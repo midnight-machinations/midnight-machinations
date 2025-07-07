@@ -40,8 +40,10 @@ impl Lobby {
 
     //send the list of players to all players
     pub fn send_players(&self){
-        let packet = ToClientPacket::LobbyClients { 
-            clients: self.clients.clone()
+        let packet = ToClientPacket::ClientObjects { 
+            clients: self.clients.iter()
+                .map(|(id, client)|(*id, client.to_client_object()))
+                .collect()
         };
         for client in self.clients.iter() {
             client.1.send(packet.clone());
