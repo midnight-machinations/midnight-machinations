@@ -19,7 +19,7 @@ import LobbyNamePane from "./LobbyNamePane";
 import { MobileContext } from "../MobileContext";
 import { WebsocketContext } from "../WebsocketContext";
 import { AppContext } from "../AppContext";
-import { useContextLobbyState } from "../../stateContext/useHooks";
+import { StateContext } from "../../stateContext/StateContext";
 
 export default function LobbyMenu(props: Readonly<{}>): ReactElement {
     const websocketContext = useContext(WebsocketContext)!;
@@ -37,11 +37,11 @@ export default function LobbyMenu(props: Readonly<{}>): ReactElement {
 }
 
 function LobbyMenuInner(): ReactElement {
-    const lobbyState = useContextLobbyState()!;
+    const lobbyState = useContext(StateContext)!;
 
-    const isSpectator = lobbyState.players.get(lobbyState.myId!)?.clientType.type === "spectator";
+    const isSpectator = lobbyState.clients.get(lobbyState.myId!)?.clientType.type === "spectator";
 
-    const myClient = lobbyState.players.get(lobbyState.myId!);
+    const myClient = lobbyState.clients.get(lobbyState.myId!);
     let isHost = true;
     if (myClient !== null){
         isHost = myClient.ready === "host";
@@ -94,7 +94,7 @@ function LobbyMenuInner(): ReactElement {
 function LobbyMenuSettings(props: Readonly<{
     isHost: boolean,
 }>): JSX.Element {
-    const lobbyState = useContextLobbyState()!;
+    const lobbyState = useContext(StateContext)!;
     const roleList = lobbyState.roleList;
     const enabledRoles = lobbyState.enabledRoles;
     const phaseTimes = lobbyState.phaseTimes;
@@ -158,7 +158,7 @@ function LobbyMenuHeader(props: Readonly<{
     advancedView: boolean,
     setAdvancedView: (advancedView: boolean) => void
 }>): JSX.Element {
-    const { lobbyName } = useContextLobbyState()!;
+    const { lobbyName } = useContext(StateContext)!;
     const { sendStartGamePacket, sendSetLobbyNamePacket } = useContext(WebsocketContext)!;
     const mobile = useContext(MobileContext)!;
     const { setContent: setAnchorContent } = useContext(AppContext)!;
@@ -187,7 +187,7 @@ function LobbyMenuHeader(props: Readonly<{
         {props.isHost ? 
             <input 
                 type="text" 
-                value={lobbyName}
+                value={lobbyName??"Unnamed Lobby"}
                 onInput={e => {
                     setLobbyName((e.target as HTMLInputElement).value);
                 }}

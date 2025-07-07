@@ -27,7 +27,7 @@ export default function StartMenu(): ReactElement {
                 <div className="left">
                     <Button onClick={async () => {
                         setContent({type: "loading", loadingType:"default"});
-                        stateCtx.setGameBrowser();
+                        websocketCtx.open();
                         setTimeout(()=>{setContent({ type: "gameBrowser" });}, 500);
                     }}>
                         <Icon>play_arrow</Icon> {translate("menu.start.button.play")}

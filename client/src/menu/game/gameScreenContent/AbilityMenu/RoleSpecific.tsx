@@ -9,14 +9,15 @@ import StewardMenu from "./RoleSpecificMenus/StewardMenu";
 import RecruiterMenu from "./RoleSpecificMenus/RecruiterMenu";
 import DetailsSummary from "../../../../components/DetailsSummary";
 import HypnotistMenu from "./RoleSpecificMenus/HypnotistMenu";
-import { useContextGameState, usePlayerState } from "../../../../stateContext/useHooks";
+import { usePlayerState } from "../../../../stateContext/useHooks";
 import { PhaseState } from "../../../../stateContext/stateType/phaseState";
 import { RoleState } from "../../../../stateContext/stateType/roleState";
+import { StateContext } from "../../../../stateContext/StateContext";
 
     
 
 export default function RoleSpecificSection(): ReactElement{
-    const gameState = useContextGameState()!;
+    const gameState = useContext(StateContext)!;
 
     const roleState = usePlayerState()!.roleState;
     const phaseState = gameState!.phaseState;
@@ -204,7 +205,7 @@ function MarksmanRoleSpecificMenu(props: Readonly<{
 function MediumRoleSpecificMenu(props: Readonly<{
     roleState: RoleState & { type: "medium" }
 }>): ReactElement {
-    const gameState = useContextGameState()!;
+    const gameState = useContext(StateContext)!;
     const players = gameState.players;
 
     const counter = <Counter
@@ -233,7 +234,7 @@ function MediumRoleSpecificMenu(props: Readonly<{
 }
 
 function SpiralMenu(): ReactElement | null {
-    const gameState = useContextGameState()!;
+    const gameState = useContext(StateContext)!;
     const spiralingPlayers = gameState.players.filter(p => p.playerTags.includes("spiraling"))!
 
     if (spiralingPlayers.length !== 0) {

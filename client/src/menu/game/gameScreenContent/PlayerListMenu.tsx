@@ -176,7 +176,10 @@ function PlayerCard(props: Readonly<{
                 className={"filter"} 
                 highlighted={isFilterSet}
                 onClick={() => {
-                    stateCtx.setChatFilter(isFilterSet ? null : filter);
+                    stateCtx.setChatFilter(isFilterSet ? null : {
+                        type: "playerNameInMessage",
+                        player: filter,
+                    });
                     return true;
                 }}
                 pressedChildren={result => <Icon>{result ? "done" : "warning"}</Icon>}

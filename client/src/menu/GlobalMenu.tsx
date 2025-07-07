@@ -20,7 +20,7 @@ export default function GlobalMenu(): ReactElement {
 
     const lobbyName = stateCtx.lobbyName;
     const host = stateCtx.host;
-    const stateType = useLobbyOrGameState(state => state.type);
+    const stateType = stateCtx.type;
 
     const ref = useRef<HTMLDivElement>(null);
     const anchorController = useContext(AppContext)!;
@@ -93,16 +93,12 @@ export default function GlobalMenu(): ReactElement {
 }
 
 export function RoomLinkButton(): JSX.Element {
-    const code = useLobbyOrGameState(
-        state => {
-            const code = new URL(window.location.href);
-            code.pathname = "/connect"
-            code.searchParams.set("code", state.roomCode.toString(18))
-            return code;
-        }
-    )!;
+    const roomCode = useContext(StateContext)!.roomCode??"";
+    const url = new URL(window.location.href);
+    url.pathname = "/connect";
+    url.searchParams.set("code", roomCode.toString(18))
     
-    return <CopyButton text={code.toString()}>
+    return <CopyButton text={url.toString()}>
         <Icon>link</Icon> {translate("menu.play.field.roomCode")}
     </CopyButton>
 }

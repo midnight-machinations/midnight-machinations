@@ -24,7 +24,7 @@ export default function HostMenu(): ReactElement {
 
     useEffect(()=>{
         // Check on every packet since like 1 million packets can affect this
-        if (stateCtx === undefined || stateCtx.state.type !== "game" || stateCtx.state.host === null) {
+        if (stateCtx === undefined || stateCtx.type !== "game" || stateCtx.host === null) {
             anchorContext.clearCoverCard();
         }
 

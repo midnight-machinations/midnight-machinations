@@ -14,6 +14,8 @@ import { PhaseState } from "./stateType/phaseState";
 import { ChatFilter } from "../menu/game/gameScreenContent/ChatMenu";
 
 export type StateContext = {
+    type: "lobby" | "game" | "neither"
+
     lobbies: Map<number, LobbyPreviewData>,
     
     roomCode: number | null,
@@ -44,7 +46,7 @@ export type StateContext = {
     chatFilter: ChatFilter,
     prependWhisperFunction: (index: PlayerIndex)=>void,
 
-
+    setType: Dispatch<SetStateAction<"lobby"|"game"|"neither">>,
     setLobbies: Dispatch<SetStateAction<Map<number, LobbyPreviewData>>>,
     setRoomCode: Dispatch<SetStateAction<number | null>>,
     setLobbyName: Dispatch<SetStateAction<string | null>>,
@@ -68,12 +70,15 @@ export type StateContext = {
     setHost: Dispatch<SetStateAction<boolean>>,
     setChatFilter: Dispatch<SetStateAction<ChatFilter>>,
     setPrependWhisperFunction: Dispatch<SetStateAction<(index: PlayerIndex)=>void>>,
+
 };
 
 
 export const StateContext = createContext<StateContext | undefined>(undefined);
 export function useStateContext(): StateContext {
     const websocketCtx = useContext(WebsocketContext)!;
+
+    const [type, setType] = useState<"game"|"lobby"|"neither">("neither");
 
     const [lobbies, setLobbies] = useState(new Map<number, LobbyPreviewData>());
     
@@ -106,6 +111,7 @@ export function useStateContext(): StateContext {
     // AudioController.unpauseQueue();
     
     return {
+        type, setType,
         lobbies, setLobbies,
         roomCode, setRoomCode,
         lobbyName, setLobbyName,

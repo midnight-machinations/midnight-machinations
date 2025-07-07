@@ -1,9 +1,10 @@
-import React, { useMemo } from "react"
+import React, { useContext, useMemo } from "react"
 import { ReactElement } from "react"
 import translate from "../game/lang"
 import StyledText, { KeywordDataMap, PLAYER_KEYWORD_DATA } from "./StyledText"
 import "./playerNamePlate.css"
-import { useContextGameState, usePlayerState } from "../stateContext/useHooks"
+import { usePlayerState } from "../stateContext/useHooks"
+import { StateContext } from "../stateContext/StateContext"
 
 export default function PlayerNamePlate(props: Readonly<{
     playerIndex: number,    //guarantee this index is valid please
@@ -11,7 +12,7 @@ export default function PlayerNamePlate(props: Readonly<{
     const {
         players,
         phaseState
-    } = useContextGameState()!;
+    } = useContext(StateContext)!;
     
     const {
         roleLabel: playerRoleLabel,

@@ -1,4 +1,4 @@
-import { createContext, useEffect, useState } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 import ChatMenu from "./gameScreenContent/ChatMenu";
 import PlayerListMenu from "./gameScreenContent/PlayerListMenu";
 import AbilityMenu from "./gameScreenContent/AbilityMenu/AbilityMenu";
@@ -6,7 +6,7 @@ import WillMenu from "./gameScreenContent/WillMenu";
 import GraveyardMenu from "./gameScreenContent/GraveyardMenu";
 import WikiMenu from "./gameScreenContent/WikiMenu";
 import { Theme } from "../..";
-import { useContextGameState } from "../../stateContext/useHooks";
+import { StateContext } from "../../stateContext/StateContext";
 
 export enum GameScreenMenuType {
     ChatMenu = "ChatMenu",
@@ -60,7 +60,7 @@ export function useGameScreenMenuContext<C extends Partial<Record<GameScreenMenu
     initialOpenMenus: C,
 ): GameScreenMenuContext {
     const [contentMenus, setContentMenus] = useState<C>(initialOpenMenus);
-    const gameState = useContextGameState()!;
+    const gameState = useContext(StateContext)!;
 
     //call callbacks for openMenu
     const [callbacks, setCallbacks] = useState<(() => void)[]>([]);

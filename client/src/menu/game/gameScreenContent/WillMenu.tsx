@@ -4,8 +4,9 @@ import { TextDropdownArea } from "../../../components/TextAreaDropdown";
 import { GameScreenMenuType } from "../GameScreenMenuContext";
 import GameScreenMenuTab from "../GameScreenMenuTab";
 import { WebsocketContext } from "../../WebsocketContext";
-import { useContextGameState, usePlayerState } from "../../../stateContext/useHooks";
+import { usePlayerState } from "../../../stateContext/useHooks";
 import { getSingleRoleJsonData } from "../../../stateContext/stateType/roleState";
+import { StateContext } from "../../../stateContext/StateContext";
 
 export function defaultAlibi(): string {
     return DEFAULT_ALIBI;
@@ -21,7 +22,7 @@ export default function WillMenu(): ReactElement {
     const notes = usePlayerState()!.notes;
     const deathNote = usePlayerState()!.deathNote;
 
-    const gameState = useContextGameState()!;
+    const gameState = useContext(StateContext)!;
     const websocketContext = useContext(WebsocketContext)!;
 
     const cantPost = useMemo(() => {

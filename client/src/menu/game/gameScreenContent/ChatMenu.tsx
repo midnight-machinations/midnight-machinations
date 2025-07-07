@@ -12,7 +12,7 @@ import GameScreenMenuTab from "../GameScreenMenuTab";
 import { GameScreenMenuType } from "../GameScreenMenuContext";
 import { WebsocketContext } from "../../WebsocketContext";
 import { usePlayerNames, usePlayerNamesToString, usePlayerState } from "../../../stateContext/useHooks";
-import { PlayerClientType, PlayerIndex } from "../../../stateContext/stateType/otherState";
+import { PlayerIndex } from "../../../stateContext/stateType/otherState";
 import { StateContext } from "../../../stateContext/StateContext";
 
 

@@ -7,12 +7,12 @@ import { ListMapData } from "./ListMap"
 import { LobbyPreviewData } from "./stateContext/stateType/gameBrowserState"
 import { ChatGroup, InsiderGroup, LobbyClientID, PhaseTimes, PlayerIndex, Verdict } from "./stateContext/stateType/otherState"
 import { GameClient } from "./stateContext/stateType/gameState"
-import { LobbyClient } from "./stateContext/stateType/lobbyState"
 import { PhaseState, PhaseType } from "./stateContext/stateType/phaseState"
 import { ModifierType } from "./stateContext/stateType/modifiersState"
 import { Role, RoleState } from "./stateContext/stateType/roleState"
 import { Grave } from "./stateContext/stateType/grave"
 import { Tag } from "./stateContext/stateType/tagState"
+import { ClientObject } from "./stateContext/state"
 
 export type ToClientPacket = {
     type: "pong",
@@ -43,8 +43,8 @@ export type ToClientPacket = {
     type: "yourId",
     playerId: LobbyClientID
 } | {
-    type: "lobbyClients",
-    clients: ListMapData<LobbyClientID, LobbyClient>
+    type: "clientObjects",
+    clients: ListMapData<LobbyClientID, ClientObject>,
 } | {
     type: "lobbyName",
     name: string

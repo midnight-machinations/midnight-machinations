@@ -1,14 +1,14 @@
-import React, { ReactElement } from "react";
+import React, { ReactElement, useContext } from "react";
 import translate from "../../../../game/lang";
 import GenericAbilityMenu from "./GenericAbilityMenu";
 import "./abilityMenu.css";
 import RoleSpecificSection from "./RoleSpecific";
 import GameScreenMenuTab from "../../GameScreenMenuTab";
 import { GameScreenMenuType } from "../../GameScreenMenuContext";
-import { useContextGameState } from "../../../../stateContext/useHooks";
+import { StateContext } from "../../../../stateContext/StateContext";
 
 export default function AbilityMenu(): ReactElement {
-    const IsSpectator = useContextGameState()!.clientState.type === "spectator";
+    const IsSpectator = useContext(StateContext)!.clientState.type === "spectator";
 
     return <div className="ability-menu role-specific-colors">
         <GameScreenMenuTab close={GameScreenMenuType.RoleSpecificMenu} helpMenu={"standard/abilityMenu"}>

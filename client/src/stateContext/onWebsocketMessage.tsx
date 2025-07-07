@@ -13,7 +13,7 @@ import { Role } from "./stateType/roleState";
 import { chatMessageToAudio, sendDefaultName } from "../menu/App";
 import { StateContext } from "./StateContext";
 import { deleteReconnectData, saveReconnectData } from "../game/localStorage";
-import { createPlayerGameState, GameClient } from "./stateType/gameState";
+import { createPlayerGameState } from "./stateType/gameState";
 import { sortControllerIdCompare } from "../game/abilityInput";
 import NightMessagePopup from "../components/NightMessagePopup"
 import WikiArticle from "../wiki/WikiArticle";
@@ -172,7 +172,7 @@ export default function onWebsocketMessage(
                 stateCtx.setClientState(stateCtx.clientState);
             }
         break;
-        case "lobbyClients":
+        case "clientObjects":
             const oldMySpectator = stateCtx.clients.get(stateCtx.myId!)?.clientType.type === "spectator";
 
             stateCtx.clients = new ListMap();
@@ -195,9 +195,11 @@ export default function onWebsocketMessage(
             
             stateCtx.setClients(stateCtx.clients);
         break;
-        case "hostData":
-            stateCtx.setClients(new ListMap<number, GameClient>(packet.clients));
-        break;
+        // case "hostData":
+        //     stateCtx.setClients(
+        //         new ListMap<number, GameClient>(packet.clients)
+        //     );
+        // break;
         case "lobbyName":
             stateCtx.setLobbyName(packet.name);
         break;
@@ -363,13 +365,13 @@ export default function onWebsocketMessage(
                 stateCtx.clientState.notes = packet.notes;
                 stateCtx.setClientState(stateCtx.clientState);
                 // old default notes
-                // if(stateCtx.state.clientState.notes.length === 0){
-                //     const myIndex = stateCtx.state.clientState.myIndex;
-                //     const myRoleKey = `role.${stateCtx.state.clientState.roleState.type}.name`;
+                // if(stateCtx.clientState.notes.length === 0){
+                //     const myIndex = stateCtx.clientState.myIndex;
+                //     const myRoleKey = `role.${stateCtx.clientState.roleState.type}.name`;
 
-                //     stateCtx.state.sendSaveNotesPacket([
+                //     stateCtx.sendSaveNotesPacket([
                 //         "Claims\n" + 
-                //         stateCtx.state.players
+                //         stateCtx.players
                 //             .map(player => 
                 //                 `@${player.index + 1} - ${player.index === myIndex ? translate(myRoleKey) : ''}\n`
                 //             )
@@ -460,7 +462,7 @@ export default function onWebsocketMessage(
     }
 
     /*BEFORE YOU DELETE THIS LINE, REMEMBER THAT STATECTX STUFF NEEDS SET STATE HERE?!?!??*/
-    // stateCtx.state.invokeStateListeners(packet.type);
+    // stateCtx.invokeStateListeners(packet.type);
 }
 
 function createPlayer(arg0: string, i: number): import("./stateType/gameState").Player {

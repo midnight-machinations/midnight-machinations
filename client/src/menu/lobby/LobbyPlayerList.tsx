@@ -22,44 +22,21 @@ type PlayerDisplayData = {
 
 export default function LobbyPlayerList(): ReactElement {
 
-    let players: undefined | PlayerDisplayData[] = undefined;
-    let host = false;
     const stateCtx = useContext(StateContext)!;
-    const { state } = stateCtx;
 
-    if(state.type === "game" && state.host!==null){
-        host = state.host !== null;
-        players = state.host.clients.entries().map(([id, player]) => {
-            return {
-                id,
-                clientType: player.clientType.type,
-                connection: player.connection,
-                ready: null,
-                host: player.host,
-                name: player.clientType.type === "player"
-                    ? state.players[player.clientType.index].name
-                    : player.clientType.index.toString(),
-                displayName: player.clientType.type === "player"
-                    ? state.players[player.clientType.index].toString()
-                    : player.clientType.index.toString(),
-            }
-        })
-    }else if(state.type==="lobby"){
-        host = state.players.get(state.myId!)?.ready === "host";
-        players = state.players.entries().map(([id, player]) => {
-            const name = player.clientType.type === "player" ? player.clientType.name : null;
-            return {
-                id,
-                clientType: player.clientType.type,
-                ready: player.ready === "ready",
-                connection: player.connection,
-                host: player.ready === "host",
-                name,
-                displayName: name ?? "Spectator",
-            }
-        })
-    }
-    players = players!;
+    let host: boolean = stateCtx.clients.get(stateCtx.myId!)?.ready === "host";
+    let players: PlayerDisplayData[] = stateCtx.clients.entries().map(([id, player]) => {
+        const name = player.clientType.type === "player" ? player.clientType.name : null;
+        return {
+            id,
+            clientType: player.clientType.type,
+            ready: player.ready === "ready",
+            connection: player.connection,
+            host: player.ready === "host",
+            name,
+            displayName: name ?? "Spectator",
+        }
+    });
 
     return <section className="player-list-menu-colors selector-section">
         <h2>{translate("menu.lobby.players")}</h2>

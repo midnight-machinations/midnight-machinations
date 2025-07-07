@@ -1,6 +1,5 @@
 import React, { ReactElement, useCallback, useContext, useEffect, useState } from "react";
 import translate from "../../game/lang";
-import LoadingScreen from "../LoadingScreen";
 import "./playMenu.css";
 import PlayMenuJoinPopup from "./PlayMenuJoinPopup";
 import { Button } from "../../components/Button";
@@ -12,7 +11,6 @@ import { StateContext } from "../../stateContext/StateContext";
 export default function PlayMenu(): ReactElement {
     const { setContent: setAnchorContent } = useContext(AppContext)!;
     const { sendLobbyListRequest, sendJoinPacket, sendRejoinPacket, sendHostPacket } = useContext(WebsocketContext)!;
-    const stateCtx = useContext(StateContext)!;
     
     useEffect(() => {
         let autoRefreshInterval: NodeJS.Timeout;
@@ -32,7 +30,6 @@ export default function PlayMenu(): ReactElement {
             if (roomCode === undefined) return false;
         
             setAnchorContent({type:"loading", loadingType:"join"});
-            stateCtx.setGameBrowser();
         
             if (playerId === undefined) {
                 sendJoinPacket(roomCode);
@@ -53,7 +50,7 @@ export default function PlayMenu(): ReactElement {
                 <div>
                     <Button onClick={async () => {
                         setAnchorContent({type:"loading", loadingType:"host"});
-                        stateCtx.setGameBrowser();
+                        // stateCtx.setGameBrowser();
                         sendHostPacket();
                     }}>
                         {translate("menu.play.button.host")}
@@ -146,7 +143,7 @@ function PlayMenuTable(props: Readonly<{
             </tr>
         </thead>
         <tbody>
-            {(stateCtx.state.type === "gameBrowser"?Array.from(stateCtx.state.lobbies.entries()):[]).map((entry)=>{
+            {(Array.from(stateCtx.lobbies.entries())).map((entry)=>{
                 const roomCode = entry[0];
                 const lobby: LobbyPreviewData = entry[1];
 

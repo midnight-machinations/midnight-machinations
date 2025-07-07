@@ -6,7 +6,7 @@ import { GameScreenMenuContext, GameScreenMenuType } from "./GameScreenMenuConte
 import { WikiArticleLink } from "../../wiki/WikiArticleLink";
 import { MobileContext } from "../MobileContext";
 import { AppContext } from "../AppContext";
-import { useContextGameState } from "../../stateContext/useHooks";
+import { StateContext } from "../../stateContext/StateContext";
 
 export default function GameScreenMenuTab(props: Readonly<{
     helpMenu: WikiArticleLink | null
@@ -15,7 +15,7 @@ export default function GameScreenMenuTab(props: Readonly<{
 }>): ReactElement {
     const appContext = useContext(AppContext)!;
     const menuController = useContext(GameScreenMenuContext)!;
-    const spectator = useContextGameState()!.clientState.type === "spectator";
+    const spectator = useContext(StateContext)!.clientState.type === "spectator";
     const mobile = useContext(MobileContext)!;
 
     return <div className="content-tab">

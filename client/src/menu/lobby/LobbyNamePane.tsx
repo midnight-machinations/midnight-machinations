@@ -3,13 +3,13 @@ import translate from "../../game/lang";
 import Icon from "../../components/Icon";
 import { Button } from "../../components/Button";
 import { WebsocketContext } from "../WebsocketContext";
-import { useContextLobbyState } from "../../stateContext/useHooks";
+import { StateContext } from "../../stateContext/StateContext";
 
 
 
 export default function LobbyNamePane(): ReactElement {
-    const lobbyState = useContextLobbyState()!;
-    const client = lobbyState.players.get(lobbyState.myId!);
+    const lobbyState = useContext(StateContext)!;
+    const client = lobbyState.clients.get(lobbyState.myId!);
     const isSpectator = client?.clientType.type === "spectator";
     const ready = client?.ready??false;
     const websocketContext = useContext(WebsocketContext)!;
