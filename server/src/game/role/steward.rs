@@ -62,7 +62,7 @@ impl RoleStateImpl for Steward {
 
                 self.self_heals_remaining = self.self_heals_remaining
                     .saturating_sub(
-                        if roles.iter().any(|role|*role == Role::Steward){1}else{0}
+                        if roles.contains(&Role::Steward){1}else{0}
                     );
                 
                 actor_ref.set_role_state(game, Steward{

@@ -854,8 +854,6 @@
     "chatMessage.informantResult": "\\0 \\1 \\2",
     "chatMessage.informantResult.visited": "Yoru trgaet sditeiv \\0.",
     "chatMessage.informantResult.visitedBy": "Yoru trgaet swa sditeiv yb \\0.",
-    "chatMessage.framerResult": "\\0 swa sditeiv yb wont lssaiyolt with tsehe sorle: \\1.",
-    "chatMessage.framerResult.nobody": "\\0 swa ont sditeiv yb yan wont lssaiyolt.",
     "chatMessage.scarecrowResult": "You blrcedwdkoa \\0.",
     "chatMessage.ambusherCaught": "You tghcau an rhmeasub, ti swa \\0.",
     "chatMessage.wildcardConvertFailed": "You dilaef ot tnvecor ot eth loer \\0. Eth loer thimg ehva neeb edslidba or ankte.",
