@@ -70,17 +70,17 @@ pub trait RoleStateImpl: Clone + std::fmt::Debug + Default + GetClientRoleState<
     fn on_game_start(self, _game: &mut Game, _actor_ref: PlayerReference) {}
     fn before_initial_role_creation(self, _game: &mut Game, _actor_ref: PlayerReference) {}
     fn on_conceal_role(self, _game: &mut Game, _actor_ref: PlayerReference, _player: PlayerReference, _concealed_player: PlayerReference) {}
-    fn on_player_roleblocked(self, _game: &mut Game, midnight_machinations: &mut MidnightVariables, actor_ref: PlayerReference, player: PlayerReference, _invisible: bool) {
+    fn on_player_roleblocked(self, _game: &mut Game, midnight_variables: &mut MidnightVariables, actor_ref: PlayerReference, player: PlayerReference, _invisible: bool) {
         if player != actor_ref {return}
 
-        NightVisits::retain(midnight_machinations, |v|
+        NightVisits::retain(midnight_variables, |v|
             !matches!(v.tag, VisitTag::Role{..}) || v.visitor != actor_ref
         );
     }
-    fn on_visit_wardblocked(self, _game: &mut Game, midnight_machinations: &mut MidnightVariables, actor_ref: PlayerReference, visit: Visit) {
+    fn on_visit_wardblocked(self, _game: &mut Game, midnight_variables: &mut MidnightVariables, actor_ref: PlayerReference, visit: Visit) {
         if actor_ref != visit.visitor {return};
 
-        NightVisits::retain(midnight_machinations, |v|
+        NightVisits::retain(midnight_variables, |v|
             !matches!(v.tag, VisitTag::Role{..}) || v.visitor != actor_ref
         );
     }

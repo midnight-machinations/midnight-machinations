@@ -90,7 +90,7 @@ impl PuppeteerMarionette{
         Tags::set_viewers(game, super::tags::TagSetID::PuppeteerMarionette, &InsiderGroupID::Puppeteer.players(game).clone());
     }
     pub fn on_remove_insider(game: &mut Game, _event: &OnRemoveInsider, _fold: &mut (), _priority: ()){
-        Tags::set_viewers(game, super::tags::TagSetID::PuppeteerMarionette, &InsiderGroupID::Mafia.players(game).clone());
+        Tags::set_viewers(game, super::tags::TagSetID::PuppeteerMarionette, &InsiderGroupID::Puppeteer.players(game).clone());
     }
     pub fn on_midnight(game: &mut Game, _event: &OnMidnight, midnight_variables: &mut MidnightVariables, priority: OnMidnightPriority){
         if priority == OnMidnightPriority::Kill{

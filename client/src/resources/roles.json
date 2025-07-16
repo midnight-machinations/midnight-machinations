@@ -332,7 +332,7 @@
         "roleSets": ["town", "townCommon", "townKilling"],
         "armor": false,
         "aura": null,
-        "maxCount": null,
+        "maxCount": 1,
         "canWriteDeathNote": false,
         "canBeConvertedTo": [],
         "chatMessages":[
@@ -709,9 +709,6 @@
         "canWriteDeathNote": false,
         "canBeConvertedTo": ["godfather"],
         "chatMessages":[
-            {"type": "framerResult", "mafiaMember": 1, "visitors": ["gossip", "detective"]},
-            {"type": "framerResult", "mafiaMember": 4, "visitors": ["doctor"]},
-            {"type": "framerResult", "mafiaMember": 20, "visitors": []},
             {"type": "sheriffResult","suspicious": true},
             {"type": "snoopResult", "townie": false},
             {"type": "seerResult", "enemies": true}
