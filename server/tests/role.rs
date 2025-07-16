@@ -1394,7 +1394,8 @@ fn snoop_basic() {
     kit::scenario!(game in Night 1 where
         gf: Godfather,
         det: Detective,
-        snoop: Snoop
+        snoop: Snoop,
+        v: Detective
     );
 
     assert!(snoop.send_ability_input_player_list_typical(det));
@@ -1402,26 +1403,38 @@ fn snoop_basic() {
     game.next_phase();
     assert_contains!(
         snoop.get_messages_after_night(1),
-        ChatMessageVariant::SnoopResult { townie: false }
+        ChatMessageVariant::SnoopResult { townie: true }
     );
 
     game.skip_to(Night, 2);
 
-    assert!(snoop.send_ability_input_player_list_typical(det));
+    assert!(snoop.send_ability_input_player_list_typical(gf));
     game.next_phase();
     assert_contains!(
         snoop.get_messages_after_night(2),
-        ChatMessageVariant::SnoopResult { townie: true }
+        ChatMessageVariant::SnoopResult { townie: false }
     );
 
     game.skip_to(Night, 3);
 
-    assert!(snoop.send_ability_input_player_list_typical(gf));
+    assert!(snoop.send_ability_input_player_list_typical(det));
+    assert!(det.send_ability_input_player_list_typical(snoop));
+    assert!(v.send_ability_input_player_list_typical(snoop));
     game.next_phase();
     assert_contains!(
         snoop.get_messages_after_night(3),
         ChatMessageVariant::SnoopResult { townie: false }
     );
+
+    game.skip_to(Night, 4);
+
+    assert!(snoop.send_ability_input_player_list_typical(det));
+    assert!(gf.send_ability_input_player_list_typical(snoop));
+    game.next_phase();
+    assert_contains!(
+        snoop.get_messages_after_night(4),
+        ChatMessageVariant::SnoopResult { townie: false }
+    );    
 }
 
 #[test]

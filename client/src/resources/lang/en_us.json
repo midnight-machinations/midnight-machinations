@@ -1495,10 +1495,10 @@
     "wiki.article.role.auditor.attributes":"- You are not told the names of any players\n- The random role you are told is from the outline you chose",
     "wiki.article.role.auditor.extra":"- Your ability works independently of your visits, Your visit getting transported or getting possessed doesn't usually impact your ability\n    - If you are blocked, you don't get results, but you can select that outline again\n- It is possible for you to visit dead players",
 
-    "wiki.article.role.snoop.reminder": "At night, select a player to learn if they are a town loyalist, but you can't tell if you are visited by anyone.",
-    "wiki.article.role.snoop.guide": "- At night, select a player. You are either told that they are a townie, or that you can't tell if they are a townie\n    - You can't tell what your target was if:\n        - They aren't a townie\n        - You were visited by anyone at all\n        - They have a suspicious aura\n\n    - Otherwise, you are told they are a townie",
-    "wiki.article.role.snoop.abilities":"- Visit a player to search them\n    - If your target is a town loyalist, and you are not visited by anyone, you are told they are a town loyalist",
-    "wiki.article.role.snoop.attributes":"- If your target has a suspicious aura, your results will be inconclusive",
+    "wiki.article.role.snoop.reminder": "At night, select a player to learn if they are a town loyalist, but you can't tell if you are visited by at least one non town loyalist, or at least two town loyalists.",
+    "wiki.article.role.snoop.guide": "- At night, select a player. You are either told that they are a town loyalist, or that you can't tell if they are a townie\n    - You can't tell what your target was if:\n        - They aren't a townie\n        - You are visited by at least one non town loyalist, or at least two town loyalists\n        - They have a suspicious aura\n\n    - Otherwise, you are told they are a town loyalist",
+    "wiki.article.role.snoop.abilities":"- Visit a player to search them\n    - If your target is a town loyalist, you are not visited by at least one non town loyalist, and you are not visited by at least two town loyalists, then you are told they are a town loyalist",
+    "wiki.article.role.snoop.attributes":"- If your target has a suspicious aura, you are told that you can't tell.",
     "wiki.article.role.snoop.extra":"- innocent aura doesn't effect your results",
 
     "wiki.article.role.gossip.reminder": "At night, select a player to eavesdrop on, and learn if they visited a player who is enemies with town.",
