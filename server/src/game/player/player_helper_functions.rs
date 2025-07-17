@@ -348,13 +348,13 @@ impl PlayerReference{
         self.role(game).possession_immune()
     }
     pub fn has_innocent_aura(&self, game: &Game) -> bool {
-        PlayerReference::all_players(game).any(|player_ref| 
-            match player_ref.role_state(game) {
-                RoleState::Disguiser(r) => 
-                    r.current_target.is_some_and(|player|player == *self),
-                _ => false
-            }
-        ) ||
+        // PlayerReference::all_players(game).any(|player_ref| 
+        //     match player_ref.role_state(game) {
+        //         RoleState::Disguiser(r) => 
+        //             r.current_target.is_some_and(|player|player == *self),
+        //         _ => false
+        //     }
+        // ) ||
         self.role(game).has_innocent_aura(game)
     }
     pub fn has_suspicious_aura(&self, game: &Game, midnight_variables: &MidnightVariables) -> bool {
