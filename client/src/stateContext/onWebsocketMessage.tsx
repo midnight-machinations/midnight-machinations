@@ -180,18 +180,13 @@ export default function onWebsocketMessage(
                 stateCtx.clients.insert(clientId, lobbyClient);
             }
             const newMySpectator = stateCtx.clients.get(stateCtx.myId!)?.clientType.type === "spectator";
-            if(
-                newMySpectator && stateCtx.clientState.type!=="spectator" ||
-                !newMySpectator && stateCtx.clientState.type==="spectator"
-            ){
-                stateCtx.setClientState(
-                    (newMySpectator?{type: "spectator"}:createPlayerGameState())
-                );
-            }
             
             if (oldMySpectator && !newMySpectator){
                 sendDefaultName(websocketCtx);
             }
+            
+            stateCtx.clientState = (newMySpectator?{type: "spectator"}:createPlayerGameState());
+            stateCtx.setClientState(stateCtx.clientState);
 
             // Recompute keyword data, since player names are keywords.
             computePlayerKeywordDataForLobby(
@@ -211,8 +206,12 @@ export default function onWebsocketMessage(
             stateCtx.setLobbyName(packet.name);
         break;
         case "startGame":
-            // const isSpectator = stateCtx.clients.get(stateCtx.myId!)?.clientType.type === "spectator";
             appCtx.setContent({type:"loading"});
+            
+            // const spectator = stateCtx.clients.get(stateCtx.myId!)?.clientType.type === "spectator";
+            // stateCtx.setClientState(
+            //     (spectator?{type: "spectator"}:createPlayerGameState())
+            // );
 
             AudioController.queueFile("audio/start_game.mp3");
             break;
