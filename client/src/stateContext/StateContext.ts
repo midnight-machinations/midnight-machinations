@@ -1,6 +1,6 @@
 import { createContext, Dispatch, SetStateAction, useContext, useState } from "react";
 import { ClientObject } from "./state";
-import { Player, PlayerGameState } from "./stateType/gameState";
+import { createPlayerGameState, Player, PlayerGameState } from "./stateType/gameState";
 import { LobbyPreviewData } from "./stateType/gameBrowserState";
 import ListMap from "../ListMap";
 import { WebsocketContext } from "../menu/WebsocketContext";
@@ -76,8 +76,6 @@ export type StateContext = {
 
 export const StateContext = createContext<StateContext | undefined>(undefined);
 export function useStateContext(): StateContext {
-    const websocketCtx = useContext(WebsocketContext)!;
-
     const [type, setType] = useState<"game"|"lobby"|"neither">("neither");
 
     const [lobbies, setLobbies] = useState(new Map<number, LobbyPreviewData>());
@@ -102,7 +100,10 @@ export function useStateContext(): StateContext {
     const [ticking, setTicking] = useState<boolean>(false);
     const [initialized, setInitialized] = useState<boolean>(false);
     const [fastForward, setFastForward] = useState<boolean>(false);
-    const [clientState, setClientState] = useState<PlayerGameState | {type: "spectator"}>({type: "spectator"});
+    const [clientState, setClientState] = useState<PlayerGameState | {type: "spectator"}>(
+        // {type: "spectator"}
+        createPlayerGameState()
+    );
     const [host, setHost] = useState<boolean>(false);
     const [chatFilter, setChatFilter] = useState<ChatFilter>(null);
     const [prependWhisperFunction, setPrependWhisperFunction] = useState<(index: PlayerIndex)=>void>((index)=>{});

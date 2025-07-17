@@ -110,10 +110,10 @@ export default function WebSocketContextProvider(props: Readonly<{ children: Rea
         webSocket,
         lastMessageRecieved,
 
-        open: () => {
-            // if(webSocket.current?.OPEN === 1){
-            //     return
-            // }
+        open: async () => {
+            if(websocketContext.webSocket.current?.OPEN === 1){
+                await websocketContext.close();
+            }
 
             let address = process.env.REACT_APP_WS_ADDRESS;
             if(!address){
@@ -180,7 +180,7 @@ export default function WebSocketContextProvider(props: Readonly<{ children: Rea
 
             websocketContext.webSocket.current.addEventListener("close", () => {
                 completePromise();
-            })
+            });
             
             websocketContext.webSocket.current.close();
             websocketContext.webSocket.current = null;

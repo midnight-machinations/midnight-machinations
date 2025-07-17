@@ -1,7 +1,7 @@
 import React, { ReactElement, useCallback, useContext, useMemo, useRef, useState } from "react";
 import "./outlineSelector.css";
 import translate from "../../game/lang";
-import { getAllRoles, getRolesFromRoleSet, ROLE_SETS, RoleList, RoleOrRoleSet, RoleOutline, simplifyRoleOutline, translateRoleOutline, translateRoleOrRoleSet} from "../../stateContext/stateType/roleListState";
+import { getAllRoles, getRolesFromRoleSet, ROLE_SETS, RoleList, RoleOrRoleSet, RoleOutline, simplifyRoleOutline, translateRoleOutline, translateRoleOrRoleSet, RoleOutlineOption} from "../../stateContext/stateType/roleListState";
 import Icon from "../Icon";
 import { DragAndDrop } from "../DragAndDrop";
 import { GameModeContext } from "./GameModesEditor";
@@ -14,13 +14,11 @@ import { INSIDER_GROUPS, InsiderGroup } from "../../stateContext/stateType/other
 import { Role } from "../../stateContext/stateType/roleState";
 import { StateContext } from "../../stateContext/StateContext";
 
-type RoleOutlineSelectorProps = {
+export default function RoleOutlineSelector(props: {
     roleOutline: RoleOutline,
     onChange: (value: RoleOutline) => void,
     disabled?: boolean,
-}
-
-export default function RoleOutlineSelector(props: RoleOutlineSelectorProps): ReactElement {
+}): ReactElement {
     const handleAddUnion = () => {
         props.onChange([...props.roleOutline, { roleSet: "any" }]);
     }
@@ -77,9 +75,9 @@ export default function RoleOutlineSelector(props: RoleOutlineSelectorProps): Re
                         disabled={props.disabled}
                         roleOrRoleSet={roleOrRoleSet}
                         onChange={(value) => {
-                            let options = [...props.roleOutline];
+                            let options: RoleOutline = [...props.roleOutline];
 
-                            let old = {...options[index]};
+                            let old: RoleOutlineOption = {...options[index]};
 
                             switch (value.type) {
                                 case "role":
@@ -406,7 +404,7 @@ export function OutlineListSelector(props: Readonly<{
     onRemoveOutline?: ((index: number) => void),
     setRoleList: (newRoleList: RoleList) => void,
 }>) {
-    const {roleList} = useContext(GameModeContext);
+    const {roleList} = useContext(GameModeContext)!;
 
     const simplify = () => {
         props.setRoleList(roleList.map(simplifyRoleOutline));

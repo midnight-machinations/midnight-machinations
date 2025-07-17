@@ -22,18 +22,7 @@ import { AppContext } from "../AppContext";
 import { StateContext } from "../../stateContext/StateContext";
 
 export default function LobbyMenu(props: Readonly<{}>): ReactElement {
-    const websocketContext = useContext(WebsocketContext)!;
-    const [loading, setLoading] = useState<boolean>(true);
-
-    // This doesn't catch all the packets :(
-    useEffect(() => {
-        console.log(websocketContext.lastMessageRecieved?.type);
-        if (websocketContext.lastMessageRecieved?.type === "lobbyName") {
-            setLoading(false);
-        }
-    }, [websocketContext.lastMessageRecieved]);
-
-    return loading ? <LoadingScreen type="join" /> : <LobbyMenuInner/>
+    return <LobbyMenuInner/>
 }
 
 function LobbyMenuInner(): ReactElement {

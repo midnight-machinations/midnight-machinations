@@ -13,7 +13,7 @@ import { Role } from "./stateType/roleState";
 import { chatMessageToAudio, sendDefaultName } from "../menu/App";
 import { StateContext } from "./StateContext";
 import { deleteReconnectData, saveReconnectData } from "../game/localStorage";
-import { createPlayerGameState } from "./stateType/gameState";
+import { createPlayer, createPlayerGameState } from "./stateType/gameState";
 import { sortControllerIdCompare } from "../game/abilityInput";
 import NightMessagePopup from "../components/NightMessagePopup"
 import WikiArticle from "../wiki/WikiArticle";
@@ -180,7 +180,14 @@ export default function onWebsocketMessage(
                 stateCtx.clients.insert(clientId, lobbyClient);
             }
             const newMySpectator = stateCtx.clients.get(stateCtx.myId!)?.clientType.type === "spectator";
-
+            if(
+                newMySpectator && stateCtx.clientState.type!=="spectator" ||
+                !newMySpectator && stateCtx.clientState.type==="spectator"
+            ){
+                stateCtx.setClientState(
+                    (newMySpectator?{type: "spectator"}:createPlayerGameState())
+                );
+            }
             
             if (oldMySpectator && !newMySpectator){
                 sendDefaultName(websocketCtx);
@@ -464,8 +471,3 @@ export default function onWebsocketMessage(
     /*BEFORE YOU DELETE THIS LINE, REMEMBER THAT STATECTX STUFF NEEDS SET STATE HERE?!?!??*/
     // stateCtx.invokeStateListeners(packet.type);
 }
-
-function createPlayer(arg0: string, i: number): import("./stateType/gameState").Player {
-    throw new Error("Function not implemented.");
-}
-

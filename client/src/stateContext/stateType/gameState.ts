@@ -77,7 +77,7 @@ export type Player = {
 
     toString(): string
 }
-function createPlayer(name: string, index: number): Player {
+export function createPlayer(name: string, index: number): Player {
     return{
         name: name,
         index: index,
