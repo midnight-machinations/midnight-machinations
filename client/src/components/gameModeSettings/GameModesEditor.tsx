@@ -1,18 +1,18 @@
 import { ReactElement, createContext, useCallback, useState } from "react";
 import React from "react";
 import { OutlineListSelector } from "./OutlineSelector";
-import { getAllRoles, RoleList, RoleOutline } from "../../game/roleListState.d";
+import { getAllRoles, RoleList, RoleOutline } from "../../stateContext/stateType/roleListState";
 import translate from "../../game/lang";
 import "./gameModesEditor.css";
 import PhaseTimesSelector from "./PhaseTimeSelector";
-import { ModifierType, PhaseTimes } from "../../game/gameState.d";
 import EnabledRoleSelector from "./EnabledRoleSelector";
-import { Role } from "../../game/roleState.d";
 import "./selectorSection.css";
-import { defaultPhaseTimes } from "../../game/gameState";
 import { GameModeSelector } from "./GameModeSelector";
 import { ShareableGameMode } from "./gameMode";
 import { EnabledModifiersSelector } from "./EnabledModifiersSelector";
+import { defaultPhaseTimes, PhaseTimes } from "../../stateContext/stateType/otherState";
+import { ModifierType } from "../../stateContext/stateType/modifiersState";
+import { Role } from "../../stateContext/stateType/roleState";
 
 const GameModeContext = createContext({
     roleList: [] as RoleList,

@@ -1,10 +1,10 @@
 import React, { ReactElement } from "react";
-import Wiki from "../../components/Wiki";
+import Wiki from "../../wiki/Wiki";
 import translate from "../../game/lang";
 import "./standaloneWiki.css";
-import { WikiArticleLink } from "../../components/WikiArticleLink";
-import { MODIFIERS, ModifierType } from "../../game/gameState.d";
-import { getAllRoles } from "../../game/roleListState.d";
+import { WikiArticleLink } from "../../wiki/WikiArticleLink";
+import { getAllRoles } from "../../stateContext/stateType/roleListState";
+import { MODIFIERS, ModifierType } from "../../stateContext/stateType/modifiersState";
 
 export default function StandaloneWiki(props: Readonly<{
     initialWikiPage?: WikiArticleLink
@@ -25,7 +25,6 @@ export default function StandaloneWiki(props: Readonly<{
                         window.history.replaceState({}, '', `/wiki`)
                     }
                 }}
-                static={true}
             />
         </div>
     </div>

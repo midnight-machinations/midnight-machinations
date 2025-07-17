@@ -42,6 +42,9 @@ export default class ListMap<K, V> {
     values(): V[] {
         return this.list.map(([k, v]) => v)
     }
+    length(): number {
+        return this.list.length;
+    }
 
 
 }

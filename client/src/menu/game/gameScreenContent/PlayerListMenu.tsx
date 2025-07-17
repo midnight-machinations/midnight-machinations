@@ -1,33 +1,28 @@
-import React, { ReactElement } from "react";
+import React, { ReactElement, useContext } from "react";
 import translate from "../../../game/lang";
-import GAME_MANAGER from "../../../index";
 import "./playerListMenu.css"
 import "./../gameScreen.css"
-import { PlayerIndex } from "../../../game/gameState.d";
-import { ContentMenu, ContentTab } from "../GameScreen";
 import StyledText from "../../../components/StyledText";
 import Icon from "../../../components/Icon";
 import { Button } from "../../../components/Button";
-import { useGameState, usePlayerNames, usePlayerState, useSpectator } from "../../../components/useHooks";
 import PlayerNamePlate from "../../../components/PlayerNamePlate";
 import ChatMessage, { translateChatMessage } from "../../../components/ChatMessage";
 import GraveComponent, { translateGraveRole } from "../../../components/grave";
 import { ChatMessageSection, ChatTextInput } from "./ChatMenu";
+import GameScreenMenuTab from "../GameScreenMenuTab";
+import { GameScreenMenuType } from "../GameScreenMenuContext";
+import { usePlayerNames, usePlayerState } from "../../../stateContext/useHooks";
+import { PlayerIndex } from "../../../stateContext/stateType/otherState";
+import { StateContext } from "../../../stateContext/StateContext";
 
 export default function PlayerListMenu(): ReactElement {
-    const players = useGameState(
-        gameState => gameState.players,
-        ["gamePlayers", "playerAlive", "yourPlayerTags", "yourRoleLabels", "playerVotes"]
-    )!
-
-    const graves = useGameState(
-        gameState => gameState.graves,
-        ["addGrave"]
-    )!
+    const stateCtx = useContext(StateContext)!;
+    const players = stateCtx.players;
+    const graves = stateCtx.graves;
 
 
     return <div className="player-list-menu player-list-menu-colors">
-        <ContentTab close={ContentMenu.PlayerListMenu} helpMenu={"standard/playerList"}>{translate("menu.playerList.title")}</ContentTab>
+        <GameScreenMenuTab close={GameScreenMenuType.PlayerListMenu} helpMenu={"standard/playerList"}>{translate("menu.playerList.title")}</GameScreenMenuTab>
 
         <div className="player-list">
             {players
@@ -67,32 +62,32 @@ function PlayerCard(props: Readonly<{
     graveIndex?: number,
     playerIndex: number
 }>): ReactElement{
-    const isPlayerSelf = usePlayerState(
-        playerState => playerState.myIndex === props.playerIndex,
-        ["yourPlayerIndex"],
-        false
-    )!;
-    const chatFilter = usePlayerState(
-        playerState => playerState.chatFilter,
-        ["filterUpdate"],
-    );
-    const playerAlive = useGameState(
-        gameState => gameState.players[props.playerIndex].alive,
-        ["gamePlayers", "playerAlive"]
-    )!;
-    const phaseState = useGameState(
-        gameState => gameState.phaseState,
-        ["phase"]
-    )!
-    const numVoted = useGameState(
-        gameState => gameState.players[props.playerIndex].numVoted,
-        ["gamePlayers", "playerVotes"]
-    )!;
-    const sendChatGroups = usePlayerState(
-        playerState => playerState.sendChatGroups,
-        ["yourSendChatGroups"]
-    );
-    const playerNames = usePlayerNames();
+    const [alibiOpen, setAlibiOpen] = React.useState(false);
+    const [graveOpen, setGraveOpen] = React.useState(false);
+    const [whisperChatOpen, setWhisperChatOpen] = React.useState(false);
+
+    const stateCtx = useContext(StateContext)!;
+    const playerState = usePlayerState();
+
+    const playerAlive = stateCtx.players[props.playerIndex].alive;
+    const numVoted = stateCtx.players[props.playerIndex].numVoted
+    const phaseState = stateCtx.phaseState;
+
+    let isPlayerSelf = false;
+    let chatFilter = undefined;
+    let sendChatGroups = undefined;
+    let whisperNotification = false;
+    if(playerState !== undefined){
+        isPlayerSelf = playerState.myIndex === props.playerIndex;
+        chatFilter = playerState?.chatFilter;
+        sendChatGroups = playerState?.sendChatGroups;
+        
+        whisperNotification = playerState.missedWhispers.some(player => player === props.playerIndex) &&
+            !isPlayerSelf &&
+            !whisperChatOpen;
+    }
+
+    const playerNames = usePlayerNames()!;
 
     type NonAnonymousBlockMessage = {
         variant: {
@@ -110,43 +105,21 @@ function PlayerCard(props: Readonly<{
         chatGroup: "all"
     }
 
-    const mostRecentBlockMessage: undefined | NonAnonymousBlockMessage = useGameState(
-        gameState => findLast(gameState.chatMessages, message =>
-                message.chatGroup === "all" && 
-                message.variant.type === "normal" &&
-                message.variant.block &&
-                (message.variant.messageSender.type === "player" || message.variant.messageSender.type === "livingToDead") &&
-                message.variant.messageSender.player === props.playerIndex
-            ),
-        ["addChatMessages", "gamePlayers"]
+    const mostRecentBlockMessage: undefined | NonAnonymousBlockMessage = findLast(
+        stateCtx.chatMessages,
+        message => message.chatGroup === "all" && 
+            message.variant.type === "normal" &&
+            message.variant.block &&
+            (message.variant.messageSender.type === "player" || message.variant.messageSender.type === "livingToDead") &&
+            message.variant.messageSender.player === props.playerIndex
     ) as undefined | NonAnonymousBlockMessage;
+    
 
-    const [alibiOpen, setAlibiOpen] = React.useState(false);
-    const [graveOpen, setGraveOpen] = React.useState(false);
-    const [whisperChatOpen, setWhisperChatOpen] = React.useState(false);
-    const whispersDisabled = useGameState(
-        gameState => gameState.enabledModifiers.includes("noWhispers"),
-        ["enabledModifiers"]
-    )!;
+    const whispersDisabled = stateCtx.enabledModifiers.includes("noWhispers");
 
-    const grave = useGameState(
-        gameState => {
-            if(props.graveIndex === undefined) return undefined;
-            return gameState.graves[props.graveIndex]
-        },
-        ["addGrave"]
-    )!
+    const grave = props.graveIndex === undefined?undefined:stateCtx.graves[props.graveIndex];
 
-    const whisperNotification = usePlayerState(
-        gameState =>
-            gameState.missedWhispers.some(player => player === props.playerIndex) &&
-            !isPlayerSelf &&
-            !whisperChatOpen,
-        ["addChatMessages", "whisperChatOpenOrClose"],
-        false
-    );
-
-    const spectator = useSpectator();
+    const spectator = stateCtx.clientState.type === "spectator";
 
     return <><div 
         className={`player-card`}
@@ -170,7 +143,7 @@ function PlayerCard(props: Readonly<{
         {grave !== undefined ? 
             <Button onClick={()=>setGraveOpen(!graveOpen)}>
                 <StyledText noLinks={true}>
-                    {translateGraveRole(grave)} {translate(grave.diedPhase+".icon")}{grave.dayNumber.toString()}
+                    {translateGraveRole(grave.information)} {translate(grave.diedPhase+".icon")}{grave.dayNumber.toString()}
                 </StyledText>
             </Button>
         : null}
@@ -185,11 +158,9 @@ function PlayerCard(props: Readonly<{
                 onClick={()=>{
                     // GAME_MANAGER.prependWhisper(props.playerIndex); return true;
                     setWhisperChatOpen(!whisperChatOpen);
-                    if(GAME_MANAGER.state.stateType === 'game' && GAME_MANAGER.state.clientState.type === 'player'){
-                        GAME_MANAGER.state.clientState.missedWhispers = 
-                            GAME_MANAGER.state.clientState.missedWhispers.filter(player => player !== props.playerIndex);
+                    if(playerState !== undefined){
+                        playerState.missedWhispers = playerState.missedWhispers.filter(player => player !== props.playerIndex);
                     }
-                    GAME_MANAGER.invokeStateListeners("whisperChatOpenOrClose");
                 }}
                 pressedChildren={() => <Icon>done</Icon>}
             >
@@ -205,7 +176,10 @@ function PlayerCard(props: Readonly<{
                 className={"filter"} 
                 highlighted={isFilterSet}
                 onClick={() => {
-                    GAME_MANAGER.updateChatFilter(isFilterSet ? null : filter);
+                    stateCtx.setChatFilter(isFilterSet ? null : {
+                        type: "playerNameInMessage",
+                        player: filter,
+                    });
                     return true;
                 }}
                 pressedChildren={result => <Icon>{result ? "done" : "warning"}</Icon>}

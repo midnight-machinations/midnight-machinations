@@ -1,13 +1,13 @@
-import { ReactElement } from "react"
+import { ReactElement, useContext } from "react"
 import React from "react"
 import "./twoRoleOutlineOptionSelectionMenu.css"
-import { Role } from "../../../../../game/roleState.d"
-import { RoleList, translateRoleOutline } from "../../../../../game/roleListState.d"
+import { RoleList, translateRoleOutline } from "../../../../../stateContext/stateType/roleListState"
 import StyledText from "../../../../../components/StyledText"
 import translate from "../../../../../game/lang"
-import { useGameState } from "../../../../../components/useHooks"
 import { Button } from "../../../../../components/Button"
 import { AvailableTwoRoleOutlineOptionSelection, TwoRoleOutlineOptionSelection } from "../../../../../game/abilityInput"
+import { Role } from "../../../../../stateContext/stateType/roleState"
+import { StateContext } from "../../../../../stateContext/StateContext"
 
 export type AuditorResult = Role[];
 type AuditorButtons = ({
@@ -24,12 +24,7 @@ export default function TwoRoleOutlineOptionSelectionMenu(props: {
     previouslyGivenResults?: [number, AuditorResult][],
     onChoose: (chosenOutlines: TwoRoleOutlineOptionSelection)=>void
 }): ReactElement {
-    const roleList = useGameState(
-        (gameState)=>{
-            return gameState.roleList;
-        },
-        ["roleList"]
-    )!;
+    const roleList = useContext(StateContext)!.roleList;
 
     const previouslyGivenResults = props.previouslyGivenResults ?? [];
     const chosenOutlines = props.selection ?? [null, null];

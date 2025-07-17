@@ -1,4 +1,4 @@
-import { ReactElement } from "react";
+import { ReactElement, useContext } from "react";
 import { 
     TwoPlayerOptionSelection, 
     TwoRoleOptionSelection, 
@@ -17,10 +17,8 @@ import {
     IntegerSelection
 } from "../../../../game/abilityInput";
 import React from "react";
-import { usePlayerState } from "../../../../components/useHooks";
 import { Button } from "../../../../components/Button";
 import TwoRoleOutlineOptionSelectionMenu from "./AbilitySelectionTypes/TwoRoleOutlineOptionSelectionMenu";
-import GAME_MANAGER from "../../../..";
 import TwoRoleOptionSelectionMenu from "./AbilitySelectionTypes/TwoRoleOptionSelectionMenu";
 import TwoPlayerOptionSelectionMenu from "./AbilitySelectionTypes/TwoPlayerOptionSelectionMenu";
 import StyledText from "../../../../components/StyledText";
@@ -31,12 +29,14 @@ import DetailsSummary from "../../../../components/DetailsSummary";
 import translate from "../../../../game/lang";
 import StringSelectionMenu from "./AbilitySelectionTypes/StringSelectionMenu";
 import ListMap from "../../../../ListMap";
-import { Role } from "../../../../game/roleState.d";
-import { PlayerIndex } from "../../../../game/gameState.d";
 import Icon from "../../../../components/Icon";
 import PlayerListSelectionMenu from "./AbilitySelectionTypes/PlayerListSelectionMenu";
 import IntegerSelectionMenu from "./AbilitySelectionTypes/IntegerSelectionMenu";
 import BooleanSelectionMenu from "./AbilitySelectionTypes/BooleanSelectionMenu";
+import { WebsocketContext } from "../../../WebsocketContext";
+import { PlayerIndex } from "../../../../stateContext/stateType/otherState";
+import { Role } from "../../../../stateContext/stateType/roleState";
+import { usePlayerState } from "../../../../stateContext/useHooks";
 
 type GroupName = `${PlayerIndex}/${Role}` | "syndicateGunItem" | "backup" | ControllerID["type"];
 
@@ -86,10 +86,7 @@ function showThisController(id: ControllerID): boolean {
 }
 
 export default function GenericAbilityMenu(): ReactElement {
-    const savedAbilities = usePlayerState(
-        playerState => playerState.savedControllers,
-        ["yourAllowedControllers"]
-    )!;
+    const savedAbilities = usePlayerState()!.savedControllers;
 
     let controllerGroupsMap: ControllerGroupsMap = new ListMap();
     //build this map ^
@@ -252,14 +249,17 @@ function SwitchSingleAbilityMenuType(props: Readonly<{
     const {id, available} = props;
     let selected: AbilitySelection = props.selected;
 
+    const { sendAbilityInput } = useContext(WebsocketContext) ?? {};
+
     switch(available.type) {
         case "unit":
             return <Button
                 onClick={()=>{
-                    GAME_MANAGER.sendAbilityInput({
-                        id, 
-                        selection: {type: "unit", selection: null}
-                    });
+                    if(sendAbilityInput!==undefined)
+                        sendAbilityInput({
+                            id, 
+                            selection: {type: "unit", selection: null}
+                        });
                 }}
             >
                 {translateControllerID(props.id)}
@@ -276,13 +276,14 @@ function SwitchSingleAbilityMenuType(props: Readonly<{
                 id={id}
                 selection={bool}
                 onChoose={(x)=>{
-                    GAME_MANAGER.sendAbilityInput({
-                        id, 
-                        selection: {
-                            type: "boolean",
-                            selection: x
-                        }
-                    });
+                    if(sendAbilityInput!==undefined)
+                        sendAbilityInput({
+                            id, 
+                            selection: {
+                                type: "boolean",
+                                selection: x
+                            }
+                        });
                 }}
             />;
         }
@@ -301,13 +302,14 @@ function SwitchSingleAbilityMenuType(props: Readonly<{
                 selection={input}
                 availableSelection={available.selection}
                 onChoose={(selection) => {
-                    GAME_MANAGER.sendAbilityInput({
-                        id, 
-                        selection: {
-                            type: "playerList",
-                            selection
-                        }
-                    });
+                    if(sendAbilityInput!==undefined)
+                        sendAbilityInput({
+                            id, 
+                            selection: {
+                                type: "playerList",
+                                selection
+                            }
+                        });
                 }}
             />;
         }
@@ -326,13 +328,14 @@ function SwitchSingleAbilityMenuType(props: Readonly<{
                 selection={input}
                 availableSelection={available.selection}
                 onChoose={(selection) => {
-                    GAME_MANAGER.sendAbilityInput({
-                        id, 
-                        selection: {
-                            type: "twoPlayerOption",
-                            selection
-                        }
-                    });
+                    if(sendAbilityInput!==undefined)
+                        sendAbilityInput({
+                            id, 
+                            selection: {
+                                type: "twoPlayerOption",
+                                selection
+                            }
+                        });
                 }}
             />;
         }
@@ -351,13 +354,14 @@ function SwitchSingleAbilityMenuType(props: Readonly<{
                 selection={input}
                 availableSelection={available.selection}
                 onChoose={(selection) => {
-                    GAME_MANAGER.sendAbilityInput({
-                        id, 
-                        selection: {
-                            type: "roleList",
-                            selection
-                        }
-                    });
+                    if(sendAbilityInput!==undefined)
+                        sendAbilityInput({
+                            id, 
+                            selection: {
+                                type: "roleList",
+                                selection
+                            }
+                        });
                 }}
             />
         }
@@ -377,13 +381,14 @@ function SwitchSingleAbilityMenuType(props: Readonly<{
                 input={input}
                 availableSelection={available.selection}
                 onChoose={(selection) => {
-                    GAME_MANAGER.sendAbilityInput({
-                        id,
-                        selection: {
-                            type: "twoRoleOption",
-                            selection: selection
-                        }
-                    });
+                    if(sendAbilityInput!==undefined)
+                        sendAbilityInput({
+                            id,
+                            selection: {
+                                type: "twoRoleOption",
+                                selection: selection
+                            }
+                        });
                 }}
             />;
         }
@@ -402,13 +407,14 @@ function SwitchSingleAbilityMenuType(props: Readonly<{
                 selection={input}
                 available={available.selection}
                 onChoose={(selection) => {
-                    GAME_MANAGER.sendAbilityInput({
-                        id,
-                        selection: {
-                            type: "twoRoleOutlineOption",
-                            selection: selection
-                        }
-                    });
+                    if(sendAbilityInput!==undefined)
+                        sendAbilityInput({
+                            id,
+                            selection: {
+                                type: "twoRoleOutlineOption",
+                                selection: selection
+                            }
+                        });
                 }}
             />
         }
@@ -427,13 +433,14 @@ function SwitchSingleAbilityMenuType(props: Readonly<{
                 id={id}
                 selection={input}
                 onChoose={(selection) => {
-                    GAME_MANAGER.sendAbilityInput({
-                        id,
-                        selection: {
-                            type: "string",
-                            selection: selection
-                        }
-                    });
+                    if(sendAbilityInput!==undefined)
+                        sendAbilityInput({
+                            id,
+                            selection: {
+                                type: "string",
+                                selection: selection
+                            }
+                        });
                 }}
             />
         }
@@ -453,13 +460,14 @@ function SwitchSingleAbilityMenuType(props: Readonly<{
                 selection={input}
                 available={available.selection}
                 onChoose={(selection: number) => {
-                    GAME_MANAGER.sendAbilityInput({
-                        id,
-                        selection: {
-                            type: "integer",
-                            selection: selection
-                        }
-                    });
+                    if(sendAbilityInput!==undefined)
+                        sendAbilityInput({
+                            id,
+                            selection: {
+                                type: "integer",
+                                selection: selection
+                            }
+                        });
                 }}
             />
         }
@@ -478,13 +486,14 @@ function SwitchSingleAbilityMenuType(props: Readonly<{
                 selection={input}
                 available={available.selection}
                 onChange={(selection)=>{
-                    GAME_MANAGER.sendAbilityInput({
-                        id,
-                        selection: {
-                            type: "kira",
-                            selection: selection
-                        }
-                    });
+                    if(sendAbilityInput!==undefined)
+                        sendAbilityInput({
+                            id,
+                            selection: {
+                                type: "kira",
+                                selection: selection
+                            }
+                        });
                 }}
             />
         }

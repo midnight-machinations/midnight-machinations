@@ -1,4 +1,4 @@
-import { AudioFilePath } from "./Anchor";
+import { AudioFilePath } from "./App";
 
 export default class AudioController {
     private static audio = new Audio();

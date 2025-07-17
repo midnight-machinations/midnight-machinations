@@ -1,10 +1,10 @@
 import DEFAULT_GAME_MODES from "../resources/defaultGameModes.json";
 import { CurrentFormat, GameModeStorage } from "../components/gameModeSettings/gameMode";
 import { Language } from "./lang";
-import { Role } from "./roleState.d";
 import parseFromJson from "../components/gameModeSettings/gameMode/dataFixer";
-import { ContentMenu } from "../menu/game/GameScreen";
 import { ParseResult, Success } from "../components/gameModeSettings/gameMode/parse";
+import { GameScreenMenuType } from "../menu/game/GameScreenMenuContext";
+import { Role } from "../stateContext/stateType/roleState";
 
 
 export function saveReconnectData(roomCode: number, playerId: number) {
@@ -53,12 +53,11 @@ export type Settings = {
     defaultName: string | null;
     language: Language;
     maxMenus: number;
-    menuOrder: ContentMenu[]
+    menuOrder: GameScreenMenuType[]
     roleSpecificMenus: Role[] // RoleSpecificMenuType=standalone for all listed roles, otherwise it should be playerlist
 };
 
 export type RoleSpecificMenuType = "playerList" | "standalone";
-
 
 
 export function loadSettingsParsed(): Settings {
@@ -79,12 +78,12 @@ export function getDefaultSettings(): Readonly<Settings> {
         defaultName: null,
         maxMenus: window.innerWidth < 600 ? 1 : 6,
         menuOrder: [
-            ContentMenu.WikiMenu, 
-            ContentMenu.GraveyardMenu, 
-            ContentMenu.PlayerListMenu, 
-            ContentMenu.ChatMenu, 
-            ContentMenu.WillMenu, 
-            ContentMenu.RoleSpecificMenu
+            GameScreenMenuType.WikiMenu, 
+            GameScreenMenuType.GraveyardMenu, 
+            GameScreenMenuType.PlayerListMenu, 
+            GameScreenMenuType.ChatMenu, 
+            GameScreenMenuType.WillMenu, 
+            GameScreenMenuType.RoleSpecificMenu
         ],
         roleSpecificMenus: []
     }

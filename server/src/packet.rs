@@ -28,7 +28,10 @@ use crate::{
             doomsayer::DoomsayerGuess,
             ClientRoleStateEnum, Role
         }, role_list::{RoleList, RoleOutline}, settings::PhaseTimeSettings, verdict::Verdict, GameOverReason, RejectStartReason
-    }, lobby::lobby_client::LobbyClient, room::RoomClientID, vec_map::VecMap, vec_set::VecSet, websocket_listener::RoomCode
+    },
+    lobby::lobby_client::ClientObject,
+    room::RoomClientID, vec_map::VecMap, vec_set::VecSet,
+    websocket_listener::RoomCode
 };
 
 #[derive(Serialize, Debug, Clone)]
@@ -46,6 +49,7 @@ pub struct HostDataPacketGameClient {
     pub connection: ClientConnection,
     pub host: bool,
 }
+
 
 #[derive(Serialize, Debug, Clone)]
 #[serde(rename_all = "camelCase")]
@@ -76,7 +80,7 @@ pub enum ToClientPacket{
     #[serde(rename_all = "camelCase")]
     YourId{player_id: RoomClientID},
     #[serde(rename_all = "camelCase")]
-    LobbyClients{clients: VecMap<RoomClientID, LobbyClient>},
+    ClientObjects{clients: VecMap<RoomClientID, ClientObject>},
     PlayersHost{hosts: Vec<RoomClientID>},
     PlayersReady{ready: Vec<RoomClientID>},
     #[serde(rename_all = "camelCase")]

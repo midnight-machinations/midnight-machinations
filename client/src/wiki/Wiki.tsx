@@ -1,34 +1,35 @@
-import React, { ReactElement, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import React, { ReactElement, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 import translate from "../game/lang";
 import "./wiki.css";
-import { Role, getMainRoleSetFromRole } from "../game/roleState.d";
-import GAME_MANAGER, { regEscape } from "..";
+import { regEscape } from "..";
 import WikiArticle, { getSearchStrings, PageCollection } from "./WikiArticle";
 import { ARTICLES, WikiArticleLink, getArticleTitle, wikiPageIsEnabled } from "./WikiArticleLink";
-import StyledText from "./StyledText";
-import Icon from "./Icon";
-import { ContentMenu, MenuController } from "../menu/game/GameScreen";
-import { AnchorController } from "../menu/Anchor";
-import WikiCoverCard from "./WikiCoverCard";
-import { getAllRoles } from "../game/roleListState.d";
-import { useLobbyOrGameState } from "./useHooks";
-import { MODIFIERS, ModifierType } from "../game/gameState.d";
+import StyledText from "../components/StyledText";
+import Icon from "../components/Icon";
+import { getAllRoles } from "../stateContext/stateType/roleListState";
 import Masonry from "react-responsive-masonry";
-import CheckBox from "./CheckBox";
+import CheckBox from "../components/CheckBox";
+import { Button } from "../components/Button";
+import { GameScreenMenuContext } from "../menu/game/GameScreenMenuContext";
+import { AppContextType } from "../menu/AppContext";
+import { MODIFIERS, ModifierType } from "../stateContext/stateType/modifiersState";
+import { getMainRoleSetFromRole, Role } from "../stateContext/stateType/roleState";
+import { StateContext } from "../stateContext/StateContext";
 
 
-export function setWikiSearchPage(page: WikiArticleLink, anchorController: AnchorController, menuController?: MenuController) {
-    if (GAME_MANAGER.wikiArticleCallbacks.length === 0) {
-        if (menuController?.canOpen(ContentMenu.WikiMenu)) {
-            menuController.openMenu(ContentMenu.WikiMenu, () => {
-                GAME_MANAGER.setWikiArticle(page);
-            });
-        } else {
-            anchorController.setCoverCard(<WikiCoverCard initialWikiPage={page}/>)
-        }
-    } else {
-        GAME_MANAGER.setWikiArticle(page);
-    }
+export function setWikiSearchPage(page: WikiArticleLink, anchorController: AppContextType, menuController?: GameScreenMenuContext) {
+    // TODO 
+    // if (GAME_MANAGER.wikiArticleCallbacks.length === 0) {
+    //     if (menuController?.menuIsAvailable(GameScreenMenuType.WikiMenu)) {
+    //         menuController.openMenu(GameScreenMenuType.WikiMenu, () => {
+    //             GAME_MANAGER.setWikiArticle(page);
+    //         });
+    //     } else {
+    //         anchorController.setCoverCard(<WikiCoverCard initialWikiPage={page}/>)
+    //     }
+    // } else {
+    //     GAME_MANAGER.setWikiArticle(page);
+    // }
 }
 
 
@@ -37,7 +38,6 @@ export default function Wiki(props: Readonly<{
     enabledModifiers: ModifierType[],
     initialWikiPage?: WikiArticleLink,
     onPageChange?: (page: WikiArticleLink | null) => void,
-    static?: boolean
 }>): ReactElement {
 
     const [searchQuery, setSearchQuery] = useState("");
@@ -58,18 +58,6 @@ export default function Wiki(props: Readonly<{
         }
         setArticle(page);
     }, [history]);
-
-    useEffect(() => {
-        GAME_MANAGER.addSetWikiArticleCallback(chooseArticle);
-
-        return () => GAME_MANAGER.removeSetWikiArticleCallback(chooseArticle);
-    }, [setArticle, chooseArticle]);
-
-    // This makes sure you can call GAME_MANAGER.setWikiArticle immediately after this component is added
-    GAME_MANAGER.addSetWikiArticleCallback(chooseArticle);
-    setTimeout(() => {
-        GAME_MANAGER.removeSetWikiArticleCallback(chooseArticle);
-    }, 100)
 
     function goBack() {
         if (history.length > 1) {
@@ -97,7 +85,6 @@ export default function Wiki(props: Readonly<{
                 enabledRoles={props.enabledRoles}
                 enabledModifiers={props.enabledModifiers}
                 onChooseArticle={chooseArticle}
-                static={props.static === true}
             />
             :
             <WikiArticle article={article}/>
@@ -112,18 +99,18 @@ function WikiSearchBar(props: Readonly<{
     onClear: () => void,
 }>): ReactElement {
     return <div className="wiki-search-bar">
-        <button tabIndex={-1} onClick={() => props.onBack()}>
+        <Button tabIndex={-1} onClick={() => props.onBack()}>
             <Icon>arrow_back</Icon>
-        </button>
+        </Button>
         <input type="text" value={props.searchQuery}
             onChange={(e)=>{
                 props.onSearchChange(e.target.value.trimStart())}
             }
             placeholder={translate("menu.wiki.search.placeholder")}
         />
-        <button tabIndex={-1} onClick={props.onClear}>
+        <Button tabIndex={-1} onClick={props.onClear}>
             <Icon>close</Icon>
-        </button>
+        </Button>
     </div>
 }
 
@@ -132,18 +119,9 @@ function WikiSearchResults(props: Readonly<{
     enabledRoles: Role[],
     enabledModifiers: ModifierType[],
     onChooseArticle: (article: WikiArticleLink) => void,
-    static: boolean
 }>): ReactElement {
-    const enabledRoles = useLobbyOrGameState(
-        gameState => gameState.enabledRoles,
-        ["enabledRoles"],
-        getAllRoles()
-    )!;
-    const enabledModifiers = useLobbyOrGameState(
-        gameState => gameState.enabledModifiers,
-        ["enabledModifiers"],
-        MODIFIERS as any as ModifierType[]
-    )!;
+    const enabledRoles = useContext(StateContext)?.enabledRoles??getAllRoles();
+    const enabledModifiers = useContext(StateContext)?.enabledModifiers??MODIFIERS as any as ModifierType[];
 
     const [hideDisabled, setHideDisabled] = useState(true);
 
@@ -160,9 +138,9 @@ function WikiSearchResults(props: Readonly<{
     [props.searchQuery, getSearchResults])
 
     return <div className="wiki-results" tabIndex={-1}>
-        {!props.static && <label className="centered-label">
+        {enabledRoles.length === getAllRoles().length || <label className="centered-label">
             {translate("hideDisabled")}
-            <CheckBox 
+            <CheckBox
                 checked={hideDisabled} 
                 onChange={checked => setHideDisabled(checked)}
             />

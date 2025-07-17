@@ -2,7 +2,7 @@ import { ReactElement } from "react";
 import { AvailableTwoRoleOptionSelection, TwoRoleOptionSelection } from "../../../../../game/abilityInput";
 import React from "react";
 import RoleDropdown from "../../../../../components/RoleDropdown";
-import { Role } from "../../../../../game/roleState.d";
+import { Role } from "../../../../../stateContext/stateType/roleState";
 
 export default function TwoRoleOptionSelectionMenu(props: Readonly<{
     input: TwoRoleOptionSelection,

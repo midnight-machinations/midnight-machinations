@@ -217,7 +217,6 @@ impl Lobby {
                     if !player.is_host() {break 'packet_match}
                 }
 
-                if self.settings.role_list.0.len() <= index as usize {break 'packet_match}
                 let Some(unset_outline) = self.settings.role_list.0.get_mut(index as usize) else {break 'packet_match};
                 *unset_outline = role_outline.clone();
                 

@@ -1,40 +1,30 @@
-import React, { JSXElementConstructor, ReactElement, useContext, useEffect, useRef } from 'react';
+import React, {JSXElementConstructor, ReactElement, useContext, useEffect, useRef } from 'react';
 import "./globalMenu.css";
 import translate from '../game/lang';
-import GAME_MANAGER from '..';
-import { AnchorControllerContext } from './Anchor';
-import StartMenu from './main/StartMenu';
 import LoadingScreen from './LoadingScreen';
 import GameModesEditor from '../components/gameModeSettings/GameModesEditor';
 import { CopyButton } from '../components/ClipboardButtons';
-import WikiCoverCard from '../components/WikiCoverCard';
+import WikiCoverCard from '../wiki/WikiCoverCard';
 import Icon from '../components/Icon';
 import SettingsMenu from './Settings';
-import { useLobbyOrGameState } from '../components/useHooks';
 import { Button } from '../components/Button';
 import HostMenu from './HostMenu';
+import { AppContext } from './AppContext';
+import { WebsocketContext } from './WebsocketContext';
+import { deleteReconnectData } from '../game/localStorage';
+import { StateContext } from '../stateContext/StateContext';
 
 export default function GlobalMenu(): ReactElement {
-    const lobbyName = useLobbyOrGameState(
-        state => state.lobbyName,
-        ["lobbyName"]
-    )!;
-    const host = useLobbyOrGameState(
-        state => {
-            if (state.stateType === "game") {
-                return state.host !== null
-            } else {
-                return state.players.get(state.myId!)?.ready === "host"
-            }
-        },
-        ["lobbyClients", "playersHost", "gamePlayers"]
-    )!;
-    const stateType = useLobbyOrGameState(
-        state => state.stateType,
-        ["acceptJoin", "rejectJoin", "rejectStart", "gameInitializationComplete", "startGame"]
-    )!;
+    const { sendBackToLobbyPacket } = useContext(WebsocketContext)!;
+    const stateCtx = useContext(StateContext)!;
+
+    const lobbyName = stateCtx.lobbyName;
+    const host = stateCtx.host;
+    const stateType = stateCtx.type;
+
     const ref = useRef<HTMLDivElement>(null);
-    const anchorController = useContext(AnchorControllerContext)!;
+    const anchorController = useContext(AppContext)!;
+    const websocketContext = useContext(WebsocketContext)!;
 
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
@@ -51,20 +41,22 @@ export default function GlobalMenu(): ReactElement {
     
     async function quitToMainMenu() {
         if (stateType === "game") {
-            GAME_MANAGER.leaveGame();
+            websocketContext.sendPacket({ type: "leave" })
+            deleteReconnectData();
+            websocketContext.close();
         }
+
         anchorController.closeGlobalMenu();
         anchorController.clearCoverCard();
         anchorController.setContent(<LoadingScreen type="disconnect"/>)
-        window.history.replaceState({}, '', '/')
-        await GAME_MANAGER.setDisconnectedState();
-        anchorController.setContent(<StartMenu/>)
+        window.history.replaceState({}, '', '/');
+        anchorController.setContent({type:"main"})
     }
     function goToRolelistEditor() {
         anchorController.setCoverCard(<GameModesEditor/>);
         anchorController.closeGlobalMenu();
     }
-    const quitButtonBlacklist: (string | JSXElementConstructor<any>)[] = [StartMenu, LoadingScreen];
+    const quitButtonBlacklist: (string | JSXElementConstructor<any>)[] = ["main"];
 
     return (
         <div className="chat-menu-colors global-menu slide-in" ref={ref}>
@@ -73,7 +65,7 @@ export default function GlobalMenu(): ReactElement {
                     <h2>{lobbyName}</h2>
                     <RoomLinkButton/>
                     {(stateType === "game" && host) && <>
-                        <Button onClick={()=>GAME_MANAGER.sendBackToLobbyPacket()}>
+                        <Button onClick={()=>sendBackToLobbyPacket()}>
                             {translate("backToLobby")}
                         </Button>
                         <Button onClick={()=>anchorController.setCoverCard(<HostMenu />)}>
@@ -83,34 +75,30 @@ export default function GlobalMenu(): ReactElement {
                 </section>
             }
             <section>
-                { quitButtonBlacklist.includes(anchorController.contentType) ||
-                    <button onClick={() => quitToMainMenu()}><Icon>not_interested</Icon> {translate("menu.globalMenu.quitToMenu")}</button>
+                {quitButtonBlacklist.includes(anchorController.contentType.type) ||
+                    <Button onClick={() => quitToMainMenu()}><Icon>not_interested</Icon> {translate("menu.globalMenu.quitToMenu")}</Button>
                 }
-                <button onClick={() => {
+                <Button onClick={() => {
                     anchorController.setCoverCard(<SettingsMenu />)
                     anchorController.closeGlobalMenu();
-                }}><Icon>settings</Icon> {translate("menu.globalMenu.settings")}</button>
-                <button onClick={() => goToRolelistEditor()}><Icon>edit</Icon> {translate("menu.globalMenu.gameSettingsEditor")}</button>
-                <button onClick={() => {
+                }}><Icon>settings</Icon> {translate("menu.globalMenu.settings")}</Button>
+                <Button onClick={() => goToRolelistEditor()}><Icon>edit</Icon> {translate("menu.globalMenu.gameSettingsEditor")}</Button>
+                <Button onClick={() => {
                     anchorController.setCoverCard(<WikiCoverCard />);
                     anchorController.closeGlobalMenu();
-                }}><Icon>menu_book</Icon> {translate("menu.wiki.title")}</button>
+                }}><Icon>menu_book</Icon> {translate("menu.wiki.title")}</Button>
             </section>
         </div>
     );
 }
 
 export function RoomLinkButton(): JSX.Element {
-    const code = useLobbyOrGameState(
-        state => {
-            const code = new URL(window.location.href);
-            code.pathname = "/connect"
-            code.searchParams.set("code", state.roomCode.toString(18))
-            return code;
-        }, ["acceptJoin", "backToLobby"]
-    )!;
+    const roomCode = useContext(StateContext)!.roomCode??"";
+    const url = new URL(window.location.href);
+    url.pathname = "/connect";
+    url.searchParams.set("code", roomCode.toString(18))
     
-    return <CopyButton text={code.toString()}>
+    return <CopyButton text={url.toString()}>
         <Icon>link</Icon> {translate("menu.play.field.roomCode")}
     </CopyButton>
 }

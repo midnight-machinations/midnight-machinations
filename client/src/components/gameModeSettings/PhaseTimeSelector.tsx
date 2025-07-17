@@ -1,9 +1,9 @@
 import React, { ReactElement, useContext } from "react";
-import { PhaseType, PhaseTimes, PHASES } from "../../game/gameState.d";
 import translate from "../../game/lang";
-import { isValidPhaseTime } from "../../game/gameManager";
 import "./phaseTimeSelector.css";
 import { GameModeContext } from "./GameModesEditor";
+import { PHASES, PhaseType } from "../../stateContext/stateType/phaseState";
+import { PhaseTimes } from "../../stateContext/stateType/otherState";
 
 
 
@@ -64,4 +64,8 @@ function PhaseTimeSelector(props: Readonly<{
             /> 
         }
     </div>
+}
+
+export function isValidPhaseTime(time: number) {
+    return Number.isSafeInteger(time) && time <= 1000 && 0 <= time;
 }

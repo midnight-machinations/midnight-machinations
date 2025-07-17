@@ -1,6 +1,5 @@
 import React, { ReactElement, useCallback, useContext, useEffect, useState } from "react";
 import { deleteGameModes, loadGameModesParsed, saveGameModes } from "../../game/localStorage";
-import { AnchorControllerContext } from "../../menu/Anchor";
 import { CopyButton, PasteButton } from "../../components/ClipboardButtons";
 import Icon from "../Icon";
 import { Button } from "../Button";
@@ -11,6 +10,7 @@ import "./gameModeSelector.css"
 import parseFromJson, { LATEST_VERSION_STRING } from "./gameMode/dataFixer";
 import { GameMode, GameModeData, GameModeStorage } from "./gameMode";
 import { isFailure, parseJsonObject } from "./gameMode/parse";
+import { AppContext } from "../../menu/AppContext";
 
 type GameModeLocation = {
     name: string,
@@ -55,7 +55,7 @@ function GameModeSelectorPanel(props: {
 }): ReactElement {
     const [gameModeNameField, setGameModeNameField] = useState<string>("");
     const {roleList, phaseTimes, enabledRoles, enabledModifiers} = useContext(GameModeContext);
-    const anchorController = useContext(AnchorControllerContext)!;
+    const anchorController = useContext(AppContext)!;
 
     const validateName = (name: string) => {
         return name.length < 100 && name.length !== 0

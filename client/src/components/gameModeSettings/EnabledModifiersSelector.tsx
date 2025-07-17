@@ -1,10 +1,10 @@
 import React, { ReactElement, useCallback, useContext, useState } from "react";
-import { MODIFIERS, ModifierType } from "../../game/gameState.d";
 import translate from "../../game/lang";
 import StyledText from "../StyledText";
 import { GameModeContext } from "./GameModesEditor";
 import { Button } from "../Button";
 import CheckBox from "../CheckBox";
+import { MODIFIERS, ModifierType } from "../../stateContext/stateType/modifiersState";
 
 export function EnabledModifiersSelector(props: Readonly<{
     disabled?: boolean,

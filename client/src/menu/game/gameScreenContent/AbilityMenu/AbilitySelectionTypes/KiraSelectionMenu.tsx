@@ -1,13 +1,13 @@
-import React, { ReactElement, useEffect, useState } from "react"
+import React, { ReactElement, useContext } from "react"
 import "./kiraSelectionMenu.css";
-import GAME_MANAGER from "../../../../..";
 import translate, { translateChecked } from "../../../../../game/lang";
 import StyledText, { KeywordDataMap } from "../../../../../components/StyledText";
 import Select, { SelectOptionsSearch } from "../../../../../components/Select";
-import { PlayerIndex } from "../../../../../game/gameState.d";
 import ListMap, { ListMapData } from "../../../../../ListMap";
 import { AvailableKiraSelection } from "../../../../../game/abilityInput";
-import { useGameState, usePlayerState } from "../../../../../components/useHooks";
+import { PlayerIndex } from "../../../../../stateContext/stateType/otherState";
+import { usePlayerState } from "../../../../../stateContext/useHooks";
+import { StateContext } from "../../../../../stateContext/StateContext";
 
 export const KIRA_GUESSES = [
     "none",
@@ -108,15 +108,9 @@ export default function KiraSelectionMenu(props: Readonly<{
     onChange: (selection: KiraSelection)=>void;
 }>): ReactElement {
 
-    const myIndex = usePlayerState(
-        (playerState)=>playerState.myIndex
-    )!;
-
-    const guessable = useGameState(
-        (gameState)=>gameState.players.filter((p)=>p.alive&&p.index!==myIndex).map((p)=>p.index)
-    )!;
+    const myIndex = usePlayerState()!.myIndex;
+    const guessable = useContext(StateContext)!.players.filter((p)=>p.alive&&p.index!==myIndex).map((p)=>p.index);
     
-
     function sendSetKiraGuess(guesses: KiraSelection){
         props.onChange(guesses);
     }
@@ -144,23 +138,7 @@ function KiraGuessPicker(props: {
     guess: KiraGuess,
     onChange: (guess: KiraGuess) => void
 }): ReactElement {
-
-    const [players, setPlayers] = useState(() => {
-        if(GAME_MANAGER.state.stateType === "game")
-            return GAME_MANAGER.state.players;
-        return [];
-    });
-
-    useEffect(()=>{
-        const listener = ()=>{
-            if(GAME_MANAGER.state.stateType === "game")
-                setPlayers(GAME_MANAGER.state.players);
-        };
-
-        listener();
-        GAME_MANAGER.addStateListener(listener);
-        return ()=>GAME_MANAGER.removeStateListener(listener);
-    }, [setPlayers]);
+    const { players } = useContext(StateContext)!;
 
     const guessOptions: SelectOptionsSearch<KiraGuess> = new Map();
     for(let guess of KIRA_GUESSES){

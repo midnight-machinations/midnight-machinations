@@ -1,10 +1,10 @@
 import { ReactElement } from "react"
-import { Role } from "../game/roleState.d"
 import React from "react"
 import translate from "../game/lang"
 import Select, { SelectOptionsSearch } from "./Select"
 import StyledText from "./StyledText"
-import { getAllRoles } from "../game/roleListState.d"
+import { getAllRoles } from "../stateContext/stateType/roleListState"
+import { Role } from "../stateContext/stateType/roleState"
 
 
 type RoleDropdownProps = {

@@ -1,9 +1,8 @@
 import React from 'react';
 import { createRoot } from 'react-dom/client';
 import './index.css';
-import Anchor from './menu/Anchor';
-import { GameManager, createGameManager } from './game/gameManager';
-import LoadingScreen from './menu/LoadingScreen';
+import App from './menu/App';
+// import { GameManager, createGameManager } from './game/gameManager';
 import route from './routing';
 
 export const DEV_ENV = process.env.NODE_ENV !== 'production';
@@ -20,13 +19,13 @@ const THEME_CSS_ATTRIBUTES = [
 export { THEME_CSS_ATTRIBUTES }
 
 const ROOT = createRoot(document.querySelector("#root")!);
-const GAME_MANAGER: GameManager = createGameManager();
-const TIME_PERIOD = 1000;
-export default GAME_MANAGER;
+// const GAME_MANAGER: GameManager = createGameManager();
+// const TIME_PERIOD = 1000;
+// export default GAME_MANAGER;
 
-setInterval(() => {
-    GAME_MANAGER.tick(TIME_PERIOD);
-}, TIME_PERIOD);
+// setInterval(() => {
+//     GAME_MANAGER.tick(TIME_PERIOD);
+// }, TIME_PERIOD);
 
 new MutationObserver(mutations => {
     for (const mutation of mutations) {
@@ -43,9 +42,7 @@ new MutationObserver(mutations => {
 }).observe(document.body, { subtree: true, childList: true });
 
 ROOT.render(
-    <Anchor onMount={anchorController => route(anchorController, window.location)}>
-        <LoadingScreen type="default"/>
-    </Anchor>
+    <App onMount={(appContext, websocketContext) => route(appContext, websocketContext, window.location)}/>
 );
 
 export function find(text: string): RegExp {
@@ -63,12 +60,18 @@ export function find(text: string): RegExp {
     }
 }
 
+//escapes weird characters, adding a backslash first
 export function regEscape(text: string) {
     return text.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&')
 }
 
-export function replaceMentions(rawText: string, playerNames: string[]) {
+export function replaceMentions(rawText: string, playerNames: string[] | undefined) {
     let text = rawText;
+
+    if(playerNames===undefined){
+        return text;
+    }
+
     playerNames.forEach((player, i) => {
         text = text.replace(find(`@${i + 1}`), player);
     });
