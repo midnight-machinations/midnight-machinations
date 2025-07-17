@@ -1,3 +1,5 @@
+use std::iter::once;
+
 use serde::Serialize;
 
 use crate::game::ability_input::{AvailableIntegerSelection, AvailableTwoPlayerOptionSelection, IntegerSelection, PlayerListSelection};
@@ -6,12 +8,14 @@ use crate::game::components::transport::{Transport, TransportPriority};
 use crate::game::event::on_midnight::{MidnightVariables, OnMidnightPriority};
 use crate::game::grave::GraveKiller;
 use crate::game::{attack_power::DefensePower, chat::ChatMessageVariant};
-use crate::game::player::PlayerReference;
+use crate::game::player::{PlayerReference};
 
 use crate::game::visit::Visit;
 use crate::game::Game;
 use crate::vec_map;
+use crate::vec_set::VecSet;
 
+use super::common_role::convert_controller_selection_to_visits;
 use super::detective::Detective;
 use super::{ControllerID, ControllerParametersMap, Role, RoleStateImpl};
 
@@ -82,7 +86,9 @@ impl RoleStateImpl for Polymath {
     }
     fn controller_parameters_map(self, game: &Game, actor_ref: PlayerReference) -> ControllerParametersMap {
         let selection = Self::ability_type_selection(game, actor_ref);
-        
+        let living_players: VecSet<PlayerReference> = PlayerReference::all_players(game)
+                        .filter(|p|p.alive(game))
+                        .collect();
         let mut ctrl = ControllerParametersMap::builder(game)
             .id(ControllerID::role(actor_ref, Role::Polymath, 0))
             .available_selection(AvailableIntegerSelection {
@@ -117,18 +123,17 @@ impl RoleStateImpl for Polymath {
             PolymathAbilityType::Support => ctrl.combine_overwrite(
                 ControllerParametersMap::builder(game)
                 .id(ControllerID::role(actor_ref, Role::Polymath, 3))
-                .available_selection(AvailableTwoPlayerOptionSelection::same_players(
-                    PlayerReference::all_players(game)
-                        .filter(|p|p.alive(game))
-                        .collect(), 
-                    false, 
-                    true
-                )).night_typical(actor_ref)
+                .available_selection(AvailableTwoPlayerOptionSelection{
+                    available_second_players: living_players.excluding(once(&actor_ref)),
+                    available_first_players: living_players,
+                    can_choose_duplicates: false,
+                    can_choose_none: false
+                }).night_typical(actor_ref)
                 .add_grayed_out_condition(false)
                 .build_map()
             ),
             PolymathAbilityType::Kill => {
-                ctrl.combine_overwrite( //
+                ctrl.combine_overwrite(
                     ControllerParametersMap::builder(game)
                     .id(ControllerID::role(actor_ref, Role::Polymath, 4))
                     .single_player_selection_typical(actor_ref, false, true)
@@ -136,7 +141,7 @@ impl RoleStateImpl for Polymath {
                     .add_grayed_out_condition(game.day_number() == 1)
                     .build_map()
                 );
-                ctrl.combine_overwrite( //
+                ctrl.combine_overwrite(
                     ControllerParametersMap::builder(game)
                     .id(ControllerID::role(actor_ref, Role::Polymath, 5))
                     .single_player_selection_typical(actor_ref, true, true)
@@ -152,25 +157,25 @@ impl RoleStateImpl for Polymath {
         let type_selection = Self::ability_type_selection(game, actor_ref);
         match type_selection {
             PolymathAbilityType::None => Vec::new(),
-            PolymathAbilityType::Investigate => crate::game::role::common_role::convert_controller_selection_to_visits(
-                    game,
-                    actor_ref,
-                    ControllerID::role(actor_ref, Role::Polymath, 1),
-                    false
-                ),
-            PolymathAbilityType::Protect => crate::game::role::common_role::convert_controller_selection_to_visits(
+            PolymathAbilityType::Investigate => convert_controller_selection_to_visits(
+                game,
+                actor_ref,
+                ControllerID::role(actor_ref, Role::Polymath, 1),
+                false
+            ),
+            PolymathAbilityType::Protect => convert_controller_selection_to_visits(
                 game,
                 actor_ref,
                 ControllerID::role(actor_ref, Role::Polymath, 2),
                 false
             ),
-            PolymathAbilityType::Support => crate::game::role::common_role::convert_controller_selection_to_visits(
+            PolymathAbilityType::Support => convert_controller_selection_to_visits(
                 game,
                 actor_ref,
                 ControllerID::role(actor_ref, Role::Polymath, 3),
                 false
             ),
-            PolymathAbilityType::Kill => crate::game::role::common_role::convert_controller_selection_to_visits(
+            PolymathAbilityType::Kill => convert_controller_selection_to_visits(
                 game,
                 actor_ref,
                 ControllerID::role(actor_ref, Role::Polymath, 5),
