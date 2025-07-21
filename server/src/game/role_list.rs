@@ -16,10 +16,14 @@ impl RoleList {
     pub fn create_random_role_assignments(&self, enabled_roles: &VecSet<Role>) -> Option<Vec<RoleAssignment>> {
         let mut generated_data = Vec::<RoleAssignment>::new();
         for entry in self.0.iter(){
-            if let Some(player_initialization_data) = entry.get_random_role_assignments(
+            if let Some(new_role_assignment) = entry.get_random_role_assignments(
                 enabled_roles, &generated_data.iter().map(|datum| datum.role).collect::<Vec<Role>>()
             ){
-                generated_data.push(player_initialization_data);
+                if generated_data.iter().all(|a|a.player.is_none() || new_role_assignment.player.is_none() || a.player != new_role_assignment.player) {
+                    generated_data.push(new_role_assignment);
+                } else {
+                    return None;
+                }
             }else{
                 return None;
             }
@@ -40,7 +44,8 @@ impl RoleList {
 pub struct RoleAssignment {
     role: Role,
     insider_groups: RoleOutlineOptionInsiderGroups,
-    win_condition: RoleOutlineOptionWinCondition
+    win_condition: RoleOutlineOptionWinCondition,
+    player: Option<PlayerIndex>,
 }
 impl RoleAssignment{
     pub fn role(&self)->Role{
@@ -62,6 +67,9 @@ impl RoleAssignment{
             RoleOutlineOptionWinCondition::GameConclusionReached { win_if_any } => 
                 WinCondition::GameConclusionReached { win_if_any: win_if_any.clone() },
         }
+    }
+    pub fn player(&self)->Option<PlayerIndex>{
+        self.player
     }
 }
 
@@ -108,20 +116,29 @@ impl RoleOutline{
         }]}
     }
     pub fn get_role_assignments(&self) -> Vec<RoleAssignment> {
-        self.options.iter()
-            .flat_map(|r| 
-                r.roles.get_roles().into_iter()
-                    .map(|role| RoleAssignment{
+        self.options.iter().flat_map(|o|
+            o.roles.get_roles().into_iter().flat_map(move |role|
+                (
+                    if o.player_pool.is_empty() {
+                        vec![None]
+                    } else {
+                        o.player_pool.iter().map(Some).collect()
+                    }
+                ).into_iter().map(move |player|
+                    RoleAssignment{
                         role,
-                        insider_groups: r.insider_groups.clone(),
-                        win_condition: r.win_condition.clone()
-                    })
-            ).collect()
+                        insider_groups: o.insider_groups.clone(),
+                        win_condition: o.win_condition.clone(),
+                        player: player.copied()
+                    }
+                )
+            )
+        ).collect()
     }
     pub fn get_random_role_assignments(&self, enabled_roles: &VecSet<Role>, taken_roles: &[Role]) -> Option<RoleAssignment> {
         let options = self.get_role_assignments()
             .into_iter()
-            .filter(|r|role_can_generate(r.role, enabled_roles, taken_roles))
+            .filter(|r|role_enabled_and_not_taken(r.role, enabled_roles, taken_roles))
             .collect::<Vec<_>>();
         options.choose(&mut rand::rng()).cloned()
     }
@@ -397,7 +414,7 @@ impl RoleSet{
 
 
 
-pub fn role_can_generate(role: Role, enabled_roles: &VecSet<Role>, taken_roles: &[Role]) -> bool {
+pub fn role_enabled_and_not_taken(role: Role, enabled_roles: &VecSet<Role>, taken_roles: &[Role]) -> bool {
     if !enabled_roles.contains(&role) {
         return false;
     }
