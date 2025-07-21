@@ -5,7 +5,7 @@ use vec1::{
     Vec1
 };
 
-use crate::vec_set::{vec_set, VecSet};
+use crate::{game::player::PlayerIndex, vec_set::{vec_set, VecSet}};
 
 use super::{components::{insider_group::InsiderGroupID, win_condition::WinCondition}, game_conclusion::GameConclusion, role::Role};
 
@@ -93,7 +93,8 @@ impl Default for RoleOutline {
         Self {options: vec1![RoleOutlineOption{
             win_condition: Default::default(),
             insider_groups: Default::default(),
-            roles: RoleOutlineOptionRoles::RoleSet { role_set: RoleSet::Any }
+            roles: RoleOutlineOptionRoles::RoleSet { role_set: RoleSet::Any },
+            player_pool: Default::default(),
         }]}
     }
 }
@@ -102,7 +103,8 @@ impl RoleOutline{
         RoleOutline{options: vec1![RoleOutlineOption{
             win_condition: Default::default(),
             insider_groups: Default::default(),
-            roles: RoleOutlineOptionRoles::Role{role}
+            roles: RoleOutlineOptionRoles::Role{role},
+            player_pool: Default::default(),
         }]}
     }
     pub fn get_role_assignments(&self) -> Vec<RoleAssignment> {
@@ -188,6 +190,8 @@ pub struct RoleOutlineOption {
     pub win_condition: RoleOutlineOptionWinCondition,
     #[serde(flatten, skip_serializing_if = "RoleOutlineOptionInsiderGroups::is_default")]
     pub insider_groups: RoleOutlineOptionInsiderGroups,
+
+    pub player_pool: VecSet<PlayerIndex>
 }
 
 /// Watch this!
@@ -212,6 +216,13 @@ impl<'de> Deserialize<'de> for RoleOutlineOption {
                 if let Ok(string_insider_groups) = serde_json::to_string(value) {
                     if let Ok(insider_groups) = serde_json::from_str(string_insider_groups.as_str()) {
                         option.insider_groups = RoleOutlineOptionInsiderGroups::Custom { insider_groups }
+                    }
+                }
+            }
+            if let Some(value) = map.get("playerPool") {
+                if let Ok(string_player_pool) = serde_json::to_string(value) {
+                    if let Ok(player_pool) = serde_json::from_str(string_player_pool.as_str()) {
+                        option.player_pool = player_pool;
                     }
                 }
             }

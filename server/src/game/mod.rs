@@ -326,7 +326,10 @@ impl Game {
     
     /// `initialization_data` must have length 255 or lower
     #[expect(clippy::cast_possible_truncation, reason = "See doc comment")]
-    fn assign_players_to_assignments(initialization_data: Vec<RoleAssignment>)->Assignments{
+    fn assign_players_to_assignments(
+        initialization_data: Vec<RoleAssignment>
+    )->Assignments{
+
         let mut player_indices: Vec<PlayerIndex> = (0..initialization_data.len() as PlayerIndex).collect();
         player_indices.shuffle(&mut rand::rng());
 
