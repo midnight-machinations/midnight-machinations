@@ -12,11 +12,13 @@ import { Button, RawButton } from "../Button";
 import { useLobbyOrGameState, useLobbyState } from "../useHooks";
 import { Conclusion, CONCLUSIONS, INSIDER_GROUPS, InsiderGroup, PlayerClientType, PlayerIndex, translateConclusion, translateWinCondition } from "../../game/gameState.d";
 import Popover from "../Popover";
+import DUMMY_NAMES from "../../resources/dummyNames.json";
 
 type RoleOutlineSelectorProps = {
     roleOutline: RoleOutline,
     onChange: (value: RoleOutline) => void,
     disabled?: boolean,
+    numPlayers?: number
 }
 
 export default function RoleOutlineSelector(props: RoleOutlineSelectorProps): ReactElement {
@@ -56,6 +58,7 @@ export default function RoleOutlineSelector(props: RoleOutlineSelectorProps): Re
 
                             props.onChange(options)
                         }}
+                        numPlayers={props.numPlayers}
                     />
                     <InsiderGroupSelectorLabel
                         disabled={props.disabled}
@@ -112,6 +115,8 @@ export default function RoleOutlineSelector(props: RoleOutlineSelectorProps): Re
                                 options[index].winIfAny = old.winIfAny;
                             if("insiderGroups" in old)
                                 options[index].insiderGroups = old.insiderGroups;
+                            if("playerPool" in old)
+                                options[index].playerPool = old.playerPool;
 
                             props.onChange(options);
                         }}
@@ -289,14 +294,14 @@ function InsiderGroupSelector(props: Readonly<{
                             }}
                             optionsSearch={optionsSearch}
                         />
-                        <button
+                        <Button
                             disabled={props.disabled}
                             onClick={() => {
                                 const options = [...insiderGroups];
                                 options.splice(index, 1);
                                 props.onChange(options);
                             }}
-                        ><Icon size="tiny">remove</Icon></button>
+                        ><Icon size="tiny">remove</Icon></Button>
                     </div>
                 )
             })}
@@ -364,6 +369,7 @@ function PlayerPoolSelector(props: Readonly<{
     disabled?: boolean,
     playerPool?: PlayerIndex[],
     onChange: (newSet?: PlayerIndex[]) => void,
+    numPlayers?: number,
 }>): ReactElement {
     const playerNames = useLobbyState(
         state => 
@@ -371,7 +377,7 @@ function PlayerPoolSelector(props: Readonly<{
                 .filter(([_id, client]) => client.clientType.type === "player")
                 .map(([_id, player]) => (player.clientType as PlayerClientType).name),
         ["lobbyClients"]
-    )!;
+    )??DUMMY_NAMES.slice(0, props.numPlayers??0);
 
     if (props.playerPool === undefined) {
         if (playerNames.length > 0) {
@@ -442,6 +448,7 @@ function PlayerPoolSelectorLabel(props: Readonly<{
     disabled?: boolean,
     playerPool?: PlayerIndex[],
     onChange: (value?: PlayerIndex[]) => void,
+    numPlayers?: number,
 }>): ReactElement {
     const ref = useRef<HTMLButtonElement>(null);
 
@@ -474,6 +481,7 @@ function PlayerPoolSelectorLabel(props: Readonly<{
                 disabled={props.disabled}
                 playerPool={props.playerPool}
                 onChange={props.onChange}
+                numPlayers={props.numPlayers}
             />
         </Popover>
     </>
@@ -572,6 +580,7 @@ export function OutlineListSelector(props: Readonly<{
                                 roleOutline={outline}
                                 onChange={(value: RoleOutline) => {props.onChangeRolePicker(value, index);}}
                                 key={index}
+                                numPlayers={roleList.length}
                             />
                         }
                         {props.onRemoveOutline &&
