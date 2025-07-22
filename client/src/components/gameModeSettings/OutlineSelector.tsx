@@ -9,10 +9,9 @@ import { GameModeContext } from "./GameModesEditor";
 import Select, { dropdownPlacementFunction, SelectOptionsSearch } from "../Select";
 import StyledText from "../StyledText";
 import { Button, RawButton } from "../Button";
-import { useLobbyOrGameState, useLobbyState, usePlayerNames } from "../useHooks";
-import { Conclusion, CONCLUSIONS, INSIDER_GROUPS, InsiderGroup, LobbyClient, PlayerClientType, PlayerIndex, translateConclusion, translateWinCondition } from "../../game/gameState.d";
+import { useLobbyOrGameState, useLobbyState } from "../useHooks";
+import { Conclusion, CONCLUSIONS, INSIDER_GROUPS, InsiderGroup, PlayerClientType, PlayerIndex, translateConclusion, translateWinCondition } from "../../game/gameState.d";
 import Popover from "../Popover";
-import ListMap from "../../ListMap";
 
 type RoleOutlineSelectorProps = {
     roleOutline: RoleOutline,
@@ -367,19 +366,18 @@ function PlayerPoolSelector(props: Readonly<{
     onChange: (newSet?: PlayerIndex[]) => void,
 }>): ReactElement {
     const playerNames = useLobbyState(
-        state => new ListMap(
+        state => 
             state.players.list
                 .filter(([_id, client]) => client.clientType.type === "player")
-                .map(([id, player]) => [id, (player.clientType as PlayerClientType).name]),
-        ),
+                .map(([_id, player]) => (player.clientType as PlayerClientType).name),
         ["lobbyClients"]
     )!;
 
     if (props.playerPool === undefined) {
-        if (playerNames.list.length > 0) {
+        if (playerNames.length > 0) {
             return <div className="conclusions-selector">
                 <Button
-                    onClick={() => props.onChange([playerNames.list[0][0]])}
+                    onClick={() => props.onChange([0])}
                 >
                     {translate("setNotDefault")}
                 </Button>
@@ -393,10 +391,10 @@ function PlayerPoolSelector(props: Readonly<{
     }
 
     const playerPool = props.playerPool;
-    const playersNotChosen = playerNames.list.filter(player => !playerPool.includes(player[0])).map(player => player[0]);
+    const playersNotChosen = playerNames.map((_, index)=>index).filter(index => !playerPool.includes(index));
 
-    const optionsSearch = new Map<number, [ReactElement, string]>(playerNames.list.map(([id, player]) => [
-        id, [<StyledText noLinks={true}>{player}</StyledText>, player]
+    const optionsSearch = new Map<number, [ReactElement, string]>(playerNames.map((name, index) => [
+        index, [<StyledText noLinks={true}>{name}</StyledText>, name]
     ]));
 
     return <div className="conclusions-selector">
@@ -409,27 +407,27 @@ function PlayerPoolSelector(props: Readonly<{
                             disabled={props.disabled}
                             value={id}
                             onChange={value => {
-                                const options = [...playerNames.list.map(([id, _]) => id)];
+                                const options = [...playerPool];
                                 options[index] = value;
                                 props.onChange(options);
                             }}
                             optionsSearch={optionsSearch}
                         />
-                        <button
+                        <Button
                             disabled={props.disabled}
                             onClick={() => {
                                 const options = [...playerPool];
                                 options.splice(index, 1);
                                 props.onChange(options);
                             }}
-                        ><Icon size="tiny">remove</Icon></button>
+                        ><Icon size="tiny">remove</Icon></Button>
                     </div>
                 )
             })}
-            {playersNotChosen.length !== 0 && <button
+            {playersNotChosen.length !== 0 && <Button
                 disabled={props.disabled}
                 onClick={() => props.onChange([...playerPool, playersNotChosen[0]])}
-            ><Icon size="tiny">add</Icon></button>}
+            ><Icon size="tiny">add</Icon></Button>}
         </div>
         <Button
             disabled={props.disabled}
