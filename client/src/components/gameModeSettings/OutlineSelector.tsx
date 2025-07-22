@@ -9,9 +9,10 @@ import { GameModeContext } from "./GameModesEditor";
 import Select, { dropdownPlacementFunction, SelectOptionsSearch } from "../Select";
 import StyledText from "../StyledText";
 import { Button, RawButton } from "../Button";
-import { useLobbyOrGameState } from "../useHooks";
-import { Conclusion, CONCLUSIONS, INSIDER_GROUPS, InsiderGroup, translateConclusion, translateWinCondition } from "../../game/gameState.d";
+import { useLobbyOrGameState, useLobbyState, usePlayerNames } from "../useHooks";
+import { Conclusion, CONCLUSIONS, INSIDER_GROUPS, InsiderGroup, LobbyClient, PlayerClientType, PlayerIndex, translateConclusion, translateWinCondition } from "../../game/gameState.d";
 import Popover from "../Popover";
+import ListMap from "../../ListMap";
 
 type RoleOutlineSelectorProps = {
     roleOutline: RoleOutline,
@@ -42,6 +43,21 @@ export default function RoleOutlineSelector(props: RoleOutlineSelectorProps): Re
 
             return (
                 <div key={index} className="role-picker-option">
+                    <PlayerPoolSelectorLabel
+                        disabled={props.disabled}
+                        playerPool={option.playerPool}
+                        onChange={pool => {
+                            const options = [...props.roleOutline];
+
+                            if(pool === undefined && "playerPool" in options[index]) {
+                                delete options[index].playerPool;
+                            } else {
+                                options[index].playerPool = pool;
+                            }
+
+                            props.onChange(options)
+                        }}
+                    />
                     <InsiderGroupSelectorLabel
                         disabled={props.disabled}
                         insiderGroups={option.insiderGroups}
@@ -339,6 +355,126 @@ function InsiderGroupSelectorLabel(props: Readonly<{
             <InsiderGroupSelector
                 disabled={props.disabled}
                 insiderGroups={props.insiderGroups}
+                onChange={props.onChange}
+            />
+        </Popover>
+    </>
+}
+
+function PlayerPoolSelector(props: Readonly<{
+    disabled?: boolean,
+    playerPool?: PlayerIndex[],
+    onChange: (newSet?: PlayerIndex[]) => void,
+}>): ReactElement {
+    const playerNames = useLobbyState(
+        state => new ListMap(
+            state.players.list
+                .filter(([_id, client]) => client.clientType.type === "player")
+                .map(([id, player]) => [id, (player.clientType as PlayerClientType).name]),
+        ),
+        ["lobbyClients"]
+    )!;
+
+    if (props.playerPool === undefined) {
+        if (playerNames.list.length > 0) {
+            return <div className="conclusions-selector">
+                <Button
+                    onClick={() => props.onChange([playerNames.list[0][0]])}
+                >
+                    {translate("setNotDefault")}
+                </Button>
+            </div>
+        } else {
+            // This shouldn't be possible anyway, but just in case.
+            return <div className="conclusions-selector">
+                <StyledText noLinks={true}>{translate("noPlayers")}</StyledText>
+            </div>
+        }
+    }
+
+    const playerPool = props.playerPool;
+    const playersNotChosen = playerNames.list.filter(player => !playerPool.includes(player[0])).map(player => player[0]);
+
+    const optionsSearch = new Map<number, [ReactElement, string]>(playerNames.list.map(([id, player]) => [
+        id, [<StyledText noLinks={true}>{player}</StyledText>, player]
+    ]));
+
+    return <div className="conclusions-selector">
+        <div className="role-picker">
+            {playerPool.map((id, index) => {
+                return (
+                    <div key={id} className="role-picker-option">
+                        <Select
+                            className="role-outline-option-selector"
+                            disabled={props.disabled}
+                            value={id}
+                            onChange={value => {
+                                const options = [...playerNames.list.map(([id, _]) => id)];
+                                options[index] = value;
+                                props.onChange(options);
+                            }}
+                            optionsSearch={optionsSearch}
+                        />
+                        <button
+                            disabled={props.disabled}
+                            onClick={() => {
+                                const options = [...playerPool];
+                                options.splice(index, 1);
+                                props.onChange(options);
+                            }}
+                        ><Icon size="tiny">remove</Icon></button>
+                    </div>
+                )
+            })}
+            {playersNotChosen.length !== 0 && <button
+                disabled={props.disabled}
+                onClick={() => props.onChange([...playerPool, playersNotChosen[0]])}
+            ><Icon size="tiny">add</Icon></button>}
+        </div>
+        <Button
+            disabled={props.disabled}
+            onClick={() => props.onChange()}
+        >
+            {translate("setDefault")}
+        </Button>
+    </div>
+}
+
+function PlayerPoolSelectorLabel(props: Readonly<{
+    disabled?: boolean,
+    playerPool?: PlayerIndex[],
+    onChange: (value?: PlayerIndex[]) => void,
+}>): ReactElement {
+    const ref = useRef<HTMLButtonElement>(null);
+
+    const [popupOpen, setPopupOpen] = useState<boolean>(false);
+
+    const buttonDisplay = useMemo(() => {
+        if (props.playerPool === undefined) {
+            return <Icon>diversity_1</Icon>
+        } else if (props.playerPool.length === 0) {
+            return <Icon>person_off</Icon>
+        } else {
+            return <Icon>assignment_ind</Icon>
+        }
+    }, [props.playerPool]);
+
+    return <>
+        <RawButton
+            ref={ref}
+            onClick={() => setPopupOpen(open => !open)}
+        >
+            {buttonDisplay}
+        </RawButton>
+        <Popover
+            open={popupOpen}
+            setOpenOrClosed={setPopupOpen}
+            anchorForPositionRef={ref}
+            onRender={dropdownPlacementFunction}
+        >
+            <PlayerPoolSelector
+                disabled={props.disabled}
+                playerPool={props.playerPool}
                 onChange={props.onChange}
             />
         </Popover>

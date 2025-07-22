@@ -207,7 +207,7 @@ pub struct RoleOutlineOption {
     pub win_condition: RoleOutlineOptionWinCondition,
     #[serde(flatten, skip_serializing_if = "RoleOutlineOptionInsiderGroups::is_default")]
     pub insider_groups: RoleOutlineOptionInsiderGroups,
-
+    #[serde(skip_serializing_if = "VecSet::is_empty")]
     pub player_pool: VecSet<PlayerIndex>
 }
 
