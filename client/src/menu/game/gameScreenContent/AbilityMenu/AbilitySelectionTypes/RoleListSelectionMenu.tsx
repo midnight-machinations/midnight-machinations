@@ -1,8 +1,8 @@
 import { ReactElement } from "react";
-import { Role } from "../../../../../game/roleState.d";
 import RoleDropdown from "../../../../../components/RoleDropdown";
 import React from "react";
 import { AvailableRoleListSelection, RoleListSelection } from "../../../../../game/abilityInput";
+import { Role } from "../../../../../stateContext/stateType/roleState";
 
 export default function RoleListSelectionMenu(props: Readonly<{
     selection: RoleListSelection,

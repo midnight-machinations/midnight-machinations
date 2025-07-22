@@ -1,38 +1,29 @@
-import { useGameState, usePlayerState } from "../../../../components/useHooks";
-import React, { ReactElement } from "react";
+import React, { ReactElement, useContext } from "react";
 import AuditorMenu from "./RoleSpecificMenus/AuditorMenu";
-import LargeDoomsayerMenu from "./RoleSpecificMenus/LargeDoomsayerMenu";
+// import LargeDoomsayerMenu from "./RoleSpecificMenus/LargeDoomsayerMenu";
 import Counter from "../../../../components/Counter";
 import StyledText from "../../../../components/StyledText";
 import translate from "../../../../game/lang";
 import SmallPuppeteerMenu from "./RoleSpecificMenus/SmallPuppeteerMenu";
 import StewardMenu from "./RoleSpecificMenus/StewardMenu";
 import RecruiterMenu from "./RoleSpecificMenus/RecruiterMenu";
-import { RoleState } from "../../../../game/roleState.d";
-import { PhaseState } from "../../../../game/gameState.d";
 import DetailsSummary from "../../../../components/DetailsSummary";
 import HypnotistMenu from "./RoleSpecificMenus/HypnotistMenu";
+import { usePlayerState } from "../../../../stateContext/useHooks";
+import { PhaseState } from "../../../../stateContext/stateType/phaseState";
+import { RoleState } from "../../../../stateContext/stateType/roleState";
+import { StateContext } from "../../../../stateContext/StateContext";
 
     
 
 export default function RoleSpecificSection(): ReactElement{
-    const roleState = usePlayerState(
-        playerState => playerState.roleState,
-        ["yourRoleState"]
-    )!;
-    const phaseState = useGameState(
-        gameState => gameState.phaseState,
-        ["phase"]
-    )!;
+    const gameState = useContext(StateContext)!;
 
-    const dayNumber = useGameState(
-        gameState => gameState.dayNumber,
-        ["phase"]
-    )!;
-    const numPlayers = useGameState(
-        gameState => gameState.players.length,
-        ["gamePlayers"]
-    )!;
+    const roleState = usePlayerState()!.roleState;
+    const phaseState = gameState!.phaseState;
+
+    const dayNumber = gameState.dayNumber;
+    const numPlayers = gameState.players.length;
 
     const inner = roleSpecificSectionInner(phaseState, dayNumber, roleState, numPlayers);
 
@@ -62,8 +53,8 @@ function roleSpecificSectionInner(
             return <AuditorMenu roleState={roleState}/>;
         case "hypnotist":
             return <HypnotistMenu roleState={roleState}/>;
-        case "doomsayer":
-            return <LargeDoomsayerMenu/>;
+        // case "doomsayer":
+        //     return <LargeDoomsayerMenu/>;
         case "jailor": 
             return <Counter 
                 max={maxChargesCounter} 
@@ -214,10 +205,8 @@ function MarksmanRoleSpecificMenu(props: Readonly<{
 function MediumRoleSpecificMenu(props: Readonly<{
     roleState: RoleState & { type: "medium" }
 }>): ReactElement {
-    const players = useGameState(
-        gameState => gameState.players,
-        ["gamePlayers"]
-    )!;
+    const gameState = useContext(StateContext)!;
+    const players = gameState.players;
 
     const counter = <Counter
         max={3}
@@ -244,11 +233,9 @@ function MediumRoleSpecificMenu(props: Readonly<{
     }
 }
 
-function SpiralMenu(props: {}): ReactElement | null {
-    const spiralingPlayers = useGameState(
-        gameState => gameState.players.filter(p => p.playerTags.includes("spiraling")),
-        ["yourPlayerTags"]
-    )!
+function SpiralMenu(): ReactElement | null {
+    const gameState = useContext(StateContext)!;
+    const spiralingPlayers = gameState.players.filter(p => p.playerTags.includes("spiraling"))!
 
     if (spiralingPlayers.length !== 0) {
         return <div className="role-information">

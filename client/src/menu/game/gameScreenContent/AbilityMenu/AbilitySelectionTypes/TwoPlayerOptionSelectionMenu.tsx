@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
-import { PlayerIndex } from "../../../../../game/gameState.d";
 import PlayerOptionDropdown from "../../../../../components/PlayerOptionDropdown";
 import { AvailableTwoPlayerOptionSelection, TwoPlayerOptionSelection } from "../../../../../game/abilityInput";
+import { PlayerIndex } from "../../../../../stateContext/stateType/otherState";
 
 export default function TwoPlayerOptionSelectionMenu(props: Readonly<{
     availableSelection: AvailableTwoPlayerOptionSelection

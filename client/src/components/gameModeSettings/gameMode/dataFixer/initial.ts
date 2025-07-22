@@ -1,8 +1,9 @@
 import { VersionConverter } from ".";
-import { PHASES, PhaseTimes } from "../../../../game/gameState.d";
 import { Settings } from "../../../../game/localStorage";
-import { ROLE_SETS, RoleSet, getAllRoles } from "../../../../game/roleListState.d";
-import { Role } from "../../../../game/roleState.d";
+import { PhaseTimes } from "../../../../stateContext/stateType/otherState";
+import { PHASES } from "../../../../stateContext/stateType/phaseState";
+import { ROLE_SETS, RoleSet, getAllRoles } from "../../../../stateContext/stateType/roleListState";
+import { Role } from "../../../../stateContext/stateType/roleState";
 import { Failure, ParseResult, ParseSuccess, Success, isFailure } from "../parse";
 
 const initial: VersionConverter = {

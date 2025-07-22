@@ -1,59 +1,70 @@
 import translate, { translateChecked } from "../game/lang";
-import React, { ReactElement } from "react";
-import GAME_MANAGER, { find, replaceMentions } from "..";
+import React, { ReactElement, useContext } from "react";
+import { find, replaceMentions } from "..";
 import StyledText, { KeywordDataMap, PLAYER_SENDER_KEYWORD_DATA } from "./StyledText";
 import "./chatMessage.css"
-import { ChatGroup, Conclusion, DefensePower, PhaseState, PlayerIndex, Tag, translateConclusion, translateWinCondition, Verdict, WinCondition } from "../game/gameState.d";
-import { Role, RoleState } from "../game/roleState.d";
-import { Grave } from "../game/graveState";
 import DOMPurify from "dompurify";
-import GraveComponent from "./grave";
-import { RoleList, RoleOutline, translateRoleOutline } from "../game/roleListState.d";
+import GraveComponent, { translateGraveRole } from "./grave";
+import { RoleList, RoleOutline, translateRoleOutline } from "../stateContext/stateType/roleListState";
 import { CopyButton } from "./ClipboardButtons";
-import { useGameState, useLobbyOrGameState, usePlayerNames, usePlayerState, useSpectator } from "./useHooks";
 import { KiraResult, KiraResultDisplay } from "../menu/game/gameScreenContent/AbilityMenu/AbilitySelectionTypes/KiraSelectionMenu";
 import { AuditorResult } from "../menu/game/gameScreenContent/AbilityMenu/RoleSpecificMenus/AuditorMenu";
 import { ControllerID, AbilitySelection, translateControllerID, controllerIdToLink } from "../game/abilityInput";
 import DetailsSummary from "./DetailsSummary";
 import ListMap from "../ListMap";
 import { Button } from "./Button";
+import { WebsocketContext } from "../menu/WebsocketContext";
+import { usePlayerNames, usePlayerState } from "../stateContext/useHooks";
+import { ChatGroup, DefensePower, PlayerIndex, Verdict } from "../stateContext/stateType/otherState";
+import { Role } from "../stateContext/stateType/roleState";
+import { Conclusion, translateConclusion, translateWinCondition, WinCondition } from "../stateContext/stateType/conclusionState";
+import { Grave } from "../stateContext/stateType/grave";
+import { Tag } from "../stateContext/stateType/tagState";
+import { PhaseState } from "../stateContext/stateType/phaseState";
+import { StateContext } from "../stateContext/StateContext";
 
 const ChatElement = React.memo((
     props: {
         message: ChatMessage,
         playerNames?: string[],
         playerKeywordData?: KeywordDataMap,
-        playerSenderKeywordData?: KeywordDataMap
+        playerSenderKeywordData?: KeywordDataMap,
+        canCopyPaste?: boolean
     }, 
 ) => {
-    const roleState = usePlayerState(
-        playerState => playerState.roleState,
-        ["yourRoleState"]
-    );
-    const forwardButton = usePlayerState(
-        playerState => {
-            let controller = new ListMap(playerState.savedControllers, (a,b)=>a.type===b.type)
-                .get({type: "forwardMessage", player: playerState.myIndex});
+    const stateCtx = useContext(StateContext)!;
+    const playerState = usePlayerState();
+    const myIndex = playerState?.myIndex;
 
-            return controller!==null&&!controller.availableAbilityData.grayedOut;
-        },
-        ["yourPlayerIndex", "yourAllowedControllers"]
-    );
-    const myIndex = usePlayerState(
-        playerState => playerState.myIndex,
-        ["yourPlayerIndex"]
-    );
+    const defaultPlayersNames = usePlayerNames()!;
+    let playerNames = props.playerNames ?? defaultPlayersNames;
     
-    const roleList = useGameState(
-        state => state.roleList,
-        ["roleList"]
-    );
+    
+
+    const canCopyPaste =
+        props.canCopyPaste??
+        (
+            playerState?.roleState.type==="forger" || 
+            playerState?.roleState.type==="counterfeiter" || 
+            playerState===undefined
+        );
+    
+    const forwardMessageController = playerState===undefined?undefined:
+        new ListMap(playerState.savedControllers, (a,b)=>a.type===b.type)
+        .get({type: "forwardMessage", player: playerState.myIndex});
+        
+    const forwardButton = 
+        forwardMessageController!==undefined&&
+        forwardMessageController!==null&&
+        !forwardMessageController.availableAbilityData.grayedOut
+    
+    const roleList = stateCtx.roleList;
 
     const [mouseHovering, setMouseHovering] = React.useState(false); 
 
+    const websocketContext = useContext(WebsocketContext)!;
+
     const message = props.message;
-    const realPlayerNames = usePlayerNames();
-    const playerNames = props.playerNames ?? realPlayerNames;
     const chatMessageStyles = require("../resources/styling/chatMessage.json");
     if(message.variant === undefined){
         console.error("ChatElement message with undefined variant:");
@@ -89,7 +100,7 @@ const ChatElement = React.memo((
                 style={style}
                 chatGroupIcon={chatGroupIcon!}
                 playerNames={playerNames}
-                roleState={roleState}
+                canCopyPaste={canCopyPaste}
                 playerKeywordData={props.playerKeywordData}
                 playerSenderKeywordData={props.playerSenderKeywordData}
                 mouseHovering={mouseHovering}
@@ -174,8 +185,7 @@ const ChatElement = React.memo((
             className="chat-message-div-small-button-div"
         >
             {
-                (roleState?.type === "forger" || roleState?.type === "counterfeiter")
-                && <CopyButton
+                canCopyPaste && <CopyButton
                     className="chat-message-div-small-button"
                     text={translateChatMessage(message.variant, playerNames, roleList)}
                 />
@@ -184,7 +194,7 @@ const ChatElement = React.memo((
                 myIndex!==undefined && mouseHovering && forwardButton
                 && <Button
                     className="chat-message-div-small-button material-icons-round"
-                    onClick={()=>GAME_MANAGER.sendAbilityInput({
+                    onClick={()=>websocketContext.sendAbilityInput({
                         id: {type: "forwardMessage", player: myIndex}, 
                         selection: {type: "chatMessage", selection: props.message}
                     })}
@@ -202,17 +212,10 @@ function PlayerDiedChatMessage(props: Readonly<{
     playerNames: string[],
     message: ChatMessage & { variant: { type: "playerDied" } }
 }>): ReactElement {
-    let graveRoleString: string;
-    switch (props.message.variant.grave.information.type) {
-        case "obscured":
-            graveRoleString = translate("obscured");
-            break;
-        case "normal":
-            graveRoleString = translate("role."+props.message.variant.grave.information.role+".name");
-            break;
-    }
+    let graveRoleString = translateGraveRole(props.message.variant.grave.information);
 
-    const spectator = useSpectator();
+    const stateCtx = useContext(StateContext)!;
+    const spectator = stateCtx.clientState.type === "spectator";
 
     return <div className={"chat-message-div"}>
         <DetailsSummary
@@ -261,7 +264,7 @@ function NormalChatMessage(props: Readonly<{
     style: string,
     chatGroupIcon: string,
     playerNames: string[],
-    roleState: RoleState | undefined,
+    canCopyPaste: boolean,
     playerKeywordData: KeywordDataMap | undefined,
     playerSenderKeywordData: KeywordDataMap | undefined,
     mouseHovering: boolean,
@@ -270,6 +273,8 @@ function NormalChatMessage(props: Readonly<{
     forwardButton: boolean | undefined,
     roleList: RoleList | undefined
 }>): ReactElement {
+    const websocketContext = useContext(WebsocketContext)!;
+
     let style = props.style;
     let chatGroupIcon = props.chatGroupIcon;
 
@@ -322,8 +327,7 @@ function NormalChatMessage(props: Readonly<{
             className="chat-message-div-small-button-div"
         >
             {
-                (props.roleState?.type === "forger" || props.roleState?.type === "counterfeiter")
-                && <CopyButton
+                props.canCopyPaste && <CopyButton
                     className="chat-message-div-small-button"
                     text={translateChatMessage(props.message.variant, props.playerNames, props.roleList)}
                 />
@@ -332,7 +336,7 @@ function NormalChatMessage(props: Readonly<{
                 props.myIndex!==undefined && props.mouseHovering && props.forwardButton
                 && <Button
                     className="chat-message-div-small-button material-icons-round"
-                    onClick={()=>GAME_MANAGER.sendAbilityInput({
+                    onClick={()=>websocketContext.sendAbilityInput({
                         id: {type: "forwardMessage", player: props.myIndex?props.myIndex:0}, 
                         selection: {type: "chatMessage", selection: props.message}
                     })}
@@ -343,35 +347,29 @@ function NormalChatMessage(props: Readonly<{
 }
 
 function useContainsMention(message: ChatMessageVariant & { text: string }, playerNames: string[]): boolean {
-    const myNumber = usePlayerState(
-        gameState => gameState.myIndex,
-        ["yourPlayerIndex"]
-    );
+    const stateCtx = useContext(StateContext)!;
+    const playerState = usePlayerState();
+    const myIndex = playerState?.myIndex;
+    
+    let myName;
+    if(myIndex !== undefined){
+        myName = stateCtx.players[myIndex].name;
+    }else{
+        let myPlayer = stateCtx.clients.get(stateCtx.myId!)!;
+        if(myPlayer.clientType.type === "player"){
+            myName = myPlayer.clientType.name;
+        }
+    }
 
-    const myName = useLobbyOrGameState(
-        state => {
-            if (state.stateType === "game" && state.clientState.type === "player")
-                return state.players[state.clientState.myIndex].name
-            else if (state.stateType === "lobby" && state.myId) {
-                const me = state.players.get(state.myId)
-                if (me?.clientType.type === "player") {
-                    return me.clientType.name
-                }
-            } else {
-                return undefined;
-            }
-        },
-        ["lobbyClients", "yourId", "yourPlayerIndex", "gamePlayers"]
-    );
-
-    if (myName === undefined) {
+    if(myIndex === undefined || myName === undefined){
         return false;
     }
+
     return (
         find(myName).test(sanitizePlayerMessage(replaceMentions(message.text, playerNames))) ||
         (
-            myNumber !== undefined && 
-            find("" + (myNumber + 1)).test(sanitizePlayerMessage(replaceMentions(message.text, playerNames)))
+            myIndex !== undefined && 
+            find("" + (myIndex + 1)).test(sanitizePlayerMessage(replaceMentions(message.text, playerNames)))
         )
     )
 }
@@ -518,8 +516,8 @@ export function translateChatMessage(
         case "trialVerdict":{
             let hang;
             // Damn
-            if (GAME_MANAGER.state.stateType === "game" && GAME_MANAGER.state.enabledModifiers.includes("twoThirdsMajority")) {
-                hang = message.innocent <= 2 * message.guilty
+            if (false /* TODO */) {
+                // hang = message.innocent <= 2 * message.guilty
             } else {
                 hang = message.innocent < message.guilty
             }

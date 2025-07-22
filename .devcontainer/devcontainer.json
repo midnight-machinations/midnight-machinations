@@ -14,10 +14,10 @@
 		//https://github.com/devcontainers/features/tree/main/src/node
 		"ghcr.io/devcontainers/features/node:1": {},
 		"ghcr.io/devcontainers/features/docker-in-docker:2": {}
-	}
+	},
 
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.
-	// "forwardPorts": [8081],
+	"forwardPorts": [80]
 
 	// Use 'postCreateCommand' to run commands after the container is created.
 	// "postCreateCommand": "uname -a",

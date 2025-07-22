@@ -1,7 +1,7 @@
-
-import { Conclusion, InsiderGroup, translateWinCondition } from "./gameState.d";
-import translate from "./lang";
-import { Role, roleJsonData } from "./roleState.d";
+import translate from "../../game/lang";
+import { Conclusion, translateWinCondition } from "./conclusionState";
+import { InsiderGroup } from "./otherState";
+import { Role, roleJsonData } from "./roleState";
 
 export type RoleList = RoleOutline[];
 export function getRolesFromRoleList(roleList: RoleList): Role[] {

@@ -1,25 +1,26 @@
-import { ReactElement } from "react"
+import { ReactElement, useContext } from "react"
 import React from "react"
-import { Role, RoleState } from "../../../../../game/roleState.d"
 import TwoRoleOutlineOptionSelectionMenu from "../AbilitySelectionTypes/TwoRoleOutlineOptionSelectionMenu"
-import GAME_MANAGER from "../../../../.."
 import { controllerIdToLink, TwoRoleOutlineOptionSelection } from "../../../../../game/abilityInput"
-import { usePlayerState } from "../../../../../components/useHooks"
 import ListMap from "../../../../../ListMap"
+import { WebsocketContext } from "../../../../WebsocketContext"
+import { usePlayerState } from "../../../../../stateContext/useHooks"
+import { Role, RoleState } from "../../../../../stateContext/stateType/roleState"
 
 export type AuditorResult = Role[];
 
 export default function AuditorMenu(props: Readonly<{
     roleState: RoleState & {type: "auditor"}
 }>): ReactElement {
-    
-    const myPlayerIndex = usePlayerState(
-        state=>state.myIndex,
-        ["yourPlayerIndex"]
-    )!;
+    const myPlayerIndex = usePlayerState()!.myIndex;
+    const savedAbilities = usePlayerState()!.savedControllers;
+
+    const savedAbilitiesMap = new ListMap(savedAbilities, (k1, k2) => controllerIdToLink(k1) === controllerIdToLink(k2));
+
+    const { sendAbilityInput } = useContext(WebsocketContext)!;
 
     const onInput = (selection: TwoRoleOutlineOptionSelection) => {
-        GAME_MANAGER.sendAbilityInput({
+        sendAbilityInput({
             id: {
                 type: "role",
                 role: "auditor",
@@ -32,14 +33,6 @@ export default function AuditorMenu(props: Readonly<{
             }
         });
     }
-    
-
-    const savedAbilities = usePlayerState(
-        playerState => playerState.savedControllers,
-        ["yourAllowedControllers"]
-    )!;
-    
-    const savedAbilitiesMap = new ListMap(savedAbilities, (k1, k2) => controllerIdToLink(k1) === controllerIdToLink(k2));
 
     let singleAbilitySave = savedAbilitiesMap.get({
         type: "role",

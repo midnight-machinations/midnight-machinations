@@ -1,13 +1,14 @@
-import React, { ReactElement, useEffect, useMemo, useRef, useState } from "react";
+import React, { ReactElement, useContext, useEffect, useMemo, useRef, useState } from "react";
 import StyledText from "./StyledText";
 import { sanitizePlayerMessage } from "./ChatMessage";
-import GAME_MANAGER, { replaceMentions } from "..";
+import { replaceMentions } from "..";
 import { Button } from "./Button";
 import Icon from "./Icon";
 import translate from "../game/lang";
 import "./textAreaDropdown.css";
 import DetailsSummary from "./DetailsSummary";
-import { usePlayerNames } from "./useHooks";
+import { WebsocketContext } from "../menu/WebsocketContext";
+import { usePlayerNames } from "../stateContext/useHooks";
 
 export function TextDropdownArea(props: Readonly<{
     titleString: string,
@@ -21,6 +22,7 @@ export function TextDropdownArea(props: Readonly<{
     cantPost: boolean
 }>): ReactElement {
     const [field, setField] = useState<string>(props.savedText);
+    const websocketContext = useContext(WebsocketContext);
 
     useEffect(() => {
         setField(props.savedText)
@@ -32,7 +34,7 @@ export function TextDropdownArea(props: Readonly<{
 
     function send(field: string){
         save(field);
-        GAME_MANAGER.sendSendChatMessagePacket('\n' + field, true);
+        websocketContext?.sendSendChatMessagePacket('\n' + field, true);
     }
 
     function save(field: string) {
@@ -84,6 +86,7 @@ function TextDropdownLabel(
     }, [props.field, props.savedText]);
 
     const playerNames = usePlayerNames();
+    const websocketContext = useContext(WebsocketContext);
 
     function save(field: string) {
         props.onSave(field);
@@ -91,7 +94,7 @@ function TextDropdownLabel(
 
     function send(field: string){
         save(field);
-        GAME_MANAGER.sendSendChatMessagePacket('\n' + field, true);
+        websocketContext?.sendSendChatMessagePacket('\n' + field, true);
     }
 
     return <div>

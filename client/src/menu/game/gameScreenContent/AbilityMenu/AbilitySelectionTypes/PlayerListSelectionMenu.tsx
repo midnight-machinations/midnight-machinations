@@ -1,7 +1,7 @@
 import React from "react";
-import { PlayerIndex } from "../../../../../game/gameState.d";
 import PlayerOptionDropdown from "../../../../../components/PlayerOptionDropdown";
 import { AvailablePlayerListSelection, PlayerListSelection, } from "../../../../../game/abilityInput";
+import { PlayerIndex } from "../../../../../stateContext/stateType/otherState";
 
 export default function PlayerListSelectionMenu(props: Readonly<{
     availableSelection: AvailablePlayerListSelection

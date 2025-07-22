@@ -1,19 +1,21 @@
-import React, { ReactElement } from "react";
+import React, { ReactElement, useContext } from "react";
 import translate from "../../../game/lang";
-import GAME_MANAGER from "../../../index";
-import { ContentMenu, ContentTab } from "../GameScreen";
 import "./graveyardMenu.css";
 import StyledText from "../../../components/StyledText";
 import { EnabledRolesDisplay } from "../../../components/gameModeSettings/EnabledRoleSelector";
-import { useGameState, usePlayerState, useSpectator } from "../../../components/useHooks";
-import { translateRoleOutline } from "../../../game/roleListState.d";
+import { translateRoleOutline } from "../../../stateContext/stateType/roleListState";
 import { Button } from "../../../components/Button";
 import DetailsSummary from "../../../components/DetailsSummary";
 import { EnabledModifiersDisplay } from "../../../components/gameModeSettings/EnabledModifiersSelector";
+import { GameScreenMenuType } from "../GameScreenMenuContext";
+import GameScreenMenuTab from "../GameScreenMenuTab";
+import { WebsocketContext } from "../../WebsocketContext";
+import { usePlayerState } from "../../../stateContext/useHooks";
+import { StateContext } from "../../../stateContext/StateContext";
 
 export default function GraveyardMenu(): ReactElement {
     return <div className="graveyard-menu graveyard-menu-colors">
-        <ContentTab close={ContentMenu.GraveyardMenu} helpMenu={"standard/gameMode"}>{translate("menu.gameMode.title")}</ContentTab>
+        <GameScreenMenuTab close={GameScreenMenuType.GraveyardMenu} helpMenu={"standard/gameMode"}>{translate("menu.gameMode.title")}</GameScreenMenuTab>
             
         <DetailsSummary
             summary={translate("menu.lobby.roleList")}
@@ -27,17 +29,13 @@ export default function GraveyardMenu(): ReactElement {
 }
 
 function RoleListDisplay(): ReactElement {
-    const roleList = useGameState(
-        gameState => gameState.roleList,
-        ["roleList"]
-    )!
-    const crossedOutOutlines = usePlayerState(
-        clientState => clientState.crossedOutOutlines,
-        ["yourCrossedOutOutlines"],
-        []
-    )!
+    const roleList = useContext(StateContext)!.roleList;
+    const playerState = usePlayerState();
+    const crossedOutOutlines = playerState!==undefined?playerState.crossedOutOutlines:[];
 
-    const spectator = useSpectator();
+    const spectator = useContext(StateContext)!.clientState.type === "spectator";
+    
+    const websocketContext = useContext(WebsocketContext)!;
 
     return <>
         {roleList.map((entry, index)=>{
@@ -54,7 +52,7 @@ function RoleListDisplay(): ReactElement {
                     else
                         newCrossedOutOutlines = crossedOutOutlines.concat(index);
 
-                    GAME_MANAGER.sendSaveCrossedOutOutlinesPacket(newCrossedOutOutlines);
+                    websocketContext.sendSaveCrossedOutOutlinesPacket(newCrossedOutOutlines);
                 }}
             >
                 {
@@ -72,10 +70,7 @@ function RoleListDisplay(): ReactElement {
 }
 
 function EnabledRoles(): ReactElement {
-    const enabledRoles = useGameState(
-        gameState => gameState.enabledRoles,
-        ["enabledRoles"]
-    )!
+    const enabledRoles = useContext(StateContext)!.enabledRoles;
 
     return <div className="graveyard-menu-excludedRoles">
         <DetailsSummary
@@ -87,10 +82,7 @@ function EnabledRoles(): ReactElement {
 }
 
 function EnabledModifiers(): ReactElement {
-    const enabledModifiers = useGameState(
-        gameState=>gameState.enabledModifiers,
-        ["enabledModifiers"]
-    )!
+    const enabledModifiers = useContext(StateContext)!.enabledModifiers;
 
     return <div className="graveyard-menu-excludedRoles">
         <DetailsSummary

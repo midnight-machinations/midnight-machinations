@@ -1,10 +1,11 @@
 import { ListMapData } from "../ListMap";
 import { KiraGuess } from "../menu/game/gameScreenContent/AbilityMenu/AbilitySelectionTypes/KiraSelectionMenu";
-import { PhaseType, PlayerIndex } from "./gameState.d";
 import translate, { translateChecked } from "./lang";
-import { Role } from "./roleState.d";
 import abilitiesJson from "../resources/abilityId.json";
 import { ChatMessage } from "../components/ChatMessage";
+import { PhaseType } from "../stateContext/stateType/phaseState";
+import { PlayerIndex } from "../stateContext/stateType/otherState";
+import { Role } from "../stateContext/stateType/roleState";
 
 
 export type AbilityJsonData = Partial<Record<ControllerIDLink, SingleAbilityJsonData>>;

@@ -3,15 +3,15 @@ import React, { ReactElement, useContext, useEffect } from "react";
 import ReactDOMServer from "react-dom/server";
 import { find } from "..";
 import translate, { translateChecked } from "../game/lang";
-import { Role, getMainRoleSetFromRole, roleJsonData } from "../game/roleState.d";
 import "./styledText.css";
 import DUMMY_NAMES from "../resources/dummyNames.json";
-import { ARTICLES, WikiArticleLink, getArticleLangKey } from "./WikiArticleLink";
-import { MenuControllerContext } from "../menu/game/GameScreen";
-import { Player } from "../game/gameState.d";
-import { AnchorControllerContext } from "../menu/Anchor";
-import { setWikiSearchPage } from "./Wiki";
-import { getRoleSetsFromRole } from "../game/roleListState.d";
+import { ARTICLES, WikiArticleLink, getArticleLangKey } from "../wiki/WikiArticleLink";
+import { setWikiSearchPage } from "../wiki/Wiki";
+import { getRoleSetsFromRole } from "../stateContext/stateType/roleListState";
+import { AppContext } from "../menu/AppContext";
+import { GameScreenMenuContext } from "../menu/game/GameScreenMenuContext";
+import { getMainRoleSetFromRole, Role, roleJsonData } from "../stateContext/stateType/roleState";
+import { Player } from "../stateContext/stateType/gameState";
 
 export type TokenData = {
     style?: string, 
@@ -54,8 +54,8 @@ export type StyledTextProps = {
  */
 export default function StyledText(props: Readonly<StyledTextProps>): ReactElement {
     const playerKeywordData = props.playerKeywordData ?? PLAYER_KEYWORD_DATA;
-    const menuController = useContext(MenuControllerContext);
-    const anchorController = useContext(AnchorControllerContext)!;
+    const menuController = useContext(GameScreenMenuContext);
+    const anchorController = useContext(AppContext)!;
 
     useEffect(() => {
         (window as any).setWikiSearchPage = (page: WikiArticleLink) => {

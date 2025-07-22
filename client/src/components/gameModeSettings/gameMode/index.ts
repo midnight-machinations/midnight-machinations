@@ -1,7 +1,7 @@
-import { ModifierType, PhaseTimes } from "../../../game/gameState.d";
-import { RoleList } from "../../../game/roleListState.d";
-import { Role } from "../../../game/roleState.d";
-
+import { ModifierType } from "../../../stateContext/stateType/modifiersState";
+import { PhaseTimes } from "../../../stateContext/stateType/otherState";
+import { RoleList } from "../../../stateContext/stateType/roleListState";
+import { Role } from "../../../stateContext/stateType/roleState";
 
 export type CurrentFormat = "v4";
 

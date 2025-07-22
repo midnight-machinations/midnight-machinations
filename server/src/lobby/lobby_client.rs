@@ -88,4 +88,25 @@ impl LobbyClient {
             sender.send(message);
         }
     }
+
+
+    pub fn to_client_object(&self)->ClientObject{
+        ClientObject{
+            client_type: self.client_type.clone(),
+            connection: self.connection.clone(),
+            ready: self.ready.clone(),
+            player_index: Option::None,
+            host: matches!(self.ready, Ready::Host)
+        }
+    }
+}
+
+#[derive(Serialize, Debug, Clone)]
+#[serde(rename_all = "camelCase")]
+pub struct ClientObject{
+    client_type: LobbyClientType,
+    connection: ClientConnection,
+    host: bool,
+    player_index: Option<crate::game::player::PlayerIndex>,
+    ready: Ready,
 }

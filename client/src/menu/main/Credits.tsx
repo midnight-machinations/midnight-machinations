@@ -1,14 +1,16 @@
-import React from "react";
+import React, { useContext } from "react";
 import { ReactElement } from "react";
 import translate from "../../game/lang";
 import "./credits.css";
-import { ANCHOR_CONTROLLER } from "../Anchor";
 import StartMenu from "./StartMenu";
+import { AppContext } from "../AppContext";
 
 export default function Credits(): ReactElement {
+    const anchorContext = useContext(AppContext)!;
+
     return <div className="credits-menu">
         <button onClick={() => {
-            ANCHOR_CONTROLLER?.setContent(<StartMenu/>);
+            anchorContext.setContent({type:"main"});
         }}>{translate("menu.globalMenu.quitToMenu")}</button>
         <div>
             <h3>{translate("leadDevelopers")}</h3>

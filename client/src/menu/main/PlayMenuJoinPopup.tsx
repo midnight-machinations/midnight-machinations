@@ -1,7 +1,7 @@
 import React, { ReactElement } from "react";
-import { LobbyPreviewData } from "../../game/packet";
 import translate from "../../game/lang";
 import "./playMenuJoinPopup.css";
+import { LobbyPreviewData } from "../../stateContext/stateType/gameBrowserState";
 
 export default function PlayMenuJoinPopup(props: Readonly<{
     roomCode: number,

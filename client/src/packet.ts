@@ -1,18 +1,18 @@
-import { PhaseType, PlayerIndex, Verdict, PhaseTimes, Tag, LobbyClientID, ChatGroup, PhaseState, LobbyClient, ModifierType, InsiderGroup, GameClient } from "./gameState.d"
-import { Grave } from "./graveState"
-import { ChatMessage } from "../components/ChatMessage"
-import { RoleList, RoleOutline } from "./roleListState.d"
-import { Role, RoleState } from "./roleState.d"
-import { DoomsayerGuess } from "../menu/game/gameScreenContent/AbilityMenu/RoleSpecificMenus/LargeDoomsayerMenu"
-import { KiraGuess } from "../menu/game/gameScreenContent/AbilityMenu/AbilitySelectionTypes/KiraSelectionMenu"
-import { AbilityInput, ControllerID, SavedController } from "./abilityInput"
-import { ListMapData } from "../ListMap"
-
-export type LobbyPreviewData = {
-    name: string,
-    inGame : boolean,
-    players: [LobbyClientID, string][]
-}
+import { ChatMessage } from "./components/ChatMessage"
+import { RoleList, RoleOutline } from "./stateContext/stateType/roleListState"
+import { DoomsayerGuess } from "./menu/game/gameScreenContent/AbilityMenu/RoleSpecificMenus/LargeDoomsayerMenu"
+import { KiraGuess } from "./menu/game/gameScreenContent/AbilityMenu/AbilitySelectionTypes/KiraSelectionMenu"
+import { AbilityInput, ControllerID, SavedController } from "./game/abilityInput"
+import { ListMapData } from "./ListMap"
+import { LobbyPreviewData } from "./stateContext/stateType/gameBrowserState"
+import { ChatGroup, InsiderGroup, LobbyClientID, PhaseTimes, PlayerIndex, Verdict } from "./stateContext/stateType/otherState"
+import { GameClient } from "./stateContext/stateType/gameState"
+import { PhaseState, PhaseType } from "./stateContext/stateType/phaseState"
+import { ModifierType } from "./stateContext/stateType/modifiersState"
+import { Role, RoleState } from "./stateContext/stateType/roleState"
+import { Grave } from "./stateContext/stateType/grave"
+import { Tag } from "./stateContext/stateType/tagState"
+import { ClientObject } from "./stateContext/state"
 
 export type ToClientPacket = {
     type: "pong",
@@ -43,8 +43,8 @@ export type ToClientPacket = {
     type: "yourId",
     playerId: LobbyClientID
 } | {
-    type: "lobbyClients",
-    clients: ListMapData<LobbyClientID, LobbyClient>
+    type: "clientObjects",
+    clients: ListMapData<LobbyClientID, ClientObject>,
 } | {
     type: "lobbyName",
     name: string
