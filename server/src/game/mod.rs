@@ -335,9 +335,6 @@ impl Game {
         player_indices.retain(|p|!initialization_data.iter().any(|a|a.player() == Some(*p)));
         player_indices.shuffle(&mut rand::rng());
 
-
-        println!("{:?}", initialization_data);
-
         initialization_data
             .into_iter()
             .enumerate()
