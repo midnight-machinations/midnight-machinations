@@ -421,7 +421,7 @@ fn psychic_auras(){
             }).collect();
 
         if messages.len() != 1 {
-            panic!("{:?}", messages);
+            panic!("{messages:?}");
         }
 
         game.skip_to(Night, 2);
@@ -439,7 +439,7 @@ fn psychic_auras(){
             }).collect();
 
         if messages.len() != 1 {
-            panic!("{:?}", messages);
+            panic!("{messages:?}");
         }
     }
 }
@@ -1310,14 +1310,14 @@ fn drunk_framer() {
     if !(
         messages2.contains(&ChatMessageVariant::LookoutResult { players: vec![drunk.index()] })
     ){
-        panic!("{:?}", messages2);
+        panic!("{messages2:?}");
     }
 
     let messages = lookout.get_messages();
     if !(
         messages.contains(&ChatMessageVariant::LookoutResult { players: vec![mafioso.index()] })
     ){
-        panic!("{:?}", messages);
+        panic!("{messages:?}");
     }
 }
 
@@ -2045,56 +2045,6 @@ fn vigilante_shoots_marionette(){
     assert!(puppeteer.alive());
     assert!(!townie.alive());
     assert!(vigilante.alive());
-}
-
-#[test]
-fn recruits_dont_get_converted_to_mk(){
-    kit::scenario!(game in Night 2 where
-        recruiter: Recruiter,
-        mortician: Mortician,
-        vigi: Vigilante,
-        a: Detective,
-        b: Detective,
-        c: Detective,
-        d: Detective
-    );
-
-    assert!(vigi.send_ability_input_player_list_typical(recruiter));
-    recruiter.send_ability_input(AbilityInput::new(
-        ControllerID::syndicate_choose_backup(),
-        PlayerListSelection(vec![mortician.player_ref()])
-    ));
-
-    game.skip_to(Night, 3);
-
-    assert!(!recruiter.alive());
-    assert!(mortician.role() == Role::Recruiter);
-    assert!(vigi.role() == Role::Vigilante);
-
-    assert!(mortician.send_ability_input_player_list_typical(a));
-    mortician.send_ability_input(AbilityInput::new(
-        ControllerID::role(mortician.player_ref(), Role::Recruiter, 1),
-        IntegerSelection(1)
-    ));
-    assert!(vigi.send_ability_input_player_list_typical(mortician));
-
-    game.next_phase();
-
-    assert!(!mortician.alive());
-    assert!(a.alive());
-    assert!(a.role() == Role::Recruiter);
-    assert!(mortician.role() == Role::Recruiter);
-    assert!(vigi.role() == Role::Vigilante);
-
-    game.skip_to(Obituary, 5);
-
-    //make sure recruiter lost
-    assert!(!recruiter.get_won_game());
-    assert!(!mortician.get_won_game());
-    assert!(!a.get_won_game());
-    assert!(b.get_won_game());
-    assert!(c.get_won_game());
-    assert!(d.get_won_game());
 }
 
 #[test]

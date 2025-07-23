@@ -1,5 +1,5 @@
 
-import { Conclusion, InsiderGroup, translateWinCondition } from "./gameState.d";
+import { Conclusion, InsiderGroup, PlayerIndex, translateWinCondition } from "./gameState.d";
 import translate from "./lang";
 import { Role, roleJsonData } from "./roleState.d";
 
@@ -53,6 +53,7 @@ export type RoleOutlineOption = ({
 }) & {
     winIfAny?: Conclusion[],
     insiderGroups?: InsiderGroup[]
+    playerPool?: PlayerIndex[]
 }
 
 export type RoleOrRoleSet = ({

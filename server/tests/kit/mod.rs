@@ -80,25 +80,26 @@ pub fn _format_messages_debug(messages: Vec<ChatMessageVariant>) -> String{
 /// Stuff that shouldn't be called directly - only in macro invocations.
 #[doc(hidden)]
 pub mod _init {
-    use mafia_server::game::{
+    use mafia_server::{game::{
         role::Role,
         role_list::{
             RoleList, RoleOutline, RoleOutlineOption, RoleOutlineOptionInsiderGroups,
             RoleOutlineOptionRoles, RoleOutlineOptionWinCondition
         }
-    };
+    }, vec_set::VecSet};
     use vec1::vec1;
 
     use super::*;
 
     pub fn create_basic_scenario(roles: Vec<Role>) -> TestScenario {
         let mut role_list = Vec::new();
-        for role in roles.iter() {
+        for (i, role) in roles.iter().enumerate() {
             role_list.push(RoleOutline { options: 
                 vec1![RoleOutlineOption {
                     roles: RoleOutlineOptionRoles::Role { role: *role },
                     insider_groups: RoleOutlineOptionInsiderGroups::RoleDefault,
                     win_condition: RoleOutlineOptionWinCondition::RoleDefault,
+                    player_pool: VecSet::from_iter(vec![i as u8]),
                 }]
             });
         }

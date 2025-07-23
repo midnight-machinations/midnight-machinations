@@ -9,14 +9,16 @@ import { GameModeContext } from "./GameModesEditor";
 import Select, { dropdownPlacementFunction, SelectOptionsSearch } from "../Select";
 import StyledText from "../StyledText";
 import { Button, RawButton } from "../Button";
-import { useLobbyOrGameState } from "../useHooks";
-import { Conclusion, CONCLUSIONS, INSIDER_GROUPS, InsiderGroup, translateConclusion, translateWinCondition } from "../../game/gameState.d";
+import { useLobbyOrGameState, useLobbyState } from "../useHooks";
+import { Conclusion, CONCLUSIONS, INSIDER_GROUPS, InsiderGroup, PlayerClientType, PlayerIndex, translateConclusion, translateWinCondition } from "../../game/gameState.d";
 import Popover from "../Popover";
+import DUMMY_NAMES from "../../resources/dummyNames.json";
 
 type RoleOutlineSelectorProps = {
     roleOutline: RoleOutline,
     onChange: (value: RoleOutline) => void,
     disabled?: boolean,
+    numPlayers?: number
 }
 
 export default function RoleOutlineSelector(props: RoleOutlineSelectorProps): ReactElement {
@@ -42,6 +44,22 @@ export default function RoleOutlineSelector(props: RoleOutlineSelectorProps): Re
 
             return (
                 <div key={index} className="role-picker-option">
+                    <PlayerPoolSelectorLabel
+                        disabled={props.disabled}
+                        playerPool={option.playerPool}
+                        onChange={pool => {
+                            const options = [...props.roleOutline];
+
+                            if(pool === undefined && "playerPool" in options[index]) {
+                                delete options[index].playerPool;
+                            } else {
+                                options[index].playerPool = pool;
+                            }
+
+                            props.onChange(options)
+                        }}
+                        numPlayers={props.numPlayers}
+                    />
                     <InsiderGroupSelectorLabel
                         disabled={props.disabled}
                         insiderGroups={option.insiderGroups}
@@ -97,6 +115,8 @@ export default function RoleOutlineSelector(props: RoleOutlineSelectorProps): Re
                                 options[index].winIfAny = old.winIfAny;
                             if("insiderGroups" in old)
                                 options[index].insiderGroups = old.insiderGroups;
+                            if("playerPool" in old)
+                                options[index].playerPool = old.playerPool;
 
                             props.onChange(options);
                         }}
@@ -274,14 +294,14 @@ function InsiderGroupSelector(props: Readonly<{
                             }}
                             optionsSearch={optionsSearch}
                         />
-                        <button
+                        <Button
                             disabled={props.disabled}
                             onClick={() => {
                                 const options = [...insiderGroups];
                                 options.splice(index, 1);
                                 props.onChange(options);
                             }}
-                        ><Icon size="tiny">remove</Icon></button>
+                        ><Icon size="tiny">remove</Icon></Button>
                     </div>
                 )
             })}
@@ -340,6 +360,128 @@ function InsiderGroupSelectorLabel(props: Readonly<{
                 disabled={props.disabled}
                 insiderGroups={props.insiderGroups}
                 onChange={props.onChange}
+            />
+        </Popover>
+    </>
+}
+
+function PlayerPoolSelector(props: Readonly<{
+    disabled?: boolean,
+    playerPool?: PlayerIndex[],
+    onChange: (newSet?: PlayerIndex[]) => void,
+    numPlayers?: number,
+}>): ReactElement {
+    const playerNames = useLobbyState(
+        state => 
+            state.players.list
+                .filter(([_id, client]) => client.clientType.type === "player")
+                .map(([_id, player]) => (player.clientType as PlayerClientType).name),
+        ["lobbyClients"]
+    )??DUMMY_NAMES.slice(0, props.numPlayers??0);
+
+    if (props.playerPool === undefined) {
+        if (playerNames.length > 0) {
+            return <div className="conclusions-selector">
+                <Button
+                    onClick={() => props.onChange([0])}
+                >
+                    {translate("setNotDefault")}
+                </Button>
+            </div>
+        } else {
+            // This shouldn't be possible anyway, but just in case.
+            return <div className="conclusions-selector">
+                <StyledText noLinks={true}>{translate("noPlayers")}</StyledText>
+            </div>
+        }
+    }
+
+    const playerPool = props.playerPool;
+    const playersNotChosen = playerNames.map((_, index)=>index).filter(index => !playerPool.includes(index));
+
+    const optionsSearch = new Map<number, [ReactElement, string]>(playerNames.map((name, index) => [
+        index, [<StyledText noLinks={true}>{name}</StyledText>, name]
+    ]));
+
+    return <div className="conclusions-selector">
+        <div className="role-picker">
+            {playerPool.map((id, index) => {
+                return (
+                    <div key={id} className="role-picker-option">
+                        <Select
+                            className="role-outline-option-selector"
+                            disabled={props.disabled}
+                            value={id}
+                            onChange={value => {
+                                const options = [...playerPool];
+                                options[index] = value;
+                                props.onChange(options);
+                            }}
+                            optionsSearch={optionsSearch}
+                        />
+                        <Button
+                            disabled={props.disabled}
+                            onClick={() => {
+                                const options = [...playerPool];
+                                options.splice(index, 1);
+                                props.onChange(options);
+                            }}
+                        ><Icon size="tiny">remove</Icon></Button>
+                    </div>
+                )
+            })}
+            {playersNotChosen.length !== 0 && <Button
+                disabled={props.disabled}
+                onClick={() => props.onChange([...playerPool, playersNotChosen[0]])}
+            ><Icon size="tiny">add</Icon></Button>}
+        </div>
+        <Button
+            disabled={props.disabled}
+            onClick={() => props.onChange()}
+        >
+            {translate("setDefault")}
+        </Button>
+    </div>
+}
+
+function PlayerPoolSelectorLabel(props: Readonly<{
+    disabled?: boolean,
+    playerPool?: PlayerIndex[],
+    onChange: (value?: PlayerIndex[]) => void,
+    numPlayers?: number,
+}>): ReactElement {
+    const ref = useRef<HTMLButtonElement>(null);
+
+    const [popupOpen, setPopupOpen] = useState<boolean>(false);
+
+    const buttonDisplay = useMemo(() => {
+        if (props.playerPool === undefined) {
+            return <Icon>diversity_1</Icon>
+        } else if (props.playerPool.length === 0) {
+            return <Icon>person_off</Icon>
+        } else {
+            return <Icon>assignment_ind</Icon>
+        }
+    }, [props.playerPool]);
+
+    return <>
+        <RawButton
+            ref={ref}
+            onClick={() => setPopupOpen(open => !open)}
+        >
+            {buttonDisplay}
+        </RawButton>
+        <Popover
+            open={popupOpen}
+            setOpenOrClosed={setPopupOpen}
+            anchorForPositionRef={ref}
+            onRender={dropdownPlacementFunction}
+        >
+            <PlayerPoolSelector
+                disabled={props.disabled}
+                playerPool={props.playerPool}
+                onChange={props.onChange}
+                numPlayers={props.numPlayers}
             />
         </Popover>
     </>
@@ -438,6 +580,7 @@ export function OutlineListSelector(props: Readonly<{
                                 roleOutline={outline}
                                 onChange={(value: RoleOutline) => {props.onChangeRolePicker(value, index);}}
                                 key={index}
+                                numPlayers={roleList.length}
                             />
                         }
                         {props.onRemoveOutline &&

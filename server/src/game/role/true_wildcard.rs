@@ -4,7 +4,7 @@ use crate::game::attack_power::DefensePower;
 use crate::game::chat::ChatMessageVariant;
 use crate::game::phase::PhaseType;
 use crate::game::player::PlayerReference;
-use crate::game::role_list::role_can_generate;
+use crate::game::role_list::role_enabled_and_not_taken;
 use crate::game::Game;
 
 use super::{ControllerID, ControllerParametersMap, Role, RoleStateImpl};
@@ -45,7 +45,7 @@ impl TrueWildcard {
             .get_role_list_selection_first(game) else {return};
 
         if 
-            role_can_generate(
+            role_enabled_and_not_taken(
                 role, 
                 &game.settings.enabled_roles, 
                 &Vec::new(),    //True wildcard can be whatever they want
