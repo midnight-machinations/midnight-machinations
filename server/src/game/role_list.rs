@@ -17,13 +17,11 @@ impl RoleList {
         let mut generated_data = Vec::<RoleAssignment>::new();
         for entry in self.0.iter(){
             if let Some(new_role_assignment) = entry.get_random_role_assignments(
-                enabled_roles, &generated_data.iter().map(|datum| datum.role).collect::<Vec<Role>>()
+                enabled_roles,
+                &generated_data.iter().map(|a| a.role).collect::<Vec<Role>>(),
+                &generated_data.iter().filter_map(|a| a.player).collect::<Vec<PlayerIndex>>()
             ){
-                if generated_data.iter().all(|a|a.player.is_none() || new_role_assignment.player.is_none() || a.player != new_role_assignment.player) {
-                    generated_data.push(new_role_assignment);
-                } else {
-                    return None;
-                }
+                generated_data.push(new_role_assignment);
             }else{
                 return None;
             }
@@ -40,7 +38,7 @@ impl RoleList {
     }
 }
 
-#[derive(Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub struct RoleAssignment {
     role: Role,
     insider_groups: RoleOutlineOptionInsiderGroups,
@@ -135,10 +133,11 @@ impl RoleOutline{
             )
         ).collect()
     }
-    pub fn get_random_role_assignments(&self, enabled_roles: &VecSet<Role>, taken_roles: &[Role]) -> Option<RoleAssignment> {
+    pub fn get_random_role_assignments(&self, enabled_roles: &VecSet<Role>, taken_roles: &[Role], taken_players: &[PlayerIndex]) -> Option<RoleAssignment> {
         let options = self.get_role_assignments()
             .into_iter()
             .filter(|r|role_enabled_and_not_taken(r.role, enabled_roles, taken_roles))
+            .filter(|a|a.player().is_none_or(|p|!taken_players.contains(&p)))
             .collect::<Vec<_>>();
         options.choose(&mut rand::rng()).cloned()
     }
@@ -207,7 +206,7 @@ pub struct RoleOutlineOption {
     pub win_condition: RoleOutlineOptionWinCondition,
     #[serde(flatten, skip_serializing_if = "RoleOutlineOptionInsiderGroups::is_default")]
     pub insider_groups: RoleOutlineOptionInsiderGroups,
-
+    #[serde(skip_serializing_if = "VecSet::is_empty")]
     pub player_pool: VecSet<PlayerIndex>
 }
 

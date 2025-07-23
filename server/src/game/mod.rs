@@ -331,24 +331,19 @@ impl Game {
     )->Assignments{
 
         let mut player_indices: Vec<PlayerIndex> = (0..initialization_data.len() as PlayerIndex).collect();
+        //remove all players that are already assigned
+        player_indices.retain(|p|!initialization_data.iter().any(|a|a.player() == Some(*p)));
         player_indices.shuffle(&mut rand::rng());
-        player_indices.retain(|p|initialization_data.iter().all(|a|a.player() != Some(*p)));
 
         initialization_data
             .into_iter()
             .enumerate()
-            // .zip(player_indices)
             .map(|(o_index, assignment)|{
 
                 let p_index = if let Some(player) = assignment.player() {
                     player
                 }else{
-                    player_indices.remove(
-                    player_indices
-                            .len()
-                            .checked_sub(1)
-                            .expect("player_indices length should be correct length so len()-1 should be fine")
-                    )
+                    player_indices.swap_remove(0)
                 };
 
                 // We are iterating through playerlist and outline list, so this unsafe should be fine

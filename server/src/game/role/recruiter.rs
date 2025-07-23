@@ -133,7 +133,8 @@ impl RoleStateImpl for Recruiter {
                 player_pool: VecSet::new(),
             }]}.get_random_role_assignments(
                 &game.settings.enabled_roles,
-                PlayerReference::all_players(game).map(|p|p.role(game)).collect::<Vec<_>>().as_slice()
+                PlayerReference::all_players(game).map(|p|p.role(game)).collect::<Vec<_>>().as_slice(),
+                &[]
             ).map(|assignment| assignment.role());
 
             if let Some(random_town_role) = random_town_role {
