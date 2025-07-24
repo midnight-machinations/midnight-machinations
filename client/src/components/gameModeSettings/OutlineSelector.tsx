@@ -1,7 +1,7 @@
 import React, { ReactElement, useCallback, useContext, useMemo, useRef, useState } from "react";
 import "./outlineSelector.css";
 import translate from "../../game/lang";
-import { getAllRoles, getRolesFromRoleSet, ROLE_SETS, RoleList, RoleOrRoleSet, RoleOutline, simplifyRoleOutline, translateRoleOutline, translateRoleOrRoleSet} from "../../game/roleListState.d";
+import { getAllRoles, getRolesFromRoleSet, ROLE_SETS, RoleList, RoleOrRoleSet, RoleOutline, simplifyRoleOutline, translateRoleOutline, translateRoleOrRoleSet, translatePlayerPool} from "../../game/roleListState.d";
 import { Role } from "../../game/roleState.d";
 import Icon from "../Icon";
 import { DragAndDrop } from "../DragAndDrop";
@@ -365,19 +365,23 @@ function InsiderGroupSelectorLabel(props: Readonly<{
     </>
 }
 
+function useNamesForPlayerPool(numPlayers?: number): string[] {
+    return useLobbyState(
+        state => 
+            state.players.list
+                .filter(([_id, client]) => client.clientType.type === "player")
+                .map(([_id, player]) => (player.clientType as PlayerClientType).name),
+        ["lobbyClients"]
+    )??DUMMY_NAMES.slice(0, numPlayers??0)
+}
+
 function PlayerPoolSelector(props: Readonly<{
     disabled?: boolean,
     playerPool?: PlayerIndex[],
     onChange: (newSet?: PlayerIndex[]) => void,
     numPlayers?: number,
 }>): ReactElement {
-    const playerNames = useLobbyState(
-        state => 
-            state.players.list
-                .filter(([_id, client]) => client.clientType.type === "player")
-                .map(([_id, player]) => (player.clientType as PlayerClientType).name),
-        ["lobbyClients"]
-    )??DUMMY_NAMES.slice(0, props.numPlayers??0);
+    const playerNames = useNamesForPlayerPool(props.numPlayers);
 
     if (props.playerPool === undefined) {
         if (playerNames.length > 0) {
@@ -454,15 +458,19 @@ function PlayerPoolSelectorLabel(props: Readonly<{
 
     const [popupOpen, setPopupOpen] = useState<boolean>(false);
 
+    const playerNames = useNamesForPlayerPool(props.numPlayers);
+
     const buttonDisplay = useMemo(() => {
         if (props.playerPool === undefined) {
             return <Icon>diversity_1</Icon>
         } else if (props.playerPool.length === 0) {
             return <Icon>person_off</Icon>
         } else {
-            return <Icon>assignment_ind</Icon>
+            return <StyledText noLinks={true}>
+                {translatePlayerPool(props.playerPool, playerNames)}
+            </StyledText>
         }
-    }, [props.playerPool]);
+    }, [props.playerPool, playerNames]);
 
     return <>
         <RawButton
@@ -552,6 +560,8 @@ export function OutlineListSelector(props: Readonly<{
 }>) {
     const {roleList} = useContext(GameModeContext);
 
+    const playerNames = useNamesForPlayerPool(roleList.length);
+
     const simplify = () => {
         props.setRoleList(roleList.map(simplifyRoleOutline));
     }
@@ -572,7 +582,7 @@ export function OutlineListSelector(props: Readonly<{
                         {props.disabled === true
                             ? <div className="placard">
                                 <StyledText>
-                                    {translateRoleOutline(outline)}
+                                    {translateRoleOutline(outline, playerNames)}
                                 </StyledText>
                             </div>
                             : <RoleOutlineSelector
