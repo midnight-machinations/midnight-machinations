@@ -54,16 +54,28 @@ impl <K> VecSet<K> where K: Eq {
     pub fn retain<F>(&mut self, mut f: F) where F: FnMut(&K) -> bool {
         self.vec.retain(|k, _| f(k));
     }
-
+    pub fn retained<F>(&self, f: F) -> Self where F: FnMut(&K) -> bool, K: Clone {
+        let mut result = self.clone();
+        result.retain(f);
+        result
+    }
     pub fn elements(&self) -> impl Iterator<Item = &K> {
         self.vec.keys()
     }
 
     pub fn subtract(&self, other: &Self) -> Self where K: Clone {
-        self.vec.keys().filter(|&k| !other.contains(k)).cloned().collect()
+        self.retained(|k|!other.contains(k))
     }
+    pub fn excluding<'a>(&'a self, other: impl Iterator<Item = &'a K>) -> Self where K: Clone {
+        let mut result = self.clone();
+        for element in other {
+            result.remove(element);
+        }
+        result
+    }
+
     pub fn intersection(&self, other: &Self) -> Self where K: Clone {
-        self.vec.keys().filter(|&k| other.contains(k)).cloned().collect()
+        self.retained(|k|other.contains(k))
     }
     pub fn union(&self, other: &Self) -> Self where K: Clone {
         self.vec.keys().cloned().chain(other.vec.keys().cloned()).collect()
