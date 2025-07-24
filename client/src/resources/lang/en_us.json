@@ -890,6 +890,7 @@
     "chatMessage.deathNote": "A note left with the body reads:",
     "chatMessage.phaseChange":"\\0 \\1",
     "chatMessage.phaseChange.nomination":"\\0 \\1\n\\2 trials left",
+    "chatMessage.phaseChange.nomination.lastTrial":"\\0 \\1\nLast trial",
     "chatMessage.phaseChange.trial":"\\0 \\1\n\\2 is on trial",
     "chatMessage.phaseChange.recess":"Recess",
     "chatMessage.gameOver.conclusion.town": "The town has expelled the evil!",
