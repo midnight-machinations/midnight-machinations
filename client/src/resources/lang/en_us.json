@@ -798,6 +798,7 @@
     "pitchfork.description": "Vote for a player before midnight. If two-thirds of town loyalists vote for a player, that player dies.",
     "nobodyDiedLastNight": "Nobody died last night.",
     "nobody": "nobody",
+    "player.unknown": "Player \\0",
     "modifiers": "Modifiers",
     "obscuredGraves": "Obscured Graves",
     "skipDay1": "Skip Day 1",
