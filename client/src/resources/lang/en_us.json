@@ -1417,6 +1417,7 @@
     "wiki.article.role.noReminder": "There is no reminder section written for this role.",
     "wiki.article.role.guide": "Abilities",
     "wiki.article.role.noGuide": "There is no abilities section written for this role.",
+    "wiki.article.role.exampleAlibi": "Alibi Example",
 
     "wiki.article.role.abilities": "Abilities",
     "wiki.article.role.noAbilities": "There is no abilities section written for this role.",
@@ -1491,12 +1492,16 @@
     "wiki.article.role.psychic.abilities":"- Each night, choose a player to receive a vision\n    - On even nights, the vision lists 2 players. At least one of them is a town loyalist\n    - On odd nights, the vision lists three players. At least one of them is not a town loyalist",
     "wiki.article.role.psychic.attributes":"- Besides the player you visit, the other players in your vision are chosen randomly.\n- There the random players are guaranteed to have these properties:\n    - If it is a good vision, the player doesn't have suspicious aura\n    - If it is an evil vision, the player doesn't innocent aura\n    - The player is alive\n    - A vision never lists the same player twice\n    - You can't be the random player in your own vision\n- If there are not enough players who satisfy the required properties for random players in your vision, the vision fails",
     "wiki.article.role.psychic.extra": "- Your ability works on the player you visit, if you visit nobody then your ability doesnt work\n- The order of the players in the visions are randomized",
+    "wiki.article.role.psychic.exampleAlibi": "Psychic\nN1: @6* @1 @2\nN2: (@7) @4\nN3: @3\n@8 @9",
+    "wiki.article.role.psychic.exampleAlibi.description": "As the psychic, it's important to be clear about which player you selected. Some people use an asterisk, surround the selection with parentheses, or use a separate line. Here's an example of both:",
 
     "wiki.article.role.auditor.reminder": "At night, select up to 2 outlines to learn what roles were generated from them.",
     "wiki.article.role.auditor.guide": "- At night, choose up to 2 outlines from the list\n    - For each outline, you are told up to 4 roles, one of those roles were assigned to a player from that outline, and the other roles are random\n    - You visit the player who was assigned that role, but you are not told who that player is\n    - You are told the minimum of 4 and the number the roles from that role outline - 1\n    - You can't choose an outline with only 1 role",
     "wiki.article.role.auditor.abilities":"- At night, choose up to 2 outlines from the list\n    - For each outline, you are told up to 4 roles, one of those roles were assigned to a player from that outline, and the other roles are random\n    - You visit the player who was assigned that role, but you are not told who that player is\n    - You are told the minimum of 4 and the number the roles from that role outline - 1\n    - You can't choose an outline with only 1 role",
     "wiki.article.role.auditor.attributes":"- You are not told the names of any players\n- The random role you are told is from the outline you chose",
     "wiki.article.role.auditor.extra":"- Your ability works independently of your visits, Your visit getting transported or getting possessed doesn't usually impact your ability\n    - If you are blocked, you don't get results, but you can select that outline again\n- It is possible for you to visit dead players",
+    "wiki.article.role.auditor.exampleAlibi":"Auditor\nN1:\nTC1 -> Gossip, Detective, Snoop, Philosopher\nTC2 -> Lookout, Escort, Doctor, Cop\nN2:\nSS1 -> Hypnotist, Reeducator, Framer, Forger\nSS U Minion -> Warper, Informant, Disguiser, Scarecrow",
+    "wiki.article.role.auditor.exampleAlibi.description":"The auditor gets a lot of information, so make sure to format your alibi so it is as easy to read as possible. Here's an example:",
 
     "wiki.article.role.snoop.reminder": "At night, select a player to learn if they are a town loyalist, but you can't tell if you are visited by at least one non town loyalist, or at least two town loyalists.",
     "wiki.article.role.snoop.guide": "- At night, select a player. You are either told that they are a town loyalist, or that you can't tell if they are a townie\n    - You can't tell what your target was if:\n        - They aren't a townie\n        - You are visited by at least one non town loyalist, or at least two town loyalists\n        - They have a suspicious aura\n\n    - Otherwise, you are told they are a town loyalist",
