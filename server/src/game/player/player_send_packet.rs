@@ -103,7 +103,7 @@ impl PlayerReference{
                 verdict: self.verdict(game)
             },
             ToClientPacket::YourAllowedControllers { 
-                save: game.saved_controllers.controllers_allowed_to_player(*self).all_controllers().clone(),
+                save: game.saved_controllers.controllers_allowed_to_player(*self).create_packet_data(),
             },
             ToClientPacket::YourWill{
                 will: self.will(game).clone()

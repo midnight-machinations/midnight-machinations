@@ -2,7 +2,7 @@ use crate::{
     game::{
         ability_input::{
             AvailablePlayerListSelection, AvailableRoleListSelection,
-            AvailableSelectionKind, ControllerID, ControllerParameters
+            AvailableSelectionKind, ControllerID, ControllerParameters, PhaseStartCondition
         }, components::{detained::Detained, insider_group::InsiderGroupID}, phase::PhaseType, player::PlayerReference, role::Role, Game
     },
     vec_set::VecSet
@@ -29,7 +29,7 @@ pub struct ControllerParametersBuilder<'a, A: BuilderAvailableAbilitySelectionSt
     game: &'a Game,
     available: A,
     grayed_out: bool,
-    reset_on_phase_start: Option<PhaseType>,
+    reset_on_phase_start: Option<PhaseStartCondition>,
     dont_save: bool,
     default_selection: A::Selection,
     allowed_players: VecSet<PlayerReference>,
@@ -128,7 +128,20 @@ impl<A: BuilderAvailableAbilitySelectionState, I: BuilderIDState> ControllerPara
 
     pub fn reset_on_phase_start(self, phase: PhaseType) -> Self {
         Self {
-            reset_on_phase_start: Some(phase),
+            reset_on_phase_start: Some(PhaseStartCondition{
+                phase,
+                condition: |_: &Game| true
+            }),
+            ..self
+        }
+    }
+
+    pub fn reset_on_phase_start_with_condition(self, phase: PhaseType, condition: fn(&Game) -> bool) -> Self {
+        Self {
+            reset_on_phase_start: Some(PhaseStartCondition{
+                phase,
+                condition
+            }),
             ..self
         }
     }

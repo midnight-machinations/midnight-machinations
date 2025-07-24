@@ -1,6 +1,6 @@
 import { ListMapData } from "../ListMap";
 import { KiraGuess } from "../menu/game/gameScreenContent/AbilityMenu/AbilitySelectionTypes/KiraSelectionMenu";
-import { PhaseType, PlayerIndex } from "./gameState.d";
+import { PlayerIndex } from "./gameState.d";
 import translate, { translateChecked } from "./lang";
 import { Role } from "./roleState.d";
 import abilitiesJson from "../resources/abilityId.json";
@@ -32,14 +32,8 @@ export type SavedControllersMap = {
 
 export type SavedController = {
     selection: AbilitySelection,
-    availableAbilityData: {
-        available: AvailableAbilitySelection,
-        grayedOut: boolean,
-        resetOnPhaseStart: PhaseType | null,
-        dontSave: boolean
-        defaultSelection: AbilitySelection,
-        allowedPlayers: PlayerIndex[]
-    }
+    availableSelections: AvailableAbilitySelection,
+    grayedOut: boolean,
 }
 
 export type ControllerID = {

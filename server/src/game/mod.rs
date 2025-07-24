@@ -381,7 +381,6 @@ impl Game {
         (guilty, innocent)
     }
     
-    /// this is sent to the players whenever this function is called
     fn create_voted_player_map(&self) -> VecMap<PlayerReference, u8> {
         let mut voted_player_votes: VecMap<PlayerReference, u8> = VecMap::new();
 

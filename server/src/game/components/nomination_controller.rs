@@ -1,6 +1,6 @@
 use crate::{
     game::{
-        ability_input::{AbilityInput, AvailablePlayerListSelection, ControllerID, ControllerParametersMap, PlayerListSelection}, chat::{ChatGroup, ChatMessageVariant}, modifiers::{ModifierType, Modifiers}, player::PlayerReference, Game
+        ability_input::{AbilityInput, AvailablePlayerListSelection, ControllerID, ControllerParametersMap, PlayerListSelection}, chat::{ChatGroup, ChatMessageVariant}, modifiers::{ModifierType, Modifiers}, phase::PhaseState, player::PlayerReference, Game
     }, packet::ToClientPacket
 };
 
@@ -28,7 +28,17 @@ impl NominationController{
                 ForfeitVote::forfeited_vote(game, actor) ||
                 game.current_phase().phase() != crate::game::phase::PhaseType::Nomination
             )
-            .reset_on_phase_start(crate::game::phase::PhaseType::Nomination)
+            .reset_on_phase_start_with_condition(crate::game::phase::PhaseType::Nomination, |game| {
+                Modifiers::is_enabled(game, ModifierType::UnscheduledNominations) || {
+                    if let PhaseState::Nomination { trials_left, .. } = game.current_phase() {
+                        // Less than 3 trials left means last phase was also nomination.
+                        // -- as long as Scheduled Nominations is enabled
+                        *trials_left == 3
+                    } else {
+                        false
+                    }
+                }
+            })
             .allow_players([actor])
             .build_map()
     }
