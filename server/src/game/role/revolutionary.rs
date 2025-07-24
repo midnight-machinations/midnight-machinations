@@ -5,7 +5,6 @@ use serde::Serialize;
 use crate::game::attack_power::DefensePower;
 use crate::game::chat::{ChatGroup, ChatMessageVariant};
 use crate::game::components::tags::{TagSetID, Tags};
-use crate::game::grave::Grave;
 use crate::game::phase::{PhaseState, PhaseType};
 use crate::game::player::PlayerReference;
 use crate::game::role::RoleState;
@@ -60,7 +59,7 @@ impl RoleStateImpl for Revolutionary {
                 if Some(player_on_trial) == self.target.get_target() {
                     game.add_message_to_chat_group(ChatGroup::All, ChatMessageVariant::RevolutionaryWon);
                     actor_ref.set_role_state(game, RoleState::Revolutionary(Revolutionary { target: RevolutionaryTarget::Won }));
-                    actor_ref.die_and_add_grave(game, Grave::from_player_leave_town(game, actor_ref));
+                    actor_ref.leave_town(game);
                 }
             }
             _=>{}

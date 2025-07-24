@@ -59,7 +59,7 @@ impl RoleStateImpl for Deputy {
             
 
             if target_ref.win_condition(game).is_loyalist_for(GameConclusion::Town) {
-                actor_ref.die_and_add_grave(game, Grave::from_player_leave_town(game, actor_ref));
+                actor_ref.leave_town(game);
             }
         }
 

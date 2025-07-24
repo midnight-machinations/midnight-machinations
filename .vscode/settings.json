@@ -63,5 +63,9 @@
     "rust-analyzer.linkedProjects": [
         "./server/Cargo.toml",
     ],
-    "rust-analyzer.check.command": "clippy"
+    "rust-analyzer.check.command": "clippy",
+    "search.exclude": {
+        "**/broken_keyboard.json": true,
+        "**/dyslexic.json": true
+    }
 }

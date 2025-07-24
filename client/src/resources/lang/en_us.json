@@ -475,6 +475,14 @@
 
     "role.chronokaiser.name": "Chronokaiser",
     "role.chronokaiser.name:var.0": "Chronokaisers",
+
+    "role.seeker.name": "Seeker",
+    "role.seeker.name:var.0": "Seekers",
+    "role.seeker.name:var.1": "Seek",
+    "role.seeker.name:var.2": "Seeks",
+    "role.seeker.name:var.3": "Seeking",
+    "controllerId.role.seeker.0.name": "Hider",
+    "controllerId.role.seeker.1.name": "Hiding Spot",
     
     "role.witch.name": "Witch",
     "role.witch.name:var.0": "Witches",
@@ -701,6 +709,8 @@
     "tag.disguise.name":"Disguise",
     "tag.syndicateGun":"🔫",
     "tag.syndicateGun.name":"Gun",
+    "tag.follower":"🔎",
+    "tag.follower.name":"Follower",
 
     "dead.icon":"💀",
     "trial.icon": "⚖️",
@@ -940,6 +950,10 @@
     "chatMessage.jesterWon":"The Jester will get their revenge from the grave!",
     "chatMessage.revolutionaryWon":"The Revolutionary got their target executed and won!",
     "chatMessage.chronokaiserSpeedUp":"The Chronokaiser speeds up time. Each phase is \\0% faster.",
+    "chatMessage.caughtBySeeker":"A Seeker has found you, and now you must help them search for more hiders each night.",
+    "chatMessage.seekerCaught":"You found \\0! They will now help you search each hiding spot. \\1",
+    "chatMessage.seekerCaught.players_left.role_state":"Find \\0 more hiders to win.",
+    "chatMessage.seekerCaught.players_left.win_if_any":"You can catch \\0 more hiders.",
     "chatMessage.deputyKilled":"The Deputy killed \\0!",
     "chatMessage.deputyShotYou":"A Deputy shot you!",
     "chatMessage.puppeteerPlayerIsNowMarionette":"The puppeteer strung up \\0 into a marionette. They are now a Fiends Loyalist and Puppeteer Insider. They will be attacked every night.",
@@ -1779,6 +1793,12 @@
     "wiki.article.role.chronokaiser.abilities":"* You passively speed up the game by 60%\n- If you are alive at the end of the game, you win",
     "wiki.article.role.chronokaiser.attributes":"* You have no night time ability\n* Everyone is told how much you sped up the game each day",
     "wiki.article.role.chronokaiser.extra":"* Roleblocking doesn't effect your ability\n If there are multiple Chronokaisers, the message is sent twice during discussion, and the game is sped up twice",
+
+    "wiki.article.role.seeker.remainder":"Each night pick a hider(player) and hiding spot(player). If the hider hides there(visits that player) you catch them and they follow you(are possessed into) the hiding spots you check. Have 3 followers to win.",
+    "wiki.article.role.seeker.guide":"\n- Each night pick a hider(player) and hiding spot(player). \n    - You visit the hiding spot but not the hider. \n- If the hider hides there(visits that player) you catch them and they follow you(are possessed into) the hiding spots you check. \n- Have 3 followers to win.\n    - You leave town when you win.\n- If you have 3 followers you can't choose any more hiders each night but you can still check hiding spots.",
+    "wiki.article.role.seeker.abilities":"* You win when you have 3 followers. You ",
+    "wiki.article.role.seeker.attributes":"* You leave town when you win.\n- You are roleblock and possess immune.",
+    "wiki.article.role.seeker.extra":"* If your win condition is not the default and you have 3 followers:\n    - you do not leave the game once you have 3 followers\n    - you cannot select a hider but can still search hiding spots",
 
     "wiki.article.role.martyr.reminder": "If you die, you win, and everyone else dies too, you can shoot yourself.",
     "wiki.article.role.martyr.guide": "If you die, you win, and everyone commits suicide in an attempt to follow you to the afterlife\n - You are revealed to the entire town\n - You can choose to shoot yourself X times (X = Total players ÷ 5 (round up))\n - You can't shoot night 1",

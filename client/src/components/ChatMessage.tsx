@@ -779,6 +779,15 @@ export function translateChatMessage(
                 translate("defense."+message.defense),
                 playerNames[message.playerWithVest]
             );
+        case "seekerCaught":
+            return translate(
+                "chatMessage.seekerCaught", 
+                playerNames[message.hider],
+                message.role_state_win_con ? 
+                    translate("chatMessage.seekerCaught.players_left.role_state", message.players_left) :
+                    translate("chatMessage.seekerCaught.players_left.win_if_any", message.players_left)
+            );
+        case "caughtBySeeker":
         case "deputyShotYou":
         case "mediumExists":
         case "youGuardedSomeone":
@@ -1139,6 +1148,13 @@ export type ChatMessageVariant = {
     player: PlayerIndex
 } | {
     type: "werewolfTracked"
+} | {
+    type: "seekerCaught"
+    hider: PlayerIndex
+    players_left: number
+    role_state_win_con: boolean
+} | {
+    type: "caughtBySeeker"
 }
 
 export type MessageSender = {

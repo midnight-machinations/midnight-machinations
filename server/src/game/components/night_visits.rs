@@ -61,7 +61,7 @@ impl PlayerReference{
             .copied()
             .collect()
     }
-    /// Returns all vists where the player is the visitor
+    /// Returns all visits where the player is the visitor
     pub fn all_night_visits_cloned(&self, midnight_variables: &MidnightVariables) -> Vec<Visit>{
         NightVisits::all_visits(midnight_variables)
             .into_iter()
@@ -69,7 +69,7 @@ impl PlayerReference{
             .copied()
             .collect()
     }
-    /// Returns all vists where the player is the target
+    /// Returns all visits where the player is the target
     pub fn all_night_visitors_cloned(self, midnight_variables: &MidnightVariables) -> Vec<PlayerReference> {
         NightVisits::all_visits(midnight_variables)
             .into_iter()

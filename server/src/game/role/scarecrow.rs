@@ -4,7 +4,6 @@ use crate::game::event::on_midnight::{MidnightVariables, OnMidnightPriority};
 
 use crate::game::components::win_condition::WinCondition;
 use crate::game::{attack_power::DefensePower, chat::ChatMessageVariant};
-use crate::game::grave::Grave;
 use crate::game::phase::PhaseType;
 use crate::game::player::PlayerReference;
 
@@ -76,7 +75,7 @@ impl RoleStateImpl for Scarecrow {
                 )
 
         {
-            actor_ref.die_and_add_grave(game, Grave::from_player_leave_town(game, actor_ref));
+            actor_ref.leave_town(game);
         }
     }
     fn on_visit_wardblocked(self, _game: &mut Game, _midnight_variables: &mut MidnightVariables, _actor_ref: PlayerReference, _visit: Visit) {}

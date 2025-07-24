@@ -113,8 +113,8 @@ export type RoleState = {
 } | {
     type: "goon"
 } |
-(Hypnotist & {type: "hypnotist"})
- | {
+    (Hypnotist & {type: "hypnotist"})
+  | {
     type: "consort"
  } | {
     type: "blackmailer"
@@ -148,9 +148,11 @@ export type RoleState = {
     type: "jester"
 } | {
     type: "revolutionary"
-} | 
-Doomsayer 
-| {
+} | {
+    type: "seeker"
+} |
+    Doomsayer 
+  | {
     type: "politician"
 } | {
     type: "santaClaus",

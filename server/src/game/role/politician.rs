@@ -6,7 +6,6 @@ use crate::game::chat::{ChatGroup, ChatMessageVariant};
 use crate::game::event::on_whisper::{OnWhisper, WhisperFold, WhisperPriority};
 use crate::game::components::enfranchise::Enfranchise;
 use crate::game::game_conclusion::GameConclusion;
-use crate::game::grave::Grave;
 use crate::game::phase::PhaseType;
 use crate::game::player::PlayerReference;
 use crate::game::components::win_condition::WinCondition;
@@ -157,7 +156,7 @@ impl Politician {
                 )
 
         {
-            actor_ref.die_and_add_grave(game, Grave::from_player_leave_town(game, actor_ref));
+            actor_ref.leave_town(game);
         }
     }
 
@@ -199,7 +198,7 @@ impl Politician {
     fn kill_all(game: &mut Game){
         for player in PlayerReference::all_players(game){
             if player.alive(game) && !player.win_condition(game).is_loyalist_for(GameConclusion::Politician) {
-                player.die_and_add_grave(game, Grave::from_player_leave_town(game, player));
+                player.leave_town(game);
             }
         }
     }

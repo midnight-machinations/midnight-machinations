@@ -156,6 +156,7 @@ macros::roles! {
     Jester : jester,
     Revolutionary : revolutionary,
     Politician : politician,
+    Seeker : seeker,
     Doomsayer : doomsayer,
     Wildcard : wild_card,
     TrueWildcard : true_wildcard,
@@ -368,6 +369,7 @@ mod macros {
                         RoleState::$name(role_struct)
                     }
                 }
+                
             )*
         }
     }
@@ -380,7 +382,7 @@ impl Role{
             | Role::Veteran | Role::Coxswain
             | Role::Transporter | Role::Retributionist
             | Role::Witch | Role::Doomsayer | Role::Scarecrow | Role::Warper | Role::Porter
-            | Role::MafiaWitch | Role::Necromancer 
+            | Role::MafiaWitch | Role::Necromancer | Role::Seeker
         )
     }
     pub fn has_innocent_aura(&self, game: &Game)->bool{
@@ -395,5 +397,10 @@ impl Role{
     }
     pub fn has_suspicious_aura(&self, _game: &Game)->bool{
         false
+    }
+}
+impl From<Role> for RoleState {
+    fn from(role: Role) -> Self {
+        role.default_state()
     }
 }

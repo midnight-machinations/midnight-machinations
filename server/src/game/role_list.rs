@@ -393,7 +393,7 @@ impl RoleSet{
                 ],
             RoleSet::Neutral =>
                 vec_set![
-                    Role::Jester, Role::Revolutionary, Role::Politician, Role::Doomsayer,
+                    Role::Jester, Role::Revolutionary, Role::Seeker, Role::Politician, Role::Doomsayer,
                     Role::Martyr, Role::Chronokaiser, Role::SantaClaus, Role::Krampus
                 ],
             RoleSet::Fiends =>

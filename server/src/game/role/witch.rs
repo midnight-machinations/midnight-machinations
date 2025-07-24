@@ -4,7 +4,8 @@ use crate::game::ability_input::AvailableTwoPlayerOptionSelection;
 use crate::game::event::on_midnight::{MidnightVariables, OnMidnightPriority};
 
 use crate::game::components::win_condition::WinCondition;
-use crate::game::{attack_power::DefensePower, grave::Grave};
+use crate::game::attack_power::DefensePower;
+
 use crate::game::phase::PhaseType;
 use crate::game::player::PlayerReference;
 
@@ -72,7 +73,7 @@ impl RoleStateImpl for Witch {
                 )
 
         {
-            actor_ref.die_and_add_grave(game, Grave::from_player_leave_town(game, actor_ref));
+            actor_ref.leave_town(game);
         }
         if phase == PhaseType::Night {
             actor_ref.set_role_state(game, Witch { currently_used_player: None });

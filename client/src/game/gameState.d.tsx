@@ -161,7 +161,8 @@ export type Tag =
     "puppeteerMarionette" |
     "frame" |
     "forfeitVote" |
-    "spiraling";
+    "spiraling" |
+    "follower";
 
 export const MODIFIERS = [
     "obscuredGraves",

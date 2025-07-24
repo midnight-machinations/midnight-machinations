@@ -111,17 +111,25 @@ impl PlayerReference{
         }
     }
     */
-    pub fn possess_night_action(&self, game: &mut Game, midnight_variables: &mut MidnightVariables, priority: OnMidnightPriority, currently_used_player: Option<PlayerReference>)->Option<PlayerReference>{
+    pub fn possess_night_action(&self, game: &mut Game, midnight_variables: &mut MidnightVariables, priority: OnMidnightPriority, possessed_player: Option<PlayerReference>)->Option<PlayerReference>{
         match priority {
             OnMidnightPriority::Possess => {
                 let untagged_possessor_visits = self.untagged_night_visits_cloned(midnight_variables);
-                let possessed_visit = untagged_possessor_visits.get(0)?;
-                let possessed_into_visit = untagged_possessor_visits.get(1)?;
                 
-                possessed_visit.target.push_night_message(midnight_variables,
-                    ChatMessageVariant::YouWerePossessed { immune: possessed_visit.target.possession_immune(game) }
+                let possessed_into;
+                let possessed_player =
+                    if let Some(player) = possessed_player {
+                        possessed_into = untagged_possessor_visits.first()?.target;
+                        player
+                    } else {
+                        possessed_into = untagged_possessor_visits.get(1)?.target;
+                        untagged_possessor_visits.get(0)?.target
+                    };
+                
+                possessed_player.push_night_message(midnight_variables,
+                    ChatMessageVariant::YouWerePossessed { immune: possessed_player.possession_immune(game) }
                 );
-                if possessed_visit.target.possession_immune(game) {
+                if possessed_player.possession_immune(game) {
                     self.push_night_message(midnight_variables,
                         ChatMessageVariant::TargetIsPossessionImmune
                     );
@@ -133,10 +141,10 @@ impl PlayerReference{
                 for (controller_id, controller_data) in game.saved_controllers.all_controllers().clone().iter() {
                     match controller_data.selection() {
                         AbilitySelection::Boolean(..) => {
-                            if possessed_visit.target == possessed_into_visit.target {
+                            if possessed_player == possessed_into {
                                 SavedControllersMap::set_selection_in_controller(
                                     game,
-                                    possessed_visit.target,
+                                    possessed_player,
                                     controller_id.clone(),
                                     BooleanSelection(true),
                                     true
@@ -147,12 +155,12 @@ impl PlayerReference{
 
                             let mut selection = selection.0;
                             if let Some((_, second)) = selection {
-                                selection = Some((possessed_into_visit.target, second));
+                                selection = Some((possessed_into, second));
                             }
 
                             SavedControllersMap::set_selection_in_controller(
                                 game,
-                                possessed_visit.target,
+                                possessed_player,
                                 controller_id.clone(),
                                 TwoPlayerOptionSelection(selection),
                                 true
@@ -162,15 +170,15 @@ impl PlayerReference{
 
                             let mut selection = selection.0.clone();
                             if let Some(first) = selection.first_mut(){
-                                *first = possessed_into_visit.target;
+                                *first = possessed_into;
                             }else{
-                                selection = vec![possessed_into_visit.target];
+                                selection = vec![possessed_into];
                             }
 
 
                             SavedControllersMap::set_selection_in_controller(
                                 game,
-                                possessed_visit.target,
+                                possessed_player,
                                 controller_id.clone(),
                                 PlayerListSelection(selection),
                                 true
@@ -187,8 +195,8 @@ impl PlayerReference{
                     }
                 }
 
-                possessed_visit.target.set_night_visits(midnight_variables,
-                    possessed_visit.target.convert_selection_to_visits(game)
+                possessed_player.set_night_visits(midnight_variables,
+                    possessed_player.convert_selection_to_visits(game)
                 );
 
                 //remove the second role visit from the possessor
@@ -196,22 +204,26 @@ impl PlayerReference{
                     midnight_variables,
                     self.all_night_visits_cloned(midnight_variables).into_iter().filter(|v|v.tag != VisitTag::Role { role: self.role(game), id: 1 }).collect()
                 );
-                Some(possessed_visit.target)
+                Some(possessed_player)
             },
             OnMidnightPriority::Investigative => {
-                if let Some(currently_used_player) = currently_used_player {
-                    self.push_night_message(midnight_variables,
-                        ChatMessageVariant::TargetHasRole { role: currently_used_player.role(game) }
-                    );
+                if let Some(possessed_player) = possessed_player {
+                    if !possessed_player.possession_immune(game) {
+                        self.push_night_message(midnight_variables,
+                            ChatMessageVariant::TargetHasRole { role: possessed_player.role(game) }
+                        );
+                    }
                 }
                 None
             },
             OnMidnightPriority::StealMessages => {
-                if let Some(currently_used_player) = currently_used_player {
-                    for message in currently_used_player.night_messages(midnight_variables).clone() {
-                        self.push_night_message(midnight_variables,
-                            ChatMessageVariant::TargetsMessage { message: Box::new(message.clone()) }
-                        );
+                if let Some(possessed_player) = possessed_player {
+                    if !possessed_player.possession_immune(game) {
+                        for message in possessed_player.night_messages(midnight_variables).clone() {
+                            self.push_night_message(midnight_variables,
+                                ChatMessageVariant::TargetsMessage { message: Box::new(message.clone()) }
+                            );
+                        }
                     }
                 }
                 None
@@ -227,6 +239,10 @@ impl PlayerReference{
         game.add_grave(grave);
         self.die(game);
     }
+    pub fn leave_town(&self, game: &mut Game){
+        self.die_and_add_grave(game, Grave::from_player_leave_town(game, *self));
+    }
+
     /// if the player is already dead, this does nothing
     pub fn die(&self, game: &mut Game){
         if !self.alive(game) { return }
@@ -379,6 +395,7 @@ impl PlayerReference{
                     RoleState::Revolutionary(r) => r.won(),
                     RoleState::Chronokaiser(_) => Chronokaiser::won(game, *self),
                     RoleState::Martyr(r) => r.won(),
+                    RoleState::Seeker(r) => r.won(),
                     _ => false
                 }
             },

@@ -887,6 +887,19 @@
             {"type": "chronokaiserSpeedUp", "percent": "180"}
         ]
     },
+    "seeker": {
+        "mainRoleSet": "neutral",
+        "roleSets": ["neutral"],
+        "armor": false,
+        "aura": null,
+        "maxCount": null,
+        "canWriteDeathNote": false,
+        "canBeConvertedTo": [],
+        "chatMessages":[
+            {"type": "seekerCaught"},
+            {"type": "caughtBySeeker"}
+        ]
+    },
     "santaClaus": {
         "mainRoleSet": "neutral",
         "roleSets": ["neutral"],

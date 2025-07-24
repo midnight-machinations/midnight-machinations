@@ -43,6 +43,18 @@ impl Tags{
             }
         }
     }
+    /// Removes the viewer and the tagged players
+    pub fn delete_tag(game: &mut Game, id: TagSetID) {
+        let Some((_, tags_set)) = game.tags.tags.remove(&id) else {return};
+        let mut messages = Vec::new();
+        for tagged in tags_set.tagged {
+            messages.push(ChatMessageVariant::TagRemoved {player: tagged, tag: id.get_tag()});
+        }
+        for viewer in tags_set.viewers {
+            Self::send_to_client(game, viewer);
+            viewer.add_private_chat_messages(game, messages.clone());
+        }
+    }
     
     pub fn add_viewer(game: &mut Game, id: TagSetID, player: PlayerReference){
         let added = if let Some(val) = game.tags.tags.get_mut(&id){
@@ -176,7 +188,8 @@ pub enum TagSetID{
     WerewolfTracked(PlayerReference),
     RevolutionaryTarget(PlayerReference),
     UzumakiSpiral(PlayerReference),
-    ForfeitVote
+    ForfeitVote,
+    Follower(PlayerReference)
 }
 impl TagSetID{
     fn get_tag(&self)->Tag{
@@ -193,6 +206,7 @@ impl TagSetID{
             TagSetID::RevolutionaryTarget(_) => Tag::RevolutionaryTarget,
             TagSetID::UzumakiSpiral(_) => Tag::Spiraling,
             TagSetID::ForfeitVote => Tag::ForfeitVote,
+            TagSetID::Follower(_) => Tag::Follower,
         }
     }
 }
@@ -212,4 +226,5 @@ pub enum Tag{
     RevolutionaryTarget,
     Spiraling,
     ForfeitVote,
+    Follower,
 }

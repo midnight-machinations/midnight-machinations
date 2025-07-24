@@ -170,6 +170,12 @@
     "role/jester/0": {
         "midnight": true
     },
+    "role/seeker/0": {
+        "midnight": true
+    },
+    "role/seeker/1": {
+        "midnight": true
+    },
     "role/politician/0": {
         "midnight": false
     },

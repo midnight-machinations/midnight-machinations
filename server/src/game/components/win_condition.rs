@@ -1,3 +1,4 @@
+
 use serde::{Deserialize, Serialize};
 use crate::{game::{event::on_convert::OnConvert, game_conclusion::GameConclusion, player::PlayerReference, role_list::RoleAssignment, role_outline_reference::RoleOutlineReference, Game}, vec_map::VecMap, vec_set::{vec_set, VecSet}};
 
@@ -90,5 +91,8 @@ impl WinCondition{
     
     pub fn new_loyalist(resolution_state: GameConclusion) -> WinCondition {
         WinCondition::GameConclusionReached { win_if_any: vec_set![resolution_state] }
+    }
+    pub fn is_role_state(&self) -> bool {
+        matches!(self, Self::RoleStateWon)
     }
 }
