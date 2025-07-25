@@ -56,10 +56,12 @@ export function find(text: string): RegExp {
         /(iPhone|iPod|iPad)/i.test(navigator.userAgent) && 
         /OS ([2-9]_\d)|(1[0-5]_\d)|(16_[0-3])(_\d)? like Mac OS X/i.test(navigator.userAgent)
     ) { 
-        // This won't work if a keyword starts with a symbol.
+        // This won't work if a keyword starts with a symbol, or ends with a number.
         return RegExp(`\\b${regEscape(text)}(?!\\w)`, "gi");
     } else {
-        return RegExp(`(?<!\\w)${regEscape(text)}(?!\\w)`, "gi");
+        // \p{L} matches any letter in any language. It's a unicode thing apparently.
+        // Importantly, it doesn't match numbers, while \w does.
+        return RegExp(`(?<!\\p{L})${regEscape(text)}(?!\\p{L})`, "gi");
     }
 }
 
