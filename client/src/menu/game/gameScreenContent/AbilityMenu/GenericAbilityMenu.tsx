@@ -134,7 +134,7 @@ function MultipleControllersMenu(props: Readonly<{
     controllers: ListMap<ControllerID, SavedController>
 }>): ReactElement {
 
-    const disabled = !props.controllers.values().some((controller)=>!controller.availableAbilityData.grayedOut)
+    const disabled = !props.controllers.values().some((controller)=>!controller.grayedOut)
     const nightIcon = !props.controllers.keys().some(
         (id)=>!singleAbilityJsonData(controllerIdToLink(id))?.midnight
     );
@@ -199,7 +199,7 @@ function SingleAbilityMenu(props: Readonly<{
         } */}
         <SwitchSingleAbilityMenuType
             id={props.abilityId}
-            available={props.saveData.availableAbilityData.available}
+            available={props.saveData.availableSelections}
             selected={props.saveData.selection}
         />
     </>
@@ -214,7 +214,7 @@ function SingleAbilityMenu(props: Readonly<{
                 </div>
             }
             defaultOpen={true}
-            disabled={props.saveData.availableAbilityData.grayedOut}
+            disabled={props.saveData.grayedOut}
         >
             {inner}
         </DetailsSummary>
@@ -224,7 +224,7 @@ function SingleAbilityMenu(props: Readonly<{
             <div className="generic-ability-menu generic-ability-menu-tab-no-summary">
                 <span>
                     {
-                        props.saveData.availableAbilityData.grayedOut === true ?
+                        props.saveData.grayedOut === true ?
                         <Icon>close</Icon>
                         : null
                     }
@@ -233,7 +233,7 @@ function SingleAbilityMenu(props: Readonly<{
                 {nightIcon?<span>{translate("night.icon")}</span>:null}
             </div>
             {
-                props.saveData.availableAbilityData.grayedOut === false ?
+                props.saveData.grayedOut === false ?
                 <>{inner}</>
                 : null
             }

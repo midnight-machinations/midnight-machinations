@@ -1,5 +1,4 @@
 use super::builder::ControllerParametersBuilder;
-use serde::{Deserialize, Serialize};
 
 use crate::game::Game;
 use crate::vec_map::{vec_map, VecMap};
@@ -10,8 +9,7 @@ use super::*;
 
 
 
-#[derive(Default, Clone, Serialize, Deserialize, Debug, PartialEq, Eq)]
-#[serde(rename_all = "camelCase")]
+#[derive(Default, Clone, Debug, PartialEq, Eq)]
 pub struct ControllerParametersMap{
     controllers: VecMap<ControllerID, ControllerParameters>
 }

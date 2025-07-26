@@ -175,9 +175,11 @@ impl PhaseState {
 
                 let required_votes = game.nomination_votes_required();
                 game.add_message_to_chat_group(ChatGroup::All, ChatMessageVariant::TrialInformation { required_votes, trials_left });
-                
 
-                game.send_packet_to_all(ToClientPacket::PlayerVotes{votes_for_player: game.create_voted_player_map()});
+                // If the previous phase was nomination, let players keep their votes
+                if Modifiers::is_enabled(game, ModifierType::UnscheduledNominations) || trials_left == 3 {
+                    game.send_packet_to_all(ToClientPacket::PlayerVotes{votes_for_player: game.create_voted_player_map()});
+                }
             },
             PhaseState::Testimony { player_on_trial, .. } => {
                 game.add_message_to_chat_group(ChatGroup::All, 
