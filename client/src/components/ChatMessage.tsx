@@ -467,11 +467,18 @@ export function translateChatMessage(
         case "phaseChange":
             switch (message.phase.type) {
                 case "nomination":
-                    return translate("chatMessage.phaseChange.nomination",
-                        translate("phase."+message.phase.type),
-                        message.dayNumber,
-                        message.phase.trialsLeft
-                    );
+                    if (message.phase.trialsLeft === 1) {
+                        return translate("chatMessage.phaseChange.nomination.lastTrial",
+                            translate("phase."+message.phase.type),
+                            message.dayNumber,
+                        );
+                    } else {
+                        return translate("chatMessage.phaseChange.nomination",
+                            translate("phase."+message.phase.type),
+                            message.dayNumber,
+                            message.phase.trialsLeft
+                        );
+                    }
                 case "testimony":
                 case "judgement":
                 case "finalWords":
