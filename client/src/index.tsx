@@ -59,7 +59,7 @@ export function find(text: string): RegExp {
         // This won't work if a keyword starts with a symbol.
         return RegExp(`\\b${regEscape(text)}(?!\\w)`, "gi");
     } else {
-        return RegExp(`(?<!\\w)${regEscape(text)}(?!\\w)`, "gi");
+        return RegExp(`(?<![a-zA-Z])${regEscape(text)}(?![a-zA-Z])`, "gi");
     }
 }
 
