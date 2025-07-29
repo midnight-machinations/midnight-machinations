@@ -1,9 +1,11 @@
 use serde::{Deserialize, Serialize};
 
 use crate::game::{
-    ability_input::*, attack_power::DefensePower, components::{synopsis::Synopsis, tags::Tag, win_condition::WinCondition}, grave::Grave, phase::PhaseState, player::{PlayerIndex, PlayerReference}, role::{
-        auditor::AuditorResult, engineer::TrapState, kira::KiraResult, krampus::KrampusAbility, santa_claus::SantaListKind, spy::SpyBug, Role
-    }, role_list::RoleOutline, verdict::Verdict
+    ability_input::*, attack_power::DefensePower, components::{synopsis::Synopsis, tags::Tag,
+        win_condition::WinCondition}, grave::Grave, phase::PhaseState, player::{PlayerIndex, PlayerReference}, role::{
+            auditor::AuditorResult, engineer::TrapState, kira::KiraResult, krampus::KrampusAbility,
+            santa_claus::SantaListKind, spy::SpyBug, Role
+        }, role_list::RoleOutline, role_outline_reference::OutlineIndex, verdict::Verdict
 };
 
 
@@ -168,7 +170,7 @@ pub enum ChatMessageVariant {
     PsychicEvil{first: PlayerReference, second: PlayerReference},
     PsychicFailed,
     #[serde(rename_all = "camelCase")]
-    AuditorResult{role_outline: RoleOutline, result: AuditorResult},
+    AuditorResult{outline_index: OutlineIndex, role_outline: RoleOutline, result: AuditorResult},
     SnoopResult{townie: bool},
     PolymathSnoopResult{inno: bool},
     GossipResult{enemies: bool},

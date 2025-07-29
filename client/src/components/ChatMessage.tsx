@@ -701,7 +701,8 @@ export function translateChatMessage(
                 playerNames[message.player]
             );
         case "auditorResult":
-            return translate("chatMessage.auditorResult", 
+            return translate("chatMessage.auditorResult",
+                message.outlineIndex+1,
                 translateRoleOutline(message.roleOutline),
                 message.result.map((role)=>translate("role."+role+".name")).join(", ")
             );
@@ -1031,6 +1032,7 @@ export type ChatMessageVariant = {
     type: "psychicFailed"
 } | {
     type: "auditorResult",
+    outlineIndex: number,
     roleOutline: RoleOutline,
     result: AuditorResult,
 } | {
