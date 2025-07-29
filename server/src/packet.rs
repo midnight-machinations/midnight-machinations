@@ -126,7 +126,7 @@ pub enum ToClientPacket{
 
     #[serde(rename_all = "camelCase")]
     YourAllowedControllers{
-        save: VecMap<ControllerID, SavedController>
+        save: VecMap<ControllerID, SavedControllerPacket>
     },
 
     #[serde(rename_all = "camelCase")]

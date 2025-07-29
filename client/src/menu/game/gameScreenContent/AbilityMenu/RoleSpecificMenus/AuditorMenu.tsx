@@ -53,10 +53,10 @@ export default function AuditorMenu(props: Readonly<{
     if(
         singleAbilitySave !== null &&
         singleAbilitySave.selection.type === "twoRoleOutlineOption" &&
-        singleAbilitySave.availableAbilityData.available.type === "twoRoleOutlineOption"
+        singleAbilitySave.availableSelections.type === "twoRoleOutlineOption"
     ){
         newSelection = singleAbilitySave.selection.selection;
-        newAvailable = singleAbilitySave.availableAbilityData.available.selection;
+        newAvailable = singleAbilitySave.availableSelections.selection;
     } else {
         newSelection = undefined;
         newAvailable = undefined;

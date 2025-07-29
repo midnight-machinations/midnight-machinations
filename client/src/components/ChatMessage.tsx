@@ -35,7 +35,7 @@ const ChatElement = React.memo((
             let controller = new ListMap(playerState.savedControllers, (a,b)=>a.type===b.type)
                 .get({type: "forwardMessage", player: playerState.myIndex});
 
-            return controller!==null&&!controller.availableAbilityData.grayedOut;
+            return controller!==null&&!controller.grayedOut;
         },
         ["yourPlayerIndex", "yourAllowedControllers"]
     );

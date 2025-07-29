@@ -1,4 +1,4 @@
-use serde::{Deserialize, Serialize};
+use serde::Serialize;
 
 use crate::{
     game::{
@@ -18,7 +18,7 @@ use crate::{
 
 use super::*;
 
-#[derive(Default, Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
+#[derive(Default, Debug, Clone, PartialEq, Eq)]
 pub struct SavedControllersMap{
     pub(super) saved_controllers: VecMap<ControllerID, SavedController>,
 }
@@ -61,14 +61,39 @@ impl SavedControllersMap{
 
     pub fn on_phase_start(game: &mut Game, phase: PhaseType){
         Self::update_controllers_from_parameters(game);
-        for (_, saved_controller) in game.saved_controllers.saved_controllers.iter_mut(){
-            saved_controller.reset_on_phase_start(phase);
+        let mut should_reset = Vec::new();
+        for (controller_id, saved_controller) in game.saved_controllers.saved_controllers.iter(){
+            if let Some(PhaseStartCondition{ phase: reset_phase, condition }) = saved_controller.available_ability_data.reset_on_phase_start(){
+                if phase == reset_phase && condition(game) {
+                    should_reset.push(controller_id.clone());
+                }
+            }
+        }
+        for controller_id in should_reset {
+            if let Some(saved_controller) = game.saved_controllers.saved_controllers.get_mut(&controller_id) {
+                saved_controller.selection = saved_controller.available_ability_data.default_selection().clone();
+            }
         }
         Self::send_saved_controllers_to_clients(game);
     }
 
     pub fn on_tick(game: &mut Game){
         Self::update_controllers_from_parameters(game);
+    }
+
+    pub fn create_packet_data(&self) -> VecMap<ControllerID, SavedControllerPacket> {
+        self.saved_controllers.iter()
+            .map(|(id, saved_controller)| {
+                (
+                    id.clone(),
+                    SavedControllerPacket {
+                        selection: saved_controller.selection.clone(),
+                        available_selections: saved_controller.available_ability_data.available.clone(),
+                        grayed_out: saved_controller.available_ability_data.grayed_out(),
+                    }
+                )
+            })
+            .collect()
     }
 
 
@@ -248,15 +273,14 @@ impl SavedControllersMap{
     pub fn send_saved_controllers_to_clients(game: &Game){
         for player in PlayerReference::all_players(game){
             player.send_packet(game, ToClientPacket::YourAllowedControllers { 
-                save: game.saved_controllers.controllers_allowed_to_player(player).saved_controllers
+                save: game.saved_controllers.controllers_allowed_to_player(player).create_packet_data()
             });
         }
     }
 }
 
 
-#[derive(Clone, Serialize, Deserialize, Debug, PartialEq, Eq)]
-#[serde(rename_all = "camelCase")]
+#[derive(Clone, Debug, PartialEq, Eq)]
 pub struct SavedController{
     selection: AbilitySelection,
 
@@ -269,11 +293,12 @@ impl SavedController{
     pub fn selection(&self)->&AbilitySelection{
         &self.selection
     }
-    pub fn reset_on_phase_start(&mut self, phase: PhaseType){
-        if let Some(reset_phase) = self.available_ability_data.reset_on_phase_start(){
-            if phase == reset_phase{
-                self.selection = self.available_ability_data.default_selection().clone();
-            }
-        }
-    }
+}
+
+#[derive(Serialize, Debug, Clone)]
+#[serde(rename_all = "camelCase")]
+pub struct SavedControllerPacket {
+    selection: AbilitySelection,
+    available_selections: AvailableAbilitySelection,
+    grayed_out: bool,
 }
