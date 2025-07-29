@@ -865,6 +865,7 @@
     
     "phase.night": "Night",
     "phase.night:var.0": "Nighttime",
+    "phase.night:var.1": "N",
     "phase.night.subtitle": "Use your abilities to help your team.",
 
     "phase.recess": "Recess",
