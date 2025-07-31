@@ -873,6 +873,22 @@
             {"type": "doomsayerFailed"}
         ]
     },
+    "mercenary":{
+        "mainRoleSet": "neutral",
+        "roleSets": ["neutral"],
+        "armor": false,
+        "aura": null,
+        "maxCount": null,
+        "canWriteDeathNote": true,
+        "canBeConvertedTo": [],
+        "chatMessages":[
+            {"type": "mercenaryHits", "roles":["vigilante", "godfather", "witch"]},
+            {"type": "mercenaryHits", "roles":["informant", "arsonist"]},
+            {"type": "mercenaryResult", "hit":true},
+            {"type": "mercenaryResult", "hit":false},
+            {"type": "mercenaryYouAreAHit"}
+        ]
+    },
     "chronokaiser": {
         "mainRoleSet": "neutral",
         "roleSets": ["neutral"],

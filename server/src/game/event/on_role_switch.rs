@@ -24,5 +24,10 @@ impl OnRoleSwitch{
         DrunkAura::on_role_switch(game, self.player);
 
         SynopsisTracker::on_role_switch(game, self.player, self.old.role(), self.new.role());
+
+
+        for player in PlayerReference::all_players(game){
+            player.on_role_switch(game, self.player, self.old.clone(), self.new.clone());
+        }
     }
 }

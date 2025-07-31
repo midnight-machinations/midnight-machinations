@@ -173,6 +173,15 @@
     "role/politician/0": {
         "midnight": false
     },
+    "role/mercenary/0": {
+        "midnight": true
+    },
+    "role/mercenary/1": {
+        "midnight": true
+    },
+    "role/mercenary/2": {
+        "midnight": true
+    },
     "role/santaClaus/0": {
         "midnight": true
     },
