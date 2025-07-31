@@ -63,6 +63,7 @@ pub trait RoleStateImpl: Clone + std::fmt::Debug + Default + GetClientRoleState<
 
     fn on_phase_start(self, _game: &mut Game, _actor_ref: PlayerReference, _phase: PhaseType) {}
     fn on_role_creation(self, _game: &mut Game, _actor_ref: PlayerReference) {}
+    fn on_role_switch(self, _game: &mut Game, _actor_ref: PlayerReference, _player: PlayerReference, _new: RoleState, _old: RoleState) {}
     fn before_role_switch(self, _game: &mut Game, _actor_ref: PlayerReference, _player: PlayerReference, _new: RoleState, _old: RoleState) {}
     fn on_any_death(self, _game: &mut Game, _actor_ref: PlayerReference, _dead_player_ref: PlayerReference) {}
     fn on_grave_added(self, _game: &mut Game, _actor_ref: PlayerReference, _grave: GraveReference) {}
@@ -157,6 +158,7 @@ macros::roles! {
     Revolutionary : revolutionary,
     Politician : politician,
     Doomsayer : doomsayer,
+    Mercenary : mercenary,
     Wildcard : wild_card,
     TrueWildcard : true_wildcard,
     Martyr : martyr,
@@ -319,6 +321,11 @@ mod macros {
                 pub fn on_role_creation(self, game: &mut Game, actor_ref: PlayerReference){
                     match self {
                         $(Self::$name(role_struct) => role_struct.on_role_creation(game, actor_ref)),*
+                    }
+                }
+                pub fn on_role_switch(self, game: &mut Game, actor_ref: PlayerReference, player: PlayerReference, old: RoleState, new: RoleState){
+                    match self {
+                        $(Self::$name(role_struct) => role_struct.on_role_switch(game, actor_ref, player, old, new)),*
                     }
                 }
                 pub fn before_role_switch(self, game: &mut Game, actor_ref: PlayerReference, player: PlayerReference, old: RoleState, new: RoleState){

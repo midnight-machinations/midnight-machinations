@@ -733,8 +733,10 @@ export function translateChatMessage(
             return translate("chatMessage.ambusherCaught",
                 playerNames[message.ambusher]
             );
-        case "silenced":
-            return translate("chatMessage.silenced");
+        case "mercenaryHits":
+            return translate("chatMessage.mercenaryHits", roleListToString(message.roles));
+        case "mercenaryResult":
+            return translate("chatMessage.mercenaryResult."+(message.hit?"hit":"notHit"));
         case "mediumHauntStarted":
             return translate("chatMessage.mediumHauntStarted", playerNames[message.medium], playerNames[message.player]);
         case "youWerePossessed":
@@ -787,6 +789,7 @@ export function translateChatMessage(
                 translate("defense."+message.defense),
                 playerNames[message.playerWithVest]
             );
+        case "mercenaryYouAreAHit":
         case "deputyShotYou":
         case "mediumExists":
         case "youGuardedSomeone":
@@ -805,6 +808,7 @@ export function translateChatMessage(
         case "youArePoisoned":
         case "doomsayerFailed":
         case "doomsayerWon":
+        case "silenced":
         case "martyrFailed":
         case "martyrWon":
         case "targetsMessage":
@@ -1121,6 +1125,14 @@ export type ChatMessageVariant = {
     type: "doomsayerFailed"
 } | {
     type: "doomsayerWon"
+} | {
+    type: "mercenaryHits",
+    roles: Role[]
+} | {
+    type: "mercenaryResult",
+    hit: boolean
+} | {
+    type: "mercenaryYouAreAHit"
 } | {
     type: "kiraResult",
     result: {

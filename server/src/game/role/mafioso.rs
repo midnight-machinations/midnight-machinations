@@ -38,7 +38,7 @@ impl RoleStateImpl for Mafioso {
             .single_player_selection_typical(actor_ref, false, false)
             .night_typical(actor_ref)
             .add_grayed_out_condition(game.day_number() <= 1)
-            .build_map()  
+            .build_map()
     }
     fn convert_selection_to_visits(self, game: &Game, actor_ref: PlayerReference) -> Vec<Visit> {
         common_role::convert_controller_selection_to_visits(

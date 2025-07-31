@@ -320,7 +320,7 @@
 
     "role.polymath.name": "Polymath",
     "role.polymath.name:var.0": "Polymath",
-    "controllerId.role.polymath.0.name": "Ability Type",
+    "controllerId.role.polymath.0.name": "Choose Ability",
     "controllerId.role.polymath.0.integer.0": "None",
     "controllerId.role.polymath.0.integer.1": "Investigative",
     "controllerId.role.polymath.0.integer.2": "Protective",
@@ -472,6 +472,15 @@
     
     "role.doomsayer.name": "Doomsayer",
     "role.doomsayer.name:var.0": "Doomsayers",
+
+    "role.mercenary.name": "Mercenary",
+    "role.mercenary.name:var.0": "Mercenaries",
+    "role.mercenary.roleDataText": "\\0 bullets remaining",
+    "controllerId.role.mercenary.0.name": "Choose Ability",
+    "controllerId.role.mercenary.1.name": "Investigate",
+    "controllerId.role.mercenary.2.name": "Attack",
+    "controllerId.role.mercenary.0.integer.1": "Investigate",
+    "controllerId.role.mercenary.0.integer.2": "Attack",
 
     "role.chronokaiser.name": "Chronokaiser",
     "role.chronokaiser.name:var.0": "Chronokaisers",
@@ -1030,6 +1039,10 @@
     "chatMessage.phaseFastForwarded": "The phase has been fast forwarded.",
     "chatMessage.doomsayerFailed": "At least one of your guesses was incorrect or invalid.",
     "chatMessage.doomsayerWon": "Your guesses were correct. You win!",
+    "chatMessage.mercenaryHits": "Your hits are: \\0.",
+    "chatMessage.mercenaryResult.hit": "Your target is a hit.",
+    "chatMessage.mercenaryResult.notHit": "Your target is not a hit.",
+    "chatMessage.mercenaryYouAreAHit": "You are on a Mercenaries hit list.",
     "chatMessage.martyrFailed": "The martyr lives, and we endure for another day.",
     "chatMessage.martyrWon": "The messiah has been killed! May we all enter the kingdom of heaven.",
 
@@ -1781,6 +1794,12 @@
     "wiki.article.role.doomsayer.attributes":"* When you win, you leave town at the start of the next obituary\n* You have to guess the exact role of townies, but you only need to guess the faction of all other roles\n* You can't try to guess town investigative roles\n* When there are not enough players left for you to guess, you convert to a jester\n* You have an indirect, protection-piercing attack",
     "wiki.article.role.doomsayer.extra":"* Your three guesses must be three different players\n* If the players you guessed correctly don't die, you still win\n* You do not visit when you attack\n* You can't try to guess a martyr\n* If you are blocked, your ability does nothing",
     
+    "wiki.article.role.mercenary.reminder": "You are told a hit list of roles, if at least one player with each of those roles is dead, you win.",
+    "wiki.article.role.mercenary.guide": "- At the start of the game, you are told a hit list of X different roles (X = Total players ÷ 5 (round up)), You win if, for each role, there is a dead player with that role or there is no player with that role\n    - Each player on your hit list is told they are on a mercenaries hit list\n    - The role Mercenary can't be on your hit list\n    - For each role on your hit list, there is at least one player with that role\n    - If there are not enough roles available to fill your hit list, your hit list is smaller, filling with as many roles as possible up to X\n- Choose between Investigate or Attack\n    - Investigate: Choose a player to visit and learn if they have a role on your hit list\n    - Attack: Choose a player to visit and attack with a basic attack\n        - You can't choose to attack night 1\n        - You can only attack up to X times (X = Total players ÷ 5 (round up)), if you are roleblocked it doesn't use an ability charge",
+    "wiki.article.role.mercenary.abilities": "",
+    "wiki.article.role.mercenary.attributes": "",
+    "wiki.article.role.mercenary.extra": "",
+
     "wiki.article.role.chronokaiser.reminder": "Each day while you are alive, time speeds up by 60%. You win if you live to the end of the game.",
     "wiki.article.role.chronokaiser.guide": "- Each day while you are alive, time speeds up by 60%\n - Every discussion phase, the amount that you sped up the game is announced in chat\n - If you are alive at the end of the game, you win",
     "wiki.article.role.chronokaiser.abilities":"* You passively speed up the game by 60%\n- If you are alive at the end of the game, you win",

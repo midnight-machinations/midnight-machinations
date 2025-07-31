@@ -151,6 +151,11 @@ export type RoleState = {
 } | 
 Doomsayer 
 | {
+    type: "mercenary",
+    roles: Role[],
+    attacksRemaining: number,
+    won: boolean
+} | {
     type: "politician"
 } | {
     type: "santaClaus",
