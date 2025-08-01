@@ -377,8 +377,7 @@
         "canWriteDeathNote": false,
         "canBeConvertedTo": [],
         "chatMessages":[
-            {"type": "roleBlocked", "immune": true},
-            {"type": "roleBlocked", "immune": false}
+            {"type": "roleBlocked"}
         ]
     },
     "medium": {
@@ -635,8 +634,7 @@
         "canWriteDeathNote": false,
         "canBeConvertedTo": ["godfather"],
         "chatMessages":[
-            {"type": "roleBlocked","immune": true},
-            {"type": "roleBlocked","immune": false},
+            {"type": "roleBlocked"},
             {"type": "youSurvivedAttack"},
             {"type": "youWereGuarded"},
             {"type": "transported"},
@@ -654,8 +652,7 @@
         "canWriteDeathNote": false,
         "canBeConvertedTo": ["godfather"],
         "chatMessages":[
-            {"type": "roleBlocked", "immune": true},
-            {"type": "roleBlocked", "immune": false}
+            {"type": "roleBlocked"}
         ]
     },
     "blackmailer": {
@@ -739,7 +736,10 @@
         "maxCount": 1,
         "canWriteDeathNote": false,
         "canBeConvertedTo": ["godfather"],
-        "chatMessages":[]
+        "chatMessages":[
+            {"type": "yourConvertFailed"},
+            {"type": "roleBlocked"}
+        ]
     },
     "forger": {
         "mainRoleSet": "mafia",
@@ -1261,8 +1261,7 @@
             {"type": "wardenPlayersImprisoned", "players": [5,2,10]},
             {"type": "youAttackedSomeone"},
             {"type": "someoneSurvivedYourAttack"},
-            {"type": "roleBlocked", "immune": true},
-            {"type": "roleBlocked", "immune": false},
+            {"type": "roleBlocked"},
             {"type": "wardblocked"}
         ]
     },
