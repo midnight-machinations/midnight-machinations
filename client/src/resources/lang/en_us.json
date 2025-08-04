@@ -1474,18 +1474,24 @@
     "wiki.article.role.detective.abilities":"* Visit a player to learn if they're friends or enemies with the town",
     "wiki.article.role.detective.attributes":"* A suspicious aura makes the player with the aura register as suspicious to you\n* An innocent aura makes the player with the aura register as innocent to you",
     "wiki.article.role.detective.extra": "Most neutral roles like jester are usually friends with town.",
+    "wiki.article.role.detective.exampleAlibi":"Detective\nN1: @5 - friend\nN2: @2 - enemies",
+    "wiki.article.role.detective.exampleAlibi.description":"Here is an example of an alibi from a detective who, on night 1, saw that @5 is friends with town, and on night 2, found that @2 is enemies with town.",
 
     "wiki.article.role.lookout.reminder": "At night, select a player to find out who visits them.",
     "wiki.article.role.lookout.guide": "- At night, select a player to find out who visits them\n\n_For Example_\n- If you select @1 on the night they die, and @2 visited them then it's likely @2 killed them.\n\nYou should tell the town the information you get daily.",
     "wiki.article.role.lookout.abilities":"* Visit a player to find all other visitors to them",
     "wiki.article.role.lookout.attributes":"* You can't see yourself visit",
     "wiki.article.role.lookout.extra": "* A framer may end up impacting your results using appeared visits",
+    "wiki.article.role.lookout.exampleAlibi":"Lookout\nN1: @5 vb @1\nN2: @1 nv",
+    "wiki.article.role.lookout.exampleAlibi.description":"Here is an example of an alibi from a lookout who, on night 1, saw that @5 was visited by @1, and on night 2, found that @1 was not visited by anyone.",
 
     "wiki.article.role.spy.reminder": "At night, you are told who syndicate insiders visit, and what happens to your bug target.",
     "wiki.article.role.spy.guide": "- At night, select a player\n    - You are told if they recieve a message saying they are roleblocked, wardblocked, silenced, transported, possessed, or guarded from an attack\n- Each night you will passively learn information:\n    - You always learn who the syndicate insiders visited.",
     "wiki.article.role.spy.abilities":"* For each visit from a syndicate insider, you are told the target of that visits name\n* Visit a player to learn if they were told that they were transported, silenced, roleblocked, wardblocked, possessed, or guarded",
     "wiki.article.role.spy.attributes":"* Appeared visits can change your syndicate visits information\n* If you are blocked, you aren't told syndicate visits, or the bug information",
     "wiki.article.role.spy.extra": "* Your bug can be messed with by a hypnotist, if a hypnotist sends the player you bug a message, your bug catches that message\n- The syndicate visits count all syndicate insiders, even if they don't have a syndicate role\n- The cult count accounts for all alive cult insiders, even if they don't have a cult role",
+    "wiki.article.role.spy.exampleAlibi":"Spy\nN1:\nBug @8 - was roleblocked\nSyndicate Visited: @1, @8, @8\nN2:\nBug @13 [I was roleblocked]",
+    "wiki.article.role.spy.exampleAlibi.description":"Here is an example of an alibi from a spy who, on night 1, saw that @8 was roleblocked and the syndicate visited @1 and @8 twice, and on night 2, the spy themselves was roleblocked, so their ability did not work.",
 
     "wiki.article.role.tracker.reminder": "At night, select a player to find out who they visited.",
     "wiki.article.role.tracker.guide": "- At night select a player to find out who they visited\n\n_For example_\n- If you select @5 and they visited @10 on the night @10 died, @5 might have attacked @10\n\n You should tell the town the information you get daily.",
@@ -1498,6 +1504,8 @@
     "wiki.article.role.philosopher.abilities":"* Visit 2 players to learn if they are friends or enemies",
     "wiki.article.role.philosopher.attributes":"* If 2 players are friends they can win together\n* If 2 players are enemies they can't win together",
     "wiki.article.role.philosopher.extra": "* Players with a suspicious aura register as enemies with everyone\n* Players with an innocent aura register as friends with everyone\n- If both a suspicious aura and innocent aura are involved in your investigation, they will be enemies. A godfather and a player who is framed by a framer are enemies",
+    "wiki.article.role.philosopher.exampleAlibi":"Philosopher\nN1: @15 & @9 - friends\nN2: @11 & @6 - enemies",
+    "wiki.article.role.philosopher.exampleAlibi.description":"Here is an example of an alibi from a Philosopher who, on night 1, saw that @15 is friends with @9, and on night 2, found that @11 is enemies with town.",
 
     "wiki.article.role.psychic.reminder": "At night, select a player to be in your vision. On odd nights at least 1 of 3 players are evil. On even nights at least 1 of 2 players are good.",
     "wiki.article.role.psychic.guide": "- Each night, choose a player to receive a vision\n    - On even nights, the vision lists 2 players. At least one of them is a town loyalist\n    - On odd nights, the vision lists three players. At least one of them is not a town loyalist",
@@ -1538,6 +1546,8 @@
     "wiki.article.role.doctor.abilities":"* Visit a player to guard for the night",
     "wiki.article.role.doctor.attributes":"* If you visit yourself, you use the self guard charge, and you can't select yourself again",
     "wiki.article.role.doctor.extra":"",
+    "wiki.article.role.doctor.exampleAlibi":"Doctor\nN1: @12\nN2: @16 [guarded someone]",
+    "wiki.article.role.doctor.exampleAlibi.description":"Here is an example of an alibi from a Doctor who, on night 1, guarded @12, and on night 2, guarded @16, and @16 was attacked, so the doctor wrote that they got a message saying that their target was guarded from an attack.",
 
     "wiki.article.role.bodyguard.reminder": "Each night* select a player. All attacks to them are directed towards you, and you attack them back.",
     "wiki.article.role.bodyguard.guide": "Each night except the first, select a player\n    - If your target is attacked, you are attacked instead, and you attack the attacker back\n- You can choose to guard yourself instead up to once per game",
@@ -1592,6 +1602,8 @@
     "wiki.article.role.coxswain.abilities":"- None",
     "wiki.article.role.coxswain.attributes":"- You are immune to possession",
     "wiki.article.role.coxswain.extra":"- None",
+    "wiki.article.role.coxswain.exampleAlibi":"Coxswain\nN1: n/a\nN2: @2 (Detective)\n@2 said they got @5 as enemies with town\n @2 told me to say \"17253\".",
+    "wiki.article.role.coxswain.exampleAlibi.description":"Here is an example of an alibi from a Coxswain who, on night 2, used their ability to give @2, a player who claims to be detective, their ability back, and then talked to them at night and wrote some important ntoes from what @2 said.",
 
     "wiki.article.role.retributionist.guide": "- At night, Select a dead town role to possess them, forcing them to use their ability on a living player\n- You can only possess dead players who's grave has a town role on it\n- You can possess the same player up to 2 times",
     "wiki.article.role.retributionist.abilities":"- Visit 2 players\n    - The first player has their first visit changed to the second player you visit\n- You can only select certain players\n    - The first player you select must be a dead player with a town role on their grave\n    - The second player you select must be any living player",
@@ -1633,6 +1645,8 @@
     "wiki.article.role.marksman.abilities":"* Choose to mark up to 3 players\n* Select up to 3 players, if you have nobody marked, you can't camp anyone\n    - If a marked player visits any of your targets, you attack them",
     "wiki.article.role.marksman.attributes":"* You can't mark or camp to camp on night 1\n* If you kill a town loyalist, you can't mark or camp again\n* You have an indirect, basic attack",
     "wiki.article.role.marksman.extra":"* You can't mark or camp yourself\n- You only visit the players you camp, not the players you mark, even if you attack the marked players",
+    "wiki.article.role.marksman.exampleAlibi":"Marksman\nN1: n/a\nN2: [attacked someone with defense]\nMark:\n@8 @19 @4\nCamp:\n@7 @23",
+    "wiki.article.role.marksman.exampleAlibi.description":"Here is an example of an alibi from a Marksman who, on night 2, marked @8 @19 and @4, and camped @7 and @23. They also were told a message saying they attacked a player who had defense and survived.",
 
     "wiki.article.role.deputy.reminder": "Once per game, during the day, shoot someone. If you kill a town loyalist you leave town.",
     "wiki.article.role.deputy.guide":"- Once per game, you can shoot a player during the day\n- If you kill a townie, you instantly leave town\n- If you kill someone, everyone is told that a deputy shot someone\n- If the player you shoot survives your attack, only the player you attacked is told, nobody else is told\n- You can only shoot during discussion or nomination\n\nIf you attack someone and they survive it is likely that they are a role that is armored. Most roles that are armored are evil.",

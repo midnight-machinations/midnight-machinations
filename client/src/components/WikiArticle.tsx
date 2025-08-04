@@ -86,7 +86,7 @@ export default function WikiArticle(props: {
                         {"### "+translate("wiki.article.role.exampleAlibi")+"\n"}
                     </WikiStyledText>
                     {exampleAlibiDescription && <WikiStyledText>
-                        {exampleAlibiDescription}
+                        {replaceMentions(exampleAlibiDescription, DUMMY_NAMES)}
                     </WikiStyledText>}
                     <blockquote>
                         <WikiStyledText>{replaceMentions(exampleAlibi, DUMMY_NAMES)}</WikiStyledText>
