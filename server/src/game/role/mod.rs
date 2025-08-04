@@ -128,6 +128,7 @@ macros::roles! {
     Porter : porter,
     Coxswain : coxswain,
     Polymath : polymath,
+    Courtesan : courtesan,
 
     // Mafia
     Godfather : godfather,

@@ -47,6 +47,9 @@
     "role/escort/0": {
         "midnight": true
     },
+    "role/courtesan/0": {
+        "midnight": true
+    },
     "role/mayor/0": {
         "midnight": false
     },

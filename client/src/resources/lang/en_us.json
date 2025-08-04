@@ -293,6 +293,11 @@
     "role.escort.target": "Roleblock",
     "controllerId.role.escort.0.name": "Roleblock",
 
+    "role.courtesan.name": "Courtesan",
+    "role.courtesan.name:var.0": "Courtesans",
+    "role.courtesan.target": "Roleblock",
+    "controllerId.role.courtesan.0.name": "Roleblock",
+
     "role.medium.name": "Medium",
     "role.medium.name:var.0": "Mediums",
     "role.medium.name:var.1": "Small",
@@ -1586,10 +1591,16 @@
     "wiki.article.role.steward.extra":"You do not visit the roles you protect",
 
     "wiki.article.role.escort.reminder": "At night, select a player to roleblock them, stopping them from visiting anyone.",
-    "wiki.article.role.escort.guide": "- At night, select a player to roleblock them, stopping them from using their ability\n- Your target is told they were roleblocked\n\n_For example_\n- An escort selects the godfather, so the godfather can't kill anyone, and nobody dies\n\nYou should try to choose evil players, especially the ones with powerful abilities",
+    "wiki.article.role.escort.guide": "- At night, select a player to roleblock them, stopping them from using their ability\n- Your target is told they are roleblocked\n\n_For example_\n- An escort selects the godfather, so the godfather can't kill anyone, and nobody dies\n\nYou should try to choose evil players, especially the ones with powerful abilities",
     "wiki.article.role.escort.abilities":"* Visit a player to roleblock them",
     "wiki.article.role.escort.attributes":"* You can't be roleblocked\n* Your target is told when they are roleblocked, even if they are immune to being roleblocked",
     "wiki.article.role.escort.extra":"* When someone is roleblocked, their visits are wiped, so they don't visit anyone",
+    
+    "wiki.article.role.courtesan.reminder": "At night, select two players to roleblock them, stopping them from visiting anyone.",
+    "wiki.article.role.courtesan.guide": "- At night, select two players to roleblock them, stopping them from using their ability\n- Your targets are told they are roleblocked.",
+    "wiki.article.role.courtesan.abilities":"* Visit two players to roleblock them",
+    "wiki.article.role.courtesan.attributes":"* You can't be roleblocked\n* Your targets are told when they are roleblocked, even if they are immune to being roleblocked",
+    "wiki.article.role.courtesan.extra":"* When someone is roleblocked, their visits are wiped, so they don't visit anyone",
 
     "wiki.article.role.medium.reminder": "At night or obituary, speak with the dead. After you are dead, you can bring the dead to speak with a living player by haunting them.",
     "wiki.article.role.medium.guide": "- You can message the dead and other mediums at night or obituary\n- After you die, you can choose to haunt a living player X times (X = Total players ÷ 5 (round up))\n    - The player you haunt will be able to speak with the dead during night and obituary\n\n On the first night, you should attempt to contact any other possible mediums to learn if there are any. You should try to find information from other players and tell the town what dead players think about the game.",

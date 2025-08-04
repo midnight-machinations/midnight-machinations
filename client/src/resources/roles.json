@@ -380,6 +380,18 @@
             {"type": "roleBlocked"}
         ]
     },
+    "courtesan": {
+        "mainRoleSet": "town",
+        "roleSets": ["town", "townCommon", "townSupport"],
+        "armor": false,
+        "aura": null,
+        "maxCount": null,
+        "canWriteDeathNote": false,
+        "canBeConvertedTo": [],
+        "chatMessages":[
+            {"type": "roleBlocked"}
+        ]
+    },
     "medium": {
         "mainRoleSet": "town",
         "roleSets": ["town", "townCommon", "townSupport"],

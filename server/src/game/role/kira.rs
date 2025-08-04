@@ -25,7 +25,7 @@ pub enum KiraGuess{
     Detective, Lookout, Tracker, Psychic, Philosopher, Gossip, Auditor, Snoop, Spy, TallyClerk,
     Doctor, Bodyguard, Cop, Bouncer, Engineer, Armorsmith, Steward,
     Vigilante, Veteran, Marksman, Deputy, Rabblerouser,
-    Escort, Medium, Retributionist, Reporter, Mayor, Transporter, Porter, Coxswain, Polymath
+    Escort, Medium, Retributionist, Reporter, Mayor, Transporter, Porter, Coxswain, Polymath, Courtesan
 }
 impl KiraGuess{
     fn convert_to_guess(role: Role)->Option<KiraGuess>{
@@ -59,6 +59,7 @@ impl KiraGuess{
             Role::Rabblerouser => Some(Self::Rabblerouser),
 
             Role::Escort => Some(Self::Escort),
+            Role::Courtesan => Some(Self::Courtesan),
             Role::Medium => Some(Self::Medium),
             Role::Retributionist => Some(Self::Retributionist),
             Role::Reporter => Some(Self::Reporter),
