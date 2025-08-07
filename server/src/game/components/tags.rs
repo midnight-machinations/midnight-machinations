@@ -27,7 +27,8 @@ impl Tags{
             }
         }
     }
-    pub fn remove_tag(game: &mut Game, id: TagSetID, tagged_player: PlayerReference){
+    /// Returns true if the tag existed before calling this.
+    pub fn remove_tag(game: &mut Game, id: TagSetID, tagged_player: PlayerReference) -> bool {
         let removed = if let Some(val) = game.tags.tags.get_mut(&id){
             val.remove_tag(tagged_player).is_some()
         }else{
@@ -42,6 +43,7 @@ impl Tags{
                 }
             }
         }
+        removed
     }
     
     pub fn add_viewer(game: &mut Game, id: TagSetID, player: PlayerReference){

@@ -801,6 +801,7 @@ export function translateChatMessage(
         case "yourConvertFailed":
         case "cultConvertsNext":
         case "cultKillsNext":
+        case "revolutionaryRefreshFailed":
         case "someoneSurvivedYourAttack":
         case "transported":
         case "targetIsPossessionImmune":
@@ -962,6 +963,8 @@ export type ChatMessageVariant = {
     type: "cultConvertsNext"
 } | {
     type: "cultKillsNext"
+} |{
+    type: "revolutionaryRefreshFailed"
 } | {
     type: "mediumHauntStarted",
     medium: PlayerIndex,
