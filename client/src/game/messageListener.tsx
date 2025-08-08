@@ -19,7 +19,6 @@ import AudioController from "../menu/AudioController";
 import NightMessagePopup from "../components/NightMessagePopup";
 import PlayMenu from "../menu/main/PlayMenu";
 import StartMenu from "../menu/main/StartMenu";
-import { defaultAlibi } from "../menu/game/gameScreenContent/WillMenu";
 import ListMap from "../ListMap";
 import { sortControllerIdCompare } from "./abilityInput";
 
@@ -411,33 +410,9 @@ export default function messageListener(packet: ToClientPacket){
                 GAME_MANAGER.state.players = [...GAME_MANAGER.state.players];
             }
         break;
-        case "yourWill":
-            if(GAME_MANAGER.state.stateType === "game" && GAME_MANAGER.state.clientState.type === "player"){
-                GAME_MANAGER.state.clientState.will = packet.will;
-
-                if(GAME_MANAGER.state.clientState.will === ""){
-                    GAME_MANAGER.sendSaveWillPacket(defaultAlibi());
-                }
-            }
-        break;
         case "yourNotes":
             if(GAME_MANAGER.state.stateType === "game" && GAME_MANAGER.state.clientState.type === "player"){
                 GAME_MANAGER.state.clientState.notes = packet.notes;
-                
-                // old default notes
-                // if(GAME_MANAGER.state.clientState.notes.length === 0){
-                //     const myIndex = GAME_MANAGER.state.clientState.myIndex;
-                //     const myRoleKey = `role.${GAME_MANAGER.state.clientState.roleState.type}.name`;
-
-                //     GAME_MANAGER.sendSaveNotesPacket([
-                //         "Claims\n" + 
-                //         GAME_MANAGER.state.players
-                //             .map(player => 
-                //                 `@${player.index + 1} - ${player.index === myIndex ? translate(myRoleKey) : ''}\n`
-                //             )
-                //             .join('')
-                //     ]);
-                // }
             }
         break;
         case "yourCrossedOutOutlines":

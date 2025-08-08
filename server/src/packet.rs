@@ -133,7 +133,6 @@ pub enum ToClientPacket{
     YourRoleLabels{role_labels: VecMap<PlayerIndex, Role>},
     #[serde(rename_all = "camelCase")]
     YourPlayerTags{player_tags: VecMap<PlayerReference, Vec1<Tag>>},
-    YourWill{will: String},
     YourNotes{notes: Vec<String>},
     #[serde(rename_all = "camelCase")]
     YourCrossedOutOutlines{crossed_out_outlines: Vec<u8>},
@@ -223,7 +222,6 @@ pub enum ToServerPacket{
     #[serde(rename_all = "camelCase")]
     Judgement{verdict: Verdict},
 
-    SaveWill{will: String},
     SaveNotes{notes: Vec<String>},
     #[serde(rename_all = "camelCase")]
     SaveCrossedOutOutlines{crossed_out_outlines: Vec<u8>},

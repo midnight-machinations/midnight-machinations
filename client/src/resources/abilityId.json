@@ -272,25 +272,39 @@
     "syndicateBackupAttack": {
         "midnight": true
     },
+    "forwardMessage": {
+        "midnight": false,
+        "visible": false
+    },
     "nominate": {
         "midnight": false
     },
     "chat": {
-        "midnight": false
+        "midnight": false,
+        "visible": false
     },
     "chatIsBlock": {
-        "midnight": false
+        "midnight": false,
+        "visible": false
     },
     "sendChat":{
-        "midnight": false
+        "midnight": false,
+        "visible": false
     },
     "whisper": {
-        "midnight": false
+        "midnight": false,
+        "visible": false
     },
     "whisperToPlayer": {
-        "midnight": false
+        "midnight": false,
+        "visible": false
     },
     "sendWhisper":{
-        "midnight": false
+        "midnight": false,
+        "visible": false
+    },
+    "alibi": {
+        "midnight": false,
+        "visible": false
     }
 }

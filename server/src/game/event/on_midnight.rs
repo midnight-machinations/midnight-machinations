@@ -159,7 +159,7 @@ impl PlayerMidnightVariables {
 
             grave_role: None,
             grave_killers: Vec::new(),
-            grave_will: player_ref.will(game).clone(),
+            grave_will: player_ref.alibi(game).to_owned(),
             grave_death_notes: Vec::new(),
             guarded_players: Vec::new(),
         }

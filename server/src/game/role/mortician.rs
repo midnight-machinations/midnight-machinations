@@ -92,7 +92,7 @@ impl RoleStateImpl for Mortician {
             actor_ref.add_private_chat_message(game, ChatMessageVariant::PlayerRoleAndAlibi{
                 player: grave_ref.deref(game).player,
                 role: grave_ref.deref(game).player.role(game),
-                will: grave_ref.deref(game).player.will(game).to_string(),
+                will: grave_ref.deref(game).player.alibi(game).to_string(),
             });
             self.cremations_remaining = self.cremations_remaining.saturating_sub(1);
 

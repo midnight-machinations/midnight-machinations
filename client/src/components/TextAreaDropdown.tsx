@@ -27,6 +27,11 @@ export function TextDropdownArea(props: Readonly<{
     }, [props.savedText])
 
     const unsaved = useMemo(() => {
+        if(field==="bruh"){
+            console.log(props.savedText);
+            console.log(field);
+            console.log(props.savedText !== field);
+        }
         return props.savedText !== field
     }, [field, props.savedText]);
 

@@ -105,9 +105,6 @@ impl PlayerReference{
             ToClientPacket::YourAllowedControllers { 
                 save: game.saved_controllers.controllers_allowed_to_player(*self).all_controllers().clone(),
             },
-            ToClientPacket::YourWill{
-                will: self.will(game).clone()
-            },
             ToClientPacket::YourNotes{
                 notes: self.notes(game).clone()
             },

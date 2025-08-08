@@ -1,10 +1,12 @@
-import React, { ReactElement, useMemo } from "react";
+import React, { ReactElement, useEffect, useMemo } from "react";
 import translate from "../../../game/lang";
 import GAME_MANAGER from "../../../index";
 import { ContentMenu, ContentTab } from "../GameScreen";
 import { usePlayerState } from "../../../components/useHooks";
 import { getSingleRoleJsonData } from "../../../game/roleState.d";
 import { TextDropdownArea } from "../../../components/TextAreaDropdown";
+import ListMap from "../../../ListMap";
+import { controllerIdToLink } from "../../../game/abilityInput";
 
 export function defaultAlibi(): string {
     return DEFAULT_ALIBI;
@@ -12,6 +14,10 @@ export function defaultAlibi(): string {
 const DEFAULT_ALIBI = "ROLE\nNight 1: \nNight 2:";
 
 export default function WillMenu(): ReactElement {
+    const playerIndex = usePlayerState(
+        playerState => playerState.myIndex
+    )!;
+
     const cantChat = usePlayerState(
         playerState => playerState.sendChatGroups.length === 0,
         ["yourSendChatGroups"]
@@ -22,10 +28,18 @@ export default function WillMenu(): ReactElement {
         ["yourRoleState"]
     )!;
 
-    const alibi = usePlayerState(
-        playerState => playerState.will,
-        ["yourWill"]
+    const savedAbilities = usePlayerState(
+        playerState => playerState.savedControllers,
+        ["yourAllowedControllers"]
     )!;
+    const alibiSelection = new ListMap(savedAbilities, (k1, k2)=>controllerIdToLink(k1)===controllerIdToLink(k2)).get({type: "alibi", player: playerIndex});
+    const alibi = (alibiSelection?.selection.type === "string")?alibiSelection.selection.selection:"";
+    useEffect(()=>{
+        if(alibi===""){
+            GAME_MANAGER.sendSaveWillPacket("");
+        }
+    }, [alibi])
+
     const notes = usePlayerState(
         playerState => playerState.notes,
         ["yourNotes"]

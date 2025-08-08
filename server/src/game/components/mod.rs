@@ -23,5 +23,6 @@ pub mod guard;
 pub mod fragile_vest;
 pub mod transport;
 pub mod win_condition;
+pub mod alibi;
 
 pub mod player_component;

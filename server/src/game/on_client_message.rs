@@ -140,9 +140,6 @@ impl Game {
                 
                 sender_player_ref.set_verdict(self, verdict);
             },
-            ToServerPacket::SaveWill { will } => {
-                sender_player_ref.set_will(self, will);
-            },
             ToServerPacket::SaveNotes { notes } => {
                 sender_player_ref.set_notes(self, notes);
             },

@@ -9,7 +9,8 @@ import { ChatMessage } from "../components/ChatMessage";
 
 export type AbilityJsonData = Partial<Record<ControllerIDLink, SingleAbilityJsonData>>;
 export type SingleAbilityJsonData = {
-    midnight: boolean,
+    midnight?: boolean,
+    visible?: boolean,
 }
 
 export function allAbilitiesJsonData(): AbilityJsonData {
@@ -47,6 +48,9 @@ export type ControllerID = {
     player: PlayerIndex,
     role: Role,
     id: RoleControllerID,
+} | {
+    type: "alibi",
+    player: PlayerIndex,
 } | {
     type: "nominate",
     player: PlayerIndex,

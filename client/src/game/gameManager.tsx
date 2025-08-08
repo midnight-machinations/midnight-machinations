@@ -13,6 +13,7 @@ import { createGameState, createLobbyState } from "./gameState";
 import { deleteReconnectData } from "./localStorage";
 import AudioController from "../menu/AudioController";
 import ListMap from "../ListMap";
+import { defaultAlibi } from "../menu/game/gameScreenContent/WillMenu";
 
 export function createGameManager(): GameManager {
 
@@ -369,9 +370,27 @@ export function createGameManager(): GameManager {
         },
 
         sendSaveWillPacket(will) {
-            this.server.sendPacket({
-                type: "saveWill",
-                will: will
+            if(will === ""){
+                will = defaultAlibi();
+            }
+
+            let player = undefined;
+            // if(player===undefined){
+                if(this.state.stateType==="game" && this.state.clientState.type === "player"){
+                    player = this.state.clientState.myIndex;
+                }
+            // }
+            if(player===undefined){return}
+
+            this.sendAbilityInput({
+                id: {
+                    type: "alibi",
+                    player: player
+                }, 
+                selection: {
+                    type: "string",
+                    selection: will
+                }
             });
         },
         sendSaveNotesPacket(notes) {

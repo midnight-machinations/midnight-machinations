@@ -22,6 +22,8 @@ pub enum ControllerID{
     WhisperToPlayer{player: PlayerReference},
     SendWhisper{player: PlayerReference},
 
+    Alibi{player: PlayerReference},
+
     #[serde(rename_all = "camelCase")]
     Role{
         player: PlayerReference,
@@ -90,6 +92,7 @@ impl ControllerID{
         !matches!(self, 
             ControllerID::Nominate { .. } | 
             ControllerID::ForwardMessage { .. } |
+            ControllerID::Alibi { .. } |
             ControllerID::Chat { .. } |
             ControllerID::ChatIsBlock { .. } |
             ControllerID::SendChat { .. } |

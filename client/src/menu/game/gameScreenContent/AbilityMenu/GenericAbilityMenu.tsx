@@ -90,18 +90,7 @@ function translateGroupName(id: ControllerID): string {
 
 /// True if this controller should be in this menu
 function showThisController(id: ControllerID): boolean {
-    switch(id.type){
-        case "forwardMessage":
-        case "chat":
-        case "chatIsBlock":
-        case "sendChat":
-        case "whisper":
-        case "whisperToPlayer":
-        case "sendWhisper":
-            return false
-        default:
-            return true
-    }
+    return singleAbilityJsonData(controllerIdToLink(id))?.visible??true;
 }
 
 export default function GenericAbilityMenu(): ReactElement {

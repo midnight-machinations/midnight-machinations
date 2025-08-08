@@ -106,7 +106,6 @@ export type PlayerGameState = {
     
     roleState: RoleState,
 
-    will: string,
     notes: string[],
     crossedOutOutlines: number[],
     chatFilter: ChatFilter,

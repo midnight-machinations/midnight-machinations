@@ -97,7 +97,7 @@ impl RoleStateImpl for Counterfeiter {
                         actor_ref.push_night_message(midnight_variables, ChatMessageVariant::PlayerRoleAndAlibi{
                             player: forged_ref,
                             role: forged_ref.role(game),
-                            will: forged_ref.will(game).to_string(),
+                            will: forged_ref.alibi(game).to_string(),
                         });
                     }
                 }

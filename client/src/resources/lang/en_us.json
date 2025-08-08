@@ -737,6 +737,7 @@
     "messageSender.livingToDead.icon": "🔮",
 
     "controllerId.nominate.name": "Nominate",
+    "controllerId.alibi.name": "Alibi",
     "controllerId.chat.name": "Chat",
     "controllerId.chatIsBlock.name": "Chat is Block",
     "controllerId.sendChat.name": "Send Chat",

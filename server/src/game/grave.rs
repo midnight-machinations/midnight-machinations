@@ -106,7 +106,7 @@ impl Grave{
             information: GraveInformation::Normal{
                 role: player_ref.role(game), 
                 death_cause: GraveDeathCause::Execution, 
-                will: player_ref.will(game).clone(), 
+                will: player_ref.alibi(game).to_owned(), 
                 death_notes: vec![]
             }
         }
@@ -121,7 +121,7 @@ impl Grave{
                 role: player_ref.role(game), 
                 death_cause: GraveDeathCause::Killers(vec![GraveKiller::Suicide]), 
                 death_notes: vec![],
-                will: player_ref.will(game).clone(), 
+                will: player_ref.alibi(game).to_owned(), 
 
             }
         }
@@ -135,7 +135,7 @@ impl Grave{
             information: GraveInformation::Normal { 
                 role: player_ref.role(game), 
                 death_cause: GraveDeathCause::LeftTown, 
-                will: player_ref.will(game).clone(), 
+                will: player_ref.alibi(game).to_owned(), 
                 death_notes: vec![]
             }
         }
@@ -149,7 +149,7 @@ impl Grave{
             information: GraveInformation::Normal { 
                 role: player_ref.role(game),
                 death_cause: GraveDeathCause::BrokenHeart, 
-                will: player_ref.will(game).clone(),
+                will: player_ref.alibi(game).to_owned(),
                 death_notes: vec![]
             }
         }
