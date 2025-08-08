@@ -393,17 +393,89 @@ export function createGameManager(): GameManager {
             });
         },
         sendSendChatMessagePacket(text, block) {
-            this.server.sendPacket({
-                type: "sendChatMessage",
-                text: text,
-                block: block
+            let player = undefined;
+            // if(player===undefined){
+                if(this.state.stateType==="game" && this.state.clientState.type === "player"){
+                    player = this.state.clientState.myIndex;
+                }
+            // }
+            if(player===undefined){return}
+
+            this.sendAbilityInput({
+                id: {
+                    type: "chatIsBlock",
+                    player: player
+                }, 
+                selection: {
+                    type: "boolean",
+                    selection: block
+                }
+            });
+
+            this.sendAbilityInput({
+                id: {
+                    type: "chat",
+                    player: player
+                }, 
+                selection: {
+                    type: "string",
+                    selection: text
+                }
+            });
+
+            
+            this.sendAbilityInput({
+                id: {
+                    type: "sendChat",
+                    player: player
+                }, 
+                selection: {
+                    type: "unit",
+                    selection: null
+                }
             });
         },
-        sendSendWhisperPacket(playerIndex, text) {
-            this.server.sendPacket({
-                type: "sendWhisper",
-                playerIndex: playerIndex,
-                text: text
+        sendSendWhisperPacket(whisperToPlayer, text) {
+            let player = undefined;
+            // if(player===undefined){
+                if(this.state.stateType==="game" && this.state.clientState.type === "player"){
+                    player = this.state.clientState.myIndex;
+                }
+            // }
+            if(player===undefined){return}
+
+            this.sendAbilityInput({
+                id: {
+                    type: "whisperToPlayer",
+                    player: player
+                }, 
+                selection: {
+                    type: "playerList",
+                    selection: [whisperToPlayer]
+                }
+            });
+
+            this.sendAbilityInput({
+                id: {
+                    type: "whisper",
+                    player: player
+                }, 
+                selection: {
+                    type: "string",
+                    selection: text
+                }
+            });
+
+            
+            this.sendAbilityInput({
+                id: {
+                    type: "sendWhisper",
+                    player: player
+                }, 
+                selection: {
+                    type: "unit",
+                    selection: null
+                }
             });
         },
         sendEnabledRolesPacket(roles) {

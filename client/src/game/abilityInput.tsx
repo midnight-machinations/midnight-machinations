@@ -51,6 +51,24 @@ export type ControllerID = {
     type: "nominate",
     player: PlayerIndex,
 } | {
+    type: "chat",
+    player: PlayerIndex,
+} | {
+    type: "chatIsBlock",
+    player: PlayerIndex,
+} | {
+    type: "sendChat",
+    player: PlayerIndex,
+} | {
+    type: "whisper",
+    player: PlayerIndex,
+} | {
+    type: "whisperToPlayer",
+    player: PlayerIndex,
+} | {
+    type: "sendWhisper",
+    player: PlayerIndex,
+} | {
     type: "forfeitVote",
     player: PlayerIndex,
 } | {

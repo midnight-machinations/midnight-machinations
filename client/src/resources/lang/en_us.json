@@ -737,6 +737,12 @@
     "messageSender.livingToDead.icon": "🔮",
 
     "controllerId.nominate.name": "Nominate",
+    "controllerId.chat.name": "Chat",
+    "controllerId.chatIsBlock.name": "Chat is Block",
+    "controllerId.sendChat.name": "Send Chat",
+    "controllerId.whisper.name": "Whisper",
+    "controllerId.whisperToPlayer.name": "Whisper To Player",
+    "controllerId.sendWhisper.name": "Send Whisper",
     "controllerId.forfeitVote.name": "Forfeit Nomination Vote",
     "controllerId.syndicateGunItemShoot.name": "Shoot Gun",
     "controllerId.syndicateGunItemGive.name": "Give Gun",

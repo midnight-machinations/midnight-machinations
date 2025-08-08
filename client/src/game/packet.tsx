@@ -233,14 +233,6 @@ export type ToServerPacket = {
     type: "judgement", 
     verdict: Verdict
 } | {
-    type: "sendChatMessage", 
-    text: string,
-    block: boolean,
-} | {
-    type: "sendWhisper", 
-    playerIndex: PlayerIndex, 
-    text: string
-} | {
     type: "saveWill", 
     will: string
 } | {

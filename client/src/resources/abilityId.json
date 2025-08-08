@@ -271,5 +271,26 @@
     },
     "syndicateBackupAttack": {
         "midnight": true
+    },
+    "nominate": {
+        "midnight": false
+    },
+    "chat": {
+        "midnight": false
+    },
+    "chatIsBlock": {
+        "midnight": false
+    },
+    "sendChat":{
+        "midnight": false
+    },
+    "whisper": {
+        "midnight": false
+    },
+    "whisperToPlayer": {
+        "midnight": false
+    },
+    "sendWhisper":{
+        "midnight": false
     }
 }

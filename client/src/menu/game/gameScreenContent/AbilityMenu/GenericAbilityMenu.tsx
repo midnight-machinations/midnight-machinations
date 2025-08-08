@@ -38,7 +38,12 @@ import PlayerListSelectionMenu from "./AbilitySelectionTypes/PlayerListSelection
 import IntegerSelectionMenu from "./AbilitySelectionTypes/IntegerSelectionMenu";
 import BooleanSelectionMenu from "./AbilitySelectionTypes/BooleanSelectionMenu";
 
-type GroupName = `${PlayerIndex}/${Role}` | "syndicateGunItem" | "backup" | ControllerID["type"];
+type GroupName = `${PlayerIndex}/${Role}` | 
+    "syndicateGunItem" | 
+    "backup" | 
+    "chat" |
+    "whisper" |
+    ControllerID["type"];
 
 type ControllerGroupsMap = ListMap<
     GroupName, 
@@ -55,6 +60,14 @@ function getGroupNameFromControllerID(id: ControllerID): GroupName {
         case "syndicateBackupAttack":
         case "syndicateChooseBackup":
             return "backup";
+        case "chat":
+        case "chatIsBlock":
+        case "sendChat":
+            return "chat";
+        case "whisper":
+        case "whisperToPlayer":
+        case "sendWhisper":
+            return "whisper";
         default:
             return id.type;
     }
@@ -79,6 +92,12 @@ function translateGroupName(id: ControllerID): string {
 function showThisController(id: ControllerID): boolean {
     switch(id.type){
         case "forwardMessage":
+        case "chat":
+        case "chatIsBlock":
+        case "sendChat":
+        case "whisper":
+        case "whisperToPlayer":
+        case "sendWhisper":
             return false
         default:
             return true

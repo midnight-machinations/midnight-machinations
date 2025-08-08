@@ -223,9 +223,6 @@ pub enum ToServerPacket{
     #[serde(rename_all = "camelCase")]
     Judgement{verdict: Verdict},
 
-    SendChatMessage{text: String, block: bool},
-    #[serde(rename_all = "camelCase")]
-    SendWhisper{player_index: PlayerIndex, text: String},
     SaveWill{will: String},
     SaveNotes{notes: Vec<String>},
     #[serde(rename_all = "camelCase")]

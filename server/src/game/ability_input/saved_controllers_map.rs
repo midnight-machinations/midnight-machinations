@@ -2,11 +2,8 @@ use serde::{Deserialize, Serialize};
 
 use crate::{
     game::{
-        chat::ChatMessageVariant, components::{
-            forward_messages::ForwardMessages, insider_group::InsiderGroupID,
-            mafia::Mafia, pitchfork::Pitchfork, syndicate_gun_item::SyndicateGunItem,
-            forfeit_vote::ForfeitVote,
-            nomination_controller::NominationController,
+        chat::{ChatController, ChatMessageVariant}, components::{
+            forfeit_vote::ForfeitVote, forward_messages::ForwardMessages, insider_group::InsiderGroupID, mafia::Mafia, nomination_controller::NominationController, pitchfork::Pitchfork, syndicate_gun_item::SyndicateGunItem
         }, 
         event::{
             on_controller_selection_changed::OnControllerSelectionChanged,
@@ -48,7 +45,7 @@ impl SavedControllersMap{
             return false;
         }
 
-        if id.should_send_chat_message() {
+        if id.should_send_selection_chat_message() {
             Self::send_selection_message(game, actor, id, incoming_selection);
         }
         
@@ -86,7 +83,8 @@ impl SavedControllersMap{
             Mafia::controller_parameters_map(game),
             ForfeitVote::controller_parameters_map(game),
             Pitchfork::controller_parameters_map(game),
-            ForwardMessages::controller_parameters_map(game)
+            ForwardMessages::controller_parameters_map(game),
+            ChatController::controller_parameters_map(game)
         ]);
 
         if *current_controller_parameters != new_controller_parameters_map {
