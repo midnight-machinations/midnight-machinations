@@ -19,7 +19,7 @@ impl Alibi{
 impl PlayerReference{
     pub fn alibi<'a>(&self, game: &'a Game) -> &'a str {
         let Some(StringSelection(string)) = 
-            ControllerID::Alibi { player: *self }.get_string_selection(game) else {return &""};
+            ControllerID::Alibi { player: *self }.get_string_selection(game) else {return ""};
         string
     }
 }
