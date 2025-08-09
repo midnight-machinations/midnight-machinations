@@ -1230,7 +1230,7 @@
     "wiki.article.standard.silenced.title:var.1": "Silencer",
     "wiki.article.standard.silenced.title:var.2": "Silencing",
     "wiki.article.standard.silenced.title:var.3": "Silenced",
-    "wiki.article.standard.silenced.text": "A player who is silenced can not talk or otherwise communicate during that day.\n- They can't nominate during the nomination phase because they are forced to forfeit their vote\n- They can still vote during the judgement phase\n- If the silenced player is put on trial, they still can't talk\n- If the players are talking out loud, silenced players should not speak or use any type of communication, including signals or facial expressions. The rule is, of a player can't use chat, they are not allowed to communicate\n- Roles like deputy mayor and jailor can still use their abilities normally during the day even if silenced\n\n A Blackmailer can silence a player each night.",
+    "wiki.article.standard.silenced.text": "A player who is silenced can not talk or otherwise communicate during that day.\n- They can still vote during the judgement phase\n- If the silenced player is put on trial, they still can't talk\n- If the players are talking out loud, silenced players should not speak or use any type of communication, including signals or facial expressions. The rule is, of a player can't use chat, they are not allowed to communicate\n- Roles like deputy mayor and jailor can still use their abilities normally during the day even if silenced\n\n A Blackmailer can silence a player each night.",
     "wiki.article.standard.friends.title": "Friends",
     "wiki.article.standard.friends.title:var.0": "Friend",
     "wiki.article.standard.friends.text": "If 2 players can win the same game, they are friends.\n - A jester can win in the same game as a detective, so they are friends\n- An Apostle can win in the same game as a disciple so they are friends\n- A godfather can't win in the same game as a detective, they both need the other to lose, so they are enemies\n- A marionette is friends with a puppeteer and enemies with a medium\n The philosopher, detective, and gossip, can use their abilities to see if people are friends or enemies, although auras can effect these results.\n\n A player can also be friends with conclusions. If you can win with town then you are friends with town, for example, a detective is friends with town but enemies with syndicate.",
@@ -1731,7 +1731,7 @@
     "wiki.article.role.mafiaKillingWildcard.reminder": "Choose a syndicate killing role to become that role when night starts.",
     "wiki.article.role.mafiaKillingWildcard.guide": "* Choose a syndicate killing role to become that role\n    * You become that role when night starts\n* You likely can't become a role if someone already has that role (You can't become a role that has exceeded its role limit)",
     "wiki.article.role.mafiaKillingWildcard.abilities":"* Become a role you choose at the start of night",
-    "wiki.article.role.mafiaKillingWildcard.attributes":"* You can not become a role that is disabled\n* You can not become a role that is taken by too many players",
+    "wiki.article.role.mafiaKillingWildcard.attributes":"* You can not become a role that iuides disabled\n* You can not become a role that is taken by too many players",
     "wiki.article.role.mafiaKillingWildcard.extra":"* If you choose a role that was disabled you stay as the Syndicate Killing Wildcard\n* You can choose Syndicate Killing Wildcard to stay as Syndicate Killing Wildcard\n* You can't become a role that is at its role limit, for example, you can't become a godfather even if there is already one in the game, even if that godfather is dead",
 
     "wiki.article.role.goon.reminder": "No ability besides being a syndicate insider.",
@@ -1753,10 +1753,10 @@
     "wiki.article.role.consort.extra":"* When someone is roleblocked, their visits are wiped, so they don't visit anyone\n* You can't select other syndicate members",
 
     "wiki.article.role.blackmailer.reminder": "Each night, select a player to silence, that player forfeits their vote during the next day.",
-    "wiki.article.role.blackmailer.guide": "- At night, select a player to silence\n- The silenced player can't speak during the next day, and they can't vote during the next nomination\n\nYou should choose talkative players who might speak out against a syndicate member, or players who have information that you want to suppress.",
+    "wiki.article.role.blackmailer.guide": "- At night, select a player to silence\n- The silenced player can't speak during the next day.\n- While a blackmailer is alive, nomination votes are hidden and verdict votes are hidden.",
     "wiki.article.role.blackmailer.abilities":"* Visit a player to silence them during the next day",
-    "wiki.article.role.blackmailer.attributes":"* Silenced players are forced to forfeit vote during the next day\n* Silenced players can not talk in chat or out loud during the entire next day",
-    "wiki.article.role.blackmailer.extra":"* The silenced player is no longer be silenced at the start of the next night\n* You cannot select other syndicate members",
+    "wiki.article.role.blackmailer.attributes":"- Silenced players can not talk in chat or out loud during the entire next day.",
+    "wiki.article.role.blackmailer.extra":"* The silenced player is no longer be silenced at the start of the next night\n* You can't select other syndicate members",
 
     "wiki.article.role.informant.reminder": "Each night, select 2 players to reveal their role, you are told who visits them, and who they visited. You can see all whispers.",
     "wiki.article.role.informant.guide": "- At night, select up to 2 players to be told:\n    - Their role (Their role is revealed to you)\n    - Who they visited\n    - Who visited them\n- You can read whispers that were sent to other players\n\nYou should communicate the information you get to the rest of the syndicate. It is fairly easy to fake claim lookout or tracker.",

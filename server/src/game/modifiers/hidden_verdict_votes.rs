@@ -1,5 +1,5 @@
 
-use crate::game::{components::silenced::Silenced, modifiers::Modifiers, Game};
+use crate::game::{modifiers::Modifiers, player::PlayerReference, role::Role, Game};
 
 use super::{ModifierTrait, ModifierType};
 
@@ -16,6 +16,8 @@ impl ModifierTrait for HiddenVerdictVotes{}
 impl HiddenVerdictVotes {
     pub fn verdict_votes_are_hidden(game: &Game)->bool{
         Modifiers::is_enabled(game, ModifierType::HiddenVerdictVotes) ||
-        !Silenced::is_empty(game)
+        PlayerReference::all_players(game).any(|p|
+            p.role(game) == Role::Blackmailer || p.alive(game)
+        )
     }
 }
