@@ -1,10 +1,14 @@
-use crate::{
-    game::{
-        ability_input::{AbilityInput, AvailablePlayerListSelection, ControllerID, ControllerParametersMap, PlayerListSelection}, chat::{ChatGroup, ChatMessageVariant}, modifiers::{ModifierType, Modifiers}, player::PlayerReference, Game
-    }, packet::ToClientPacket
-};
+use crate::game::{
+        ability_input::{
+            AbilityInput, AvailablePlayerListSelection, ControllerID,
+            ControllerParametersMap, PlayerListSelection
+        },
+        chat::{ChatGroup, ChatMessageVariant},
+        modifiers::{hidden_nomination_votes::HiddenNominationVotes, ModifierType, Modifiers},
+        player::PlayerReference, Game
+    };
 
-use super::forfeit_vote::ForfeitVote;
+use super::forfeit_vote::ForfeitNominationVote;
 
 pub struct NominationController;
 
@@ -25,7 +29,7 @@ impl NominationController{
             })
             .add_grayed_out_condition(
                 !actor.alive(game) ||
-                ForfeitVote::forfeited_vote(game, actor) ||
+                ForfeitNominationVote::forfeited_vote(game, actor) ||
                 game.current_phase().phase() != crate::game::phase::PhaseType::Nomination
             )
             .reset_on_phase_start(crate::game::phase::PhaseType::Nomination)
@@ -35,18 +39,18 @@ impl NominationController{
     pub fn on_validated_ability_input_received(game: &mut Game, player: PlayerReference, input: AbilityInput){
         if let Some(PlayerListSelection(voted)) = input.get_player_list_selection_if_id(ControllerID::Nominate{ player }){
 
-            game.add_message_to_chat_group(ChatGroup::All, ChatMessageVariant::Voted{
-                voter: player.index(), 
-                votee: voted.first().map(|p|p.index())
-            });
+            if !HiddenNominationVotes::nomination_votes_are_hidden(game) {
+                game.add_message_to_chat_group(ChatGroup::All, ChatMessageVariant::Voted{
+                    voter: player.index(), 
+                    votee: voted.first().map(|p|p.index())
+                });
+            }
 
             game.count_nomination_and_start_trial(
                 Modifiers::is_enabled(game, ModifierType::UnscheduledNominations)
             );
 
-            game.send_packet_to_all(ToClientPacket::PlayerVotes {
-                votes_for_player: game.create_voted_player_map()
-            });
+            game.send_player_votes();
         }
     }
 }

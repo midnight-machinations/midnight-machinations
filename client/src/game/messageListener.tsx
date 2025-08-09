@@ -353,12 +353,8 @@ export default function messageListener(packet: ToClientPacket){
                 let listMapVotes = new ListMap<PlayerIndex, number>(packet.votesForPlayer);
 
                 for(let i = 0; i < GAME_MANAGER.state.players.length; i++){
-                    GAME_MANAGER.state.players[i].numVoted = 0;
-                    
-                    let numVoted = listMapVotes.get(i);
-                    if(numVoted !== null){
-                        GAME_MANAGER.state.players[i].numVoted = numVoted;
-                    }
+                    let numVoted = listMapVotes.get(i)??0;
+                    GAME_MANAGER.state.players[i].numVoted = numVoted;
                 }
                 GAME_MANAGER.state.players = [...GAME_MANAGER.state.players];
             }

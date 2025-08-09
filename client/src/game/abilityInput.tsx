@@ -73,7 +73,7 @@ export type ControllerID = {
     type: "sendWhisper",
     player: PlayerIndex,
 } | {
-    type: "forfeitVote",
+    type: "forfeitNominationVote",
     player: PlayerIndex,
 } | {
     type: "pitchforkVote",
@@ -142,7 +142,7 @@ export function sortControllerIdCompare(
         syndicateGunItemGive: 3,
         syndicateChooseBackup: 4,
         syndicateBackupAttack: 5,
-        forfeitVote: 6,
+        forfeitNominationVote: 6,
         pitchforkVote: 7
     };
 

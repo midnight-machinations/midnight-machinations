@@ -1,6 +1,6 @@
 use crate::game::{
     components::{
-        cult::Cult, enfranchise::Enfranchise, forfeit_vote::ForfeitVote, mafia::Mafia
+        cult::Cult, enfranchise::Enfranchise, forfeit_vote::ForfeitNominationVote, mafia::Mafia
     },
     modifiers::Modifiers, player::PlayerReference, Game
 };
@@ -17,6 +17,6 @@ impl OnGameStart{
         Mafia::on_game_start(game);
         Cult::on_game_start(game);
         Enfranchise::on_game_start(game);
-        ForfeitVote::on_game_start(game);
+        ForfeitNominationVote::on_game_start(game);
     }
 }

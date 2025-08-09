@@ -21,6 +21,9 @@ impl Silenced {
             player.get_current_send_chat_groups(game).into_iter().collect()
         });
     }
+    pub fn is_empty(game: &Game)->bool{
+        game.silenced().silenced_players.is_empty()
+    }
     pub fn unsilence(game: &mut Game, player: PlayerReference) {
         game.silenced_mut().silenced_players.remove(&player);
     }
