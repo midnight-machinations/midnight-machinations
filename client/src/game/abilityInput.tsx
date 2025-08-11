@@ -6,7 +6,6 @@ import { Role } from "./roleState.d";
 import abilitiesJson from "../resources/abilityId.json";
 import { ChatMessage } from "../components/ChatMessage";
 
-
 export type AbilityJsonData = Partial<Record<ControllerIDLink, SingleAbilityJsonData>>;
 export type SingleAbilityJsonData = {
     midnight?: boolean,
@@ -100,6 +99,21 @@ export type ControllerIDLink = (
     `${ControllerID["type"]}`
 );
 
+export function controllerIdToLinkWithPlayer(id: ControllerID): string {
+    let out: string = `${id.type}`;
+    if(
+        id.type!=="syndicateGunItemShoot" &&
+        id.type!=="syndicateBackupAttack" &&
+        id.type!=="syndicateGunItemGive" &&
+        id.type!=="syndicateChooseBackup"
+    ){
+        out+=`/${id.player}`;
+    }
+    if (id.type === "role") {
+        out += `/${id.role}/${id.id}`;
+    }
+    return out as string;
+}
 export function controllerIdToLink(id: ControllerID): ControllerIDLink {
     let out: ControllerIDLink = `${id.type}`;
     if (id.type === "role") {

@@ -143,6 +143,7 @@ macros::roles! {
     
     Hypnotist : hypnotist,
     Blackmailer : blackmailer,
+    Cerenovous : cerenovous,
     Informant: informant,
     MafiaWitch : mafia_witch,
     Necromancer : necromancer,

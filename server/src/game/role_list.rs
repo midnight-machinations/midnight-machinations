@@ -384,7 +384,7 @@ impl RoleSet{
                 ],
             RoleSet::MafiaSupport => 
                 vec_set![
-                    Role::Blackmailer, Role::Informant, Role::Hypnotist, Role::Consort,
+                    Role::Blackmailer, Role::Cerenovous, Role::Informant, Role::Hypnotist, Role::Consort,
                     Role::Forger, Role::Framer, Role::Mortician, Role::Disguiser,
                     Role::MafiaWitch, Role::Necromancer, Role::Reeducator,
                     Role::Ambusher

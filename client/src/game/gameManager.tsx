@@ -411,19 +411,18 @@ export function createGameManager(): GameManager {
                 deathNote: notes.trim().length === 0 ? null : notes
             });
         },
-        sendSendChatMessagePacket(text, block) {
-            let player = undefined;
-            // if(player===undefined){
+        sendSendChatMessagePacket(text, block, controllingPlayer) {
+            if(controllingPlayer===undefined){
                 if(this.state.stateType==="game" && this.state.clientState.type === "player"){
-                    player = this.state.clientState.myIndex;
+                    controllingPlayer = this.state.clientState.myIndex;
                 }
-            // }
-            if(player===undefined){return}
+            }
+            if(controllingPlayer===undefined){return}
 
             this.sendAbilityInput({
                 id: {
                     type: "chatIsBlock",
-                    player: player
+                    player: controllingPlayer
                 }, 
                 selection: {
                     type: "boolean",
@@ -434,7 +433,7 @@ export function createGameManager(): GameManager {
             this.sendAbilityInput({
                 id: {
                     type: "chat",
-                    player: player
+                    player: controllingPlayer
                 }, 
                 selection: {
                     type: "string",
@@ -446,7 +445,7 @@ export function createGameManager(): GameManager {
             this.sendAbilityInput({
                 id: {
                     type: "sendChat",
-                    player: player
+                    player: controllingPlayer
                 }, 
                 selection: {
                     type: "unit",
@@ -454,19 +453,18 @@ export function createGameManager(): GameManager {
                 }
             });
         },
-        sendSendWhisperPacket(whisperToPlayer, text) {
-            let player = undefined;
-            // if(player===undefined){
+        sendSendWhisperPacket(whisperToPlayer, text, controllingPlayer) {
+            if(controllingPlayer===undefined){
                 if(this.state.stateType==="game" && this.state.clientState.type === "player"){
-                    player = this.state.clientState.myIndex;
+                    controllingPlayer = this.state.clientState.myIndex;
                 }
-            // }
-            if(player===undefined){return}
+            }
+            if(controllingPlayer===undefined){return}
 
             this.sendAbilityInput({
                 id: {
                     type: "whisperToPlayer",
-                    player: player
+                    player: controllingPlayer
                 }, 
                 selection: {
                     type: "playerList",
@@ -477,7 +475,7 @@ export function createGameManager(): GameManager {
             this.sendAbilityInput({
                 id: {
                     type: "whisper",
-                    player: player
+                    player: controllingPlayer
                 }, 
                 selection: {
                     type: "string",
@@ -489,7 +487,7 @@ export function createGameManager(): GameManager {
             this.sendAbilityInput({
                 id: {
                     type: "sendWhisper",
-                    player: player
+                    player: controllingPlayer
                 }, 
                 selection: {
                     type: "unit",

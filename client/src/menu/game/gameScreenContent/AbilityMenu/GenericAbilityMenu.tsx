@@ -9,12 +9,13 @@ import {
     TwoRoleOutlineOptionSelection,
     RoleListSelection,
     SavedController,
-    controllerIdToLink,
+    controllerIdToLinkWithPlayer,
     singleAbilityJsonData,
     StringSelection,
     translateControllerIDNoRole,
     PlayerListSelection,
-    IntegerSelection
+    IntegerSelection,
+    controllerIdToLink
 } from "../../../../game/abilityInput";
 import React from "react";
 import { usePlayerState } from "../../../../components/useHooks";
@@ -90,7 +91,7 @@ function translateGroupName(id: ControllerID): string {
 
 /// True if this controller should be in this menu
 function showThisController(id: ControllerID): boolean {
-    return singleAbilityJsonData(controllerIdToLink(id))?.visible??true;
+    return (singleAbilityJsonData(controllerIdToLink(id))?.visible)??true;
 }
 
 export default function GenericAbilityMenu(): ReactElement {
@@ -109,7 +110,7 @@ export default function GenericAbilityMenu(): ReactElement {
         
         let controllers = controllerGroupsMap.get(groupName);
         if(controllers === null){
-            controllers = new ListMap([], (k1, k2)=>controllerIdToLink(k1)===controllerIdToLink(k2));
+            controllers = new ListMap([], (k1, k2)=>controllerIdToLinkWithPlayer(k1)===controllerIdToLinkWithPlayer(k2));
         }
 
         controllers.insert(controllerID, controller);

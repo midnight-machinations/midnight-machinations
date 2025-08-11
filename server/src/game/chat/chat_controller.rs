@@ -1,6 +1,6 @@
 
 
-use crate::{game::{ability_input::{AbilityInput, AvailableBooleanSelection, AvailableStringSelection, AvailableUnitSelection, BooleanSelection, ControllerID, ControllerParametersMap, PlayerListSelection, StringSelection}, chat::{ChatGroup, ChatMessageVariant, MessageSender}, event::{on_whisper::OnWhisper, Event}, player::PlayerReference, role::Role, Game}, strings::TidyableString};
+use crate::{game::{ability_input::{AbilityInput, AvailableBooleanSelection, AvailableStringSelection, AvailableUnitSelection, BooleanSelection, ControllerID, ControllerParametersMap, PlayerListSelection, StringSelection}, chat::{ChatGroup, ChatMessageVariant, MessageSender}, event::{on_whisper::OnWhisper, Event}, player::PlayerReference, role::{Role, RoleState}, Game}, strings::TidyableString, vec_set::VecSet};
 
 pub struct ChatController;
 impl ChatController{
@@ -76,39 +76,49 @@ impl ChatController{
     }
 
     fn one_player_controller_paraemeters_map(game: &Game, player: PlayerReference)->ControllerParametersMap{
-        let allowed_players = [player];
+        let mut allowed_players: VecSet<PlayerReference> = PlayerReference::all_players(game)
+            .filter(|p|
+                if let RoleState::Cerenovous(cerenovous) = p.role_state(game){
+                    cerenovous.currently_silenced == Some(player)
+                }else{false}
+            )
+            .collect();
+        if allowed_players.is_empty() {
+            allowed_players.insert(player);
+        }
+
         
         //chat
         let chat = ControllerParametersMap::builder(game)
             .id(ControllerID::Chat{ player })
             .available_selection(AvailableStringSelection)
-            .allow_players(allowed_players)
+            .allow_players(allowed_players.clone())
             .build_map();
 
         let chat_is_block = ControllerParametersMap::builder(game)
             .id(ControllerID::ChatIsBlock { player })
             .available_selection(AvailableBooleanSelection)
-            .allow_players(allowed_players)
+            .allow_players(allowed_players.clone())
             .build_map();
 
         let send_chat = ControllerParametersMap::builder(game)
             .id(ControllerID::SendChat{ player })
             .available_selection(AvailableUnitSelection)
             .add_grayed_out_condition(player.get_current_send_chat_groups(game).is_empty())
-            .allow_players(allowed_players)
+            .allow_players(allowed_players.clone())
             .build_map();
 
         //whisper
         let whisper = ControllerParametersMap::builder(game)
             .id(ControllerID::Whisper{ player })
             .available_selection(AvailableStringSelection)
-            .allow_players(allowed_players)
+            .allow_players(allowed_players.clone())
             .build_map();
 
         let whisper_to_player = ControllerParametersMap::builder(game)
             .id(ControllerID::WhisperToPlayer { player })
             .single_player_selection_typical(player, false, true)
-            .allow_players(allowed_players)
+            .allow_players(allowed_players.clone())
             .build_map();
 
         let send_whisper = ControllerParametersMap::builder(game)

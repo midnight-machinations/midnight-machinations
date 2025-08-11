@@ -116,8 +116,10 @@ export type RoleState = {
 (Hypnotist & {type: "hypnotist"})
  | {
     type: "consort"
- } | {
+} | {
     type: "blackmailer"
+} | {
+    type: "cerenovous"
 } | {
     type: "informant",
 } | {

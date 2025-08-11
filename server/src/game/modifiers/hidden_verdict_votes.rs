@@ -16,8 +16,8 @@ impl ModifierTrait for HiddenVerdictVotes{}
 impl HiddenVerdictVotes {
     pub fn verdict_votes_are_hidden(game: &Game)->bool{
         Modifiers::is_enabled(game, ModifierType::HiddenVerdictVotes) ||
-        PlayerReference::all_players(game).any(|p|
-            p.role(game) == Role::Blackmailer || p.alive(game)
-        )
+        PlayerReference::all_players(game)
+            .filter(|p|p.alive(game))
+            .any(|p|matches!(p.role(game), Role::Blackmailer | Role::Cerenovous))
     }
 }

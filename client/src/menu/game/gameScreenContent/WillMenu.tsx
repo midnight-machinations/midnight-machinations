@@ -6,7 +6,8 @@ import { usePlayerState } from "../../../components/useHooks";
 import { getSingleRoleJsonData } from "../../../game/roleState.d";
 import { TextDropdownArea } from "../../../components/TextAreaDropdown";
 import ListMap from "../../../ListMap";
-import { controllerIdToLink } from "../../../game/abilityInput";
+import { controllerIdToLinkWithPlayer } from "../../../game/abilityInput";
+import { PlayerIndex } from "../../../game/gameState.d";
 
 export function defaultAlibi(): string {
     return DEFAULT_ALIBI;
@@ -32,7 +33,7 @@ export default function WillMenu(): ReactElement {
         playerState => playerState.savedControllers,
         ["yourAllowedControllers"]
     )!;
-    const alibiSelection = new ListMap(savedAbilities, (k1, k2)=>controllerIdToLink(k1)===controllerIdToLink(k2)).get({type: "alibi", player: playerIndex});
+    const alibiSelection = new ListMap(savedAbilities, (k1, k2)=>controllerIdToLinkWithPlayer(k1)===controllerIdToLinkWithPlayer(k2)).get({type: "alibi", player: playerIndex});
     const alibi = (alibiSelection?.selection.type === "string")?alibiSelection.selection.selection:"";
     useEffect(()=>{
         if(alibi===""){
@@ -51,7 +52,15 @@ export default function WillMenu(): ReactElement {
 
     const cantPost = useMemo(() => {
         return cantChat
-    }, [cantChat])
+    }, [cantChat]);
+
+
+    const canPostAsPlayers: PlayerIndex[] | undefined = usePlayerState(
+        playerState=>playerState.savedControllers
+            .map(([id,_])=>id.type==="chat"?id.player:undefined)
+            .filter((p)=>p!==undefined?true:false) as PlayerIndex[],
+        ["yourAllowedControllers"]
+    );
     
     return <div className="will-menu will-menu-colors">
         <ContentTab
@@ -73,6 +82,8 @@ export default function WillMenu(): ReactElement {
             {(notes.length === 0 ? [""] : notes).map((note, i) => {
                 const title = note.split('\n')[0] || translate("menu.will.notes");
                 return <TextDropdownArea
+                    canPostAs={canPostAsPlayers}
+
                     key={title + i}
                     titleString={title}
                     savedText={note}

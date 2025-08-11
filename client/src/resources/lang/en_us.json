@@ -128,7 +128,7 @@
     "menu.playerList.button.filter":"Filter",
     "menu.playerList.player.votes":"\\0 votes",
 
-    "youAreWhispering": "You are whispering to \\0.",
+    "playerIsWhisperingToPlayer": "\\0 is whispering to \\1.",
     "cancelWhisper": "Cancel whisper",
 
     "button.clear": "Clear",
@@ -417,6 +417,10 @@
     "role.blackmailer.name": "Blackmailer",
     "role.blackmailer.name:var.0": "Blackmailers",
     "controllerId.role.blackmailer.0.name": "Silence",
+    
+    "role.cerenovous.name": "Cerenovous",
+    "role.cerenovous.name:var.0": "Cerenovouses",
+    "controllerId.role.cerenovous.0.name": "Pilot",
     
     "role.informant.name": "Informant",
     "role.informant.name:var.0": "Informants",
@@ -1752,11 +1756,17 @@
     "wiki.article.role.consort.attributes":"* You can't be roleblocked\n* Your target is told when they are roleblocked, even if they are immune to being roleblocked",
     "wiki.article.role.consort.extra":"* When someone is roleblocked, their visits are wiped, so they don't visit anyone\n* You can't select other syndicate members",
 
-    "wiki.article.role.blackmailer.reminder": "Each night, select a player to silence, that player forfeits their vote during the next day.",
+    "wiki.article.role.blackmailer.reminder": "Each night, select a player to silence until the next night.",
     "wiki.article.role.blackmailer.guide": "- At night, select a player to silence\n- The silenced player can't speak during the next day.\n- While a blackmailer is alive, nomination votes are hidden and verdict votes are hidden.",
     "wiki.article.role.blackmailer.abilities":"* Visit a player to silence them during the next day",
     "wiki.article.role.blackmailer.attributes":"- Silenced players can not talk in chat or out loud during the entire next day.",
     "wiki.article.role.blackmailer.extra":"* The silenced player is no longer be silenced at the start of the next night\n* You can't select other syndicate members",
+
+    "wiki.article.role.cerenovous.reminder": "Each night, select a player to pilot, you can chat as that player until the next night.",
+    "wiki.article.role.cerenovous.guide": "- At night, select a player to pilot\n- The piloted player can't chat during the next day, instead you can chat as them.\n    - You can send block messages as them.\n    - You can whisper as them.\n- While a cerenovous is alive, nomination votes are hidden and verdict votes are hidden.\n- You can read whispers sent to other players.",
+    "wiki.article.role.cerenovous.abilities":"* Visit a player to pilot them during the next day",
+    "wiki.article.role.cerenovous.attributes":"",
+    "wiki.article.role.cerenovous.extra":"- The piloted player is no longer piloted at the start of the next night.\n* You can't select other syndicate members",
 
     "wiki.article.role.informant.reminder": "Each night, select 2 players to reveal their role, you are told who visits them, and who they visited. You can see all whispers.",
     "wiki.article.role.informant.guide": "- At night, select up to 2 players to be told:\n    - Their role (Their role is revealed to you)\n    - Who they visited\n    - Who visited them\n- You can read whispers that were sent to other players\n\nYou should communicate the information you get to the rest of the syndicate. It is fairly easy to fake claim lookout or tracker.",
