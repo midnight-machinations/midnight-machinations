@@ -238,7 +238,6 @@ function PlayerCard(props: Readonly<{
         {controllers.list
             .map(([id, _])=>{
                 if(id.type!=="whisper"){return null}
-
                 const sendChatController = controllers.get({type: "sendWhisper", player: id.player})!;
 
                 return <>
