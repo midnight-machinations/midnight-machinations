@@ -117,9 +117,12 @@ export type RoleState = {
  | {
     type: "consort"
 } | {
-    type: "blackmailer"
+    type: "blackmailer",
+    previous: PlayerIndex | null
 } | {
-    type: "cerenovous"
+    type: "cerenovous",
+    previous: PlayerIndex | null
+    currentlyPiloted: PlayerIndex | null
 } | {
     type: "informant",
 } | {

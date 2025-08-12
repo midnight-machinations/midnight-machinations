@@ -1757,13 +1757,13 @@
     "wiki.article.role.consort.extra":"* When someone is roleblocked, their visits are wiped, so they don't visit anyone\n* You can't select other syndicate members",
 
     "wiki.article.role.blackmailer.reminder": "Each night, select a player to silence until the next night.",
-    "wiki.article.role.blackmailer.guide": "- At night, select a player to silence\n- The silenced player can't speak during the next day.\n- While a blackmailer is alive, nomination votes are hidden and verdict votes are hidden.",
+    "wiki.article.role.blackmailer.guide": "- At night, select a player to silence\n- The silenced player can't speak during the next day.\n- While a blackmailer is alive, nomination votes are hidden and verdict votes are hidden.\n- You can't choose to silence the player you silenced yesterday.",
     "wiki.article.role.blackmailer.abilities":"* Visit a player to silence them during the next day",
     "wiki.article.role.blackmailer.attributes":"- Silenced players can not talk in chat or out loud during the entire next day.",
     "wiki.article.role.blackmailer.extra":"* The silenced player is no longer be silenced at the start of the next night\n* You can't select other syndicate members",
 
     "wiki.article.role.cerenovous.reminder": "Each night, select a player to pilot, you can chat as that player until the next night.",
-    "wiki.article.role.cerenovous.guide": "- At night, select a player to pilot\n- The piloted player can't chat during the next day, instead you can chat as them.\n    - You can send block messages as them.\n    - You can whisper as them.\n- While a cerenovous is alive, nomination votes are hidden and verdict votes are hidden.\n- You can read whispers sent to other players.",
+    "wiki.article.role.cerenovous.guide": "- At night, select a player to pilot\n- The piloted player can't chat during the next day, instead you can chat as them.\n    - You can send block messages as them.\n    - You can whisper as them.\n- While a cerenovous is alive, nomination votes are hidden and verdict votes are hidden.\n- You can read whispers sent to other players.\n- You can't choose to pilot the player you piloted yesterday.",
     "wiki.article.role.cerenovous.abilities":"* Visit a player to pilot them during the next day",
     "wiki.article.role.cerenovous.attributes":"",
     "wiki.article.role.cerenovous.extra":"- The piloted player is no longer piloted at the start of the next night.\n* You can't select other syndicate members",

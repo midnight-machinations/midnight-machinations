@@ -1,5 +1,7 @@
 use serde::Serialize;
+use crate::game::ability_input::AvailablePlayerListSelection;
 use crate::game::chat::ChatMessageVariant;
+use crate::game::components::insider_group::InsiderGroupID;
 use crate::game::event::on_midnight::{MidnightVariables, OnMidnightPriority};
 use crate::game::event::on_whisper::{OnWhisper, WhisperFold, WhisperPriority};
 use crate::game::phase::PhaseType;
@@ -12,8 +14,10 @@ use super::{ControllerID, ControllerParametersMap, Role, RoleStateImpl};
 
 
 #[derive(Clone, Debug, Serialize, Default)]
+#[serde(rename_all = "camelCase")]
 pub struct Cerenovous{
-    pub currently_silenced: Option<PlayerReference>
+    pub currently_piloted: Option<PlayerReference>,
+    previous: Option<PlayerReference>,
 }
 
 
@@ -30,14 +34,28 @@ impl RoleStateImpl for Cerenovous {
         if let Some(visit) = actor_visits.first(){
             let target_ref = visit.target;
     
-            self.currently_silenced = Some(target_ref);
-            actor_ref.set_role_state(game, self);
+            self.currently_piloted = Some(target_ref);
+            self.previous = Some(target_ref);
+        }else{
+            self.previous = None;
         }
+        actor_ref.set_role_state(game, self);
     }
     fn controller_parameters_map(self, game: &Game, actor_ref: PlayerReference) -> ControllerParametersMap {
         ControllerParametersMap::builder(game)
             .id(ControllerID::role(actor_ref, Role::Cerenovous, 0))
-            .single_player_selection_typical(actor_ref, false, false)
+            .available_selection(AvailablePlayerListSelection {
+                available_players: PlayerReference::all_players(game)
+                    .filter(|player|
+                        !(!player.alive(game) || 
+                        *player == actor_ref ||
+                        InsiderGroupID::in_same_group(game, actor_ref, *player) ||
+                        Some(*player) == self.previous)
+                    )
+                    .collect(),
+                can_choose_duplicates: false,
+                max_players: Some(1)
+            })
             .night_typical(actor_ref)
             .build_map()
     }
@@ -55,7 +73,7 @@ impl RoleStateImpl for Cerenovous {
         ].into_iter().collect()
     }
     fn on_phase_start(mut self, game: &mut Game, actor_ref: PlayerReference, phase: crate::game::phase::PhaseType) {
-        self.currently_silenced = None;
+        self.currently_piloted = None;
         if phase == PhaseType::Night {
             actor_ref.set_role_state(game, self);
         }

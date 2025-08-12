@@ -79,7 +79,7 @@ impl ChatController{
         let mut allowed_players: VecSet<PlayerReference> = PlayerReference::all_players(game)
             .filter(|p|
                 if let RoleState::Cerenovous(cerenovous) = p.role_state(game){
-                    cerenovous.currently_silenced == Some(player)
+                    cerenovous.currently_piloted == Some(player)
                 }else{false}
             )
             .collect();
