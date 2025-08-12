@@ -54,9 +54,6 @@ impl Game {
 
     pub fn on_player_message(&mut self, room_client_id: RoomClientID, sender_player_ref: PlayerReference, incoming_packet: ToServerPacket) -> GameClientMessageResult {
         'packet_match: {match incoming_packet {
-            ToServerPacket::SetName{ name } => {
-                self.set_player_name(sender_player_ref, name);
-            },
             ToServerPacket::Leave => {
                 if let RemoveRoomClientResult::RoomShouldClose = self.remove_client(room_client_id) {
                     return GameClientMessageResult::Close;

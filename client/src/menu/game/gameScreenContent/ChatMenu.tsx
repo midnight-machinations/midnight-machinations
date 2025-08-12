@@ -176,7 +176,7 @@ function filterMessage(
 export function ChatMessageSection(props: Readonly<{
     filter?: ChatFilter,
 }>): ReactElement {
-    const players = useGameState((gameState)=>{return gameState.players}, ["gamePlayers"])!;
+    const players = useGameState((gameState)=>{return gameState.players}, ["gamePlayers"])??[];
     const filter = useMemo(() => props.filter ?? null, [props.filter]);
     const messages = useLobbyOrGameState(
         state => state.chatMessages,
@@ -378,7 +378,10 @@ export function ChatTextInput(props: Readonly<{
         return sendingPlayer!==null ? playerStrings[sendingPlayer] : null
     }, [playerStrings, sendingPlayer]);
 
-    if(sendingPlayer===whispering){
+    if(
+        sendingPlayer!==null &&
+        sendingPlayer===whispering
+    ){
         return <></>;
     }
 
