@@ -40,7 +40,7 @@ impl RoleStateImpl for Veteran {
     type ClientRoleState = ClientRoleState;
     fn new_state(game: &Game) -> Self {
         Self{
-            alerts_remaining: game.num_players().div_ceil(5),
+            alerts_remaining: crate::game::role::common_role::standard_charges(game),
             ..Self::default()
         }
     }

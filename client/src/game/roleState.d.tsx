@@ -121,8 +121,9 @@ export type RoleState = {
     previous: PlayerIndex | null
 } | {
     type: "cerenovous",
-    previous: PlayerIndex | null
-    currentlyPiloted: PlayerIndex | null
+    previous: PlayerIndex | null,
+    currentlyPiloted: PlayerIndex | null,
+    charges: number,
 } | {
     type: "informant",
 } | {

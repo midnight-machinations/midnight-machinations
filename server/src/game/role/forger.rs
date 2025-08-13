@@ -7,7 +7,6 @@ use crate::game::chat::ChatMessageVariant;
 use crate::game::event::on_midnight::{MidnightVariables, OnMidnightPriority};
 use crate::game::phase::PhaseType;
 use crate::game::player::PlayerReference;
-
 use crate::game::visit::Visit;
 
 use crate::game::Game;
@@ -45,7 +44,7 @@ impl RoleStateImpl for Forger {
     type ClientRoleState = ClientRoleState;
     fn new_state(game: &Game) -> Self {
         Self{
-            forges_remaining: game.num_players().div_ceil(5),
+            forges_remaining: crate::game::role::common_role::standard_charges(game),
             ..Self::default()
         }
     }

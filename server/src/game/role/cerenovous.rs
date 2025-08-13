@@ -18,6 +18,7 @@ use super::{ControllerID, ControllerParametersMap, Role, RoleStateImpl};
 pub struct Cerenovous{
     pub currently_piloted: Option<PlayerReference>,
     previous: Option<PlayerReference>,
+    charges: u8,
 }
 
 
@@ -26,16 +27,26 @@ pub(super) const DEFENSE: DefensePower = DefensePower::None;
 
 impl RoleStateImpl for Cerenovous {
     type ClientRoleState = Cerenovous;
+    fn new_state(game: &Game) -> Self {
+        Self{
+            charges: crate::game::role::common_role::standard_charges(game),
+            ..Self::default()
+        }
+    }
     fn on_midnight(mut self, game: &mut Game, midnight_variables: &mut MidnightVariables, actor_ref: PlayerReference, priority: OnMidnightPriority) {
         if priority != OnMidnightPriority::Deception {return}
-        
 
         let actor_visits = actor_ref.untagged_night_visits_cloned(midnight_variables);
-        if let Some(visit) = actor_visits.first(){
-            let target_ref = visit.target;
-    
-            self.currently_piloted = Some(target_ref);
-            self.previous = Some(target_ref);
+        if let Some(visit) = actor_visits.first() {
+            if self.charges != 0 {
+                let target_ref = visit.target;
+                
+                self.currently_piloted = Some(target_ref);
+                self.previous = Some(target_ref);
+                self.charges = self.charges.saturating_sub(1);
+            }else{
+                self.previous = None;
+            }
         }else{
             self.previous = None;
         }
@@ -57,6 +68,7 @@ impl RoleStateImpl for Cerenovous {
                 max_players: Some(1)
             })
             .night_typical(actor_ref)
+            .add_grayed_out_condition(self.charges == 0)
             .build_map()
     }
     fn convert_selection_to_visits(self, game: &Game, actor_ref: PlayerReference) -> Vec<Visit> {
