@@ -4,6 +4,7 @@ import translate, { translateChecked } from "../../../../../game/lang";
 import GameState from "../../../../../game/gameState.d";
 import { StateEventType } from "../../../../../game/gameManager.d";
 import GAME_MANAGER from "../../../../..";
+import { encodeString } from "../../../../../components/ChatMessage";
 
 
 export type Doomsayer = {
@@ -108,7 +109,7 @@ export default class LargeDoomsayerMenu extends React.Component<LargeDoomsayerMe
 
         let playerOptions: JSX.Element[] = [];
         for(let i = 0; i < this.state.gameState.players.length; i++){
-            playerOptions.push(<option key={i} value={i}>{this.state.gameState.players[i].toString()}</option>);
+            playerOptions.push(<option key={i} value={i}>{encodeString(this.state.gameState.players[i].toString())}</option>);
         }
         let doomsayerGuessOptions: JSX.Element[] = [];
         for(let i = 0; i < DOOMSAYER_GUESSES.length; i++){

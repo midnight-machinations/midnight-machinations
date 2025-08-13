@@ -12,7 +12,7 @@ import { RoleState } from "../../../../game/roleState.d";
 import { PhaseState } from "../../../../game/gameState.d";
 import DetailsSummary from "../../../../components/DetailsSummary";
 import HypnotistMenu from "./RoleSpecificMenus/HypnotistMenu";
-import ChatElement from "../../../../components/ChatMessage";
+import ChatElement, { encodeString } from "../../../../components/ChatMessage";
 
     
 
@@ -251,7 +251,7 @@ function MediumRoleSpecificMenu(props: Readonly<{
             {counter}
             <div className="role-information">
                 <StyledText>{translate("role.medium.roleDataText", 
-                    players[props.roleState.seancedTarget].toString(),
+                    encodeString(players[props.roleState.seancedTarget].toString()),
                 )}</StyledText>
             </div>
         </>;

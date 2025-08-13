@@ -1,6 +1,6 @@
 import React, { ReactElement, useEffect, useMemo, useRef, useState } from "react";
 import StyledText from "./StyledText";
-import { sanitizePlayerMessage } from "./ChatMessage";
+import { encodeString } from "./ChatMessage";
 import GAME_MANAGER, { replaceMentions } from "..";
 import { Button } from "./Button";
 import Icon from "./Icon";
@@ -8,12 +8,12 @@ import translate from "../game/lang";
 import "./textAreaDropdown.css";
 import DetailsSummary from "./DetailsSummary";
 import { usePlayerNames, usePlayerState } from "./useHooks";
-import { PlayerIndex } from "../game/gameState.d";
+import { PlayerIndex, UnsafeString } from "../game/gameState.d";
 import PlayerOptionDropdown from "./PlayerOptionDropdown";
 
 export function TextDropdownArea(props: Readonly<{
-    titleString: string,
-    savedText: string,
+    titleString: UnsafeString,
+    savedText: UnsafeString,
     defaultOpen?: boolean,
     open?: boolean,
     dropdownArrow?: boolean,
@@ -24,8 +24,8 @@ export function TextDropdownArea(props: Readonly<{
 
     canPostAs?: PlayerIndex[]
 }>): ReactElement {
-    const [field, setField] = useState<string>(props.savedText);
-    
+    const [field, setField] = useState<UnsafeString>(props.savedText);
+
     const myIndex = usePlayerState((p, _)=>p.myIndex);
 
     useEffect(() => {
@@ -61,13 +61,13 @@ export function TextDropdownArea(props: Readonly<{
         }
     }, [canPostAs, postingAsPlayer]);
 
-    function send(field: string){
+    function send(field: UnsafeString){
         save(field);
-        GAME_MANAGER.sendSendChatMessagePacket(field, true, postingAsPlayer??undefined);
+        GAME_MANAGER.sendSendChatMessagePacket(field as string, true, postingAsPlayer??undefined);
     }
 
-    function save(field: string) {
-        props.onSave(field);
+    function save(field: UnsafeString) {
+        props.onSave(field as string);
     }
 
     return (
@@ -104,13 +104,13 @@ export function TextDropdownArea(props: Readonly<{
 
 function TextDropdownLabel(
     props: Readonly<{
-        titleString: string,
-        savedText: string,
-        field: string,
+        titleString: UnsafeString,
+        savedText: UnsafeString,
+        field: UnsafeString,
         open?: boolean,
         onAdd?: () => void,
         onSubtract?: () => void,
-        onSave: (text: string) => void,
+        onSave: (text: UnsafeString) => void,
         onSend: ()=>void,
         cantPost: boolean,
 
@@ -126,17 +126,17 @@ function TextDropdownLabel(
 
     const playerNames = usePlayerNames();
 
-    function save(field: string) {
+    function save(field: UnsafeString) {
         props.onSave(field);
     }
 
-    function send(field: string){
+    function send(field: UnsafeString){
         save(field);
         props.onSend();
     }
 
     return <div>
-        <StyledText>{replaceMentions(props.titleString, playerNames)}</StyledText>
+        <StyledText>{encodeString(replaceMentions(props.titleString, playerNames))}</StyledText>
         <span>
             {props.onSubtract ? <Button
                 onClick={(e) => {
@@ -202,10 +202,10 @@ function TextDropdownLabel(
 }
 
 function PrettyTextArea(props: Readonly<{
-    field: string,
-    setField: (field: string) => void,
-    save: (field: string) => void,
-    send: (field: string) => void,
+    field: UnsafeString,
+    setField: (field: UnsafeString) => void,
+    save: (field: UnsafeString) => void,
+    send: (field: UnsafeString) => void,
 }>): ReactElement {
     const [writing, setWriting] = useState<boolean>(false);
     const [hover, setHover] = useState<boolean>(false);
@@ -253,14 +253,14 @@ function PrettyTextArea(props: Readonly<{
                 className="textarea"
             >
                 <StyledText noLinks={true}>
-                    {sanitizePlayerMessage(replaceMentions(props.field, playerNames))}
+                    {encodeString(replaceMentions(props.field, playerNames))}
                 </StyledText>
             </div>
             :
             <textarea
                 className="textarea"
                 ref={textareaRef}
-                value={props.field}
+                value={props.field as string}
                 onChange={e => props.setField(e.target.value)}
                 onKeyDown={(e) => {
                     if (e.ctrlKey) {

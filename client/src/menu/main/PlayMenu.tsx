@@ -8,6 +8,7 @@ import { StateListener } from "../../game/gameManager.d";
 import { LobbyPreviewData } from "../../game/packet";
 import LobbyMenu from "../lobby/LobbyMenu";
 import PlayMenuJoinPopup from "./PlayMenuJoinPopup";
+import { encodeString } from "../../components/ChatMessage";
 
 export default function PlayMenu(): ReactElement {
     const { setContent: setAnchorContent } = useContext(AnchorControllerContext)!;
@@ -177,13 +178,13 @@ function PlayMenuTable(props: Readonly<{
                             }
                         }}>{translate("menu.play.button.join")}</button>
                     </td>
-                    <td>{lobby.name}</td>
+                    <td>{encodeString(lobby.name)}</td>
                     <td>
                         <div className="play-menu-lobby-player-list">
                             {lobby.players.map((player)=>{
-                                return <button key={player[1]} onClick={()=>{
+                                return <button key={player[1] as string} onClick={()=>{
                                     props.joinGame(roomCode, player[0]);
-                                }}>{player[1]}</button>
+                                }}>{encodeString(player[1])}</button>
                             })}
                         </div>
                     </td>

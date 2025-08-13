@@ -3,7 +3,7 @@ import React, { ReactElement } from "react";
 import GAME_MANAGER, { find, replaceMentions } from "..";
 import StyledText, { KeywordDataMap, PLAYER_SENDER_KEYWORD_DATA } from "./StyledText";
 import "./chatMessage.css"
-import { ChatGroup, Conclusion, DefensePower, PhaseState, PlayerIndex, Tag, translateConclusion, translateWinCondition, Verdict, WinCondition } from "../game/gameState.d";
+import { ChatGroup, Conclusion, DefensePower, PhaseState, PlayerIndex, Tag, translateConclusion, translateWinCondition, UnsafeString, Verdict, WinCondition } from "../game/gameState.d";
 import { Role, RoleState } from "../game/roleState.d";
 import { Grave } from "../game/graveState";
 import DOMPurify from "dompurify";
@@ -204,7 +204,7 @@ function PlayerDiedChatMessage(props: Readonly<{
     playerKeywordData?: KeywordDataMap,
     style: string,
     chatGroupIcon: string | null,
-    playerNames: string[],
+    playerNames: UnsafeString[],
     message: ChatMessage & { variant: { type: "playerDied" } }
 }>): ReactElement {
     let graveRoleString: string;
@@ -226,7 +226,7 @@ function PlayerDiedChatMessage(props: Readonly<{
                     playerKeywordData={props.playerKeywordData}
                 >
                     {(props.chatGroupIcon ?? "")} {translate("chatMessage.playerDied",
-                        props.playerNames[props.message.variant.grave.player], graveRoleString
+                        encodeString(props.playerNames[props.message.variant.grave.player]), graveRoleString
                     )}
                 </StyledText>
             }
@@ -239,7 +239,7 @@ function PlayerDiedChatMessage(props: Readonly<{
 
 function LobbyChatMessage(props: Readonly<{
     message: ChatMessage & { variant: { type: "lobbyMessage" } }
-    playerNames: string[],
+    playerNames: UnsafeString[],
     style: string,
     playerKeywordData: KeywordDataMap | undefined,
     playerSenderKeywordData: KeywordDataMap | undefined
@@ -254,7 +254,7 @@ function LobbyChatMessage(props: Readonly<{
     return <div className={"chat-message-div"}><span className={`chat-message ${style}`}>
         <StyledText
             playerKeywordData={props.playerSenderKeywordData ?? PLAYER_SENDER_KEYWORD_DATA}
-        >{props.chatGroupIcon ?? ""} {props.message.variant.sender}: </StyledText>
+        >{props.chatGroupIcon ?? ""} {encodeString(props.message.variant.sender)}: </StyledText>
         <StyledText
             playerKeywordData={props.playerKeywordData}
         >{translateChatMessage(props.message.variant, props.playerNames)}</StyledText>
@@ -265,7 +265,7 @@ function NormalChatMessage(props: Readonly<{
     message: ChatMessage & { variant: { type: "normal" } }
     style: string,
     chatGroupIcon: string,
-    playerNames: string[],
+    playerNames: UnsafeString[],
     roleState: RoleState | undefined,
     playerKeywordData: KeywordDataMap | undefined,
     playerSenderKeywordData: KeywordDataMap | undefined,
@@ -292,7 +292,7 @@ function NormalChatMessage(props: Readonly<{
 
     let messageSender = "";
     if (props.message.variant.messageSender.type === "player" || props.message.variant.messageSender.type === "livingToDead") {
-        messageSender = props.playerNames[props.message.variant.messageSender.player];
+        messageSender = encodeString(props.playerNames[props.message.variant.messageSender.player]);
     }else if(props.message.variant.messageSender.type === "jailor" || props.message.variant.messageSender.type === "reporter"){
         messageSender = translate("role."+props.message.variant.messageSender.type+".name");
     }
@@ -347,7 +347,7 @@ function NormalChatMessage(props: Readonly<{
     </div>;
 }
 
-function useContainsMention(message: ChatMessageVariant & { text: string }, playerNames: string[]): boolean {
+function useContainsMention(message: ChatMessageVariant & { text: string | UnsafeString }, playerNames: UnsafeString[]): boolean {
     const myNumber = usePlayerState(
         gameState => gameState.myIndex,
         ["yourPlayerIndex"]
@@ -373,22 +373,22 @@ function useContainsMention(message: ChatMessageVariant & { text: string }, play
         return false;
     }
     return (
-        find(myName).test(sanitizePlayerMessage(replaceMentions(message.text, playerNames))) ||
+        find(encodeString(myName)).test(encodeString(replaceMentions(message.text, playerNames))) ||
         (
             myNumber !== undefined && 
-            find("" + (myNumber + 1)).test(sanitizePlayerMessage(replaceMentions(message.text, playerNames)))
+            find("" + (myNumber + 1)).test(encodeString(replaceMentions(message.text, playerNames)))
         )
     )
 }
 
 export default ChatElement;
 
-function playerListToString(playerList: PlayerIndex[], playerNames: string[]): string {
+function playerListToString(playerList: PlayerIndex[], playerNames: UnsafeString[]): string {
     if (playerList.length === 0) {
         return translate("nobody");
     }
     return playerList.map((playerIndex) => {
-        return playerNames[playerIndex];
+        return encodeString(playerNames[playerIndex]);
     }).join(", ");
 }
 
@@ -401,32 +401,36 @@ function roleListToString(roleList: Role[]): string {
     }).join(", ");
 }
 
-export function sanitizePlayerMessage(text: string): string {
-    return DOMPurify.sanitize(text, { 
-        ALLOWED_TAGS: []
-    });
+function htmlEncode(str: string): string {
+    const div = document.createElement('div');
+    div.appendChild(document.createTextNode(str));
+    return div.innerHTML;
+}
+
+export function encodeString(text: UnsafeString): string {
+    return htmlEncode(text as string);
 }
 
 export function translateChatMessage(
     message: ChatMessageVariant,
-    playerNames: string[],
+    playerNames: UnsafeString[],
     roleList?: RoleOutline[]
 ): string {
     switch (message.type) {
         case "lobbyMessage":
-            return sanitizePlayerMessage(replaceMentions(message.text, playerNames));
+            return encodeString(replaceMentions(message.text, playerNames));
         case "normal":
-            return (message.block===true?"\n":"")+sanitizePlayerMessage(replaceMentions(message.text, playerNames));
+            return (message.block===true?"\n":"")+encodeString(replaceMentions(message.text, playerNames));
         case "whisper":
             return translate("chatMessage.whisper", 
-                playerNames[message.fromPlayerIndex],
-                playerNames[message.toPlayerIndex],
-                sanitizePlayerMessage(replaceMentions(message.text, playerNames))
+                encodeString(playerNames[message.fromPlayerIndex]),
+                encodeString(playerNames[message.toPlayerIndex]),
+                encodeString(replaceMentions(message.text, playerNames))
             );
         case "broadcastWhisper":
             return translate("chatMessage.broadcastWhisper",
-                playerNames[message.whisperer],
-                playerNames[message.whisperee],
+                encodeString(playerNames[message.whisperer]),
+                encodeString(playerNames[message.whisperee]),
             );
         case "roleAssignment":
             return translate("chatMessage.roleAssignment", 
@@ -434,38 +438,38 @@ export function translateChatMessage(
             );
         case "playersRoleRevealed":
             return translate("chatMessage.playersRoleRevealed",
-                playerNames[message.player],
+                encodeString(playerNames[message.player]),
                 translate("role."+message.role+".name")
             );
         case "playersRoleConcealed":
             return translate("chatMessage.playersRoleConcealed",
-                playerNames[message.player]
+                encodeString(playerNames[message.player])
             );
         case "tagAdded":
             return translate("chatMessage.tagAdded",
-                playerNames[message.player],
+                encodeString(playerNames[message.player]),
                 translate("tag."+message.tag+".name"),
                 translate("tag."+message.tag)
             );
         case "tagRemoved":
             return translate("chatMessage.tagRemoved",
-                playerNames[message.player],
+                encodeString(playerNames[message.player]),
                 translate("tag."+message.tag+".name"),
                 translate("tag."+message.tag)
             );
         case "playerWonOrLost":
             if(message.won){
                 return translate("chatMessage.playerWon",
-                    playerNames[message.player], translate("role."+message.role+".name")
+                    encodeString(playerNames[message.player]), translate("role."+message.role+".name")
                 );
             }else{
                 return translate("chatMessage.playerLost",
-                    playerNames[message.player], translate("role."+message.role+".name")
+                    encodeString(playerNames[message.player]), translate("role."+message.role+".name")
                 );
             }
         case "playerQuit":
             return translate(`chatMessage.playerQuit${message.gameOver ? ".gameOver" : ""}`,
-                playerNames[message.playerIndex]
+                encodeString(playerNames[message.playerIndex])
             );
         case "youDied":
             return translate("chatMessage.youDied");
@@ -490,7 +494,7 @@ export function translateChatMessage(
                     return translate("chatMessage.phaseChange.trial",
                         translate("phase."+message.phase.type),
                         message.dayNumber,
-                        playerNames[message.phase.playerOnTrial]
+                        encodeString(playerNames[message.phase.playerOnTrial])
                     );
                 case "recess":
                     return translate("chatMessage.phaseChange.recess");
@@ -509,22 +513,22 @@ export function translateChatMessage(
         case "voted":
             if (message.votee !== null) {
                 return translate("chatMessage.voted",
-                    playerNames[message.voter],
-                    playerNames[message.votee],
+                    encodeString(playerNames[message.voter]),
+                    encodeString(playerNames[message.votee]),
                 );
             } else {
                 return translate("chatMessage.voted.cleared",
-                    playerNames[message.voter],
+                    encodeString(playerNames[message.voter]),
                 );
             }
         case "playerNominated":
             return translate("chatMessage.playerNominated",
-                playerNames[message.playerIndex],
+                encodeString(playerNames[message.playerIndex]),
                 playerListToString(message.playersVoted, playerNames)
             );
         case "judgementVerdict":
             return translate("chatMessage.judgementVerdict",
-                playerNames[message.voterPlayerIndex],
+                encodeString(playerNames[message.voterPlayerIndex]),
                 translate("verdict."+message.verdict.toLowerCase())
             );
         case "trialVerdict":{
@@ -536,7 +540,7 @@ export function translateChatMessage(
                 hang = message.innocent < message.guilty
             }
             return translate("chatMessage.trialVerdict",
-                playerNames[message.playerOnTrial],
+                encodeString(playerNames[message.playerOnTrial]),
                 hang?translate("verdict.guilty"):translate("verdict.innocent"),
                 message.innocent,
                 message.guilty
@@ -607,7 +611,7 @@ export function translateChatMessage(
                     out = translate("chatMessage.abilityUsed.selection.twoRoleOutlineOption", first, second);
                     break;
                 case "string":
-                    out = translate("chatMessage.abilityUsed.selection.string", sanitizePlayerMessage(replaceMentions(message.selection.selection, playerNames)));
+                    out = translate("chatMessage.abilityUsed.selection.string", encodeString(replaceMentions(message.selection.selection, playerNames)));
                     break;
                 case "integer":
                     let text = translateChecked("controllerId."+controllerIdToLinkWithPlayer(message.abilityId).replace(/\//g, ".") + ".integer." + message.selection.selection);
@@ -623,31 +627,31 @@ export function translateChatMessage(
             }
             
             let abilityIdString = translateControllerID(message.abilityId);
-                
-            return translate("chatMessage.abilityUsed", playerNames[message.player], abilityIdString, out);
+
+            return translate("chatMessage.abilityUsed", encodeString(playerNames[message.player]), abilityIdString, out);
         case "mayorRevealed":
             return translate("chatMessage.mayorRevealed",
-                playerNames[message.playerIndex],
+                encodeString(playerNames[message.playerIndex]),
             );
         case "martyrRevealed":
             return translate("chatMessage.martyrRevealed",
-                playerNames[message.martyr],
+                encodeString(playerNames[message.martyr]),
             );
         case "reporterReport":
             return translate("chatMessage.reporterReport",
-                sanitizePlayerMessage(replaceMentions(message.report, playerNames))
+                encodeString(replaceMentions(message.report, playerNames))
             );
         case "playerIsBeingInterviewed":
             return translate("chatMessage.playerIsBeingInterviewed",
-                playerNames[message.playerIndex],
+                encodeString(playerNames[message.playerIndex]),
             );
         case "jailedTarget":
             return translate("chatMessage.jailedTarget",
-                playerNames[message.playerIndex],
+                encodeString(playerNames[message.playerIndex]),
             );
         case "jailedSomeone":
             return translate("chatMessage.jailedSomeone",
-                playerNames[message.playerIndex]
+                encodeString(playerNames[message.playerIndex])
             );
         case "wardenPlayersImprisoned":
             return translate("chatMessage.wardenPlayersImprisoned",
@@ -655,25 +659,25 @@ export function translateChatMessage(
             )
         case "deputyKilled":
             return translate("chatMessage.deputyKilled",
-                playerNames[message.shotIndex]
+                encodeString(playerNames[message.shotIndex])
             );
         case "puppeteerPlayerIsNowMarionette":
             return translate("chatMessage.puppeteerPlayerIsNowMarionette",
-                playerNames[message.player]
+                encodeString(playerNames[message.player])
             );
         case "recruiterPlayerIsNowRecruit":
             return translate("chatMessage.recruiterPlayerIsNowRecruit",
-                playerNames[message.player]
+                encodeString(playerNames[message.player])
             );
         case "godfatherBackup":
             if (message.backup !== null) {
-                return translate("chatMessage.godfatherBackup", playerNames[message.backup]);
+                return translate("chatMessage.godfatherBackup", encodeString(playerNames[message.backup]));
             } else {
                 return translate("chatMessage.godfatherBackup.nobody");
             }
         /* NIGHT */
         case "godfatherBackupKilled":
-            return translate("chatMessage.godfatherBackupKilled", playerNames[message.backup]);
+            return translate("chatMessage.godfatherBackupKilled", encodeString(playerNames[message.backup]));
         case "sheriffResult":
             return translate("chatMessage.sheriffResult." + (message.suspicious ? "suspicious" : "innocent"));
         case "snoopResult":
@@ -697,13 +701,13 @@ export function translateChatMessage(
         case "psychicEvil":
             return translate(
                 "chatMessage.psychicEvil",
-                playerNames[message.first],
-                playerNames[message.second]
+                encodeString(playerNames[message.first]),
+                encodeString(playerNames[message.second])
             );
         case "psychicGood":
             return translate(
                 "chatMessage.psychicGood",
-                playerNames[message.player]
+                encodeString(playerNames[message.player])
             );
         case "auditorResult":
             return translate("chatMessage.auditorResult",
@@ -719,13 +723,13 @@ export function translateChatMessage(
             return translate("chatMessage.trapStateEndOfNight."+message.state.type);
         case "playerRoleAndAlibi":
             return translate("chatMessage.playerRoleAndAlibi",
-                playerNames[message.player],
+                encodeString(playerNames[message.player]),
                 translate("role."+message.role+".name"),
-                sanitizePlayerMessage(replaceMentions(message.will, playerNames))
+                encodeString(replaceMentions(message.will, playerNames))
             );
         case "informantResult":
             return translate("chatMessage.informantResult",
-                playerNames[message.player],
+                encodeString(playerNames[message.player]),
                 translate("role."+message.role+".name"),
                 translate("chatMessage.informantResult.visited", playerListToString(message.visited, playerNames)),
                 translate("chatMessage.informantResult.visitedBy", playerListToString(message.visitedBy, playerNames))
@@ -736,14 +740,14 @@ export function translateChatMessage(
             );
         case "ambusherCaught":
             return translate("chatMessage.ambusherCaught",
-                playerNames[message.ambusher]
+                encodeString(playerNames[message.ambusher])
             );
         case "mercenaryHits":
             return translate("chatMessage.mercenaryHits", roleListToString(message.roles));
         case "mercenaryResult":
             return translate("chatMessage.mercenaryResult."+(message.hit?"hit":"notHit"));
         case "mediumHauntStarted":
-            return translate("chatMessage.mediumHauntStarted", playerNames[message.medium], playerNames[message.player]);
+            return translate("chatMessage.mediumHauntStarted", encodeString(playerNames[message.medium]), encodeString(playerNames[message.player]));
         case "youWerePossessed":
             return translate("chatMessage.youWerePossessed" + (message.immune ? ".immune" : ""));
         case "targetHasRole":
@@ -752,7 +756,7 @@ export function translateChatMessage(
             return translate("chatMessage.targetHasWinCondition", translateWinCondition(message.winCondition));
         case "werewolfTrackingResult":
             return translate("chatMessage.werewolfTrackingResult", 
-                playerNames[message.trackedPlayer],
+                encodeString(playerNames[message.trackedPlayer]),
                 playerListToString(message.players, playerNames)
             );
         case "wildcardConvertFailed":
@@ -768,7 +772,7 @@ export function translateChatMessage(
         case "addedToNaughtyList":
             return translate("chatMessage.addedToNaughtyList");
         case "santaAddedPlayerToNaughtyList":
-            return translate("chatMessage.santaAddedPlayerToNaughtyList", playerNames[message.player]);
+            return translate("chatMessage.santaAddedPlayerToNaughtyList", encodeString(playerNames[message.player]));
         case "gameOver": {
             const conclusionString = 
                 translateChecked(`chatMessage.gameOver.conclusion.${message.synopsis.conclusion}`)
@@ -776,7 +780,7 @@ export function translateChatMessage(
             
             return conclusionString + '\n'
                 + message.synopsis.playerSynopses.map((synopsis, index) => 
-                    translate(`chatMessage.gameOver.player.won.${synopsis.won}`, playerNames![index])
+                    translate(`chatMessage.gameOver.player.won.${synopsis.won}`, encodeString(playerNames![index]))
                         + ` (${
                             synopsis.crumbs.map(crumb => translate("chatMessage.gameOver.player.crumb",
                                 translateWinCondition(crumb.winCondition), 
@@ -786,13 +790,13 @@ export function translateChatMessage(
                 ).join('\n');
         }
         case "playerForwardedMessage":
-            return translate(`chatMessage.playerForwardedMessage`, playerNames[message.forwarder]);
+            return translate(`chatMessage.playerForwardedMessage`, encodeString(playerNames[message.forwarder]));
         case "fragileVestBreak":
             console.log(playerNames);
             return translate(
                 `chatMessage.fragileVestBreak`,
                 translate("defense."+message.defense),
-                playerNames[message.playerWithVest]
+                encodeString(playerNames[message.playerWithVest])
             );
         case "mercenaryYouAreAHit":
         case "deputyShotYou":
@@ -839,18 +843,18 @@ export type ChatMessage = {
 }
 export type ChatMessageVariant = {
     type: "lobbyMessage",
-    sender: string,
-    text: string
+    sender: UnsafeString,
+    text: UnsafeString
 } | {
     type: "normal", 
     messageSender: MessageSender,
-    text: string,
+    text: UnsafeString,
     block: boolean
 } | {
     type: "whisper", 
     fromPlayerIndex: PlayerIndex, 
     toPlayerIndex: PlayerIndex, 
-    text: string
+    text: UnsafeString
 } | {
     type: "broadcastWhisper", 
     whisperer: PlayerIndex, 
@@ -948,7 +952,7 @@ export type ChatMessageVariant = {
     type: "politicianCountdownStarted"
 } | {
     type: "reporterReport",
-    report: string
+    report: UnsafeString
 } | {
     type: "playerIsBeingInterviewed",
     playerIndex: PlayerIndex
@@ -1081,7 +1085,7 @@ export type ChatMessageVariant = {
     type: "playerRoleAndAlibi",
     player: PlayerIndex,
     role: Role,
-    will: string
+    will: UnsafeString
 } | {
     type: "informantResult", 
     player: PlayerIndex

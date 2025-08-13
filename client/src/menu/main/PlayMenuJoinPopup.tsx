@@ -2,6 +2,7 @@ import React, { ReactElement } from "react";
 import { LobbyPreviewData } from "../../game/packet";
 import translate from "../../game/lang";
 import "./playMenuJoinPopup.css";
+import { encodeString } from "../../components/ChatMessage";
 
 export default function PlayMenuJoinPopup(props: Readonly<{
     roomCode: number,
@@ -14,9 +15,9 @@ export default function PlayMenuJoinPopup(props: Readonly<{
         
         <div className="rejoinColumn">
             {props.lobbyData.players.map((player, j)=>{
-                return <button key={player[1]} onClick={()=>{
+                return <button key={player[1] as string} onClick={()=>{
                     props.joinGame(props.roomCode, player[0]);
-                }}>{player[1]}</button>
+                }}>{encodeString(player[1])}</button>
             })}
         </div>
     </div>
