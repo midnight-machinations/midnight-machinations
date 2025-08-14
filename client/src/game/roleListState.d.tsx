@@ -68,7 +68,7 @@ export type RoleOrRoleSet = ({
 
 
 export function translateRoleOutline(roleOutline: RoleOutline, playerNames?: string[]): string {
-    return roleOutline.map(outline => translateRoleOutlineOption(outline, playerNames)).join(" "+translate("union")+" ")
+    return roleOutline.map(outline => translateRoleOutlineOption(outline, playerNames)).join(" "+translate("union:var.1")+" ")
 }
 
 export function translatePlayerPool(playerPool: PlayerIndex[], playerNames: string[]): string {
@@ -91,12 +91,13 @@ export function translateRoleOutlineOption(roleOutlineOption: RoleOutlineOption,
         if (roleOutlineOption.insiderGroups.length === 0) {
             out += translate("chatGroup.all.icon")
         }
-        for (const insiderGroup of roleOutlineOption.insiderGroups) {
-            out += translate(`chatGroup.${insiderGroup}.icon`) + ' '
-        }
+        out += roleOutlineOption.insiderGroups
+            .map(insiderGroup => translate(`chatGroup.${insiderGroup}.icon`))
+            .join(' ' + translate("union") + ' ');
+        out += ', '
     }
     if (roleOutlineOption.winIfAny) {
-        out += `${translateWinCondition({ type: "gameConclusionReached", winIfAny: roleOutlineOption.winIfAny })} `
+        out += `${translateWinCondition({ type: "gameConclusionReached", winIfAny: roleOutlineOption.winIfAny })}, `;
     }
     if ("roleSet" in roleOutlineOption) {
         out += translate(roleOutlineOption.roleSet)
