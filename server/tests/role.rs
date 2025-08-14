@@ -807,7 +807,7 @@ fn ambusher_basic(){
         protected_player: Jester,
         townie1: Detective,
         townie2: Detective,
-        blackmailer: Blackmailer
+        blackmailer: Informant
     );
 
     
