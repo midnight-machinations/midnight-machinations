@@ -1,4 +1,4 @@
-import { PlayerIndex } from "./gameState.d";
+import { PlayerIndex, UnsafeString } from "./gameState.d";
 import { RoleSet } from "./roleListState.d";
 import { Role } from "./roleState.d";
 
@@ -17,9 +17,9 @@ export type GraveInformation = {
     type: "normal",
     
     role: Role,
-    will: string,
+    will: UnsafeString,
     deathCause: GraveDeathCause,
-    deathNotes: string[],
+    deathNotes: UnsafeString[],
 }
 
 export type GraveDeathCause = {

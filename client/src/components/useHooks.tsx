@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import GAME_MANAGER from "..";
 import { StateEventType } from "../game/gameManager.d";
-import GameState, { LobbyState, PlayerGameState } from "../game/gameState.d";
+import GameState, { LobbyState, PlayerGameState, UnsafeString } from "../game/gameState.d";
 import DUMMY_NAMES from "../resources/dummyNames.json";
 import deepEqual from "deep-equal";
 
@@ -137,7 +137,7 @@ export function useSpectator(): boolean | undefined {
     )
 }
 
-export function usePlayerNames(): string[] {
+export function usePlayerNames(): UnsafeString[] {
     return useLobbyOrGameState(
         state => {
             if (state.stateType === "game") {

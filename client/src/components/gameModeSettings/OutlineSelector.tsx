@@ -10,9 +10,10 @@ import Select, { dropdownPlacementFunction, SelectOptionsSearch } from "../Selec
 import StyledText from "../StyledText";
 import { Button, RawButton } from "../Button";
 import { useLobbyOrGameState, useLobbyState } from "../useHooks";
-import { Conclusion, CONCLUSIONS, INSIDER_GROUPS, InsiderGroup, PlayerClientType, PlayerIndex, translateConclusion, translateWinCondition } from "../../game/gameState.d";
+import { Conclusion, CONCLUSIONS, INSIDER_GROUPS, InsiderGroup, PlayerClientType, PlayerIndex, translateConclusion, translateWinCondition, UnsafeString } from "../../game/gameState.d";
 import Popover from "../Popover";
 import DUMMY_NAMES from "../../resources/dummyNames.json";
+import { encodeString } from "../ChatMessage";
 
 type RoleOutlineSelectorProps = {
     roleOutline: RoleOutline,
@@ -365,7 +366,7 @@ function InsiderGroupSelectorLabel(props: Readonly<{
     </>
 }
 
-function useNamesForPlayerPool(numPlayers?: number): string[] {
+function useNamesForPlayerPool(numPlayers?: number): UnsafeString[] {
     return useLobbyState(
         state => 
             state.players.list
@@ -404,7 +405,7 @@ function PlayerPoolSelector(props: Readonly<{
     const playersNotChosen = playerNames.map((_, index)=>index).filter(index => !playerPool.includes(index));
 
     const optionsSearch = new Map<number, [ReactElement, string]>(playerNames.map((name, index) => [
-        index, [<StyledText noLinks={true}>{name}</StyledText>, name]
+        index, [<StyledText noLinks={true}>{encodeString(name)}</StyledText>, encodeString(name)]
     ]));
 
     return <div className="conclusions-selector">
