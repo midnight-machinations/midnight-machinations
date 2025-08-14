@@ -1,5 +1,5 @@
-import { Grave } from "./graveState";
-import { ChatMessage } from "../components/ChatMessage";
+import { Grave, GraveIndex } from "./graveState";
+import { ChatMessage, ChatMessageIndex } from "../components/ChatMessage";
 import { Role, RoleState } from "./roleState.d";
 import { RoleList } from "./roleListState.d";
 import { LobbyPreviewData } from "./packet";
@@ -36,7 +36,7 @@ export type LobbyState = {
     enabledModifiers: ModifierType[],
 
     players: ListMap<LobbyClientID, LobbyClient>,
-    chatMessages: ChatMessage[],
+    chatMessages: ListMap<ChatMessageIndex, ChatMessage>,
 }
 export type LobbyClient = {
     ready: "host" | "ready" | "notReady",
@@ -73,8 +73,8 @@ type GameState = {
 
     myId: number | null,
 
-    chatMessages : ChatMessage[],
-    graves: Grave[],
+    chatMessages : ListMap<ChatMessageIndex, ChatMessage>,
+    graves: ListMap<GraveIndex, Grave>,
     players: Player[],
     
     phaseState: PhaseState,

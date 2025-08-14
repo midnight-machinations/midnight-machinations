@@ -2,7 +2,33 @@
 use super::event::before_initial_role_creation::BeforeInitialRoleCreation;
 use rand::seq::SliceRandom;
 
-use crate::{client_connection::ClientConnection, game::{ability_input::SavedControllersMap, components::{confused::Confused, cult::Cult, detained::Detained, drunk_aura::DrunkAura, fragile_vest::FragileVests, insider_group::{InsiderGroupID, InsiderGroups}, mafia::Mafia, mafia_recruits::MafiaRecruits, pitchfork::Pitchfork, player_component::PlayerComponent, poison::Poison, puppeteer_marionette::PuppeteerMarionette, silenced::Silenced, syndicate_gun_item::SyndicateGunItem, synopsis::SynopsisTracker, tags::Tags, verdicts_today::VerdictsToday, win_condition::WinCondition}, event::on_game_start::OnGameStart, game_client::GameClient, modifiers::Modifiers, phase::PhaseStateMachine, player::{Player, PlayerIndex, PlayerInitializeParameters, PlayerReference}, role_list::RoleAssignment, role_outline_reference::RoleOutlineReference, settings::Settings, spectator::{spectator_pointer::SpectatorPointer, Spectator, SpectatorInitializeParameters}, Assignments, Game, RejectStartReason}, packet::ToClientPacket, room::RoomClientID, vec_map::VecMap};
+use crate::{
+    client_connection::ClientConnection,
+    game::{
+        ability_input::SavedControllersMap,
+        chat::ChatComponent,
+        components::{
+            confused::Confused, cult::Cult, detained::Detained,
+            drunk_aura::DrunkAura, fragile_vest::FragileVests,
+            graves::Graves, insider_group::{InsiderGroupID, InsiderGroups},
+            mafia::Mafia, mafia_recruits::MafiaRecruits, pitchfork::Pitchfork,
+            player_component::PlayerComponent, poison::Poison,
+            puppeteer_marionette::PuppeteerMarionette, silenced::Silenced,
+            syndicate_gun_item::SyndicateGunItem, synopsis::SynopsisTracker,
+            tags::Tags, verdicts_today::VerdictsToday, win_condition::WinCondition
+        },
+        event::on_game_start::OnGameStart, game_client::GameClient,
+        modifiers::Modifiers, phase::PhaseStateMachine,
+        player::{Player, PlayerIndex, PlayerInitializeParameters, PlayerReference},
+        role_list::RoleAssignment, role_outline_reference::RoleOutlineReference,
+        settings::Settings,
+        spectator::{
+            spectator_pointer::SpectatorPointer, Spectator,SpectatorInitializeParameters
+        },
+        Assignments, Game, RejectStartReason
+    },
+    packet::ToClientPacket, room::RoomClientID, vec_map::VecMap
+};
 
 impl Game{
     /// `players` must have length 255 or lower.
@@ -76,7 +102,6 @@ impl Game{
                 spectators: spectators.clone().into_iter().map(Spectator::new).collect(),
                 spectator_chat_messages: Vec::new(),
                 players: new_players.into_boxed_slice(),
-                graves: Vec::new(),
                 phase_machine: PhaseStateMachine::new(settings.phase_times.clone()),
                 modifiers: Modifiers::default_from_settings(settings.enabled_modifiers.clone()),
                 settings,
@@ -89,7 +114,8 @@ impl Game{
                 mafia_recruits: MafiaRecruits::default(),
                 verdicts_today: VerdictsToday::default(),
                 poison: Poison::default(),
-
+                
+                graves: Graves::default(),
                 insider_groups: unsafe{InsiderGroups::new(num_players, &assignments)},
                 detained: Detained::default(),
                 confused: Confused::default(),
@@ -98,7 +124,8 @@ impl Game{
                 tags: Tags::default(),
                 silenced: Silenced::default(),
                 fragile_vests: unsafe{PlayerComponent::<FragileVests>::new(num_players)},
-                win_condition: unsafe{PlayerComponent::<WinCondition>::new(num_players, &assignments)}
+                win_condition: unsafe{PlayerComponent::<WinCondition>::new(num_players, &assignments)},
+                chat_messages: unsafe{ChatComponent::new(num_players)}
             };
 
             // Just distribute insider groups, this is for game over checking (Keeps game running syndicate gun)

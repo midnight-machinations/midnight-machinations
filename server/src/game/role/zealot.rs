@@ -3,7 +3,7 @@ use serde::Serialize;
 use crate::game::attack_power::{AttackPower, DefensePower};
 use crate::game::components::cult::{Cult, CultAbility};
 use crate::game::event::on_midnight::{MidnightVariables, OnMidnightPriority};
-use crate::game::grave::GraveKiller;
+use crate::game::components::graves::grave::GraveKiller;
 use crate::game::player::PlayerReference;
 
 

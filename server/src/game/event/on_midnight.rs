@@ -1,7 +1,10 @@
 use crate::{event_priority, game::{
-    attack_power::DefensePower, chat::ChatMessageVariant, components::{
-        detained::Detained, fragile_vest::FragileVests, guard::Guard, mafia::Mafia, mafia_recruits::MafiaRecruits, pitchfork::Pitchfork, player_component::PlayerComponent, poison::Poison, puppeteer_marionette::PuppeteerMarionette, syndicate_gun_item::SyndicateGunItem
-    }, grave::GraveKiller, modifiers::Modifiers, player::PlayerReference, role::{Role, RoleState}, visit::Visit, Game
+    attack_power::DefensePower, chat::ChatMessageVariant, 
+    components::{
+        detained::Detained, fragile_vest::FragileVests, graves::grave::GraveKiller, guard::Guard, mafia::Mafia, mafia_recruits::MafiaRecruits, pitchfork::Pitchfork, player_component::PlayerComponent, poison::Poison, puppeteer_marionette::PuppeteerMarionette, syndicate_gun_item::SyndicateGunItem
+    },
+    modifiers::Modifiers, player::PlayerReference,
+    role::{Role, RoleState}, visit::Visit, Game
 }};
 use super::Event;
 

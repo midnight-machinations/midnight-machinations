@@ -1,7 +1,6 @@
 #![allow(clippy::get_first, reason = "Often need to get first two visits manually.")]
 
 pub mod game_client;
-pub mod grave;
 pub mod phase;
 pub mod player;
 pub mod chat;
@@ -53,6 +52,8 @@ use role_outline_reference::RoleOutlineReference;
 use serde::Serialize;
 
 use crate::client_connection::ClientConnection;
+use crate::game::chat::ChatPlayerComponent;
+use crate::game::components::graves::Graves;
 use crate::game::game_client::GameClient;
 use crate::game::game_client::GameClientLocation;
 use crate::game::modifiers::hidden_nomination_votes::HiddenNominationVotes;
@@ -68,14 +69,11 @@ use player::PlayerReference;
 use player::Player;
 use phase::PhaseStateMachine;
 use settings::Settings;
-use grave::Grave;
 use self::components::{
     cult::Cult,
     puppeteer_marionette::PuppeteerMarionette
 };
 use self::game_conclusion::GameConclusion;
-use self::event::on_grave_added::OnGraveAdded;
-use self::grave::GraveReference;
 use self::phase::PhaseState;
 use self::spectator::{
     spectator_pointer::{
@@ -99,7 +97,6 @@ pub struct Game {
     pub assignments: VecMap<PlayerReference, (RoleOutlineReference, RoleAssignment)>,
 
     pub players: Box<[Player]>,
-    pub graves: Vec<Grave>,
 
     phase_machine : PhaseStateMachine,
 
@@ -109,6 +106,7 @@ pub struct Game {
     
     
     //components with data
+    pub graves: Graves,
     pub saved_controllers: SavedControllersMap,
     syndicate_gun_item: SyndicateGunItem,
     pub cult: Cult,
@@ -127,7 +125,8 @@ pub struct Game {
     pub tags: Tags,
     pub silenced: Silenced,
     pub fragile_vests: PlayerComponent<FragileVests>,
-    pub win_condition: PlayerComponent<WinCondition>
+    pub win_condition: PlayerComponent<WinCondition>,
+    pub chat_messages: PlayerComponent<ChatPlayerComponent>
 }
 
 #[derive(Serialize, Debug, Clone, Copy)]
@@ -287,16 +286,6 @@ impl Game {
         self.phase_machine.day_number
     }
 
-    pub fn add_grave(&mut self, grave: Grave) {
-        if let Ok(grave_index) = self.graves.len().try_into() {
-            self.graves.push(grave.clone());
-
-            if let Some(grave_ref) = GraveReference::new(self, grave_index) {
-                OnGraveAdded::new(grave_ref).invoke(self);
-            }
-        }
-    }
-
     pub fn add_message_to_chat_group(&mut self, group: ChatGroup, variant: ChatMessageVariant){
         let message = ChatMessage::new_non_private(variant.clone(), group.clone());
 
@@ -315,8 +304,9 @@ impl Game {
         }
     }
     pub fn add_chat_message_to_spectators(&mut self, message: ChatMessageVariant){
+        let new_idx = self.spectator_chat_messages.len();
         for spectator in self.spectators.iter_mut(){
-            spectator.queued_chat_messages.push(message.clone());
+            spectator.queued_chat_messages.push_back((new_idx, message.clone()));
         }
         self.spectator_chat_messages.push(message);
     }

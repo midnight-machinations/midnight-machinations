@@ -1,6 +1,18 @@
 use std::collections::VecDeque;
 
-use crate::{game::{chat::{ChatMessage, ChatMessageVariant}, game_client::{GameClient, GameClientLocation}, phase::PhaseType, player::{PlayerIndex, PlayerInitializeParameters, PlayerReference}, spectator::{spectator_pointer::{SpectatorIndex, SpectatorPointer}, SpectatorInitializeParameters}, Game, RejectStartReason}, log, packet::{ToClientPacket, ToServerPacket}, room::{name_validation::{self, sanitize_server_name}, RemoveRoomClientResult, RoomClientID, RoomState}, strings::TidyableString, vec_map::VecMap, websocket_connections::connection::ClientSender};
+use crate::{
+    game::{
+        chat::{ChatMessage, ChatMessageVariant},
+        game_client::{GameClient, GameClientLocation},
+        phase::PhaseType, player::{PlayerIndex, PlayerInitializeParameters, PlayerReference},
+        spectator::{spectator_pointer::{SpectatorIndex, SpectatorPointer},
+        SpectatorInitializeParameters}, Game, RejectStartReason
+    }, 
+    log, packet::{ToClientPacket, ToServerPacket}, 
+    room::{name_validation::{self, sanitize_server_name}, RemoveRoomClientResult,
+    RoomClientID, RoomState}, strings::TidyableString, vec_map::{vec_map, VecMap},
+    websocket_connections::connection::ClientSender
+};
 
 use super::{lobby_client::{LobbyClient, LobbyClientType, Ready}, Lobby};
 
@@ -26,12 +38,14 @@ impl Lobby {
                     break 'packet_match
                 };
 
-                self.send_to_all(ToClientPacket::AddChatMessages { chat_messages: vec![
+                self.send_to_all(ToClientPacket::AddChatMessages { chat_messages: vec_map![(
+                    self.chat_message_index,
                     ChatMessage::new_non_private(
                         ChatMessageVariant::LobbyMessage { sender: name, text }, 
                         crate::game::chat::ChatGroup::All
                     )
-                ]});
+                )]});
+                self.chat_message_index = self.chat_message_index.saturating_add(1);
             }
             ToServerPacket::SetSpectator { spectator } => {
                 let player_names = self.clients.values().filter_map(|p| {

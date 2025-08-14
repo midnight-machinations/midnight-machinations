@@ -24,11 +24,22 @@ use vec1::Vec1;
 
 use crate::{
     client_connection::ClientConnection, game::{
-        ability_input::*, chat::{ChatGroup, ChatMessage}, components::{insider_group::InsiderGroupID, tags::Tag}, game_client::GameClientLocation, grave::Grave, modifiers::ModifierType, phase::{PhaseState, PhaseType}, player::{PlayerIndex, PlayerReference}, role::{
+        ability_input::*, chat::{ChatGroup, ChatMessage, ChatMessageIndex},
+        components::{
+            graves::{grave::Grave, grave_reference::GraveReference}, insider_group::InsiderGroupID, tags::Tag
+        },
+        game_client::GameClientLocation,
+        modifiers::ModifierType, phase::{PhaseState, PhaseType},
+        player::{PlayerIndex, PlayerReference},
+        role::{
             doomsayer::DoomsayerGuess,
             ClientRoleStateEnum, Role
-        }, role_list::{RoleList, RoleOutline}, settings::PhaseTimeSettings, verdict::Verdict, GameOverReason, RejectStartReason
-    }, lobby::lobby_client::LobbyClient, room::RoomClientID, vec_map::VecMap, vec_set::VecSet, websocket_listener::RoomCode
+        },
+        role_list::{RoleList, RoleOutline}, settings::PhaseTimeSettings, verdict::Verdict,
+        GameOverReason, RejectStartReason
+    }, 
+    lobby::lobby_client::LobbyClient, room::RoomClientID, vec_map::VecMap, vec_set::VecSet,
+    websocket_listener::RoomCode
 };
 
 #[derive(Serialize, Debug, Clone)]
@@ -146,8 +157,9 @@ pub enum ToClientPacket{
     YourVoteFastForwardPhase{fast_forward: bool},
 
     #[serde(rename_all = "camelCase")]
-    AddChatMessages{chat_messages: Vec<ChatMessage>},
-    AddGrave{grave: Grave},
+    AddChatMessages{chat_messages: VecMap<ChatMessageIndex, ChatMessage>},
+    #[serde(rename_all = "camelCase")]
+    AddGrave{grave: Grave, grave_ref: GraveReference},
 
     #[serde(rename_all = "camelCase")]
     NightMessages{chat_messages: Vec<ChatMessage>},
