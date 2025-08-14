@@ -817,7 +817,7 @@ fn ambusher_basic(){
     townie2.send_ability_input_player_list_typical(protected_player);
     blackmailer.send_ability_input_player_list_typical(protected_player);
 
-    game.skip_to(Night, 3);
+    game.skip_to(Night, 4);
 
     assert!(ambusher.alive());
     assert!(protected_player.alive());
@@ -837,7 +837,6 @@ fn ambusher_basic(){
     assert!(protected_player.alive());
     assert!(townie1.alive() || townie2.alive());
     assert!(!townie1.alive() || !townie2.alive());
-    // assert!(!blackmailer.alive());
     assert!(blackmailer.get_messages().contains(&ChatMessageVariant::YouSurvivedAttack)||!blackmailer.alive());
     assert!(townie1.alive() == townie1_status);
     assert!(townie2.alive() == townie2_status);
