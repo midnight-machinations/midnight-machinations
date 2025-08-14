@@ -4,12 +4,12 @@ use serde::{Deserialize, Serialize};
 
 use crate::game::attack_power::AttackPower;
 use crate::game::chat::ChatMessageVariant;
+use crate::game::components::graves::grave::{Grave, GraveKiller};
 use crate::game::components::win_condition::WinCondition;
 use crate::game::event::on_midnight::{MidnightVariables, OnMidnightPriority};
 use crate::game::game_conclusion::GameConclusion;
-use crate::game::grave::Grave;
 use crate::game::phase::PhaseType;
-use crate::game::{attack_power::DefensePower, grave::GraveKiller};
+use crate::game::attack_power::DefensePower;
 use crate::game::player::PlayerReference;
 
 use crate::game::visit::Visit;

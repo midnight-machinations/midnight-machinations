@@ -36,14 +36,14 @@ use serde::{Deserialize, Serialize};
 use skip_day_1::SkipDay1;
 use two_thirds_majority::TwoThirdsMajority;
 
-use crate::{vec_map::VecMap, vec_set::VecSet};
+use crate::{game::components::graves::grave_reference::GraveReference, vec_map::VecMap, vec_set::VecSet};
 
 use super::{ability_input::AbilityInput,
     event::{
         on_midnight::{MidnightVariables, OnMidnight, OnMidnightPriority},
         on_whisper::{OnWhisper, WhisperFold, WhisperPriority}
     },
-    grave::GraveReference, player::PlayerReference, Game
+    player::PlayerReference, Game
 };
 
 

@@ -4,12 +4,12 @@ use serde::Serialize;
 use crate::game::ability_input::AvailablePlayerListSelection;
 use crate::game::attack_power::DefensePower;
 use crate::game::chat::ChatMessageVariant;
+use crate::game::components::graves::grave::GraveInformation;
+use crate::game::components::graves::grave_reference::GraveReference;
 use crate::game::event::on_midnight::MidnightVariables;
 use crate::game::event::on_midnight::OnMidnightPriority;
 use crate::game::components::tags::TagSetID;
 use crate::game::components::tags::Tags;
-use crate::game::grave::GraveInformation;
-use crate::game::grave::GraveReference;
 use crate::game::player::PlayerReference;
 
 use crate::game::visit::Visit;

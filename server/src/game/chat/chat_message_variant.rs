@@ -1,8 +1,7 @@
 use serde::{Deserialize, Serialize};
 
 use crate::{game::{
-    ability_input::*, attack_power::DefensePower, components::{synopsis::Synopsis, tags::Tag,
-        win_condition::WinCondition}, grave::Grave, phase::PhaseState, player::{PlayerIndex, PlayerReference}, role::{
+    ability_input::*, attack_power::DefensePower, components::{graves::grave::Grave, synopsis::Synopsis, tags::Tag, win_condition::WinCondition}, phase::PhaseState, player::{PlayerIndex, PlayerReference}, role::{
             auditor::AuditorResult, engineer::TrapState, kira::KiraResult, krampus::KrampusAbility,
             santa_claus::SantaListKind, spy::SpyBug, Role
         }, role_list::RoleOutline, role_outline_reference::OutlineIndex, verdict::Verdict

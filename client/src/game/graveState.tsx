@@ -2,6 +2,8 @@ import { PlayerIndex } from "./gameState.d";
 import { RoleSet } from "./roleListState.d";
 import { Role } from "./roleState.d";
 
+export type GraveIndex = number;
+
 export type Grave = {
     player: PlayerIndex,
     diedPhase: GravePhase,
@@ -9,7 +11,7 @@ export type Grave = {
     information: GraveInformation,
 }
 
-export type GraveInformation ={ 
+export type GraveInformation = {
     type: "obscured",
 } | {
     type: "normal",

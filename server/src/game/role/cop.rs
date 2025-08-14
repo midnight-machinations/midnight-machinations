@@ -7,7 +7,7 @@ use crate::game::attack_power::DefensePower;
 use crate::game::components::night_visits::NightVisits;
 use crate::game::event::on_midnight::{MidnightVariables, OnMidnightPriority};
 use crate::game::game_conclusion::GameConclusion;
-use crate::game::grave::GraveKiller;
+use crate::game::components::graves::grave::GraveKiller;
 use crate::game::player::PlayerReference;
 
 use crate::game::visit::Visit;

@@ -2,9 +2,10 @@ use serde::Serialize;
 
 use crate::game::ability_input::ControllerParametersMap;
 use crate::game::attack_power::AttackPower;
+use crate::game::components::graves::grave::GraveKiller;
 use crate::game::event::on_midnight::{MidnightVariables, OnMidnightPriority};
 use crate::game::role_list::RoleSet;
-use crate::game::{attack_power::DefensePower, grave::GraveKiller};
+use crate::game::attack_power::DefensePower;
 use crate::game::player::PlayerReference;
 
 use crate::game::visit::Visit;

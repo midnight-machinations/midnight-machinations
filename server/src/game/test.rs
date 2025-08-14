@@ -1,5 +1,5 @@
 
-    use crate::vec_map::VecMap;
+    use crate::{game::{chat::ChatComponent, components::graves::Graves}, vec_map::VecMap};
 
     use super::{
         ability_input::saved_controllers_map::SavedControllersMap, components::{
@@ -51,10 +51,10 @@
             spectators: Vec::new(),
             spectator_chat_messages: Vec::new(),
             players: players.into_boxed_slice(),
-            graves: Vec::new(),
             phase_machine: PhaseStateMachine::new(settings.phase_times.clone()),
             settings,
 
+            graves: Graves::default(),
             saved_controllers: SavedControllersMap::default(),
             syndicate_gun_item: SyndicateGunItem::default(),
             cult: Cult::default(),
@@ -72,7 +72,8 @@
             tags: Tags::default(),
             silenced: Silenced::default(),
             fragile_vests: unsafe{PlayerComponent::<FragileVests>::new(num_players)},
-            win_condition: unsafe{PlayerComponent::<WinCondition>::new(num_players, &assignments)}
+            win_condition: unsafe{PlayerComponent::<WinCondition>::new(num_players, &assignments)},
+            chat_messages: unsafe{ChatComponent::new(num_players)}
         };
 
 

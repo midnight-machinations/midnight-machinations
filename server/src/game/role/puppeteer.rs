@@ -3,6 +3,7 @@ use serde::Serialize;
 use crate::game::ability_input::{AvailableIntegerSelection, AvailablePlayerListSelection};
 use crate::game::attack_power::AttackPower;
 use crate::game::components::detained::Detained;
+use crate::game::components::graves::grave::GraveKiller;
 use crate::game::event::on_midnight::{MidnightVariables, OnMidnightPriority};
 use crate::game::{
     attack_power::DefensePower,
@@ -63,7 +64,7 @@ impl RoleStateImpl for Puppeteer {
                     actor_ref,
                     game,
                     midnight_variables,
-                    crate::game::grave::GraveKiller::Role(Role::Puppeteer),
+                    GraveKiller::Role(Role::Puppeteer),
                     AttackPower::ArmorPiercing,
                     true
                 );

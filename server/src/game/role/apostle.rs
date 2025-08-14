@@ -7,7 +7,7 @@ use crate::game::components::cult::{Cult, CultAbility};
 use crate::game::components::insider_group::InsiderGroupID;
 use crate::game::components::win_condition::WinCondition;
 use crate::game::event::on_midnight::{MidnightVariables, OnMidnightPriority};
-use crate::game::grave::GraveKiller;
+use crate::game::components::graves::grave::GraveKiller;
 use crate::game::player::PlayerReference;
 use crate::game::game_conclusion::GameConclusion;
 
