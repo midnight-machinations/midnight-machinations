@@ -1,11 +1,22 @@
 
 
-use crate::{game::{ability_input::{AbilityInput, AvailableBooleanSelection, AvailableStringSelection, AvailableUnitSelection, BooleanSelection, ControllerID, ControllerParametersMap, PlayerListSelection, StringSelection}, chat::{ChatGroup, ChatMessageVariant, MessageSender}, event::{on_whisper::OnWhisper, Event}, player::PlayerReference, role::{Role, RoleState}, Game}, strings::TidyableString, vec_set::VecSet};
+use crate::{
+    game::{
+        ability_input::{
+            AvailableBooleanSelection,
+            AvailableStringSelection, AvailableUnitSelection, BooleanSelection,
+            ControllerID, ControllerParametersMap, PlayerListSelection, StringSelection
+        },
+        chat::{ChatComponent, ChatGroup, ChatMessageVariant, MessageSender},
+        event::{on_validated_ability_input_received::OnValidatedAbilityInputReceived, on_whisper::OnWhisper, Event}, player::PlayerReference,
+        role::{Role, RoleState}, Game
+    },
+    strings::TidyableString, vec_set::VecSet
+};
 
-pub struct ChatController;
-impl ChatController{
-    pub fn on_validated_ability_input_received(game: &mut Game, _player: PlayerReference, input: AbilityInput){
-        match input.id() {
+impl ChatComponent{
+    pub fn on_validated_ability_input_received(game: &mut Game, event: &OnValidatedAbilityInputReceived, _fold: &mut (), _priority: ()){
+        match event.input.id() {
             ControllerID::SendChat { player } => {
                 Self::send_chat(game, player);
             },

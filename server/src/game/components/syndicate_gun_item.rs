@@ -1,7 +1,7 @@
 use crate::{game::{
     ability_input::*, attack_power::AttackPower, components::graves::grave::GraveKiller, event::{on_add_insider::OnAddInsider,
     on_midnight::{MidnightVariables, OnMidnight, OnMidnightPriority},
-    on_remove_insider::OnRemoveInsider}, phase::PhaseType, player::PlayerReference, role_list::RoleSet, visit::{Visit, VisitTag}, Game
+    on_remove_insider::OnRemoveInsider, on_validated_ability_input_received::OnValidatedAbilityInputReceived}, phase::PhaseType, player::PlayerReference, role_list::RoleSet, visit::{Visit, VisitTag}, Game
 }, vec_set};
 
 use super::{detained::Detained, insider_group::InsiderGroupID, night_visits::NightVisits, tags::Tags};
@@ -130,22 +130,22 @@ impl SyndicateGunItem {
             _ => {}
         }
     }
-    pub fn on_validated_ability_input_received(game: &mut Game, actor_ref: PlayerReference, ability_input: AbilityInput) {
+    pub fn on_validated_ability_input_received(game: &mut Game, event: &OnValidatedAbilityInputReceived, _fold: &mut (), _priority: ()) {
         if let Some(player_with_gun) = game.syndicate_gun_item.player_with_gun {
-            if actor_ref != player_with_gun {
+            if event.actor_ref != player_with_gun {
                 return;
             }
         }else{
             return;
         }
 
-        let Some(PlayerListSelection(target)) = ability_input
+        let Some(PlayerListSelection(target)) = event.input
             .get_player_list_selection_if_id(ControllerID::SyndicateGunItemGive)
         else {return};
         let Some(target) = target.first() else {return};
 
         if
-            actor_ref != *target &&
+            event.actor_ref != *target &&
             target.alive(game) &&
             InsiderGroupID::Mafia.contains_player(game, *target) 
         {

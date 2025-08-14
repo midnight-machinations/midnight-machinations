@@ -8,7 +8,6 @@ use std::collections::VecDeque;
 pub use chat_group::*;
 pub use chat_message::*;
 pub use chat_message_variant::*;
-pub use chat_controller::*;
 
 use crate::game::{components::player_component::PlayerComponent, player::PlayerReference, Game};
 
@@ -38,16 +37,15 @@ impl ChatComponent{
         chat_player.messages.push(message.clone());
         chat_player.not_sent_messages.push_back((index, message.clone()));
     }
-    pub fn chat_messages<'a>(game: &'a Game, player: PlayerReference) -> &'a Vec<ChatMessage> {
+    pub fn chat_messages(game: &Game, player: PlayerReference) -> &Vec<ChatMessage> {
         &game.chat_messages.get(player).messages
     }
-    pub fn not_sent_messages<'a>(game: &'a Game, player: PlayerReference) -> &'a VecDeque<(ChatMessageIndex, ChatMessage)> {
+    pub fn not_sent_messages(game: &Game, player: PlayerReference) -> &VecDeque<(ChatMessageIndex, ChatMessage)> {
         &game.chat_messages.get(player).not_sent_messages
     }
-    pub fn not_sent_messages_pop_front<'a>(game: &'a mut Game, player: PlayerReference) -> Option<(ChatMessageIndex, ChatMessage)> {
+    pub fn not_sent_messages_pop_front(game: &mut Game, player: PlayerReference) -> Option<(ChatMessageIndex, ChatMessage)> {
         game.chat_messages.get_mut(player).not_sent_messages.pop_front()
     }
-    // #[expect(clippy::assigning_clones, reason = "Reference rules prevents this")]
     pub fn requeue_chat_messages(game: &mut Game, player: PlayerReference){
         let mut messages = Self::chat_messages(game, player)
             .clone()
