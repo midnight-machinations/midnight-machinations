@@ -24,7 +24,7 @@ impl ControllerParametersMap{
             controllers: vec_map!((id, ability_data))
         }
     }
-    pub fn builder(game: &Game) -> ControllerParametersBuilder {
+    pub fn builder(game: &'_ Game) -> ControllerParametersBuilder<'_> {
         ControllerParametersBuilder::new(game)
     }
     pub fn insert_ability(&mut self, id: ControllerID, ability_data: ControllerParameters){

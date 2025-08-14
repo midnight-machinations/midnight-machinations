@@ -18,9 +18,7 @@ impl Room {
         //RATE LIMITER
         match incoming_packet {
             ToServerPacket::Judgement { .. } |
-            ToServerPacket::SendChatMessage { .. } |
-            ToServerPacket::SendLobbyMessage { .. } |
-            ToServerPacket::SendWhisper { .. } => {
+            ToServerPacket::SendLobbyMessage { .. } => {
                 let Some(last_message_times) = (match self {
                     Self::Game(game) => game.get_client_last_message_times(room_client_id),
                     Self::Lobby(lobby) => lobby.get_client_last_message_times(room_client_id)

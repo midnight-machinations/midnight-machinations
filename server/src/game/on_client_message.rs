@@ -1,9 +1,22 @@
-use crate::{lobby::{lobby_client::LobbyClient, Lobby}, log, packet::{ToClientPacket, ToServerPacket}, room::{RemoveRoomClientResult, RoomClientID, RoomState}, strings::TidyableString, vec_map::VecMap, websocket_connections::connection::ClientSender};
+use crate::{
+    lobby::{lobby_client::LobbyClient, Lobby},
+    log,
+    packet::{ToClientPacket, ToServerPacket},
+    room::{RemoveRoomClientResult, RoomClientID, RoomState},
+    vec_map::VecMap,
+    websocket_connections::connection::ClientSender
+};
 
 use super::{
-    chat::{ChatGroup, ChatMessageVariant, MessageSender}, event::{on_fast_forward::OnFastForward, on_game_ending::OnGameEnding, on_whisper::OnWhisper, Event}, game_client::GameClientLocation, game_conclusion::GameConclusion, phase::PhaseType, player::PlayerReference, role::{
-        Role, RoleState
-    }, spectator::spectator_pointer::SpectatorPointer, Game
+    event::{
+        on_fast_forward::OnFastForward,
+        on_game_ending::OnGameEnding
+    },
+    game_client::GameClientLocation,
+    game_conclusion::GameConclusion, phase::PhaseType,
+    player::PlayerReference,
+    role::RoleState,
+    spectator::spectator_pointer::SpectatorPointer, Game
 };
 
 
@@ -41,9 +54,6 @@ impl Game {
 
     pub fn on_player_message(&mut self, room_client_id: RoomClientID, sender_player_ref: PlayerReference, incoming_packet: ToServerPacket) -> GameClientMessageResult {
         'packet_match: {match incoming_packet {
-            ToServerPacket::SetName{ name } => {
-                self.set_player_name(sender_player_ref, name);
-            },
             ToServerPacket::Leave => {
                 if let RemoveRoomClientResult::RoomShouldClose = self.remove_client(room_client_id) {
                     return GameClientMessageResult::Close;
@@ -126,63 +136,6 @@ impl Game {
                 if self.current_phase().phase() != PhaseType::Judgement {break 'packet_match;}
                 
                 sender_player_ref.set_verdict(self, verdict);
-            },
-            ToServerPacket::SendChatMessage { text, block } => {
-                if text.replace(['\n', '\r'], "").trim().is_empty() {
-                    break 'packet_match;
-                }
-                
-                for chat_group in sender_player_ref.get_current_send_chat_groups(self){
-                    let message_sender = match chat_group {
-                        ChatGroup::Jail => {
-                            if sender_player_ref.role(self) == Role::Jailor {
-                                Some(MessageSender::Jailor)
-                            }else{None}
-                        },
-                        ChatGroup::Kidnapped => {
-                            if sender_player_ref.role(self) == Role::Kidnapper {
-                                Some(MessageSender::Jailor)
-                            }else{None}
-                        },
-                        ChatGroup::Dead => {
-                            if sender_player_ref.alive(self) {
-                                Some(MessageSender::LivingToDead{ player: sender_player_ref.index() })
-                            }else{None}
-                        },
-                        ChatGroup::Interview => {
-                            if sender_player_ref.role(self) == Role::Reporter {
-                                Some(MessageSender::Reporter)
-                            }else{None}
-                        },
-                        _ => {None}
-                    };
-
-                    let message_sender = message_sender.unwrap_or(MessageSender::Player { player: sender_player_ref.index() });
-
-
-                    self.add_message_to_chat_group(
-                        chat_group.clone(),
-                        ChatMessageVariant::Normal{
-                            message_sender,
-                            text: text.trim_newline().trim_whitespace().truncate(600).truncate_lines(35), 
-                            block
-                        }
-                    );
-                }
-            },
-            ToServerPacket::SendWhisper { player_index: whispered_to_player_index, text } => {
-                let whisperee_ref = match PlayerReference::new(self, whispered_to_player_index) {
-                    Ok(receiver_ref) => receiver_ref,
-                    Err(_) => {
-                        sender_player_ref.add_private_chat_message(self, ChatMessageVariant::InvalidWhisper);
-                        break 'packet_match;
-                    }
-                };
-
-                OnWhisper::new(sender_player_ref, whisperee_ref, text).invoke(self);
-            },
-            ToServerPacket::SaveWill { will } => {
-                sender_player_ref.set_will(self, will);
             },
             ToServerPacket::SaveNotes { notes } => {
                 sender_player_ref.set_notes(self, notes);

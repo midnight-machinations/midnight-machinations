@@ -3,7 +3,7 @@ import React from "react"
 import { Role, RoleState } from "../../../../../game/roleState.d"
 import TwoRoleOutlineOptionSelectionMenu from "../AbilitySelectionTypes/TwoRoleOutlineOptionSelectionMenu"
 import GAME_MANAGER from "../../../../.."
-import { controllerIdToLink, TwoRoleOutlineOptionSelection } from "../../../../../game/abilityInput"
+import { controllerIdToLinkWithPlayer, TwoRoleOutlineOptionSelection } from "../../../../../game/abilityInput"
 import { usePlayerState } from "../../../../../components/useHooks"
 import ListMap from "../../../../../ListMap"
 
@@ -39,7 +39,7 @@ export default function AuditorMenu(props: Readonly<{
         ["yourAllowedControllers"]
     )!;
     
-    const savedAbilitiesMap = new ListMap(savedAbilities, (k1, k2) => controllerIdToLink(k1) === controllerIdToLink(k2));
+    const savedAbilitiesMap = new ListMap(savedAbilities, (k1, k2) => controllerIdToLinkWithPlayer(k1) === controllerIdToLinkWithPlayer(k2));
 
     let singleAbilitySave = savedAbilitiesMap.get({
         type: "role",

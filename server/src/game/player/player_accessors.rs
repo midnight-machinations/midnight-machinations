@@ -49,14 +49,6 @@ impl PlayerReference{
             Modifiers::is_enabled(game, ModifierType::UnscheduledNominations)
         );
     }
-
-    pub fn will<'a>(&self, game: &'a Game) -> &'a String {
-        &self.deref(game).will
-    }
-    pub fn set_will(&self, game: &mut Game, will: String){
-        self.deref_mut(game).will = will;
-        self.send_packet(game, ToClientPacket::YourWill { will: self.deref(game).will.clone() });
-    }
     
     pub fn notes<'a>(&self, game: &'a Game) -> &'a Vec<String> {
         &self.deref(game).notes

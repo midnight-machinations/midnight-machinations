@@ -96,7 +96,7 @@ impl SpectatorPointer {
             self.send_packet(game, ToClientPacket::GameOver { reason: GameOverReason::Draw })
         }
 
-        self.send_packet(game, ToClientPacket::PlayerVotes{votes_for_player: game.create_voted_player_map()});
+        game.send_player_votes();
         for grave in game.graves.iter(){
             self.send_packet(game, ToClientPacket::AddGrave { grave: grave.clone() });
         }

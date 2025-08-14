@@ -1,5 +1,7 @@
 use serde::Serialize;
 
+use crate::game::ability_input::AvailablePlayerListSelection;
+use crate::game::components::insider_group::InsiderGroupID;
 use crate::game::components::silenced::Silenced;
 use crate::game::event::on_midnight::{MidnightVariables, OnMidnightPriority};
 use crate::game::{attack_power::DefensePower, player::PlayerReference};
@@ -11,7 +13,9 @@ use super::{ControllerID, ControllerParametersMap, Role, RoleStateImpl};
 
 
 #[derive(Clone, Debug, Serialize, Default)]
-pub struct Blackmailer;
+pub struct Blackmailer{
+    previous: Option<PlayerReference>
+}
 
 
 pub(super) const MAXIMUM_COUNT: Option<u8> = Some(1);
@@ -19,7 +23,7 @@ pub(super) const DEFENSE: DefensePower = DefensePower::None;
 
 impl RoleStateImpl for Blackmailer {
     type ClientRoleState = Blackmailer;
-    fn on_midnight(self, game: &mut Game, midnight_variables: &mut MidnightVariables, actor_ref: PlayerReference, priority: OnMidnightPriority) {
+    fn on_midnight(mut self, game: &mut Game, midnight_variables: &mut MidnightVariables, actor_ref: PlayerReference, priority: OnMidnightPriority) {
         if priority != OnMidnightPriority::Deception {return}
         
 
@@ -28,13 +32,27 @@ impl RoleStateImpl for Blackmailer {
             let target_ref = visit.target;
     
             Silenced::silence_night(game, midnight_variables, target_ref);
+            self.previous = Some(target_ref);
+        }else{
+            self.previous = None;
         }
+        actor_ref.set_role_state(game, self);
     }
     fn controller_parameters_map(self, game: &Game, actor_ref: PlayerReference) -> ControllerParametersMap {
         ControllerParametersMap::builder(game)
             .id(ControllerID::role(actor_ref, Role::Blackmailer, 0))
-            .single_player_selection_typical(actor_ref, false, false)
-            .night_typical(actor_ref)
+            .available_selection(AvailablePlayerListSelection {
+                available_players: PlayerReference::all_players(game)
+                    .filter(|player|
+                        !(!player.alive(game) || 
+                        *player == actor_ref ||
+                        InsiderGroupID::in_same_group(game, actor_ref, *player) ||
+                        Some(*player) == self.previous)
+                    )
+                    .collect(),
+                can_choose_duplicates: false,
+                max_players: Some(1)
+            }).night_typical(actor_ref)
             .build_map()
     }
     fn convert_selection_to_visits(self, game: &Game, actor_ref: PlayerReference) -> Vec<Visit> {

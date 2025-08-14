@@ -1,11 +1,8 @@
 use crate::game::{
-    ability_input::AbilityInput,
-    components::{
+    ability_input::AbilityInput, chat::ChatController, components::{
         forward_messages::ForwardMessages, nomination_controller::NominationController,
         syndicate_gun_item::SyndicateGunItem
-    },
-    player::PlayerReference,
-    Game
+    }, player::PlayerReference, Game
 };
 
 #[must_use = "Event must be invoked"]
@@ -24,5 +21,6 @@ impl OnValidatedAbilityInputReceived{
         SyndicateGunItem::on_validated_ability_input_received(game, self.actor_ref, self.input.clone());
         ForwardMessages::on_validated_ability_input_received(game, self.actor_ref, self.input.clone());
         NominationController::on_validated_ability_input_received(game, self.actor_ref, self.input.clone());
+        ChatController::on_validated_ability_input_received(game, self.actor_ref, self.input.clone());
     }
 }

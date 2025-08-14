@@ -39,6 +39,7 @@ impl RoleStateImpl for Auditor {
         if let Some(chosen_outline) = first{
             let result = Self::get_result(game, chosen_outline, Confused::is_confused(game, actor_ref));
             actor_ref.push_night_message(midnight_variables, ChatMessageVariant::AuditorResult {
+                outline_index: chosen_outline.index(),
                 role_outline: chosen_outline.deref(game).clone(),
                 result: result.clone(),
             });
@@ -49,6 +50,7 @@ impl RoleStateImpl for Auditor {
         if let Some(chosen_outline) = second{
             let result = Self::get_result(game, chosen_outline, Confused::is_confused(game, actor_ref));
             actor_ref.push_night_message(midnight_variables, ChatMessageVariant::AuditorResult {
+                outline_index: chosen_outline.index(),
                 role_outline: chosen_outline.deref(game).clone(),
                 result: result.clone()
             });

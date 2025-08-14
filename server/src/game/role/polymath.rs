@@ -117,13 +117,17 @@ impl RoleStateImpl for Polymath {
             PolymathAbilityType::Support => ctrl.combine_overwrite(
                 ControllerParametersMap::builder(game)
                 .id(ControllerID::role(actor_ref, Role::Polymath, 3))
-                .available_selection(AvailableTwoPlayerOptionSelection::same_players(
-                    PlayerReference::all_players(game)
+                .available_selection(AvailableTwoPlayerOptionSelection{
+                    available_first_players: PlayerReference::all_players(game)
                         .filter(|p|p.alive(game))
-                        .collect(), 
-                    false, 
-                    true
-                )).night_typical(actor_ref)
+                        .filter(|p|*p != actor_ref)
+                        .collect(),
+                    available_second_players:PlayerReference::all_players(game)
+                        .filter(|p|p.alive(game))
+                        .collect(),
+                    can_choose_duplicates: false, 
+                    can_choose_none: true
+                }).night_typical(actor_ref)
                 .add_grayed_out_condition(false)
                 .build_map()
             ),
@@ -139,7 +143,7 @@ impl RoleStateImpl for Polymath {
                 ctrl.combine_overwrite( //
                     ControllerParametersMap::builder(game)
                     .id(ControllerID::role(actor_ref, Role::Polymath, 5))
-                    .single_player_selection_typical(actor_ref, true, true)
+                    .single_player_selection_typical(actor_ref, false, true)
                     .night_typical(actor_ref)
                     .add_grayed_out_condition(game.day_number() == 1)
                     .build_map()

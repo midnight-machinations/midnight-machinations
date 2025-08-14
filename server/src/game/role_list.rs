@@ -362,9 +362,11 @@ impl RoleSet{
                 ],
             RoleSet::TownSupport => 
                 vec_set![
-                    Role::Medium, Role::Coxswain,
-                    Role::Retributionist, Role::Transporter, Role::Porter, Role::Escort, 
-                    Role::Mayor, Role::Reporter, Role::Polymath
+                    Role::Medium, Role::Coxswain, Role::Retributionist,
+                    Role::Transporter, Role::Porter,
+                    Role::Mayor, Role::Reporter,
+                    Role::Courtesan, Role::Escort,
+                    Role::Polymath
                 ],
             RoleSet::Mafia =>
                 vec_set![
@@ -382,7 +384,7 @@ impl RoleSet{
                 ],
             RoleSet::MafiaSupport => 
                 vec_set![
-                    Role::Blackmailer, Role::Informant, Role::Hypnotist, Role::Consort,
+                    Role::Blackmailer, Role::Cerenovous, Role::Informant, Role::Hypnotist, Role::Consort,
                     Role::Forger, Role::Framer, Role::Mortician, Role::Disguiser,
                     Role::MafiaWitch, Role::Necromancer, Role::Reeducator,
                     Role::Ambusher
@@ -393,7 +395,7 @@ impl RoleSet{
                 ],
             RoleSet::Neutral =>
                 vec_set![
-                    Role::Jester, Role::Revolutionary, Role::Politician, Role::Doomsayer,
+                    Role::Jester, Role::Revolutionary, Role::Politician, Role::Doomsayer, Role::Mercenary,
                     Role::Martyr, Role::Chronokaiser, Role::SantaClaus, Role::Krampus
                 ],
             RoleSet::Fiends =>

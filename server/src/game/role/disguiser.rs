@@ -109,7 +109,7 @@ impl RoleStateImpl for Disguiser {
             actor_ref.add_private_chat_message(game, ChatMessageVariant::PlayerRoleAndAlibi{
                 player: grave.deref(game).player,
                 role: grave.deref(game).player.role(game),
-                will: grave.deref(game).player.will(game).to_string(),
+                will: grave.deref(game).player.alibi(game).to_string(),
             });
 
             

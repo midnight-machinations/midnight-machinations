@@ -6,10 +6,10 @@ import { Role } from "./roleState.d";
 import abilitiesJson from "../resources/abilityId.json";
 import { ChatMessage } from "../components/ChatMessage";
 
-
 export type AbilityJsonData = Partial<Record<ControllerIDLink, SingleAbilityJsonData>>;
 export type SingleAbilityJsonData = {
-    midnight: boolean,
+    midnight?: boolean,
+    visible?: boolean,
 }
 
 export function allAbilitiesJsonData(): AbilityJsonData {
@@ -48,10 +48,31 @@ export type ControllerID = {
     role: Role,
     id: RoleControllerID,
 } | {
+    type: "alibi",
+    player: PlayerIndex,
+} | {
     type: "nominate",
     player: PlayerIndex,
 } | {
-    type: "forfeitVote",
+    type: "chat",
+    player: PlayerIndex,
+} | {
+    type: "chatIsBlock",
+    player: PlayerIndex,
+} | {
+    type: "sendChat",
+    player: PlayerIndex,
+} | {
+    type: "whisper",
+    player: PlayerIndex,
+} | {
+    type: "whisperToPlayer",
+    player: PlayerIndex,
+} | {
+    type: "sendWhisper",
+    player: PlayerIndex,
+} | {
+    type: "forfeitNominationVote",
     player: PlayerIndex,
 } | {
     type: "pitchforkVote",
@@ -78,6 +99,21 @@ export type ControllerIDLink = (
     `${ControllerID["type"]}`
 );
 
+export function controllerIdToLinkWithPlayer(id: ControllerID): string {
+    let out: string = `${id.type}`;
+    if(
+        id.type!=="syndicateGunItemShoot" &&
+        id.type!=="syndicateBackupAttack" &&
+        id.type!=="syndicateGunItemGive" &&
+        id.type!=="syndicateChooseBackup"
+    ){
+        out+=`/${id.player}`;
+    }
+    if (id.type === "role") {
+        out += `/${id.role}/${id.id}`;
+    }
+    return out as string;
+}
 export function controllerIdToLink(id: ControllerID): ControllerIDLink {
     let out: ControllerIDLink = `${id.type}`;
     if (id.type === "role") {
@@ -120,7 +156,7 @@ export function sortControllerIdCompare(
         syndicateGunItemGive: 3,
         syndicateChooseBackup: 4,
         syndicateBackupAttack: 5,
-        forfeitVote: 6,
+        forfeitNominationVote: 6,
         pitchforkVote: 7
     };
 

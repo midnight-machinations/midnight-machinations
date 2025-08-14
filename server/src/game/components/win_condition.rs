@@ -54,15 +54,15 @@ impl Ord for WinCondition {
 
 
 impl WinCondition{
-    pub fn required_resolution_states_for_win(&self)->Option<VecSet<GameConclusion>>{
+    pub fn required_conclusions_for_win(&self)->Option<VecSet<GameConclusion>>{
         match self{
             WinCondition::GameConclusionReached{win_if_any} => Some(win_if_any.clone()),
             WinCondition::RoleStateWon => None,
         }
     }
     pub fn are_friends(a: &WinCondition, b: &WinCondition)->bool{
-        let a_conditions = a.required_resolution_states_for_win();
-        let b_conditions = b.required_resolution_states_for_win();
+        let a_conditions = a.required_conclusions_for_win();
+        let b_conditions = b.required_conclusions_for_win();
 
         match (a_conditions, b_conditions){
             (Some(a), Some(b)) => a.intersection(&b).count() > 0,

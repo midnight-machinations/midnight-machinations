@@ -1,6 +1,11 @@
 use serde::{Deserialize, Serialize};
 
-use crate::game::{player::PlayerReference, role::Role, Game};
+use crate::game::{
+    modifiers::hidden_nomination_votes::HiddenNominationVotes, 
+    player::PlayerReference,
+    role::Role,
+    Game
+};
 
 use super::{
     AbilitySelection, BooleanSelection,
@@ -12,15 +17,27 @@ pub type RoleControllerID = u8;
 #[serde(rename_all = "camelCase")]
 #[serde(tag="type")]
 pub enum ControllerID{
+    Nominate{player: PlayerReference},
+    
+    Chat{player: PlayerReference},
+    ChatIsBlock{player: PlayerReference},
+    SendChat{player: PlayerReference},
+
+    Whisper{player: PlayerReference},
+    WhisperToPlayer{player: PlayerReference},
+    SendWhisper{player: PlayerReference},
+
+    Alibi{player: PlayerReference},
+
     #[serde(rename_all = "camelCase")]
     Role{
         player: PlayerReference,
         role: Role,
         id: RoleControllerID
     },
-    ForfeitVote{player: PlayerReference},
+    ForfeitNominationVote{player: PlayerReference},
     PitchforkVote{player: PlayerReference},
-    Nominate{player: PlayerReference},
+    
 
     ForwardMessage{player: PlayerReference},
 
@@ -42,8 +59,20 @@ impl ControllerID{
     pub fn nominate(player: PlayerReference)->Self{
         Self::Nominate{player}
     }
+    pub fn chat(player: PlayerReference)->Self{
+        Self::Chat{player}
+    }
+    pub fn chat_is_block(player: PlayerReference)->Self{
+        Self::ChatIsBlock{player}
+    }
+    pub fn whisper(player: PlayerReference)->Self{
+        Self::Whisper{player}
+    }
+    pub fn whisper_to_player(player: PlayerReference)->Self{
+        Self::WhisperToPlayer{player}
+    }
     pub fn forfeit_vote(player: PlayerReference)->Self{
-        Self::ForfeitVote{player}
+        Self::ForfeitNominationVote{player}
     }
     pub fn pitchfork_vote(player: PlayerReference)->Self{
         Self::PitchforkVote{player}
@@ -64,8 +93,25 @@ impl ControllerID{
 
 
 impl ControllerID{
-    pub fn should_send_chat_message(&self)->bool{
-        !matches!(self, ControllerID::Nominate { .. } | ControllerID::ForwardMessage { .. })
+    pub fn should_send_selection_chat_message(&self, game: &Game)->bool{
+        if 
+            matches!(self, ControllerID::Nominate { .. }) &&
+            HiddenNominationVotes::nomination_votes_are_hidden(game)
+        {
+            true
+        }else{
+            !matches!(self, 
+                ControllerID::Nominate { .. } | 
+                ControllerID::ForwardMessage { .. } |
+                ControllerID::Alibi { .. } |
+                ControllerID::Chat { .. } |
+                ControllerID::ChatIsBlock { .. } |
+                ControllerID::SendChat { .. } |
+                ControllerID::Whisper { .. } |
+                ControllerID::WhisperToPlayer { .. } |
+                ControllerID::SendWhisper { .. }
+            )
+        }
     }
     fn get_controller<'a>(&self, game: &'a Game)->Option<&'a SavedController>{
         game.saved_controllers.saved_controllers.get(self)

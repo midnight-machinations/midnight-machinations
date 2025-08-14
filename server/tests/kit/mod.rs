@@ -70,7 +70,7 @@ pub fn _format_messages_debug(messages: Vec<ChatMessageVariant>) -> String{
             ChatMessageVariant::PhaseChange{..} => "\t",
             _ => "\t\t",
         };
-        string += format!("{:?}", message).as_str();
+        string += format!("{message:?}").as_str();
         string += "\n";
     }
     string += "]";
@@ -110,7 +110,7 @@ pub mod _init {
             ..Default::default()
         }, roles.len() as u8){
             Ok(game) => game,
-            Err(err) => panic!("Failed to create game: {:?}", err),
+            Err(err) => panic!("Failed to create game: {err:?}"),
         };
 
         let mut players_out: Vec<PlayerReference> = PlayerReference::all_players(&game).collect();

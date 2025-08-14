@@ -116,8 +116,14 @@ export type RoleState = {
 (Hypnotist & {type: "hypnotist"})
  | {
     type: "consort"
- } | {
-    type: "blackmailer"
+} | {
+    type: "blackmailer",
+    previous: PlayerIndex | null
+} | {
+    type: "cerenovous",
+    previous: PlayerIndex | null,
+    currentlyPiloted: PlayerIndex | null,
+    charges: number,
 } | {
     type: "informant",
 } | {
@@ -151,6 +157,11 @@ export type RoleState = {
 } | 
 Doomsayer 
 | {
+    type: "mercenary",
+    roles: Role[],
+    attacksRemaining: number,
+    won: boolean
+} | {
     type: "politician"
 } | {
     type: "santaClaus",

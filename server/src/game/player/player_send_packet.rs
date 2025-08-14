@@ -74,7 +74,7 @@ impl PlayerReference{
         }
 
 
-        self.send_packet(game, ToClientPacket::PlayerVotes{votes_for_player: game.create_voted_player_map()});
+        game.send_player_votes();
         for grave in game.graves.iter(){
             self.send_packet(game, ToClientPacket::AddGrave { grave: grave.clone() });
         }
@@ -104,9 +104,6 @@ impl PlayerReference{
             },
             ToClientPacket::YourAllowedControllers { 
                 save: game.saved_controllers.controllers_allowed_to_player(*self).all_controllers().clone(),
-            },
-            ToClientPacket::YourWill{
-                will: self.will(game).clone()
             },
             ToClientPacket::YourNotes{
                 notes: self.notes(game).clone()

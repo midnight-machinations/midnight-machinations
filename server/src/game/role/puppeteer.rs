@@ -34,7 +34,7 @@ impl RoleStateImpl for Puppeteer {
     type ClientRoleState = Puppeteer;
     fn new_state(game: &Game) -> Self {
         Self{
-            marionettes_remaining: game.num_players().div_ceil(5),
+            marionettes_remaining: crate::game::role::common_role::standard_charges(game),
         }
     }
     fn on_midnight(mut self, game: &mut Game, midnight_variables: &mut MidnightVariables, actor_ref: PlayerReference, priority: OnMidnightPriority) {

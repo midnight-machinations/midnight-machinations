@@ -47,7 +47,7 @@ impl RoleStateImpl for Recruiter {
     type ClientRoleState = Recruiter;
     fn new_state(game: &Game) -> Self {
         Self{
-            recruits_remaining: game.num_players().div_ceil(5),
+            recruits_remaining: crate::game::role::common_role::standard_charges(game),
         }
     }
     fn on_midnight(self, game: &mut Game, midnight_variables: &mut MidnightVariables, actor_ref: PlayerReference, priority: OnMidnightPriority) {

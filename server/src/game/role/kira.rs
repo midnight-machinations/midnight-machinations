@@ -25,7 +25,7 @@ pub enum KiraGuess{
     Detective, Lookout, Tracker, Psychic, Philosopher, Gossip, Auditor, Snoop, Spy, TallyClerk,
     Doctor, Bodyguard, Cop, Bouncer, Engineer, Armorsmith, Steward,
     Vigilante, Veteran, Marksman, Deputy, Rabblerouser,
-    Escort, Medium, Retributionist, Reporter, Mayor, Transporter, Porter, Coxswain, Polymath
+    Escort, Medium, Retributionist, Reporter, Mayor, Transporter, Porter, Coxswain, Polymath, Courtesan
 }
 impl KiraGuess{
     fn convert_to_guess(role: Role)->Option<KiraGuess>{
@@ -59,6 +59,7 @@ impl KiraGuess{
             Role::Rabblerouser => Some(Self::Rabblerouser),
 
             Role::Escort => Some(Self::Escort),
+            Role::Courtesan => Some(Self::Courtesan),
             Role::Medium => Some(Self::Medium),
             Role::Retributionist => Some(Self::Retributionist),
             Role::Reporter => Some(Self::Reporter),
@@ -72,7 +73,7 @@ impl KiraGuess{
             Role::Godfather | Role::Mafioso |
             Role::Counterfeiter | Role::Recruiter | Role::Impostor | Role::MafiaKillingWildcard |
             Role::Goon |
-            Role::Hypnotist | Role::Blackmailer | Role::Informant | 
+            Role::Hypnotist | Role::Blackmailer | Role::Cerenovous | Role::Informant | 
             Role::MafiaWitch | Role::Necromancer | Role::Consort |
             Role::Mortician | Role::Framer | Role::Forger | 
             Role::Disguiser | Role::Reeducator |
@@ -80,7 +81,7 @@ impl KiraGuess{
 
             //Neutral
             Role::Jester | Role::Revolutionary | Role::Politician |
-            Role::Doomsayer |
+            Role::Doomsayer | Role::Mercenary |
             Role::Witch | Role::Scarecrow | Role::Warper | Role::Kidnapper | Role::Chronokaiser |
             Role::Wildcard | Role::TrueWildcard | Role::Drunk | Role::Spiral |
             Role::SantaClaus | Role::Krampus => Some(Self::NonTown),
