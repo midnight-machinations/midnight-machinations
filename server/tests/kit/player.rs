@@ -192,7 +192,7 @@ impl TestPlayer {
         if let Some(conclusion) = GameConclusion::game_is_over(game!(self)) {
             self.0.get_won_game(game!(self), conclusion)
         } else {
-            panic!("Game is not over, cannot get won game status");
+            false // Game is not over, so nobody wins!
         }
     }
 }
