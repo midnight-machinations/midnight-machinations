@@ -16,7 +16,6 @@ use crate::{
 
 use super::{lobby_client::{LobbyClient, LobbyClientType, Ready}, Lobby};
 
-
 pub enum LobbyClientMessageResult {
     StartGame(Box<Game>),
     Close,
