@@ -1,4 +1,4 @@
-use mafia_server::{game::{ability_input::*, chat::ChatMessageVariant, phase::PhaseState, player::{PlayerIndex, PlayerReference}, role::{Role, RoleState}, verdict::Verdict, Game}, packet::ToServerPacket};
+use mafia_server::{game::{ability_input::*, chat::ChatMessageVariant, game_conclusion::GameConclusion, phase::PhaseState, player::{PlayerIndex, PlayerReference}, role::{Role, RoleState}, verdict::Verdict, Game}, packet::ToServerPacket};
 
 #[derive(Clone, Copy, Debug)]
 pub struct TestPlayer(PlayerReference, *mut Game);
@@ -189,7 +189,11 @@ impl TestPlayer {
     }
 
     pub fn get_won_game(&self) -> bool {
-        self.0.get_won_game(game!(self))
+        if let Some(conclusion) = GameConclusion::game_is_over(game!(self)) {
+            self.0.get_won_game(game!(self), conclusion)
+        } else {
+            panic!("Game is not over, cannot get won game status");
+        }
     }
 }
 
