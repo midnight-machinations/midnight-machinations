@@ -816,7 +816,7 @@ fn ambusher_basic(){
     townie2.send_ability_input_player_list_typical(protected_player);
     blackmailer.send_ability_input_player_list_typical(protected_player);
 
-    game.skip_to(Night, 4);
+    game.skip_to(Night, 3);
 
     assert!(ambusher.alive());
     assert!(protected_player.alive());
