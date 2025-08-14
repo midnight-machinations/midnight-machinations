@@ -29,6 +29,10 @@
     "role/gossip/0": {
         "midnight": true
     },
+    "role/auditor/0": {
+        "midnight": true,
+        "visible": false
+    },
     "role/bouncer/0": {
         "midnight": true
     },
@@ -156,6 +160,9 @@
         "midnight": true
     },
     "role/blackmailer/0": {
+        "midnight": true
+    },
+    "role/cerenovous/0": {
         "midnight": true
     },
     "role/consort/0": {

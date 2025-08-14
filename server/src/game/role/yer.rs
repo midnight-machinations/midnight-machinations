@@ -37,7 +37,7 @@ impl RoleStateImpl for Yer {
     type ClientRoleState = Yer;
     fn new_state(game: &Game) -> Self {
         Self{
-            star_passes_remaining: game.num_players().div_ceil(5),
+            star_passes_remaining: crate::game::role::common_role::standard_charges(game),
             ..Self::default()
         }
     }

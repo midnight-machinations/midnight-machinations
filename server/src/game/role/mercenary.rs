@@ -38,7 +38,7 @@ impl RoleStateImpl for Mercenary {
 
         available_roles.shuffle(&mut rand::rng());
         
-        let attacks_remaining = game.num_players().div_ceil(5);
+        let attacks_remaining = crate::game::role::common_role::standard_charges(game);
         let mut roles = VecSet::new();
         for _ in 0..attacks_remaining {
             if let Some(role) = available_roles.pop(){

@@ -420,6 +420,7 @@
     
     "role.cerenovous.name": "Cerenovous",
     "role.cerenovous.name:var.0": "Cerenovouses",
+    "role.cerenovous.roleDataText": "\\0 pilots remaining",
     "controllerId.role.cerenovous.0.name": "Pilot",
     
     "role.informant.name": "Informant",
@@ -1763,7 +1764,7 @@
     "wiki.article.role.blackmailer.extra":"* The silenced player is no longer be silenced at the start of the next night\n* You can't select other syndicate members",
 
     "wiki.article.role.cerenovous.reminder": "Each night, select a player to pilot, you can chat as that player until the next night.",
-    "wiki.article.role.cerenovous.guide": "- At night, select a player to pilot\n- The piloted player can't chat during the next day, instead you can chat as them.\n    - You can send block messages as them.\n    - You can whisper as them.\n- While a cerenovous is alive, nomination votes are hidden and verdict votes are hidden.\n- You can read whispers sent to other players.\n- You can't choose to pilot the player you piloted yesterday.",
+    "wiki.article.role.cerenovous.guide": "- At night, select a player to pilot\n- The piloted player can't chat during the next day, instead you can chat as them.\n    - You can send block messages as them.\n    - You can whisper as them.\n- While a cerenovous is alive, nomination votes are hidden and verdict votes are hidden.\n- You can read whispers sent to other players.\n- You can't choose to pilot the player you piloted yesterday.\n- You can only pilot X times (X = Total players ÷ 5 (round up))",
     "wiki.article.role.cerenovous.abilities":"* Visit a player to pilot them during the next day",
     "wiki.article.role.cerenovous.attributes":"",
     "wiki.article.role.cerenovous.extra":"- The piloted player is no longer piloted at the start of the next night.\n* You can't select other syndicate members",

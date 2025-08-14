@@ -48,7 +48,7 @@ impl RoleStateImpl for Counterfeiter {
     type ClientRoleState = ClientRoleState;
     fn new_state(game: &Game) -> Self {
         Self{
-            forges_remaining: game.num_players().div_ceil(5),
+            forges_remaining: crate::game::role::common_role::standard_charges(game),
             ..Self::default()
         }
     }
