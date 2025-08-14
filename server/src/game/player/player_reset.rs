@@ -1,5 +1,5 @@
 use std::time::Duration;
-use crate::{client_connection::ClientConnection, game::{phase::PhaseType, verdict::Verdict, Game}};
+use crate::{client_connection::ClientConnection, game::{modifiers::{ModifierType, Modifiers}, phase::PhaseType, verdict::Verdict, Game}};
 use super::PlayerReference;
 
 
@@ -27,7 +27,14 @@ impl PlayerReference{
             PhaseType::Obituary => {},
             PhaseType::Discussion => {},
             PhaseType::Nomination => {
-                self.set_verdict(game, Verdict::Abstain);
+                self.set_verdict(
+                    game, 
+                    if Modifiers::is_enabled(game, ModifierType::Abstaining) {
+                        Verdict::Abstain
+                    } else {
+                        Verdict::Innocent
+                    }
+                );
             },
             PhaseType::Testimony => {},
             PhaseType::Judgement => {},

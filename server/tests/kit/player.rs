@@ -118,7 +118,26 @@ impl TestPlayer {
         game!(self).on_player_message(
             0, // This is only used for host stuff.
             self.0, 
-            ToServerPacket::SendChatMessage { text: message.to_string(), block: false }
+            ToServerPacket::AbilityInput { ability_input: AbilityInput::new(
+                ControllerID::Chat { player: self.0 },
+                StringSelection(message.to_string())
+            ) }
+        );
+        game!(self).on_player_message(
+            0, // This is only used for host stuff.
+            self.0, 
+            ToServerPacket::AbilityInput { ability_input: AbilityInput::new(
+                ControllerID::ChatIsBlock { player: self.0 },
+                BooleanSelection(false)
+            ) }
+        );
+        game!(self).on_player_message(
+            0, // This is only used for host stuff.
+            self.0, 
+            ToServerPacket::AbilityInput { ability_input: AbilityInput::new(
+                ControllerID::SendChat { player: self.0 },
+                UnitSelection
+            ) }
         );
     }
 

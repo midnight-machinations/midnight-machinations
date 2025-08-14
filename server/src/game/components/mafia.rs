@@ -40,7 +40,7 @@ impl Mafia{
 
         let available_backup_players = PlayerReference::all_players(game)
             .filter(|p|
-                InsiderGroupID::Mafia.is_player_in_revealed_group(game, *p) &&
+                InsiderGroupID::Mafia.contains_player(game, *p) &&
                 p.alive(game) &&
                 !players_with_gun.contains(p)
             )
@@ -61,7 +61,7 @@ impl Mafia{
 
                 let attackable_players = PlayerReference::all_players(game)
                     .filter(|p|
-                        !InsiderGroupID::Mafia.is_player_in_revealed_group(game, *p) &&
+                        !InsiderGroupID::Mafia.contains_player(game, *p) &&
                         p.alive(game) &&
                         *p != *backup
                     )
@@ -89,7 +89,7 @@ impl Mafia{
     pub fn syndicate_killing_players(game: &Game)->VecSet<PlayerReference>{
         PlayerReference::all_players(game)
             .filter(|p|
-                InsiderGroupID::Mafia.is_player_in_revealed_group(game, *p) &&
+                InsiderGroupID::Mafia.contains_player(game, *p) &&
                 (
                     SyndicateGunItem::player_with_gun(&game.syndicate_gun_item).is_some_and(|f|f==*p) ||
                     RoleSet::MafiaKilling.get_roles().contains(&p.role(game))
@@ -137,14 +137,14 @@ impl Mafia{
 
         let killing_role_exists = PlayerReference::all_players(game).any(
             |p|
-                InsiderGroupID::Mafia.is_player_in_revealed_group(game, p) &&
+                InsiderGroupID::Mafia.contains_player(game, p) &&
                 RoleSet::MafiaKilling.get_roles().contains(&p.role(game))
         );
 
         if !killing_role_exists{
             //give random syndicate insider the gun
             let insiders = PlayerReference::all_players(game)
-                .filter(|p| InsiderGroupID::Mafia.is_player_in_revealed_group(game, *p))
+                .filter(|p| InsiderGroupID::Mafia.contains_player(game, *p))
                 .collect::<Vec<_>>();
 
             let Some(insider) = insiders.choose(&mut rand::rng()) else {return};
@@ -192,7 +192,7 @@ impl Mafia{
         let living_players_to_convert = PlayerReference::all_players(game)
             .filter(|p|
                 p.alive(game) &&
-                InsiderGroupID::Mafia.is_player_in_revealed_group(game, *p)
+                InsiderGroupID::Mafia.contains_player(game, *p)
             )
             .collect::<Vec<_>>();
 

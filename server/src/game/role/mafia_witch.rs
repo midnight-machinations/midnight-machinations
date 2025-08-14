@@ -42,7 +42,7 @@ impl RoleStateImpl for MafiaWitch {
                 available_first_players: PlayerReference::all_players(game)
                     .filter(|p|p.alive(game))
                     .filter(|p|*p != actor_ref)
-                    .filter(|p|!InsiderGroupID::in_same_revealed_group(game, actor_ref, *p))
+                    .filter(|p|!InsiderGroupID::in_same_group(game, actor_ref, *p))
                     .collect(),
                 available_second_players: PlayerReference::all_players(game)
                     .filter(|p|p.alive(game))

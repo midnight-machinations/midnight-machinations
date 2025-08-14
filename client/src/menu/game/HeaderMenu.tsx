@@ -163,13 +163,11 @@ export function PhaseSpecificInformation(props: Readonly<{
                         } else if (!props.players[props.myIndex!].alive) {
                             return translate("judgement.cannotVote.dead");
                         } else {
-                            return (["guilty", "abstain", "innocent"] as const)
-                                    .filter((verdict)=>{
-                                        if(enabledModifiers.includes("noAbstaining") && verdict === "abstain"){
-                                            return false;
-                                        }
-                                        return true
-                                    }).map((verdict) => {
+                            return (
+                                enabledModifiers.includes("abstaining") ? 
+                                    ["guilty", "abstain", "innocent"] as const :
+                                    ["guilty", "innocent"] as const 
+                                ).map((verdict) => {
                                 return <VerdictButton key={verdict} verdict={verdict}/>
                             })
                         }

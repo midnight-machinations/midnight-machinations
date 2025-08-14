@@ -28,11 +28,9 @@ impl RoleStateImpl for Snoop {
         if let Some(visit) = actor_visits.first(){
 
             let townie = if Confused::is_confused(game, actor_ref) {
-                false
+                Snoop::confused_result()
             }else{
-                visit.target.win_condition(game).is_loyalist_for(GameConclusion::Town) &&
-                    actor_ref.all_night_visitors_cloned(midnight_variables).is_empty() &&
-                    !visit.target.has_suspicious_aura(game, midnight_variables)
+                Snoop::result(game, midnight_variables, visit)
             };
 
             actor_ref.push_night_message(midnight_variables, 
@@ -55,5 +53,33 @@ impl RoleStateImpl for Snoop {
             ControllerID::role(actor_ref, Role::Snoop, 0),
             false
         )
+    }
+}
+
+impl Snoop{
+    /// Is a town loyalist
+    fn result(game: &Game, midnight_variables: &MidnightVariables, visit: &Visit)->bool{
+        visit.target.win_condition(game).is_loyalist_for(GameConclusion::Town) &&
+        !visit.target.has_suspicious_aura(game, midnight_variables) &&
+        !Self::too_many_visitors(game, midnight_variables, visit)
+    }
+    fn confused_result()->bool{
+        false
+    }
+    fn too_many_visitors(game: &Game, midnight_variables: &MidnightVariables, visit: &Visit)->bool{
+        visit.visitor
+            .all_night_visitors_cloned(midnight_variables)
+            .iter()
+            .map(|visitor|
+                if visitor
+                    .win_condition(game)
+                    .is_loyalist_for(GameConclusion::Town)
+                {    
+                    0.5
+                } else {
+                    1.0
+                }
+            )
+            .fold(0.0, |acc, visitor|acc + visitor) >= 1.0
     }
 }

@@ -1,18 +1,83 @@
 use serde::{Deserialize, Serialize};
 
-use crate::{game::{chat::{ChatGroup, ChatMessageVariant}, event::{on_add_insider::OnAddInsider, on_remove_insider::OnRemoveInsider, Event}, player::PlayerReference, Game}, packet::ToClientPacket, vec_set::VecSet};
+use crate::{game::{chat::{ChatGroup, ChatMessageVariant}, event::{on_add_insider::OnAddInsider, on_remove_insider::OnRemoveInsider, Event}, player::PlayerReference, role_list::RoleAssignment, role_outline_reference::RoleOutlineReference, Game}, packet::ToClientPacket, vec_map::VecMap, vec_set::VecSet};
 
-#[derive(Default)]
+#[derive(Debug)]
 pub struct InsiderGroups{
     mafia: InsiderGroup,
     cult: InsiderGroup,
     puppeteer: InsiderGroup
 }
 impl InsiderGroups{
+
+    pub fn broken_new()->Self{
+        Self{
+            mafia: InsiderGroup::default(),
+            cult: InsiderGroup::default(),
+            puppeteer: InsiderGroup::default(),
+        }
+    }
+
+    /// # Safety
+    /// player_count is correct
+    /// assignments contains all players
+    pub unsafe fn new(player_count: u8, assignments: &VecMap<PlayerReference, (RoleOutlineReference, RoleAssignment)>)->Self{
+        let mut out = Self{
+            mafia: InsiderGroup::default(),
+            cult: InsiderGroup::default(),
+            puppeteer: InsiderGroup::default()
+        };
+        for player in PlayerReference::all_players_from_count(player_count){
+            for group in assignments
+                .get(&player)
+                .expect("assignments is required to hold all players for safety").1
+                .insider_groups()
+            {
+                out.get_group_mut(group).players.insert(player);
+            }
+        }
+        out
+    }
+
+
+    
     pub fn on_conceal_role(game: &mut Game, player: PlayerReference, concealed_player: PlayerReference){
         InsiderGroupID::Mafia.on_conceal_role(game, player, concealed_player);
         InsiderGroupID::Cult.on_conceal_role(game, player, concealed_player);
         InsiderGroupID::Puppeteer.on_conceal_role(game, player, concealed_player);
+    }
+    // packets
+    pub fn send_fellow_insiders_packets(game: &Game, player: PlayerReference){
+        let fellow_insiders = PlayerReference::all_players(game)
+            .filter(|p| InsiderGroupID::in_same_group(game, *p, player))
+            .map(|p| p.index())
+            .collect();
+
+        player.send_packet(game, ToClientPacket::YourFellowInsiders{fellow_insiders});
+    }
+    pub fn send_player_insider_groups_packet(game: &Game, player: PlayerReference){
+        let mut groups = VecSet::new();
+        for group in InsiderGroupID::all(){
+            if group.contains_player(game, player){
+                groups.insert(group);
+            }
+        }
+        player.send_packet(game, ToClientPacket::YourInsiderGroups{insider_groups: groups});
+    }
+
+    fn get_group(&self, id: InsiderGroupID)->&InsiderGroup{
+        match id {
+            InsiderGroupID::Mafia => &self.mafia,
+            InsiderGroupID::Cult => &self.cult,
+            InsiderGroupID::Puppeteer => &self.puppeteer,
+        }
+    }
+    fn get_group_mut(&mut self, id: InsiderGroupID)->&mut InsiderGroup{
+        match id {
+            InsiderGroupID::Mafia => &mut self.mafia,
+            InsiderGroupID::Cult => &mut self.cult,
+            InsiderGroupID::Puppeteer => &mut self.puppeteer,
+        }
     }
 }
 #[derive(Clone, Copy, PartialEq, Eq, Hash, Debug, Serialize, Deserialize)]
@@ -22,24 +87,9 @@ pub enum InsiderGroupID{
     Cult,
     Puppeteer
 }
-#[derive(Default)]
+#[derive(Default, Debug)]
 pub struct InsiderGroup{
     players: VecSet<PlayerReference>
-}
-impl From<InsiderGroup> for VecSet<PlayerReference> {
-    fn from(revealed_group: InsiderGroup)->Self{
-        revealed_group.players
-    }
-}
-impl<'a> From<&'a InsiderGroup> for &'a VecSet<PlayerReference> {
-    fn from(revealed_group: &'a InsiderGroup)->Self{
-        &revealed_group.players
-    }
-}
-impl<'a> From<&'a mut InsiderGroup> for &'a mut VecSet<PlayerReference> {
-    fn from(revealed_group: &'a mut InsiderGroup)->Self{
-        &mut revealed_group.players
-    }
 }
 
 impl InsiderGroupID{
@@ -66,47 +116,48 @@ impl InsiderGroupID{
         }
         None
     }
-    fn revealed_group<'a>(&self, game: &'a Game)->&'a InsiderGroup{
-        match self{
-            InsiderGroupID::Mafia=>&game.revealed_groups.mafia,
-            InsiderGroupID::Cult=>&game.revealed_groups.cult,
-            InsiderGroupID::Puppeteer=>&game.revealed_groups.puppeteer
-        }
+    fn deref<'a>(&self, game: &'a Game)->&'a InsiderGroup{
+        game.insider_groups.get_group(*self)
     }
-    fn revealed_group_mut<'a>(&self, game: &'a mut Game)->&'a mut InsiderGroup{
-        match self{
-            InsiderGroupID::Mafia=>&mut game.revealed_groups.mafia,
-            InsiderGroupID::Cult=>&mut game.revealed_groups.cult,
-            InsiderGroupID::Puppeteer=>&mut game.revealed_groups.puppeteer
-        }
+    fn deref_mut<'a>(&self, game: &'a mut Game)->&'a mut InsiderGroup{
+        game.insider_groups.get_group_mut(*self)
     }
     pub fn players<'a>(&self, game: &'a Game)->&'a VecSet<PlayerReference>{
-        self.revealed_group(game).into()
+        &self.deref(game).players
+    }
+    pub fn players_mut<'a>(&self, game: &'a mut Game)->&'a mut VecSet<PlayerReference>{
+        &mut self.deref_mut(game).players
+    }
+    
+    pub fn reveal_group_players(&self, game: &mut Game){
+        for a in self.players(game).clone() {
+            InsiderGroups::send_fellow_insiders_packets(game, a);
+            for b in self.players(game).clone() {
+                a.reveal_players_role(game, b);
+            }
+        }
     }
 
     // Mutations
     /// # Safety
     /// This function will not alert the other players of the addition of this new player
     pub unsafe fn add_player_to_revealed_group_unchecked(&self, game: &mut Game, player: PlayerReference){
-        let players: &mut VecSet<PlayerReference> = self.revealed_group_mut(game).into();
-        players.insert(player);
+        self.players_mut(game).insert(player);
         OnAddInsider::new(player, *self).invoke(game);
     }
     pub fn add_player_to_revealed_group(&self, game: &mut Game, player: PlayerReference){
-        let players: &mut VecSet<PlayerReference> = self.revealed_group_mut(game).into();
-        if players.insert(player).is_none() {
+        if self.players_mut(game).insert(player).is_none() {
             self.reveal_group_players(game);
         }
         OnAddInsider::new(player, *self).invoke(game);
-        Self::send_player_insider_groups(game, player);
+        InsiderGroups::send_player_insider_groups_packet(game, player);
     }
     pub fn remove_player_from_insider_group(&self, game: &mut Game, player: PlayerReference){
-        let players: &mut VecSet<PlayerReference> = self.revealed_group_mut(game).into();
-        if players.remove(&player).is_some() {
+        if self.players_mut(game).remove(&player).is_some() {
             self.reveal_group_players(game);
         }
         OnRemoveInsider::new(player, *self).invoke(game);
-        Self::send_player_insider_groups(game, player);
+        InsiderGroups::send_player_insider_groups_packet(game, player);
     }
     pub fn set_player_insider_groups(set: VecSet<InsiderGroupID>, game: &mut Game, player: PlayerReference){
         for group in InsiderGroupID::all(){
@@ -117,44 +168,10 @@ impl InsiderGroupID{
             }
         }
     }
-    pub fn start_game_set_player_insider_groups(set: VecSet<InsiderGroupID>, game: &mut Game, player: PlayerReference){
-        for group in InsiderGroupID::all(){
-            if set.contains(&group){
-                let players: &mut VecSet<PlayerReference> = group.revealed_group_mut(game).into();
-                players.insert(player);
-                OnAddInsider::new(player, group).invoke(game);
-            }
-        }
-        Self::send_player_insider_groups(game, player);
-        
-    }
-    // non related mutations
-    pub fn send_player_insider_groups(game: &Game, player: PlayerReference){
-        let mut groups = VecSet::new();
-        for group in InsiderGroupID::all(){
-            if group.is_player_in_revealed_group(game, player){
-                groups.insert(group);
-            }
-        }
-        player.send_packet(game, ToClientPacket::YourInsiderGroups{insider_groups: groups});
-    }
-    pub fn reveal_group_players(&self, game: &mut Game){
-        let players: VecSet<PlayerReference> = <&InsiderGroup as Into<&VecSet<PlayerReference>>>::
-            into(self.revealed_group(game)).clone();
-
-        for a in players.clone() {
-            Self::send_fellow_insiders(game, a);
-            for b in players.clone() {
-                a.reveal_players_role(game, b);
-            }
-        }
-    }
 
     // Events
     pub fn on_conceal_role(&self, game: &mut Game, player: PlayerReference, concealed_player: PlayerReference){
-        
-        let players: &VecSet<PlayerReference> = self.revealed_group(game).into();
-        if players.contains(&concealed_player) && players.contains(&player) {
+        if self.contains_player(game, concealed_player) && self.contains_player(game, player) {
             self.reveal_group_players(game);
         }
     }
@@ -162,46 +179,25 @@ impl InsiderGroupID{
 
     // Queries
     pub fn in_any_group(game: &Game, player: PlayerReference)->bool{
-        InsiderGroupID::all().into_iter().any(|g|g.is_player_in_revealed_group(game, player))
+        InsiderGroupID::all().into_iter().any(|g|g.contains_player(game, player))
     }
-    pub fn is_player_in_revealed_group(&self, game: &Game, player: PlayerReference)->bool{
-        let players: &VecSet<PlayerReference> = self.revealed_group(game).into();
+    pub fn contains_player(&self, game: &Game, player: PlayerReference)->bool{
+        let players: &VecSet<PlayerReference> = self.players(game);
         players.contains(&player)
     }
-    pub fn players_both_in_revealed_group(&self, game: &Game, a: PlayerReference, b: PlayerReference)->bool{
-        let players: &VecSet<PlayerReference> = self.revealed_group(game).into();
-        players.contains(&a) && players.contains(&b)
+    pub fn in_same_group(game: &Game, a: PlayerReference, b: PlayerReference)->bool{
+        InsiderGroupID::all().iter().any(|group| group.contains_player(game, b) && group.contains_player(game, a))
     }
-    pub fn in_same_revealed_group(game: &Game, a: PlayerReference, b: PlayerReference)->bool{
-        InsiderGroupID::all().iter().any(|group| group.players_both_in_revealed_group(game, a, b))
-    }
-    pub fn all_players_in_same_revealed_group_with_actor(game: &Game, actor_ref: PlayerReference)->VecSet<PlayerReference>{
-        let mut players = VecSet::new();
-        for group in InsiderGroupID::all(){
-            if group.is_player_in_revealed_group(game, actor_ref){
-                players.extend(group.players(game).clone());
-            }
-        }
-        players
-    }
-    pub fn all_insider_groups_with_player(game: &Game, player_ref: PlayerReference)->VecSet<InsiderGroupID>{
+    pub fn all_groups_with_player(game: &Game, player_ref: PlayerReference)->VecSet<InsiderGroupID>{
         InsiderGroupID::all()
             .into_iter()
             .filter(|group| 
-                group.is_player_in_revealed_group(game, player_ref)
+                group.contains_player(game, player_ref)
             ).collect()
     }
     
 
-    // packets
-    pub fn send_fellow_insiders(game: &Game, player: PlayerReference){
-        let fellow_insiders = PlayerReference::all_players(game)
-            .filter(|p| Self::in_same_revealed_group(game, *p, player))
-            .map(|p| p.index())
-            .collect();
-
-        player.send_packet(game, ToClientPacket::YourFellowInsiders{fellow_insiders});
-    }
+    
 
     //other
     pub fn send_message_in_available_insider_chat_or_private(

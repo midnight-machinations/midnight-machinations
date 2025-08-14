@@ -35,7 +35,7 @@ impl RoleStateImpl for Medium {
     type ClientRoleState = Medium;
     fn new_state(game: &Game) -> Self {
         Self{
-            seances_remaining: game.num_players().div_ceil(5),
+            seances_remaining: crate::game::role::common_role::standard_charges(game),
             ..Self::default()
         }
     }

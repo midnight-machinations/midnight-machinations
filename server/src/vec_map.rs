@@ -1,3 +1,4 @@
+use rand::{seq::SliceRandom, Rng};
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Debug)]
@@ -130,6 +131,10 @@ impl<K, V> VecMap<K, V> where K: Eq {
 
     pub fn contains(&self, key: &K) -> bool {
         self.vec.iter().any(|(k, _)| k == key)
+    }
+
+    pub fn shuffle<R: Rng + ?Sized>(&mut self, rng: &mut R){
+        self.vec.shuffle(rng);
     }
 }
 

@@ -50,7 +50,7 @@ impl RoleStateImpl for Martyr {
     type ClientRoleState = Martyr;
     fn new_state(game: &Game) -> Self {
         Self{
-            state: MartyrState::StillPlaying { bullets: game.num_players().div_ceil(5) }
+            state: MartyrState::StillPlaying { bullets: crate::game::role::common_role::standard_charges(game) }
         }
     }
     fn on_midnight(mut self, game: &mut Game, midnight_variables: &mut MidnightVariables, actor_ref: PlayerReference, priority: OnMidnightPriority) {

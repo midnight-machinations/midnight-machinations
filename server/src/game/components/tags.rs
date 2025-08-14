@@ -176,7 +176,7 @@ pub enum TagSetID{
     WerewolfTracked(PlayerReference),
     RevolutionaryTarget(PlayerReference),
     UzumakiSpiral(PlayerReference),
-    ForfeitVote
+    ForfeitNominationVote
 }
 impl TagSetID{
     fn get_tag(&self)->Tag{
@@ -192,7 +192,7 @@ impl TagSetID{
             TagSetID::WerewolfTracked(_) => Tag::WerewolfTracked,
             TagSetID::RevolutionaryTarget(_) => Tag::RevolutionaryTarget,
             TagSetID::UzumakiSpiral(_) => Tag::Spiraling,
-            TagSetID::ForfeitVote => Tag::ForfeitVote,
+            TagSetID::ForfeitNominationVote => Tag::ForfeitNominationVote,
         }
     }
 }
@@ -211,5 +211,5 @@ pub enum Tag{
     WerewolfTracked,
     RevolutionaryTarget,
     Spiraling,
-    ForfeitVote,
+    ForfeitNominationVote,
 }

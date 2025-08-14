@@ -3,6 +3,7 @@ use serde::Serialize;
 
 use crate::game::ability_input::{AvailablePlayerListSelection, ControllerID};
 use crate::game::attack_power::AttackPower;
+use crate::game::chat::ChatMessageVariant;
 use crate::game::components::insider_group::InsiderGroupID;
 use crate::game::event::on_midnight::{MidnightVariables, OnMidnightPriority};
 use crate::game::role_list::RoleSet;
@@ -52,7 +53,7 @@ impl RoleStateImpl for Reeducator {
                         .into_iter()
                         .map(|mut v|{
                             if 
-                                !InsiderGroupID::in_same_revealed_group(game, actor_ref, v.target) &&
+                                !InsiderGroupID::in_same_group(game, actor_ref, v.target) &&
                                 v.tag == (VisitTag::Role{role: Role::Reeducator, id: 0})
                             {
                                 v.attack = true;
@@ -70,6 +71,7 @@ impl RoleStateImpl for Reeducator {
                 }
             },
             OnMidnightPriority::Convert => {
+                if game.day_number() <= 1 {return};
                 let visits = actor_ref.untagged_night_visits_cloned(midnight_variables);
                 let Some(visit) = visits.first() else {return};
 
@@ -85,7 +87,12 @@ impl RoleStateImpl for Reeducator {
                 let new_state = role.new_state(game);
 
                 if visit.attack {
-                    if self.convert_charges_remaining && game.day_number() > 1 {
+                    if self.convert_charges_remaining {
+                        if visit.target.night_defense(game, midnight_variables).can_block(AttackPower::ProtectionPiercing) {
+                            actor_ref.push_night_message(midnight_variables, ChatMessageVariant::YourConvertFailed);
+                            return;
+                        }
+
                         actor_ref.try_night_kill_single_attacker(
                             actor_ref,
                             game,
@@ -121,8 +128,8 @@ impl RoleStateImpl for Reeducator {
                         .filter(|player| 
                             player.alive(game) &&
                             (
-                                InsiderGroupID::in_same_revealed_group(game, actor_ref, *player) || 
-                                (game.day_number() > 1 && self.convert_charges_remaining)
+                                InsiderGroupID::in_same_group(game, actor_ref, *player) || 
+                                self.convert_charges_remaining
                             )
                         )
                         .collect(),
@@ -130,6 +137,7 @@ impl RoleStateImpl for Reeducator {
                     max_players: Some(1)
                 })
                 .night_typical(actor_ref)
+                .add_grayed_out_condition(game.day_number() <= 1)
                 .build_map(),
             ControllerParametersMap::builder(game)
                 .id(ControllerID::role(actor_ref, Role::Reeducator, 1))
@@ -139,6 +147,7 @@ impl RoleStateImpl for Reeducator {
                 )
                 .default_selection(RoleListSelection(vec![Reeducator::default_role(game)]))
                 .allow_players([actor_ref])
+                .add_grayed_out_condition(game.day_number() <= 1)
                 .build_map()
         ])
     }

@@ -2,7 +2,7 @@ use std::{ops::Div, time::Duration};
 
 use serde::{Serialize, Deserialize};
 
-use crate::{game::modifiers::{ModifierType, Modifiers}, packet::ToClientPacket};
+use crate::game::modifiers::{hidden_nomination_votes::HiddenNominationVotes, hidden_verdict_votes::HiddenVerdictVotes, ModifierType, Modifiers};
 
 use super::{
     chat::{ChatGroup, ChatMessageVariant},
@@ -110,7 +110,7 @@ impl PhaseStateMachine {
 
         if
             phase == PhaseType::Nomination &&
-            Modifiers::modifier_is_enabled(game, ModifierType::ScheduledNominations)
+            !Modifiers::is_enabled(game, ModifierType::UnscheduledNominations)
         {
             time = time.map(|o|o.div(3));
         }
@@ -176,19 +176,21 @@ impl PhaseState {
                 let required_votes = game.nomination_votes_required();
                 game.add_message_to_chat_group(ChatGroup::All, ChatMessageVariant::TrialInformation { required_votes, trials_left });
                 
-
-                game.send_packet_to_all(ToClientPacket::PlayerVotes{votes_for_player: game.create_voted_player_map()});
+                game.send_player_votes();
             },
             PhaseState::Testimony { player_on_trial, .. } => {
-                game.add_message_to_chat_group(ChatGroup::All, 
-                    ChatMessageVariant::PlayerNominated {
-                        player_index: player_on_trial.index(),
-                        players_voted: PlayerReference::all_players(game)
+
+                if !HiddenNominationVotes::nomination_votes_are_hidden(game) {
+                    game.add_message_to_chat_group(ChatGroup::All, 
+                        ChatMessageVariant::PlayerNominated {
+                            player_index: player_on_trial.index(),
+                            players_voted: PlayerReference::all_players(game)
                             .filter(|player_ref| player_ref.chosen_vote(game) == Some(player_on_trial))
                             .map(|player_ref| player_ref.index())
                             .collect()
-                    }
-                );
+                        }
+                    );
+                }
             },
             PhaseState::Briefing 
             | PhaseState::Night
@@ -219,7 +221,7 @@ impl PhaseState {
             PhaseState::Nomination {trials_left, ..} => {
 
 
-                if Modifiers::modifier_is_enabled(game, ModifierType::ScheduledNominations){
+                if !Modifiers::is_enabled(game, ModifierType::UnscheduledNominations){
                     
                     if let Some(player_on_trial) = game.count_nomination_and_start_trial(false){    
                         Self::Testimony{
@@ -245,27 +247,34 @@ impl PhaseState {
             },
             PhaseState::Judgement { trials_left, player_on_trial, nomination_time_remaining } => {
 
-                game.add_messages_to_chat_group(ChatGroup::All, 
-                PlayerReference::all_players(game)
-                    .filter(|player_ref|{
-                        player_ref.alive(game) && *player_ref != player_on_trial
-                    })
-                    .map(|player_ref|
-                        ChatMessageVariant::JudgementVerdict{
-                            voter_player_index: player_ref.index(),
-                            verdict: player_ref.verdict(game)
-                        }
-                    )
-                    .collect()
-                );
-                
-                let (guilty, innocent) = game.count_verdict_votes(player_on_trial);
-                game.add_message_to_chat_group(ChatGroup::All, ChatMessageVariant::TrialVerdict{ 
-                    player_on_trial: player_on_trial.index(), 
-                    innocent, guilty 
-                });
 
-                let hang = if Modifiers::modifier_is_enabled(game, ModifierType::TwoThirdsMajority) {
+                let (guilty, innocent) = game.count_verdict_votes(player_on_trial);
+
+                if !HiddenVerdictVotes::verdict_votes_are_hidden(game) {
+                    
+                    game.add_messages_to_chat_group(ChatGroup::All, 
+                        PlayerReference::all_players(game)
+                            .filter(|player_ref|{
+                                player_ref.alive(game) && *player_ref != player_on_trial
+                            })
+                            .map(|player_ref|
+                                ChatMessageVariant::JudgementVerdict{
+                                    voter_player_index: player_ref.index(),
+                                    verdict: player_ref.verdict(game)
+                                }
+                            )
+                            .collect()
+                    );
+
+
+                    game.add_message_to_chat_group(ChatGroup::All, ChatMessageVariant::TrialVerdict{ 
+                        player_on_trial: player_on_trial.index(), 
+                        innocent, guilty 
+                    });
+                }
+                
+
+                let hang = if Modifiers::is_enabled(game, ModifierType::TwoThirdsMajority) {
                     innocent <= guilty.div(2)
                 } else {
                     innocent < guilty

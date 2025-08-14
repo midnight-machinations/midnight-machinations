@@ -13,6 +13,7 @@ import { createGameState, createLobbyState } from "./gameState";
 import { deleteReconnectData } from "./localStorage";
 import AudioController from "../menu/AudioController";
 import ListMap from "../ListMap";
+import { defaultAlibi } from "../menu/game/gameScreenContent/WillMenu";
 
 export function createGameManager(): GameManager {
 
@@ -369,9 +370,27 @@ export function createGameManager(): GameManager {
         },
 
         sendSaveWillPacket(will) {
-            this.server.sendPacket({
-                type: "saveWill",
-                will: will
+            if(will === ""){
+                will = defaultAlibi();
+            }
+
+            let player = undefined;
+            // if(player===undefined){
+                if(this.state.stateType==="game" && this.state.clientState.type === "player"){
+                    player = this.state.clientState.myIndex;
+                }
+            // }
+            if(player===undefined){return}
+
+            this.sendAbilityInput({
+                id: {
+                    type: "alibi",
+                    player: player
+                }, 
+                selection: {
+                    type: "string",
+                    selection: will
+                }
             });
         },
         sendSaveNotesPacket(notes) {
@@ -392,18 +411,88 @@ export function createGameManager(): GameManager {
                 deathNote: notes.trim().length === 0 ? null : notes
             });
         },
-        sendSendChatMessagePacket(text, block) {
-            this.server.sendPacket({
-                type: "sendChatMessage",
-                text: text,
-                block: block
+        sendSendChatMessagePacket(text, block, controllingPlayer) {
+            if(controllingPlayer===undefined){
+                if(this.state.stateType==="game" && this.state.clientState.type === "player"){
+                    controllingPlayer = this.state.clientState.myIndex;
+                }
+            }
+            if(controllingPlayer===undefined){return}
+
+            this.sendAbilityInput({
+                id: {
+                    type: "chatIsBlock",
+                    player: controllingPlayer
+                }, 
+                selection: {
+                    type: "boolean",
+                    selection: block
+                }
+            });
+
+            this.sendAbilityInput({
+                id: {
+                    type: "chat",
+                    player: controllingPlayer
+                }, 
+                selection: {
+                    type: "string",
+                    selection: text
+                }
+            });
+
+            
+            this.sendAbilityInput({
+                id: {
+                    type: "sendChat",
+                    player: controllingPlayer
+                }, 
+                selection: {
+                    type: "unit",
+                    selection: null
+                }
             });
         },
-        sendSendWhisperPacket(playerIndex, text) {
-            this.server.sendPacket({
-                type: "sendWhisper",
-                playerIndex: playerIndex,
-                text: text
+        sendSendWhisperPacket(whisperToPlayer, text, controllingPlayer) {
+            if(controllingPlayer===undefined){
+                if(this.state.stateType==="game" && this.state.clientState.type === "player"){
+                    controllingPlayer = this.state.clientState.myIndex;
+                }
+            }
+            if(controllingPlayer===undefined){return}
+
+            this.sendAbilityInput({
+                id: {
+                    type: "whisperToPlayer",
+                    player: controllingPlayer
+                }, 
+                selection: {
+                    type: "playerList",
+                    selection: [whisperToPlayer]
+                }
+            });
+
+            this.sendAbilityInput({
+                id: {
+                    type: "whisper",
+                    player: controllingPlayer
+                }, 
+                selection: {
+                    type: "string",
+                    selection: text
+                }
+            });
+
+            
+            this.sendAbilityInput({
+                id: {
+                    type: "sendWhisper",
+                    player: controllingPlayer
+                }, 
+                selection: {
+                    type: "unit",
+                    selection: null
+                }
             });
         },
         sendEnabledRolesPacket(roles) {

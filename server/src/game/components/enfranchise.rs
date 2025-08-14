@@ -1,5 +1,5 @@
 use crate::game::{
-    chat::{ChatGroup, ChatMessageVariant}, modifiers::Modifiers, player::PlayerReference, Game
+    chat::{ChatGroup, ChatMessageVariant}, modifiers::{ModifierType, Modifiers}, player::PlayerReference, Game
 };
 
 use super::tags::Tags;
@@ -12,7 +12,7 @@ impl Enfranchise{
         Tags::add_tag(game, super::tags::TagSetID::Enfranchised, player);
 
         game.count_nomination_and_start_trial(
-            !Modifiers::modifier_is_enabled(game, crate::game::modifiers::ModifierType::ScheduledNominations)
+            Modifiers::is_enabled(game, ModifierType::UnscheduledNominations)
         );
     }
     pub fn unenfranchise(game: &mut Game, player: PlayerReference){

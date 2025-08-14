@@ -46,16 +46,8 @@ impl PlayerReference{
         }
         game.send_packet_to_all(ToClientPacket::PlayerAlive { alive: alive_players });
         game.count_nomination_and_start_trial(
-            !Modifiers::modifier_is_enabled(game, crate::game::modifiers::ModifierType::ScheduledNominations)
+            Modifiers::is_enabled(game, ModifierType::UnscheduledNominations)
         );
-    }
-
-    pub fn will<'a>(&self, game: &'a Game) -> &'a String {
-        &self.deref(game).will
-    }
-    pub fn set_will(&self, game: &mut Game, will: String){
-        self.deref_mut(game).will = will;
-        self.send_packet(game, ToClientPacket::YourWill { will: self.deref(game).will.clone() });
     }
     
     pub fn notes<'a>(&self, game: &'a Game) -> &'a Vec<String> {
@@ -152,7 +144,7 @@ impl PlayerReference{
         self.deref(game).voting_variables.verdict
     }
     pub fn set_verdict(&self, game: &mut Game, mut verdict: Verdict){
-        if Modifiers::modifier_is_enabled(game, ModifierType::NoAbstaining) && verdict == Verdict::Abstain {
+        if verdict == Verdict::Abstain && !Modifiers::is_enabled(game, ModifierType::Abstaining) {
             verdict = Verdict::Innocent;
         }
         self.send_packet(game, ToClientPacket::YourJudgement { verdict });

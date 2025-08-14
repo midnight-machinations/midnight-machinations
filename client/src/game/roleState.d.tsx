@@ -3,9 +3,9 @@ import { RoleSet } from "./roleListState.d"
 import ROLES from "./../resources/roles.json";
 import { ChatMessageVariant } from "../components/ChatMessage";
 import { AuditorResult } from "../menu/game/gameScreenContent/AbilityMenu/RoleSpecificMenus/AuditorMenu";
-import { Hypnotist } from "../menu/game/gameScreenContent/AbilityMenu/RoleSpecificMenus/LargeHypnotistMenu";
 import { Doomsayer } from "../menu/game/gameScreenContent/AbilityMenu/RoleSpecificMenus/LargeDoomsayerMenu";
 import { TwoRoleOptionSelection } from "./abilityInput";
+import { Hypnotist } from "../menu/game/gameScreenContent/AbilityMenu/RoleSpecificMenus/HypnotistMenu";
 
 export type RoleState = {
     type: "jailor",
@@ -116,8 +116,14 @@ export type RoleState = {
 (Hypnotist & {type: "hypnotist"})
  | {
     type: "consort"
- } | {
-    type: "blackmailer"
+} | {
+    type: "blackmailer",
+    previous: PlayerIndex | null
+} | {
+    type: "cerenovous",
+    previous: PlayerIndex | null,
+    currentlyPiloted: PlayerIndex | null,
+    charges: number,
 } | {
     type: "informant",
 } | {
@@ -151,6 +157,11 @@ export type RoleState = {
 } | 
 Doomsayer 
 | {
+    type: "mercenary",
+    roles: Role[],
+    attacksRemaining: number,
+    won: boolean
+} | {
     type: "politician"
 } | {
     type: "santaClaus",

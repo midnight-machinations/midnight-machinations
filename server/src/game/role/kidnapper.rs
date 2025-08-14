@@ -54,7 +54,7 @@ impl RoleStateImpl for Kidnapper {
                         actor_ref, 
                         game, 
                         midnight_variables,
-                        GraveKiller::Role(Role::Jailor), 
+                        GraveKiller::Role(Role::Jailor),
                         AttackPower::ProtectionPiercing, 
                         false
                     );

@@ -1,6 +1,6 @@
 import { ReactElement } from "react";
 import React from "react";
-import { AvailableIntegerSelection, ControllerID, controllerIdToLink, IntegerSelection } from "../../../../../game/abilityInput";
+import { AvailableIntegerSelection, ControllerID, controllerIdToLinkWithPlayer, IntegerSelection } from "../../../../../game/abilityInput";
 import Select from "../../../../../components/Select";
 import { translateChecked } from "../../../../../game/lang";
 import StyledText from "../../../../../components/StyledText";
@@ -23,7 +23,7 @@ export default function IntegerSelectionMenu(props: Readonly<{
         let out: [React.ReactNode, string] = [<>{i}</>, i.toString()];
 
         if(props.id !== undefined){
-            let text = translateChecked("controllerId."+controllerIdToLink(props.id).replace(/\//g, ".") + ".integer." + i);
+            let text = translateChecked("controllerId."+controllerIdToLinkWithPlayer(props.id).replace(/\//g, ".") + ".integer." + i);
             
             if(text !== null)
                 out = [<StyledText noLinks={true}>{text}</StyledText>, text];

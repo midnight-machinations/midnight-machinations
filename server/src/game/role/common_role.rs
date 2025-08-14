@@ -17,6 +17,11 @@ use crate::game::{
 use super::{medium::Medium, reporter::Reporter, warden::Warden, InsiderGroupID, Role, RoleState};
 
 
+pub(super) fn standard_charges(game: &Game)->u8{
+    game.num_players().div_ceil(5)
+}
+
+
 /// This function uses defaults. When using this function, consider if you need to override the defaults.
 /// Defaults to VisitTag::Role { role: actor_ref.role(game), id: 0 }
 pub(super) fn convert_controller_selection_to_visits(game: &Game, actor_ref: PlayerReference, controller_id: ControllerID, attack: bool) -> Vec<Visit> {
@@ -109,7 +114,7 @@ pub(super) fn get_current_send_chat_groups(game: &Game, actor_ref: PlayerReferen
     }
     if 
         !actor_ref.alive(game) && 
-        !Modifiers::modifier_is_enabled(game, ModifierType::DeadCanChat)
+        !Modifiers::is_enabled(game, ModifierType::DeadCanChat)
     {
         if PuppeteerMarionette::marionettes_and_puppeteer(game).contains(&actor_ref){
             return vec![ChatGroup::Dead, ChatGroup::Puppeteer].into_iter().collect();
@@ -126,13 +131,13 @@ pub(super) fn get_current_send_chat_groups(game: &Game, actor_ref: PlayerReferen
             let mut out = HashSet::new();
 
             //evil chat groups
-            if InsiderGroupID::Puppeteer.is_player_in_revealed_group(game, actor_ref) {
+            if InsiderGroupID::Puppeteer.contains_player(game, actor_ref) {
                 out.insert(ChatGroup::Puppeteer);
             }
-            if InsiderGroupID::Cult.is_player_in_revealed_group(game, actor_ref) {
+            if InsiderGroupID::Cult.contains_player(game, actor_ref) {
                 out.insert(ChatGroup::Cult);
             }
-            if InsiderGroupID::Mafia.is_player_in_revealed_group(game, actor_ref) {
+            if InsiderGroupID::Mafia.contains_player(game, actor_ref) {
                 out.insert(ChatGroup::Mafia);
             }
 
@@ -227,13 +232,13 @@ pub(super) fn get_current_send_chat_groups(game: &Game, actor_ref: PlayerReferen
             ) {
                 vec![ChatGroup::Kidnapped]
             }else{
-                if InsiderGroupID::Puppeteer.is_player_in_revealed_group(game, actor_ref){
+                if InsiderGroupID::Puppeteer.contains_player(game, actor_ref){
                     night_chat_groups.push(ChatGroup::Puppeteer);
                 }
-                if InsiderGroupID::Mafia.is_player_in_revealed_group(game, actor_ref){
+                if InsiderGroupID::Mafia.contains_player(game, actor_ref){
                     night_chat_groups.push(ChatGroup::Mafia);
                 }
-                if InsiderGroupID::Cult.is_player_in_revealed_group(game, actor_ref){
+                if InsiderGroupID::Cult.contains_player(game, actor_ref){
                     night_chat_groups.push(ChatGroup::Cult);
                 }
                 night_chat_groups
@@ -254,13 +259,13 @@ pub(super) fn get_current_receive_chat_groups(game: &Game, actor_ref: PlayerRefe
         out.push(ChatGroup::Dead);
     }
 
-    if InsiderGroupID::Mafia.is_player_in_revealed_group(game, actor_ref) {
+    if InsiderGroupID::Mafia.contains_player(game, actor_ref) {
         out.push(ChatGroup::Mafia);
     }
-    if InsiderGroupID::Cult.is_player_in_revealed_group(game, actor_ref) {
+    if InsiderGroupID::Cult.contains_player(game, actor_ref) {
         out.push(ChatGroup::Cult);
     }
-    if InsiderGroupID::Puppeteer.is_player_in_revealed_group(game, actor_ref){
+    if InsiderGroupID::Puppeteer.contains_player(game, actor_ref){
         out.push(ChatGroup::Puppeteer);
     }
 

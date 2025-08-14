@@ -1,12 +1,10 @@
 use std::collections::HashSet;
 
 use crate::{game::{
-    attack_power::AttackPower, chat::ChatMessageVariant,
-    event::{
+    attack_power::AttackPower, chat::ChatMessageVariant, components::insider_group::InsiderGroupID, event::{
         on_add_insider::OnAddInsider, on_midnight::{MidnightVariables, OnMidnight, OnMidnightPriority},
         on_remove_insider::OnRemoveInsider
-    },
-    game_conclusion::GameConclusion, player::PlayerReference, role::Role, role_list::RoleSet, Game, InsiderGroupID
+    }, game_conclusion::GameConclusion, player::PlayerReference, role::Role, role_list::RoleSet, Game
 }, vec_set::VecSet};
 
 use super::{tags::Tags, win_condition::WinCondition};
@@ -28,7 +26,7 @@ impl MafiaRecruits{
     pub fn recruit(game: &mut Game, midnight_variables: &mut MidnightVariables, player: PlayerReference)->bool{
         let mut recruiter_recruits = game.mafia_recruits().clone();
 
-        if InsiderGroupID::Mafia.is_player_in_revealed_group(game, player) {return false;}
+        if InsiderGroupID::Mafia.contains_player(game, player) {return false;}
         if !recruiter_recruits.recruits.insert(player){return false;}
         Tags::add_tag(game, super::tags::TagSetID::SyndicateRecruit, player);
 
@@ -78,7 +76,7 @@ impl MafiaRecruits{
     }
     pub fn mafia_members(game: &Game)->HashSet<PlayerReference>{
         PlayerReference::all_players(game)
-            .filter(|p|InsiderGroupID::Mafia.is_player_in_revealed_group(game, *p))
+            .filter(|p|InsiderGroupID::Mafia.contains_player(game, *p))
             .collect()
     }
     pub fn mafia_and_recruits(game: &Game)->HashSet<PlayerReference>{

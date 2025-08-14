@@ -45,7 +45,7 @@ impl RoleStateImpl for Jailor {
     type ClientRoleState = Jailor;
     fn new_state(game: &Game) -> Self {
         Self{
-            executions_remaining: game.num_players().div_ceil(5),
+            executions_remaining: crate::game::role::common_role::standard_charges(game),
             ..Self::default()
         }
     }

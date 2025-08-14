@@ -60,7 +60,7 @@ impl RoleStateImpl for Politician {
     type ClientRoleState = ClientRoleState;
     fn on_validated_ability_input_received(self, game: &mut Game, actor_ref: PlayerReference, input_player: PlayerReference, ability_input: super::AbilityInput) {
         if actor_ref != input_player {return;}
-        if ability_input.id() != ControllerID::role(actor_ref, Role::Mayor, 0) {
+        if ability_input.id() != ControllerID::role(actor_ref, Role::Politician, 0) {
             return;
         }
         

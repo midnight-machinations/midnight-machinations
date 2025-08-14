@@ -61,7 +61,7 @@ impl SyndicateGunItem {
                             .filter(|target|
                                 player_with_gun != *target &&
                                 target.alive(game) &&
-                                InsiderGroupID::Mafia.is_player_in_revealed_group(game, *target))
+                                InsiderGroupID::Mafia.contains_player(game, *target))
                             .collect(),
                         can_choose_duplicates: false,
                         max_players: Some(1)
@@ -149,7 +149,7 @@ impl SyndicateGunItem {
         if
             actor_ref != *target &&
             target.alive(game) &&
-            InsiderGroupID::Mafia.is_player_in_revealed_group(game, *target) 
+            InsiderGroupID::Mafia.contains_player(game, *target) 
         {
             SyndicateGunItem::give_gun_to_player(game, *target);
         }

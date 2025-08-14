@@ -38,7 +38,7 @@ impl RoleStateImpl for Disguiser {
         let actor_visits = actor_ref.untagged_night_visits_cloned(midnight_variables);
         let Some(first_visit) = actor_visits.first() else {return};
         
-        if !InsiderGroupID::in_same_revealed_group(game, actor_ref, first_visit.target) {return}
+        if !InsiderGroupID::in_same_group(game, actor_ref, first_visit.target) {return}
 
         self.current_target = Some(first_visit.target);
         self.last_role_selection = Self::disguised_role(&self, game, actor_ref);
@@ -61,7 +61,7 @@ impl RoleStateImpl for Disguiser {
                     available_players: PlayerReference::all_players(game)
                         .filter(|p|
                             p.alive(game) &&
-                            InsiderGroupID::in_same_revealed_group(game, actor_ref, *p)
+                            InsiderGroupID::in_same_group(game, actor_ref, *p)
                         )
                         .collect(),
                     can_choose_duplicates: false,
@@ -109,7 +109,7 @@ impl RoleStateImpl for Disguiser {
             actor_ref.add_private_chat_message(game, ChatMessageVariant::PlayerRoleAndAlibi{
                 player: grave.deref(game).player,
                 role: grave.deref(game).player.role(game),
-                will: grave.deref(game).player.will(game).to_string(),
+                will: grave.deref(game).player.alibi(game).to_string(),
             });
 
             

@@ -1,6 +1,6 @@
 pub mod obscured_graves;
 pub mod dead_can_chat;
-pub mod no_abstaining;
+pub mod abstaining;
 pub mod no_death_cause;
 pub mod role_set_grave_killers;
 pub mod no_due_process;
@@ -9,13 +9,16 @@ pub mod no_trial;
 pub mod no_whispers;
 pub mod no_night_chat;
 pub mod no_chat;
-pub mod scheduled_nominations;
+pub mod unscheduled_nominations;
 pub mod skip_day_1;
 pub mod hidden_whispers;
+pub mod hidden_nomination_votes;
+pub mod hidden_verdict_votes;
+pub mod forfeit_vote;
 
 use dead_can_chat::DeadCanChat;
 use hidden_whispers::HiddenWhispers;
-use no_abstaining::NoAbstaining;
+use abstaining::Abstaining;
 use no_chat::NoChat;
 use no_due_process::AutoGuilty;
 use no_night_chat::NoNightChat;
@@ -24,7 +27,10 @@ use no_whispers::NoWhispers;
 use obscured_graves::ObscuredGraves;
 use no_death_cause::NoDeathCause;
 use role_set_grave_killers::RoleSetGraveKillers;
-use scheduled_nominations::ScheduledNominations;
+use unscheduled_nominations::UnscheduledNominations;
+use hidden_nomination_votes::HiddenNominationVotes;
+use hidden_verdict_votes::HiddenVerdictVotes;
+use forfeit_vote::ForfeitNominationVote;
 
 use serde::{Deserialize, Serialize};
 use skip_day_1::SkipDay1;
@@ -60,7 +66,7 @@ pub enum ModifierState{
     ObscuredGraves(ObscuredGraves),
     SkipDay1(SkipDay1),
     DeadCanChat(DeadCanChat),
-    NoAbstaining(NoAbstaining),
+    Abstaining(Abstaining),
     NoDeathCause(NoDeathCause),
     RoleSetGraveKillers(RoleSetGraveKillers),
     AutoGuilty(AutoGuilty),
@@ -70,7 +76,10 @@ pub enum ModifierState{
     NoNightChat(NoNightChat),
     NoChat(NoChat),
     HiddenWhispers(HiddenWhispers),
-    ScheduledNominations(ScheduledNominations),
+    UnscheduledNominations(UnscheduledNominations),
+    HiddenNominationVotes(HiddenNominationVotes),
+    HiddenVerdictVotes(HiddenVerdictVotes),
+    ForfeitNominationVote(ForfeitNominationVote),
 }
 #[derive(Clone, Serialize, Deserialize, PartialEq, Eq, Debug, Hash)]
 #[serde(rename_all = "camelCase")]
@@ -78,7 +87,7 @@ pub enum ModifierType{
     ObscuredGraves,
     SkipDay1,
     DeadCanChat,
-    NoAbstaining,
+    Abstaining,
     NoDeathCause,
     RoleSetGraveKillers,
     AutoGuilty,
@@ -88,7 +97,10 @@ pub enum ModifierType{
     NoNightChat,
     NoChat,
     HiddenWhispers,
-    ScheduledNominations,
+    UnscheduledNominations,
+    HiddenNominationVotes,
+    HiddenVerdictVotes,
+    ForfeitNominationVote,
 }
 impl ModifierType{
     pub fn default_state(&self)->ModifierState{
@@ -96,7 +108,7 @@ impl ModifierType{
             Self::ObscuredGraves => ModifierState::ObscuredGraves(ObscuredGraves),
             Self::SkipDay1 => ModifierState::SkipDay1(SkipDay1),
             Self::DeadCanChat => ModifierState::DeadCanChat(DeadCanChat),
-            Self::NoAbstaining => ModifierState::NoAbstaining(NoAbstaining),
+            Self::Abstaining => ModifierState::Abstaining(Abstaining),
             Self::NoDeathCause => ModifierState::NoDeathCause(NoDeathCause),
             Self::RoleSetGraveKillers => ModifierState::RoleSetGraveKillers(RoleSetGraveKillers),
             Self::AutoGuilty => ModifierState::AutoGuilty(AutoGuilty),
@@ -106,7 +118,10 @@ impl ModifierType{
             Self::NoNightChat => ModifierState::NoNightChat(NoNightChat),
             Self::NoChat => ModifierState::NoChat(NoChat),
             Self::HiddenWhispers => ModifierState::HiddenWhispers(HiddenWhispers),
-            Self::ScheduledNominations => ModifierState::ScheduledNominations(ScheduledNominations),
+            Self::UnscheduledNominations => ModifierState::UnscheduledNominations(UnscheduledNominations),
+            Self::HiddenNominationVotes => ModifierState::HiddenNominationVotes(HiddenNominationVotes),
+            Self::HiddenVerdictVotes => ModifierState::HiddenVerdictVotes(HiddenVerdictVotes),
+            Self::ForfeitNominationVote => ModifierState::ForfeitNominationVote(ForfeitNominationVote),
         }
     }
 }
@@ -116,7 +131,7 @@ impl From<&ModifierState> for ModifierType{
             ModifierState::ObscuredGraves(_) => Self::ObscuredGraves,
             ModifierState::SkipDay1(_) => Self::SkipDay1,
             ModifierState::DeadCanChat(_) => Self::DeadCanChat,
-            ModifierState::NoAbstaining(_) => Self::NoAbstaining,
+            ModifierState::Abstaining(_) => Self::Abstaining,
             ModifierState::NoDeathCause(_) => Self::NoDeathCause,
             ModifierState::RoleSetGraveKillers(_) => Self::RoleSetGraveKillers,
             ModifierState::AutoGuilty(_) => Self::AutoGuilty,
@@ -126,7 +141,10 @@ impl From<&ModifierState> for ModifierType{
             ModifierState::NoNightChat(_) => Self::NoNightChat,
             ModifierState::NoChat(_) => Self::NoChat,
             ModifierState::HiddenWhispers(_) => Self::HiddenWhispers,
-            ModifierState::ScheduledNominations(_) => Self::ScheduledNominations,
+            ModifierState::UnscheduledNominations(_) => Self::UnscheduledNominations,
+            ModifierState::HiddenNominationVotes(_) => Self::HiddenNominationVotes,
+            ModifierState::HiddenVerdictVotes(_) => Self::HiddenVerdictVotes,
+            ModifierState::ForfeitNominationVote(_) => Self::ForfeitNominationVote,
         }
     }
 }
@@ -140,7 +158,7 @@ pub struct Modifiers{
 }
 
 impl Modifiers{
-    pub fn modifier_is_enabled(game: &Game, modifier: ModifierType)->bool{
+    pub fn is_enabled(game: &Game, modifier: ModifierType)->bool{
         game.modifiers.modifiers.contains(&modifier)
     }
     pub fn get_modifier(game: &Game, modifier: ModifierType)->Option<&ModifierState>{

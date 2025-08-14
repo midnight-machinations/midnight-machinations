@@ -36,6 +36,10 @@ function RoleListDisplay(): ReactElement {
         ["yourCrossedOutOutlines"],
         []
     )!
+    const playerNames = useGameState(
+        gameState => gameState.players.map(player => player.toString()),
+        ["gamePlayers"]
+    )!
 
     const spectator = useSpectator();
 
@@ -60,10 +64,10 @@ function RoleListDisplay(): ReactElement {
                 {
                     crossedOutOutlines.includes(index) ? 
                     <s><StyledText>
-                        {translateRoleOutline(entry)}
+                        {translateRoleOutline(entry, playerNames)}
                     </StyledText></s> : 
                     <StyledText>
-                        {translateRoleOutline(entry)}
+                        {translateRoleOutline(entry, playerNames)}
                     </StyledText>
                 }
             </Button>

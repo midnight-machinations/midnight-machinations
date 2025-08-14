@@ -10,6 +10,7 @@ use crate::game::Game;
 use super::{ControllerID, ControllerParametersMap, Role, RoleStateImpl};
 
 #[derive(Clone, Debug, Serialize)]
+#[serde(rename_all = "camelCase")]
 pub struct Doctor {
     self_heals_remaining: u8,
 }

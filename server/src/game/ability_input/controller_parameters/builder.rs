@@ -92,7 +92,7 @@ impl<'a, I: BuilderIDState> ControllerParametersBuilder<'a, NoAbilitySelection, 
                         false
                     }else if *player == actor_ref{
                         can_select_self
-                    }else if InsiderGroupID::in_same_revealed_group(game, actor_ref, *player){
+                    }else if InsiderGroupID::in_same_group(game, actor_ref, *player){
                         can_select_insiders
                     }else{
                         true

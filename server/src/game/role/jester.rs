@@ -18,7 +18,7 @@ use super::{
 
 #[derive(Clone, Debug, Default)]
 pub struct Jester {
-    lynched_yesterday: bool,
+    executed_yesterday: bool,
     won: bool,
 }
 
@@ -34,11 +34,7 @@ impl RoleStateImpl for Jester {
     fn on_midnight(self, game: &mut Game, midnight_variables: &mut MidnightVariables, actor_ref: PlayerReference, priority: OnMidnightPriority) {
         if priority != OnMidnightPriority::TopPriority {return;}
         if actor_ref.alive(game) {return;}
-        if !self.lynched_yesterday {return}
-        
-        
-
-
+        if !self.executed_yesterday {return}
 
         let target_ref = if let Some(target_ref) = ControllerID::role(actor_ref, Role::Jester, 0)
             .get_player_list_selection(game)
@@ -79,24 +75,25 @@ impl RoleStateImpl for Jester {
                 can_choose_duplicates: false,
                 max_players: Some(1)
             })
-            .night_typical(actor_ref)
-            .add_grayed_out_condition(!self.lynched_yesterday)
+            .add_grayed_out_condition(!self.executed_yesterday)
+            .reset_on_phase_start(PhaseType::Obituary)
+            .allow_players([actor_ref])
             .build_map()
     }
     fn on_phase_start(self, game: &mut Game, actor_ref: PlayerReference, _phase: PhaseType){
         match game.current_phase() {
-            &PhaseState::FinalWords { player_on_trial } => {
-                if player_on_trial == actor_ref {
+            PhaseState::FinalWords { player_on_trial } => {
+                if *player_on_trial == actor_ref {
                     actor_ref.set_role_state(game, Jester { 
-                        lynched_yesterday: true,
+                        executed_yesterday: true,
                         won: true
                     });
                 }
             }
             PhaseState::Obituary { .. } => {
                 actor_ref.set_role_state(game, Jester { 
-                    lynched_yesterday: false,
-                    won: self.won
+                    executed_yesterday: false,
+                    ..self
                 });
             }
             _ => {}

@@ -3,7 +3,7 @@ use std::time::Duration;
 use crate::{
     client_connection::ClientConnection, 
     game::{
-        chat::ChatMessageVariant, components::{insider_group::InsiderGroupID, tags::Tags},
+        chat::ChatMessageVariant, components::{insider_group::InsiderGroups, tags::Tags},
         Game, GameOverReason
     },
     packet::ToClientPacket, websocket_connections::connection::ClientSender
@@ -74,7 +74,7 @@ impl PlayerReference{
         }
 
 
-        self.send_packet(game, ToClientPacket::PlayerVotes{votes_for_player: game.create_voted_player_map()});
+        game.send_player_votes();
         for grave in game.graves.iter(){
             self.send_packet(game, ToClientPacket::AddGrave { grave: grave.clone() });
         }
@@ -82,8 +82,8 @@ impl PlayerReference{
         // Player specific
         self.requeue_chat_messages(game);
         self.send_chat_messages(game);
-        InsiderGroupID::send_player_insider_groups(game, *self);
-        InsiderGroupID::send_fellow_insiders(game, *self);
+        InsiderGroups::send_player_insider_groups_packet(game, *self);
+        InsiderGroups::send_fellow_insiders_packets(game, *self);
         Tags::send_to_client(game, *self);
 
         self.send_packets(game, vec![
@@ -104,9 +104,6 @@ impl PlayerReference{
             },
             ToClientPacket::YourAllowedControllers { 
                 save: game.saved_controllers.controllers_allowed_to_player(*self).all_controllers().clone(),
-            },
-            ToClientPacket::YourWill{
-                will: self.will(game).clone()
             },
             ToClientPacket::YourNotes{
                 notes: self.notes(game).clone()

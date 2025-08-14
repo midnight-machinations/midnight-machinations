@@ -126,9 +126,6 @@ export type ToClientPacket = {
     type: "yourPlayerTags",
     playerTags: ListMapData<PlayerIndex, Tag[]> 
 } | {
-    type: "yourWill",
-    will: string
-} | {
     type: "yourNotes",
     notes: string[]
 } | {
@@ -232,17 +229,6 @@ export type ToServerPacket = {
 {
     type: "judgement", 
     verdict: Verdict
-} | {
-    type: "sendChatMessage", 
-    text: string,
-    block: boolean,
-} | {
-    type: "sendWhisper", 
-    playerIndex: PlayerIndex, 
-    text: string
-} | {
-    type: "saveWill", 
-    will: string
 } | {
     type: "saveNotes", 
     notes: string[]

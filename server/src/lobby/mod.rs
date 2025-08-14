@@ -164,6 +164,7 @@ impl RoomState for Lobby {
                 };
 
         self.clients.insert(room_client_id, new_player);
+        self.clients.shuffle(&mut rand::rng());
 
         self.ensure_host_exists(None);
 

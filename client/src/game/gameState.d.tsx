@@ -106,7 +106,6 @@ export type PlayerGameState = {
     
     roleState: RoleState,
 
-    will: string,
     notes: string[],
     crossedOutOutlines: number[],
     chatFilter: ChatFilter,
@@ -160,19 +159,21 @@ export type Tag =
     "morticianTagged" |
     "puppeteerMarionette" |
     "frame" |
-    "forfeitVote" |
+    "forfeitNominationVote" |
     "spiraling";
 
 export const MODIFIERS = [
     "obscuredGraves",
     "skipDay1",
-    "deadCanChat", "noAbstaining",
+    "deadCanChat", "abstaining",
     "noDeathCause",
     "roleSetGraveKillers", "autoGuilty", 
     "twoThirdsMajority", "noTrialPhases", 
     "noWhispers", "hiddenWhispers",
     "noNightChat", "noChat", 
-    "scheduledNominations"
+    "unscheduledNominations",
+    "hiddenNominationVotes", "hiddenVerdictVotes",
+    "forfeitNominationVote"
 ] as const;
 export type ModifierType = (typeof MODIFIERS)[number];
 

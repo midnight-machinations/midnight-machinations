@@ -15,6 +15,7 @@ use crate::game::role_list::{RoleOutline, RoleOutlineOption, RoleOutlineOptionRo
 use crate::game::visit::Visit;
 
 use crate::game::Game;
+use crate::vec_set::VecSet;
 use super::godfather::Godfather;
 use super::{
     ControllerID,
@@ -46,7 +47,7 @@ impl RoleStateImpl for Recruiter {
     type ClientRoleState = Recruiter;
     fn new_state(game: &Game) -> Self {
         Self{
-            recruits_remaining: game.num_players().div_ceil(5),
+            recruits_remaining: crate::game::role::common_role::standard_charges(game),
         }
     }
     fn on_midnight(self, game: &mut Game, midnight_variables: &mut MidnightVariables, actor_ref: PlayerReference, priority: OnMidnightPriority) {
@@ -128,10 +129,12 @@ impl RoleStateImpl for Recruiter {
             let random_town_role = RoleOutline {options: vec1![RoleOutlineOption {
                 win_condition: Default::default(), 
                 insider_groups: Default::default(), 
-                roles: RoleOutlineOptionRoles::RoleSet{ role_set: RoleSet::TownCommon } 
+                roles: RoleOutlineOptionRoles::RoleSet{ role_set: RoleSet::TownCommon } ,
+                player_pool: VecSet::new(),
             }]}.get_random_role_assignments(
                 &game.settings.enabled_roles,
-                PlayerReference::all_players(game).map(|p|p.role(game)).collect::<Vec<_>>().as_slice()
+                PlayerReference::all_players(game).map(|p|p.role(game)).collect::<Vec<_>>().as_slice(),
+                &[]
             ).map(|assignment| assignment.role());
 
             if let Some(random_town_role) = random_town_role {

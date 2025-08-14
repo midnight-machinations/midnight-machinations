@@ -13,10 +13,15 @@ import { CopyButton } from "./ClipboardButtons";
 import { useGameState, useLobbyOrGameState, usePlayerNames, usePlayerState, useSpectator } from "./useHooks";
 import { KiraResult, KiraResultDisplay } from "../menu/game/gameScreenContent/AbilityMenu/AbilitySelectionTypes/KiraSelectionMenu";
 import { AuditorResult } from "../menu/game/gameScreenContent/AbilityMenu/RoleSpecificMenus/AuditorMenu";
-import { ControllerID, AbilitySelection, translateControllerID, controllerIdToLink } from "../game/abilityInput";
+import { ControllerID, AbilitySelection, translateControllerID, controllerIdToLinkWithPlayer } from "../game/abilityInput";
 import DetailsSummary from "./DetailsSummary";
 import ListMap from "../ListMap";
 import { Button } from "./Button";
+
+
+function canCopyPasteChatMessages(roleState?: RoleState): boolean{
+    return roleState?.type === "forger" || roleState?.type === "counterfeiter" || roleState?.type === "cerenovous";
+}
 
 const ChatElement = React.memo((
     props: {
@@ -174,7 +179,7 @@ const ChatElement = React.memo((
             className="chat-message-div-small-button-div"
         >
             {
-                (roleState?.type === "forger" || roleState?.type === "counterfeiter")
+                canCopyPasteChatMessages(roleState)
                 && <CopyButton
                     className="chat-message-div-small-button"
                     text={translateChatMessage(message.variant, playerNames, roleList)}
@@ -322,7 +327,7 @@ function NormalChatMessage(props: Readonly<{
             className="chat-message-div-small-button-div"
         >
             {
-                (props.roleState?.type === "forger" || props.roleState?.type === "counterfeiter")
+                canCopyPasteChatMessages(props.roleState)
                 && <CopyButton
                     className="chat-message-div-small-button"
                     text={translateChatMessage(props.message.variant, props.playerNames, props.roleList)}
@@ -467,11 +472,18 @@ export function translateChatMessage(
         case "phaseChange":
             switch (message.phase.type) {
                 case "nomination":
-                    return translate("chatMessage.phaseChange.nomination",
-                        translate("phase."+message.phase.type),
-                        message.dayNumber,
-                        message.phase.trialsLeft
-                    );
+                    if (message.phase.trialsLeft === 1) {
+                        return translate("chatMessage.phaseChange.nomination.lastTrial",
+                            translate("phase."+message.phase.type),
+                            message.dayNumber,
+                        );
+                    } else {
+                        return translate("chatMessage.phaseChange.nomination",
+                            translate("phase."+message.phase.type),
+                            message.dayNumber,
+                            message.phase.trialsLeft
+                        );
+                    }
                 case "testimony":
                 case "judgement":
                 case "finalWords":
@@ -541,13 +553,13 @@ export function translateChatMessage(
                 case "boolean":{
                     let text = null;
                     if(message.selection.selection===true){
-                        text = translateChecked("controllerId."+controllerIdToLink(message.abilityId).replace(/\//g, ".") + ".boolean.true");
+                        text = translateChecked("controllerId."+controllerIdToLinkWithPlayer(message.abilityId).replace(/\//g, ".") + ".boolean.true");
                         if(text===null)
                             text = " "+translate("on");
                         else
                             text = " "+text;
                     }else{
-                        text = translateChecked("controllerId."+controllerIdToLink(message.abilityId).replace(/\//g, ".") + ".boolean.false");
+                        text = translateChecked("controllerId."+controllerIdToLinkWithPlayer(message.abilityId).replace(/\//g, ".") + ".boolean.false");
                         if(text===null)
                             text = " "+translate("off");
                         else
@@ -598,7 +610,7 @@ export function translateChatMessage(
                     out = translate("chatMessage.abilityUsed.selection.string", sanitizePlayerMessage(replaceMentions(message.selection.selection, playerNames)));
                     break;
                 case "integer":
-                    let text = translateChecked("controllerId."+controllerIdToLink(message.abilityId).replace(/\//g, ".") + ".integer." + message.selection.selection);
+                    let text = translateChecked("controllerId."+controllerIdToLinkWithPlayer(message.abilityId).replace(/\//g, ".") + ".integer." + message.selection.selection);
                     
                     if(text === null){
                         text = message.selection.selection.toString()
@@ -694,7 +706,8 @@ export function translateChatMessage(
                 playerNames[message.player]
             );
         case "auditorResult":
-            return translate("chatMessage.auditorResult", 
+            return translate("chatMessage.auditorResult",
+                message.outlineIndex+1,
                 translateRoleOutline(message.roleOutline),
                 message.result.map((role)=>translate("role."+role+".name")).join(", ")
             );
@@ -717,17 +730,6 @@ export function translateChatMessage(
                 translate("chatMessage.informantResult.visited", playerListToString(message.visited, playerNames)),
                 translate("chatMessage.informantResult.visitedBy", playerListToString(message.visitedBy, playerNames))
             );
-        case "framerResult":
-            const mafiaMemberName = playerNames[message.mafiaMember];
-            const visitorRoles = message.visitors.map((role) => translate("role."+role+".name"));
-
-            if(message.visitors.length === 0){
-                return translate("chatMessage.framerResult.nobody", mafiaMemberName);
-            }
-            return translate("chatMessage.framerResult",
-                mafiaMemberName,
-                visitorRoles.join(", ")
-            );
         case "scarecrowResult":
             return translate("chatMessage.scarecrowResult",
                 playerListToString(message.players, playerNames)
@@ -736,8 +738,10 @@ export function translateChatMessage(
             return translate("chatMessage.ambusherCaught",
                 playerNames[message.ambusher]
             );
-        case "silenced":
-            return translate("chatMessage.silenced");
+        case "mercenaryHits":
+            return translate("chatMessage.mercenaryHits", roleListToString(message.roles));
+        case "mercenaryResult":
+            return translate("chatMessage.mercenaryResult."+(message.hit?"hit":"notHit"));
         case "mediumHauntStarted":
             return translate("chatMessage.mediumHauntStarted", playerNames[message.medium], playerNames[message.player]);
         case "youWerePossessed":
@@ -790,6 +794,7 @@ export function translateChatMessage(
                 translate("defense."+message.defense),
                 playerNames[message.playerWithVest]
             );
+        case "mercenaryYouAreAHit":
         case "deputyShotYou":
         case "mediumExists":
         case "youGuardedSomeone":
@@ -808,6 +813,7 @@ export function translateChatMessage(
         case "youArePoisoned":
         case "doomsayerFailed":
         case "doomsayerWon":
+        case "silenced":
         case "martyrFailed":
         case "martyrWon":
         case "targetsMessage":
@@ -1035,6 +1041,7 @@ export type ChatMessageVariant = {
     type: "psychicFailed"
 } | {
     type: "auditorResult",
+    outlineIndex: number,
     roleOutline: RoleOutline,
     result: AuditorResult,
 } | {
@@ -1082,10 +1089,6 @@ export type ChatMessageVariant = {
     visitedBy: PlayerIndex[],
     visited: PlayerIndex[]
 } | {
-    type: "framerResult", 
-    mafiaMember: PlayerIndex,
-    visitors: Role[]
-} | {
     type: "scarecrowResult",
     players: PlayerIndex[]
 } | {
@@ -1127,6 +1130,14 @@ export type ChatMessageVariant = {
     type: "doomsayerFailed"
 } | {
     type: "doomsayerWon"
+} | {
+    type: "mercenaryHits",
+    roles: Role[]
+} | {
+    type: "mercenaryResult",
+    hit: boolean
+} | {
+    type: "mercenaryYouAreAHit"
 } | {
     type: "kiraResult",
     result: {

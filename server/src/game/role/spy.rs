@@ -38,7 +38,7 @@ impl RoleStateImpl for Spy {
 
                 let mut mafia_visits = vec![];
                 for other_player in PlayerReference::all_players(game){
-                    if !InsiderGroupID::Mafia.is_player_in_revealed_group(game, other_player) {continue}
+                    if !InsiderGroupID::Mafia.contains_player(game, other_player) {continue}
                     mafia_visits.append(
                         &mut other_player.tracker_seen_visits(game, midnight_variables)
                             .iter()

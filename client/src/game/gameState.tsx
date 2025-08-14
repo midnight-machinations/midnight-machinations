@@ -78,7 +78,6 @@ export function createPlayerGameState(): PlayerGameState {
 
         savedControllers: [],
 
-        will: "",
         notes: [],
         crossedOutOutlines: [],
         chatFilter: null,

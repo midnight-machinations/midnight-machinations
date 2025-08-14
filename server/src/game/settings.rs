@@ -12,7 +12,7 @@ pub struct Settings{
     pub role_list: RoleList,
     pub phase_times: PhaseTimeSettings,
     pub enabled_roles: VecSet<Role>,
-    pub enabled_modifiers: VecSet<ModifierType>,
+    pub enabled_modifiers: VecSet<ModifierType>
 }
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]

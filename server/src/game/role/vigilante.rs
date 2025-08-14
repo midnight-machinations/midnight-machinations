@@ -67,7 +67,7 @@ impl RoleStateImpl for Vigilante {
                     }       
 
                     VigilanteState::NotLoaded => {
-                        self.state = VigilanteState::Loaded { bullets: game.num_players().div_ceil(5) };
+                        self.state = VigilanteState::Loaded { bullets: crate::game::role::common_role::standard_charges(game) };
                     }
 
                     _ => {},

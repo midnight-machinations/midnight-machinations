@@ -11,6 +11,7 @@
     "@types/node": "^18.15.5",
     "@types/react": "^18.0.28",
     "@types/react-dom": "^18.0.11",
+    "deep-equal": "2.2.3",
     "dompurify": "^3.0.3",
     "marked": "^5.1.0",
     "react": "^18.2.0",
@@ -24,6 +25,7 @@
   },
   "devDependencies": {
     "@babel/plugin-proposal-private-property-in-object": "7.21.0-placeholder-for-preset-env.2",
+    "@types/deep-equal": "^1.0.4",
     "@types/react-helmet": "^6.1.11",
     "@types/react-responsive-masonry": "^2.1.3"
   },
