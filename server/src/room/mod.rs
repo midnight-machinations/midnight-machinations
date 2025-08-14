@@ -26,6 +26,7 @@ pub trait RoomState {
     fn is_host(&self, room_client_id: RoomClientID)->bool;
 }
 
+#[expect(clippy::large_enum_variant, reason = "This is stored in a box anyway, and I don't want the rooms moving around in memory for no reason.")]
 #[enum_delegate::implement(RoomState)]
 pub enum Room {
     Lobby(Lobby),
