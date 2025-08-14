@@ -6,7 +6,6 @@ import "./chatMessage.css"
 import { ChatGroup, Conclusion, DefensePower, PhaseState, PlayerIndex, Tag, translateConclusion, translateWinCondition, UnsafeString, Verdict, WinCondition } from "../game/gameState.d";
 import { Role, RoleState } from "../game/roleState.d";
 import { Grave } from "../game/graveState";
-import DOMPurify from "dompurify";
 import GraveComponent from "./grave";
 import { RoleList, RoleOutline, translateRoleOutline } from "../game/roleListState.d";
 import { CopyButton } from "./ClipboardButtons";
