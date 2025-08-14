@@ -9,13 +9,14 @@ use crate::{
         chat::ChatComponent,
         components::{
             confused::Confused, cult::Cult, detained::Detained,
-            drunk_aura::DrunkAura, fragile_vest::FragileVests,
+            drunk_aura::DrunkAura, fragile_vest::FragileVestsComponent,
             graves::Graves, insider_group::{InsiderGroupID, InsiderGroups},
             mafia::Mafia, mafia_recruits::MafiaRecruits, pitchfork::Pitchfork,
-            player_component::PlayerComponent, poison::Poison,
+            poison::Poison,
             puppeteer_marionette::PuppeteerMarionette, silenced::Silenced,
             syndicate_gun_item::SyndicateGunItem, synopsis::SynopsisTracker,
-            tags::Tags, verdicts_today::VerdictsToday, win_condition::WinCondition
+            tags::Tags, verdicts_today::VerdictsToday,
+            win_condition::WinConditionComponent
         },
         event::on_game_start::OnGameStart, game_client::GameClient,
         modifiers::Modifiers, phase::PhaseStateMachine,
@@ -123,8 +124,8 @@ impl Game{
                 synopsis_tracker: SynopsisTracker::new(num_players),
                 tags: Tags::default(),
                 silenced: Silenced::default(),
-                fragile_vests: unsafe{PlayerComponent::<FragileVests>::new(num_players)},
-                win_condition: unsafe{PlayerComponent::<WinCondition>::new(num_players, &assignments)},
+                fragile_vests: unsafe{FragileVestsComponent::new(num_players)},
+                win_condition: unsafe{WinConditionComponent::new(num_players, &assignments)},
                 chat_messages: unsafe{ChatComponent::new(num_players)}
             };
 

@@ -194,7 +194,7 @@ pub fn get_nice_listers(game: &Game) -> Vec<PlayerReference> {
     PlayerReference::all_players(game)
         .filter(|player|
             player.win_condition(game)
-                .required_conclusions_for_win()
+                .win_if_any_conclusions()
                 .is_some_and(|states| states.contains(&GameConclusion::NiceList))
         ).collect()
 }
@@ -203,7 +203,7 @@ pub fn get_naughty_listers(game: &Game) -> Vec<PlayerReference> {
     PlayerReference::all_players(game)
         .filter(|player|
             player.win_condition(game)
-                .required_conclusions_for_win()
+                .win_if_any_conclusions()
                 .is_some_and(|states| states.contains(&GameConclusion::NaughtyList))
         ).collect()
 }

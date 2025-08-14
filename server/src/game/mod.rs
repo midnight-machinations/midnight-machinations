@@ -31,11 +31,9 @@ use components::confused::Confused;
 use components::drunk_aura::DrunkAura;
 use components::enfranchise::Enfranchise;
 use components::forfeit_vote::ForfeitNominationVote;
-use components::fragile_vest::FragileVests;
 use components::mafia::Mafia;
 use components::pitchfork::Pitchfork;
 use components::mafia_recruits::MafiaRecruits;
-use components::player_component::PlayerComponent;
 use components::poison::Poison;
 use components::detained::Detained;
 use components::insider_group::InsiderGroups;
@@ -44,16 +42,16 @@ use components::syndicate_gun_item::SyndicateGunItem;
 use components::synopsis::SynopsisTracker;
 use components::tags::Tags;
 use components::verdicts_today::VerdictsToday;
-use components::win_condition::WinCondition;
 use modifiers::ModifierType;
 use modifiers::Modifiers;
 use role_list::RoleAssignment;
 use role_outline_reference::RoleOutlineReference;
 use serde::Serialize;
-
 use crate::client_connection::ClientConnection;
-use crate::game::chat::ChatPlayerComponent;
+use crate::game::chat::ChatComponent;
+use crate::game::components::fragile_vest::FragileVestsComponent;
 use crate::game::components::graves::Graves;
+use crate::game::components::win_condition::WinConditionComponent;
 use crate::game::game_client::GameClient;
 use crate::game::game_client::GameClientLocation;
 use crate::game::modifiers::hidden_nomination_votes::HiddenNominationVotes;
@@ -124,9 +122,9 @@ pub struct Game {
     pub synopsis_tracker: SynopsisTracker,
     pub tags: Tags,
     pub silenced: Silenced,
-    pub fragile_vests: PlayerComponent<FragileVests>,
-    pub win_condition: PlayerComponent<WinCondition>,
-    pub chat_messages: PlayerComponent<ChatPlayerComponent>
+    pub fragile_vests: FragileVestsComponent,
+    pub win_condition: WinConditionComponent,
+    pub chat_messages: ChatComponent
 }
 
 #[derive(Serialize, Debug, Clone, Copy)]

@@ -2816,7 +2816,7 @@ fn santa_cannot_convert_naughty_player() {
     game.skip_to(Night, 2);
 
     assert_contains!(
-        nice.player_ref().win_condition(&game).required_conclusions_for_win().unwrap(),
+        nice.player_ref().win_condition(&game).win_if_any_conclusions().unwrap(),
         GameConclusion::NiceList
     );
 
@@ -2828,7 +2828,7 @@ fn santa_cannot_convert_naughty_player() {
     game.skip_to(Night, 3);
 
     assert_contains!(
-        naughty.player_ref().win_condition(&game).required_conclusions_for_win().unwrap(),
+        naughty.player_ref().win_condition(&game).win_if_any_conclusions().unwrap(),
         GameConclusion::NaughtyList
     );
 
@@ -2837,12 +2837,12 @@ fn santa_cannot_convert_naughty_player() {
     game.skip_to(Obituary, 4);
 
     assert_contains!(
-        naughty.player_ref().win_condition(&game).required_conclusions_for_win().unwrap(),
+        naughty.player_ref().win_condition(&game).win_if_any_conclusions().unwrap(),
         GameConclusion::NaughtyList
     );
 
     assert_not_contains!(
-        naughty.player_ref().win_condition(&game).required_conclusions_for_win().unwrap(),
+        naughty.player_ref().win_condition(&game).win_if_any_conclusions().unwrap(),
         GameConclusion::NiceList
     );
 }
@@ -2941,7 +2941,7 @@ fn santa_always_gets_their_naughty_selection() {
         game.skip_to(Obituary, 3);
     
         assert_contains!(
-            naughty.player_ref().win_condition(&game).required_conclusions_for_win().unwrap(),
+            naughty.player_ref().win_condition(&game).win_if_any_conclusions().unwrap(),
             GameConclusion::NaughtyList
         );
     }
