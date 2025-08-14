@@ -17,7 +17,7 @@ use crate::{
 use super::{lobby_client::{LobbyClient, LobbyClientType, Ready}, Lobby};
 
 pub enum LobbyClientMessageResult {
-    StartGame(Game),
+    StartGame(Box<Game>),
     Close,
     None
 }
@@ -182,7 +182,7 @@ impl Lobby {
                         
                 self.send_to_all(ToClientPacket::RoomName { name: self.name.clone() });
 
-                return LobbyClientMessageResult::StartGame(game);
+                return LobbyClientMessageResult::StartGame(Box::new(game));
             },
             ToServerPacket::SetPhaseTime{phase, time} => {
                 if let Some(player) = self.clients.get(&room_client_id){
