@@ -4,6 +4,7 @@ import translate from "../game/lang"
 import StyledText, { KeywordDataMap, PLAYER_KEYWORD_DATA } from "./StyledText"
 import { useGameState, usePlayerState } from "./useHooks"
 import "./playerNamePlate.css"
+import { encodeString } from "./ChatMessage"
 
 export default function PlayerNamePlate(props: Readonly<{
     playerIndex: number,    //guarantee this index is valid please
@@ -58,10 +59,10 @@ export default function PlayerNamePlate(props: Readonly<{
 
         const newKeywordData: KeywordDataMap = {...PLAYER_KEYWORD_DATA};
         if(myIndex === props.playerIndex){
-            newKeywordData[playerNameToString] = [
+            newKeywordData[encodeString(playerNameToString)] = [
                 { style: "keyword-player-important keyword-player-number", replacement: (myIndex + 1).toString() },
                 { replacement: " " },
-                { style: "keyword-player-important keyword-player-sender", replacement: playerName }
+                { style: "keyword-player-important keyword-player-sender", replacement: encodeString(playerName) }
             ];
         }
 
@@ -79,7 +80,7 @@ export default function PlayerNamePlate(props: Readonly<{
                     }
                 }
             })()}
-            <StyledText playerKeywordData={newKeywordData}>{playerNameToString}</StyledText>
+            <StyledText playerKeywordData={newKeywordData}>{encodeString(playerNameToString)}</StyledText>
             {roleString !== null && <StyledText> {roleString}</StyledText>}
             <StyledText>{playerTags.map((tag)=>{return translate("tag."+tag)})}</StyledText>
         </div>

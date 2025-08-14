@@ -1,4 +1,4 @@
-import { PhaseType, PlayerIndex, Verdict, PhaseTimes, Tag, LobbyClientID, ChatGroup, PhaseState, LobbyClient, ModifierType, InsiderGroup, GameClient } from "./gameState.d"
+import { PhaseType, PlayerIndex, Verdict, PhaseTimes, Tag, LobbyClientID, ChatGroup, PhaseState, LobbyClient, ModifierType, InsiderGroup, GameClient, UnsafeString } from "./gameState.d"
 import { Grave, GraveIndex } from "./graveState"
 import { ChatMessage, ChatMessageIndex } from "../components/ChatMessage"
 import { RoleList, RoleOutline } from "./roleListState.d"
@@ -9,9 +9,9 @@ import { AbilityInput, ControllerID, SavedController } from "./abilityInput"
 import { ListMapData } from "../ListMap"
 
 export type LobbyPreviewData = {
-    name: string,
+    name: UnsafeString,
     inGame : boolean,
-    players: [LobbyClientID, string][]
+    players: [LobbyClientID, UnsafeString][]
 }
 
 export type ToClientPacket = {
@@ -47,7 +47,7 @@ export type ToClientPacket = {
     clients: ListMapData<LobbyClientID, LobbyClient>
 } | {
     type: "lobbyName",
-    name: string
+    name: UnsafeString
 } | {
     type: "yourPlayerIndex",
     playerIndex: PlayerIndex
@@ -74,7 +74,7 @@ export type ToClientPacket = {
     type: "backToLobby",
 } | {
     type: "gamePlayers",
-    players: string[]
+    players: UnsafeString[]
 } | {
     type: "roleList",
     roleList: RoleList,
@@ -127,13 +127,13 @@ export type ToClientPacket = {
     playerTags: ListMapData<PlayerIndex, Tag[]> 
 } | {
     type: "yourNotes",
-    notes: string[]
+    notes: UnsafeString[]
 } | {
     type: "yourCrossedOutOutlines",
     crossedOutOutlines: number[]
 } | {
     type: "yourDeathNote", 
-    deathNote: string | null
+    deathNote: UnsafeString | null
 } | {
     type: "yourRoleState",
     roleState: RoleState

@@ -20,6 +20,8 @@ import { useLobbyState } from "../../components/useHooks";
 import { Button } from "../../components/Button";
 import { EnabledModifiersSelector } from "../../components/gameModeSettings/EnabledModifiersSelector";
 import LobbyNamePane from "./LobbyNamePane";
+import { UnsafeString } from "../../game/gameState.d";
+import { encodeString } from "../../components/ChatMessage";
 
 export default function LobbyMenu(): ReactElement {
     const isSpectator = useLobbyState(
@@ -169,7 +171,7 @@ function LobbyMenuHeader(props: Readonly<{
     advancedView: boolean,
     setAdvancedView: (advancedView: boolean) => void
 }>): JSX.Element {
-    const [lobbyName, setLobbyName] = useState<string>(GAME_MANAGER.state.stateType === "lobby" ? GAME_MANAGER.state.lobbyName : "Mafia Lobby");
+    const [lobbyName, setLobbyName] = useState<UnsafeString>(GAME_MANAGER.state.stateType === "lobby" ? GAME_MANAGER.state.lobbyName : "Mafia Lobby");
     const mobile = useContext(MobileContext)!;
     const { setContent: setAnchorContent } = useContext(AnchorControllerContext)!;
 
@@ -207,7 +209,7 @@ function LobbyMenuHeader(props: Readonly<{
         {props.isHost ? 
             <input 
                 type="text" 
-                value={lobbyName}
+                value={lobbyName as string}
                 onInput={e => {
                     setLobbyName((e.target as HTMLInputElement).value);
                 }}
@@ -225,7 +227,7 @@ function LobbyMenuHeader(props: Readonly<{
                     GAME_MANAGER.sendSetLobbyNamePacket(newLobbyName);
                 }}
             /> : 
-            <h3>{lobbyName}</h3>
+            <h3>{encodeString(lobbyName)}</h3>
         }
         
     </header>

@@ -3,10 +3,11 @@ import React from "react";
 import { TextDropdownArea } from "../../../../../components/TextAreaDropdown";
 import { ControllerID, translateControllerID } from "../../../../../game/abilityInput";
 import { usePlayerState } from "../../../../../components/useHooks";
+import { UnsafeString } from "../../../../../game/gameState.d";
 
 export default function StringSelectionMenu(props: Readonly<{
     id?: ControllerID
-    selection: string,
+    selection: UnsafeString,
     onChoose: (string: string)=>void,
 }>): ReactElement {
 
@@ -14,8 +15,8 @@ export default function StringSelectionMenu(props: Readonly<{
         playerState => playerState.sendChatGroups.length === 0,
         ["yourSendChatGroups"]
     )!;
-    
-    let title = props.selection.split('\n')[0];
+
+    let title: UnsafeString = (props.selection as string).split('\n')[0];
     if(props.id !== undefined){
         title = translateControllerID(props.id);
     }

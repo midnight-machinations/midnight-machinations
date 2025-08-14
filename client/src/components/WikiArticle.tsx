@@ -86,10 +86,10 @@ export default function WikiArticle(props: {
                         {"### "+translate("wiki.article.role.exampleAlibi")+"\n"}
                     </WikiStyledText>
                     {exampleAlibiDescription && <WikiStyledText>
-                        {replaceMentions(exampleAlibiDescription, DUMMY_NAMES)}
+                        {replaceMentions(exampleAlibiDescription, DUMMY_NAMES) as string}
                     </WikiStyledText>}
                     <blockquote>
-                        <WikiStyledText>{replaceMentions(exampleAlibi, DUMMY_NAMES)}</WikiStyledText>
+                        <WikiStyledText>{replaceMentions(exampleAlibi, DUMMY_NAMES) as string}</WikiStyledText>
                     </blockquote>
                 </div>}
                 <DetailsSummary 
@@ -120,7 +120,7 @@ export default function WikiArticle(props: {
             return <section className="wiki-article">
                 <WikiStyledText className="wiki-article-standard">
                     {"# "+translate(`wiki.article.${articleType}.${props.article.split("/")[1]}.title`)+"\n"}
-                    {replaceMentions(translate(`wiki.article.${articleType}.${props.article.split("/")[1]}.text`), DUMMY_NAMES)}
+                    {replaceMentions(translate(`wiki.article.${articleType}.${props.article.split("/")[1]}.text`), DUMMY_NAMES) as string}
                 </WikiStyledText>
             </section>
         }
@@ -152,7 +152,7 @@ function CategoryArticle(props: Readonly<{ category: WikiCategory }>): ReactElem
     return <section className="wiki-article">
         <WikiStyledText className="wiki-article-standard">
             {"# "+title+"\n"}
-            {description ? replaceMentions(description, DUMMY_NAMES) : ""}
+            {description ? replaceMentions(description, DUMMY_NAMES) as string : ""}
         </WikiStyledText>
         <PageCollection 
             title={title}
