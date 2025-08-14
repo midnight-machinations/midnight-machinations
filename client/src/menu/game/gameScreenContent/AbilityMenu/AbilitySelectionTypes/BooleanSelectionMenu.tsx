@@ -1,6 +1,6 @@
 import { ReactElement } from "react";
 import React from "react";
-import { ControllerID, controllerIdToLinkWithPlayer, BooleanSelection } from "../../../../../game/abilityInput";
+import { ControllerID, controllerIdToLinkWithPlayer, BooleanSelection, controllerIdToLink } from "../../../../../game/abilityInput";
 import Select from "../../../../../components/Select";
 import translate, { translateChecked } from "../../../../../game/lang";
 import StyledText from "../../../../../components/StyledText";
@@ -14,8 +14,8 @@ export default function BooleanSelectionMenu(props: Readonly<{
 
     if(
         props.id === undefined ||
-        translateChecked("controllerId."+controllerIdToLinkWithPlayer(props.id).replace(/\//g, ".") + ".boolean.true") === null ||
-        translateChecked("controllerId."+controllerIdToLinkWithPlayer(props.id).replace(/\//g, ".") + ".boolean.false") === null
+        translateChecked("controllerId."+controllerIdToLink(props.id).replace(/\//g, ".") + ".boolean.true") === null ||
+        translateChecked("controllerId."+controllerIdToLink(props.id).replace(/\//g, ".") + ".boolean.false") === null
     ){
         return <BooleanSelectionMenuUnnamed {...props}/>;
     }else{

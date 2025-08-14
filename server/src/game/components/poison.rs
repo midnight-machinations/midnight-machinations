@@ -1,7 +1,5 @@
 use crate::{game::{
-    attack_power::AttackPower, chat::ChatMessageVariant,
-    event::on_midnight::{MidnightVariables, OnMidnight, OnMidnightPriority},
-    grave::GraveKiller, player::PlayerReference, Game,
+    attack_power::AttackPower, chat::ChatMessageVariant, components::graves::grave::GraveKiller, event::on_midnight::{MidnightVariables, OnMidnight, OnMidnightPriority}, player::PlayerReference, Game
 }, vec_set::VecSet};
 
 impl Game {

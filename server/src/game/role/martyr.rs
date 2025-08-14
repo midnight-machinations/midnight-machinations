@@ -3,8 +3,9 @@ use serde::Serialize;
 use crate::game::ability_input::AvailableBooleanSelection;
 use crate::game::attack_power::{AttackPower, DefensePower};
 use crate::game::chat::{ChatGroup, ChatMessageVariant};
+use crate::game::components::graves::grave::{Grave, GraveDeathCause, GraveInformation, GraveKiller};
+use crate::game::components::graves::grave_reference::GraveReference;
 use crate::game::event::on_midnight::{MidnightVariables, OnMidnightPriority};
-use crate::game::grave::{Grave, GraveDeathCause, GraveInformation, GraveKiller};
 use crate::game::phase::PhaseType;
 use crate::game::player::PlayerReference;
 
@@ -107,10 +108,10 @@ impl RoleStateImpl for Martyr {
         }
     }
     fn on_any_death(self, game: &mut Game, actor_ref: PlayerReference, dead_player_ref: PlayerReference) {
-        let left_town = game.graves.iter().any(|grave| 
-            grave.player == dead_player_ref &&
-            if let GraveInformation::Normal { death_cause, .. } = &grave.information {
-                death_cause == &GraveDeathCause::LeftTown
+        let left_town = GraveReference::all_graves(game).any(|grave| 
+            grave.deref(game).player == dead_player_ref &&
+            if let GraveInformation::Normal { death_cause, .. } = &grave.deref(game).information {
+                *death_cause == GraveDeathCause::LeftTown
             } else {false}
         );
 

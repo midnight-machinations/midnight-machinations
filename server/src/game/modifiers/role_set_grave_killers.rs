@@ -1,4 +1,4 @@
-use crate::game::{grave::{GraveDeathCause, GraveInformation, GraveKiller, GraveReference}, role_list::RoleSet, Game};
+use crate::game::{components::graves::{grave::{GraveDeathCause, GraveInformation, GraveKiller}, grave_reference::GraveReference}, role_list::RoleSet, Game};
 
 use super::{ModifierTrait, ModifierType};
 
@@ -44,7 +44,7 @@ impl ModifierTrait for RoleSetGraveKillers{
                     grave.deref_mut(game).information = GraveInformation::Normal{
                         role,
                         will,
-                        death_cause: crate::game::grave::GraveDeathCause::Killers(new_killers),
+                        death_cause: GraveDeathCause::Killers(new_killers),
                         death_notes
                     }
                 }

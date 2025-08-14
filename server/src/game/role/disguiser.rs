@@ -3,8 +3,9 @@ use serde::Serialize;
 
 use crate::game::ability_input::*;
 use crate::game::chat::ChatMessageVariant;
+use crate::game::components::graves::grave::GraveInformation;
+use crate::game::components::graves::grave_reference::GraveReference;
 use crate::game::event::on_midnight::{MidnightVariables, OnMidnightPriority};
-use crate::game::grave::GraveInformation;
 use crate::game::phase::PhaseType;
 use crate::game::{attack_power::DefensePower, player::PlayerReference};
 
@@ -97,7 +98,7 @@ impl RoleStateImpl for Disguiser {
             _ => {}
         }
     }
-    fn on_grave_added(self, game: &mut Game, actor_ref: PlayerReference, grave: crate::game::grave::GraveReference) {
+    fn on_grave_added(self, game: &mut Game, actor_ref: PlayerReference, grave: GraveReference) {
         let grave_ref = grave;
         
         if

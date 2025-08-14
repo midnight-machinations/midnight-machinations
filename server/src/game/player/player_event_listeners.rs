@@ -1,4 +1,8 @@
-use crate::game::{ability_input::{AbilityInput, ControllerID}, event::{on_midnight::{MidnightVariables, OnMidnight, OnMidnightPriority}, on_whisper::{OnWhisper, WhisperFold, WhisperPriority}}, grave::GraveReference, role::RoleState, visit::Visit, Game};
+use crate::game::{
+    ability_input::{AbilityInput, ControllerID}, components::graves::grave_reference::GraveReference, event::{
+        on_midnight::{MidnightVariables, OnMidnight, OnMidnightPriority},
+        on_whisper::{OnWhisper, WhisperFold, WhisperPriority}}, role::RoleState, visit::Visit, Game
+    };
 
 use super::PlayerReference;
 

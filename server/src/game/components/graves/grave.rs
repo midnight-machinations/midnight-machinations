@@ -1,17 +1,8 @@
 use std::vec;
-
 use rand::rng;
 use rand::seq::SliceRandom;
 use serde::{Serialize, Deserialize};
-
-use super::event::on_midnight::MidnightVariables;
-use super::phase::PhaseType;
-use super::Game;
-use super::player::PlayerReference;
-use super::role::Role;
-use super::role_list::RoleSet;
-
-
+use crate::game::{event::on_midnight::MidnightVariables, phase::PhaseType, player::PlayerReference, role::Role, role_list::RoleSet, Game};
 
 
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq, PartialOrd, Ord)]
@@ -156,26 +147,3 @@ impl Grave{
     }
 }
 
-#[derive(Clone, Copy)]
-pub struct GraveReference{
-    index: u8
-}
-impl GraveReference{
-    pub fn new(game: &Game, index: u8)->Option<GraveReference> {
-        if (index as usize) < game.graves.len() {
-            Some(GraveReference { index })
-        }else{
-            None
-        }
-    }
-    pub fn deref(self, game: &Game)->&Grave{
-        unsafe {
-            game.graves.get_unchecked(self.index as usize)
-        }
-    }
-    pub fn deref_mut(self, game: &mut Game)->&mut Grave{
-        unsafe {
-            game.graves.get_unchecked_mut(self.index as usize)
-        }
-    }
-}
