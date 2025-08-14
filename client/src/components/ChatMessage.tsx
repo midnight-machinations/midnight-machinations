@@ -415,6 +415,7 @@ export function translateChatMessage(
     playerNames: UnsafeString[],
     roleList?: RoleOutline[]
 ): string {
+    
     switch (message.type) {
         case "lobbyMessage":
             return encodeString(replaceMentions(message.text, playerNames));

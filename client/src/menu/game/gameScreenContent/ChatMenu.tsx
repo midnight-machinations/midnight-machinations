@@ -179,7 +179,7 @@ export function ChatMessageSection(props: Readonly<{
     const players = useGameState((gameState)=>{return gameState.players}, ["gamePlayers"])??[];
     const filter = useMemo(() => props.filter ?? null, [props.filter]);
     const messages = useLobbyOrGameState(
-        state => state.chatMessages.entries().map(([_idx, msg])=>msg),
+        state => state.chatMessages.values(),
         ["addChatMessages"]
     )!;
     // const myPlayerIndex = usePlayerState(

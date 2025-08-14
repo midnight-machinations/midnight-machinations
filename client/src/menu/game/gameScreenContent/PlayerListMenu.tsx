@@ -119,7 +119,7 @@ function PlayerCard(props: Readonly<{
     }
 
     const mostRecentBlockMessage: undefined | NonAnonymousBlockMessage = useGameState(
-        gameState => findLast(gameState.chatMessages.entries(), ([_idx, message]) =>
+        gameState => findLast(gameState.chatMessages.values(), (message) =>
                 message.chatGroup === "all" && 
                 message.variant.type === "normal" &&
                 message.variant.block &&
