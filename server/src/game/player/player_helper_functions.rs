@@ -362,15 +362,9 @@ impl PlayerReference{
         DrunkAura::has_drunk_aura(game, *self) ||
         Arsonist::has_suspicious_aura_douse(game, *self)
     }
-    pub fn get_won_game(&self, game: &Game) -> bool {
+    pub fn get_won_game(&self, game: &Game, conclusion: GameConclusion) -> bool {
         match self.win_condition(game){
-            WinCondition::GameConclusionReached { win_if_any } => {
-                if let Some(resolution) = GameConclusion::game_is_over(game) {
-                    win_if_any.contains(&resolution)
-                } else {
-                    false
-                }
-            },
+            WinCondition::GameConclusionReached { win_if_any } => win_if_any.contains(&conclusion),
             WinCondition::RoleStateWon => {
                 match self.role_state(game) {
                     RoleState::Jester(r) => r.won(),

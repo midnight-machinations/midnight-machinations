@@ -2,7 +2,7 @@ use serde::{Deserialize, Serialize};
 
 use super::{components::win_condition::WinCondition, player::PlayerReference, role::Role, role_list::RoleSet, Game};
 
-#[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq, Hash, PartialOrd, Ord)]
+#[derive(Clone, Copy, Debug, Serialize, Deserialize, PartialEq, Eq, Hash, PartialOrd, Ord)]
 #[serde(rename_all = "camelCase")]
 pub enum GameConclusion {
     Town,
