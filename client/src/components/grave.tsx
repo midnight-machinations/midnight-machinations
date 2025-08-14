@@ -2,11 +2,12 @@
 import { replaceMentions } from "..";
 import { Grave, GraveInformation } from "../game/graveState";
 import translate from "../game/lang";
-import { sanitizePlayerMessage } from "./ChatMessage";
+import { encodeString } from "./ChatMessage";
 import StyledText from "./StyledText";
 import React, { ReactElement, useMemo } from "react";
 import "./grave.css";
 import { useGameState } from "./useHooks";
+import { UnsafeString } from "../game/gameState.d";
 
 export function translateGraveRole(grave: Grave): string {
     if(grave.information.type === "obscured") {
@@ -18,11 +19,11 @@ export function translateGraveRole(grave: Grave): string {
 
 export default function GraveComponent(props: Readonly<{
     grave: Grave, 
-    playerNames?: string[]
+    playerNames?: UnsafeString[]
     onClick?: () => void
 }>): ReactElement {
     const gamePlayerNames = useGameState(
-        gameState => gameState.players.map(player => player.toString()),
+        gameState => gameState.players.map(player => encodeString(player.toString())),
         ["gamePlayers"]
     )!
 
@@ -38,7 +39,7 @@ export default function GraveComponent(props: Readonly<{
 
 function UnobscuredGrave(props: Readonly<{
     grave: Grave & { information: GraveInformation & { type: "normal" } },
-    playerNames: string[]
+    playerNames: UnsafeString[]
     onClick?: () => void
 }>): ReactElement {
     const graveDeathCause = useMemo(() => {
@@ -73,11 +74,11 @@ function UnobscuredGrave(props: Readonly<{
         <div><StyledText>{`${diedPhaseString+diedPhaseIcon+props.grave.dayNumber}`}</StyledText></div>
         <div><StyledText>{`${props.playerNames[props.grave.player]+" ("+graveRoleString+")"}`}</StyledText></div>
         {graveDeathCause && <div><StyledText>{`${translate("killedBy")+" "+graveDeathCause}`}</StyledText></div>}
-        {props.grave.information.will.length === 0 || <>
+        {(props.grave.information.will as string).length === 0 || <>
             {translate("alibi")}
             <div className="note-area">
                 <StyledText>
-                    {sanitizePlayerMessage(replaceMentions(
+                    {encodeString(replaceMentions(
                         props.grave.information.will,
                         props.playerNames
                     ))}
@@ -89,7 +90,7 @@ function UnobscuredGrave(props: Readonly<{
                 {translate("grave.deathNote")}
                 <div className="note-area">
                     <StyledText>
-                        {sanitizePlayerMessage(replaceMentions(
+                        {encodeString(replaceMentions(
                             note,
                             props.playerNames
                         ))}
@@ -101,7 +102,7 @@ function UnobscuredGrave(props: Readonly<{
 }
 
 
-function ObscuredGrave(props: Readonly<{grave: Grave, playerNames: string[]}>): ReactElement {
+function ObscuredGrave(props: Readonly<{grave: Grave, playerNames: UnsafeString[]}>): ReactElement {
 
     let diedPhaseString = props.grave.diedPhase === "day" ? translate("day") : translate("phase.night");
     let diedPhaseIcon = props.grave.diedPhase === "day" ? translate("day.icon") : translate("night.icon");

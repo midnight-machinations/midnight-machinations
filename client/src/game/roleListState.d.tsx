@@ -1,5 +1,6 @@
 
-import { Conclusion, InsiderGroup, PlayerIndex, translateWinCondition } from "./gameState.d";
+import { encodeString } from "../components/ChatMessage";
+import { Conclusion, InsiderGroup, PlayerIndex, translateWinCondition, UnsafeString } from "./gameState.d";
 import translate from "./lang";
 import { Role, roleJsonData } from "./roleState.d";
 
@@ -67,22 +68,22 @@ export type RoleOrRoleSet = ({
 
 
 
-export function translateRoleOutline(roleOutline: RoleOutline, playerNames?: string[]): string {
+export function translateRoleOutline(roleOutline: RoleOutline, playerNames?: UnsafeString[]): string {
     return roleOutline.map(outline => translateRoleOutlineOption(outline, playerNames)).join(" "+translate("union")+" ")
 }
 
-export function translatePlayerPool(playerPool: PlayerIndex[], playerNames: string[]): string {
+export function translatePlayerPool(playerPool: PlayerIndex[], playerNames: UnsafeString[]): string {
     let out = '';
     if (playerPool.length === 0) {
         out += translate("nobody");
     }
     out += playerPool
-        .map(playerNumber => playerNames.at(playerNumber) ?? translate("player.unknown", playerNumber))
+        .map(playerNumber => encodeString(playerNames.at(playerNumber) ?? translate("player.unknown", playerNumber)))
         .join(' ' + translate("union") + ' ')
     return out;
 }
 
-export function translateRoleOutlineOption(roleOutlineOption: RoleOutlineOption, playerNames?: string[]): string {
+export function translateRoleOutlineOption(roleOutlineOption: RoleOutlineOption, playerNames?: UnsafeString[]): string {
     let out = "";
     if (roleOutlineOption.playerPool && playerNames !== undefined) {
         out += translatePlayerPool(roleOutlineOption.playerPool, playerNames) + ': ';

@@ -25,7 +25,7 @@ import { sortControllerIdCompare } from "./abilityInput";
 function sendDefaultName() {
     const defaultName = loadSettingsParsed().defaultName;
     if(defaultName !== null && defaultName !== undefined && defaultName !== ""){
-        GAME_MANAGER.sendSetNamePacket(defaultName)
+        GAME_MANAGER.sendSetNamePacket(defaultName as string)
     }
 } 
 
