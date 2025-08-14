@@ -4,7 +4,7 @@ use crate::game::ability_input::{AvailableIntegerSelection, AvailableStringSelec
 use crate::game::attack_power::{AttackPower, DefensePower};
 use crate::game::chat::ChatMessageVariant;
 use crate::game::event::on_midnight::{MidnightVariables, OnMidnightPriority};
-use crate::game::grave::GraveKiller;
+use crate::game::components::graves::grave::GraveKiller;
 use crate::game::phase::PhaseType;
 use crate::game::player::PlayerReference;
 

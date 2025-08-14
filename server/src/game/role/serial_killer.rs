@@ -1,8 +1,9 @@
 use serde::Serialize;
 
 use crate::game::attack_power::AttackPower;
+use crate::game::components::graves::grave::GraveKiller;
 use crate::game::event::on_midnight::{MidnightVariables, OnMidnightPriority};
-use crate::game::{attack_power::DefensePower, grave::GraveKiller};
+use crate::game::attack_power::DefensePower;
 use crate::game::player::PlayerReference;
 
 use crate::game::visit::Visit;

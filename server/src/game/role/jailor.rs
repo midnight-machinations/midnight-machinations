@@ -8,7 +8,7 @@ use crate::game::chat::{ChatGroup, ChatMessageVariant};
 use crate::game::components::detained::Detained;
 use crate::game::event::on_midnight::{MidnightVariables, OnMidnightPriority};
 use crate::game::game_conclusion::GameConclusion;
-use crate::game::grave::GraveKiller;
+use crate::game::components::graves::grave::GraveKiller;
 use crate::game::phase::PhaseType;
 use crate::game::player::PlayerReference;
 

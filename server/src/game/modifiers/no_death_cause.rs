@@ -1,4 +1,4 @@
-use crate::game::{grave::{GraveInformation, GraveReference}, Game};
+use crate::game::{components::graves::{grave::{GraveDeathCause, GraveInformation}, grave_reference::GraveReference}, Game};
 
 use super::{ModifierTrait, ModifierType};
 
@@ -18,7 +18,7 @@ impl ModifierTrait for NoDeathCause{
                 grave.deref_mut(game).information = GraveInformation::Normal{
                     role,
                     will,
-                    death_cause: crate::game::grave::GraveDeathCause::None,
+                    death_cause: GraveDeathCause::None,
                     death_notes
                 }
             },

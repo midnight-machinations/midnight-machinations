@@ -4,7 +4,7 @@ use serde::{Serialize, Deserialize};
 use crate::game::attack_power::AttackPower;
 use crate::game::event::on_midnight::{MidnightVariables, OnMidnightPriority};
 use crate::game::{attack_power::DefensePower, chat::ChatMessageVariant};
-use crate::game::grave::GraveKiller;
+use crate::game::components::graves::grave::GraveKiller;
 use crate::game::player::PlayerReference;
 
 use crate::game::Game;
