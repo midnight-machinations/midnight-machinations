@@ -1,4 +1,4 @@
-use crate::game::{grave::{GraveInformation, GraveReference}, Game};
+use crate::game::{components::graves::{grave::GraveInformation, grave_reference::GraveReference}, Game};
 
 use super::{ModifierTrait, ModifierType};
 

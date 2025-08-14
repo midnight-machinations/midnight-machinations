@@ -4,13 +4,12 @@ use std::{ops::Deref, vec};
 
 pub(crate) use kit::{assert_contains, assert_not_contains};
 
-use mafia_server::game::{attack_power::DefensePower, components::syndicate_gun_item::SyndicateGunItem};
+use mafia_server::game::{attack_power::DefensePower, components::{graves::{grave::{Grave, GraveDeathCause, GraveInformation, GraveKiller, GravePhase}, grave_reference::GraveReference}, syndicate_gun_item::SyndicateGunItem}};
 pub use mafia_server::game::{
     ability_input::{ControllerID, IntegerSelection, PlayerListSelection, RoleListSelection},
     game_conclusion::GameConclusion,
     role::engineer::Trap,
-    chat::{ChatMessageVariant, MessageSender, ChatGroup}, 
-    grave::*,
+    chat::{ChatMessageVariant, MessageSender, ChatGroup},
     ability_input::{
         selection_type::{
             two_role_option_selection::TwoRoleOptionSelection,
@@ -192,7 +191,7 @@ fn mortician_obscures_on_stand(){
 
     game.skip_to(Night, 2);
     
-    assert_eq!(game.graves[0].information, GraveInformation::Obscured);
+    assert_eq!(unsafe{GraveReference::new_unchecked(0)}.deref(&game).information, GraveInformation::Obscured);
     assert_contains!(mortician.get_messages(), ChatMessageVariant::PlayerRoleAndAlibi { player: townie.player_ref(), role: Role::Detective, will: "".to_string() });
 }
 
@@ -219,7 +218,7 @@ fn mortician_obscures_fail_after_death(){
     game.skip_to(Night, 2);
     gf.send_ability_input_player_list_typical(townie);
     game.next_phase();
-    assert!(matches!(game.graves[1].information, GraveInformation::Normal { role: Role::Detective, .. }));
+    assert!(matches!(unsafe{GraveReference::new_unchecked(1)}.deref(&game).information, GraveInformation::Normal { role: Role::Detective, .. }));
     assert_not_contains!(mortician.get_messages(), ChatMessageVariant::PlayerRoleAndAlibi { player: townie.player_ref(), role: Role::Detective, will: "".to_string() });
 }
 
@@ -808,7 +807,7 @@ fn ambusher_basic(){
         protected_player: Jester,
         townie1: Detective,
         townie2: Detective,
-        blackmailer: Blackmailer
+        blackmailer: Informant
     );
 
     
@@ -1207,7 +1206,7 @@ fn grave_contains_multiple_killers() {
     assert!(vigilante.send_ability_input_player_list_typical(townie));
     game.next_phase();
     assert!(
-        *game.graves.first().unwrap() ==
+        *unsafe{GraveReference::new_unchecked(0)}.deref(&game) ==
         Grave{ 
             player: townie.player_ref(),
             died_phase: GravePhase::Night,
@@ -1219,7 +1218,7 @@ fn grave_contains_multiple_killers() {
                 death_notes: vec![],
             }
         } ||
-        *game.graves.first().unwrap() ==
+        *unsafe{GraveReference::new_unchecked(0)}.deref(&game) ==
         Grave{ 
             player: townie.player_ref(),
             died_phase: GravePhase::Night,

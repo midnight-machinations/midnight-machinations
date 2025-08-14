@@ -434,13 +434,16 @@ export default function messageListener(packet: ToClientPacket){
         break;
         case "addChatMessages":
             if(GAME_MANAGER.state.stateType === "game" || GAME_MANAGER.state.stateType === "lobby"){
-                GAME_MANAGER.state.chatMessages = GAME_MANAGER.state.chatMessages.concat(packet.chatMessages);
+                GAME_MANAGER.state.chatMessages = new ListMap(
+                    GAME_MANAGER.state.chatMessages.entries().concat(packet.chatMessages)
+                ).fixUnique();
 
                 // Chat notification icon state
                 if(GAME_MANAGER.state.stateType === "game" && packet.chatMessages.length !== 0){
                     GAME_MANAGER.state.missedChatMessages = true;
                     
-                    for(let chatMessage of packet.chatMessages){
+                    // eslint-disable-next-line
+                    for(let [_index, chatMessage] of packet.chatMessages){
                         if(
                             chatMessage.variant.type === "whisper" &&
                             GAME_MANAGER.state.clientState.type === "player" &&
@@ -452,7 +455,8 @@ export default function messageListener(packet: ToClientPacket){
                 }
 
                 if (GAME_MANAGER.state.stateType !== "game" || GAME_MANAGER.state.initialized === true) {
-                    for(let chatMessage of packet.chatMessages){
+                    // eslint-disable-next-line
+                    for(let [_index, chatMessage] of packet.chatMessages){
                         let audioSrc = chatMessageToAudio(chatMessage);
                         if(audioSrc)
                             AudioController.queueFile(audioSrc);
@@ -469,8 +473,15 @@ export default function messageListener(packet: ToClientPacket){
             }
         break;
         case "addGrave":
-            if(GAME_MANAGER.state.stateType === "game")
-                GAME_MANAGER.state.graves = [...GAME_MANAGER.state.graves, packet.grave];
+            if(GAME_MANAGER.state.stateType === "game"){
+                GAME_MANAGER.state.graves.insert(packet.graveRef, packet.grave);
+                GAME_MANAGER.state.graves = new ListMap(
+                    [...GAME_MANAGER.state.graves
+                        .entries()
+                        .sort(([a,_a],[b,_b])=>a-b)
+                    ]
+                );
+            }
         break;
         case "gameOver":
             if(GAME_MANAGER.state.stateType === "game"){

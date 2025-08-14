@@ -1,6 +1,6 @@
 import { PhaseType, PlayerIndex, Verdict, PhaseTimes, Tag, LobbyClientID, ChatGroup, PhaseState, LobbyClient, ModifierType, InsiderGroup, GameClient, UnsafeString } from "./gameState.d"
-import { Grave } from "./graveState"
-import { ChatMessage } from "../components/ChatMessage"
+import { Grave, GraveIndex } from "./graveState"
+import { ChatMessage, ChatMessageIndex } from "../components/ChatMessage"
 import { RoleList, RoleOutline } from "./roleListState.d"
 import { Role, RoleState } from "./roleState.d"
 import { DoomsayerGuess } from "../menu/game/gameScreenContent/AbilityMenu/RoleSpecificMenus/LargeDoomsayerMenu"
@@ -145,13 +145,14 @@ export type ToClientPacket = {
     fastForward: boolean
 } | {
     type: "addChatMessages",
-    chatMessages: ChatMessage[]
+    chatMessages: [ChatMessageIndex, ChatMessage][]
 } | {
     type: "nightMessages",
     chatMessages: ChatMessage[]
 } | {
     type: "addGrave",
-    grave: Grave
+    grave: Grave,
+    graveRef: GraveIndex,
 } | {
     type: "gameOver",
     reason: string

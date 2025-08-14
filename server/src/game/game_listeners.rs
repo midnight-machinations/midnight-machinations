@@ -1,7 +1,10 @@
-use crate::packet::ToClientPacket;
+use crate::{game::components::graves::grave_reference::GraveReference, packet::ToClientPacket};
 
 use super::{
-    chat::{ChatGroup, ChatMessageVariant}, components::synopsis::SynopsisTracker, event::on_whisper::{OnWhisper, WhisperFold, WhisperPriority}, game_conclusion::GameConclusion, grave::GraveReference, phase::{PhaseState, PhaseStateMachine, PhaseType}, player::PlayerReference, role::Role, Game, GameOverReason
+    chat::{ChatGroup, ChatMessageVariant}, components::synopsis::SynopsisTracker,
+    event::on_whisper::{OnWhisper, WhisperFold, WhisperPriority},
+    game_conclusion::GameConclusion, phase::{PhaseState, PhaseStateMachine, PhaseType},
+    player::PlayerReference, role::Role, Game, GameOverReason
 };
 
 //Event listerner functions for game defined here
@@ -40,9 +43,9 @@ impl Game{
         self.add_message_to_chat_group(ChatGroup::All, ChatMessageVariant::PhaseFastForwarded);
         self.send_packet_to_all(ToClientPacket::PhaseTimeLeft{ seconds_left: self.phase_machine.time_remaining.map(|o|o.as_secs().try_into().expect("Phase time should be below 18 hours")) });
     }
-    pub fn on_grave_added(&mut self, grave: GraveReference){   
-        let grave = grave.deref(self).clone();     
-        self.send_packet_to_all(ToClientPacket::AddGrave{grave: grave.clone()});
+    pub fn on_grave_added(&mut self, grave_ref: GraveReference){   
+        let grave = grave_ref.deref(self).clone();     
+        self.send_packet_to_all(ToClientPacket::AddGrave{grave: grave.clone(), grave_ref});
         self.add_message_to_chat_group(ChatGroup::All, ChatMessageVariant::PlayerDied { grave: grave.clone() });
 
         

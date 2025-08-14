@@ -6,7 +6,7 @@ use crate::game::attack_power::DefensePower;
 use crate::game::event::on_midnight::MidnightVariables;
 use crate::game::event::on_midnight::OnMidnightPriority;
 use crate::game::game_conclusion::GameConclusion;
-use crate::game::grave::GraveKiller;
+use crate::game::components::graves::grave::GraveKiller;
 use crate::game::phase::PhaseType;
 use crate::game::player::PlayerReference;
 

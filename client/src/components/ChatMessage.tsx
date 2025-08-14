@@ -836,6 +836,7 @@ export function translateChatMessage(
             return "FIXME: " + translate("chatMessage." + message);
     }
 }
+export type ChatMessageIndex = number;
 export type ChatMessage = {
     variant: ChatMessageVariant
     chatGroup: ChatGroup | null

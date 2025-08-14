@@ -30,7 +30,7 @@ export function createLobbyState(): LobbyState {
         enabledModifiers: [],
 
         players: new ListMap<LobbyClientID, LobbyClient>(),
-        chatMessages: [],
+        chatMessages: new ListMap(),
     }
 }
 
@@ -44,8 +44,8 @@ export function createGameState(): GameState {
 
         myId: null,
 
-        chatMessages : [],
-        graves: [],
+        chatMessages : new ListMap(),
+        graves: new ListMap(),
         players: [],
         
         phaseState: {type:"briefing"},

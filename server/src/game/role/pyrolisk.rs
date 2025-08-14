@@ -2,8 +2,9 @@ use serde::Serialize;
 
 use crate::game::attack_power::{AttackPower, DefensePower};
 use crate::game::chat::ChatMessageVariant;
+use crate::game::components::graves::grave::{GraveInformation, GraveKiller};
+use crate::game::components::graves::grave_reference::GraveReference;
 use crate::game::event::on_midnight::{MidnightVariables, OnMidnightPriority};
-use crate::game::grave::{GraveInformation, GraveKiller, GraveReference};
 use crate::game::player::PlayerReference;
 
 use crate::game::visit::Visit;
