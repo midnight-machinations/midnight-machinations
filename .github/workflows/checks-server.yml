@@ -1,0 +1,42 @@
+name: Server
+
+on:
+  push:
+    branches: 
+      - 'main'
+    paths:
+      - '.github/workflows/server.yml'
+      - 'server/**'
+      - '!server/resources/**'
+  pull_request:
+    branches: 
+      - 'main'
+    paths:
+      - '.github/workflows/server.yml'
+      - 'server/**'
+      - '!server/resources/**'
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  build_server:
+    name: Build Server
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./server
+    steps:
+      - uses: actions/checkout@v3
+      - name: Install cargo-audit
+        run: cargo install cargo-audit
+      - name: Install cargo-clippy
+        run: rustup component add clippy-preview
+      - name: Builds
+        run: cargo build --verbose
+      - name: Test
+        run: cargo test --verbose
+      - name: Check
+        run: cargo clippy --verbose
+      - name: Audit
+        run: cargo audit
