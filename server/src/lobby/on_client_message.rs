@@ -16,7 +16,6 @@ use crate::{
 
 use super::{lobby_client::{LobbyClient, LobbyClientType, Ready}, Lobby};
 
-#[expect(clippy::large_enum_variant, reason = "The lint is lowkey right but it's NBD since this isn't stored anywhere for long")]
 pub enum LobbyClientMessageResult {
     StartGame(Game),
     Close,
