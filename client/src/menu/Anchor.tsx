@@ -13,6 +13,8 @@ import WikiCoverCard from "../components/WikiCoverCard";
 import WikiArticle from "../components/WikiArticle";
 import AudioController from "./AudioController";
 import { computeKeywordData } from "../components/StyledText";
+import { useAuth0 } from "@auth0/auth0-react";
+import StartMenu from "./main/StartMenu";
 
 const MobileContext = createContext<boolean | undefined>(undefined);
 
@@ -202,6 +204,20 @@ export default function Anchor(props: Readonly<{
         props.onMount(anchorController);
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [props])
+
+    const { isLoading, error } = useAuth0();
+
+    if (error) {
+        setTimeout(() => {
+            anchorController.setContent(<StartMenu />);
+            anchorController.pushErrorCard({ title: error.name ?? "Unknown Auth Error", body: error.message ?? "Unknown Reason" })
+        })
+        return <LoadingScreen type="login"/>
+    }
+
+    if (isLoading) {
+        return <LoadingScreen type="login"/>
+    }
     
 
     return <MobileContext.Provider value={mobile} >
