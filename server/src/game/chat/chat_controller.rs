@@ -90,7 +90,7 @@ impl ChatComponent{
         let mut allowed_players: VecSet<PlayerReference> = PlayerReference::all_players(game)
             .filter(|p|
                 if let RoleState::Cerenovous(cerenovous) = p.role_state(game){
-                    cerenovous.currently_piloted == Some(player)
+                    cerenovous.currently_brained == Some(player)
                 }else{false}
             )
             .collect();

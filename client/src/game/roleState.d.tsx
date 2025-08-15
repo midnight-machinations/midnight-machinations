@@ -122,7 +122,7 @@ export type RoleState = {
 } | {
     type: "cerenovous",
     previous: PlayerIndex | null,
-    currentlyPiloted: PlayerIndex | null,
+    currentlyBrained: PlayerIndex | null,
     charges: number,
 } | {
     type: "informant",
