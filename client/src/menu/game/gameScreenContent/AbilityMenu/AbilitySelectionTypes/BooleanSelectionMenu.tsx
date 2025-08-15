@@ -1,6 +1,6 @@
 import { ReactElement } from "react";
 import React from "react";
-import { ControllerID, controllerIdToLinkWithPlayer, BooleanSelection, controllerIdToLink } from "../../../../../game/abilityInput";
+import { ControllerID, BooleanSelection, controllerIdToLink } from "../../../../../game/abilityInput";
 import Select from "../../../../../components/Select";
 import translate, { translateChecked } from "../../../../../game/lang";
 import StyledText from "../../../../../components/StyledText";
@@ -46,10 +46,10 @@ function BooleanSelectionMenuNamed(props: Readonly<{
     ///make array with numbers from available.min to available.max
     let optionsSearch = new Map<boolean, [React.ReactNode, string]>();
 
-    let trueText = translate("controllerId."+controllerIdToLinkWithPlayer(props.id).replace(/\//g, ".") + ".boolean.true");
+    let trueText = translate("controllerId."+controllerIdToLink(props.id).replace(/\//g, ".") + ".boolean.true");
     optionsSearch.set(true, [<StyledText noLinks={true}>{trueText}</StyledText>, trueText]);
     
-    let falseText = translate("controllerId."+controllerIdToLinkWithPlayer(props.id).replace(/\//g, ".") + ".boolean.false");
+    let falseText = translate("controllerId."+controllerIdToLink(props.id).replace(/\//g, ".") + ".boolean.false");
     optionsSearch.set(false, [<StyledText noLinks={true}>{falseText}</StyledText>, falseText]);
     
     return <div>

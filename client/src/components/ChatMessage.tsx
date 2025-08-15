@@ -12,7 +12,7 @@ import { CopyButton } from "./ClipboardButtons";
 import { useGameState, useLobbyOrGameState, usePlayerNames, usePlayerState, useSpectator } from "./useHooks";
 import { KiraResult, KiraResultDisplay } from "../menu/game/gameScreenContent/AbilityMenu/AbilitySelectionTypes/KiraSelectionMenu";
 import { AuditorResult } from "../menu/game/gameScreenContent/AbilityMenu/RoleSpecificMenus/AuditorMenu";
-import { ControllerID, AbilitySelection, translateControllerID, controllerIdToLinkWithPlayer } from "../game/abilityInput";
+import { ControllerID, AbilitySelection, translateControllerID, controllerIdToLink } from "../game/abilityInput";
 import DetailsSummary from "./DetailsSummary";
 import ListMap from "../ListMap";
 import { Button } from "./Button";
@@ -557,13 +557,13 @@ export function translateChatMessage(
                 case "boolean":{
                     let text = null;
                     if(message.selection.selection===true){
-                        text = translateChecked("controllerId."+controllerIdToLinkWithPlayer(message.abilityId).replace(/\//g, ".") + ".boolean.true");
+                        text = translateChecked("controllerId."+controllerIdToLink(message.abilityId).replace(/\//g, ".") + ".boolean.true");
                         if(text===null)
                             text = " "+translate("on");
                         else
                             text = " "+text;
                     }else{
-                        text = translateChecked("controllerId."+controllerIdToLinkWithPlayer(message.abilityId).replace(/\//g, ".") + ".boolean.false");
+                        text = translateChecked("controllerId."+controllerIdToLink(message.abilityId).replace(/\//g, ".") + ".boolean.false");
                         if(text===null)
                             text = " "+translate("off");
                         else
@@ -614,7 +614,7 @@ export function translateChatMessage(
                     out = translate("chatMessage.abilityUsed.selection.string", encodeString(replaceMentions(message.selection.selection, playerNames)));
                     break;
                 case "integer":
-                    let text = translateChecked("controllerId."+controllerIdToLinkWithPlayer(message.abilityId).replace(/\//g, ".") + ".integer." + message.selection.selection);
+                    let text = translateChecked("controllerId."+controllerIdToLink(message.abilityId).replace(/\//g, ".") + ".integer." + message.selection.selection);
                     
                     if(text === null){
                         text = message.selection.selection.toString()

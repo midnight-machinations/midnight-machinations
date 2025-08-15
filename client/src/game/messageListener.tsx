@@ -436,7 +436,7 @@ export default function messageListener(packet: ToClientPacket){
             if(GAME_MANAGER.state.stateType === "game" || GAME_MANAGER.state.stateType === "lobby"){
                 GAME_MANAGER.state.chatMessages = new ListMap(
                     GAME_MANAGER.state.chatMessages.entries().concat(packet.chatMessages)
-                ).fixUnique();
+                );
 
                 // Chat notification icon state
                 if(GAME_MANAGER.state.stateType === "game" && packet.chatMessages.length !== 0){

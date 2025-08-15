@@ -49,7 +49,7 @@ export default function PlayerListMenu(): ReactElement {
             {players
                 .filter(
                     player => !player.alive && 
-                    graves.entries().find(([_, grave]) => grave.player === player.index) === undefined
+                    graves.values().find((grave) => grave.player === player.index) === undefined
                 ).length === 0 || 
                 <>
                     <div className="dead-players-separator">
@@ -104,9 +104,9 @@ function PlayerCard(props: Readonly<{
 
     type NonAnonymousBlockMessage = {
         variant: {
-            type: "normal", 
+            type: "normal",
             messageSender: {
-                type: "player", 
+                type: "player",
                 player: PlayerIndex
             } | {
                 type: "livingToDead",
@@ -156,7 +156,7 @@ function PlayerCard(props: Readonly<{
 
     const spectator = useSpectator();
 
-    return <><div 
+    return <><div
         className={`player-card`}
         key={props.playerIndex}
     >

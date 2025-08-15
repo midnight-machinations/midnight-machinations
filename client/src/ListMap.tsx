@@ -9,6 +9,7 @@ export default class ListMap<K, V> {
     ) {
         this.list = list;
         this.equalsFn = equalsFn;
+        this.fixUnique();
     }
     fixUnique(): ListMap<K, V> {
         const list = this.list;

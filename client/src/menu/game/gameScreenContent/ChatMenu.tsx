@@ -182,10 +182,6 @@ export function ChatMessageSection(props: Readonly<{
         state => state.chatMessages.values(),
         ["addChatMessages"]
     )!;
-    // const myPlayerIndex = usePlayerState(
-    //     (gameState)=>gameState.myIndex,
-    //     ["yourPlayerIndex"]
-    // );
 
     const allMessages = messages
         .filter((msg)=>filterMessage(filter, msg, players.map((p)=>p.toString())))
