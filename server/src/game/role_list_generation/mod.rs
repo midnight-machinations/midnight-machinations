@@ -2,21 +2,21 @@ use std::collections::VecDeque;
 
 use rand::seq::SliceRandom;
 
-use crate::{game::{components::{insider_group::InsiderGroupID, win_condition::WinCondition}, player::PlayerReference, role::{recruiter, Role}, role_list::{RoleList, RoleOutlineOption}, role_list_generation::criteria::{GenerationCriterion, GenerationCriterionResult}}, vec_set::VecSet};
+use crate::{game::{components::{insider_group::InsiderGroupID, win_condition::WinCondition}, player::PlayerReference, role::Role, role_list::RoleOutlineOption, role_list_generation::criteria::{GenerationCriterion, GenerationCriterionResult}, settings::Settings}, vec_set::VecSet};
 
 pub mod criteria;
 
 pub struct RoleListGenerator<'a> {
-    role_list: &'a RoleList,
+    settings: &'a Settings,
     nodes: Vec<PartialOutlineListAssignmentNode>,
     criteria: Vec<GenerationCriterion>,
 }
 
 impl<'a> RoleListGenerator<'a> {
 
-    pub fn new(role_list: &'a RoleList) -> RoleListGenerator<'a> {
+    pub fn new(settings: &'a Settings) -> RoleListGenerator<'a> {
         RoleListGenerator {
-            role_list,
+            settings,
             nodes: Vec::new(),
             criteria: vec![
                 // Though it's less efficient, we want to fill roles first
@@ -29,15 +29,14 @@ impl<'a> RoleListGenerator<'a> {
                 criteria::FILL_ALL_OUTLINE_OPTIONS,
                 criteria::FILL_ALL_PLAYERS,
                 criteria::FILL_ALL_WIN_CONDITIONS,
-                criteria::FILL_ALL_INSIDER_GROUPS,
-                recruiter::ENSURE_ONE_FEWER_SYNDICATE_PER_RECRUITER
+                criteria::FILL_ALL_INSIDER_GROUPS
             ]
         }
     }
 
     const MAX_TRAVERSAL_DEPTH: usize = 2500;
 
-    // Basic DFS with a queue and a set of seen nodes to avoid cycles.
+    // Basic DFS with a stack and a set of seen nodes to avoid cycles.
     pub fn generate_role_list(&mut self) -> Option<OutlineListAssignment> {
         // This is a list of indices of the nodes in self.nodes that we still need to visit.
         let mut nodes_to_visit = VecDeque::new();
@@ -49,7 +48,7 @@ impl<'a> RoleListGenerator<'a> {
                 insider_groups: None,
                 win_condition: None,
                 player: None
-            }; self.role_list.0.len()]
+            }; self.settings.role_list.0.len()]
         });
         let mut seen = VecSet::new();
         let mut depth = 0;
@@ -102,9 +101,17 @@ impl<'a> RoleListGenerator<'a> {
     /// That's true when it comes to filling in roles, and that pattern continues for the following order of precedence:
     /// outline options, players, win conditions, insider groups, then all other criteria.
     fn neighbors_of(&mut self, node: &PartialOutlineListAssignmentNode) -> Vec<usize> {
-        if let Some(neighbors_to_add) = self.criteria.iter()
-            .find_map(|&criterion| {
-                let result = (criterion.evaluate)(node, self.role_list);
+        if let Some(mut neighbors_to_add) = self.criteria
+            .iter()
+            .copied()
+            .chain(
+                // Add criteria from the roles in the node.
+                node.assignments.iter()
+                    .filter_map(|assignment| assignment.role)
+                    .flat_map(|role| role.role_list_generation_criteria())
+            )
+            .find_map(|criterion| {
+                let result = (criterion.evaluate)(node, self.settings);
                 if let GenerationCriterionResult::Unmet(neighbors) = result {
                     Some(neighbors)
                 } else {
@@ -114,9 +121,8 @@ impl<'a> RoleListGenerator<'a> {
         {
             let mut out = Vec::new();
 
-            let mut extra_neighbors = neighbors_to_add.clone();
-            extra_neighbors.shuffle(&mut rand::rng());
-            for neighbor in extra_neighbors {
+            neighbors_to_add.shuffle(&mut rand::rng());
+            for neighbor in neighbors_to_add {
                 out.push(self.nodes.len());
                 self.nodes.push(neighbor);
             }

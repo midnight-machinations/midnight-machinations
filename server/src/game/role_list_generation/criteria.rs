@@ -2,12 +2,12 @@
 
 use std::collections::HashMap;
 
-use crate::{game::{components::{insider_group::InsiderGroupID, win_condition::WinCondition}, player::PlayerReference, role_list::{RoleList, RoleOutlineOptionInsiderGroups, RoleOutlineOptionWinCondition}, role_list_generation::{PartialOutlineAssignment, PartialOutlineListAssignmentNode}}, vec_set::VecSet};
+use crate::{game::{components::{insider_group::InsiderGroupID, win_condition::WinCondition}, player::PlayerReference, role_list::{RoleOutlineOptionInsiderGroups, RoleOutlineOptionWinCondition}, role_list_generation::{PartialOutlineAssignment, PartialOutlineListAssignmentNode}, settings::Settings}, vec_set::VecSet};
 
 
 #[derive(Clone, Copy)]
 pub struct GenerationCriterion {
-    pub evaluate: fn(node: &PartialOutlineListAssignmentNode, role_list: &RoleList) -> GenerationCriterionResult
+    pub evaluate: fn(node: &PartialOutlineListAssignmentNode, settings: &Settings) -> GenerationCriterionResult
 }
 
 pub enum GenerationCriterionResult {
@@ -18,15 +18,18 @@ pub enum GenerationCriterionResult {
 }
 
 pub const FILL_ALL_ROLES: GenerationCriterion = GenerationCriterion {
-    evaluate: |node, role_list| {
+    evaluate: |node, settings| {
         if let Some((i, _)) = node.assignments
             .iter()
             .enumerate()
             .find(|(_, assignment)| assignment.role.is_none())
         {
             GenerationCriterionResult::Unmet(
-                role_list.0[i].get_all_roles()
+                settings.role_list.0[i].get_all_roles()
                     .iter()
+                    .filter(|role| {
+                        settings.enabled_roles.contains(role)
+                    })
                     .map(|role| {
                         let mut new_node = node.clone();
                         new_node.assignments[i].role = Some(*role);
@@ -83,14 +86,14 @@ pub const REJECT_EXCEEDED_ROLE_LIMITS: GenerationCriterion = GenerationCriterion
 };
 
 pub const FILL_ALL_OUTLINE_OPTIONS: GenerationCriterion = GenerationCriterion {
-    evaluate: |node, role_list| {
+    evaluate: |node, settings| {
         if let Some((i, assignment)) = node.assignments
             .iter()
             .enumerate()
             .find(|(_, assignment)| assignment.outline_option.is_none())
         {
             GenerationCriterionResult::Unmet(
-                role_list.0[i].options.iter()
+                settings.role_list.0[i].options.iter()
                     .filter(|&o| assignment.role.is_some_and(|r| o.roles.get_roles().contains(&r)))
                     .cloned()
                     .map(|outline_option| {

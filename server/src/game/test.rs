@@ -20,9 +20,8 @@
         }
 
         let settings = settings.clone();
-        let role_list = settings.role_list.clone();
 
-        let mut role_list_generator = RoleListGenerator::new(&role_list);
+        let mut role_list_generator = RoleListGenerator::new(&settings);
 
         let random_outline_assignments = match role_list_generator.generate_role_list() {
             Some(roles) => {roles},

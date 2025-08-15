@@ -7,9 +7,10 @@ use crate::game::components::mafia_recruits::MafiaRecruits;
 use crate::game::event::on_midnight::{MidnightVariables, OnMidnightPriority};
 use crate::game::components::graves::grave::GraveKiller;
 use crate::game::player::PlayerReference;
-use crate::game::role_list::{RoleList, RoleSet};
+use crate::game::role_list::RoleSet;
 use crate::game::role_list_generation::criteria::{GenerationCriterion, GenerationCriterionResult};
 use crate::game::role_list_generation::PartialOutlineListAssignmentNode;
+use crate::game::settings::Settings;
 use crate::game::visit::Visit;
 
 use crate::game::Game;
@@ -111,6 +112,9 @@ impl RoleStateImpl for Recruiter {
             crate::game::components::insider_group::InsiderGroupID::Mafia
         ].into_iter().collect()
     }
+    fn role_list_generation_criteria() -> Vec<GenerationCriterion> {
+        vec![ENSURE_ONE_FEWER_SYNDICATE_PER_RECRUITER]
+    }
 }
 
 impl Recruiter {
@@ -142,7 +146,7 @@ impl Recruiter {
 }
 
 pub const ENSURE_ONE_FEWER_SYNDICATE_PER_RECRUITER: GenerationCriterion = GenerationCriterion {
-    evaluate: |node: &PartialOutlineListAssignmentNode, _: &RoleList| {
+    evaluate: |node: &PartialOutlineListAssignmentNode, _: &Settings| {
         // There are currently no role sets which have mafia roles and town roles at the same time
         // So this implementation is fine.
         if node.assignments
