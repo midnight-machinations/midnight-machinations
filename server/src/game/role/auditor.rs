@@ -90,9 +90,8 @@ impl Auditor{
         let outline = chosen_outline.deref(game);
 
         let mut all_possible_fake_roles = outline
-            .get_role_assignments()
+            .get_all_roles()
             .into_iter()
-            .map(|data| data.role())
             .filter(|x|game.settings.enabled_roles.contains(x))
             .collect::<Vec<Role>>();
         all_possible_fake_roles.shuffle(&mut rand::rng());

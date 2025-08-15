@@ -353,7 +353,7 @@ impl Game {
 
         if !self.clients.iter().any(|p| is_player_not_disconnected_host(self, p.1)) {
             let next_available_player_id = self.clients.iter()
-                .filter(|(&id, _)| skip.is_none_or(|s| s != id))
+                .filter(|(id, _)| skip.is_none_or(|s| s != **id))
                 .filter(|(_, c)| is_player_not_disconnected(self, c))
                 .map(|(&id, _)| id)
                 .next();

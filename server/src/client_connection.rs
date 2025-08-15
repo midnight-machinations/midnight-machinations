@@ -12,7 +12,7 @@ pub enum ClientConnection {
 }
 impl ClientConnection {
     pub fn send_packet(&self, packet: ToClientPacket)->bool {
-        if let ClientConnection::Connected(ref sender) = self {
+        if let ClientConnection::Connected(sender) = self {
             sender.send(packet);
             true
         }else{

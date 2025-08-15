@@ -1,0 +1,177 @@
+#![allow(clippy::indexing_slicing, reason = "We ensure the index is valid before accessing it")]
+
+use crate::{game::{components::{insider_group::InsiderGroupID, win_condition::WinCondition}, player::PlayerReference, role_list::{RoleList, RoleOutlineOptionInsiderGroups, RoleOutlineOptionWinCondition}, role_list_generation::{PartialOutlineAssignment, PartialOutlineListAssignmentNode}}, vec_set::VecSet};
+
+
+#[derive(Clone, Copy)]
+pub struct GenerationCriterion {
+    pub evaluate: fn(node: &PartialOutlineListAssignmentNode, role_list: &RoleList) -> GenerationCriterionResult
+}
+
+pub enum GenerationCriterionResult {
+    /// This criterion is unmet, but these neighbors satisfy it!
+    Unmet(Vec<PartialOutlineListAssignmentNode>),
+    /// This criterion is met, carry on.
+    Met
+}
+
+pub const FILL_ALL_ROLES: GenerationCriterion = GenerationCriterion {
+    evaluate: |node, role_list| {
+        if let Some((i, _)) = node.assignments
+            .iter()
+            .enumerate()
+            .find(|(_, assignment)| assignment.role.is_none())
+        {
+            GenerationCriterionResult::Unmet(
+                role_list.0[i].get_all_roles()
+                    .iter()
+                    .map(|role| {
+                        let mut new_node = node.clone();
+                        new_node.assignments[i].role = Some(*role);
+                        new_node
+                    })
+                    .collect()
+            )
+        } else {
+            GenerationCriterionResult::Met
+        }
+    }
+};
+
+pub const FILL_ALL_OUTLINE_OPTIONS: GenerationCriterion = GenerationCriterion {
+    evaluate: |node, role_list| {
+        if let Some((i, assignment)) = node.assignments
+            .iter()
+            .enumerate()
+            .find(|(_, assignment)| assignment.outline_option.is_none())
+        {
+            GenerationCriterionResult::Unmet(
+                role_list.0[i].options.iter()
+                    .filter(|&o| assignment.role.is_some_and(|r| o.roles.get_roles().contains(&r)))
+                    .cloned()
+                    .map(|outline_option| {
+                        let mut new_node = node.clone();
+                        new_node.assignments[i].outline_option = Some(outline_option);
+                        new_node
+                    })
+                    .collect()
+            )
+        } else {
+            GenerationCriterionResult::Met
+        }
+    }
+};
+
+pub const FILL_ALL_PLAYERS: GenerationCriterion = GenerationCriterion {
+    evaluate: |node, _| {
+        #[expect(clippy::cast_possible_truncation, reason = "node.assignments.len() cannot exceed the number of players")]
+        if let Some((i, assignment)) = node.assignments
+            .iter()
+            .enumerate()
+            .find(|(_, assignment)| assignment.player.is_none())
+        {
+            GenerationCriterionResult::Unmet(
+                (0..node.assignments.len())
+                    .map(|idx| unsafe { PlayerReference::new_unchecked(idx as u8) })
+                    .filter(|p| {
+                        // Ensure the player is not already assigned a role in this assignment
+                        !node.assignments.iter().any(|a| a.player == Some(*p))
+                    })
+                    .filter(|p| {
+                        // Ensure the player is able to be in this role outline option
+                        assignment.outline_option.as_ref().is_some_and(|o| {
+                            o.player_pool.is_empty() || o.player_pool.contains(&p.index())
+                        })
+                    })
+                    .map(|player_possibility| {
+                        let mut new_node = node.clone();
+                        new_node.assignments[i].player = Some(player_possibility);
+                        new_node
+                    })
+                    .collect()
+            )
+        } else {
+            GenerationCriterionResult::Met
+        }
+    }
+};
+
+fn possible_win_conditions_for_assignment(assignment: &PartialOutlineAssignment) -> Vec<WinCondition> {
+    let Some(role) = assignment.role else {
+        return vec![];
+    };
+    let Some(outline_option) = assignment.outline_option.clone() else {
+        return vec![];
+    };
+    match outline_option.win_condition {
+        RoleOutlineOptionWinCondition::GameConclusionReached { win_if_any } => {
+            vec![WinCondition::GameConclusionReached { win_if_any }]
+        },
+        RoleOutlineOptionWinCondition::RoleDefault => {
+            vec![role.default_state().default_win_condition()]
+        }
+    }
+}
+
+pub const FILL_ALL_WIN_CONDITIONS: GenerationCriterion = GenerationCriterion {
+    evaluate: |node, _| {
+        if let Some((i, assignment)) = node.assignments
+            .iter()
+            .enumerate()
+            .find(|(_, assignment)| assignment.win_condition.is_none())
+        {
+            GenerationCriterionResult::Unmet(
+                possible_win_conditions_for_assignment(assignment)
+                    .iter()
+                    .map(|win_condition| {
+                        let mut new_node = node.clone();
+                        new_node.assignments[i].win_condition = Some(win_condition.clone());
+                        new_node
+                    })
+                    .collect()
+            )
+        } else {
+            GenerationCriterionResult::Met
+        }
+    }
+};
+
+pub fn possible_insider_group_combinations_for_assignment(assignment: &PartialOutlineAssignment) -> Vec<VecSet<InsiderGroupID>> {
+    let Some(role) = assignment.role else {
+        return vec![];
+    };
+    let Some(outline_option) = assignment.outline_option.clone() else {
+        return vec![];
+    };
+    match outline_option.insider_groups {
+        RoleOutlineOptionInsiderGroups::Custom { insider_groups } => {
+            vec![insider_groups.clone()]
+        },
+        RoleOutlineOptionInsiderGroups::RoleDefault => {
+            vec![role.default_state().default_revealed_groups()]
+        }
+    }
+}
+
+pub const FILL_ALL_INSIDER_GROUPS: GenerationCriterion = GenerationCriterion {
+    evaluate: |node, _| {
+        if let Some((i, assignment)) = node.assignments
+            .iter()
+            .enumerate()
+            .find(|(_, assignment)| assignment.insider_groups.is_none())
+        {
+            GenerationCriterionResult::Unmet(
+                possible_insider_group_combinations_for_assignment(assignment)
+                    .into_iter()
+                    .map(|insider_group_possibility| {
+                        let mut new_node = node.clone();
+                        new_node.assignments[i].insider_groups = Some(insider_group_possibility);
+                        new_node
+                    })
+                    .collect()
+            )
+        } else {
+            GenerationCriterionResult::Met
+        }
+    }
+};

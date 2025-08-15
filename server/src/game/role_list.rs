@@ -1,4 +1,3 @@
-use rand::seq::IndexedRandom;
 use serde::{Deserialize, Serialize};
 use vec1::{
     vec1,
@@ -7,71 +6,20 @@ use vec1::{
 
 use crate::{game::player::PlayerIndex, vec_set::{vec_set, VecSet}};
 
-use super::{components::{insider_group::InsiderGroupID, win_condition::WinCondition}, game_conclusion::GameConclusion, role::Role};
+use super::{components::{insider_group::InsiderGroupID}, game_conclusion::GameConclusion, role::Role};
 
 #[derive(Default, Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct RoleList(pub Vec<RoleOutline>);
 impl RoleList {
-    /// Output is the same order as the rolelist
-    pub fn create_random_role_assignments(&self, enabled_roles: &VecSet<Role>) -> Option<Vec<RoleAssignment>> {
-        let mut generated_data = Vec::<RoleAssignment>::new();
-        for entry in self.0.iter(){
-            if let Some(new_role_assignment) = entry.get_random_role_assignments(
-                enabled_roles,
-                &generated_data.iter().map(|a| a.role).collect::<Vec<Role>>(),
-                &generated_data.iter().filter_map(|a| a.player).collect::<Vec<PlayerIndex>>()
-            ){
-                generated_data.push(new_role_assignment);
-            }else{
-                return None;
-            }
-        }
-        Some(generated_data)
-    }
     pub fn simplify(&mut self){
         for entry in self.0.iter_mut(){
             entry.simplify();
         }
     }
     pub fn sort(&mut self){
-        self.0.sort_by_key(|r| r.get_role_assignments().len());
+        self.0.sort_by_key(|r| r.get_all_roles().len());
     }
 }
-
-#[derive(Debug, Clone, PartialEq, Eq)]
-pub struct RoleAssignment {
-    pub role: Role,
-    pub insider_groups: RoleOutlineOptionInsiderGroups,
-    pub win_condition: RoleOutlineOptionWinCondition,
-    pub player: Option<PlayerIndex>,
-}
-impl RoleAssignment{
-    pub fn role(&self)->Role{
-        self.role
-    }
-    pub fn insider_groups(&self)->VecSet<InsiderGroupID>{
-        match &self.insider_groups {
-            RoleOutlineOptionInsiderGroups::RoleDefault => {
-                self.role.default_state().default_revealed_groups()
-            },
-            RoleOutlineOptionInsiderGroups::Custom { insider_groups } => insider_groups.clone(),
-        }
-    }
-    pub fn win_condition(&self)->WinCondition{
-        match &self.win_condition {
-            RoleOutlineOptionWinCondition::RoleDefault => {
-                self.role.default_state().default_win_condition()
-            },
-            RoleOutlineOptionWinCondition::GameConclusionReached { win_if_any } => 
-                WinCondition::GameConclusionReached { win_if_any: win_if_any.clone() },
-        }
-    }
-    pub fn player(&self)->Option<PlayerIndex>{
-        self.player
-    }
-}
-
-
 
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord)]
 pub struct RoleOutline {
@@ -112,34 +60,6 @@ impl RoleOutline{
             roles: RoleOutlineOptionRoles::Role{role},
             player_pool: Default::default(),
         }]}
-    }
-    pub fn get_role_assignments(&self) -> Vec<RoleAssignment> {
-        self.options.iter().flat_map(|o|
-            o.roles.get_roles().into_iter().flat_map(move |role|
-                (
-                    if o.player_pool.is_empty() {
-                        vec![None]
-                    } else {
-                        o.player_pool.iter().map(Some).collect()
-                    }
-                ).into_iter().map(move |player|
-                    RoleAssignment{
-                        role,
-                        insider_groups: o.insider_groups.clone(),
-                        win_condition: o.win_condition.clone(),
-                        player: player.copied()
-                    }
-                )
-            )
-        ).collect()
-    }
-    pub fn get_random_role_assignments(&self, enabled_roles: &VecSet<Role>, taken_roles: &[Role], taken_players: &[PlayerIndex]) -> Option<RoleAssignment> {
-        let options = self.get_role_assignments()
-            .into_iter()
-            .filter(|r|role_enabled_and_not_taken(r.role, enabled_roles, taken_roles))
-            .filter(|a|a.player().is_none_or(|p|!taken_players.contains(&p)))
-            .collect::<Vec<_>>();
-        options.choose(&mut rand::rng()).cloned()
     }
     pub fn get_all_roles(&self) -> Vec<Role>{
         self.options.iter()

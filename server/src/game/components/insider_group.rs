@@ -27,7 +27,7 @@ impl InsiderGroups{
             cult: InsiderGroup::default(),
             puppeteer: InsiderGroup::default()
         };
-        for player in PlayerReference::all_players_from_count(player_count){
+        for player in unsafe { PlayerReference::all_players_from_count(player_count) }{
             for group in assignments
                 .get(&player)
                 .expect("assignments is required to hold all players for safety").1

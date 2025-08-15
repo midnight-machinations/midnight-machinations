@@ -7,10 +7,12 @@ impl WinConditionComponent{
     /// # Safety
     /// num_players must be correct
     pub unsafe fn new(num_players: u8, assignments: &VecMap<PlayerReference, (RoleOutlineReference, OutlineAssignment)>) -> Self {
-        PlayerComponent::<WinCondition>::new_component_box(
-            num_players,
-            |player| assignments.get(&player).expect("Already checked this was fine").1.win_condition.clone()
-        )
+        unsafe {
+            PlayerComponent::<WinCondition>::new_component_box(
+                num_players,
+                |player| assignments.get(&player).expect("Already checked this was fine").1.win_condition.clone()
+            )
+        }
     }
 }
 impl PlayerReference{

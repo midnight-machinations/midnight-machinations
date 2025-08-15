@@ -129,7 +129,7 @@ impl RoomState for Game {
 
                 // Shift every other spectator down one index
                 for client in self.clients.iter_mut() {
-                    if let GameClientLocation::Spectator(ref mut other) = &mut client.1.client_location {
+                    if let GameClientLocation::Spectator(other) = &mut client.1.client_location {
                         if other.index() > spectator.index() {
                             *other = SpectatorPointer::new(other.index().saturating_sub(1));
                         }
@@ -168,7 +168,7 @@ impl RoomState for Game {
 
                 // Shift every other spectator down one index
                 for client in self.clients.iter_mut() {
-                    if let GameClientLocation::Spectator(ref mut other) = &mut client.1.client_location {
+                    if let GameClientLocation::Spectator(other) = &mut client.1.client_location {
                         if other.index() > spectator.index() {
                             *other = SpectatorPointer::new(other.index().saturating_sub(1));
                         }

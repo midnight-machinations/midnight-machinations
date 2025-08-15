@@ -47,7 +47,9 @@ impl<K, V> VecMap<K, V> where K: Eq {
     /// This function is unsafe because it does not check if the key exists in the map
     /// and will panic if the key does not exist
     pub unsafe fn get_unchecked_mut(&mut self, key: &K) -> &mut V {
-        self.get_unchecked_kvp_mut(key).1
+        unsafe {
+            self.get_unchecked_kvp_mut(key).1
+        }
     }
 
     pub fn get_kvp(&self, key: &K) -> Option<(&K, &V)> {
