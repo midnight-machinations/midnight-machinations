@@ -1,5 +1,7 @@
 #![allow(clippy::indexing_slicing, reason = "We ensure the index is valid before accessing it")]
 
+use std::collections::HashMap;
+
 use crate::{game::{components::{insider_group::InsiderGroupID, win_condition::WinCondition}, player::PlayerReference, role_list::{RoleList, RoleOutlineOptionInsiderGroups, RoleOutlineOptionWinCondition}, role_list_generation::{PartialOutlineAssignment, PartialOutlineListAssignmentNode}}, vec_set::VecSet};
 
 
@@ -32,6 +34,48 @@ pub const FILL_ALL_ROLES: GenerationCriterion = GenerationCriterion {
                     })
                     .collect()
             )
+        } else {
+            GenerationCriterionResult::Met
+        }
+    }
+};
+
+pub const REJECT_EXCEEDED_ROLE_LIMITS: GenerationCriterion = GenerationCriterion {
+    evaluate: |node, _| {
+        let mut role_appearances = HashMap::new();
+
+        for assignment in node.assignments.iter() {
+            if let Some(role) = assignment.role {
+                *role_appearances.entry(role).or_insert(0) += 1;
+            }
+        }
+
+        let mut exceeded_roles = vec![];
+
+        for role in role_appearances.keys() {
+            if let Some(max) = role.maximum_count() {
+                if role_appearances[role] > max && !exceeded_roles.contains(role) {
+                    exceeded_roles.push(*role);
+                }
+            }
+        }
+
+        if !exceeded_roles.is_empty() {
+            let mut neighbors_to_add = Vec::new();
+
+            for role in exceeded_roles {
+                for assignment in node.assignments.iter() {
+                    if assignment.role == Some(role) {
+                        let mut new_node = node.clone();
+                        new_node.assignments.iter_mut()
+                            .filter(|a| a.role == Some(role))
+                            .for_each(|a| a.role = None);
+                        neighbors_to_add.push(new_node);
+                    }
+                }
+            }
+
+            GenerationCriterionResult::Unmet(neighbors_to_add)
         } else {
             GenerationCriterionResult::Met
         }

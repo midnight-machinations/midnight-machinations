@@ -9,7 +9,7 @@ pub mod criteria;
 pub struct RoleListGenerator<'a> {
     role_list: &'a RoleList,
     nodes: Vec<PartialOutlineListAssignmentNode>,
-    criteria: Vec<GenerationCriterion>
+    criteria: Vec<GenerationCriterion>,
 }
 
 impl<'a> RoleListGenerator<'a> {
@@ -25,11 +25,12 @@ impl<'a> RoleListGenerator<'a> {
                 // then Town Protective | Veteran would have a 50% chance of generating Veteran.
                 // So this order is important.
                 criteria::FILL_ALL_ROLES,
+                criteria::REJECT_EXCEEDED_ROLE_LIMITS,
                 criteria::FILL_ALL_OUTLINE_OPTIONS,
                 criteria::FILL_ALL_PLAYERS,
                 criteria::FILL_ALL_WIN_CONDITIONS,
                 criteria::FILL_ALL_INSIDER_GROUPS,
-                // recruiter::ENSURE_ONE_FEWER_SYNDICATE_PER_RECRUITER
+                recruiter::ENSURE_ONE_FEWER_SYNDICATE_PER_RECRUITER
             ]
         }
     }
@@ -54,7 +55,7 @@ impl<'a> RoleListGenerator<'a> {
         let mut depth = 0;
 
         while let Some((current_idx, current_node)) = 
-            nodes_to_visit.pop_front().and_then(|idx| self.nodes.get(idx).map(|node| (idx, node)))
+            nodes_to_visit.pop_back().and_then(|idx| self.nodes.get(idx).map(|node| (idx, node)))
             && depth < Self::MAX_TRAVERSAL_DEPTH
         {
             if seen.contains(&current_idx) {
