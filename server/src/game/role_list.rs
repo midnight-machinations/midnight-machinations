@@ -40,10 +40,10 @@ impl RoleList {
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct RoleAssignment {
-    role: Role,
-    insider_groups: RoleOutlineOptionInsiderGroups,
-    win_condition: RoleOutlineOptionWinCondition,
-    player: Option<PlayerIndex>,
+    pub role: Role,
+    pub insider_groups: RoleOutlineOptionInsiderGroups,
+    pub win_condition: RoleOutlineOptionWinCondition,
+    pub player: Option<PlayerIndex>,
 }
 impl RoleAssignment{
     pub fn role(&self)->Role{

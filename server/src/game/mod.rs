@@ -8,6 +8,7 @@ pub mod role;
 pub mod visit;
 pub mod verdict;
 pub mod role_list;
+pub mod role_list_generation;
 pub mod settings;
 pub mod game_conclusion;
 pub mod components;
@@ -44,7 +45,6 @@ use components::tags::Tags;
 use components::verdicts_today::VerdictsToday;
 use modifiers::ModifierType;
 use modifiers::Modifiers;
-use role_list::RoleAssignment;
 use role_outline_reference::RoleOutlineReference;
 use serde::Serialize;
 use crate::client_connection::ClientConnection;
@@ -55,6 +55,7 @@ use crate::game::components::win_condition::WinConditionComponent;
 use crate::game::game_client::GameClient;
 use crate::game::game_client::GameClientLocation;
 use crate::game::modifiers::hidden_nomination_votes::HiddenNominationVotes;
+use crate::game::role_list_generation::OutlineAssignment;
 use crate::room::RoomClientID;
 use crate::room::name_validation;
 use crate::packet::HostDataPacketGameClient;
@@ -92,7 +93,7 @@ pub struct Game {
     pub spectator_chat_messages: Vec<ChatMessageVariant>,
 
     /// indexed by role outline reference
-    pub assignments: VecMap<PlayerReference, (RoleOutlineReference, RoleAssignment)>,
+    pub assignments: VecMap<PlayerReference, (RoleOutlineReference, OutlineAssignment)>,
 
     pub players: Box<[Player]>,
 
@@ -146,7 +147,7 @@ pub enum GameOverReason {
     Draw
 }
 
-type Assignments = VecMap<PlayerReference, (RoleOutlineReference, RoleAssignment)>;
+type Assignments = VecMap<PlayerReference, (RoleOutlineReference, OutlineAssignment)>;
 
 impl Game {
     pub const DISCONNECT_TIMER_SECS: u16 = 60 * 2;
