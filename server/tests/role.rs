@@ -4,7 +4,7 @@ use std::{ops::Deref, vec};
 
 pub(crate) use kit::{assert_contains, assert_not_contains};
 
-use mafia_server::game::{attack_power::DefensePower, components::{graves::{grave::{Grave, GraveDeathCause, GraveInformation, GraveKiller, GravePhase}, grave_reference::GraveReference}, syndicate_gun_item::SyndicateGunItem}};
+use mafia_server::{game::{attack_power::DefensePower, components::{graves::{grave::{Grave, GraveDeathCause, GraveInformation, GraveKiller, GravePhase}, grave_reference::GraveReference}, syndicate_gun_item::SyndicateGunItem}, role_list::{RoleList, RoleOutline, RoleOutlineOption, RoleOutlineOptionInsiderGroups, RoleOutlineOptionRoles, RoleOutlineOptionWinCondition}, settings::{PhaseTimeSettings, Settings}, test::mock_game}, vec_set};
 pub use mafia_server::game::{
     ability_input::{ControllerID, IntegerSelection, PlayerListSelection, RoleListSelection},
     game_conclusion::GameConclusion,
@@ -3043,4 +3043,49 @@ fn enraged_werewolf_kills() {
     bystander.send_ability_input_player_list_typical(target);
     game.next_phase();
     assert!(!bystander.alive());
+}
+
+#[test]
+fn recruiter_role_list_is_correct() {
+    let (game, _assignments) = mock_game(
+        Settings {
+            role_list: RoleList(vec![
+                RoleOutline {options: vec1::vec1![RoleOutlineOption {
+                    roles: RoleOutlineOptionRoles::Role { role: Role::Recruiter },
+                    win_condition: RoleOutlineOptionWinCondition::RoleDefault,
+                    insider_groups: RoleOutlineOptionInsiderGroups::RoleDefault,
+                    player_pool: vec_set![0]
+                }]},
+                RoleOutline {options: vec1::vec1![RoleOutlineOption {
+                    roles: RoleOutlineOptionRoles::Role { role: Role::Goon },
+                    win_condition: RoleOutlineOptionWinCondition::RoleDefault,
+                    insider_groups: RoleOutlineOptionInsiderGroups::RoleDefault,
+                    player_pool: vec_set![1]
+                }]},
+                RoleOutline {options: vec1::vec1![RoleOutlineOption {
+                    roles: RoleOutlineOptionRoles::Role { role: Role::Detective },
+                    win_condition: RoleOutlineOptionWinCondition::RoleDefault,
+                    insider_groups: RoleOutlineOptionInsiderGroups::RoleDefault,
+                    player_pool: vec_set![2]
+                }]},
+                RoleOutline {options: vec1::vec1![RoleOutlineOption {
+                    roles: RoleOutlineOptionRoles::Role { role: Role::Detective },
+                    win_condition: RoleOutlineOptionWinCondition::RoleDefault,
+                    insider_groups: RoleOutlineOptionInsiderGroups::RoleDefault,
+                    player_pool: vec_set![3]
+                }]}
+            ]),
+            phase_times: PhaseTimeSettings::default(),
+            enabled_roles: RoleSet::Any.get_roles(),
+            enabled_modifiers: vec_set![],
+        },
+        4
+    ).unwrap();
+
+    let [recruiter, goon, detective1, detective2] = [0, 1, 2, 3].map(|i| unsafe { PlayerReference::new_unchecked(i) } );
+
+    assert!(recruiter.role(&game) == Role::Recruiter);
+    assert!(goon.role(&game) != Role::Goon);
+    assert!(detective1.role(&game) == Role::Detective);
+    assert!(detective2.role(&game) == Role::Detective);
 }
