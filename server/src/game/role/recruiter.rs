@@ -146,18 +146,24 @@ impl Recruiter {
 }
 
 pub const ENSURE_ONE_FEWER_SYNDICATE_PER_RECRUITER: GenerationCriterion = GenerationCriterion {
-    evaluate: |node: &PartialOutlineListAssignmentNode, _: &Settings| {
-        // There are currently no role sets which have mafia roles and town roles at the same time
-        // So this implementation is fine.
+    evaluate: |node: &PartialOutlineListAssignmentNode, settings: &Settings| {
+        let enabled_roles = &settings.enabled_roles;
+        let syndicate_roles = RoleSet::Mafia.get_roles().intersection(enabled_roles);
+        let town_common_roles = RoleSet::TownCommon.get_roles().intersection(enabled_roles);
+
+        // There are currently no role sets which have mafia roles and town roles at the same time,
+        // but if there were, this check says "uhhh sure let's just say this is fine".
         if node.assignments
             .iter()
             .any(|assignment| 
                 assignment.outline_option
                     .as_ref()
-                    .is_some_and(|o| 
-                        !o.roles.get_roles().intersection(&RoleSet::Mafia.get_roles()).is_empty() &&
-                        !o.roles.get_roles().subtract(&RoleSet::Mafia.get_roles()).is_empty()
-                    )
+                    .is_some_and(|o| {
+                        let outline_roles = o.roles.get_roles().intersection(enabled_roles);
+
+                        !outline_roles.intersection(&syndicate_roles).is_empty() &&
+                        !outline_roles.subtract(&syndicate_roles).is_empty()
+                    })
             )
         {
             return GenerationCriterionResult::Met;
@@ -165,12 +171,16 @@ pub const ENSURE_ONE_FEWER_SYNDICATE_PER_RECRUITER: GenerationCriterion = Genera
 
         // Which assignments are supposed to generate syndicate?
         let expected_syndicate_members = node.assignments.iter()
-            .filter(|assignment| assignment.outline_option.as_ref().is_some_and(|o| o.roles.get_roles().is_subset(&RoleSet::Mafia.get_roles())))
+            .filter(|assignment| assignment.outline_option.as_ref().is_some_and(|o| {
+                let outline_roles = o.roles.get_roles().intersection(enabled_roles);
+
+                !outline_roles.is_empty() && outline_roles.is_subset(&syndicate_roles)
+            }))
             .count();
 
         // Which assignments are actually populated with syndicate roles?
         let actual_syndicate_members = node.assignments.iter()
-            .filter(|assignment| assignment.role.is_some_and(|role| RoleSet::Mafia.get_roles().contains(&role)))
+            .filter(|assignment| assignment.role.is_some_and(|role| syndicate_roles.contains(&role)))
             .count();
 
         let number_of_recruiters = node.assignments.iter()
@@ -190,9 +200,9 @@ pub const ENSURE_ONE_FEWER_SYNDICATE_PER_RECRUITER: GenerationCriterion = Genera
                 .filter(|(_, assignment)| assignment.role.is_some_and(|role| RoleSet::Mafia.get_roles().contains(&role)))
                 .filter(|(_, assignment)| assignment.role != Some(Role::Recruiter))
             {
-                for role in RoleSet::TownCommon.get_roles() {
+                for role in town_common_roles.iter() {
                     let mut new_node = node.clone();
-                    new_node.assignments[syndicate_idx].role = Some(role);
+                    new_node.assignments[syndicate_idx].role = Some(*role);
                     new_node.assignments[syndicate_idx].win_condition = Some(role.default_state().default_win_condition());
                     new_node.assignments[syndicate_idx].insider_groups = Some(role.default_state().default_revealed_groups());
                     new_neighbors.push(new_node);
