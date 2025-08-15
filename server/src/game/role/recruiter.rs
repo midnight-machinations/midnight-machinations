@@ -143,29 +143,28 @@ impl Recruiter {
 
 pub const ENSURE_ONE_FEWER_SYNDICATE_PER_RECRUITER: GenerationCriterion = GenerationCriterion {
     evaluate: |node: &PartialOutlineListAssignmentNode, _: &RoleList| {
-        // If we have any outlines which are a superset of the mafia roles, how the hell
-        // are we supposed to know which roles to get rid of?
-        // That game mode is weird enough anyway, so let's just allow it.
+        // There are currently no role sets which have mafia roles and town roles at the same time
+        // So this implementation is fine.
         if node.assignments
             .iter()
             .any(|assignment| 
-                !assignment.outline_option
+                assignment.outline_option
                     .as_ref()
                     .is_some_and(|o| 
                         !o.roles.get_roles().intersection(&RoleSet::Mafia.get_roles()).is_empty() &&
-                        o.roles.get_roles().subtract(&RoleSet::Mafia.get_roles()).is_empty()
+                        !o.roles.get_roles().subtract(&RoleSet::Mafia.get_roles()).is_empty()
                     )
             )
         {
             return GenerationCriterionResult::Met;
         }
 
-        // Which outlines are supposed to generate syndicate?
+        // Which assignments are supposed to generate syndicate?
         let expected_syndicate_members = node.assignments.iter()
             .filter(|assignment| assignment.outline_option.as_ref().is_some_and(|o| o.roles.get_roles().is_subset(&RoleSet::Mafia.get_roles())))
             .count();
 
-        // Which outlines are actually populated with syndicate roles?
+        // Which assignments are actually populated with syndicate roles?
         let actual_syndicate_members = node.assignments.iter()
             .filter(|assignment| assignment.role.is_some_and(|role| RoleSet::Mafia.get_roles().contains(&role)))
             .count();

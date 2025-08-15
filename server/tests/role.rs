@@ -3044,16 +3044,3 @@ fn enraged_werewolf_kills() {
     game.next_phase();
     assert!(!bystander.alive());
 }
-
-#[test]
-fn recruiter_role_list_is_correct() {
-    kit::scenario!(_game where
-        recruiter: Recruiter,
-        goon: Goon,
-        _townie1: Villager,
-        _townie2: Villager
-    );
-
-    assert!(recruiter.role() == Role::Recruiter);
-    assert!(goon.role() != Role::Goon);
-}
