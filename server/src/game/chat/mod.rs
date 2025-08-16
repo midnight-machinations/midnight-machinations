@@ -28,7 +28,7 @@ impl ChatComponent{
     /// # Safety
     /// player_count is correct
     pub unsafe fn new(player_count: u8)->Self{
-        PlayerComponent::new_component_box(player_count, |_|ChatPlayerComponent::new())
+        unsafe { PlayerComponent::new_component_box(player_count, |_|ChatPlayerComponent::new()) }
     }
 
     pub fn add_chat_message(game: &mut Game, player: PlayerReference, message: ChatMessage) {

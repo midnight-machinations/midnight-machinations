@@ -7,7 +7,7 @@ impl FragileVestsComponent{
     /// # Safety
     /// player_count is correct
     pub unsafe fn new(player_count: u8)->Self{
-        PlayerComponent::new_component_box(player_count, |_|FragileVests::new())
+        unsafe { PlayerComponent::new_component_box(player_count, |_|FragileVests::new()) }
     }
     
     pub fn add_defense_item(

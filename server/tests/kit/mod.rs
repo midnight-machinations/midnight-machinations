@@ -121,7 +121,7 @@ pub mod _init {
                 .expect("test scenario assert");
             let found_player = *assignments
                 .iter()
-                .find(|(_,(_,r))|r.role() == *role)
+                .find(|(_,(_,r))|r.role == *role)
                 .map(|(p,_)|p)
                 .expect("test scenario assert");
 

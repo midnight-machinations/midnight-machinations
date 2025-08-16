@@ -205,7 +205,7 @@ impl PhaseState {
     
     /// Returns what phase should come next
     pub fn end(game: &mut Game) -> PhaseState {
-        let next = match *game.current_phase() {
+        match *game.current_phase() {
             PhaseState::Briefing => {
                 Self::Dusk
             },
@@ -300,8 +300,7 @@ impl PhaseState {
                 Self::Obituary { last_night: OnMidnight::new().invoke(game) }
             },
             PhaseState::Recess => Self::Recess
-        };
-        next
+        }
     }
     
     pub fn is_day(&self) -> bool {
