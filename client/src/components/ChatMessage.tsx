@@ -375,7 +375,7 @@ function useContainsMention(message: ChatMessageVariant & { text: string | Unsaf
         find(encodeString(myName)).test(encodeString(replaceMentions(message.text, playerNames))) ||
         (
             myNumber !== undefined && 
-            find("" + (myNumber + 1)).test(encodeString(replaceMentions(message.text, playerNames)))
+            find("@" + (myNumber + 1)).test(encodeString(replaceMentions(message.text, playerNames)))
         )
     )
 }
