@@ -152,7 +152,7 @@ pub const ENSURE_ONE_FEWER_SYNDICATE_PER_RECRUITER: GenerationCriterion = Genera
         let town_common_roles = RoleSet::TownCommon.get_roles().intersection(enabled_roles);
 
         // There are currently no role sets which have mafia roles and town roles at the same time,
-        // but if there were, this check says "uhhh sure let's just say this is fine".
+        // but if there were, this check says "uhh sure let's just say this is fine".
         if node.assignments
             .iter()
             .any(|assignment| 

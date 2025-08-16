@@ -29,12 +29,15 @@ impl<'a> RoleListGenerator<'a> {
                 criteria::FILL_ALL_OUTLINE_OPTIONS,
                 criteria::FILL_ALL_PLAYERS,
                 criteria::FILL_ALL_WIN_CONDITIONS,
+                // The game will check for this too, but might as well try to fix it here anyway
+                // so we don't have to completely restart the DFS.
+                criteria::NOT_ALL_SAME_WIN_CONDITION,
                 criteria::FILL_ALL_INSIDER_GROUPS
             ]
         }
     }
 
-    const MAX_TRAVERSAL_DEPTH: usize = 2500;
+    const MAX_TRAVERSAL_DEPTH: usize = 250;
 
     // Basic DFS with a stack and a set of seen nodes to avoid cycles.
     pub fn generate_role_list(&mut self) -> Option<OutlineListAssignment> {
@@ -64,12 +67,14 @@ impl<'a> RoleListGenerator<'a> {
             seen.insert(current_idx);
 
             let current_node = current_node.clone();
-            let neighbors = self.neighbors_of(&current_node);
 
-            if neighbors.is_empty() {
-                return Some(unsafe { self.finalize(&current_node) });
-            } else {
-                nodes_to_visit.extend(neighbors);
+            match self.neighbors_of(&current_node) {
+                NeighborsResult::AllCriteriaMet => {
+                    return Some(unsafe { self.finalize(&current_node) });
+                },
+                NeighborsResult::NeighborIndices(neighbor_indices) => {
+                    nodes_to_visit.extend(neighbor_indices);
+                }
             }
         }
 
@@ -100,7 +105,7 @@ impl<'a> RoleListGenerator<'a> {
     /// 
     /// That's true when it comes to filling in roles, and that pattern continues for the following order of precedence:
     /// outline options, players, win conditions, insider groups, then all other criteria.
-    fn neighbors_of(&mut self, node: &PartialOutlineListAssignmentNode) -> Vec<usize> {
+    fn neighbors_of(&mut self, node: &PartialOutlineListAssignmentNode) -> NeighborsResult {
         if let Some(mut neighbors_to_add) = self.criteria
             .iter()
             .copied()
@@ -127,15 +132,15 @@ impl<'a> RoleListGenerator<'a> {
                 self.nodes.push(neighbor);
             }
 
-            return out;
+            return NeighborsResult::NeighborIndices(out);
         }
 
-        vec![]
+        NeighborsResult::AllCriteriaMet
     }
 
     /// # Safety
     /// Before calling this function, you must ensure that all fields in the node are set.
-    /// This is usually guaranteed if a node has no neighbors.
+    /// This is usually guaranteed if every criterion has been met.
     #[expect(clippy::unwrap_used, reason = "We ensure all fields are set before this point")]
     unsafe fn finalize(&self, node: &PartialOutlineListAssignmentNode) -> OutlineListAssignment {
         let mut assignments = Vec::new();
@@ -175,4 +180,9 @@ pub struct OutlineAssignment {
     pub insider_groups: VecSet<InsiderGroupID>,
     pub win_condition: WinCondition,
     pub player: PlayerReference
+}
+
+pub enum NeighborsResult {
+    NeighborIndices(Vec<usize>),
+    AllCriteriaMet
 }

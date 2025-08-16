@@ -2,7 +2,7 @@
 
 use std::collections::HashMap;
 
-use crate::{game::{components::{insider_group::InsiderGroupID, win_condition::WinCondition}, player::PlayerReference, role_list::{RoleOutlineOptionInsiderGroups, RoleOutlineOptionWinCondition}, role_list_generation::{PartialOutlineAssignment, PartialOutlineListAssignmentNode}, settings::Settings}, vec_set::VecSet};
+use crate::{game::{components::{insider_group::InsiderGroupID, win_condition::WinCondition}, game_conclusion::GameConclusion, player::PlayerReference, role_list::{RoleOutlineOptionInsiderGroups, RoleOutlineOptionWinCondition}, role_list_generation::{PartialOutlineAssignment, PartialOutlineListAssignmentNode}, settings::Settings}, vec_set::VecSet};
 
 
 #[derive(Clone, Copy)]
@@ -173,6 +173,39 @@ pub const FILL_ALL_WIN_CONDITIONS: GenerationCriterion = GenerationCriterion {
                     .map(|win_condition| {
                         let mut new_node = node.clone();
                         new_node.assignments[i].win_condition = Some(win_condition.clone());
+                        new_node
+                    })
+                    .collect()
+            )
+        } else {
+            GenerationCriterionResult::Met
+        }
+    }
+};
+
+pub const NOT_ALL_SAME_WIN_CONDITION: GenerationCriterion = GenerationCriterion {
+    evaluate: |node, _| {
+        if GameConclusion::all()
+            .iter()
+            .any(|conclusion| {
+                node.assignments
+                    .iter()
+                    .all(|a| 
+                        a.win_condition.as_ref().is_some_and(|w| w.friends_with_conclusion(*conclusion))
+                    )
+            })
+        {
+            GenerationCriterionResult::Unmet(
+                (0..node.assignments.len())
+                    .map(|i| {
+                        let mut new_node = node.clone();
+                        new_node.assignments[i] = PartialOutlineAssignment {
+                            outline_option: None,
+                            role: None,
+                            insider_groups: None,
+                            win_condition: None,
+                            player: None,
+                        };
                         new_node
                     })
                     .collect()
