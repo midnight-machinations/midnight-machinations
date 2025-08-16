@@ -544,6 +544,7 @@ fn doctor_basic() {
 #[test]
 fn transporter_basic_vigilante_escort() {
     kit::scenario!(game in Night 2 where
+        _godfather: Godfather,
         trans: Transporter,
         vigi: Vigilante,
         escort: Escort,
@@ -983,6 +984,8 @@ fn rabble_rouser_turns_into_jester(){
 #[test]
 fn rabble_rouser_instantly_turns_into_jester(){
     kit::scenario!(_game where
+        _godfather: Godfather,
+        _serial_killer: SerialKiller,
         exe: Revolutionary
     );
     let RoleState::Jester(_) = exe.role_state() else {panic!()};
@@ -991,6 +994,7 @@ fn rabble_rouser_instantly_turns_into_jester(){
 #[test]
 fn can_type_in_jail() {
     kit::scenario!(game in Dusk 1 where
+        _godfather: Godfather,
         jailor: Jailor,
         detective: Detective
     );
@@ -1021,7 +1025,8 @@ fn can_type_in_jail() {
 fn mafioso_cant_kill_mafia() {
     kit::scenario!(game in Night 1 where
         mafioso: Mafioso,
-        mortician: Mortician
+        mortician: Mortician,
+        _detective: Detective
     );
 
     mafioso.send_ability_input_player_list_typical(mortician);
@@ -1513,6 +1518,7 @@ fn polymath_snoop_basic() {
 #[test]
 fn polymath_armorsmith_marksman_basic() {
     kit::scenario!(game in Night 2 where
+        _godfather: Godfather,
         armor: Polymath,
         mark: Polymath,
         phil: Philosopher
