@@ -1,7 +1,7 @@
 use std::collections::HashSet;
 
 use crate::{game::{
-    attack_power::AttackPower, chat::ChatMessageVariant, components::insider_group::InsiderGroupID, event::{
+    attack_power::AttackPower, chat::ChatMessageVariant, components::{graves::grave::GraveKiller, insider_group::InsiderGroupID}, event::{
         on_add_insider::OnAddInsider, on_midnight::{MidnightVariables, OnMidnight, OnMidnightPriority},
         on_remove_insider::OnRemoveInsider
     }, game_conclusion::GameConclusion, player::PlayerReference, role::Role, role_list::RoleSet, Game
@@ -60,7 +60,7 @@ impl MafiaRecruits{
             .collect();
 
         for player in players{
-            player.try_night_kill(&recruiters, game, midnight_variables, crate::game::grave::GraveKiller::RoleSet(RoleSet::Mafia), attack_power, false);
+            player.try_night_kill(&recruiters, game, midnight_variables, GraveKiller::RoleSet(RoleSet::Mafia), attack_power, false);
         }
     }
 

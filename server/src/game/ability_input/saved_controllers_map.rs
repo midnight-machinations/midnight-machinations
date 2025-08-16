@@ -2,12 +2,16 @@ use serde::{Deserialize, Serialize};
 
 use crate::{
     game::{
-        chat::{ChatController, ChatMessageVariant}, components::{
-            alibi::Alibi, forfeit_vote::ForfeitNominationVote, forward_messages::ForwardMessages, insider_group::InsiderGroupID, mafia::Mafia, nomination_controller::NominationController, pitchfork::Pitchfork, syndicate_gun_item::SyndicateGunItem
+        chat::{ChatComponent, ChatMessageVariant},
+        components::{
+            alibi::Alibi, forfeit_vote::ForfeitNominationVote,
+            forward_messages::ForwardMessages, insider_group::InsiderGroupID,
+            mafia::Mafia, nomination_controller::NominationController,
+            pitchfork::Pitchfork, syndicate_gun_item::SyndicateGunItem
         }, 
         event::{
             on_controller_selection_changed::OnControllerSelectionChanged,
-            on_validated_ability_input_received::OnValidatedAbilityInputReceived
+            on_validated_ability_input_received::OnValidatedAbilityInputReceived, Event
         }, 
         phase::PhaseType, player::PlayerReference, Game
     }, packet::ToClientPacket, vec_map::VecMap, vec_set::VecSet
@@ -84,7 +88,7 @@ impl SavedControllersMap{
             ForfeitNominationVote::controller_parameters_map(game),
             Pitchfork::controller_parameters_map(game),
             ForwardMessages::controller_parameters_map(game),
-            ChatController::controller_parameters_map(game),
+            ChatComponent::controller_parameters_map(game),
             Alibi::controller_parameters_map(game)
         ]);
 

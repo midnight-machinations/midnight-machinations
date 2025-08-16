@@ -1,5 +1,5 @@
 use crate::game::{
-    grave::GraveReference, modifiers::Modifiers, player::PlayerReference, Game
+    components::graves::grave_reference::GraveReference, modifiers::Modifiers, player::PlayerReference, Game
 };
 
 

@@ -1,11 +1,8 @@
 use crate::game::{
         ability_input::{
-            AbilityInput, AvailablePlayerListSelection, ControllerID,
+            AvailablePlayerListSelection, ControllerID,
             ControllerParametersMap, PlayerListSelection
-        },
-        chat::{ChatGroup, ChatMessageVariant},
-        modifiers::{hidden_nomination_votes::HiddenNominationVotes, ModifierType, Modifiers},
-        player::PlayerReference, Game
+        }, chat::{ChatGroup, ChatMessageVariant}, event::on_validated_ability_input_received::OnValidatedAbilityInputReceived, modifiers::{hidden_nomination_votes::HiddenNominationVotes, ModifierType, Modifiers}, player::PlayerReference, Game
     };
 
 use super::forfeit_vote::ForfeitNominationVote;
@@ -36,12 +33,12 @@ impl NominationController{
             .allow_players([actor])
             .build_map()
     }
-    pub fn on_validated_ability_input_received(game: &mut Game, player: PlayerReference, input: AbilityInput){
-        if let Some(PlayerListSelection(voted)) = input.get_player_list_selection_if_id(ControllerID::Nominate{ player }){
+    pub fn on_validated_ability_input_received(game: &mut Game, event: &OnValidatedAbilityInputReceived, _fold: &mut (), _priority: ()){
+        if let Some(PlayerListSelection(voted)) = event.input.get_player_list_selection_if_id(ControllerID::Nominate{ player: event.actor_ref }){
 
             if !HiddenNominationVotes::nomination_votes_are_hidden(game) {
                 game.add_message_to_chat_group(ChatGroup::All, ChatMessageVariant::Voted{
-                    voter: player.index(), 
+                    voter: event.actor_ref.index(), 
                     votee: voted.first().map(|p|p.index())
                 });
             }

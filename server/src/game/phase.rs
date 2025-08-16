@@ -2,7 +2,7 @@ use std::{ops::Div, time::Duration};
 
 use serde::{Serialize, Deserialize};
 
-use crate::game::modifiers::{hidden_nomination_votes::HiddenNominationVotes, hidden_verdict_votes::HiddenVerdictVotes, ModifierType, Modifiers};
+use crate::game::{components::graves::{grave::Grave, Graves}, modifiers::{hidden_nomination_votes::HiddenNominationVotes, hidden_verdict_votes::HiddenVerdictVotes, ModifierType, Modifiers}};
 
 use super::{
     chat::{ChatGroup, ChatMessageVariant},
@@ -10,7 +10,7 @@ use super::{
         before_phase_end::BeforePhaseEnd,
         on_midnight::{OnMidnight, MidnightVariables}, on_phase_start::OnPhaseStart, Event
     },
-    grave::Grave, player::PlayerReference, settings::PhaseTimeSettings, Game
+    player::PlayerReference, settings::PhaseTimeSettings, Game
 };
 
 
@@ -159,7 +159,7 @@ impl PhaseState {
 
                 for player_ref in PlayerReference::all_players(game) {
                     if player_ref.night_died(&last_night) {
-                        game.add_grave(Grave::from_player_night(game, &last_night, player_ref));
+                        Graves::add_grave(game, Grave::from_player_night(game, &last_night, player_ref));
                     }
                 }
                 for player_ref in PlayerReference::all_players(game) {

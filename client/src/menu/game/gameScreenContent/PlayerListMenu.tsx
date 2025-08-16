@@ -37,19 +37,19 @@ export default function PlayerListMenu(): ReactElement {
                 .map(player => <div key={player.index} className="player-card-holder"><PlayerCard playerIndex={player.index}/></div>)
             }
 
-            {graves.length === 0 || 
+            {graves.entries().length === 0 || 
                 <>
                     <div className="dead-players-separator">
                         <StyledText>{translate("grave.icon")} {translate("graveyard")}</StyledText>
                     </div>
-                    {graves.map((grave, index) => <div key={grave.player} className="player-card-holder"><PlayerCard graveIndex={index} playerIndex={grave.player}/></div>)}
+                    {graves.entries().map(([index, grave]) => <div key={grave.player} className="player-card-holder"><PlayerCard graveIndex={index} playerIndex={grave.player}/></div>)}
                 </>
             }
 
             {players
                 .filter(
                     player => !player.alive && 
-                    graves.find(grave => grave.player === player.index) === undefined
+                    graves.values().find((grave) => grave.player === player.index) === undefined
                 ).length === 0 || 
                 <>
                     <div className="dead-players-separator">
@@ -104,9 +104,9 @@ function PlayerCard(props: Readonly<{
 
     type NonAnonymousBlockMessage = {
         variant: {
-            type: "normal", 
+            type: "normal",
             messageSender: {
-                type: "player", 
+                type: "player",
                 player: PlayerIndex
             } | {
                 type: "livingToDead",
@@ -119,7 +119,7 @@ function PlayerCard(props: Readonly<{
     }
 
     const mostRecentBlockMessage: undefined | NonAnonymousBlockMessage = useGameState(
-        gameState => findLast(gameState.chatMessages, message =>
+        gameState => findLast(gameState.chatMessages.values(), (message) =>
                 message.chatGroup === "all" && 
                 message.variant.type === "normal" &&
                 message.variant.block &&
@@ -140,7 +140,7 @@ function PlayerCard(props: Readonly<{
     const grave = useGameState(
         gameState => {
             if(props.graveIndex === undefined) return undefined;
-            return gameState.graves[props.graveIndex]
+            return gameState.graves.get(props.graveIndex)
         },
         ["addGrave"]
     )!
@@ -156,7 +156,7 @@ function PlayerCard(props: Readonly<{
 
     const spectator = useSpectator();
 
-    return <><div 
+    return <><div
         className={`player-card`}
         key={props.playerIndex}
     >

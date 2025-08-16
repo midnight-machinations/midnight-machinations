@@ -5,7 +5,7 @@ use crate::game::chat::ChatMessageVariant;
 use crate::game::components::night_visits::NightVisits;
 use crate::game::event::on_midnight::{MidnightVariables, OnMidnightPriority};
 use crate::game::components::tags::{TagSetID, Tags};
-use crate::game::grave::GraveKiller;
+use crate::game::components::graves::grave::GraveKiller;
 use crate::game::player::{PlayerIndex, PlayerReference};
 use crate::game::visit::{Visit, VisitTag};
 use crate::game::phase::PhaseType;

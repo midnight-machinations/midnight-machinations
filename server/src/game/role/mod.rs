@@ -1,6 +1,7 @@
 #![allow(clippy::single_match, reason = "May add more cases for more priorities later")]
 
 use std::collections::HashSet;
+use crate::game::components::graves::grave_reference::GraveReference;
 use crate::vec_set::{vec_set, VecSet};
 
 use crate::game::player::PlayerReference;
@@ -15,8 +16,11 @@ use serde::{Serialize, Deserialize};
 use super::components::win_condition::WinCondition;
 use super::{
     ability_input::*, components::{insider_group::InsiderGroupID, night_visits::NightVisits},
-    event::{on_midnight::{MidnightVariables, OnMidnightPriority}, on_whisper::{OnWhisper, WhisperFold, WhisperPriority}},
-    grave::GraveReference, visit::VisitTag,
+    event::{
+        on_midnight::{MidnightVariables, OnMidnightPriority},
+        on_whisper::{OnWhisper, WhisperFold, WhisperPriority}
+    },
+    visit::VisitTag,
 };
 
 pub trait GetClientRoleState<CRS> {

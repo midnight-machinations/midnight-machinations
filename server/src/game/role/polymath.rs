@@ -4,7 +4,7 @@ use crate::game::ability_input::{AvailableIntegerSelection, AvailableTwoPlayerOp
 use crate::game::attack_power::AttackPower;
 use crate::game::components::transport::{Transport, TransportPriority};
 use crate::game::event::on_midnight::{MidnightVariables, OnMidnightPriority};
-use crate::game::grave::GraveKiller;
+use crate::game::components::graves::grave::GraveKiller;
 use crate::game::{attack_power::DefensePower, chat::ChatMessageVariant};
 use crate::game::player::PlayerReference;
 

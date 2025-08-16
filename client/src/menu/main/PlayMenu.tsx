@@ -8,6 +8,8 @@ import { StateListener } from "../../game/gameManager.d";
 import { LobbyPreviewData } from "../../game/packet";
 import LobbyMenu from "../lobby/LobbyMenu";
 import PlayMenuJoinPopup from "./PlayMenuJoinPopup";
+import { encodeString } from "../../components/ChatMessage";
+import { Button } from "../../components/Button";
 
 export default function PlayMenu(): ReactElement {
     const { setContent: setAnchorContent } = useContext(AnchorControllerContext)!;
@@ -159,9 +161,7 @@ function PlayMenuTable(props: Readonly<{
             </tr>
         </thead>
         <tbody>
-            {Array.from(lobbies.entries()).map((entry)=>{
-                const roomCode = entry[0];
-                const lobby: LobbyPreviewData = entry[1];
+            {Array.from(lobbies.entries()).map(([roomCode, lobby])=>{
 
                 return <tr key={roomCode}>
                     <td>
@@ -177,13 +177,13 @@ function PlayMenuTable(props: Readonly<{
                             }
                         }}>{translate("menu.play.button.join")}</button>
                     </td>
-                    <td>{lobby.name}</td>
+                    <td>{encodeString(lobby.name)}</td>
                     <td>
                         <div className="play-menu-lobby-player-list">
-                            {lobby.players.map((player)=>{
-                                return <button key={player[1]} onClick={()=>{
-                                    props.joinGame(roomCode, player[0]);
-                                }}>{player[1]}</button>
+                            {lobby.players.map(([clientId, clientName])=>{
+                                return <Button key={clientName as string} onClick={()=>{
+                                    props.joinGame(roomCode, clientId);
+                                }}>{encodeString(clientName)}</Button>
                             })}
                         </div>
                     </td>

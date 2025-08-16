@@ -2,9 +2,9 @@ use serde::Serialize;
 
 use crate::game::ability_input::{AvailableIntegerSelection, IntegerSelection};
 use crate::game::chat::ChatMessageVariant;
+use crate::game::components::graves::grave::{Grave, GraveKiller};
 use crate::game::event::on_midnight::{MidnightVariables, OnMidnightPriority};
 use crate::game::attack_power::{AttackPower, DefensePower};
-use crate::game::grave::{Grave, GraveKiller};
 use rand::seq::SliceRandom;
 use crate::game::player::PlayerReference;
 

@@ -9,6 +9,15 @@ export default class ListMap<K, V> {
     ) {
         this.list = list;
         this.equalsFn = equalsFn;
+        this.fixUnique();
+    }
+    fixUnique(): ListMap<K, V> {
+        const list = this.list;
+        this.list = [];
+        for(const [key, val] of list){
+            this.insert(key, val)
+        }
+        return this;
     }
     contains(key: K): boolean {
         for (const kvp of this.list) {

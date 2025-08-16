@@ -6,7 +6,7 @@ use crate::game::attack_power::DefensePower;
 use crate::game::components::transport::Transport;
 use crate::game::components::transport::TransportPriority;
 use crate::game::event::on_midnight::{MidnightVariables, OnMidnightPriority};
-use crate::game::grave::GraveKiller;
+use crate::game::components::graves::grave::GraveKiller;
 use crate::game::phase::PhaseType;
 use crate::game::player::PlayerReference;
 

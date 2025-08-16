@@ -1,5 +1,5 @@
-import { Grave } from "./graveState";
-import { ChatMessage } from "../components/ChatMessage";
+import { Grave, GraveIndex } from "./graveState";
+import { ChatMessage, ChatMessageIndex } from "../components/ChatMessage";
 import { Role, RoleState } from "./roleState.d";
 import { RoleList } from "./roleListState.d";
 import { LobbyPreviewData } from "./packet";
@@ -26,7 +26,7 @@ export type OutsideLobbyState = {
 export type LobbyState = {
     stateType: "lobby"
     roomCode: number,
-    lobbyName: string,
+    lobbyName: UnsafeString,
 
     myId: number | null,
 
@@ -36,7 +36,7 @@ export type LobbyState = {
     enabledModifiers: ModifierType[],
 
     players: ListMap<LobbyClientID, LobbyClient>,
-    chatMessages: ChatMessage[],
+    chatMessages: ListMap<ChatMessageIndex, ChatMessage>,
 }
 export type LobbyClient = {
     ready: "host" | "ready" | "notReady",
@@ -61,20 +61,20 @@ export type LobbyClientType = {
 } | PlayerClientType;
 export type PlayerClientType = {
     type: "player",
-    name: string,
+    name: UnsafeString,
 }
 
 type GameState = {
     stateType: "game",
     roomCode: number,
-    lobbyName: string,
+    lobbyName: UnsafeString,
     
     initialized: boolean,
 
     myId: number | null,
 
-    chatMessages : ChatMessage[],
-    graves: Grave[],
+    chatMessages : ListMap<ChatMessageIndex, ChatMessage>,
+    graves: ListMap<GraveIndex, Grave>,
     players: Player[],
     
     phaseState: PhaseState,
@@ -106,10 +106,10 @@ export type PlayerGameState = {
     
     roleState: RoleState,
 
-    notes: string[],
+    notes: UnsafeString[],
     crossedOutOutlines: number[],
     chatFilter: ChatFilter,
-    deathNote: string,
+    deathNote: UnsafeString,
     judgement: Verdict,
 
     savedControllers: ListMapData<ControllerID, SavedController>,
@@ -178,15 +178,18 @@ export const MODIFIERS = [
 export type ModifierType = (typeof MODIFIERS)[number];
 
 export type Player = {
-    name: string,
+    name: UnsafeString,
     index: number,
     numVoted: number,
     alive: boolean,
     roleLabel: Role | null,
     playerTags: Tag[]
 
-    toString(): string
+    toString(): UnsafeString
 }
+
+// Not actually unknown, but this prevents use without sanitization
+export type UnsafeString = string | (unknown & { __brand?: "UnsafeString" });
 
 export const CONCLUSIONS = ["town", "mafia", "cult", "fiends", "politician", "niceList", "naughtyList", "draw"] as const;
 export type Conclusion = (typeof CONCLUSIONS)[number];

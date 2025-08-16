@@ -2,7 +2,8 @@ use crate::{game::{attack_power::DefensePower, chat::ChatMessageVariant, event::
 
 use super::player_component::PlayerComponent;
 
-impl PlayerComponent<FragileVests>{
+pub type FragileVestsComponent = PlayerComponent<FragileVests>;
+impl FragileVestsComponent{
     /// # Safety
     /// player_count is correct
     pub unsafe fn new(player_count: u8)->Self{

@@ -17,7 +17,6 @@ use crate::{
     },
     websocket_connections::connection::ClientSender,
 };
-use super::chat::ChatMessage;
 
 pub struct PlayerInitializeParameters {
     pub connection: ClientConnection,
@@ -35,9 +34,6 @@ pub struct Player {
     death_note: Option<String>,
 
     role_labels: VecSet<PlayerReference>,
-
-    chat_messages: Vec<ChatMessage>,
-    queued_chat_messages: Vec<ChatMessage>, // Not yet sent to the client
 
     fast_forward_vote: bool,
 
@@ -60,9 +56,6 @@ impl Player {
 
             role_labels: VecSet::new(),
 
-            chat_messages: Vec::new(),
-            queued_chat_messages: Vec::new(),
-            
             fast_forward_vote: false,
 
             voting_variables: PlayerVotingVariables{
@@ -92,9 +85,6 @@ pub mod test {
             death_note: None,
 
             role_labels: VecSet::new(),
-
-            chat_messages: Vec::new(),
-            queued_chat_messages: Vec::new(),
 
             fast_forward_vote: false,
 

@@ -1,6 +1,6 @@
 import { ListMapData } from "../ListMap";
 import { KiraGuess } from "../menu/game/gameScreenContent/AbilityMenu/AbilitySelectionTypes/KiraSelectionMenu";
-import { PhaseType, PlayerIndex } from "./gameState.d";
+import { PhaseType, PlayerIndex, UnsafeString } from "./gameState.d";
 import translate, { translateChecked } from "./lang";
 import { Role } from "./roleState.d";
 import abilitiesJson from "../resources/abilityId.json";
@@ -324,7 +324,7 @@ export type AvailableTwoRoleOptionSelection = {
 export type TwoRoleOutlineOptionSelection = [PlayerIndex | null, PlayerIndex | null];
 export type AvailableTwoRoleOutlineOptionSelection = (number | null)[];
 
-export type StringSelection = string;
+export type StringSelection = UnsafeString;
 
 export type IntegerSelection = number;
 export type AvailableIntegerSelection = {

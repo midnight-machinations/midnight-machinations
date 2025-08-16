@@ -4,10 +4,11 @@ import GAME_MANAGER from "../../../../..";
 import translate, { translateChecked } from "../../../../../game/lang";
 import StyledText, { KeywordDataMap } from "../../../../../components/StyledText";
 import Select, { SelectOptionsSearch } from "../../../../../components/Select";
-import { PlayerIndex } from "../../../../../game/gameState.d";
+import { PlayerIndex, UnsafeString } from "../../../../../game/gameState.d";
 import ListMap, { ListMapData } from "../../../../../ListMap";
 import { AvailableKiraSelection } from "../../../../../game/abilityInput";
 import { useGameState, usePlayerState } from "../../../../../components/useHooks";
+import { encodeString } from "../../../../../components/ChatMessage";
 
 export const KIRA_GUESSES = [
     "none",
@@ -42,7 +43,7 @@ export function KiraResultDisplay(props: Readonly<{
         map: KiraResult
     },
     playerKeywordData?: KeywordDataMap,
-    playerNames: string[],
+    playerNames: UnsafeString[],
 }>): ReactElement {
     let guessesMap = new ListMap<PlayerIndex, [KiraGuess, KiraGuessResult]>();
 
@@ -94,7 +95,7 @@ export function KiraResultDisplay(props: Readonly<{
             <StyledText
                 playerKeywordData={props.playerKeywordData}
             >
-                {props.playerNames[playerIndex]} {kiraGuessTranslate(guess)} {resultIcon} {resultString}
+                {encodeString(props.playerNames[playerIndex])} {kiraGuessTranslate(guess)} {resultIcon} {resultString}
             </StyledText>
         </div>)
     }
@@ -171,7 +172,7 @@ function KiraGuessPicker(props: {
     }
 
     return <div className="kira-guess-picker">
-        <StyledText>{players[props.playerIndex].toString()}</StyledText>
+        <StyledText>{encodeString(players[props.playerIndex].toString())}</StyledText>
         <Select
             value={props.guess}
             onChange={(e) => props.onChange(e)}

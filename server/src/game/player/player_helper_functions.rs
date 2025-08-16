@@ -7,7 +7,7 @@ use crate::{
         attack_power::{AttackPower, DefensePower},
         chat::{ChatGroup, ChatMessage, ChatMessageVariant},
         components::{
-            drunk_aura::DrunkAura, fragile_vest::FragileVests, insider_group::InsiderGroupID, night_visits::NightVisits, player_component::PlayerComponent, win_condition::WinCondition
+            drunk_aura::DrunkAura, fragile_vest::FragileVests, graves::{grave::{Grave, GraveKiller}, Graves}, insider_group::InsiderGroupID, night_visits::NightVisits, player_component::PlayerComponent, win_condition::WinCondition
         },
         event::{
             before_role_switch::BeforeRoleSwitch, on_any_death::OnAnyDeath,
@@ -16,7 +16,6 @@ use crate::{
             on_visit_wardblocked::OnVisitWardblocked
         },
         game_conclusion::GameConclusion,
-        grave::{Grave, GraveKiller},
         modifiers::{ModifierType, Modifiers}, phase::PhaseType,
         role::{arsonist::Arsonist,chronokaiser::Chronokaiser, Role, RoleState},
         visit::{Visit, VisitTag},
@@ -224,7 +223,7 @@ impl PlayerReference{
 
     pub fn die_and_add_grave(&self, game: &mut Game, grave: Grave){
         if !self.alive(game) { return }
-        game.add_grave(grave);
+        Graves::add_grave(game, grave);
         self.die(game);
     }
     /// if the player is already dead, this does nothing
@@ -363,15 +362,9 @@ impl PlayerReference{
         DrunkAura::has_drunk_aura(game, *self) ||
         Arsonist::has_suspicious_aura_douse(game, *self)
     }
-    pub fn get_won_game(&self, game: &Game) -> bool {
+    pub fn get_won_game(&self, game: &Game, conclusion: GameConclusion) -> bool {
         match self.win_condition(game){
-            WinCondition::GameConclusionReached { win_if_any } => {
-                if let Some(resolution) = GameConclusion::game_is_over(game) {
-                    win_if_any.contains(&resolution)
-                } else {
-                    false
-                }
-            },
+            WinCondition::GameConclusionReached { win_if_any } => win_if_any.contains(&conclusion),
             WinCondition::RoleStateWon => {
                 match self.role_state(game) {
                     RoleState::Jester(r) => r.won(),
