@@ -347,11 +347,6 @@ function NormalChatMessage(props: Readonly<{
 }
 
 function useContainsMention(message: ChatMessageVariant & { text: string | UnsafeString }, playerNames: UnsafeString[]): boolean {
-    const myNumber = usePlayerState(
-        gameState => gameState.myIndex,
-        ["yourPlayerIndex"]
-    );
-
     const myName = useLobbyOrGameState(
         state => {
             if (state.stateType === "game" && state.clientState.type === "player")
