@@ -36,7 +36,7 @@ export default function AuditorMenu(props: Readonly<{
 
     const savedAbilities = usePlayerState(
         playerState => playerState.savedControllers,
-        ["yourAllowedControllers"]
+        ["yourAllowedControllers", "yourAllowedController"]
     )!;
     
     const savedAbilitiesMap = new ListMap(savedAbilities, (k1, k2) => controllerIdToLinkWithPlayer(k1) === controllerIdToLinkWithPlayer(k2));

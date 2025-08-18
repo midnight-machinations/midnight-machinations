@@ -19,11 +19,12 @@ use super::*;
 #[derive(Default, Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
 pub struct SavedControllersMap{
     pub(super) saved_controllers: VecMap<ControllerID, SavedController>,
+    pub(super) sent_controllers: VecMap<ControllerID, SavedController>,
 }
 
 impl SavedControllersMap{
     pub fn new(saved_controllers: VecMap<ControllerID, SavedController>)->Self{
-        Self{saved_controllers}
+        Self{saved_controllers, sent_controllers: VecMap::new()}
     }
 
     //event listeners
@@ -246,11 +247,17 @@ impl SavedControllersMap{
     }
     // game stuff
     
-    pub fn send_saved_controllers_to_clients(game: &Game){
-        for player in PlayerReference::all_players(game){
-            player.send_packet(game, ToClientPacket::YourAllowedControllers { 
-                save: game.saved_controllers.controllers_allowed_to_player(player).saved_controllers
-            });
+    pub fn send_saved_controllers_to_clients(game: &mut Game){
+        for id in game.saved_controllers.all_controller_ids() {
+            if game.saved_controllers.saved_controllers.get(&id) == game.saved_controllers.sent_controllers.get(&id) {continue}
+            let Some(controller) = game.saved_controllers.saved_controllers.get(&id) else {continue};
+            game.saved_controllers.sent_controllers.insert(id.clone(), controller.clone());
+
+            for player in controller.available_ability_data.allowed_players().iter() {
+                player.send_packet(game, ToClientPacket::YourAllowedController{
+                    id: id.clone(), controller: controller.clone()
+                });
+            }
         }
     }
 }

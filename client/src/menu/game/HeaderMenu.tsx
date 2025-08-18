@@ -142,7 +142,7 @@ export function PhaseSpecificInformation(props: Readonly<{
 }>): ReactElement | null {
     const controllers = usePlayerState(
         playerState => playerState.savedControllers,
-        ["yourAllowedControllers"]
+        ["yourAllowedControllers", "yourAllowedController"]
     )??[];
 
     const spectator = useSpectator();

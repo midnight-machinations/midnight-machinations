@@ -97,7 +97,7 @@ function showThisController(id: ControllerID): boolean {
 export default function GenericAbilityMenu(): ReactElement {
     const savedAbilities = usePlayerState(
         playerState => playerState.savedControllers,
-        ["yourAllowedControllers"]
+        ["yourAllowedControllers", "yourAllowedController"]
     )!;
 
     let controllerGroupsMap: ControllerGroupsMap = new ListMap();

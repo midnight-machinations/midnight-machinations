@@ -139,6 +139,7 @@ pub enum ToClientPacket{
     YourAllowedControllers{
         save: VecMap<ControllerID, SavedController>
     },
+    YourAllowedController{id: ControllerID, controller: SavedController},
 
     #[serde(rename_all = "camelCase")]
     YourRoleLabels{role_labels: VecMap<PlayerIndex, Role>},

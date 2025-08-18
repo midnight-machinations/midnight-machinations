@@ -20,7 +20,7 @@ import NightMessagePopup from "../components/NightMessagePopup";
 import PlayMenu from "../menu/main/PlayMenu";
 import StartMenu from "../menu/main/StartMenu";
 import ListMap from "../ListMap";
-import { sortControllerIdCompare } from "./abilityInput";
+import { controllerIdToLinkWithPlayer, sortControllerIdCompare } from "./abilityInput";
 
 function sendDefaultName() {
     const defaultName = loadSettingsParsed().defaultName;
@@ -373,6 +373,15 @@ export default function messageListener(packet: ToClientPacket){
             if(GAME_MANAGER.state.stateType === "game" && GAME_MANAGER.state.clientState.type === "player"){
                 GAME_MANAGER.state.clientState.savedControllers = 
                     packet.save.sort((a, b) => sortControllerIdCompare(a[0],b[0]));
+            }
+        break;
+        case "yourAllowedController":
+            if(GAME_MANAGER.state.stateType === "game" && GAME_MANAGER.state.clientState.type === "player"){
+                let savedControllers = new ListMap(GAME_MANAGER.state.clientState.savedControllers,
+                    (k1,k2)=>controllerIdToLinkWithPlayer(k1)===controllerIdToLinkWithPlayer(k2)
+                );
+                savedControllers.insert(packet.id, packet.controller);
+                GAME_MANAGER.state.clientState.savedControllers = [...savedControllers.entries().sort((a, b) => sortControllerIdCompare(a[0],b[0]))]
             }
         break;
         case "yourRoleLabels":

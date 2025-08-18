@@ -42,7 +42,7 @@ export default function ChatMenu(): ReactElement {
     }, [filter, playerNames]);
 
     const controllers = new ListMap(
-        usePlayerState(playerState=>playerState.savedControllers, ["yourAllowedControllers"]),
+        usePlayerState(playerState=>playerState.savedControllers, ["yourAllowedControllers", "yourAllowedController"]),
         (k1, k2)=>controllerIdToLinkWithPlayer(k1)===controllerIdToLinkWithPlayer(k2)
     );
 

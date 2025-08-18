@@ -120,6 +120,10 @@ export type ToClientPacket = {
     type: "yourAllowedControllers",
     save: ListMapData<ControllerID, SavedController>,
 } | {
+    type: "yourAllowedController",
+    id: ControllerID, 
+    controller: SavedController
+} | {
     type: "yourRoleLabels",
     roleLabels: ListMapData<PlayerIndex, Role> 
 } | {

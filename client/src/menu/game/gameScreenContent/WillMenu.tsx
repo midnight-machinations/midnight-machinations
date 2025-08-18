@@ -31,7 +31,7 @@ export default function WillMenu(): ReactElement {
 
     const savedAbilities = usePlayerState(
         playerState => playerState.savedControllers,
-        ["yourAllowedControllers"]
+        ["yourAllowedControllers", "yourAllowedController"]
     )!;
     const alibiSelection = new ListMap(savedAbilities, (k1, k2)=>controllerIdToLinkWithPlayer(k1)===controllerIdToLinkWithPlayer(k2)).get({type: "alibi", player: playerIndex});
     const alibi = (alibiSelection?.selection.type === "string")?alibiSelection.selection.selection:"";
@@ -59,7 +59,7 @@ export default function WillMenu(): ReactElement {
         playerState=>playerState.savedControllers
             .map(([id,_])=>id.type==="chat"?id.player:undefined)
             .filter((p)=>p!==undefined?true:false) as PlayerIndex[],
-        ["yourAllowedControllers"]
+        ["yourAllowedControllers", "yourAllowedController"]
     );
     
     return <div className="will-menu will-menu-colors">
