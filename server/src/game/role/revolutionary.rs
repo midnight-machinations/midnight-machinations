@@ -9,7 +9,6 @@ use crate::game::components::graves::grave::Grave;
 use crate::game::components::tags::{TagSetID, Tags};
 use crate::game::event::on_midnight::{MidnightVariables, OnMidnightPriority};
 use crate::game::game_conclusion::GameConclusion;
-use crate::game::grave::Grave;
 use crate::game::phase::{PhaseState, PhaseType};
 use crate::game::player::PlayerReference;
 use crate::game::role::RoleState;
