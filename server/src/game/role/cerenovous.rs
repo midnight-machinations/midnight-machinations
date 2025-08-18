@@ -41,6 +41,7 @@ impl RoleStateImpl for Cerenovous {
             if self.charges != 0 {
                 let target_ref = visit.target;
                 
+                target_ref.push_night_message(midnight_variables, ChatMessageVariant::Brained);
                 self.currently_brained = Some(target_ref);
                 self.previous = Some(target_ref);
                 self.charges = self.charges.saturating_sub(1);

@@ -818,6 +818,7 @@ export function translateChatMessage(
         case "doomsayerFailed":
         case "doomsayerWon":
         case "silenced":
+        case "brained":
         case "martyrFailed":
         case "martyrWon":
         case "targetsMessage":
@@ -1082,6 +1083,8 @@ export type ChatMessageVariant = {
     backup: PlayerIndex
 } | {
     type: "silenced"
+} | {
+    type: "brained"
 } | {
     type: "playerRoleAndAlibi",
     player: PlayerIndex,

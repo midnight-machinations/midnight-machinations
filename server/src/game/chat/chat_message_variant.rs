@@ -186,6 +186,7 @@ pub enum ChatMessageVariant {
     Transported,
 
     Silenced,
+    Brained,
     #[serde(rename_all = "camelCase")]
     GodfatherBackup{backup: Option<PlayerIndex>},
     #[serde(rename_all = "camelCase")]
