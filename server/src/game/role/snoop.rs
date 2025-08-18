@@ -1,5 +1,6 @@
 use serde::Serialize;
 
+use crate::game::components::aura::Aura;
 use crate::game::components::confused::Confused;
 use crate::game::event::on_midnight::{MidnightVariables, OnMidnightPriority};
 use crate::game::{attack_power::DefensePower, chat::ChatMessageVariant};
@@ -69,7 +70,7 @@ impl Snoop{
     /// Is a town loyalist
     fn result(game: &Game, midnight_variables: &MidnightVariables, buddy: Option<Role>, visit: &Visit)->bool{
         visit.target.win_condition(game).is_loyalist_for(GameConclusion::Town) &&
-        !visit.target.has_suspicious_aura(game, midnight_variables) &&
+        !Aura::suspicious(game, midnight_variables, visit.target) &&
         !Self::too_many_visitors(game, midnight_variables, buddy, visit)
     }
     fn confused_result()->bool{

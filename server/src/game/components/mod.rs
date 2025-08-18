@@ -26,5 +26,6 @@ pub mod win_condition;
 pub mod alibi;
 pub mod graves;
 pub mod judgement_controller;
+pub mod aura;
 
 pub mod player_component;
