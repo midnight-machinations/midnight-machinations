@@ -4,10 +4,7 @@ use crate::{
     game::{
         chat::{ChatComponent, ChatMessageVariant},
         components::{
-            alibi::Alibi, forfeit_vote::ForfeitNominationVote,
-            forward_messages::ForwardMessages, insider_group::InsiderGroupID,
-            mafia::Mafia, nomination_controller::NominationController,
-            pitchfork::Pitchfork, syndicate_gun_item::SyndicateGunItem
+            alibi::Alibi, forfeit_vote::ForfeitNominationVote, forward_messages::ForwardMessages, insider_group::InsiderGroupID, judgement_controller::JudgementController, mafia::Mafia, nomination_controller::NominationController, pitchfork::Pitchfork, syndicate_gun_item::SyndicateGunItem
         }, 
         event::{
             on_controller_selection_changed::OnControllerSelectionChanged,
@@ -83,6 +80,7 @@ impl SavedControllersMap{
                     .map(|player| player.controller_parameters_map(game))
             ),
             NominationController::controller_parameters_map(game),
+            JudgementController::controller_parameters_map(game),
             SyndicateGunItem::controller_parameters_map(game),
             Mafia::controller_parameters_map(game),
             ForfeitNominationVote::controller_parameters_map(game),

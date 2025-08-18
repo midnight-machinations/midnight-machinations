@@ -35,7 +35,7 @@ use crate::{
             doomsayer::DoomsayerGuess,
             ClientRoleStateEnum, Role
         },
-        role_list::{RoleList, RoleOutline}, settings::PhaseTimeSettings, verdict::Verdict,
+        role_list::{RoleList, RoleOutline}, settings::PhaseTimeSettings,
         GameOverReason, RejectStartReason
     }, 
     lobby::lobby_client::LobbyClient, room::RoomClientID, vec_map::VecMap, vec_set::VecSet,
@@ -152,8 +152,6 @@ pub enum ToClientPacket{
     #[serde(rename_all = "camelCase")]
     YourRoleState{role_state: ClientRoleStateEnum},
     #[serde(rename_all = "camelCase")]
-    YourJudgement{verdict: Verdict},
-    #[serde(rename_all = "camelCase")]
     YourVoteFastForwardPhase{fast_forward: bool},
 
     #[serde(rename_all = "camelCase")]
@@ -231,9 +229,6 @@ pub enum ToServerPacket{
     HostForceSetPlayerName { id: RoomClientID, name: String },
 
     // Game
-    #[serde(rename_all = "camelCase")]
-    Judgement{verdict: Verdict},
-
     SaveNotes{notes: Vec<String>},
     #[serde(rename_all = "camelCase")]
     SaveCrossedOutOutlines{crossed_out_outlines: Vec<u8>},

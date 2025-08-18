@@ -18,6 +18,7 @@ pub type RoleControllerID = u8;
 #[serde(tag="type")]
 pub enum ControllerID{
     Nominate{player: PlayerReference},
+    Judge{player: PlayerReference},
     
     Chat{player: PlayerReference},
     ChatIsBlock{player: PlayerReference},
@@ -58,6 +59,9 @@ impl ControllerID{
     }
     pub fn nominate(player: PlayerReference)->Self{
         Self::Nominate{player}
+    }
+    pub fn judge(player: PlayerReference)->Self{
+        Self::Judge{player}
     }
     pub fn chat(player: PlayerReference)->Self{
         Self::Chat{player}

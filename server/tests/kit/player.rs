@@ -111,7 +111,12 @@ impl TestPlayer {
         );
     }
     pub fn set_verdict(&self, verdict: Verdict) {
-        self.0.set_verdict(game!(self), verdict);
+        self.send_ability_input(
+            AbilityInput::new(
+                ControllerID::judge(self.player_ref()),
+                IntegerSelection(match verdict {Verdict::Innocent=>0,Verdict::Guilty=>1,Verdict::Abstain=>2})
+            )
+        );
     }
 
     pub fn send_message(&self, message: &str) {

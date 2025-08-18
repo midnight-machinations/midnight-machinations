@@ -286,6 +286,10 @@
     "nominate": {
         "midnight": false
     },
+    "judge": {
+        "midnight": false,
+        "visible": false
+    },
     "chat": {
         "midnight": false,
         "visible": false

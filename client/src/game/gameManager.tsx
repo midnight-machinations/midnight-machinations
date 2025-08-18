@@ -363,9 +363,19 @@ export function createGameManager(): GameManager {
         },
 
         sendJudgementPacket(judgement: Verdict) {
-            this.server.sendPacket({
-                type: "judgement",
-                verdict: judgement
+            let player = undefined;
+            // if(player===undefined){
+                if(this.state.stateType==="game" && this.state.clientState.type === "player"){
+                    player = this.state.clientState.myIndex;
+                }
+            // }
+            if(player===undefined){return}
+
+            const verdictInt = judgement==="innocent"?0:judgement==="guilty"?1:2;
+
+            this.sendAbilityInput({
+                id: {type:"judge",player},
+                selection: {type:"integer",selection:verdictInt}
             });
         },
 

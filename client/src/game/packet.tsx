@@ -138,9 +138,6 @@ export type ToClientPacket = {
     type: "yourRoleState",
     roleState: RoleState
 } | {
-    type: "yourJudgement",
-    verdict: Verdict
-} | {
     type: "yourVoteFastForwardPhase",
     fastForward: boolean
 } | {
@@ -228,9 +225,6 @@ export type ToServerPacket = {
 } |
 // Game
 {
-    type: "judgement", 
-    verdict: Verdict
-} | {
     type: "saveNotes", 
     notes: string[]
 } | {

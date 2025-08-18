@@ -424,10 +424,6 @@ export default function messageListener(packet: ToClientPacket){
                 GAME_MANAGER.state.clientState.roleState = packet.roleState;
             }
         break;
-        case "yourJudgement":
-            if(GAME_MANAGER.state.stateType === "game" && GAME_MANAGER.state.clientState.type === "player")
-                GAME_MANAGER.state.clientState.judgement = packet.verdict;
-        break;
         case "yourVoteFastForwardPhase":
             if(GAME_MANAGER.state.stateType === "game")
                 GAME_MANAGER.state.fastForward = packet.fastForward;

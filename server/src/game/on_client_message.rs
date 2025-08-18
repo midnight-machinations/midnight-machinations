@@ -13,7 +13,7 @@ use super::{
         on_game_ending::OnGameEnding
     },
     game_client::GameClientLocation,
-    game_conclusion::GameConclusion, phase::PhaseType,
+    game_conclusion::GameConclusion,
     player::PlayerReference,
     role::RoleState,
     spectator::spectator_pointer::SpectatorPointer, Game
@@ -131,11 +131,6 @@ impl Game {
                 self.ensure_host_exists(Some(room_client_id));
                 self.send_players();
                 self.resend_host_data_to_all_hosts();
-            }
-            ToServerPacket::Judgement { verdict } => {
-                if self.current_phase().phase() != PhaseType::Judgement {break 'packet_match;}
-                
-                sender_player_ref.set_verdict(self, verdict);
             },
             ToServerPacket::SaveNotes { notes } => {
                 sender_player_ref.set_notes(self, notes);

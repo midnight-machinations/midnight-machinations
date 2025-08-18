@@ -741,6 +741,10 @@
     "messageSender.livingToDead.icon": "🔮",
 
     "controllerId.nominate.name": "Nominate",
+    "controllerId.judge.name": "Judge",
+    "controllerId.judge.integer.0": "Innocent",
+    "controllerId.judge.integer.1": "Guilty",
+    "controllerId.judge.integer.2": "Abstain",
     "controllerId.alibi.name": "Alibi",
     "controllerId.chat.name": "Chat",
     "controllerId.chatIsBlock.name": "Chat is Block",

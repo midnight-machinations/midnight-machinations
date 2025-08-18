@@ -110,7 +110,6 @@ export type PlayerGameState = {
     crossedOutOutlines: number[],
     chatFilter: ChatFilter,
     deathNote: UnsafeString,
-    judgement: Verdict,
 
     savedControllers: ListMapData<ControllerID, SavedController>,
 

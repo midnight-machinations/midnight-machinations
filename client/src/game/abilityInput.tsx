@@ -54,6 +54,9 @@ export type ControllerID = {
     type: "nominate",
     player: PlayerIndex,
 } | {
+    type: "judge",
+    player: PlayerIndex,
+} | {
     type: "chat",
     player: PlayerIndex,
 } | {
