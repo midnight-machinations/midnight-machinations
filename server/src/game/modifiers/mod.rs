@@ -15,6 +15,7 @@ pub mod hidden_whispers;
 pub mod hidden_nomination_votes;
 pub mod hidden_verdict_votes;
 pub mod forfeit_vote;
+pub mod random_player_names;
 
 use dead_can_chat::DeadCanChat;
 use hidden_whispers::HiddenWhispers;
@@ -31,6 +32,7 @@ use unscheduled_nominations::UnscheduledNominations;
 use hidden_nomination_votes::HiddenNominationVotes;
 use hidden_verdict_votes::HiddenVerdictVotes;
 use forfeit_vote::ForfeitNominationVote;
+use random_player_names::RandomPlayerNames;
 
 use serde::{Deserialize, Serialize};
 use skip_day_1::SkipDay1;
@@ -80,6 +82,7 @@ pub enum ModifierState{
     HiddenNominationVotes(HiddenNominationVotes),
     HiddenVerdictVotes(HiddenVerdictVotes),
     ForfeitNominationVote(ForfeitNominationVote),
+    RandomPlayerNames(RandomPlayerNames),
 }
 #[derive(Clone, Serialize, Deserialize, PartialEq, Eq, Debug, Hash)]
 #[serde(rename_all = "camelCase")]
@@ -101,6 +104,7 @@ pub enum ModifierType{
     HiddenNominationVotes,
     HiddenVerdictVotes,
     ForfeitNominationVote,
+    RandomPlayerNames,
 }
 impl ModifierType{
     pub fn default_state(&self)->ModifierState{
@@ -122,6 +126,7 @@ impl ModifierType{
             Self::HiddenNominationVotes => ModifierState::HiddenNominationVotes(HiddenNominationVotes),
             Self::HiddenVerdictVotes => ModifierState::HiddenVerdictVotes(HiddenVerdictVotes),
             Self::ForfeitNominationVote => ModifierState::ForfeitNominationVote(ForfeitNominationVote),
+            Self::RandomPlayerNames => ModifierState::RandomPlayerNames(RandomPlayerNames),
         }
     }
 }
@@ -145,6 +150,7 @@ impl From<&ModifierState> for ModifierType{
             ModifierState::HiddenNominationVotes(_) => Self::HiddenNominationVotes,
             ModifierState::HiddenVerdictVotes(_) => Self::HiddenVerdictVotes,
             ModifierState::ForfeitNominationVote(_) => Self::ForfeitNominationVote,
+            ModifierState::RandomPlayerNames(_) => Self::RandomPlayerNames,
         }
     }
 }

@@ -172,7 +172,7 @@ export const MODIFIERS = [
     "noNightChat", "noChat", 
     "unscheduledNominations",
     "hiddenNominationVotes", "hiddenVerdictVotes",
-    "forfeitNominationVote"
+    "forfeitNominationVote", "randomPlayerNames"
 ] as const;
 export type ModifierType = (typeof MODIFIERS)[number];
 
