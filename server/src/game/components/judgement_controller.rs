@@ -24,10 +24,7 @@ impl JudgementController{
                 min: 0,
                 max: if abstain_enabled {2} else {1},
             })
-            .add_grayed_out_condition(
-                !actor.alive(game) ||
-                game.current_phase().phase() != crate::game::phase::PhaseType::Judgement
-            )
+            .add_grayed_out_condition(!actor.alive(game))
             .reset_on_phase_start(crate::game::phase::PhaseType::Judgement)
             .default_selection(IntegerSelection(if abstain_enabled {2} else {0}))
             .allow_players([actor])

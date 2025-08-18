@@ -23,6 +23,7 @@ impl RoleStateImpl for Snoop {
     fn on_midnight(self, game: &mut Game, midnight_variables: &mut MidnightVariables, actor_ref: PlayerReference, priority: OnMidnightPriority) {
         if priority != OnMidnightPriority::Investigative {return;}
 
+        let buddy = ControllerID::role(actor_ref, Role::Snoop, 1).get_role_list_selection_first(game).copied();
 
         let actor_visits = actor_ref.untagged_night_visits_cloned(midnight_variables);
         if let Some(visit) = actor_visits.first(){
@@ -30,7 +31,7 @@ impl RoleStateImpl for Snoop {
             let townie = if Confused::is_confused(game, actor_ref) {
                 Snoop::confused_result()
             }else{
-                Snoop::result(game, midnight_variables, visit)
+                Snoop::result(game, midnight_variables, buddy, visit)
             };
 
             actor_ref.push_night_message(midnight_variables, 
@@ -39,12 +40,20 @@ impl RoleStateImpl for Snoop {
         }
     }
     fn controller_parameters_map(self, game: &Game, actor_ref: PlayerReference) -> ControllerParametersMap {
-        ControllerParametersMap::builder(game)
-            .id(ControllerID::role(actor_ref, Role::Snoop, 0))
-            .single_player_selection_typical(actor_ref, false, true)
-            .night_typical(actor_ref)
-            .add_grayed_out_condition(false)
-            .build_map()
+        ControllerParametersMap::combine(
+            [
+                ControllerParametersMap::builder(game)
+                    .id(ControllerID::role(actor_ref, Role::Snoop, 0))
+                    .single_player_selection_typical(actor_ref, false, true)
+                    .night_typical(actor_ref)
+                    .build_map(),
+                ControllerParametersMap::builder(game)
+                    .id(ControllerID::role(actor_ref, Role::Snoop, 1))
+                    .single_role_selection_typical(game, |_|true)
+                    .night_typical(actor_ref)
+                    .build_map()
+            ]
+        )
     }
     fn convert_selection_to_visits(self, game: &Game, actor_ref: PlayerReference) -> Vec<Visit> {
         crate::game::role::common_role::convert_controller_selection_to_visits(
@@ -58,28 +67,18 @@ impl RoleStateImpl for Snoop {
 
 impl Snoop{
     /// Is a town loyalist
-    fn result(game: &Game, midnight_variables: &MidnightVariables, visit: &Visit)->bool{
+    fn result(game: &Game, midnight_variables: &MidnightVariables, buddy: Option<Role>, visit: &Visit)->bool{
         visit.target.win_condition(game).is_loyalist_for(GameConclusion::Town) &&
         !visit.target.has_suspicious_aura(game, midnight_variables) &&
-        !Self::too_many_visitors(game, midnight_variables, visit)
+        !Self::too_many_visitors(game, midnight_variables, buddy, visit)
     }
     fn confused_result()->bool{
         false
     }
-    fn too_many_visitors(game: &Game, midnight_variables: &MidnightVariables, visit: &Visit)->bool{
+    fn too_many_visitors(game: &Game, midnight_variables: &MidnightVariables, buddy: Option<Role>, visit: &Visit)->bool{
         visit.visitor
             .all_night_visitors_cloned(midnight_variables)
             .iter()
-            .map(|visitor|
-                if visitor
-                    .win_condition(game)
-                    .is_loyalist_for(GameConclusion::Town)
-                {    
-                    0.5
-                } else {
-                    1.0
-                }
-            )
-            .fold(0.0, |acc, visitor|acc + visitor) >= 1.0
+            .any(|visitor|buddy.is_none_or(|r|r != visitor.role(game)))
     }
 }

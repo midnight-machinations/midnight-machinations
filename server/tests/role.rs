@@ -1393,11 +1393,12 @@ fn snoop_basic() {
         gf: Godfather,
         det: Detective,
         snoop: Snoop,
-        v: Detective
+        v: Doctor
     );
 
     assert!(snoop.send_ability_input_player_list_typical(det));
-    assert!(det.send_ability_input_player_list_typical(snoop));
+    snoop.send_ability_input_role_typical(vec![Role::Detective]);
+
     game.next_phase();
     assert_contains!(
         snoop.get_messages_after_night(1),

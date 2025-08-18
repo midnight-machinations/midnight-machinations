@@ -68,7 +68,8 @@ export default function ChatMenu(): ReactElement {
             .map(([id, _])=>{
                 if(id.type!=="chat"){return null}
 
-                const sendChatController = controllers.get({type: "sendChat", player: id.player})!;
+                const sendChatController = controllers.get({type: "sendChat", player: id.player});
+                if(sendChatController===null){return null}
 
                 return <>
                     <div key={"header: "+JSON.stringify(id)} className="chat-menu-icons">

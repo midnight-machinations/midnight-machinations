@@ -230,6 +230,7 @@
     "role.snoop.name:var.2": "Snoopies",
     "role.snoop.name:var.3": "Snoopys",
     "controllerId.role.snoop.0.name": "Snoop",
+    "controllerId.role.snoop.1.name": "Buddy",
 
     "role.gossip.name": "Gossip",
     "role.gossip.name:var.0": "Gossips",
@@ -1553,10 +1554,10 @@
     "wiki.article.role.auditor.exampleAlibi":"Auditor\nN1:\n4: TC -> Gossip, Detective, Snoop, Philosopher\n5: TC -> Lookout, Escort, Doctor, Cop\nN2:\n1: SS -> Hypnotist, Reeducator, Framer, Forger\n3: SS U Minion -> Warper, Informant, Disguiser, Scarecrow",
     "wiki.article.role.auditor.exampleAlibi.description":"The auditor gets a lot of information, so make sure to format your alibi so it is as easy to read as possible. Here's an example:",
 
-    "wiki.article.role.snoop.reminder": "At night, select a player to learn if they are a town loyalist, but you can't tell if you are visited by at least one non town loyalist, or at least two town loyalists.",
-    "wiki.article.role.snoop.guide": "- At night, select a player. You are either told that they are a town loyalist, or that you can't tell if they are a townie\n    - You can't tell what your target was if:\n        - They aren't a townie\n        - You are visited by at least one non town loyalist, or at least two town loyalists\n        - They have a suspicious aura\n\n    - Otherwise, you are told they are a town loyalist",
-    "wiki.article.role.snoop.abilities":"- Visit a player to search them\n    - If your target is a town loyalist, you are not visited by at least one non town loyalist, and you are not visited by at least two town loyalists, then you are told they are a town loyalist",
-    "wiki.article.role.snoop.attributes":"- If your target has a suspicious aura, you are told that you can't tell.",
+    "wiki.article.role.snoop.reminder": "At night, select a player to learn if they are a town loyalist, but you can't tell if you are visited a player who isn't your buddy.",
+    "wiki.article.role.snoop.guide": "- At night, select a player. You are either told that they are a town loyalist, or that you can't tell\n    - You can't tell what your target was if:\n        - They aren't a town loyalist\n        - You are visited by at least one player who does not have the role you chose as your buddy.\n        - They have a suspicious aura\n\n    - Otherwise, you are told they are a town loyalist",
+    "wiki.article.role.snoop.abilities":"- Visit a player to snoop them",
+    "wiki.article.role.snoop.attributes":"",
     "wiki.article.role.snoop.extra":"- innocent aura doesn't effect your results",
 
     "wiki.article.role.gossip.reminder": "At night, select a player to eavesdrop on, and learn if they visited a player who is enemies with town.",
