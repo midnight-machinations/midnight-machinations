@@ -14,6 +14,9 @@ export type RoleState = {
 } | {
     type: "villager"
 } | {
+    type: "courtesan",
+    previous: PlayerIndex[]
+} | {
     type: "mayor"
 } | {
     type: "transporter"

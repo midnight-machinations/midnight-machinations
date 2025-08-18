@@ -11,23 +11,33 @@ use crate::vec_set;
 use super::{ControllerID, ControllerParametersMap, Role, RoleStateImpl};
 
 #[derive(Clone, Debug, Default, Serialize)]
-pub struct Courtesan;
+pub struct Courtesan{
+    previous: Vec<PlayerReference>
+}
 
 pub(super) const MAXIMUM_COUNT: Option<u8> = None;
 pub(super) const DEFENSE: DefensePower = DefensePower::None;
 
 impl RoleStateImpl for Courtesan {
     type ClientRoleState = Courtesan;
-    fn on_midnight(self, game: &mut Game, midnight_variables: &mut MidnightVariables, actor_ref: PlayerReference, priority: OnMidnightPriority) {
+    fn on_midnight(mut self, game: &mut Game, midnight_variables: &mut MidnightVariables, actor_ref: PlayerReference, priority: OnMidnightPriority) {
         if priority != OnMidnightPriority::Roleblock {return;}
         let actor_visits = actor_ref.untagged_night_visits_cloned(midnight_variables);
+        let mut previous = Vec::new();
         for visit in actor_visits{
+            previous.push(visit.target);
             visit.target.roleblock(game, midnight_variables, true);
         }
+        self.previous = previous;
+        actor_ref.set_role_state(game, self);
     }
     fn controller_parameters_map(self, game: &Game, actor_ref: PlayerReference) -> ControllerParametersMap {
         let available_players: vec_set::VecSet<PlayerReference> = PlayerReference::all_players(game)
-            .filter(|p| p.alive(game) && *p != actor_ref)
+            .filter(|p|
+                p.alive(game) &&
+                *p != actor_ref &&
+                !self.previous.contains(p)
+            )
             .collect();
 
         ControllerParametersMap::builder(game)
