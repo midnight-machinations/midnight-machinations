@@ -222,6 +222,9 @@
     "role/werewolf/0": {
         "midnight": true
     },
+    "role/werewolf/1": {
+        "midnight": false
+    },
     "role/puppeteer/0": {
         "midnight": true
     },

@@ -530,7 +530,7 @@
     "role.werewolf.name:var.1": "Wolf",
     "role.werewolf.name:var.2": "Wolves",
     "controllerId.role.werewolf.1.name": "Sniff",
-    "controllerId.role.werewolf.0.name": "Sniff/Camp",
+    "controllerId.role.werewolf.0.name": "Camp",
 
     "role.ojo.name": "Ojo",
     "role.ojo.name:var.0": "Ojos",
@@ -703,7 +703,7 @@
     "tag.revolutionaryTarget":"🎯",
     "tag.revolutionaryTarget.name":"Revolutionary target",
     "tag.werewolfTracked": "🐾",
-    "tag.werewolfTracked.name": "Werewolf Tracked",
+    "tag.werewolfTracked.name": "Werewolf Sniffed",
     "tag.morticianTagged":"🏺",
     "tag.morticianTagged.name":"Obscure tagged",
     "tag.spiraling":"🌀",
@@ -1922,10 +1922,10 @@
     "wiki.article.role.arsonist.extra":"* If you are roleblocked, you still douse visitors\n* Igniting a is an indirect, protection-piercing attack\n* When you ignite, you don't attack dead players\n* When you become an arsonist, you clean the gas off yourself\n* An arsonist can not be attacked by an arsonist igniting",
 
     "wiki.article.role.werewolf.reminder": "Each day, track a player. Each night, camp a tracked player to rampage them, if they visit anybody, you also attack them.",
-    "wiki.article.role.werewolf.guide": "- At the start of night, choose a player to track\n - Each night, select a player to camp \n - If you camp a tracked player, you rampage them. If they are visiting anybody, you also attack them.\n - If you camp a player you aren't tracking, you track them instead\n* You enrage once at least 2/3rds of the living players are either tracked or are yourself. While enraged, you always attack when visiting\n* You are told who each player you have tracked visits.\n* You still track players after you die\n* Your attack is armor-piercing\n* At the start of every night, every tracked player is told they are tracked",
-    "wiki.article.role.werewolf.abilities":"- At the start of night, choose a player to track\n - Each night, select a player to camp \n - If you camp a tracked player, you rampage them. If they are visiting anybody, you also attack them.\n - If you camp a player you aren't tracking, you track them instead",
-    "wiki.article.role.werewolf.attributes":"* You enrage once at least 2/3rds of the living players are either tracked or are yourself. While enraged, you always attack when visiting\n* You are told who each player you have tracked visits.\n* You still track players after you die\n* Your attack is armor-piercing",
-    "wiki.article.role.werewolf.extra":"* At the start of every night, every tracked player is told they are tracked",
+    "wiki.article.role.werewolf.guide": "- Before the start of night, choose a player to sniff\n     - For each sniffed player, you are told who they visit\n    - At the start of night, all sniffed players are told they are sniffed\n- At night, choose a player to camp\n    - If the camped player is already sniffed then you rampage them\n    - If the camped player is already sniffed, and either they visit any player or you are enraged, then you attack them\n    - If the camped player is not already sniffed then you sniff them\n- If at least 2/3rds of living players are either sniffed or are yourself then you are enraged",
+    "wiki.article.role.werewolf.abilities":"- You only visit the players you camp\n- Your attack is armor-piercing",
+    "wiki.article.role.werewolf.attributes":"",
+    "wiki.article.role.werewolf.extra":"",
 
     "wiki.article.role.ojo.reminder": "Each night*, attack a player. Everyones roles are revealed to you, you track everyone, and you can read other players whispers.",
     "wiki.article.role.ojo.guide":"- Each night*, attack a player. Everyones roles are revealed to you, and you track everyone, and you can read other players whispers.",
