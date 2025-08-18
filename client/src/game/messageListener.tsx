@@ -7,7 +7,7 @@ import { ToClientPacket } from "./packet";
 import { GameClient, PlayerIndex, Tag } from "./gameState.d";
 import { Role } from "./roleState.d";
 import translate from "./lang";
-import { computePlayerKeywordData, computePlayerKeywordDataForLobby } from "../components/StyledText";
+import { computePlayerKeywordData, computePlayerKeywordDataForLobby, computeRoleListKeywordData } from "../components/StyledText";
 import { deleteReconnectData, loadSettingsParsed, saveReconnectData } from "./localStorage";
 import { WikiArticleLink } from "../components/WikiArticleLink";
 import React from "react";
@@ -21,6 +21,7 @@ import PlayMenu from "../menu/main/PlayMenu";
 import StartMenu from "../menu/main/StartMenu";
 import ListMap from "../ListMap";
 import { sortControllerIdCompare } from "./abilityInput";
+import { getNamesForPlayerPoolFromLobbyClients } from "../components/gameModeSettings/OutlineSelector";
 
 function sendDefaultName() {
     const defaultName = loadSettingsParsed().defaultName;
@@ -223,6 +224,9 @@ export default function messageListener(packet: ToClientPacket){
                         .filter(client => client.clientType.type === "player")
                         .map(client => (client.clientType as { type: "player", name: string }).name)
                 );
+                // Recompute keyword data, since role list entries are keywords.
+                const names = getNamesForPlayerPoolFromLobbyClients(GAME_MANAGER.state.players)
+                computeRoleListKeywordData(names, GAME_MANAGER.state.roleList);
             }
         break;
         case "hostData":
@@ -289,12 +293,23 @@ export default function messageListener(packet: ToClientPacket){
 
                 // Recompute keyword data, since player names are keywords.
                 computePlayerKeywordData(GAME_MANAGER.state.players);
+                // Recompute keyword data, since role list entries are keywords.
+                computeRoleListKeywordData(GAME_MANAGER.state.players.map(toString), GAME_MANAGER.state.roleList);
             }
         break;
         case "roleList":
             //list of role list entriy
-            if(GAME_MANAGER.state.stateType === "lobby" || GAME_MANAGER.state.stateType === "game")
+            if(GAME_MANAGER.state.stateType === "lobby" || GAME_MANAGER.state.stateType === "game") {
                 GAME_MANAGER.state.roleList = packet.roleList;
+
+                // Recompute keyword data, since role list entries are keywords.
+                if(GAME_MANAGER.state.stateType === "game") {
+                    computeRoleListKeywordData(GAME_MANAGER.state.players.map(toString), GAME_MANAGER.state.roleList);
+                } else {
+                    const names = getNamesForPlayerPoolFromLobbyClients(GAME_MANAGER.state.players)
+                    computeRoleListKeywordData(names, GAME_MANAGER.state.roleList);
+                }
+            }
         break;
         case "roleOutline":
             //role list entriy
@@ -302,6 +317,14 @@ export default function messageListener(packet: ToClientPacket){
                 GAME_MANAGER.state.roleList = structuredClone(GAME_MANAGER.state.roleList);
                 GAME_MANAGER.state.roleList[packet.index] = packet.roleOutline;
                 GAME_MANAGER.state.roleList = [...GAME_MANAGER.state.roleList];
+
+                // Recompute keyword data, since role list entries are keywords.
+                if(GAME_MANAGER.state.stateType === "game") {
+                    computeRoleListKeywordData(GAME_MANAGER.state.players.map(toString), GAME_MANAGER.state.roleList);
+                } else {
+                    const names = getNamesForPlayerPoolFromLobbyClients(GAME_MANAGER.state.players)
+                    computeRoleListKeywordData(names, GAME_MANAGER.state.roleList);
+                }
             }
         break;
         case "phaseTime":

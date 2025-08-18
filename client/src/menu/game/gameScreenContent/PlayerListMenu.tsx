@@ -8,7 +8,7 @@ import { ContentMenu, ContentTab } from "../GameScreen";
 import StyledText from "../../../components/StyledText";
 import Icon from "../../../components/Icon";
 import { Button } from "../../../components/Button";
-import { useGameState, usePlayerNames, usePlayerState, useSpectator } from "../../../components/useHooks";
+import { useGameState, useLobbyOrGameState, usePlayerNames, usePlayerState, useSpectator } from "../../../components/useHooks";
 import PlayerNamePlate from "../../../components/PlayerNamePlate";
 import ChatMessage, { translateChatMessage } from "../../../components/ChatMessage";
 import GraveComponent, { translateGraveRole } from "../../../components/grave";
@@ -91,6 +91,10 @@ function PlayerCard(props: Readonly<{
         ["gamePlayers", "playerVotes"]
     )!;
     const playerNames = usePlayerNames();
+    const roleList = useLobbyOrGameState(
+        gameState => gameState.roleList,
+        ["roleList"]
+    )!;
 
 
     const controllers = new ListMap(
@@ -166,7 +170,7 @@ function PlayerCard(props: Readonly<{
             <Button onClick={()=>setAlibiOpen(!alibiOpen)}>
                 <StyledText noLinks={true}>
                     {
-                        translateChatMessage(mostRecentBlockMessage.variant, playerNames)
+                        translateChatMessage(mostRecentBlockMessage.variant, playerNames, roleList)
                             .split("\n")[1]
                             .trim()
                             .substring(0,30)
