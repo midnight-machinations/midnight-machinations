@@ -964,28 +964,87 @@ fn veteran_does_not_kill_framed_player(){
 }
 
 #[test]
-fn rabble_rouser_turns_into_jester(){
-    kit::scenario!(game in Night 2 where
-        target: Detective,
-        mafioso: Mafioso,
-        exe: Revolutionary
-    );
+fn revolutionary_refresh_picks_new_townie(){
+    let mut targets = Vec::with_capacity(5);
+    for _ in 0..20 {
+        targets.clear();
+        kit::scenario!(game in Dusk 1 where
+            _town1: Detective,
+            _town2: Detective,
+            _town3: Detective,
+            rev: Revolutionary,
+            maf: Mafioso
+        );
+        let first_target = match rev.role_state() {
+            RoleState::Revolutionary(state) => {
+                let Some(target) = state.get_target() else {panic!("{:?}", rev.role_state())};
+                assert_not_contains!(targets, target);
+                assert_ne!(*maf, target);
+                assert_ne!(*rev, target);
+                targets.push(target);
+                target
+            }
+            
+            _ => panic!("{:?}", rev.role_state())
+        };
+        
+        game.skip_to(PhaseType::Dusk, 2);
 
-    assert!(mafioso.send_ability_input_player_list_typical(target));
+        match rev.role_state() {
+            RoleState::Revolutionary(state) => {
+                let Some(target) = state.get_target() else {panic!("{:?}", rev.role_state())};
+                assert_contains!(targets, target);
+                assert_ne!(*maf, target);
+                assert_ne!(*rev, target);
+                assert_eq!(target, first_target)
+            }
+            _ => panic!("{:?}", rev.role_state())
+        }
 
-    game.skip_to(Nomination, 3);
+        rev.send_ability_input_boolean_typical(true);
+        game.skip_to(PhaseType::Dusk, 3);
+        
+        match rev.role_state() {
+            RoleState::Revolutionary(state) => {
+                let Some(target) = state.get_target() else {panic!("{:?}", rev.role_state())};
+                assert_not_contains!(targets, target);
+                assert_ne!(*maf, target);
+                assert_ne!(*rev, target);
+                targets.push(target);
+            }
+            _ => panic!("{:?}", rev.role_state())
+        }
 
-    assert!(!target.alive());
-    assert!(exe.alive());
-    assert!(mafioso.alive());
-    let RoleState::Jester(_) = exe.role_state() else {panic!()};
-}
-#[test]
-fn rabble_rouser_instantly_turns_into_jester(){
-    kit::scenario!(_game where
-        exe: Revolutionary
-    );
-    let RoleState::Jester(_) = exe.role_state() else {panic!()};
+        rev.send_ability_input_boolean_typical(true);
+        game.skip_to(PhaseType::Dusk, 4);
+        
+        let penultimate_target = match rev.role_state() {
+            RoleState::Revolutionary(state) => {
+                let Some(target) = state.get_target() else {panic!("{:?}", rev.role_state())};
+                assert_not_contains!(targets, target);
+                assert_ne!(*maf, target);
+                assert_ne!(*rev, target);
+                targets.push(target);
+                target
+            }
+            _ => panic!("{:?}", rev.role_state())
+        };
+
+        rev.send_ability_input_boolean_typical(true);
+        game.skip_to(PhaseType::Dusk, 5);
+
+        match rev.role_state() {
+            RoleState::Revolutionary(state) => {
+                let Some(target) = state.get_target() else {panic!("{:?}", rev.role_state())};
+                assert_contains!(targets, target);
+                assert_ne!(*maf, target);
+                assert_ne!(*rev, target);
+                assert_ne!(target, penultimate_target);
+                targets.push(target);
+            }
+            _ => panic!("{:?}", rev.role_state())
+        }
+    }
 }
 
 #[test]
