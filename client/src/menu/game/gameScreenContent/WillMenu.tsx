@@ -1,10 +1,13 @@
-import React, { ReactElement, useMemo } from "react";
+import React, { ReactElement, useEffect, useMemo } from "react";
 import translate from "../../../game/lang";
 import GAME_MANAGER from "../../../index";
 import { ContentMenu, ContentTab } from "../GameScreen";
 import { usePlayerState } from "../../../components/useHooks";
 import { getSingleRoleJsonData } from "../../../game/roleState.d";
 import { TextDropdownArea } from "../../../components/TextAreaDropdown";
+import ListMap from "../../../ListMap";
+import { controllerIdToLinkWithPlayer } from "../../../game/abilityInput";
+import { PlayerIndex, UnsafeString } from "../../../game/gameState.d";
 
 export function defaultAlibi(): string {
     return DEFAULT_ALIBI;
@@ -12,6 +15,10 @@ export function defaultAlibi(): string {
 const DEFAULT_ALIBI = "ROLE\nNight 1: \nNight 2:";
 
 export default function WillMenu(): ReactElement {
+    const playerIndex = usePlayerState(
+        playerState => playerState.myIndex
+    )!;
+
     const cantChat = usePlayerState(
         playerState => playerState.sendChatGroups.length === 0,
         ["yourSendChatGroups"]
@@ -22,10 +29,18 @@ export default function WillMenu(): ReactElement {
         ["yourRoleState"]
     )!;
 
-    const alibi = usePlayerState(
-        playerState => playerState.will,
-        ["yourWill"]
+    const savedAbilities = usePlayerState(
+        playerState => playerState.savedControllers,
+        ["yourAllowedControllers"]
     )!;
+    const alibiSelection = new ListMap(savedAbilities, (k1, k2)=>controllerIdToLinkWithPlayer(k1)===controllerIdToLinkWithPlayer(k2)).get({type: "alibi", player: playerIndex});
+    const alibi = (alibiSelection?.selection.type === "string")?alibiSelection.selection.selection:"";
+    useEffect(()=>{
+        if(alibi===""){
+            GAME_MANAGER.sendSaveWillPacket("");
+        }
+    }, [alibi])
+
     const notes = usePlayerState(
         playerState => playerState.notes,
         ["yourNotes"]
@@ -37,7 +52,15 @@ export default function WillMenu(): ReactElement {
 
     const cantPost = useMemo(() => {
         return cantChat
-    }, [cantChat])
+    }, [cantChat]);
+
+
+    const canPostAsPlayers: PlayerIndex[] | undefined = usePlayerState(
+        playerState=>playerState.savedControllers
+            .map(([id,_])=>id.type==="chat"?id.player:undefined)
+            .filter((p)=>p!==undefined?true:false) as PlayerIndex[],
+        ["yourAllowedControllers"]
+    );
     
     return <div className="will-menu will-menu-colors">
         <ContentTab
@@ -57,9 +80,11 @@ export default function WillMenu(): ReactElement {
                 }}
             />
             {(notes.length === 0 ? [""] : notes).map((note, i) => {
-                const title = note.split('\n')[0] || translate("menu.will.notes");
+                const title: UnsafeString = (note as string).split('\n')[0] || translate("menu.will.notes");
                 return <TextDropdownArea
-                    key={title + i}
+                    canPostAs={canPostAsPlayers}
+
+                    key={title as string + i}
                     titleString={title}
                     savedText={note}
                     cantPost={cantPost}
@@ -67,21 +92,21 @@ export default function WillMenu(): ReactElement {
                         if(GAME_MANAGER.state.stateType === "game" && GAME_MANAGER.state.clientState.type === "player"){
                             const notes = [...GAME_MANAGER.state.clientState.notes];
                             notes.splice(i+1, 0, "");
-                            GAME_MANAGER.sendSaveNotesPacket(notes);
+                            GAME_MANAGER.sendSaveNotesPacket(notes as string[]);
                         }
                     }}
                     onSubtract={() => {
                         if(GAME_MANAGER.state.stateType === "game" && GAME_MANAGER.state.clientState.type === "player"){
                             const notes = [...GAME_MANAGER.state.clientState.notes];
                             notes.splice(i, 1);
-                            GAME_MANAGER.sendSaveNotesPacket(notes);
+                            GAME_MANAGER.sendSaveNotesPacket(notes as string[]);
                         }
                     }}
                     onSave={(text) => {
                         if(GAME_MANAGER.state.stateType === "game" && GAME_MANAGER.state.clientState.type === "player"){
                             const notes = [...GAME_MANAGER.state.clientState.notes];
                             notes[i] = text;
-                            GAME_MANAGER.sendSaveNotesPacket(notes);
+                            GAME_MANAGER.sendSaveNotesPacket(notes as string[]);
                         }
                     }}
                 />

@@ -5,6 +5,7 @@ import Anchor from './menu/Anchor';
 import { GameManager, createGameManager } from './game/gameManager';
 import LoadingScreen from './menu/LoadingScreen';
 import route from './routing';
+import { UnsafeString } from './game/gameState.d';
 
 export const DEV_ENV = process.env.NODE_ENV !== 'production';
 
@@ -59,7 +60,7 @@ export function find(text: string): RegExp {
         // This won't work if a keyword starts with a symbol.
         return RegExp(`\\b${regEscape(text)}(?!\\w)`, "gi");
     } else {
-        return RegExp(`(?<!\\w)${regEscape(text)}(?!\\w)`, "gi");
+        return RegExp(`(?<![a-zA-Z])${regEscape(text)}(?![a-zA-Z])`, "gi");
     }
 }
 
@@ -67,13 +68,13 @@ export function regEscape(text: string) {
     return text.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&')
 }
 
-export function replaceMentions(rawText: string, playerNames: string[]) {
+export function replaceMentions(rawText: UnsafeString, playerNames: UnsafeString[]): UnsafeString {
     let text = rawText;
     playerNames.forEach((player, i) => {
-        text = text.replace(find(`@${i + 1}`), player);
+        text = (text as string).replace(find(`@${i + 1}`), player as string);
     });
     playerNames.forEach((player, i) => {
-        text = text.replace(find(`@${player}`), player);
+        text = (text as string).replace(find(`@${player}`), player as string);
     });
     return text;
 }

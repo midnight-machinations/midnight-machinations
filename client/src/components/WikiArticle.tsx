@@ -4,7 +4,7 @@ import React from "react";
 import translate, { langText, translateChecked } from "../game/lang";
 import StyledText, { DUMMY_NAMES_KEYWORD_DATA, DUMMY_NAMES_SENDER_KEYWORD_DATA, StyledTextProps } from "./StyledText";
 import { ROLE_SETS, getAllRoles, getRolesFromRoleSet } from "../game/roleListState.d";
-import ChatElement, { ChatMessageVariant } from "./ChatMessage";
+import ChatElement from "./ChatMessage";
 import DUMMY_NAMES from "../resources/dummyNames.json";
 import { ARTICLES, GeneratedArticle, getArticleTitle, WikiArticleLink, wikiPageIsEnabled } from "./WikiArticleLink";
 import "./wiki.css";
@@ -29,7 +29,9 @@ export default function WikiArticle(props: {
         case "role": {
             const role = path[1] as Role;
             const roleData = roleJsonData()[role];
-            const chatMessages = roleData.chatMessages as ChatMessageVariant[];
+            const chatMessages = roleData.chatMessages;
+            const exampleAlibi = translateChecked("wiki.article.role."+role+".exampleAlibi");
+            const exampleAlibiDescription = translateChecked("wiki.article.role."+role+".exampleAlibi.description");
 
             return <section className="wiki-article">
                 <div>
@@ -79,6 +81,17 @@ export default function WikiArticle(props: {
                         />
                     )}
                 </div>}
+                {exampleAlibi && <div className="wiki-message-section">
+                    <WikiStyledText>
+                        {"### "+translate("wiki.article.role.exampleAlibi")+"\n"}
+                    </WikiStyledText>
+                    {exampleAlibiDescription && <WikiStyledText>
+                        {replaceMentions(exampleAlibiDescription, DUMMY_NAMES) as string}
+                    </WikiStyledText>}
+                    <blockquote>
+                        <WikiStyledText>{replaceMentions(exampleAlibi, DUMMY_NAMES) as string}</WikiStyledText>
+                    </blockquote>
+                </div>}
                 <DetailsSummary 
                     summary={translate("wiki.article.role.details")}
                 >
@@ -107,7 +120,7 @@ export default function WikiArticle(props: {
             return <section className="wiki-article">
                 <WikiStyledText className="wiki-article-standard">
                     {"# "+translate(`wiki.article.${articleType}.${props.article.split("/")[1]}.title`)+"\n"}
-                    {replaceMentions(translate(`wiki.article.${articleType}.${props.article.split("/")[1]}.text`), DUMMY_NAMES)}
+                    {replaceMentions(translate(`wiki.article.${articleType}.${props.article.split("/")[1]}.text`), DUMMY_NAMES) as string}
                 </WikiStyledText>
             </section>
         }
@@ -139,7 +152,7 @@ function CategoryArticle(props: Readonly<{ category: WikiCategory }>): ReactElem
     return <section className="wiki-article">
         <WikiStyledText className="wiki-article-standard">
             {"# "+title+"\n"}
-            {description ? replaceMentions(description, DUMMY_NAMES) : ""}
+            {description ? replaceMentions(description, DUMMY_NAMES) as string : ""}
         </WikiStyledText>
         <PageCollection 
             title={title}

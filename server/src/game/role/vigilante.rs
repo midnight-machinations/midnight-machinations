@@ -4,7 +4,7 @@ use serde::Serialize;
 use crate::game::attack_power::AttackPower;
 use crate::game::event::on_midnight::{MidnightVariables, OnMidnightPriority};
 use crate::game::{attack_power::DefensePower, game_conclusion::GameConclusion};
-use crate::game::grave::GraveKiller;
+use crate::game::components::graves::grave::GraveKiller;
 use crate::game::player::PlayerReference;
 
 use crate::game::visit::Visit;
@@ -67,7 +67,7 @@ impl RoleStateImpl for Vigilante {
                     }       
 
                     VigilanteState::NotLoaded => {
-                        self.state = VigilanteState::Loaded { bullets: game.num_players().div_ceil(5) };
+                        self.state = VigilanteState::Loaded { bullets: crate::game::role::common_role::standard_charges(game) };
                     }
 
                     _ => {},

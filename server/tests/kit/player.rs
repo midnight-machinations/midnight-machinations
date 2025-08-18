@@ -1,4 +1,4 @@
-use mafia_server::{game::{ability_input::*, chat::ChatMessageVariant, phase::PhaseState, player::{PlayerIndex, PlayerReference}, role::{Role, RoleState}, verdict::Verdict, Game}, packet::ToServerPacket};
+use mafia_server::{game::{ability_input::*, chat::ChatMessageVariant, game_conclusion::GameConclusion, phase::PhaseState, player::{PlayerIndex, PlayerReference}, role::{Role, RoleState}, verdict::Verdict, Game}, packet::ToServerPacket};
 
 #[derive(Clone, Copy, Debug)]
 pub struct TestPlayer(PlayerReference, *mut Game);
@@ -118,7 +118,26 @@ impl TestPlayer {
         game!(self).on_player_message(
             0, // This is only used for host stuff.
             self.0, 
-            ToServerPacket::SendChatMessage { text: message.to_string(), block: false }
+            ToServerPacket::AbilityInput { ability_input: AbilityInput::new(
+                ControllerID::Chat { player: self.0 },
+                StringSelection(message.to_string())
+            ) }
+        );
+        game!(self).on_player_message(
+            0, // This is only used for host stuff.
+            self.0, 
+            ToServerPacket::AbilityInput { ability_input: AbilityInput::new(
+                ControllerID::ChatIsBlock { player: self.0 },
+                BooleanSelection(false)
+            ) }
+        );
+        game!(self).on_player_message(
+            0, // This is only used for host stuff.
+            self.0, 
+            ToServerPacket::AbilityInput { ability_input: AbilityInput::new(
+                ControllerID::SendChat { player: self.0 },
+                UnitSelection
+            ) }
         );
     }
 
@@ -170,7 +189,11 @@ impl TestPlayer {
     }
 
     pub fn get_won_game(&self) -> bool {
-        self.0.get_won_game(game!(self))
+        if let Some(conclusion) = GameConclusion::game_is_over(game!(self)) {
+            self.0.get_won_game(game!(self), conclusion)
+        } else {
+            false // Game is not over, so nobody wins!
+        }
     }
 }
 

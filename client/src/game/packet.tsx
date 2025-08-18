@@ -1,6 +1,6 @@
-import { PhaseType, PlayerIndex, Verdict, PhaseTimes, Tag, LobbyClientID, ChatGroup, PhaseState, LobbyClient, ModifierType, InsiderGroup, GameClient } from "./gameState.d"
-import { Grave } from "./graveState"
-import { ChatMessage } from "../components/ChatMessage"
+import { PhaseType, PlayerIndex, Verdict, PhaseTimes, Tag, LobbyClientID, ChatGroup, PhaseState, LobbyClient, ModifierType, InsiderGroup, GameClient, UnsafeString } from "./gameState.d"
+import { Grave, GraveIndex } from "./graveState"
+import { ChatMessage, ChatMessageIndex } from "../components/ChatMessage"
 import { RoleList, RoleOutline } from "./roleListState.d"
 import { Role, RoleState } from "./roleState.d"
 import { DoomsayerGuess } from "../menu/game/gameScreenContent/AbilityMenu/RoleSpecificMenus/LargeDoomsayerMenu"
@@ -9,9 +9,9 @@ import { AbilityInput, ControllerID, SavedController } from "./abilityInput"
 import { ListMapData } from "../ListMap"
 
 export type LobbyPreviewData = {
-    name: string,
+    name: UnsafeString,
     inGame : boolean,
-    players: [LobbyClientID, string][]
+    players: [LobbyClientID, UnsafeString][]
 }
 
 export type ToClientPacket = {
@@ -47,7 +47,7 @@ export type ToClientPacket = {
     clients: ListMapData<LobbyClientID, LobbyClient>
 } | {
     type: "lobbyName",
-    name: string
+    name: UnsafeString
 } | {
     type: "yourPlayerIndex",
     playerIndex: PlayerIndex
@@ -74,7 +74,7 @@ export type ToClientPacket = {
     type: "backToLobby",
 } | {
     type: "gamePlayers",
-    players: string[]
+    players: UnsafeString[]
 } | {
     type: "roleList",
     roleList: RoleList,
@@ -126,17 +126,14 @@ export type ToClientPacket = {
     type: "yourPlayerTags",
     playerTags: ListMapData<PlayerIndex, Tag[]> 
 } | {
-    type: "yourWill",
-    will: string
-} | {
     type: "yourNotes",
-    notes: string[]
+    notes: UnsafeString[]
 } | {
     type: "yourCrossedOutOutlines",
     crossedOutOutlines: number[]
 } | {
     type: "yourDeathNote", 
-    deathNote: string | null
+    deathNote: UnsafeString | null
 } | {
     type: "yourRoleState",
     roleState: RoleState
@@ -148,13 +145,14 @@ export type ToClientPacket = {
     fastForward: boolean
 } | {
     type: "addChatMessages",
-    chatMessages: ChatMessage[]
+    chatMessages: [ChatMessageIndex, ChatMessage][]
 } | {
     type: "nightMessages",
     chatMessages: ChatMessage[]
 } | {
     type: "addGrave",
-    grave: Grave
+    grave: Grave,
+    graveRef: GraveIndex,
 } | {
     type: "gameOver",
     reason: string
@@ -232,17 +230,6 @@ export type ToServerPacket = {
 {
     type: "judgement", 
     verdict: Verdict
-} | {
-    type: "sendChatMessage", 
-    text: string,
-    block: boolean,
-} | {
-    type: "sendWhisper", 
-    playerIndex: PlayerIndex, 
-    text: string
-} | {
-    type: "saveWill", 
-    will: string
 } | {
     type: "saveNotes", 
     notes: string[]

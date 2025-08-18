@@ -5,6 +5,7 @@ use serde::Serialize;
 use crate::game::ability_input::{AvailableBooleanSelection, ControllerID, ControllerParametersMap};
 use crate::game::attack_power::DefensePower;
 use crate::game::chat::{ChatGroup, ChatMessageVariant};
+use crate::game::components::graves::grave::Grave;
 use crate::game::components::tags::{TagSetID, Tags};
 use crate::game::event::on_midnight::{MidnightVariables, OnMidnightPriority};
 use crate::game::game_conclusion::GameConclusion;

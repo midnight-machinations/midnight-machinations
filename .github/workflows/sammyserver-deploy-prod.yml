@@ -1,0 +1,51 @@
+name: sammyserver-deploy
+
+on:
+  push:
+    branches:
+      - prod
+  workflow_dispatch:
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      # 1. Checkout code from prod branch
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      # 2. Log in to Docker Hub
+      - name: Login to DockerHub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      # 3. Build & push server image
+      - name: Build and push server image
+        uses: docker/build-push-action@v4
+        with:
+          context: ./server
+          file: ./server/dockerfile
+          push: true
+          tags: |
+            ${{ secrets.DOCKERHUB_USERNAME }}/midnightmachinations-server:latest
+          build-args: |
+            WS_ADDRESS=0.0.0.0:80
+
+      # 5. Deploy to server via SSH
+      - name: Deploy to server via SSH
+        uses: appleboy/ssh-action@v0.1.6
+        with:
+          host: ${{ secrets.SERVER_HOST }}         # e.g., your.server.com or IP
+          username: ${{ secrets.SERVER_USER }}     # SSH user
+          key: ${{ secrets.SERVER_SSH_KEY }}       # SSH private key
+          port: ${{ secrets.SERVER_SSH_PORT }}     # optional, defaults to 22
+          script: |
+            # Pull the latest images
+            docker pull ${{ secrets.DOCKERHUB_USERNAME }}/midnightmachinations-server:latest
+
+            # Restart server container
+            docker stop midnightmachinations-server || true
+            docker rm midnightmachinations-server || true
+            docker run -d --name midnightmachinations-server -p 2001:80 ${{ secrets.DOCKERHUB_USERNAME }}/midnightmachinations-server:latest

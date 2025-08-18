@@ -78,7 +78,7 @@ impl WebsocketListener{
                     RoomClientMessageResult::LobbyAction(LobbyClientMessageResult::StartGame(game)) => {
                         log!(info "Room"; "Game started with room code {}", room_code);
 
-                        *room = Room::Game(game);
+                        *room = Room::Game(*game);
                     },
                     RoomClientMessageResult::GameAction(GameClientMessageResult::BackToLobby(lobby)) => {
                         *room = Room::Lobby(lobby);

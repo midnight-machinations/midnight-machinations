@@ -1,6 +1,6 @@
 import { ReactElement } from "react";
 import React from "react";
-import { ControllerID, controllerIdToLink, BooleanSelection } from "../../../../../game/abilityInput";
+import { ControllerID, BooleanSelection, controllerIdToLink } from "../../../../../game/abilityInput";
 import Select from "../../../../../components/Select";
 import translate, { translateChecked } from "../../../../../game/lang";
 import StyledText from "../../../../../components/StyledText";

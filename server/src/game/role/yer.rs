@@ -2,10 +2,11 @@ use serde::Serialize;
 
 use crate::game::attack_power::AttackPower;
 use crate::game::chat::ChatMessageVariant;
+use crate::game::components::graves::grave::GraveKiller;
 use crate::game::event::on_midnight::{MidnightVariables, OnMidnightPriority};
 
 use crate::game::components::win_condition::WinCondition;
-use crate::game::{attack_power::DefensePower, grave::GraveKiller};
+use crate::game::attack_power::DefensePower;
 use crate::game::player::PlayerReference;
 
 use crate::game::visit::Visit;
@@ -37,7 +38,7 @@ impl RoleStateImpl for Yer {
     type ClientRoleState = Yer;
     fn new_state(game: &Game) -> Self {
         Self{
-            star_passes_remaining: game.num_players().div_ceil(5),
+            star_passes_remaining: crate::game::role::common_role::standard_charges(game),
             ..Self::default()
         }
     }

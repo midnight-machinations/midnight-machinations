@@ -2,7 +2,7 @@ use serde::{Deserialize, Serialize};
 
 use super::{components::win_condition::WinCondition, player::PlayerReference, role::Role, role_list::RoleSet, Game};
 
-#[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq, Hash, PartialOrd, Ord)]
+#[derive(Clone, Copy, Debug, Serialize, Deserialize, PartialEq, Eq, Hash, PartialOrd, Ord)]
 #[serde(rename_all = "camelCase")]
 pub enum GameConclusion {
     Town,
@@ -83,16 +83,11 @@ impl GameConclusion {
     pub fn keeps_game_running(role: Role)->bool{
         if
             RoleSet::Fiends.get_roles().contains(&role) ||
-            RoleSet::MafiaKilling.get_roles().contains(&role)  
+            RoleSet::MafiaKilling.get_roles().contains(&role) 
         {
             true
         }else{
-            matches!(role, Role::Apostle | Role::Zealot | Role::Krampus)
+            matches!(role, Role::Apostle | Role::Zealot | Role::Krampus | Role::Politician)
         }
     }
 }
-
-
-//Endgamecondition -> One single game ending condition, if only these roles are left, the game ends
-//Town, Mafia, Cult, Fiends, Politcian
-//Victory condition -> If this is the endgamecondition of the game, you win

@@ -5,7 +5,7 @@ use vec1::{
     Vec1
 };
 
-use crate::vec_set::{vec_set, VecSet};
+use crate::{game::player::PlayerIndex, vec_set::{vec_set, VecSet}};
 
 use super::{components::{insider_group::InsiderGroupID, win_condition::WinCondition}, game_conclusion::GameConclusion, role::Role};
 
@@ -16,10 +16,12 @@ impl RoleList {
     pub fn create_random_role_assignments(&self, enabled_roles: &VecSet<Role>) -> Option<Vec<RoleAssignment>> {
         let mut generated_data = Vec::<RoleAssignment>::new();
         for entry in self.0.iter(){
-            if let Some(player_initialization_data) = entry.get_random_role_assignments(
-                enabled_roles, &generated_data.iter().map(|datum| datum.role).collect::<Vec<Role>>()
+            if let Some(new_role_assignment) = entry.get_random_role_assignments(
+                enabled_roles,
+                &generated_data.iter().map(|a| a.role).collect::<Vec<Role>>(),
+                &generated_data.iter().filter_map(|a| a.player).collect::<Vec<PlayerIndex>>()
             ){
-                generated_data.push(player_initialization_data);
+                generated_data.push(new_role_assignment);
             }else{
                 return None;
             }
@@ -36,11 +38,12 @@ impl RoleList {
     }
 }
 
-#[derive(Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub struct RoleAssignment {
     role: Role,
     insider_groups: RoleOutlineOptionInsiderGroups,
-    win_condition: RoleOutlineOptionWinCondition
+    win_condition: RoleOutlineOptionWinCondition,
+    player: Option<PlayerIndex>,
 }
 impl RoleAssignment{
     pub fn role(&self)->Role{
@@ -62,6 +65,9 @@ impl RoleAssignment{
             RoleOutlineOptionWinCondition::GameConclusionReached { win_if_any } => 
                 WinCondition::GameConclusionReached { win_if_any: win_if_any.clone() },
         }
+    }
+    pub fn player(&self)->Option<PlayerIndex>{
+        self.player
     }
 }
 
@@ -93,7 +99,8 @@ impl Default for RoleOutline {
         Self {options: vec1![RoleOutlineOption{
             win_condition: Default::default(),
             insider_groups: Default::default(),
-            roles: RoleOutlineOptionRoles::RoleSet { role_set: RoleSet::Any }
+            roles: RoleOutlineOptionRoles::RoleSet { role_set: RoleSet::Any },
+            player_pool: Default::default(),
         }]}
     }
 }
@@ -102,24 +109,35 @@ impl RoleOutline{
         RoleOutline{options: vec1![RoleOutlineOption{
             win_condition: Default::default(),
             insider_groups: Default::default(),
-            roles: RoleOutlineOptionRoles::Role{role}
+            roles: RoleOutlineOptionRoles::Role{role},
+            player_pool: Default::default(),
         }]}
     }
     pub fn get_role_assignments(&self) -> Vec<RoleAssignment> {
-        self.options.iter()
-            .flat_map(|r| 
-                r.roles.get_roles().into_iter()
-                    .map(|role| RoleAssignment{
+        self.options.iter().flat_map(|o|
+            o.roles.get_roles().into_iter().flat_map(move |role|
+                (
+                    if o.player_pool.is_empty() {
+                        vec![None]
+                    } else {
+                        o.player_pool.iter().map(Some).collect()
+                    }
+                ).into_iter().map(move |player|
+                    RoleAssignment{
                         role,
-                        insider_groups: r.insider_groups.clone(),
-                        win_condition: r.win_condition.clone()
-                    })
-            ).collect()
+                        insider_groups: o.insider_groups.clone(),
+                        win_condition: o.win_condition.clone(),
+                        player: player.copied()
+                    }
+                )
+            )
+        ).collect()
     }
-    pub fn get_random_role_assignments(&self, enabled_roles: &VecSet<Role>, taken_roles: &[Role]) -> Option<RoleAssignment> {
+    pub fn get_random_role_assignments(&self, enabled_roles: &VecSet<Role>, taken_roles: &[Role], taken_players: &[PlayerIndex]) -> Option<RoleAssignment> {
         let options = self.get_role_assignments()
             .into_iter()
-            .filter(|r|role_can_generate(r.role, enabled_roles, taken_roles))
+            .filter(|r|role_enabled_and_not_taken(r.role, enabled_roles, taken_roles))
+            .filter(|a|a.player().is_none_or(|p|!taken_players.contains(&p)))
             .collect::<Vec<_>>();
         options.choose(&mut rand::rng()).cloned()
     }
@@ -188,6 +206,8 @@ pub struct RoleOutlineOption {
     pub win_condition: RoleOutlineOptionWinCondition,
     #[serde(flatten, skip_serializing_if = "RoleOutlineOptionInsiderGroups::is_default")]
     pub insider_groups: RoleOutlineOptionInsiderGroups,
+    #[serde(skip_serializing_if = "VecSet::is_empty")]
+    pub player_pool: VecSet<PlayerIndex>
 }
 
 /// Watch this!
@@ -212,6 +232,13 @@ impl<'de> Deserialize<'de> for RoleOutlineOption {
                 if let Ok(string_insider_groups) = serde_json::to_string(value) {
                     if let Ok(insider_groups) = serde_json::from_str(string_insider_groups.as_str()) {
                         option.insider_groups = RoleOutlineOptionInsiderGroups::Custom { insider_groups }
+                    }
+                }
+            }
+            if let Some(value) = map.get("playerPool") {
+                if let Ok(string_player_pool) = serde_json::to_string(value) {
+                    if let Ok(player_pool) = serde_json::from_str(string_player_pool.as_str()) {
+                        option.player_pool = player_pool;
                     }
                 }
             }
@@ -335,9 +362,11 @@ impl RoleSet{
                 ],
             RoleSet::TownSupport => 
                 vec_set![
-                    Role::Medium, Role::Coxswain,
-                    Role::Retributionist, Role::Transporter, Role::Porter, Role::Escort, 
-                    Role::Mayor, Role::Reporter, Role::Polymath
+                    Role::Medium, Role::Coxswain, Role::Retributionist,
+                    Role::Transporter, Role::Porter,
+                    Role::Mayor, Role::Reporter,
+                    Role::Courtesan, Role::Escort,
+                    Role::Polymath
                 ],
             RoleSet::Mafia =>
                 vec_set![
@@ -355,7 +384,7 @@ impl RoleSet{
                 ],
             RoleSet::MafiaSupport => 
                 vec_set![
-                    Role::Blackmailer, Role::Informant, Role::Hypnotist, Role::Consort,
+                    Role::Blackmailer, Role::Cerenovous, Role::Informant, Role::Hypnotist, Role::Consort,
                     Role::Forger, Role::Framer, Role::Mortician, Role::Disguiser,
                     Role::MafiaWitch, Role::Necromancer, Role::Reeducator,
                     Role::Ambusher
@@ -366,7 +395,7 @@ impl RoleSet{
                 ],
             RoleSet::Neutral =>
                 vec_set![
-                    Role::Jester, Role::Revolutionary, Role::Politician, Role::Doomsayer,
+                    Role::Jester, Role::Revolutionary, Role::Politician, Role::Doomsayer, Role::Mercenary,
                     Role::Martyr, Role::Chronokaiser, Role::SantaClaus, Role::Krampus
                 ],
             RoleSet::Fiends =>
@@ -386,7 +415,7 @@ impl RoleSet{
 
 
 
-pub fn role_can_generate(role: Role, enabled_roles: &VecSet<Role>, taken_roles: &[Role]) -> bool {
+pub fn role_enabled_and_not_taken(role: Role, enabled_roles: &VecSet<Role>, taken_roles: &[Role]) -> bool {
     if !enabled_roles.contains(&role) {
         return false;
     }

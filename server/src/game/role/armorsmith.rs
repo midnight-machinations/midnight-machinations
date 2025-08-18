@@ -97,7 +97,7 @@ impl RoleStateImpl for Armorsmith {
     }
     fn new_state(game: &Game) -> Self {
         Self{
-            open_shops_remaining: game.num_players().div_ceil(5),
+            open_shops_remaining: crate::game::role::common_role::standard_charges(game),
             ..Self::default()
         }
     }

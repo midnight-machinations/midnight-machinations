@@ -2,8 +2,8 @@ use serde::{Deserialize, Serialize};
 use crate::{game::{event::on_convert::OnConvert, game_conclusion::GameConclusion, player::PlayerReference, role_list::RoleAssignment, role_outline_reference::RoleOutlineReference, Game}, vec_map::VecMap, vec_set::{vec_set, VecSet}};
 
 use super::player_component::PlayerComponent;
-
-impl PlayerComponent::<WinCondition>{
+pub type WinConditionComponent = PlayerComponent::<WinCondition>;
+impl WinConditionComponent{
     /// # Safety
     /// num_players must be correct
     pub unsafe fn new(num_players: u8, assignments: &VecMap<PlayerReference, (RoleOutlineReference,RoleAssignment)>)->Self{
@@ -54,22 +54,22 @@ impl Ord for WinCondition {
 
 
 impl WinCondition{
-    pub fn required_resolution_states_for_win(&self)->Option<VecSet<GameConclusion>>{
+    pub fn win_if_any_conclusions(&self)->Option<VecSet<GameConclusion>>{
         match self{
             WinCondition::GameConclusionReached{win_if_any} => Some(win_if_any.clone()),
             WinCondition::RoleStateWon => None,
         }
     }
     pub fn are_friends(a: &WinCondition, b: &WinCondition)->bool{
-        let a_conditions = a.required_resolution_states_for_win();
-        let b_conditions = b.required_resolution_states_for_win();
+        let a_conditions = a.win_if_any_conclusions();
+        let b_conditions = b.win_if_any_conclusions();
 
         match (a_conditions, b_conditions){
             (Some(a), Some(b)) => a.intersection(&b).count() > 0,
             _ => true
         }
     }
-    pub fn friends_with_resolution_state(&self, resolution_state: GameConclusion)->bool{
+    pub fn friends_with_conclusion(&self, resolution_state: GameConclusion)->bool{
         match self{
             WinCondition::GameConclusionReached{win_if_any} => win_if_any.contains(&resolution_state),
             WinCondition::RoleStateWon => true,

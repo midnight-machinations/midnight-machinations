@@ -12,6 +12,7 @@ import { RoleState } from "../../../../game/roleState.d";
 import { PhaseState } from "../../../../game/gameState.d";
 import DetailsSummary from "../../../../components/DetailsSummary";
 import HypnotistMenu from "./RoleSpecificMenus/HypnotistMenu";
+import ChatElement, { encodeString } from "../../../../components/ChatMessage";
 
     
 
@@ -143,6 +144,13 @@ function roleSpecificSectionInner(
             >
                 <StyledText>{translate("role.forger.roleDataText", roleState.forgesRemaining)}</StyledText>
             </Counter>
+        case "cerenovous":
+            return <Counter
+                max={maxChargesCounter}
+                current={roleState.charges}
+            >
+                <StyledText>{translate("role.cerenovous.roleDataText", roleState.charges)}</StyledText>
+            </Counter>
         case "mortician":
             return <Counter
                 max={maxChargesCounter}
@@ -173,6 +181,19 @@ function roleSpecificSectionInner(
                 dayNumber={dayNumber}
                 phase={phaseState.type}
             />;
+        case "mercenary":
+            return <div>
+                <Counter
+                    max={maxChargesCounter}
+                    current={roleState.attacksRemaining}
+                >
+                    <StyledText>{translate("role.mercenary.roleDataText", roleState.attacksRemaining)}</StyledText>
+                </Counter>
+                <ChatElement message={{
+                    chatGroup: null,
+                    variant: {type:"mercenaryHits", roles:roleState.roles??[]}
+                }}/>
+            </div>
         case "martyr":
             if (roleState.state.type === "stillPlaying") {
                 return <>
@@ -237,7 +258,7 @@ function MediumRoleSpecificMenu(props: Readonly<{
             {counter}
             <div className="role-information">
                 <StyledText>{translate("role.medium.roleDataText", 
-                    players[props.roleState.seancedTarget].toString(),
+                    encodeString(players[props.roleState.seancedTarget].toString()),
                 )}</StyledText>
             </div>
         </>;

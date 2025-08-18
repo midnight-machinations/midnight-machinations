@@ -2,8 +2,9 @@ use serde::Serialize;
 
 use crate::game::attack_power::{AttackPower, DefensePower};
 use crate::game::chat::ChatMessageVariant;
+use crate::game::components::graves::grave::{GraveInformation, GraveKiller};
+use crate::game::components::graves::grave_reference::GraveReference;
 use crate::game::event::on_midnight::{MidnightVariables, OnMidnightPriority};
-use crate::game::grave::{GraveInformation, GraveKiller, GraveReference};
 use crate::game::player::PlayerReference;
 
 use crate::game::visit::Visit;
@@ -88,7 +89,7 @@ impl RoleStateImpl for Pyrolisk {
         actor_ref.add_private_chat_message(game, ChatMessageVariant::PlayerRoleAndAlibi{
             player: grave_ref.deref(game).player,
             role: grave_ref.deref(game).player.role(game),
-            will: grave_ref.deref(game).player.will(game).to_string(),
+            will: grave_ref.deref(game).player.alibi(game).to_string(),
         });
 
         grave_ref.deref_mut(game).information = GraveInformation::Obscured;

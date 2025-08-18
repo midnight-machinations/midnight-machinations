@@ -3,7 +3,11 @@ use std::time::Duration;
 use crate::{
     client_connection::ClientConnection, 
     game::{
-        chat::ChatMessageVariant, components::{insider_group::InsiderGroups, tags::Tags},
+        chat::{ChatComponent, ChatMessageVariant},
+        components::{
+            graves::grave_reference::GraveReference, insider_group::InsiderGroups,
+            tags::Tags
+        },
         Game, GameOverReason
     },
     packet::ToClientPacket, websocket_connections::connection::ClientSender
@@ -74,13 +78,16 @@ impl PlayerReference{
         }
 
 
-        self.send_packet(game, ToClientPacket::PlayerVotes{votes_for_player: game.create_voted_player_map()});
-        for grave in game.graves.iter(){
-            self.send_packet(game, ToClientPacket::AddGrave { grave: grave.clone() });
+        game.send_player_votes();
+        for grave in GraveReference::all_graves(game){
+            self.send_packet(game, ToClientPacket::AddGrave {
+                grave: grave.deref(game).clone(),
+                grave_ref: grave
+            });
         }
 
         // Player specific
-        self.requeue_chat_messages(game);
+        ChatComponent::requeue_chat_messages(game, *self);
         self.send_chat_messages(game);
         InsiderGroups::send_player_insider_groups_packet(game, *self);
         InsiderGroups::send_fellow_insiders_packets(game, *self);
@@ -105,9 +112,6 @@ impl PlayerReference{
             ToClientPacket::YourAllowedControllers { 
                 save: game.saved_controllers.controllers_allowed_to_player(*self).all_controllers().clone(),
             },
-            ToClientPacket::YourWill{
-                will: self.will(game).clone()
-            },
             ToClientPacket::YourNotes{
                 notes: self.notes(game).clone()
             },
@@ -126,8 +130,7 @@ impl PlayerReference{
 
 
     pub fn send_chat_messages(&self, game: &mut Game){
-        
-        if self.deref(game).queued_chat_messages.is_empty() {
+        if ChatComponent::not_sent_messages(game, *self).is_empty() {
             return;
         }
         
@@ -135,21 +138,19 @@ impl PlayerReference{
 
         // Send in chunks
         for _ in 0..5 {
-            let msg_option = self.deref(game).queued_chat_messages.first();
+            let msg_option = ChatComponent::not_sent_messages(game, *self).front();
             if let Some(msg) = msg_option{
                 chat_messages_out.push(msg.clone());
-                self.deref_mut(game).queued_chat_messages.remove(0);
+                ChatComponent::not_sent_messages_pop_front(game, *self);
             } else {break}
         }
         
-        self.send_packet(game, ToClientPacket::AddChatMessages { chat_messages: chat_messages_out });
+        self.send_packet(game, ToClientPacket::AddChatMessages {
+            chat_messages: chat_messages_out.into_iter().collect()
+        });
         
 
         self.send_chat_messages(game);
-    }
-    #[expect(clippy::assigning_clones, reason = "Reference rules prevents this")]
-    fn requeue_chat_messages(&self, game: &mut Game){
-        self.deref_mut(game).queued_chat_messages = self.deref(game).chat_messages.clone();
     }
 }
 

@@ -12,6 +12,9 @@ pub mod no_chat;
 pub mod unscheduled_nominations;
 pub mod skip_day_1;
 pub mod hidden_whispers;
+pub mod hidden_nomination_votes;
+pub mod hidden_verdict_votes;
+pub mod forfeit_vote;
 
 use dead_can_chat::DeadCanChat;
 use hidden_whispers::HiddenWhispers;
@@ -25,19 +28,22 @@ use obscured_graves::ObscuredGraves;
 use no_death_cause::NoDeathCause;
 use role_set_grave_killers::RoleSetGraveKillers;
 use unscheduled_nominations::UnscheduledNominations;
+use hidden_nomination_votes::HiddenNominationVotes;
+use hidden_verdict_votes::HiddenVerdictVotes;
+use forfeit_vote::ForfeitNominationVote;
 
 use serde::{Deserialize, Serialize};
 use skip_day_1::SkipDay1;
 use two_thirds_majority::TwoThirdsMajority;
 
-use crate::{vec_map::VecMap, vec_set::VecSet};
+use crate::{game::components::graves::grave_reference::GraveReference, vec_map::VecMap, vec_set::VecSet};
 
 use super::{ability_input::AbilityInput,
     event::{
         on_midnight::{MidnightVariables, OnMidnight, OnMidnightPriority},
         on_whisper::{OnWhisper, WhisperFold, WhisperPriority}
     },
-    grave::GraveReference, player::PlayerReference, Game
+    player::PlayerReference, Game
 };
 
 
@@ -71,6 +77,9 @@ pub enum ModifierState{
     NoChat(NoChat),
     HiddenWhispers(HiddenWhispers),
     UnscheduledNominations(UnscheduledNominations),
+    HiddenNominationVotes(HiddenNominationVotes),
+    HiddenVerdictVotes(HiddenVerdictVotes),
+    ForfeitNominationVote(ForfeitNominationVote),
 }
 #[derive(Clone, Serialize, Deserialize, PartialEq, Eq, Debug, Hash)]
 #[serde(rename_all = "camelCase")]
@@ -89,6 +98,9 @@ pub enum ModifierType{
     NoChat,
     HiddenWhispers,
     UnscheduledNominations,
+    HiddenNominationVotes,
+    HiddenVerdictVotes,
+    ForfeitNominationVote,
 }
 impl ModifierType{
     pub fn default_state(&self)->ModifierState{
@@ -107,6 +119,9 @@ impl ModifierType{
             Self::NoChat => ModifierState::NoChat(NoChat),
             Self::HiddenWhispers => ModifierState::HiddenWhispers(HiddenWhispers),
             Self::UnscheduledNominations => ModifierState::UnscheduledNominations(UnscheduledNominations),
+            Self::HiddenNominationVotes => ModifierState::HiddenNominationVotes(HiddenNominationVotes),
+            Self::HiddenVerdictVotes => ModifierState::HiddenVerdictVotes(HiddenVerdictVotes),
+            Self::ForfeitNominationVote => ModifierState::ForfeitNominationVote(ForfeitNominationVote),
         }
     }
 }
@@ -127,6 +142,9 @@ impl From<&ModifierState> for ModifierType{
             ModifierState::NoChat(_) => Self::NoChat,
             ModifierState::HiddenWhispers(_) => Self::HiddenWhispers,
             ModifierState::UnscheduledNominations(_) => Self::UnscheduledNominations,
+            ModifierState::HiddenNominationVotes(_) => Self::HiddenNominationVotes,
+            ModifierState::HiddenVerdictVotes(_) => Self::HiddenVerdictVotes,
+            ModifierState::ForfeitNominationVote(_) => Self::ForfeitNominationVote,
         }
     }
 }

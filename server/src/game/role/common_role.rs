@@ -17,6 +17,11 @@ use crate::game::{
 use super::{medium::Medium, reporter::Reporter, warden::Warden, InsiderGroupID, Role, RoleState};
 
 
+pub(super) fn standard_charges(game: &Game)->u8{
+    game.num_players().div_ceil(5)
+}
+
+
 /// This function uses defaults. When using this function, consider if you need to override the defaults.
 /// Defaults to VisitTag::Role { role: actor_ref.role(game), id: 0 }
 pub(super) fn convert_controller_selection_to_visits(game: &Game, actor_ref: PlayerReference, controller_id: ControllerID, attack: bool) -> Vec<Visit> {

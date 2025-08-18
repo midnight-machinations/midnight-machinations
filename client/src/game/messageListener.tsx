@@ -19,14 +19,13 @@ import AudioController from "../menu/AudioController";
 import NightMessagePopup from "../components/NightMessagePopup";
 import PlayMenu from "../menu/main/PlayMenu";
 import StartMenu from "../menu/main/StartMenu";
-import { defaultAlibi } from "../menu/game/gameScreenContent/WillMenu";
 import ListMap from "../ListMap";
 import { sortControllerIdCompare } from "./abilityInput";
 
 function sendDefaultName() {
     const defaultName = loadSettingsParsed().defaultName;
     if(defaultName !== null && defaultName !== undefined && defaultName !== ""){
-        GAME_MANAGER.sendSetNamePacket(defaultName)
+        GAME_MANAGER.sendSetNamePacket(defaultName as string)
     }
 } 
 
@@ -354,12 +353,8 @@ export default function messageListener(packet: ToClientPacket){
                 let listMapVotes = new ListMap<PlayerIndex, number>(packet.votesForPlayer);
 
                 for(let i = 0; i < GAME_MANAGER.state.players.length; i++){
-                    GAME_MANAGER.state.players[i].numVoted = 0;
-                    
-                    let numVoted = listMapVotes.get(i);
-                    if(numVoted !== null){
-                        GAME_MANAGER.state.players[i].numVoted = numVoted;
-                    }
+                    let numVoted = listMapVotes.get(i)??0;
+                    GAME_MANAGER.state.players[i].numVoted = numVoted;
                 }
                 GAME_MANAGER.state.players = [...GAME_MANAGER.state.players];
             }
@@ -411,33 +406,9 @@ export default function messageListener(packet: ToClientPacket){
                 GAME_MANAGER.state.players = [...GAME_MANAGER.state.players];
             }
         break;
-        case "yourWill":
-            if(GAME_MANAGER.state.stateType === "game" && GAME_MANAGER.state.clientState.type === "player"){
-                GAME_MANAGER.state.clientState.will = packet.will;
-
-                if(GAME_MANAGER.state.clientState.will === ""){
-                    GAME_MANAGER.sendSaveWillPacket(defaultAlibi());
-                }
-            }
-        break;
         case "yourNotes":
             if(GAME_MANAGER.state.stateType === "game" && GAME_MANAGER.state.clientState.type === "player"){
                 GAME_MANAGER.state.clientState.notes = packet.notes;
-                
-                // old default notes
-                // if(GAME_MANAGER.state.clientState.notes.length === 0){
-                //     const myIndex = GAME_MANAGER.state.clientState.myIndex;
-                //     const myRoleKey = `role.${GAME_MANAGER.state.clientState.roleState.type}.name`;
-
-                //     GAME_MANAGER.sendSaveNotesPacket([
-                //         "Claims\n" + 
-                //         GAME_MANAGER.state.players
-                //             .map(player => 
-                //                 `@${player.index + 1} - ${player.index === myIndex ? translate(myRoleKey) : ''}\n`
-                //             )
-                //             .join('')
-                //     ]);
-                // }
             }
         break;
         case "yourCrossedOutOutlines":
@@ -463,13 +434,16 @@ export default function messageListener(packet: ToClientPacket){
         break;
         case "addChatMessages":
             if(GAME_MANAGER.state.stateType === "game" || GAME_MANAGER.state.stateType === "lobby"){
-                GAME_MANAGER.state.chatMessages = GAME_MANAGER.state.chatMessages.concat(packet.chatMessages);
+                GAME_MANAGER.state.chatMessages = new ListMap(
+                    GAME_MANAGER.state.chatMessages.entries().concat(packet.chatMessages)
+                );
 
                 // Chat notification icon state
                 if(GAME_MANAGER.state.stateType === "game" && packet.chatMessages.length !== 0){
                     GAME_MANAGER.state.missedChatMessages = true;
                     
-                    for(let chatMessage of packet.chatMessages){
+                    // eslint-disable-next-line
+                    for(let [_index, chatMessage] of packet.chatMessages){
                         if(
                             chatMessage.variant.type === "whisper" &&
                             GAME_MANAGER.state.clientState.type === "player" &&
@@ -481,7 +455,8 @@ export default function messageListener(packet: ToClientPacket){
                 }
 
                 if (GAME_MANAGER.state.stateType !== "game" || GAME_MANAGER.state.initialized === true) {
-                    for(let chatMessage of packet.chatMessages){
+                    // eslint-disable-next-line
+                    for(let [_index, chatMessage] of packet.chatMessages){
                         let audioSrc = chatMessageToAudio(chatMessage);
                         if(audioSrc)
                             AudioController.queueFile(audioSrc);
@@ -498,8 +473,15 @@ export default function messageListener(packet: ToClientPacket){
             }
         break;
         case "addGrave":
-            if(GAME_MANAGER.state.stateType === "game")
-                GAME_MANAGER.state.graves = [...GAME_MANAGER.state.graves, packet.grave];
+            if(GAME_MANAGER.state.stateType === "game"){
+                GAME_MANAGER.state.graves.insert(packet.graveRef, packet.grave);
+                GAME_MANAGER.state.graves = new ListMap(
+                    [...GAME_MANAGER.state.graves
+                        .entries()
+                        .sort(([a,_a],[b,_b])=>a-b)
+                    ]
+                );
+            }
         break;
         case "gameOver":
             if(GAME_MANAGER.state.stateType === "game"){

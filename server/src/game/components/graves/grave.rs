@@ -1,17 +1,8 @@
 use std::vec;
-
 use rand::rng;
 use rand::seq::SliceRandom;
 use serde::{Serialize, Deserialize};
-
-use super::event::on_midnight::MidnightVariables;
-use super::phase::PhaseType;
-use super::Game;
-use super::player::PlayerReference;
-use super::role::Role;
-use super::role_list::RoleSet;
-
-
+use crate::game::{event::on_midnight::MidnightVariables, phase::PhaseType, player::PlayerReference, role::Role, role_list::RoleSet, Game};
 
 
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq, PartialOrd, Ord)]
@@ -106,7 +97,7 @@ impl Grave{
             information: GraveInformation::Normal{
                 role: player_ref.role(game), 
                 death_cause: GraveDeathCause::Execution, 
-                will: player_ref.will(game).clone(), 
+                will: player_ref.alibi(game).to_owned(), 
                 death_notes: vec![]
             }
         }
@@ -121,7 +112,7 @@ impl Grave{
                 role: player_ref.role(game), 
                 death_cause: GraveDeathCause::Killers(vec![GraveKiller::Suicide]), 
                 death_notes: vec![],
-                will: player_ref.will(game).clone(), 
+                will: player_ref.alibi(game).to_owned(), 
 
             }
         }
@@ -135,7 +126,7 @@ impl Grave{
             information: GraveInformation::Normal { 
                 role: player_ref.role(game), 
                 death_cause: GraveDeathCause::LeftTown, 
-                will: player_ref.will(game).clone(), 
+                will: player_ref.alibi(game).to_owned(), 
                 death_notes: vec![]
             }
         }
@@ -149,33 +140,10 @@ impl Grave{
             information: GraveInformation::Normal { 
                 role: player_ref.role(game),
                 death_cause: GraveDeathCause::BrokenHeart, 
-                will: player_ref.will(game).clone(),
+                will: player_ref.alibi(game).to_owned(),
                 death_notes: vec![]
             }
         }
     }
 }
 
-#[derive(Clone, Copy)]
-pub struct GraveReference{
-    index: u8
-}
-impl GraveReference{
-    pub fn new(game: &Game, index: u8)->Option<GraveReference> {
-        if (index as usize) < game.graves.len() {
-            Some(GraveReference { index })
-        }else{
-            None
-        }
-    }
-    pub fn deref(self, game: &Game)->&Grave{
-        unsafe {
-            game.graves.get_unchecked(self.index as usize)
-        }
-    }
-    pub fn deref_mut(self, game: &mut Game)->&mut Grave{
-        unsafe {
-            game.graves.get_unchecked_mut(self.index as usize)
-        }
-    }
-}

@@ -8,10 +8,11 @@ import "./styledText.css";
 import DUMMY_NAMES from "../resources/dummyNames.json";
 import { ARTICLES, WikiArticleLink, getArticleLangKey } from "./WikiArticleLink";
 import { MenuControllerContext } from "../menu/game/GameScreen";
-import { Player } from "../game/gameState.d";
+import { Player, UnsafeString } from "../game/gameState.d";
 import { AnchorControllerContext } from "../menu/Anchor";
 import { setWikiSearchPage } from "./Wiki";
 import { getRoleSetsFromRole } from "../game/roleListState.d";
+import { encodeString } from "./ChatMessage";
 
 export type TokenData = {
     style?: string, 
@@ -185,22 +186,22 @@ export function computePlayerKeywordData(players: Player[]) {
     }
 
     for(const player of players) {
-        PLAYER_SENDER_KEYWORD_DATA[player.toString()] = [
+        PLAYER_SENDER_KEYWORD_DATA[encodeString(player.toString())] = [
             { style: "keyword-player-number", replacement: (player.index + 1).toString() },
             { replacement: " " },
-            { style: "keyword-player-sender", replacement: player.name }
+            { style: "keyword-player-sender", replacement: encodeString(player.name) }
         ];
         
-        PLAYER_KEYWORD_DATA[player.toString()] = [
+        PLAYER_KEYWORD_DATA[encodeString(player.toString())] = [
             { style: "keyword-player-number", replacement: (player.index + 1).toString() },
             { replacement: " " },
-            { style: "keyword-player", replacement: player.name }
+            { style: "keyword-player", replacement: encodeString(player.name) }
         ];
         
     }
 }
 
-export function computePlayerKeywordDataForLobby(playerNames: string[]) {
+export function computePlayerKeywordDataForLobby(playerNames: UnsafeString[]) {
     for (const key in PLAYER_KEYWORD_DATA) {
         delete PLAYER_KEYWORD_DATA[key];
     }
@@ -209,8 +210,8 @@ export function computePlayerKeywordDataForLobby(playerNames: string[]) {
     }
 
     for(const name of playerNames) {
-        PLAYER_SENDER_KEYWORD_DATA[name] = [{ style: "keyword-player-sender", replacement: name }];
-        PLAYER_KEYWORD_DATA[name] = [{ style: "keyword-player", replacement: name }];
+        PLAYER_SENDER_KEYWORD_DATA[encodeString(name)] = [{ style: "keyword-player-sender", replacement: encodeString(name) }];
+        PLAYER_KEYWORD_DATA[encodeString(name)] = [{ style: "keyword-player", replacement: encodeString(name) }];
     }
 }
 

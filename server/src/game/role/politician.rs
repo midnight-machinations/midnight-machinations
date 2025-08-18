@@ -3,10 +3,10 @@ use serde::Serialize;
 use crate::game::ability_input::AvailableUnitSelection;
 use crate::game::attack_power::DefensePower;
 use crate::game::chat::{ChatGroup, ChatMessageVariant};
+use crate::game::components::graves::grave::Grave;
 use crate::game::event::on_whisper::{OnWhisper, WhisperFold, WhisperPriority};
 use crate::game::components::enfranchise::Enfranchise;
 use crate::game::game_conclusion::GameConclusion;
-use crate::game::grave::Grave;
 use crate::game::phase::PhaseType;
 use crate::game::player::PlayerReference;
 use crate::game::components::win_condition::WinCondition;
@@ -60,7 +60,7 @@ impl RoleStateImpl for Politician {
     type ClientRoleState = ClientRoleState;
     fn on_validated_ability_input_received(self, game: &mut Game, actor_ref: PlayerReference, input_player: PlayerReference, ability_input: super::AbilityInput) {
         if actor_ref != input_player {return;}
-        if ability_input.id() != ControllerID::role(actor_ref, Role::Mayor, 0) {
+        if ability_input.id() != ControllerID::role(actor_ref, Role::Politician, 0) {
             return;
         }
         

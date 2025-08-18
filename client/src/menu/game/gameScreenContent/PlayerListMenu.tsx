@@ -13,6 +13,8 @@ import PlayerNamePlate from "../../../components/PlayerNamePlate";
 import ChatMessage, { translateChatMessage } from "../../../components/ChatMessage";
 import GraveComponent, { translateGraveRole } from "../../../components/grave";
 import { ChatMessageSection, ChatTextInput } from "./ChatMenu";
+import ListMap from "../../../ListMap";
+import { controllerIdToLinkWithPlayer } from "../../../game/abilityInput";
 
 export default function PlayerListMenu(): ReactElement {
     const players = useGameState(
@@ -35,19 +37,19 @@ export default function PlayerListMenu(): ReactElement {
                 .map(player => <div key={player.index} className="player-card-holder"><PlayerCard playerIndex={player.index}/></div>)
             }
 
-            {graves.length === 0 || 
+            {graves.entries().length === 0 || 
                 <>
                     <div className="dead-players-separator">
                         <StyledText>{translate("grave.icon")} {translate("graveyard")}</StyledText>
                     </div>
-                    {graves.map((grave, index) => <div key={grave.player} className="player-card-holder"><PlayerCard graveIndex={index} playerIndex={grave.player}/></div>)}
+                    {graves.entries().map(([index, grave]) => <div key={grave.player} className="player-card-holder"><PlayerCard graveIndex={index} playerIndex={grave.player}/></div>)}
                 </>
             }
 
             {players
                 .filter(
                     player => !player.alive && 
-                    graves.find(grave => grave.player === player.index) === undefined
+                    graves.values().find((grave) => grave.player === player.index) === undefined
                 ).length === 0 || 
                 <>
                     <div className="dead-players-separator">
@@ -88,17 +90,23 @@ function PlayerCard(props: Readonly<{
         gameState => gameState.players[props.playerIndex].numVoted,
         ["gamePlayers", "playerVotes"]
     )!;
-    const sendChatGroups = usePlayerState(
-        playerState => playerState.sendChatGroups,
-        ["yourSendChatGroups"]
-    );
     const playerNames = usePlayerNames();
+
+
+    const controllers = new ListMap(
+        usePlayerState(playerState=>playerState.savedControllers, ["yourAllowedControllers"])??[],
+        (k1, k2)=>controllerIdToLinkWithPlayer(k1)===controllerIdToLinkWithPlayer(k2)
+    );
+    const whisperAsPlayers = controllers.list
+        .map(([id, _])=>id.type==="whisper"?id.player:null)
+        .filter((x)=>x!==null&&x!==undefined);
+    
 
     type NonAnonymousBlockMessage = {
         variant: {
-            type: "normal", 
+            type: "normal",
             messageSender: {
-                type: "player", 
+                type: "player",
                 player: PlayerIndex
             } | {
                 type: "livingToDead",
@@ -111,7 +119,7 @@ function PlayerCard(props: Readonly<{
     }
 
     const mostRecentBlockMessage: undefined | NonAnonymousBlockMessage = useGameState(
-        gameState => findLast(gameState.chatMessages, message =>
+        gameState => findLast(gameState.chatMessages.values(), (message) =>
                 message.chatGroup === "all" && 
                 message.variant.type === "normal" &&
                 message.variant.block &&
@@ -132,7 +140,7 @@ function PlayerCard(props: Readonly<{
     const grave = useGameState(
         gameState => {
             if(props.graveIndex === undefined) return undefined;
-            return gameState.graves[props.graveIndex]
+            return gameState.graves.get(props.graveIndex)
         },
         ["addGrave"]
     )!
@@ -148,7 +156,7 @@ function PlayerCard(props: Readonly<{
 
     const spectator = useSpectator();
 
-    return <><div 
+    return <><div
         className={`player-card`}
         key={props.playerIndex}
     >
@@ -181,9 +189,8 @@ function PlayerCard(props: Readonly<{
         }
         {spectator ||
             <Button 
-                disabled={isPlayerSelf || whispersDisabled}
+                disabled={whispersDisabled}
                 onClick={()=>{
-                    // GAME_MANAGER.prependWhisper(props.playerIndex); return true;
                     setWhisperChatOpen(!whisperChatOpen);
                     if(GAME_MANAGER.state.stateType === 'game' && GAME_MANAGER.state.clientState.type === 'player'){
                         GAME_MANAGER.state.clientState.missedWhispers = 
@@ -221,17 +228,28 @@ function PlayerCard(props: Readonly<{
     {graveOpen && grave !== undefined ? <div onClick={()=>setGraveOpen(false)}>
         <GraveComponent grave={grave}/>
     </div> : null}
-    {(whisperChatOpen && !isPlayerSelf) && <div className="chat-menu-colors player-list-chat-section">
+    {whisperChatOpen && <div className="chat-menu-colors player-list-chat-section">
         <div className="player-list-chat-message-section">
             <ChatMessageSection filter={{
-                type: "myWhispersWithPlayer",
-                player: props.playerIndex
+                type: "whispersBetweenPlayers",
+                players: [props.playerIndex, ...(whisperAsPlayers as number[])]
             }}/>
         </div>
-        {sendChatGroups === undefined || <ChatTextInput
-            disabled={sendChatGroups.length === 0}
-            whispering={props.playerIndex}
-        />}
+        {controllers.list
+            .map(([id, _])=>{
+                if(id.type!=="whisper"){return null}
+                const sendChatController = controllers.get({type: "sendWhisper", player: id.player})!;
+
+                return <>
+                    <ChatTextInput 
+                        key={"input: "+JSON.stringify(id)}
+                        disabled={sendChatController.availableAbilityData.grayedOut}
+                        whispering={props.playerIndex}
+                        controllingPlayer={id.player}
+                    />
+                </>
+            })
+        }
     </div>}
     </>
 }

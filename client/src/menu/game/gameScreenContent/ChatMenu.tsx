@@ -3,8 +3,8 @@ import translate from "../../../game/lang";
 import GAME_MANAGER from "../../../index";
 import "../gameScreen.css";
 import "./chatMenu.css"
-import { PlayerClientType, PlayerIndex } from "../../../game/gameState.d";
-import ChatElement, { translateChatMessage } from "../../../components/ChatMessage";
+import { PlayerClientType, PlayerIndex, UnsafeString } from "../../../game/gameState.d";
+import ChatElement, { ChatMessage, encodeString, translateChatMessage } from "../../../components/ChatMessage";
 import { ContentMenu, ContentTab } from "../GameScreen";
 import { HistoryPoller, HistoryQueue } from "../../../history";
 import { Button } from "../../../components/Button";
@@ -12,6 +12,8 @@ import Icon from "../../../components/Icon";
 import StyledText, { KeywordDataMap, PLAYER_KEYWORD_DATA, PLAYER_SENDER_KEYWORD_DATA } from "../../../components/StyledText";
 import { useGameState, useLobbyOrGameState, usePlayerNames, usePlayerState } from "../../../components/useHooks";
 import { Virtuoso } from 'react-virtuoso';
+import ListMap from "../../../ListMap";
+import { controllerIdToLinkWithPlayer } from "../../../game/abilityInput";
 
 
 export default function ChatMenu(): ReactElement {
@@ -23,7 +25,7 @@ export default function ChatMenu(): ReactElement {
     const sendChatGroups = usePlayerState(
         playerState => playerState.sendChatGroups,
         ["yourSendChatGroups"]
-    );
+    )??[];
 
     const playerNames = usePlayerNames();
 
@@ -31,13 +33,23 @@ export default function ChatMenu(): ReactElement {
         if (filter === undefined || filter === null) {
             return "";
         } else if (filter.type === "playerNameInMessage") {
-            return playerNames[filter.player];
-        } else if (filter.type === "myWhispersWithPlayer") {
-            return playerNames[filter.player];
+            return encodeString(playerNames[filter.player]);
+        } else if (filter.type === "whispersBetweenPlayers") {
+            return filter.players.map((p)=>encodeString(playerNames[p])).join();
         }else{
             return "";
         }
     }, [filter, playerNames]);
+
+    const controllers = new ListMap(
+        usePlayerState(playerState=>playerState.savedControllers, ["yourAllowedControllers"]),
+        (k1, k2)=>controllerIdToLinkWithPlayer(k1)===controllerIdToLinkWithPlayer(k2)
+    );
+
+    const myIndex = usePlayerState(
+        playerState => playerState.myIndex,
+        ["yourSendChatGroups"]
+    );
 
     return <div className="chat-menu chat-menu-colors">
         <ContentTab close={ContentMenu.ChatMenu} helpMenu={"standard/chat"}>{translate("menu.chat.title")}</ContentTab>
@@ -52,15 +64,36 @@ export default function ChatMenu(): ReactElement {
             </Button>
         </div>}
         <ChatMessageSection filter={filter}/>
-        {sendChatGroups === undefined || <>
-            <div className="chat-menu-icons">
-                {!sendChatGroups.includes("all") && translate("noAll.icon")}
-                {sendChatGroups.map((group) => {
-                    return translate("chatGroup."+group+".icon");
-                })}
-            </div>
-            <ChatTextInput disabled={sendChatGroups.length === 0}/>
-        </>}
+        {controllers.list
+            .map(([id, _])=>{
+                if(id.type!=="chat"){return null}
+
+                const sendChatController = controllers.get({type: "sendChat", player: id.player})!;
+
+                return <>
+                    <div key={"header: "+JSON.stringify(id)} className="chat-menu-icons">
+                        {
+                            myIndex===id.player?
+                                <>
+                                    {!sendChatGroups.includes("all") && translate("noAll.icon")}
+                                    {sendChatGroups.map((group) => {
+                                        return translate("chatGroup."+group+".icon");
+                                    })}
+                                </>
+                                :null
+                        }
+                        <StyledText>{encodeString(playerNames[id.player])}</StyledText>
+
+                    </div>
+                    <ChatTextInput 
+                        key={"input: "+JSON.stringify(id)}
+                        disabled={sendChatController.availableAbilityData.grayedOut}
+                        controllingPlayer={id.player}
+                    />
+                </>
+            })
+        }
+        
     </div>
 }
 
@@ -68,74 +101,91 @@ export type ChatFilter = {
     type: "playerNameInMessage",
     player: PlayerIndex
 } | {
-    type: "myWhispersWithPlayer",
-    player: PlayerIndex,
+//     type: "myWhispersWithPlayer",
+//     player: PlayerIndex,
+// } | {
+    type: "whispersBetweenPlayers",
+    players: PlayerIndex[]
 } | null;
+
+function filterMessage(
+    filter: ChatFilter,
+    message: ChatMessage,
+    playerNames: UnsafeString[],
+): boolean{
+    if(filter === null || filter === undefined)
+        return true;
+
+    switch(filter.type){
+        case "playerNameInMessage":
+            let msgTxt = "";
+            //special case messages, where translate chat message doesnt work properly, or it should be let through anyway
+            switch (message.variant.type) {
+                //translateChatMessage errors for playerDied type.
+                case "playerDied":
+                case "phaseChange":
+                    return true
+                case "normal":
+                    switch(message.variant.messageSender.type) {
+                        case "player":
+                        case "livingToDead":
+                            if(message.variant.messageSender.player === filter.player)
+                                return true;
+                            break;
+                    }
+                    break;
+                case "targetsMessage":
+                    msgTxt = translateChatMessage(message.variant.message, playerNames);
+                    break;
+            }
+
+            msgTxt += translateChatMessage(message.variant, playerNames);
+
+            return msgTxt.includes(encodeString(playerNames[filter.player]));
+        // case "myWhispersWithPlayer":
+        //     switch (message.variant.type) {
+        //         //translateChatMessage errors for playerDied type.
+        //         case "phaseChange":
+        //             return true
+        //         case "whisper":
+        //             if(
+        //                 (message.variant.fromPlayerIndex === filter.player && message.variant.toPlayerIndex === myPlayerIndex) ||
+        //                 (message.variant.toPlayerIndex === filter.player && message.variant.fromPlayerIndex === myPlayerIndex)
+        //             )
+        //                 return true;
+        //             else
+        //                 return false;
+        //         default:
+        //             return false;
+        //     }
+        case "whispersBetweenPlayers":
+            switch (message.variant.type) {
+                case "phaseChange":
+                    return true
+                case "whisper":
+                    return filter.players.includes(message.variant.fromPlayerIndex) && filter.players.includes(message.variant.toPlayerIndex);
+                default:
+                    return false;
+            }
+
+    }
+    return true;
+}
+
 
 export function ChatMessageSection(props: Readonly<{
     filter?: ChatFilter,
 }>): ReactElement {
-    const players = useGameState((gameState)=>{return gameState.players}, ["gamePlayers"])!;
+    const players = useGameState((gameState)=>{return gameState.players}, ["gamePlayers"])??[];
     const filter = useMemo(() => props.filter ?? null, [props.filter]);
     const messages = useLobbyOrGameState(
-        state => state.chatMessages,
+        state => state.chatMessages.values(),
         ["addChatMessages"]
     )!;
-    const myPlayerIndex = usePlayerState(
-        (gameState)=>gameState.myIndex,
-        ["yourPlayerIndex"]
-    );
 
     const allMessages = messages
-        .filter((msg)=>{
-            if(filter === null || filter === undefined)
-                return true;
-
-            switch(filter.type){
-                case "playerNameInMessage":
-                    let msgTxt = "";
-                    //special case messages, where translate chat message doesnt work properly, or it should be let through anyway
-                    switch (msg.variant.type) {
-                        //translateChatMessage errors for playerDied type.
-                        case "playerDied":
-                        case "phaseChange":
-                            return true
-                        case "normal":
-                            switch(msg.variant.messageSender.type) {
-                                case "player":
-                                case "livingToDead":
-                                    if(msg.variant.messageSender.player === filter.player)
-                                        return true;
-                                    break;
-                            }
-                            break;
-                        case "targetsMessage":
-                            msgTxt = translateChatMessage(msg.variant.message, players.map(player => player.toString()));
-                            break;
-                    }
-
-                    msgTxt += translateChatMessage(msg.variant, players.map(player => player.toString()));
-                    
-                    return msgTxt.includes(players[filter.player].toString());
-                case "myWhispersWithPlayer":
-                    switch (msg.variant.type) {
-                        //translateChatMessage errors for playerDied type.
-                        case "phaseChange":
-                            return true
-                        case "whisper":
-                            if(
-                                (msg.variant.fromPlayerIndex === filter.player && msg.variant.toPlayerIndex === myPlayerIndex) ||
-                                (msg.variant.toPlayerIndex === filter.player && msg.variant.fromPlayerIndex === myPlayerIndex)
-                            )
-                                return true;
-                            else
-                                return false;
-                        default:
-                            return false;
-                    }
-            }
-            return true;
-        }).filter((msg, index, array)=>{
+        .filter((msg)=>filterMessage(filter, msg, players.map((p)=>p.toString())))
+        .filter((msg, index, array)=>{
             //if there is a filter, remove repeat phaseChange message
             if(filter === null){return true}
             if(msg.variant.type !== "phaseChange"){return true}
@@ -148,28 +198,28 @@ export function ChatMessageSection(props: Readonly<{
                 message={msg}
                 playerKeywordData={(() => {
                     if (filter===null) {return undefined}
-                    if (filter.type === "myWhispersWithPlayer") {return undefined}
+                    if (filter.type === "whispersBetweenPlayers") {return undefined}
 
                     const newKeywordData: KeywordDataMap = {...PLAYER_KEYWORD_DATA};
 
-                    newKeywordData[players[filter.player].toString()] = [
+                    newKeywordData[encodeString(players[filter.player].toString())] = [
                         { style: "keyword-player-important keyword-player-number", replacement: (filter.player + 1).toString() },
                         { replacement: " " },
-                        { style: "keyword-player-important keyword-player-sender", replacement: players[filter.player].name }
+                        { style: "keyword-player-important keyword-player-sender", replacement: encodeString(players[filter.player].name) }
                     ];
                     
                     return newKeywordData;
                 })()}
                 playerSenderKeywordData={(() => {
                     if (filter===null) {return undefined}
-                    if (filter.type === "myWhispersWithPlayer") {return undefined}
+                    if (filter.type === "whispersBetweenPlayers") {return undefined}
 
                     const newKeywordData: KeywordDataMap = {...PLAYER_SENDER_KEYWORD_DATA};
 
-                    newKeywordData[players[filter.player].toString()] = [
+                    newKeywordData[encodeString(players[filter.player].toString())] = [
                         { style: "keyword-player-important keyword-player-number", replacement: (filter.player + 1).toString() },
                         { replacement: " " },
-                        { style: "keyword-player-important keyword-player-sender", replacement: players[filter.player].name }
+                        { style: "keyword-player-important keyword-player-sender", replacement: encodeString(players[filter.player].name) }
                     ];
                     
                     return newKeywordData;
@@ -190,6 +240,7 @@ export function ChatMessageSection(props: Readonly<{
 export function ChatTextInput(props: Readonly<{
     disabled?: boolean,
     whispering?: PlayerIndex | null,
+    controllingPlayer?: PlayerIndex
 }>): ReactElement {
     const [chatBoxText, setChatBoxText] = useState<string>("");
     const [drawAttentionSeconds, setDrawAttentionSeconds] = useState<number>(0);
@@ -208,10 +259,6 @@ export function ChatTextInput(props: Readonly<{
         gameState => gameState.players,
         ["gamePlayers"]
     );
-    const myIndex = usePlayerState(
-        playerState => playerState.myIndex,
-        ["yourPlayerIndex"]
-    );
     const stateType = useLobbyOrGameState(
         state => state.stateType,
         ["acceptJoin", "gameInitializationComplete", "startGame", "backToLobby"]
@@ -228,17 +275,17 @@ export function ChatTextInput(props: Readonly<{
         }
     )!;
 
-    const whisperingPlayer = useMemo(() => {
+    const whisperingPlayerName = useMemo(() => {
         return whispering!==null ? playerStrings[whispering] : null
     }, [playerStrings, whispering])
     
     const prependWhisper = useCallback((index: PlayerIndex) => {
-        if (gamePlayers !== undefined && index < gamePlayers.length && index !== myIndex) {
+        if (gamePlayers !== undefined && index < gamePlayers.length && index !== props.controllingPlayer) {
             setWhispering(index);
             setDrawAttentionSeconds(1.5);
             ref.current?.focus()
         }
-    }, [gamePlayers, myIndex]);
+    }, [gamePlayers, props.controllingPlayer]);
 
     useEffect(() => {
         if (drawAttentionSeconds === 0) {
@@ -271,21 +318,21 @@ export function ChatTextInput(props: Readonly<{
         historyPoller.reset();
         if (stateType === "game") {
             if (whispering !== null) {
-                GAME_MANAGER.sendSendWhisperPacket(whispering, text);
+                GAME_MANAGER.sendSendWhisperPacket(whispering, text, props.controllingPlayer);
             } else {
-                GAME_MANAGER.sendSendChatMessagePacket(text, false);
+                GAME_MANAGER.sendSendChatMessagePacket(text, false, props.controllingPlayer);
             }
         } else if (stateType === "lobby") {
             GAME_MANAGER.sendSendLobbyMessagePacket(text);
         }
-    }, [chatBoxText, history, historyPoller, stateType, whispering]);
+    }, [chatBoxText, history, historyPoller, stateType, whispering, props.controllingPlayer]);
 
     const handleInputChange = useCallback((event: React.ChangeEvent<HTMLTextAreaElement>) => {
         const text = event.target.value;
         const whisperCommandMatch = RegExp(/\/w(\d+) /).exec(text);
         if (whispering === null && whisperCommandMatch !== null) {
             const index = parseInt(whisperCommandMatch[1]) - 1;
-            if (gamePlayers !== undefined && index < gamePlayers.length && index >= 0 && index !== myIndex) {
+            if (gamePlayers !== undefined && index < gamePlayers.length && index >= 0 && index !== props.controllingPlayer) {
                 setWhispering(index);
                 setChatBoxText(text.slice(whisperCommandMatch[0].length));
             } else {
@@ -295,7 +342,7 @@ export function ChatTextInput(props: Readonly<{
         } else {
             setChatBoxText(text);
         }
-    }, [gamePlayers, myIndex, whispering]);
+    }, [gamePlayers, props.controllingPlayer, whispering]);
 
     const handleInputKeyDown = useCallback((event: React.KeyboardEvent<HTMLTextAreaElement>) => {
         
@@ -321,9 +368,24 @@ export function ChatTextInput(props: Readonly<{
         }
     }, [sendChatField, history, historyPoller, chatBoxText]);
 
+    const myIndex = usePlayerState((playerState, _)=>playerState.myIndex, ["yourPlayerIndex"]);
+    const sendingPlayer = props.controllingPlayer??myIndex??null;
+    const sendingPlayerName = useMemo(() => {
+        return sendingPlayer!==null ? playerStrings[sendingPlayer] : null
+    }, [playerStrings, sendingPlayer]);
+
+    if(
+        sendingPlayer!==null &&
+        sendingPlayer===whispering
+    ){
+        return <></>;
+    }
+
     return <>
-        {whisperingPlayer !== null && <div className="chat-whisper-notification">
-            <StyledText className="discreet">{translate("youAreWhispering", whisperingPlayer)}</StyledText>
+        {whisperingPlayerName !== null && <div className="chat-whisper-notification">
+            {sendingPlayerName!==null?<StyledText className="discreet">{
+                translate("playerIsWhisperingToPlayer", encodeString(sendingPlayerName), encodeString(whisperingPlayerName))
+            }</StyledText>:null}
             {props.whispering === undefined ? <Button
                 highlighted={true}
                 onClick={() => setWhispering(null)}

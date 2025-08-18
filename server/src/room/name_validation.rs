@@ -34,9 +34,7 @@ pub fn sanitize_name(mut desired_name: String, other_names: &[String]) -> String
         .truncate(MAX_NAME_LENGTH)
         .truncate_lines(1);
 
-    let name_already_taken = other_names.iter().any(|name|
-        desired_name == *name
-    );
+    let name_already_taken = other_names.contains(&desired_name);
     
     if !desired_name.is_empty() && !name_already_taken {
         desired_name

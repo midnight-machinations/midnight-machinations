@@ -26,7 +26,7 @@ pub struct WebsocketListener {
     ///  Yes                 | No               | Disconnect listener client
     ///  Yes                 | Yes              | Hooray!
     clients: HashMap<SocketAddr, Client>,
-    rooms: HashMap<RoomCode, Room>,
+    rooms: HashMap<RoomCode, Box<Room>>,
 }
 impl WebsocketListener{
     pub fn new() -> Self {
@@ -38,10 +38,10 @@ impl WebsocketListener{
     fn clients(&self) -> &HashMap<SocketAddr, Client> {
         &self.clients
     }
-    fn rooms(&self) -> &HashMap<RoomCode, Room> {
+    fn rooms(&self) -> &HashMap<RoomCode, Box<Room>> {
         &self.rooms
     }
-    fn rooms_mut(&mut self) -> &mut HashMap<RoomCode, Room> {
+    fn rooms_mut(&mut self) -> &mut HashMap<RoomCode, Box<Room>> {
         &mut self.rooms
     }
     fn get_client<'a>(&'a self, address: &SocketAddr) -> Option<&'a Client> {
@@ -51,10 +51,10 @@ impl WebsocketListener{
         self.clients.get_mut(address)
     }
     pub(super) fn get_room<'a>(&'a self, room_code: &RoomCode) -> Option<&'a Room> {
-        self.rooms.get(room_code)
+        self.rooms.get(room_code).map(|r| r.as_ref())
     }
     pub(super) fn get_room_mut<'a>(&'a mut self, room_code: &RoomCode) -> Option<&'a mut Room> {
-        self.rooms.get_mut(room_code)
+        self.rooms.get_mut(room_code).map(|r| r.as_mut())
     }
 
 
@@ -158,7 +158,7 @@ impl WebsocketListener{
     pub(super) fn create_room(&mut self) -> Option<RoomCode>{
         let room_code = self.generate_roomcode()?;
 
-        self.rooms.insert(room_code, Room::new());
+        self.rooms.insert(room_code, Box::new(Room::new()));
         Some(room_code)
     }
     pub(super) fn delete_room(&mut self, room_code: RoomCode){

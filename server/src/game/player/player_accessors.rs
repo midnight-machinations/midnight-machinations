@@ -1,6 +1,6 @@
 use crate::{
     game::{
-        chat::{ChatMessage, ChatMessageVariant}, event::{
+        chat::{ChatMessage, ChatMessageVariant, ChatPlayerComponent}, components::player_component::PlayerComponent, event::{
             on_conceal_role::OnConcealRole, on_fast_forward::OnFastForward
         }, modifiers::{ModifierType, Modifiers}, role::{Role, RoleState}, verdict::Verdict, Game
     }, 
@@ -48,14 +48,6 @@ impl PlayerReference{
         game.count_nomination_and_start_trial(
             Modifiers::is_enabled(game, ModifierType::UnscheduledNominations)
         );
-    }
-
-    pub fn will<'a>(&self, game: &'a Game) -> &'a String {
-        &self.deref(game).will
-    }
-    pub fn set_will(&self, game: &mut Game, will: String){
-        self.deref_mut(game).will = will;
-        self.send_packet(game, ToClientPacket::YourWill { will: self.deref(game).will.clone() });
     }
     
     pub fn notes<'a>(&self, game: &'a Game) -> &'a Vec<String> {
@@ -122,11 +114,10 @@ impl PlayerReference{
         }
     }
     pub fn add_chat_message(&self, game: &mut Game, message: ChatMessage) {
-        self.deref_mut(game).chat_messages.push(message.clone());
-        self.deref_mut(game).queued_chat_messages.push(message);
+        PlayerComponent::<ChatPlayerComponent>::add_chat_message(game, *self, message);
     }
     pub fn chat_messages<'a>(&self, game: &'a Game) -> &'a Vec<ChatMessage> {
-        &self.deref(game).chat_messages
+        PlayerComponent::<ChatPlayerComponent>::chat_messages(game, *self)
     }
 
     pub fn set_fast_forward_vote(&self, game: &mut Game, fast_forward_vote: bool) {

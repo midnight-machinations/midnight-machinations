@@ -9,6 +9,7 @@ import Icon from "../../components/Icon";
 import { Button } from "../../components/Button";
 import { useGameState, usePlayerState, useSpectator } from "../../components/useHooks";
 import { MobileContext } from "../Anchor";
+import { encodeString } from "../../components/ChatMessage";
 
 
 export default function HeaderMenu(props: Readonly<{
@@ -126,7 +127,7 @@ function Information(): ReactElement {
                     </div>
                 </h3>
                 {spectator || <StyledText>
-                    {myName + " (" + translate("role."+(roleState!.type)+".name") + ")"}
+                    {encodeString(myName ?? "undefined") + " (" + translate("role."+(roleState!.type)+".name") + ")"}
                 </StyledText>}
             </div>
         </div>
@@ -154,7 +155,7 @@ export function PhaseSpecificInformation(props: Readonly<{
         return <div className="phase-specific">
             <div className="highlighted">
                 <StyledText>
-                    {translate(`${props.phaseState.type}.playerOnTrial`, props.players[props.phaseState.playerOnTrial].toString())}
+                    {translate(`${props.phaseState.type}.playerOnTrial`, encodeString(props.players[props.phaseState.playerOnTrial].toString()))}
                 </StyledText>
                 {!spectator && props.phaseState.type === "judgement" && <div className="judgement-info">
                     {(() => {

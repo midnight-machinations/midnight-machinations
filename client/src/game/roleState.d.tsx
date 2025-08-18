@@ -1,4 +1,4 @@
-import { PlayerIndex } from "./gameState.d"
+import { PlayerIndex, UnsafeString } from "./gameState.d"
 import { RoleSet } from "./roleListState.d"
 import ROLES from "./../resources/roles.json";
 import { ChatMessageVariant } from "../components/ChatMessage";
@@ -92,7 +92,7 @@ export type RoleState = {
 } | {
     type: "reporter",
     public: boolean,
-    report: string,
+    report: UnsafeString,
     interviewedTarget: PlayerIndex | null
 } | {
     type: "godfather"
@@ -116,8 +116,14 @@ export type RoleState = {
 (Hypnotist & {type: "hypnotist"})
  | {
     type: "consort"
- } | {
-    type: "blackmailer"
+} | {
+    type: "blackmailer",
+    previous: PlayerIndex | null
+} | {
+    type: "cerenovous",
+    previous: PlayerIndex | null,
+    currentlyBrained: PlayerIndex | null,
+    charges: number,
 } | {
     type: "informant",
 } | {
@@ -151,6 +157,11 @@ export type RoleState = {
 } | 
 Doomsayer 
 | {
+    type: "mercenary",
+    roles: Role[],
+    attacksRemaining: number,
+    won: boolean
+} | {
     type: "politician"
 } | {
     type: "santaClaus",

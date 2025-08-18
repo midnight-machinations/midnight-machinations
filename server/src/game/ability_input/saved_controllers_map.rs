@@ -2,15 +2,16 @@ use serde::{Deserialize, Serialize};
 
 use crate::{
     game::{
-        chat::ChatMessageVariant, components::{
+        chat::{ChatComponent, ChatMessageVariant},
+        components::{
+            alibi::Alibi, forfeit_vote::ForfeitNominationVote,
             forward_messages::ForwardMessages, insider_group::InsiderGroupID,
-            mafia::Mafia, pitchfork::Pitchfork, syndicate_gun_item::SyndicateGunItem,
-            forfeit_vote::ForfeitVote,
-            nomination_controller::NominationController,
+            mafia::Mafia, nomination_controller::NominationController,
+            pitchfork::Pitchfork, syndicate_gun_item::SyndicateGunItem
         }, 
         event::{
             on_controller_selection_changed::OnControllerSelectionChanged,
-            on_validated_ability_input_received::OnValidatedAbilityInputReceived
+            on_validated_ability_input_received::OnValidatedAbilityInputReceived, Event
         }, 
         phase::PhaseType, player::PlayerReference, Game
     }, packet::ToClientPacket, vec_map::VecMap, vec_set::VecSet
@@ -48,7 +49,7 @@ impl SavedControllersMap{
             return false;
         }
 
-        if id.should_send_chat_message() {
+        if id.should_send_selection_chat_message(game) {
             Self::send_selection_message(game, actor, id, incoming_selection);
         }
         
@@ -84,9 +85,11 @@ impl SavedControllersMap{
             NominationController::controller_parameters_map(game),
             SyndicateGunItem::controller_parameters_map(game),
             Mafia::controller_parameters_map(game),
-            ForfeitVote::controller_parameters_map(game),
+            ForfeitNominationVote::controller_parameters_map(game),
             Pitchfork::controller_parameters_map(game),
-            ForwardMessages::controller_parameters_map(game)
+            ForwardMessages::controller_parameters_map(game),
+            ChatComponent::controller_parameters_map(game),
+            Alibi::controller_parameters_map(game)
         ]);
 
         if *current_controller_parameters != new_controller_parameters_map {

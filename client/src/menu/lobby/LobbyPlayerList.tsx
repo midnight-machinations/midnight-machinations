@@ -9,6 +9,7 @@ import { Button, RawButton } from "../../components/Button";
 import Popover from "../../components/Popover";
 import { dropdownPlacementFunction } from "../../components/Select";
 import StyledText from "../../components/StyledText";
+import { encodeString } from "../../components/ChatMessage";
 
 type PlayerDisplayData = {
     id: number,
@@ -25,7 +26,7 @@ export default function LobbyPlayerList(): ReactElement {
         state => {
             if (state.stateType === "lobby") {
                 return state.players.entries().map(([id, player]) => {
-                    const name = player.clientType.type === "player" ? player.clientType.name : null;
+                    const name = player.clientType.type === "player" ? encodeString(player.clientType.name) : null;
                     return {
                         id,
                         clientType: player.clientType.type,
@@ -45,10 +46,10 @@ export default function LobbyPlayerList(): ReactElement {
                         ready: null,
                         host: player.host,
                         name: player.clientType.type === "player"
-                            ? state.players[player.clientType.index].name
+                            ? encodeString(state.players[player.clientType.index].name)
                             : player.clientType.index.toString(),
                         displayName: player.clientType.type === "player"
-                            ? state.players[player.clientType.index].toString()
+                            ? encodeString(state.players[player.clientType.index].toString())
                             : player.clientType.index.toString(),
                     }
                 })

@@ -11,6 +11,8 @@ pub struct Lobby {
     pub name: String,
     pub settings: Settings,
     pub clients: VecMap<RoomClientID, LobbyClient>,
+
+    pub chat_message_index: usize
 }
 
 impl Lobby {
@@ -21,6 +23,7 @@ impl Lobby {
             name: name_validation::DEFAULT_SERVER_NAME.to_string(),
             settings: Settings::default(),
             clients: VecMap::new(),
+            chat_message_index: 0,
         }
     }
 
@@ -121,7 +124,7 @@ impl Lobby {
     }
     
     pub fn new_from_game(name: String, settings: Settings, clients: VecMap<RoomClientID, LobbyClient>) -> Self {
-        let new = Self { name, settings, clients };
+        let new = Self { name, settings, clients, chat_message_index: 0 };
 
         for (id, client) in new.clients.iter() {
             client.send(ToClientPacket::YourId { player_id: *id });
@@ -164,6 +167,7 @@ impl RoomState for Lobby {
                 };
 
         self.clients.insert(room_client_id, new_player);
+        self.clients.shuffle(&mut rand::rng());
 
         self.ensure_host_exists(None);
 

@@ -1,6 +1,7 @@
 #![allow(clippy::single_match, reason = "May add more cases for more priorities later")]
 
 use std::collections::HashSet;
+use crate::game::components::graves::grave_reference::GraveReference;
 use crate::vec_set::{vec_set, VecSet};
 
 use crate::game::player::PlayerReference;
@@ -15,8 +16,11 @@ use serde::{Serialize, Deserialize};
 use super::components::win_condition::WinCondition;
 use super::{
     ability_input::*, components::{insider_group::InsiderGroupID, night_visits::NightVisits},
-    event::{on_midnight::{MidnightVariables, OnMidnightPriority}, on_whisper::{OnWhisper, WhisperFold, WhisperPriority}},
-    grave::GraveReference, visit::VisitTag,
+    event::{
+        on_midnight::{MidnightVariables, OnMidnightPriority},
+        on_whisper::{OnWhisper, WhisperFold, WhisperPriority}
+    },
+    visit::VisitTag,
 };
 
 pub trait GetClientRoleState<CRS> {
@@ -63,6 +67,7 @@ pub trait RoleStateImpl: Clone + std::fmt::Debug + Default + GetClientRoleState<
 
     fn on_phase_start(self, _game: &mut Game, _actor_ref: PlayerReference, _phase: PhaseType) {}
     fn on_role_creation(self, _game: &mut Game, _actor_ref: PlayerReference) {}
+    fn on_role_switch(self, _game: &mut Game, _actor_ref: PlayerReference, _player: PlayerReference, _new: RoleState, _old: RoleState) {}
     fn before_role_switch(self, _game: &mut Game, _actor_ref: PlayerReference, _player: PlayerReference, _new: RoleState, _old: RoleState) {}
     fn on_any_death(self, _game: &mut Game, _actor_ref: PlayerReference, _dead_player_ref: PlayerReference) {}
     fn on_grave_added(self, _game: &mut Game, _actor_ref: PlayerReference, _grave: GraveReference) {}
@@ -70,17 +75,17 @@ pub trait RoleStateImpl: Clone + std::fmt::Debug + Default + GetClientRoleState<
     fn on_game_start(self, _game: &mut Game, _actor_ref: PlayerReference) {}
     fn before_initial_role_creation(self, _game: &mut Game, _actor_ref: PlayerReference) {}
     fn on_conceal_role(self, _game: &mut Game, _actor_ref: PlayerReference, _player: PlayerReference, _concealed_player: PlayerReference) {}
-    fn on_player_roleblocked(self, _game: &mut Game, midnight_machinations: &mut MidnightVariables, actor_ref: PlayerReference, player: PlayerReference, _invisible: bool) {
+    fn on_player_roleblocked(self, _game: &mut Game, midnight_variables: &mut MidnightVariables, actor_ref: PlayerReference, player: PlayerReference, _invisible: bool) {
         if player != actor_ref {return}
 
-        NightVisits::retain(midnight_machinations, |v|
+        NightVisits::retain(midnight_variables, |v|
             !matches!(v.tag, VisitTag::Role{..}) || v.visitor != actor_ref
         );
     }
-    fn on_visit_wardblocked(self, _game: &mut Game, midnight_machinations: &mut MidnightVariables, actor_ref: PlayerReference, visit: Visit) {
+    fn on_visit_wardblocked(self, _game: &mut Game, midnight_variables: &mut MidnightVariables, actor_ref: PlayerReference, visit: Visit) {
         if actor_ref != visit.visitor {return};
 
-        NightVisits::retain(midnight_machinations, |v|
+        NightVisits::retain(midnight_variables, |v|
             !matches!(v.tag, VisitTag::Role{..}) || v.visitor != actor_ref
         );
     }
@@ -127,6 +132,7 @@ macros::roles! {
     Porter : porter,
     Coxswain : coxswain,
     Polymath : polymath,
+    Courtesan : courtesan,
 
     // Mafia
     Godfather : godfather,
@@ -141,6 +147,7 @@ macros::roles! {
     
     Hypnotist : hypnotist,
     Blackmailer : blackmailer,
+    Cerenovous : cerenovous,
     Informant: informant,
     MafiaWitch : mafia_witch,
     Necromancer : necromancer,
@@ -157,6 +164,7 @@ macros::roles! {
     Revolutionary : revolutionary,
     Politician : politician,
     Doomsayer : doomsayer,
+    Mercenary : mercenary,
     Wildcard : wild_card,
     TrueWildcard : true_wildcard,
     Martyr : martyr,
@@ -321,6 +329,11 @@ mod macros {
                         $(Self::$name(role_struct) => role_struct.on_role_creation(game, actor_ref)),*
                     }
                 }
+                pub fn on_role_switch(self, game: &mut Game, actor_ref: PlayerReference, player: PlayerReference, old: RoleState, new: RoleState){
+                    match self {
+                        $(Self::$name(role_struct) => role_struct.on_role_switch(game, actor_ref, player, old, new)),*
+                    }
+                }
                 pub fn before_role_switch(self, game: &mut Game, actor_ref: PlayerReference, player: PlayerReference, old: RoleState, new: RoleState){
                     match self {
                         $(Self::$name(role_struct) => role_struct.before_role_switch(game, actor_ref, player, old, new)),*
@@ -386,6 +399,7 @@ impl Role{
     pub fn has_innocent_aura(&self, game: &Game)->bool{
         match self {
             Role::Godfather => true,
+            Role::Disguiser => true,
             Role::Pyrolisk => {
                 game.day_number() == 1
             },
