@@ -80,6 +80,7 @@
 
     "menu.will.notes": {"link":"standard/howToPlay", "style": "keyword-info"},
     "menu.will.deathNote": {"link":"standard/howToPlay", "style": "keyword-info"},
+    "menu.wiki.title": {"link":"standard/howToPlay", "style": "keyword-title glitch"},
     
     "language":{ "link": "generated/all_text"}
 }

@@ -14,6 +14,7 @@ import { useLobbyOrGameState } from '../components/useHooks';
 import { Button } from '../components/Button';
 import HostMenu from './HostMenu';
 import { encodeString } from '../components/ChatMessage';
+import StyledText from '../components/StyledText';
 
 export default function GlobalMenu(): ReactElement {
     const lobbyName = useLobbyOrGameState(
@@ -95,7 +96,7 @@ export default function GlobalMenu(): ReactElement {
                 <button onClick={() => {
                     anchorController.setCoverCard(<WikiCoverCard />);
                     anchorController.closeGlobalMenu();
-                }}><Icon>menu_book</Icon> {translate("menu.wiki.title")}</button>
+                }}><Icon>menu_book</Icon><StyledText noLinks={true}>{translate("menu.wiki.title")}</StyledText></button>
             </section>
         </div>
     );

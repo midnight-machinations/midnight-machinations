@@ -6,6 +6,7 @@ import { WikiArticleLink } from './WikiArticleLink';
 import { useLobbyOrGameState } from './useHooks';
 import { MODIFIERS, ModifierType } from '../game/gameState.d';
 import { getAllRoles } from '../game/roleListState.d';
+import StyledText from './StyledText';
 
 export default function WikiCoverCard(props: Readonly<{
     initialWikiPage?: WikiArticleLink
@@ -22,7 +23,7 @@ export default function WikiCoverCard(props: Readonly<{
     )!;
 
     return <div className='wiki-cover-card'>
-        <h1>{translate("menu.wiki.title")}</h1>
+        <h1><StyledText noLinks={true}>{translate("menu.wiki.title")}</StyledText></h1>
         <Wiki enabledRoles={enabledRoles} enabledModifiers={enabledModifiers} initialWikiPage={props.initialWikiPage}/>
     </div>;
 }

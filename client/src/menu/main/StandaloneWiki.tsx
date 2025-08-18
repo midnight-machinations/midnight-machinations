@@ -5,13 +5,14 @@ import "./standaloneWiki.css";
 import { WikiArticleLink } from "../../components/WikiArticleLink";
 import { MODIFIERS, ModifierType } from "../../game/gameState.d";
 import { getAllRoles } from "../../game/roleListState.d";
+import StyledText from "../../components/StyledText";
 
 export default function StandaloneWiki(props: Readonly<{
     initialWikiPage?: WikiArticleLink
 }>): ReactElement {
     return <div className="standalone-wiki wiki-menu-colors">
         <header>
-            <h2>{translate("menu.wiki.title")}</h2>
+            <h2><StyledText noLinks={true}>{translate("menu.wiki.title")}</StyledText></h2>
         </header>
         <div>
             <Wiki 

@@ -45,7 +45,7 @@ export default function StartMenu(): ReactElement {
                         <Icon>edit</Icon> {translate("menu.globalMenu.gameSettingsEditor")}
                     </Button>
                     <Button onClick={() => setAnchorContent(<StandaloneWiki/>)}>
-                        <Icon>menu_book</Icon> {translate("menu.wiki.title")}
+                        <Icon>menu_book</Icon> <StyledText noLinks={true}>{translate("menu.wiki.title")}</StyledText>
                     </Button>
                 </div>
             </div>

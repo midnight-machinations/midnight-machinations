@@ -113,6 +113,8 @@
     "menu.will.subtract": "Subtract",
 
     "menu.wiki.title": "Midnight Manual",
+    "menu.wiki.title:var.0": "Manual",
+    "menu.wiki.title:var.1": "Wiki",
     "menu.wiki.icon": "📖",
     "menu.wiki.search.placeholder": "Search the manual...",
 

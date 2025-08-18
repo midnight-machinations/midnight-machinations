@@ -102,6 +102,9 @@
 .keyword-title {
     font-family: var(--title-font), 'Roboto', sans-serif;
 }
+h2 .keyword-title, h1 .keyword-title {
+    font-weight: normal;
+}
 .keyword-kira {
     font-family: var(--kira-font, Arial);
 }
