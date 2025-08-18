@@ -41,7 +41,7 @@ const ChatElement = React.memo((
 
             return controller!==null&&!controller.availableAbilityData.grayedOut;
         },
-        ["yourPlayerIndex", "yourAllowedControllers"]
+        ["yourPlayerIndex", "yourAllowedControllers", "yourAllowedController"]
     );
     const myIndex = usePlayerState(
         playerState => playerState.myIndex,
