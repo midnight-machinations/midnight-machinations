@@ -143,6 +143,8 @@ pub enum ChatMessageVariant {
     AddedToNaughtyList,
     SantaAddedPlayerToNaughtyList { player: PlayerReference },
 
+    RevolutionaryRefreshFailed,
+
     SomeoneSurvivedYourAttack,
     YouSurvivedAttack,
     YouGuardedSomeone,

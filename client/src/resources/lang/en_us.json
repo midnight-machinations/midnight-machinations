@@ -479,6 +479,7 @@
 
     "role.revolutionary.name": "Revolutionary",
     "role.revolutionary.name:var.0": "Revolutionaries",
+    "controllerId.role.revolutionary.0.name": "Refresh Target",
     
     "role.doomsayer.name": "Doomsayer",
     "role.doomsayer.name:var.0": "Doomsayers",
@@ -984,6 +985,7 @@
     "chatMessage.recruiterPlayerIsNowRecruit":"The recruiter recruited \\0 into the syndicate. They are now a Syndicate Loyalist and Syndicate Insider. They will be attacked every night.",
     "chatMessage.wardenPlayersImprisoned": "The warden has forced these players into a choice of live or die: \\0.",
     "chatMessage.yourConvertFailed": "You failed to convert your target.",
+    "chatMessage.revolutionaryRefreshFailed": "You failed to refresh your target.",
 
     "chatMessage.youDied":"You died!",
     "chatMessage.youSurvivedAttack": "You were attacked by someone, but you had defense and survived.",
@@ -1829,7 +1831,7 @@
     "wiki.article.role.ambusher.reminder": "At night, choose a player to attack a random visitor to them",
     "wiki.article.role.ambusher.guide": "- At night, choose a player to camp\n    - You attack a random visitor to the player you chose to camp\n        - The attack prioritizes town loyalists\n   - All other visitors to your target are told you are the ambusher\n    - You can't use your ability night 1\n    - You only visit the player you camp",
     "wiki.article.role.ambusher.abilities":"- At night, choose a player to camp\n    - You attack a random visitor to the player you chose to camp\n        - The attack prioritizes town loyalists\n   - All other visitors to your target are told you are the ambusher\n    - You can't use your ability night 1\n    - You only visit the player you camp",
-    "wiki.article.role.ambusher.attributes":"- The ambushers attack has an attack power of basic\n- You can attack yourself if you somehow visit yourself with another ability (for exmaple: syndicate gun)\n - If another player visits your target twice, they could potentially get the message saying they caught an ambusher twice, or get attacked and get the message once.",
+    "wiki.article.role.ambusher.attributes":"- The ambushers attack has an attack power of basic\n- You can attack yourself if you somehow visit yourself with another ability (for example: syndicate gun)\n - If another player visits your target twice, they could potentially get the message saying they caught an ambusher twice, or get attacked and get the message once.",
     "wiki.article.role.ambusher.extra":"- You can't select yourself or other syndicate members\n - You don't visit the player you attack",
 
     "wiki.article.role.mafiaSupportWildcard.guide": "* Choose a syndicate support role to become that role\n    * You become that role when night starts\n* You likely can't become a role if someone already has that role (You can't become a role that has exceeded its role limit)",
@@ -1843,11 +1845,11 @@
     "wiki.article.role.jester.attributes":"* You always have an innocent aura\n* If you select nobody on the night after you are executed, you will attack a random living player who did not vote you innocent\n* You have a protection-piercing, indirect attack",
     "wiki.article.role.jester.extra":"* Your attack is indirect, so nothing can effect it",
 
-    "wiki.article.role.revolutionary.reminder": "If your target is executed you win, after you win you leave town.",
-    "wiki.article.role.revolutionary.guide":"- Get your execution target executed to win\n When you win, you leave town at the start of night\n\nYou should try to claim something that makes people think your target is evil.",
-    "wiki.article.role.revolutionary.abilities":"* At the beginning of the game, you are assigned an execution target. It is a random townie, but never a Mayor, Reporter, Jailor, Deputy, Veteran, or Transporter\n* Your execution targets role is revealed to you when you are assigned that target",
+    "wiki.article.role.revolutionary.reminder": "If your target is executed you win, after you win you leave town. You are able to refresh your target each night.",
+    "wiki.article.role.revolutionary.guide":"- Get your execution target executed to win\n    - When you win, you leave town at the start of night\n    - You should try to claim something that makes people think your target is evil.\n- Each night choose whether or not you want to refresh your target.\n    - When you refresh your target, your assigned a random new target.\n    - Your previous target's role is concealed from you.",
+    "wiki.article.role.revolutionary.abilities":"* At the beginning of the game, you are assigned an execution target. It is a random townie.\n* Your target's role is revealed to you.\n* You can refresh your target to a new random townie.",
     "wiki.article.role.revolutionary.attributes":"* When your execution target is executed, you win\n* After you win, you leave town at the start of final words\n* You are armored",
-    "wiki.article.role.revolutionary.extra":"* If your target dies by something other than execution, you convert to a jester immediately, even while dead\n* If there are no valid targets in the game when you become the Revolutionary, you convert to a Jester",
+    "wiki.article.role.revolutionary.extra":"- If there are no valid targets other than your current target when you refresh your target, your refresh fails.",
 
     "wiki.article.role.doomsayer.reminder": "Guess the role of three different players correctly to win. When you win you attack the players you guessed.",
     "wiki.article.role.doomsayer.guide": "- Guess the role of three different players correctly to win\n- If you get all your guesses correct and win, you attack all three players, and then leave town\n- You can't guess town investigative roles\n- If a player has a non town role, you don't need to guess their exact role, just that they are non town\n\n In order to counter a doomsayer, players often claimswap",

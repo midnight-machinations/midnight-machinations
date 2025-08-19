@@ -1,3 +1,5 @@
+use std::ops::Deref;
+
 use mafia_server::{game::{ability_input::*, chat::ChatMessageVariant, game_conclusion::GameConclusion, phase::PhaseState, player::{PlayerIndex, PlayerReference}, role::{Role, RoleState}, verdict::Verdict, Game}, packet::ToServerPacket};
 
 #[derive(Clone, Copy, Debug)]
@@ -206,4 +208,12 @@ impl From<TestPlayer> for Vec<TestPlayer> {
     fn from(value: TestPlayer) -> Self {
         vec![value]
     }
+}
+
+impl Deref for TestPlayer {
+    fn deref(&self) -> &PlayerReference {
+        &self.0
+    }
+    
+    type Target = PlayerReference;
 }
