@@ -1,7 +1,7 @@
 use serde::{Deserialize, Serialize};
 
 use crate::{game::{
-    ability_input::*, attack_power::DefensePower, components::{graves::grave::Grave, synopsis::Synopsis, tags::Tag, win_condition::WinCondition}, phase::PhaseState, player::{PlayerIndex, PlayerReference}, role::{
+    controllers::*, attack_power::DefensePower, components::{graves::grave::Grave, synopsis::Synopsis, tags::Tag, win_condition::WinCondition}, phase::PhaseState, player::{PlayerIndex, PlayerReference}, role::{
             auditor::AuditorResult, engineer::TrapState, kira::KiraResult, krampus::KrampusAbility,
             santa_claus::SantaListKind, spy::SpyBug, Role
         }, role_list::RoleOutline, role_outline_reference::OutlineIndex, verdict::Verdict
@@ -100,7 +100,7 @@ pub enum ChatMessageVariant {
     AbilityUsed{
         player: PlayerIndex,
         ability_id: ControllerID,
-        selection: AbilitySelection
+        selection: ControllerSelection
     },
 
     #[serde(rename_all = "camelCase")]
@@ -186,6 +186,7 @@ pub enum ChatMessageVariant {
     Transported,
 
     Silenced,
+    Brained,
     #[serde(rename_all = "camelCase")]
     GodfatherBackup{backup: Option<PlayerIndex>},
     #[serde(rename_all = "camelCase")]

@@ -2,7 +2,7 @@ use std::collections::HashSet;
 
 use serde::Serialize;
 
-use crate::game::ability_input::{AvailableBooleanSelection, AvailableStringSelection};
+use crate::game::controllers::{AvailableBooleanSelection, AvailableStringSelection};
 use crate::game::attack_power::DefensePower;
 use crate::game::chat::{ChatGroup, ChatMessageVariant};
 use crate::game::components::insider_group::InsiderGroupID;

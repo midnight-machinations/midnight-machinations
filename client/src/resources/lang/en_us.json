@@ -230,6 +230,7 @@
     "role.snoop.name:var.2": "Snoopies",
     "role.snoop.name:var.3": "Snoopys",
     "controllerId.role.snoop.0.name": "Snoop",
+    "controllerId.role.snoop.1.name": "Buddy",
 
     "role.gossip.name": "Gossip",
     "role.gossip.name:var.0": "Gossips",
@@ -529,7 +530,7 @@
     "role.werewolf.name:var.1": "Wolf",
     "role.werewolf.name:var.2": "Wolves",
     "controllerId.role.werewolf.1.name": "Sniff",
-    "controllerId.role.werewolf.0.name": "Sniff/Camp",
+    "controllerId.role.werewolf.0.name": "Camp",
 
     "role.ojo.name": "Ojo",
     "role.ojo.name:var.0": "Ojos",
@@ -702,7 +703,7 @@
     "tag.revolutionaryTarget":"🎯",
     "tag.revolutionaryTarget.name":"Revolutionary target",
     "tag.werewolfTracked": "🐾",
-    "tag.werewolfTracked.name": "Werewolf Tracked",
+    "tag.werewolfTracked.name": "Werewolf Sniffed",
     "tag.morticianTagged":"🏺",
     "tag.morticianTagged.name":"Obscure tagged",
     "tag.spiraling":"🌀",
@@ -741,6 +742,10 @@
     "messageSender.livingToDead.icon": "🔮",
 
     "controllerId.nominate.name": "Nominate",
+    "controllerId.judge.name": "Judge",
+    "controllerId.judge.integer.0": "Innocent",
+    "controllerId.judge.integer.1": "Guilty",
+    "controllerId.judge.integer.2": "Abstain",
     "controllerId.alibi.name": "Alibi",
     "controllerId.chat.name": "Chat",
     "controllerId.chatIsBlock.name": "Chat is Block",
@@ -842,6 +847,7 @@
     "hiddenNominationVotes": "Hidden Nomination Votes",
     "hiddenVerdictVotes": "Hidden Verdict Votes",
     "forfeitNominationVote": "Forfeit Nomination Vote",
+    "randomPlayerNames": "Random Player Names",
 
     "syndicateGunItem": "Syndicate Gun",
     "nightMessages": "Night Messages",
@@ -1039,6 +1045,7 @@
     "chatMessage.godfatherBackup.nobody": "The Syndicate has deselected a backup.",
     "chatMessage.godfatherBackupKilled": "The Syndicate was blocked, so \\0 attacked for the Syndicate.",
     "chatMessage.silenced": "You are silenced! You must not speak, chat, point, or otherwise communicate until tomorrow!",
+    "chatMessage.brained": "You are brained! You must not speak, chat, point, or otherwise communicate until tomorrow!",
     "chatMessage.playerRoleAndAlibi": "\\0 had the role \\1 and their alibi stated this: \\2",
     "chatMessage.informantResult": "\\0 (\\1) \\2 \\3",
     "chatMessage.informantResult.visited": "Visited: \\0.",
@@ -1409,6 +1416,8 @@
     "wiki.article.modifier.forfeitNominationVote.title:var.2": "Forfeits Vote",
     "wiki.article.modifier.forfeitNominationVote.title:var.3": "Forfeit Nomination Vote",
     "wiki.article.modifier.forfeitNominationVote.text": "Forfeiting your vote means you are not able to vote during the nomination phase but you can still vote during the judgement phase. During discussion, players can choose to forfeit their vote using the button at the top of the playerlist. Once Nomination starts, they can't change their mind.\n- Everyone learns who forfeited their vote when nomination starts in the form of a tag\n- For each player who forfeits their vote, the amount of votes needed for a trial decreases accordingly.",
+    "wiki.article.modifier.randomPlayerNames.title": "Random Player Names",
+    "wiki.article.modifier.randomPlayerNames.text": "Random Player Names is a modifier that randomizes players names when the game starts, allowing anonymous games.",
     
     "wiki.article.standard.syndicateGunItem.title":"Syndicate Gun",
     "wiki.article.standard.syndicateGunItem.text":"Syndicate Gun is an ability a syndicate member gets when theres no syndicate killing role present\n- A syndicate member is given a gun they can use to kill a player with a basic attack at night\n- The gun can't be used on the first night\n- The gun can be passed around between syndicate members, so a different syndicate member can shoot it every night\n- The gun still uses visits, so getting roleblocked still erases that visit, and transports still move it\n- The killer appears to be syndicate on the grave of the player who died to the gun\n- When the game starts, the player with the gun is given an armored fragile vest, and that player is told if it breaks.\n    - The vest does not move when the gun moves, so the player who starts with the vest keeps it.",
@@ -1549,10 +1558,10 @@
     "wiki.article.role.auditor.exampleAlibi":"Auditor\nN1:\n4: TC -> Gossip, Detective, Snoop, Philosopher\n5: TC -> Lookout, Escort, Doctor, Cop\nN2:\n1: SS -> Hypnotist, Reeducator, Framer, Forger\n3: SS U Minion -> Warper, Informant, Disguiser, Scarecrow",
     "wiki.article.role.auditor.exampleAlibi.description":"The auditor gets a lot of information, so make sure to format your alibi so it is as easy to read as possible. Here's an example:",
 
-    "wiki.article.role.snoop.reminder": "At night, select a player to learn if they are a town loyalist, but you can't tell if you are visited by at least one non town loyalist, or at least two town loyalists.",
-    "wiki.article.role.snoop.guide": "- At night, select a player. You are either told that they are a town loyalist, or that you can't tell if they are a townie\n    - You can't tell what your target was if:\n        - They aren't a townie\n        - You are visited by at least one non town loyalist, or at least two town loyalists\n        - They have a suspicious aura\n\n    - Otherwise, you are told they are a town loyalist",
-    "wiki.article.role.snoop.abilities":"- Visit a player to search them\n    - If your target is a town loyalist, you are not visited by at least one non town loyalist, and you are not visited by at least two town loyalists, then you are told they are a town loyalist",
-    "wiki.article.role.snoop.attributes":"- If your target has a suspicious aura, you are told that you can't tell.",
+    "wiki.article.role.snoop.reminder": "At night, select a player to learn if they are a town loyalist, but you can't tell if you are visited a player who isn't your buddy.",
+    "wiki.article.role.snoop.guide": "- At night, select a player. You are either told that they are a town loyalist, or that you can't tell\n    - You can't tell what your target was if:\n        - They aren't a town loyalist\n        - You are visited by at least one player who does not have the role you chose as your buddy.\n        - They have a suspicious aura\n\n    - Otherwise, you are told they are a town loyalist",
+    "wiki.article.role.snoop.abilities":"- Visit a player to snoop them",
+    "wiki.article.role.snoop.attributes":"",
     "wiki.article.role.snoop.extra":"- innocent aura doesn't effect your results",
 
     "wiki.article.role.gossip.reminder": "At night, select a player to eavesdrop on, and learn if they visited a player who is enemies with town.",
@@ -1618,7 +1627,7 @@
     "wiki.article.role.escort.extra":"* When someone is roleblocked, their visits are wiped, so they don't visit anyone",
     
     "wiki.article.role.courtesan.reminder": "At night, select two players to roleblock them, stopping them from visiting anyone.",
-    "wiki.article.role.courtesan.guide": "- At night, select two players to roleblock them, stopping them from using their ability\n- Your targets are told they are roleblocked.",
+    "wiki.article.role.courtesan.guide": "- At night, select two players to roleblock them, stopping them from using their ability\n - Your targets are told they are roleblocked.\n - You can't choose to roleblock a player that you roleblocked last night",
     "wiki.article.role.courtesan.abilities":"* Visit two players to roleblock them",
     "wiki.article.role.courtesan.attributes":"* You can't be roleblocked\n* Your targets are told when they are roleblocked, even if they are immune to being roleblocked",
     "wiki.article.role.courtesan.extra":"* When someone is roleblocked, their visits are wiped, so they don't visit anyone",
@@ -1766,7 +1775,7 @@
 
     "wiki.article.role.cerenovous.reminder": "Each night, select a player to brain, you can chat as that player until the next night.",
     "wiki.article.role.cerenovous.guide": "- At night, select a player to brain\n- The brained player can't chat during the next day, instead you can chat as them.\n    - You can send block messages as them.\n    - You can whisper as them.\n- While a cerenovous is alive, nomination votes are hidden and verdict votes are hidden.\n- You can read whispers sent to other players.\n- You can't choose to brain the player you brained yesterday.\n- You can only brain X times (X = Total players ÷ 5 (round up))",
-    "wiki.article.role.cerenovous.abilities":"* Visit a player to brain them during the next day",
+    "wiki.article.role.cerenovous.abilities":"* Visit a player to brain them during the next day\n - When a player is brained, they are told they are brained, and their chat box dissapears.",
     "wiki.article.role.cerenovous.attributes":"",
     "wiki.article.role.cerenovous.extra":"- The brained player is no longer brained at the start of the next night.\n* You can't select other syndicate members",
 
@@ -1917,10 +1926,10 @@
     "wiki.article.role.arsonist.extra":"* If you are roleblocked, you still douse visitors\n* Igniting a is an indirect, protection-piercing attack\n* When you ignite, you don't attack dead players\n* When you become an arsonist, you clean the gas off yourself\n* An arsonist can not be attacked by an arsonist igniting",
 
     "wiki.article.role.werewolf.reminder": "Each day, track a player. Each night, camp a tracked player to rampage them, if they visit anybody, you also attack them.",
-    "wiki.article.role.werewolf.guide": "- At the start of night, choose a player to track\n - Each night, select a player to camp \n - If you camp a tracked player, you rampage them. If they are visiting anybody, you also attack them.\n - If you camp a player you aren't tracking, you track them instead\n* You enrage once at least 2/3rds of the living players are either tracked or are yourself. While enraged, you always attack when visiting\n* You are told who each player you have tracked visits.\n* You still track players after you die\n* Your attack is armor-piercing\n* At the start of every night, every tracked player is told they are tracked",
-    "wiki.article.role.werewolf.abilities":"- At the start of night, choose a player to track\n - Each night, select a player to camp \n - If you camp a tracked player, you rampage them. If they are visiting anybody, you also attack them.\n - If you camp a player you aren't tracking, you track them instead",
-    "wiki.article.role.werewolf.attributes":"* You enrage once at least 2/3rds of the living players are either tracked or are yourself. While enraged, you always attack when visiting\n* You are told who each player you have tracked visits.\n* You still track players after you die\n* Your attack is armor-piercing",
-    "wiki.article.role.werewolf.extra":"* At the start of every night, every tracked player is told they are tracked",
+    "wiki.article.role.werewolf.guide": "- Before the start of night, choose a player to sniff\n     - For each sniffed player, you are told who they visit\n    - At the start of night, all sniffed players are told they are sniffed\n- At night, choose a player to camp\n    - If the camped player is already sniffed then you rampage them\n    - If the camped player is already sniffed, and either they visit any player or you are enraged, then you attack them\n    - If the camped player is not already sniffed then you sniff them\n- If at least 2/3rds of living players are either sniffed or are yourself then you are enraged",
+    "wiki.article.role.werewolf.abilities":"- You only visit the players you camp\n- Your attack is armor-piercing",
+    "wiki.article.role.werewolf.attributes":"",
+    "wiki.article.role.werewolf.extra":"",
 
     "wiki.article.role.ojo.reminder": "Each night*, attack a player. Everyones roles are revealed to you, you track everyone, and you can read other players whispers.",
     "wiki.article.role.ojo.guide":"- Each night*, attack a player. Everyones roles are revealed to you, and you track everyone, and you can read other players whispers.",
