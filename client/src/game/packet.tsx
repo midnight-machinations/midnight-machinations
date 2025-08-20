@@ -4,8 +4,8 @@ import { ChatMessage, ChatMessageIndex } from "../components/ChatMessage"
 import { RoleList, RoleOutline } from "./roleListState.d"
 import { Role, RoleState } from "./roleState.d"
 import { DoomsayerGuess } from "../menu/game/gameScreenContent/AbilityMenu/RoleSpecificMenus/LargeDoomsayerMenu"
-import { KiraGuess } from "../menu/game/gameScreenContent/AbilityMenu/AbilitySelectionTypes/KiraSelectionMenu"
-import { AbilityInput, ControllerID, SavedController } from "./abilityInput"
+import { KiraGuess } from "../menu/game/gameScreenContent/AbilityMenu/ControllerSelectionTypes/KiraSelectionMenu"
+import { ControllerInput, ControllerID, SavedController } from "./controllerInput"
 import { ListMapData } from "../ListMap"
 
 export type LobbyPreviewData = {
@@ -240,8 +240,8 @@ export type ToServerPacket = {
 } | {
     type: "leave",
 } | {
-    type: "abilityInput",
-    abilityInput: AbilityInput
+    type: "controllerInput",
+    controllerInput: ControllerInput
 } | {
     type: "setKiraGuess",
     guesses: [PlayerIndex, KiraGuess][]

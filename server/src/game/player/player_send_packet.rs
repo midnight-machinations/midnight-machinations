@@ -107,7 +107,7 @@ impl PlayerReference{
                 role_labels: PlayerReference::ref_vec_map_to_index(self.revealed_players_map(game)) 
             },
             ToClientPacket::YourAllowedControllers { 
-                save: game.saved_controllers.controllers_allowed_to_player(*self).all_controllers().clone(),
+                save: game.controllers.controllers_allowed_to_player(*self).all_controllers().clone(),
             },
             ToClientPacket::YourNotes{
                 notes: self.notes(game).clone()

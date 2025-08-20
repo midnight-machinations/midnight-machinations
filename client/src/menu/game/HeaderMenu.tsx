@@ -167,11 +167,11 @@ export function PhaseSpecificInformation(props: Readonly<{
                     controllers.map(([id, controller])=>{
                         if(
                             id.type !== "judge" ||
-                            controller.availableAbilityData.available.type !== "integer" ||
+                            controller.parameters.available.type !== "integer" ||
                             controller.selection.type !== "integer"
                         ){return null;}
                         const availableVerdicts: Verdict[] = ["innocent", "guilty"];
-                        if(2 === controller.availableAbilityData.available.selection.max){availableVerdicts.push("abstain")}
+                        if(2 === controller.parameters.available.selection.max){availableVerdicts.push("abstain")}
                         const selected = controller.selection.selection;
 
                         return <>

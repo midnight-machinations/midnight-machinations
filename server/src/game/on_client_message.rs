@@ -141,7 +141,7 @@ impl Game {
             ToServerPacket::SaveDeathNote { death_note } => {
                 sender_player_ref.set_death_note(self, death_note);
             },
-            ToServerPacket::AbilityInput { ability_input } => 
+            ToServerPacket::ControllerInput { controller_input: ability_input } => 
                 ability_input.on_client_message(self, sender_player_ref),
             ToServerPacket::SetDoomsayerGuess { guesses } => {
                 if let RoleState::Doomsayer(mut doomsayer) = sender_player_ref.role_state(self).clone(){

@@ -1,6 +1,6 @@
 use serde::Serialize;
 
-use crate::game::ability_input::ControllerID;
+use crate::game::controllers::ControllerID;
 use crate::game::components::aura::Aura;
 use crate::game::components::confused::Confused;
 use crate::game::event::on_midnight::{MidnightVariables, OnMidnightPriority};

@@ -5,7 +5,7 @@ use rand::seq::SliceRandom;
 use crate::{
     client_connection::ClientConnection,
     game::{
-        ability_input::SavedControllersMap,
+        controllers::Controllers,
         chat::ChatComponent,
         components::{
             confused::Confused, cult::Cult, detained::Detained,
@@ -120,7 +120,7 @@ impl Game{
                 modifiers: Modifiers::default_from_settings(settings.enabled_modifiers.clone()),
                 settings,
 
-                saved_controllers: SavedControllersMap::default(),
+                controllers: Controllers::default(),
                 syndicate_gun_item: SyndicateGunItem::default(),
                 cult: Cult::default(),
                 mafia: Mafia,

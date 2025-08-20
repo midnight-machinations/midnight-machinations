@@ -59,7 +59,7 @@ impl <K> VecSet<K> where K: Eq {
         self.vec.keys()
     }
 
-    pub fn subtract(&self, other: &Self) -> Self where K: Clone {
+    pub fn sub(&self, other: &Self) -> Self where K: Clone {
         self.vec.keys().filter(|&k| !other.contains(k)).cloned().collect()
     }
     pub fn intersection(&self, other: &Self) -> Self where K: Clone {

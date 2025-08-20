@@ -1,8 +1,8 @@
 use crate::game::{
-        ability_input::{
+        controllers::{
             AvailablePlayerListSelection, ControllerID,
             ControllerParametersMap, PlayerListSelection
-        }, chat::{ChatGroup, ChatMessageVariant}, event::on_validated_ability_input_received::OnValidatedAbilityInputReceived, modifiers::{hidden_nomination_votes::HiddenNominationVotes, ModifierType, Modifiers}, player::PlayerReference, Game
+        }, chat::{ChatGroup, ChatMessageVariant}, event::on_validated_ability_input_received::OnValidatedControllerInputReceived, modifiers::{hidden_nomination_votes::HiddenNominationVotes, ModifierType, Modifiers}, player::PlayerReference, Game
     };
 
 use super::forfeit_vote::ForfeitNominationVote;
@@ -18,7 +18,7 @@ impl NominationController{
     }
     fn one_player_controller(game: &mut Game, actor: PlayerReference)->ControllerParametersMap{
         ControllerParametersMap::builder(game)
-            .id(crate::game::ability_input::ControllerID::Nominate { player: actor })
+            .id(crate::game::controllers::ControllerID::Nominate { player: actor })
             .available_selection(AvailablePlayerListSelection {
                 available_players: PlayerReference::all_players(game).filter(|p|p.alive(game)).collect(),
                 can_choose_duplicates: false,
@@ -33,7 +33,7 @@ impl NominationController{
             .allow_players([actor])
             .build_map()
     }
-    pub fn on_validated_ability_input_received(game: &mut Game, event: &OnValidatedAbilityInputReceived, _fold: &mut (), _priority: ()){
+    pub fn on_validated_ability_input_received(game: &mut Game, event: &OnValidatedControllerInputReceived, _fold: &mut (), _priority: ()){
         if let Some(PlayerListSelection(voted)) = event.input.get_player_list_selection_if_id(ControllerID::Nominate{ player: event.actor_ref }){
 
             if !HiddenNominationVotes::nomination_votes_are_hidden(game) {

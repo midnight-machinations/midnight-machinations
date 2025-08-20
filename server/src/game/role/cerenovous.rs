@@ -1,5 +1,5 @@
 use serde::Serialize;
-use crate::game::ability_input::AvailablePlayerListSelection;
+use crate::game::controllers::AvailablePlayerListSelection;
 use crate::game::chat::ChatMessageVariant;
 use crate::game::components::insider_group::InsiderGroupID;
 use crate::game::event::on_midnight::{MidnightVariables, OnMidnightPriority};

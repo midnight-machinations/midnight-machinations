@@ -14,7 +14,7 @@ import ChatMessage, { translateChatMessage } from "../../../components/ChatMessa
 import GraveComponent, { translateGraveRole } from "../../../components/grave";
 import { ChatMessageSection, ChatTextInput } from "./ChatMenu";
 import ListMap from "../../../ListMap";
-import { controllerIdToLinkWithPlayer } from "../../../game/abilityInput";
+import { controllerIdToLinkWithPlayer } from "../../../game/controllerInput";
 
 export default function PlayerListMenu(): ReactElement {
     const players = useGameState(
@@ -243,7 +243,7 @@ function PlayerCard(props: Readonly<{
                 return <>
                     <ChatTextInput 
                         key={"input: "+JSON.stringify(id)}
-                        disabled={sendChatController.availableAbilityData.grayedOut}
+                        disabled={sendChatController.parameters.grayedOut}
                         whispering={props.playerIndex}
                         controllingPlayer={id.player}
                     />

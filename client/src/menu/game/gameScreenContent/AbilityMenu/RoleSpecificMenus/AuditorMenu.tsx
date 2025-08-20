@@ -1,9 +1,9 @@
 import { ReactElement } from "react"
 import React from "react"
 import { Role, RoleState } from "../../../../../game/roleState.d"
-import TwoRoleOutlineOptionSelectionMenu from "../AbilitySelectionTypes/TwoRoleOutlineOptionSelectionMenu"
+import TwoRoleOutlineOptionSelectionMenu from "../ControllerSelectionTypes/TwoRoleOutlineOptionSelectionMenu"
 import GAME_MANAGER from "../../../../.."
-import { controllerIdToLinkWithPlayer, TwoRoleOutlineOptionSelection } from "../../../../../game/abilityInput"
+import { controllerIdToLinkWithPlayer, TwoRoleOutlineOptionSelection } from "../../../../../game/controllerInput"
 import { usePlayerState } from "../../../../../components/useHooks"
 import ListMap from "../../../../../ListMap"
 
@@ -19,7 +19,7 @@ export default function AuditorMenu(props: Readonly<{
     )!;
 
     const onInput = (selection: TwoRoleOutlineOptionSelection) => {
-        GAME_MANAGER.sendAbilityInput({
+        GAME_MANAGER.sendControllerInput({
             id: {
                 type: "role",
                 role: "auditor",
@@ -53,10 +53,10 @@ export default function AuditorMenu(props: Readonly<{
     if(
         singleAbilitySave !== null &&
         singleAbilitySave.selection.type === "twoRoleOutlineOption" &&
-        singleAbilitySave.availableAbilityData.available.type === "twoRoleOutlineOption"
+        singleAbilitySave.parameters.available.type === "twoRoleOutlineOption"
     ){
         newSelection = singleAbilitySave.selection.selection;
-        newAvailable = singleAbilitySave.availableAbilityData.available.selection;
+        newAvailable = singleAbilitySave.parameters.available.selection;
     } else {
         newSelection = undefined;
         newAvailable = undefined;

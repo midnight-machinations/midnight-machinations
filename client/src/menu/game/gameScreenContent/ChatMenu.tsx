@@ -13,7 +13,7 @@ import StyledText, { KeywordDataMap, PLAYER_KEYWORD_DATA, PLAYER_SENDER_KEYWORD_
 import { useGameState, useLobbyOrGameState, usePlayerNames, usePlayerState } from "../../../components/useHooks";
 import { Virtuoso } from 'react-virtuoso';
 import ListMap from "../../../ListMap";
-import { controllerIdToLinkWithPlayer } from "../../../game/abilityInput";
+import { controllerIdToLinkWithPlayer } from "../../../game/controllerInput";
 
 
 export default function ChatMenu(): ReactElement {
@@ -88,7 +88,7 @@ export default function ChatMenu(): ReactElement {
                     </div>
                     <ChatTextInput 
                         key={"input: "+JSON.stringify(id)}
-                        disabled={sendChatController.availableAbilityData.grayedOut}
+                        disabled={sendChatController.parameters.grayedOut}
                         controllingPlayer={id.player}
                     />
                 </>

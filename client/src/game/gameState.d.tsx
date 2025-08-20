@@ -4,7 +4,7 @@ import { Role, RoleState } from "./roleState.d";
 import { RoleList } from "./roleListState.d";
 import { LobbyPreviewData } from "./packet";
 import { ChatFilter } from "../menu/game/gameScreenContent/ChatMenu";
-import { ControllerID, SavedController } from "./abilityInput";
+import { ControllerID, SavedController } from "./controllerInput";
 import translate from "./lang";
 import ListMap, { ListMapData } from "../ListMap";
 

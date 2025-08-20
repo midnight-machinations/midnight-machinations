@@ -1,5 +1,5 @@
 use crate::game::{
-    ability_input::{
+    controllers::{
         AvailableIntegerSelection, ControllerParametersMap, IntegerSelection,
     }, 
     modifiers::{ModifierType, Modifiers},
@@ -19,7 +19,7 @@ impl JudgementController{
         let abstain_enabled = Modifiers::is_enabled(game, ModifierType::Abstaining);
 
         ControllerParametersMap::builder(game)
-            .id(crate::game::ability_input::ControllerID::Judge { player: actor })
+            .id(crate::game::controllers::ControllerID::Judge { player: actor })
             .available_selection(AvailableIntegerSelection {
                 min: 0,
                 max: if abstain_enabled {2} else {1},

@@ -6,7 +6,7 @@ import { usePlayerState } from "../../../components/useHooks";
 import { getSingleRoleJsonData } from "../../../game/roleState.d";
 import { TextDropdownArea } from "../../../components/TextAreaDropdown";
 import ListMap from "../../../ListMap";
-import { controllerIdToLinkWithPlayer } from "../../../game/abilityInput";
+import { controllerIdToLinkWithPlayer } from "../../../game/controllerInput";
 import { PlayerIndex, UnsafeString } from "../../../game/gameState.d";
 
 export function defaultAlibi(): string {
@@ -55,12 +55,9 @@ export default function WillMenu(): ReactElement {
     }, [cantChat]);
 
 
-    const canPostAsPlayers: PlayerIndex[] | undefined = usePlayerState(
-        playerState=>playerState.savedControllers
-            .map(([id,_])=>id.type==="chat"?id.player:undefined)
-            .filter((p)=>p!==undefined?true:false) as PlayerIndex[],
-        ["yourAllowedControllers", "yourAllowedController"]
-    );
+    const canPostAsPlayers: PlayerIndex[] = savedAbilities
+        .map(([id,_])=>id.type==="chat"?id.player:undefined)
+        .filter((p)=>p!==undefined?true:false) as PlayerIndex[];
     
     return <div className="will-menu will-menu-colors">
         <ContentTab

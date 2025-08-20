@@ -21,6 +21,7 @@ pub(super) mod on_visit_wardblocked;
 pub(super) mod on_whisper;
 pub(super) mod on_add_insider;
 pub(super) mod on_remove_insider;
+pub(super) mod on_controller_changed;
 
 pub trait EventPriority: Sized + Copy {
     fn values() -> Vec<Self>;

@@ -3,7 +3,7 @@ use rand::seq::SliceRandom;
 
 use crate::{
     game::{
-        ability_input::{AbilitySelection, BooleanSelection, ControllerID, ControllerParametersMap, PlayerListSelection, SavedControllersMap, TwoPlayerOptionSelection},
+        controllers::{ControllerSelection, BooleanSelection, ControllerID, ControllerParametersMap, PlayerListSelection, Controllers, TwoPlayerOptionSelection},
         attack_power::{AttackPower, DefensePower},
         chat::{ChatGroup, ChatMessage, ChatMessageVariant},
         components::{
@@ -129,11 +129,11 @@ impl PlayerReference{
 
 
                 //change all controller inputs to be selecting this player as well
-                for (controller_id, controller_data) in game.saved_controllers.all_controllers().clone().iter() {
+                for (controller_id, controller_data) in game.controllers.all_controllers().clone().iter() {
                     match controller_data.selection() {
-                        AbilitySelection::Boolean(..) => {
+                        ControllerSelection::Boolean(..) => {
                             if possessed_visit.target == possessed_into_visit.target {
-                                SavedControllersMap::set_selection_in_controller(
+                                Controllers::set_selection_in_controller(
                                     game,
                                     possessed_visit.target,
                                     controller_id.clone(),
@@ -142,14 +142,14 @@ impl PlayerReference{
                                 );
                             }
                         },
-                        AbilitySelection::TwoPlayerOption(selection) => {
+                        ControllerSelection::TwoPlayerOption(selection) => {
 
                             let mut selection = selection.0;
                             if let Some((_, second)) = selection {
                                 selection = Some((possessed_into_visit.target, second));
                             }
 
-                            SavedControllersMap::set_selection_in_controller(
+                            Controllers::set_selection_in_controller(
                                 game,
                                 possessed_visit.target,
                                 controller_id.clone(),
@@ -157,7 +157,7 @@ impl PlayerReference{
                                 true
                             );
                         },
-                        AbilitySelection::PlayerList(selection) => {
+                        ControllerSelection::PlayerList(selection) => {
 
                             let mut selection = selection.0.clone();
                             if let Some(first) = selection.first_mut(){
@@ -167,7 +167,7 @@ impl PlayerReference{
                             }
 
 
-                            SavedControllersMap::set_selection_in_controller(
+                            Controllers::set_selection_in_controller(
                                 game,
                                 possessed_visit.target,
                                 controller_id.clone(),
@@ -175,14 +175,14 @@ impl PlayerReference{
                                 true
                             );
                         },
-                        AbilitySelection::Unit(..) |
-                        AbilitySelection::ChatMessage(..) |
-                        AbilitySelection::RoleList(..) |
-                        AbilitySelection::TwoRoleOption(..) |
-                        AbilitySelection::TwoRoleOutlineOption(..) |
-                        AbilitySelection::String(..) |
-                        AbilitySelection::Integer(..) |
-                        AbilitySelection::Kira(..) => {}
+                        ControllerSelection::Unit(..) |
+                        ControllerSelection::ChatMessage(..) |
+                        ControllerSelection::RoleList(..) |
+                        ControllerSelection::TwoRoleOption(..) |
+                        ControllerSelection::TwoRoleOutlineOption(..) |
+                        ControllerSelection::String(..) |
+                        ControllerSelection::Integer(..) |
+                        ControllerSelection::Kira(..) => {}
                     }
                 }
 

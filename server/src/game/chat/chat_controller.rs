@@ -2,20 +2,20 @@
 
 use crate::{
     game::{
-        ability_input::{
+        controllers::{
             AvailableBooleanSelection,
             AvailableStringSelection, AvailableUnitSelection, BooleanSelection,
             ControllerID, ControllerParametersMap, PlayerListSelection, StringSelection
         },
         chat::{ChatComponent, ChatGroup, ChatMessageVariant, MessageSender},
-        event::{on_validated_ability_input_received::OnValidatedAbilityInputReceived, on_whisper::OnWhisper, Event}, player::PlayerReference,
+        event::{on_validated_ability_input_received::OnValidatedControllerInputReceived, on_whisper::OnWhisper, Event}, player::PlayerReference,
         role::{Role, RoleState}, Game
     },
     strings::TidyableString, vec_set::VecSet
 };
 
 impl ChatComponent{
-    pub fn on_validated_ability_input_received(game: &mut Game, event: &OnValidatedAbilityInputReceived, _fold: &mut (), _priority: ()){
+    pub fn on_validated_ability_input_received(game: &mut Game, event: &OnValidatedControllerInputReceived, _fold: &mut (), _priority: ()){
         match event.input.id() {
             ControllerID::SendChat { player } => {
                 Self::send_chat(game, player);

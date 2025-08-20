@@ -24,7 +24,7 @@ use vec1::Vec1;
 
 use crate::{
     client_connection::ClientConnection, game::{
-        ability_input::*, chat::{ChatGroup, ChatMessage, ChatMessageIndex},
+        controllers::*, chat::{ChatGroup, ChatMessage, ChatMessageIndex},
         components::{
             graves::{grave::Grave, grave_reference::GraveReference}, insider_group::InsiderGroupID, tags::Tag
         },
@@ -137,9 +137,9 @@ pub enum ToClientPacket{
 
     #[serde(rename_all = "camelCase")]
     YourAllowedControllers{
-        save: VecMap<ControllerID, SavedController>
+        save: VecMap<ControllerID, Controller>
     },
-    YourAllowedController{id: ControllerID, controller: SavedController},
+    YourAllowedController{id: ControllerID, controller: Option<Controller>},
 
     #[serde(rename_all = "camelCase")]
     YourRoleLabels{role_labels: VecMap<PlayerIndex, Role>},
@@ -236,9 +236,9 @@ pub enum ToServerPacket{
     #[serde(rename_all = "camelCase")]
     SaveDeathNote{death_note: Option<String>},
 
-    // AbilityInput
+    // ControllerInput
     #[serde(rename_all = "camelCase")]
-    AbilityInput{ability_input: AbilityInput},
+    ControllerInput{controller_input: ControllerInput},
     // Role-specific
     #[serde(rename_all = "camelCase")]
     SetDoomsayerGuess{ guesses: [(PlayerReference, DoomsayerGuess); 3] },

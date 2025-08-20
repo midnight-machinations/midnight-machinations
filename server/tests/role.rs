@@ -6,16 +6,16 @@ pub(crate) use kit::{assert_contains, assert_not_contains};
 
 use mafia_server::game::{attack_power::DefensePower, components::{graves::{grave::{Grave, GraveDeathCause, GraveInformation, GraveKiller, GravePhase}, grave_reference::GraveReference}, syndicate_gun_item::SyndicateGunItem}};
 pub use mafia_server::game::{
-    ability_input::{ControllerID, IntegerSelection, PlayerListSelection, RoleListSelection},
+    controllers::{ControllerID, IntegerSelection, PlayerListSelection, RoleListSelection},
     game_conclusion::GameConclusion,
     role::engineer::Trap,
     chat::{ChatMessageVariant, MessageSender, ChatGroup},
-    ability_input::{
+    controllers::{
         selection_type::{
             two_role_option_selection::TwoRoleOptionSelection,
             two_role_outline_option_selection::TwoRoleOutlineOptionSelection
         },
-        AbilityInput,
+        ControllerInput,
     }, 
     components::{cult::CultAbility, insider_group::InsiderGroupID},  
     role_list::RoleSet, 
@@ -892,7 +892,7 @@ fn ambusher_attacks_self(){
     );
 
     ambusher.send_ability_input_player_list_typical(protected_player);
-    ambusher.send_ability_input(AbilityInput::new(
+    ambusher.send_ability_input(ControllerInput::new(
         ControllerID::syndicate_gun_item_shoot(),
         PlayerListSelection(vec![protected_player.player_ref()])
     ));
@@ -1040,11 +1040,11 @@ fn marksman_basic() {
     );
 
     assert!(dt.send_ability_input_player_list_typical(gf));
-    mk.send_ability_input(AbilityInput::new(
+    mk.send_ability_input(ControllerInput::new(
         ControllerID::role(mk.player_ref(), Role::Marksman, 0),
         PlayerListSelection(vec!(dt.player_ref()))
     ));
-    mk.send_ability_input(AbilityInput::new(
+    mk.send_ability_input(ControllerInput::new(
         ControllerID::role(mk.player_ref(), Role::Marksman, 1),
         PlayerListSelection(vec!(gf.player_ref()))
     ));
@@ -1369,11 +1369,11 @@ fn godfather_backup_kills_esc() {
         esc: Escort
     );
 
-    godfather.send_ability_input(AbilityInput::new(
+    godfather.send_ability_input(ControllerInput::new(
         ControllerID::SyndicateChooseBackup,
         PlayerListSelection(vec![hypnotist.player_ref()])
     ));
-    hypnotist.send_ability_input(AbilityInput::new(
+    hypnotist.send_ability_input(ControllerInput::new(
         ControllerID::SyndicateBackupAttack,
         PlayerListSelection(vec![det.player_ref()])
     ));
@@ -1558,14 +1558,14 @@ fn godfather_backup_kills_jail() {
     );
 
     jail.send_ability_input_player_list_typical(godfather);
-    godfather.send_ability_input(AbilityInput::new(
+    godfather.send_ability_input(ControllerInput::new(
         ControllerID::syndicate_choose_backup(),
         PlayerListSelection(vec![hypnotist.player_ref()])
     ));
 
     game.next_phase();
     hypnotist.send_ability_input_player_list_typical(det);
-    hypnotist.send_ability_input(AbilityInput::new(
+    hypnotist.send_ability_input(ControllerInput::new(
         ControllerID::syndicate_backup_attack(),
         PlayerListSelection(vec![det.player_ref()])
     ));
@@ -1809,13 +1809,13 @@ fn godfather_backup_sets_off_engineer_trap() {
         esc: Escort
     );
 
-    gf.send_ability_input(AbilityInput::new(
+    gf.send_ability_input(ControllerInput::new(
         ControllerID::syndicate_choose_backup(),
         PlayerListSelection(vec![backup.player_ref()])
     ));
     gf.send_ability_input_player_list_typical(eng);
 
-    backup.send_ability_input(AbilityInput::new(
+    backup.send_ability_input(ControllerInput::new(
         ControllerID::syndicate_backup_attack(),
         PlayerListSelection(vec![esc.player_ref()])
     ));
@@ -1865,11 +1865,11 @@ fn godfather_wardblock_still_kills() {
 
     assert!(rev.send_ability_input_player_list_typical(townie_a));
     assert!(godfather.send_ability_input_player_list_typical(townie_a));
-    godfather.send_ability_input(AbilityInput::new(
+    godfather.send_ability_input(ControllerInput::new(
         ControllerID::syndicate_choose_backup(),
         PlayerListSelection(vec![jan.player_ref()])
     ));
-    jan.send_ability_input(AbilityInput::new(
+    jan.send_ability_input(ControllerInput::new(
         ControllerID::syndicate_backup_attack(),
         PlayerListSelection(vec![townie_b.player_ref()])
     ));
@@ -1907,7 +1907,7 @@ fn puppeteer_marionettes_philosopher(){
         townie2: Detective
     );
 
-    puppeteer.send_ability_input(AbilityInput::new(
+    puppeteer.send_ability_input(ControllerInput::new(
         ControllerID::role(puppeteer.player_ref(), Role::Puppeteer, 1),
         IntegerSelection(1)
     ));
@@ -1941,7 +1941,7 @@ fn puppeteer_marionettes_die(){
         townie3: Detective
     );
 
-    puppeteer.send_ability_input(AbilityInput::new(
+    puppeteer.send_ability_input(ControllerInput::new(
         ControllerID::role(puppeteer.player_ref(), Role::Puppeteer, 1),
         IntegerSelection(1)
     ));
@@ -1950,7 +1950,7 @@ fn puppeteer_marionettes_die(){
 
     game.skip_to(Night, 3);
 
-    puppeteer.send_ability_input(AbilityInput::new(
+    puppeteer.send_ability_input(ControllerInput::new(
         ControllerID::role(puppeteer.player_ref(), Role::Puppeteer, 1),
         IntegerSelection(0)
     ));
@@ -1973,7 +1973,7 @@ fn puppeteer_marionettes_win(){
         townie2: Detective
     );
 
-    puppeteer.send_ability_input(AbilityInput::new(
+    puppeteer.send_ability_input(ControllerInput::new(
         ControllerID::role(puppeteer.player_ref(), Role::Puppeteer, 1),
         IntegerSelection(1)
     ));
@@ -2009,7 +2009,7 @@ fn deputy_shoots_marionette(){
         townie: Detective
     );
 
-    puppeteer.send_ability_input(AbilityInput::new(
+    puppeteer.send_ability_input(ControllerInput::new(
         ControllerID::role(puppeteer.player_ref(), Role::Puppeteer, 1),
         IntegerSelection(1)
     ));
@@ -2032,7 +2032,7 @@ fn vigilante_shoots_marionette(){
         townie: Detective
     );
 
-    puppeteer.send_ability_input(AbilityInput::new(
+    puppeteer.send_ability_input(ControllerInput::new(
         ControllerID::role(puppeteer.player_ref(), Role::Puppeteer, 1),
         IntegerSelection(1)
     ));
@@ -2420,7 +2420,7 @@ fn yer() {
     /* Night 1 Kill Attempt Test */
     yer.send_ability_input_boolean_typical(true);
     yer.send_ability_input_player_list(detective, 1);
-    yer.send_ability_input(AbilityInput::new(
+    yer.send_ability_input(ControllerInput::new(
         ControllerID::Role { player: yer.player_ref(), role: Role::Yer, id: 2 }, 
         RoleListSelection(vec!(Role::TallyClerk)) 
     ));
@@ -2438,7 +2438,7 @@ fn yer() {
     /* Reg Attack Test */
     yer.send_ability_input_boolean_typical(false);
     yer.send_ability_input_player_list(detective, 1);
-    yer.send_ability_input(AbilityInput::new(
+    yer.send_ability_input(ControllerInput::new(
         ControllerID::Role { player: yer.player_ref(), role: Role::Yer, id: 2 }, 
         RoleListSelection(vec!(Role::Mafioso)) 
     ));
@@ -2477,7 +2477,7 @@ fn yer() {
     /* Conversion & Disguise Test */
     yer.send_ability_input_boolean_typical(true);
     yer.send_ability_input_player_list(convertee, 1);
-    yer.send_ability_input(AbilityInput::new(
+    yer.send_ability_input(ControllerInput::new(
         ControllerID::Role { player: yer.player_ref(), role: Role::Yer, id: 2 }, 
         RoleListSelection(vec!(Role::Zealot)) 
     ));
@@ -2514,7 +2514,7 @@ fn yer() {
     /* Idiot Proofing Test */
     convertee.send_ability_input_boolean_typical(true);
     convertee.send_ability_input_player_list(informant, 1);
-    convertee.send_ability_input(AbilityInput::new(
+    convertee.send_ability_input(ControllerInput::new(
         ControllerID::Role { player: yer.player_ref(), role: Role::Yer, id: 2 }, 
         RoleListSelection(vec!(Role::Zealot)) 
     ));
@@ -2615,7 +2615,7 @@ fn witch_leaves_by_winning_puppeteer(){
         min: Witch
     );
 
-    pup.send_ability_input(AbilityInput::new(
+    pup.send_ability_input(ControllerInput::new(
         ControllerID::role(pup.player_ref(), Role::Puppeteer, 1),
         IntegerSelection(1)
     ));
@@ -2701,14 +2701,14 @@ fn fiends_wildcard_defense_upgrade(){
         mafia: Godfather
     );
     
-    fiend.send_ability_input(AbilityInput::new(
+    fiend.send_ability_input(ControllerInput::new(
         ControllerID::role(fiend.player_ref(), Role::FiendsWildcard, 0),
         RoleListSelection(vec!(Role::Puppeteer))
     ));
 
     game.next_phase();
 
-    fiend.send_ability_input(AbilityInput::new(
+    fiend.send_ability_input(ControllerInput::new(
         ControllerID::role(fiend.player_ref(), Role::Puppeteer, 1),
         IntegerSelection(1)
     ));

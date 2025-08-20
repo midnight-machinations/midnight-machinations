@@ -1,6 +1,6 @@
 use serde::Serialize;
 
-use crate::game::ability_input::AvailableTwoPlayerOptionSelection;
+use crate::game::controllers::AvailableTwoPlayerOptionSelection;
 use crate::game::components::aura::Aura;
 use crate::game::components::confused::Confused;
 use crate::game::components::win_condition::WinCondition;
