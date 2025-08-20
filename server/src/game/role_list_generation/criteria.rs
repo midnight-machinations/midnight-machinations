@@ -56,10 +56,8 @@ pub const REJECT_EXCEEDED_ROLE_LIMITS: GenerationCriterion = GenerationCriterion
         let mut exceeded_roles = vec![];
 
         for role in role_appearances.keys() {
-            if let Some(max) = role.maximum_count() {
-                if role_appearances[role] > max && !exceeded_roles.contains(role) {
-                    exceeded_roles.push(*role);
-                }
+            if let Some(max) = role.maximum_count() && role_appearances[role] > max && !exceeded_roles.contains(role) {
+                exceeded_roles.push(*role);
             }
         }
 

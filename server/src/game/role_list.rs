@@ -141,39 +141,23 @@ impl<'de> Deserialize<'de> for RoleOutlineOption {
         let json = serde_json::Value::deserialize(deserializer)?;
 
         if let serde_json::Value::Object(map) = json {
-            if let Some(value) = map.get("winIfAny") {
-                if let Ok(string_win_condition) = serde_json::to_string(value) {
-                    if let Ok(win_if_any) = serde_json::from_str(string_win_condition.as_str()) {
-                        option.win_condition = RoleOutlineOptionWinCondition::GameConclusionReached { win_if_any}
-                    }
-                }
+            if let Some(value) = map.get("winIfAny") && let Ok(string_win_condition) = serde_json::to_string(value) && let Ok(win_if_any) = serde_json::from_str(string_win_condition.as_str()) {
+                option.win_condition = RoleOutlineOptionWinCondition::GameConclusionReached { win_if_any}
             }
-            if let Some(value) = map.get("insiderGroups") {
-                if let Ok(string_insider_groups) = serde_json::to_string(value) {
-                    if let Ok(insider_groups) = serde_json::from_str(string_insider_groups.as_str()) {
-                        option.insider_groups = RoleOutlineOptionInsiderGroups::Custom { insider_groups }
-                    }
-                }
+            
+            if let Some(value) = map.get("insiderGroups") && let Ok(string_insider_groups) = serde_json::to_string(value) && let Ok(insider_groups) = serde_json::from_str(string_insider_groups.as_str()) {
+                option.insider_groups = RoleOutlineOptionInsiderGroups::Custom { insider_groups }
             }
-            if let Some(value) = map.get("playerPool") {
-                if let Ok(string_player_pool) = serde_json::to_string(value) {
-                    if let Ok(player_pool) = serde_json::from_str(string_player_pool.as_str()) {
-                        option.player_pool = player_pool;
-                    }
-                }
+            
+            if let Some(value) = map.get("playerPool") && let Ok(string_player_pool) = serde_json::to_string(value) && let Ok(player_pool) = serde_json::from_str(string_player_pool.as_str()) {
+                option.player_pool = player_pool;
             }
             if let Some(value) = map.get("roleSet") {
-                if let Ok(string_role_set) = serde_json::to_string(value) {
-                    if let Ok(role_set) = serde_json::from_str(string_role_set.as_str()) {
-                        option.roles = RoleOutlineOptionRoles::RoleSet { role_set }
-                    }
+                if let Ok(string_role_set) = serde_json::to_string(value) && let Ok(role_set) = serde_json::from_str(string_role_set.as_str()) {
+                    option.roles = RoleOutlineOptionRoles::RoleSet { role_set }
                 }
-            } else if let Some(value) = map.get("role") {
-                if let Ok(string_role) = serde_json::to_string(value) {
-                    if let Ok(role) = serde_json::from_str(string_role.as_str()) {
-                        option.roles = RoleOutlineOptionRoles::Role { role }
-                    }
-                }
+            } else if let Some(value) = map.get("role") && let Ok(string_role) = serde_json::to_string(value) && let Ok(role) = serde_json::from_str(string_role.as_str()) {
+                option.roles = RoleOutlineOptionRoles::Role { role }
             }
         }
 

@@ -219,27 +219,23 @@ impl Game {
 
         let mut voted_player = None;
 
-        if let Some(maximum_votes) = voted_player_votes.values().max() {
-            if self.nomination_votes_is_enough(*maximum_votes){
-                let max_votes_players: VecSet<PlayerReference> = voted_player_votes.iter()
-                    .filter(|(_, votes)| **votes == *maximum_votes)
-                    .map(|(player, _)| *player)
-                    .collect();
+        if let Some(maximum_votes) = voted_player_votes.values().max() && self.nomination_votes_is_enough(*maximum_votes){
+            let max_votes_players: VecSet<PlayerReference> = voted_player_votes.iter()
+                .filter(|(_, votes)| **votes == *maximum_votes)
+                .map(|(player, _)| *player)
+                .collect();
 
-                if max_votes_players.count() == 1 {
-                    voted_player = max_votes_players.iter().next().copied();
-                }
+            if max_votes_players.count() == 1 {
+                voted_player = max_votes_players.iter().next().copied();
             }
         }
         
-        if start_trial_instantly {
-            if let Some(player_on_trial) = voted_player {
-                PhaseStateMachine::next_phase(self, Some(PhaseState::Testimony {
-                    trials_left: trials_left.saturating_sub(1), 
-                    player_on_trial, 
-                    nomination_time_remaining: self.phase_machine.get_time_remaining()
-                }));
-            }
+        if start_trial_instantly && let Some(player_on_trial) = voted_player {
+            PhaseStateMachine::next_phase(self, Some(PhaseState::Testimony {
+                trials_left: trials_left.saturating_sub(1), 
+                player_on_trial, 
+                nomination_time_remaining: self.phase_machine.get_time_remaining()
+            }));
         }
 
         voted_player
