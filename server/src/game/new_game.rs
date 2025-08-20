@@ -38,7 +38,7 @@ impl Game{
                 }
             };
 
-            let assignments = Self::assign_players_to_roles(outline_list_assignment);            
+            let assignments = Self::create_assignments(outline_list_assignment);            
 
 
             // Create list of players
@@ -179,7 +179,7 @@ impl Game{
     
     /// `assignment.assignments` must have length 255 or lower
     #[expect(clippy::cast_possible_truncation, reason = "See doc comment")]
-    pub fn assign_players_to_roles(assignment: OutlineListAssignment)->Assignments{
+    pub fn create_assignments(assignment: OutlineListAssignment)->Assignments{
         let mut assignments = Assignments::new();
 
         for (index, outline_assignment) in assignment.assignments.into_iter().enumerate() {

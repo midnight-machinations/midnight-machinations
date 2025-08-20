@@ -112,8 +112,6 @@ impl Lobby {
                 self.send_to_all(ToClientPacket::RoomName { name })
             },
             ToServerPacket::StartGame => {
-                self.clients.shuffle(&mut rand::rng());
-                
                 if let Some(player) = self.clients.get(&room_client_id) && !player.is_host() {break 'packet_match}
                 
                 let mut game_clients: VecMap<RoomClientID, GameClient> = VecMap::new();

@@ -28,7 +28,7 @@
             None => {return Err(RejectStartReason::RoleListCannotCreateRoles);}
         };
 
-        let assignments = Game::assign_players_to_roles(random_outline_assignments);
+        let assignments = Game::create_assignments(random_outline_assignments);
 
         let mut players = Vec::new();
         for player in unsafe{PlayerReference::all_players_from_count(num_players)} {
