@@ -69,7 +69,7 @@ export type RoleOrRoleSet = ({
 
 
 export function translateRoleOutline(roleOutline: RoleOutline, playerNames?: UnsafeString[]): string {
-    return roleOutline.map(outline => translateRoleOutlineOption(outline, playerNames)).join(" "+translate("union:var.1")+" ")
+    return roleOutline.map(outline => translateRoleOutlineOption(outline, playerNames)).join(" "+translate("union:var.0")+" ")
 }
 
 export function translatePlayerPool(playerPool: PlayerIndex[], playerNames: UnsafeString[]): string {
