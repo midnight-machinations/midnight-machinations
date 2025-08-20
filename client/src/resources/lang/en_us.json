@@ -770,7 +770,8 @@
     "setDefault":"Set Default",
     "setNotDefault":"Set Custom",
 
-    "union": "∪",
+    "union": "|",
+    "union:var.0": " or ",
     "onTrial": "On Trial",
     "voted": "Voted",
     "good":"Good",
