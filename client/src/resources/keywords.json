@@ -65,7 +65,7 @@
     "noGroup.icon": {"link":"standard/chatGroup"},
     "messageSender.livingToDead.icon": {"link":"standard/chatGroup"},
 
-    "day": {"link":"standard/howToPlay", "style": "keyword-info"},
+    "day": {"link":"category/phases", "style": "keyword-info"},
 
     "menu.will.notes": {"link":"standard/howToPlay", "style": "keyword-info"},
     "menu.will.deathNote": {"link":"standard/howToPlay", "style": "keyword-info"},
