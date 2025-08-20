@@ -2,7 +2,7 @@ use std::collections::HashSet;
 
 use serde::Serialize;
 
-use crate::game::ability_input::*;
+use crate::game::controllers::*;
 use crate::game::attack_power::DefensePower;
 use crate::game::chat::ChatGroup;
 use crate::game::components::detained::Detained;

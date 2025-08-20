@@ -1,7 +1,7 @@
 
 use serde::Serialize;
 
-use crate::game::ability_input::{AvailableRoleListSelection, AvailableStringSelection, RoleListSelection};
+use crate::game::controllers::{AvailableRoleListSelection, AvailableStringSelection, RoleListSelection};
 use crate::game::attack_power::DefensePower;
 use crate::game::chat::ChatMessageVariant;
 use crate::game::event::on_midnight::{MidnightVariables, OnMidnightPriority};

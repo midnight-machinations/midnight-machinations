@@ -1,6 +1,6 @@
 use serde::Serialize;
 
-use crate::game::ability_input::AvailableBooleanSelection;
+use crate::game::controllers::AvailableBooleanSelection;
 use crate::game::attack_power::{AttackPower, DefensePower};
 use crate::game::chat::{ChatGroup, ChatMessageVariant};
 use crate::game::components::graves::grave::{Grave, GraveDeathCause, GraveInformation, GraveKiller};

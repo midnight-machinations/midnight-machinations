@@ -1,21 +1,21 @@
 use crate::game::{
-    ability_input::AbilityInput, chat::ChatComponent, components::{
+    controllers::ControllerInput, chat::ChatComponent, components::{
         forward_messages::ForwardMessages, nomination_controller::NominationController,
         syndicate_gun_item::SyndicateGunItem
     }, event::Event, player::PlayerReference, Game
 };
 
 #[must_use = "Event must be invoked"]
-pub struct OnValidatedAbilityInputReceived{
+pub struct OnValidatedControllerInputReceived{
     pub actor_ref: PlayerReference,
-    pub input: AbilityInput,
+    pub input: ControllerInput,
 }
-impl OnValidatedAbilityInputReceived{
-    pub fn new(actor_ref: PlayerReference, input: AbilityInput) -> Self{
+impl OnValidatedControllerInputReceived{
+    pub fn new(actor_ref: PlayerReference, input: ControllerInput) -> Self{
         Self{actor_ref, input}
     }
 }
-impl Event for OnValidatedAbilityInputReceived{
+impl Event for OnValidatedControllerInputReceived{
     type FoldValue = ();
     type Priority = ();
 

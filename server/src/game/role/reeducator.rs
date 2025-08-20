@@ -1,7 +1,7 @@
 use rand::seq::IteratorRandom;
 use serde::Serialize;
 
-use crate::game::ability_input::{AvailablePlayerListSelection, ControllerID};
+use crate::game::controllers::{AvailablePlayerListSelection, ControllerID};
 use crate::game::attack_power::AttackPower;
 use crate::game::chat::ChatMessageVariant;
 use crate::game::components::insider_group::InsiderGroupID;

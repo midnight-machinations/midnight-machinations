@@ -1,6 +1,6 @@
 use serde::Serialize;
 
-use crate::game::ability_input::AvailablePlayerListSelection;
+use crate::game::controllers::AvailablePlayerListSelection;
 use crate::game::components::insider_group::InsiderGroupID;
 use crate::game::components::silenced::Silenced;
 use crate::game::event::on_midnight::{MidnightVariables, OnMidnightPriority};
