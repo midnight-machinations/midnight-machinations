@@ -1,4 +1,4 @@
-use crate::game::{ability_input::{AvailableStringSelection, ControllerID, ControllerParametersMap, StringSelection}, player::PlayerReference, Game};
+use crate::game::{controllers::{AvailableStringSelection, ControllerID, ControllerParametersMap, StringSelection}, player::PlayerReference, Game};
 
 pub struct Alibi;
 impl Alibi{

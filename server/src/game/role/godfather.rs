@@ -1,6 +1,6 @@
 use serde::Serialize;
 
-use crate::game::ability_input::ControllerParametersMap;
+use crate::game::controllers::ControllerParametersMap;
 use crate::game::attack_power::{AttackPower, DefensePower};
 use crate::game::event::on_midnight::{MidnightVariables, OnMidnightPriority};
 use crate::game::components::graves::grave::GraveKiller;

@@ -1,6 +1,7 @@
 use rand::seq::SliceRandom;
 use serde::Serialize;
 
+use crate::game::components::aura::Aura;
 use crate::game::components::confused::Confused;
 use crate::game::event::on_midnight::{MidnightVariables, OnMidnightPriority};
 use crate::game::visit::Visit;
@@ -59,7 +60,7 @@ impl Psychic {
         
         let mut valid_players: Vec<_> = Self::get_valid_players(game, actor_ref, target)
             .into_iter()
-            .filter(|p|!p.has_innocent_aura(game))
+            .filter(|p|!Aura::innocent(game, *p))
             .collect();
 
         valid_players.shuffle(&mut rand::rng());
@@ -79,7 +80,7 @@ impl Psychic {
     fn get_result_good(game: &Game, midnight_variables: &MidnightVariables, actor_ref: PlayerReference, target: PlayerReference, confused: bool)->ChatMessageVariant{
         let mut valid_players: Vec<_> = Self::get_valid_players(game, actor_ref, target)
             .into_iter()
-            .filter(|p|!p.has_suspicious_aura(game, midnight_variables))
+            .filter(|p|!Aura::suspicious(game, midnight_variables, *p))
             .collect();
 
         valid_players.shuffle(&mut rand::rng());

@@ -1,6 +1,6 @@
 use serde::Serialize;
 
-use crate::game::ability_input::ControllerParametersMap;
+use crate::game::controllers::ControllerParametersMap;
 use crate::game::attack_power::{AttackPower, DefensePower};
 use crate::game::chat::ChatMessageVariant;
 use crate::game::components::cult::{Cult, CultAbility};

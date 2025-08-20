@@ -33,7 +33,7 @@ pub(super) const DEFENSE: DefensePower = DefensePower::None;
 
 impl RoleStateImpl for Deputy {
     type ClientRoleState = Deputy;
-    fn on_validated_ability_input_received(self, game: &mut Game, actor_ref: PlayerReference, input_player: PlayerReference, ability_input: super::AbilityInput) {
+    fn on_validated_ability_input_received(self, game: &mut Game, actor_ref: PlayerReference, input_player: PlayerReference, ability_input: super::ControllerInput) {
         
         if actor_ref != input_player {return;}
         let Some(PlayerListSelection(target_ref)) = ability_input.get_player_list_selection_if_id(

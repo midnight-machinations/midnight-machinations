@@ -687,7 +687,9 @@
         "maxCount": 1,
         "canWriteDeathNote": false,
         "canBeConvertedTo": ["godfather"],
-        "chatMessages":[]
+        "chatMessages":[
+            {"type":"brained"}
+        ]
     },
     "informant": {
         "mainRoleSet": "mafia",
