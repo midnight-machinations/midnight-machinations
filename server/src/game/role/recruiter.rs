@@ -1,7 +1,7 @@
 
 use serde::Serialize;
 
-use crate::game::ability_input::AvailableIntegerSelection;
+use crate::game::controllers::AvailableIntegerSelection;
 use crate::game::attack_power::{AttackPower, DefensePower};
 use crate::game::components::mafia_recruits::MafiaRecruits;
 use crate::game::event::on_midnight::{MidnightVariables, OnMidnightPriority};
@@ -160,7 +160,7 @@ pub const ENSURE_ONE_FEWER_SYNDICATE_PER_RECRUITER: GenerationCriterion = Genera
                         let outline_roles = o.roles.get_roles().intersection(enabled_roles);
 
                         !outline_roles.intersection(&syndicate_roles).is_empty() &&
-                        !outline_roles.subtract(&syndicate_roles).is_empty()
+                        !outline_roles.sub(&syndicate_roles).is_empty()
                     })
             )
         {

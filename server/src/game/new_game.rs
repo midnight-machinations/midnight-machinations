@@ -1,25 +1,7 @@
 
-use super::event::before_initial_role_creation::BeforeInitialRoleCreation;
+use crate::{client_connection::ClientConnection, game::{chat::ChatComponent, components::{confused::Confused, cult::Cult, detained::Detained, drunk_aura::DrunkAura, fragile_vest::FragileVestsComponent, graves::Graves, insider_group::{InsiderGroupID, InsiderGroups}, mafia::Mafia, mafia_recruits::MafiaRecruits, pitchfork::Pitchfork, poison::Poison, puppeteer_marionette::PuppeteerMarionette, silenced::Silenced, syndicate_gun_item::SyndicateGunItem, synopsis::SynopsisTracker, tags::Tags, verdicts_today::VerdictsToday, win_condition::WinConditionComponent}, controllers::Controllers, event::on_game_start::OnGameStart, game_client::GameClient, modifiers::{ModifierType, Modifiers}, phase::PhaseStateMachine, player::{Player, PlayerInitializeParameters, PlayerReference}, role_list_generation::{OutlineListAssignment, RoleListGenerator}, role_outline_reference::RoleOutlineReference, settings::Settings, spectator::{spectator_pointer::SpectatorPointer, Spectator, SpectatorInitializeParameters}, Assignments, Game, RejectStartReason}, packet::ToClientPacket, room::{name_validation::generate_random_name, RoomClientID}, vec_map::VecMap};
 
-use crate::{
-    client_connection::ClientConnection,
-    game::{
-        ability_input::SavedControllersMap, chat::ChatComponent, components::{
-            confused::Confused, cult::Cult, detained::Detained,
-            drunk_aura::DrunkAura, fragile_vest::FragileVestsComponent,
-            graves::Graves, insider_group::{InsiderGroupID, InsiderGroups},
-            mafia::Mafia, mafia_recruits::MafiaRecruits, pitchfork::Pitchfork,
-            poison::Poison,
-            puppeteer_marionette::PuppeteerMarionette, silenced::Silenced,
-            syndicate_gun_item::SyndicateGunItem, synopsis::SynopsisTracker,
-            tags::Tags, verdicts_today::VerdictsToday,
-            win_condition::WinConditionComponent
-        }, event::on_game_start::OnGameStart, game_client::GameClient, modifiers::Modifiers, phase::PhaseStateMachine, player::{Player, PlayerInitializeParameters, PlayerReference}, role_list_generation::{OutlineListAssignment, RoleListGenerator}, role_outline_reference::RoleOutlineReference, settings::Settings, spectator::{
-            spectator_pointer::SpectatorPointer, Spectator,SpectatorInitializeParameters
-        }, Assignments, Game, RejectStartReason
-    },
-    packet::ToClientPacket, room::RoomClientID, vec_map::VecMap
-};
+use super::event::before_initial_role_creation::BeforeInitialRoleCreation;
 
 impl Game{
     /// `players` must have length 255 or lower.
@@ -61,6 +43,7 @@ impl Game{
 
             // Create list of players
             let mut new_players = Vec::new();
+            let mut new_players_names = Vec::new();
             for (player_index, player) in players.iter().enumerate() {
                 let Ok(player_index) = player_index.try_into() else {return Err(RejectStartReason::TooManyClients)};
                 let player_ref = unsafe{PlayerReference::new_unchecked(player_index)};
@@ -71,9 +54,21 @@ impl Game{
                 let Some((_, assignment)) = assignments.get(&player_ref) else {
                     return Err(RejectStartReason::RoleListTooSmall)
                 };
+                
+                let name = if settings.enabled_modifiers.contains(&ModifierType::RandomPlayerNames) {
+                    generate_random_name(
+                        &new_players_names
+                            .iter()
+                            .map(|p: &String|p.as_str())
+                            .collect::<Vec<&str>>()
+                    )
+                }else{
+                    player.name.clone()
+                };
+                new_players_names.push(name.clone());
 
                 let new_player = Player::new(
-                    player.name.clone(),
+                    name,
                     sender.clone(),
                     assignment.role
                 );
@@ -98,7 +93,7 @@ impl Game{
                 modifiers: Modifiers::default_from_settings(settings.enabled_modifiers.clone()),
                 settings,
 
-                saved_controllers: SavedControllersMap::default(),
+                controllers: Controllers::default(),
                 syndicate_gun_item: SyndicateGunItem::default(),
                 cult: Cult::default(),
                 mafia: Mafia,

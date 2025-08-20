@@ -245,7 +245,7 @@ function WikiMainPage(props: Readonly<{
 }
 
 export const WIKI_CATEGORIES = [
-    "categories", "town", "mafia", "cult", "neutral", "minions", "fiends", "modifiers", "abilities", "strategies", "menus"
+    "categories", "town", "mafia", "cult", "neutral", "minions", "fiends", "modifiers", "abilities", "strategies", "menus", "phases", "trial"
 ] as const;
 export type WikiCategory = (typeof WIKI_CATEGORIES)[number]
 
@@ -265,22 +265,22 @@ export function partitionWikiPages(
     for (const wikiPage of wikiPages) {
         const articleType = wikiPage.split("/")[0];
 
-        let category: WikiCategory | "uncategorized" | null = null;
+        let categories: (WikiCategory | "uncategorized")[] = [];
 
         if (articleType === "role") {
             const role = wikiPage.split("/")[1] as Role;
-            category = getCategoryForRole(role);
+            categories.push(getCategoryForRole(role));
 
         } else if (articleType === "modifier") {
-            category = "modifiers"
+            categories.push("modifiers")
         } else if (articleType === "category") {
-            category = "categories"
+            categories.push("categories")
         }
 
         if (wikiPage === "standard/mafia") {
-            category = "mafia"
+            categories.push("mafia")
         } else if (wikiPage === "standard/cult") {
-            category = "cult"
+            categories.push("cult")
         }
         
         if ([
@@ -292,26 +292,40 @@ export function partitionWikiPages(
             "standard/forfeitNominationVote", "standard/aura", "standard/fastForward", "standard/appearedVisit", 
             "standard/defense", "standard/confused", "standard/trial",
         ].includes(wikiPage)) {
-            category = "abilities"
+            categories.push("abilities")
         }
         
         if ([
             "standard/claim", "standard/claimswap", "standard/vfr", "standard/passcode",
         ].includes(wikiPage)) {
-            category = "strategies"
+            categories.push("strategies")
         }
 
         if ([
             "standard/playerList", "standard/gameMode", "standard/outlineList", "standard/alibi", "standard/chat", "standard/controller"
         ].includes(wikiPage)) {
-            category = "menus"
+            categories.push("menus")
         }
 
-        if (category === null) {
-            category = "uncategorized"
+        if ([
+            "category/trial", "standard/briefing", "standard/night", "standard/obituary", "standard/discussion", "standard/nomination", "standard/testimony", "standard/judgement", "standard/dusk", "standard/finalWords"
+        ].includes(wikiPage)) {
+            categories.push("phases")
         }
 
-        partitions[category].push(wikiPage)
+        if ([
+            "standard/nomination", "standard/testimony", "standard/judgement", "standard/finalWords",
+        ].includes(wikiPage)) {
+            categories.push("trial")
+        }
+
+        if (categories.length === 0) {
+            categories.push("uncategorized")
+        }
+
+        for (const category of categories) {
+            partitions[category].push(wikiPage)
+        }
     }
 
     if (sort !== false) {

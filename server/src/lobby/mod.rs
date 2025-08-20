@@ -92,10 +92,11 @@ impl Lobby {
         
         let new_name: String = name_validation::sanitize_name(name, &other_player_names);
 
-        if let Some(player) = self.clients.get_mut(&room_client_id){
-            if let LobbyClientType::Player { name } = &mut player.client_type {
-                *name = new_name;
-            }
+        if 
+            let Some(player) = self.clients.get_mut(&room_client_id) &&
+            let LobbyClientType::Player { name } = &mut player.client_type
+        {
+            *name = new_name;
         }
 
         self.send_players();
@@ -167,7 +168,6 @@ impl RoomState for Lobby {
                 };
 
         self.clients.insert(room_client_id, new_player);
-        self.clients.shuffle(&mut rand::rng());
 
         self.ensure_host_exists(None);
 

@@ -11,10 +11,7 @@ pub use player_reference::PlayerReference;
 use crate::client_connection::ClientConnection;
 use crate::vec_set::VecSet;
 use crate::{
-    game::{
-        role::{Role, RoleState}, 
-        verdict::Verdict,
-    },
+    game::role::{Role, RoleState},
     websocket_connections::connection::ClientSender,
 };
 
@@ -36,11 +33,6 @@ pub struct Player {
     role_labels: VecSet<PlayerReference>,
 
     fast_forward_vote: bool,
-
-    voting_variables: PlayerVotingVariables,
-}
-struct PlayerVotingVariables{
-    verdict:        Verdict,
 }
 impl Player {
     pub fn new(name: String, sender: ClientSender, role: Role) -> Self {
@@ -57,10 +49,6 @@ impl Player {
             role_labels: VecSet::new(),
 
             fast_forward_vote: false,
-
-            voting_variables: PlayerVotingVariables{
-                verdict : Verdict::Abstain,
-            },
         }
     }
 }
@@ -68,9 +56,9 @@ impl Player {
 pub mod test {
     use std::time::Duration;
 
-    use crate::{client_connection::ClientConnection, game::{role::Role, verdict::Verdict}, vec_set::VecSet};
+    use crate::{client_connection::ClientConnection, game::role::Role, vec_set::VecSet};
 
-    use super::{Player, PlayerVotingVariables};
+    use super::Player;
 
     pub fn mock_player(name: String, role: Role) -> Player {
         Player {
@@ -87,10 +75,6 @@ pub mod test {
             role_labels: VecSet::new(),
 
             fast_forward_vote: false,
-
-            voting_variables: PlayerVotingVariables{
-                verdict : Verdict::Abstain,
-            },
         }
     }
 }

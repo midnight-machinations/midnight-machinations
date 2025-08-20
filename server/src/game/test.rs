@@ -2,7 +2,7 @@
     use crate::{game::{chat::ChatComponent, components::graves::Graves, role_list_generation::RoleListGenerator}, vec_map::VecMap};
 
     use super::{
-        ability_input::saved_controllers_map::SavedControllersMap, components::{
+        controllers::Controllers, components::{
             cult::Cult, fragile_vest::FragileVests, insider_group::InsiderGroups,
             mafia::Mafia, mafia_recruits::MafiaRecruits, pitchfork::Pitchfork, player_component::PlayerComponent,
             poison::Poison, puppeteer_marionette::PuppeteerMarionette, silenced::Silenced, syndicate_gun_item::SyndicateGunItem,
@@ -56,7 +56,7 @@
             settings,
 
             graves: Graves::default(),
-            saved_controllers: SavedControllersMap::default(),
+            controllers: Controllers::default(),
             syndicate_gun_item: SyndicateGunItem::default(),
             cult: Cult::default(),
             mafia: Mafia,

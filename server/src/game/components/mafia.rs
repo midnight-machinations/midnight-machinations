@@ -1,7 +1,7 @@
 use rand::seq::IndexedRandom;
 
 use crate::{game::{
-    ability_input::{AvailablePlayerListSelection, ControllerParametersMap}, attack_power::{AttackPower, DefensePower}, chat::{ChatGroup, ChatMessageVariant}, components::graves::grave::GraveKiller, event::{
+    controllers::{AvailablePlayerListSelection, ControllerParametersMap}, attack_power::{AttackPower, DefensePower}, chat::{ChatGroup, ChatMessageVariant}, components::graves::grave::GraveKiller, event::{
         on_add_insider::OnAddInsider,
         on_midnight::{MidnightVariables, OnMidnight, OnMidnightPriority}, on_remove_insider::OnRemoveInsider
     }, phase::PhaseType, player::PlayerReference, role::RoleState, role_list::RoleSet, visit::{Visit, VisitTag}, ControllerID, Game, PlayerListSelection

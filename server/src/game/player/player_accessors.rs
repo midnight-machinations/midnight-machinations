@@ -1,6 +1,6 @@
 use crate::{
     game::{
-        chat::{ChatMessage, ChatMessageVariant, ChatPlayerComponent}, components::player_component::PlayerComponent, event::{
+        controllers::{ControllerID, IntegerSelection}, chat::{ChatMessage, ChatMessageVariant, ChatPlayerComponent}, components::player_component::PlayerComponent, event::{
             on_conceal_role::OnConcealRole, on_fast_forward::OnFastForward
         }, modifiers::{ModifierType, Modifiers}, role::{Role, RoleState}, verdict::Verdict, Game
     }, 
@@ -140,14 +140,11 @@ impl PlayerReference{
     Voting
     */
     pub fn verdict(&self, game: &Game) -> Verdict{
-        self.deref(game).voting_variables.verdict
-    }
-    pub fn set_verdict(&self, game: &mut Game, mut verdict: Verdict){
-        if verdict == Verdict::Abstain && !Modifiers::is_enabled(game, ModifierType::Abstaining) {
-            verdict = Verdict::Innocent;
+        match (ControllerID::Judge{player: *self}.get_integer_selection(game)) {
+            Some(IntegerSelection(0)) => Verdict::Innocent,
+            Some(IntegerSelection(1)) => Verdict::Guilty,
+            _ => Verdict::Abstain
         }
-        self.send_packet(game, ToClientPacket::YourJudgement { verdict });
-        self.deref_mut(game).voting_variables.verdict = verdict;
     }
 }
 

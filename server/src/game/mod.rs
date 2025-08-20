@@ -19,15 +19,15 @@ pub mod game_listeners;
 pub mod attack_power;
 pub mod modifiers;
 pub mod role_outline_reference;
-pub mod ability_input;
+pub mod controllers;
 pub mod room_state;
 pub mod new_game;
 
 use std::collections::VecDeque;
 use std::time::Instant;
-use ability_input::saved_controllers_map::SavedControllersMap;
-use ability_input::ControllerID;
-use ability_input::PlayerListSelection;
+use crate::game::controllers::Controllers;
+use controllers::ControllerID;
+use controllers::PlayerListSelection;
 use components::confused::Confused;
 use components::drunk_aura::DrunkAura;
 use components::enfranchise::Enfranchise;
@@ -106,7 +106,7 @@ pub struct Game {
     
     //components with data
     pub graves: Graves,
-    pub saved_controllers: SavedControllersMap,
+    pub controllers: Controllers,
     syndicate_gun_item: SyndicateGunItem,
     pub cult: Cult,
     pub mafia: Mafia,

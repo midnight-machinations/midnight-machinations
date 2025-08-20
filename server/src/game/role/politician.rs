@@ -1,6 +1,6 @@
 use serde::Serialize;
 
-use crate::game::ability_input::AvailableUnitSelection;
+use crate::game::controllers::AvailableUnitSelection;
 use crate::game::attack_power::DefensePower;
 use crate::game::chat::{ChatGroup, ChatMessageVariant};
 use crate::game::components::graves::grave::Grave;
@@ -58,7 +58,7 @@ pub(super) const DEFENSE: DefensePower = DefensePower::Armored;
 
 impl RoleStateImpl for Politician {
     type ClientRoleState = ClientRoleState;
-    fn on_validated_ability_input_received(self, game: &mut Game, actor_ref: PlayerReference, input_player: PlayerReference, ability_input: super::AbilityInput) {
+    fn on_validated_ability_input_received(self, game: &mut Game, actor_ref: PlayerReference, input_player: PlayerReference, ability_input: super::ControllerInput) {
         if actor_ref != input_player {return;}
         if ability_input.id() != ControllerID::role(actor_ref, Role::Politician, 0) {
             return;

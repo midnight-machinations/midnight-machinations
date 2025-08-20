@@ -13,7 +13,7 @@ import StyledText, { KeywordDataMap, PLAYER_KEYWORD_DATA, PLAYER_SENDER_KEYWORD_
 import { useGameState, useLobbyOrGameState, usePlayerNames, usePlayerState } from "../../../components/useHooks";
 import { Virtuoso } from 'react-virtuoso';
 import ListMap from "../../../ListMap";
-import { controllerIdToLinkWithPlayer } from "../../../game/abilityInput";
+import { controllerIdToLinkWithPlayer } from "../../../game/controllerInput";
 
 
 export default function ChatMenu(): ReactElement {
@@ -42,7 +42,7 @@ export default function ChatMenu(): ReactElement {
     }, [filter, playerNames]);
 
     const controllers = new ListMap(
-        usePlayerState(playerState=>playerState.savedControllers, ["yourAllowedControllers"]),
+        usePlayerState(playerState=>playerState.savedControllers, ["yourAllowedControllers", "yourAllowedController"]),
         (k1, k2)=>controllerIdToLinkWithPlayer(k1)===controllerIdToLinkWithPlayer(k2)
     );
 
@@ -68,7 +68,8 @@ export default function ChatMenu(): ReactElement {
             .map(([id, _])=>{
                 if(id.type!=="chat"){return null}
 
-                const sendChatController = controllers.get({type: "sendChat", player: id.player})!;
+                const sendChatController = controllers.get({type: "sendChat", player: id.player});
+                if(sendChatController===null){return null}
 
                 return <>
                     <div key={"header: "+JSON.stringify(id)} className="chat-menu-icons">
@@ -87,7 +88,7 @@ export default function ChatMenu(): ReactElement {
                     </div>
                     <ChatTextInput 
                         key={"input: "+JSON.stringify(id)}
-                        disabled={sendChatController.availableAbilityData.grayedOut}
+                        disabled={sendChatController.parameters.grayedOut}
                         controllingPlayer={id.player}
                     />
                 </>
@@ -182,10 +183,6 @@ export function ChatMessageSection(props: Readonly<{
         state => state.chatMessages.values(),
         ["addChatMessages"]
     )!;
-    // const myPlayerIndex = usePlayerState(
-    //     (gameState)=>gameState.myIndex,
-    //     ["yourPlayerIndex"]
-    // );
 
     const allMessages = messages
         .filter((msg)=>filterMessage(filter, msg, players.map((p)=>p.toString())))

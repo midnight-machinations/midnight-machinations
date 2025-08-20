@@ -14,7 +14,7 @@ import ChatMessage, { translateChatMessage } from "../../../components/ChatMessa
 import GraveComponent, { translateGraveRole } from "../../../components/grave";
 import { ChatMessageSection, ChatTextInput } from "./ChatMenu";
 import ListMap from "../../../ListMap";
-import { controllerIdToLinkWithPlayer } from "../../../game/abilityInput";
+import { controllerIdToLinkWithPlayer } from "../../../game/controllerInput";
 
 export default function PlayerListMenu(): ReactElement {
     const players = useGameState(
@@ -49,7 +49,7 @@ export default function PlayerListMenu(): ReactElement {
             {players
                 .filter(
                     player => !player.alive && 
-                    graves.entries().find(([_, grave]) => grave.player === player.index) === undefined
+                    graves.values().find((grave) => grave.player === player.index) === undefined
                 ).length === 0 || 
                 <>
                     <div className="dead-players-separator">
@@ -94,7 +94,7 @@ function PlayerCard(props: Readonly<{
 
 
     const controllers = new ListMap(
-        usePlayerState(playerState=>playerState.savedControllers, ["yourAllowedControllers"])??[],
+        usePlayerState(playerState=>playerState.savedControllers, ["yourAllowedControllers", "yourAllowedController"])??[],
         (k1, k2)=>controllerIdToLinkWithPlayer(k1)===controllerIdToLinkWithPlayer(k2)
     );
     const whisperAsPlayers = controllers.list
@@ -104,9 +104,9 @@ function PlayerCard(props: Readonly<{
 
     type NonAnonymousBlockMessage = {
         variant: {
-            type: "normal", 
+            type: "normal",
             messageSender: {
-                type: "player", 
+                type: "player",
                 player: PlayerIndex
             } | {
                 type: "livingToDead",
@@ -156,7 +156,7 @@ function PlayerCard(props: Readonly<{
 
     const spectator = useSpectator();
 
-    return <><div 
+    return <><div
         className={`player-card`}
         key={props.playerIndex}
     >
@@ -243,7 +243,7 @@ function PlayerCard(props: Readonly<{
                 return <>
                     <ChatTextInput 
                         key={"input: "+JSON.stringify(id)}
-                        disabled={sendChatController.availableAbilityData.grayedOut}
+                        disabled={sendChatController.parameters.grayedOut}
                         whispering={props.playerIndex}
                         controllingPlayer={id.player}
                     />
