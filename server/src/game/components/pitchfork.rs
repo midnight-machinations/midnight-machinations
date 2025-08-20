@@ -1,6 +1,6 @@
 use crate::{
     game::{
-        ability_input::*, attack_power::AttackPower, components::graves::grave::GraveKiller, event::on_midnight::{MidnightVariables, OnMidnight, OnMidnightPriority}, game_conclusion::GameConclusion, phase::PhaseType, player::PlayerReference, role::Role, role_list::RoleSet, Game
+        controllers::*, attack_power::AttackPower, components::graves::grave::GraveKiller, event::on_midnight::{MidnightVariables, OnMidnight, OnMidnightPriority}, game_conclusion::GameConclusion, phase::PhaseType, player::PlayerReference, role::Role, role_list::RoleSet, Game
     },
     vec_map::VecMap, vec_set::VecSet
 };

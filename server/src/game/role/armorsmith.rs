@@ -1,7 +1,7 @@
 use rand::seq::IndexedRandom;
 use serde::Serialize;
 
-use crate::game::ability_input::ControllerParametersMap;
+use crate::game::controllers::ControllerParametersMap;
 use crate::game::components::fragile_vest::FragileVests;
 use crate::game::components::player_component::PlayerComponent;
 use crate::game::event::on_midnight::{MidnightVariables, OnMidnightPriority};

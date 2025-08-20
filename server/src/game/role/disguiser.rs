@@ -1,7 +1,7 @@
 
 use serde::Serialize;
 
-use crate::game::ability_input::*;
+use crate::game::controllers::*;
 use crate::game::chat::ChatMessageVariant;
 use crate::game::components::graves::grave::GraveInformation;
 use crate::game::components::graves::grave_reference::GraveReference;

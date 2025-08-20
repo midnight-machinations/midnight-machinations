@@ -1,6 +1,6 @@
 use serde::Serialize;
 
-use crate::game::ability_input::AvailablePlayerListSelection;
+use crate::game::controllers::AvailablePlayerListSelection;
 use crate::game::attack_power::AttackPower;
 use crate::game::attack_power::DefensePower;
 use crate::game::event::on_midnight::MidnightVariables;

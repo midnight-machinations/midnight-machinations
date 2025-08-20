@@ -113,6 +113,8 @@ impl Lobby {
                 self.send_to_all(ToClientPacket::RoomName { name })
             },
             ToServerPacket::StartGame => {
+                self.clients.shuffle(&mut rand::rng());
+                
                 if let Some(player) = self.clients.get(&room_client_id){
                     if !player.is_host() {break 'packet_match}
                 }

@@ -1,14 +1,14 @@
-use crate::game::{ability_input::{AbilitySelection, AvailableChatMessageSelection, ControllerID, ControllerParametersMap}, chat::ChatMessageVariant, event::on_validated_ability_input_received::OnValidatedAbilityInputReceived, phase::PhaseState, player::PlayerReference, Game};
+use crate::game::{controllers::{ControllerSelection, AvailableChatMessageSelection, ControllerID, ControllerParametersMap}, chat::ChatMessageVariant, event::on_validated_ability_input_received::OnValidatedControllerInputReceived, phase::PhaseState, player::PlayerReference, Game};
 
 use super::insider_group::InsiderGroupID;
 
 pub struct ForwardMessages;
 
 impl ForwardMessages{
-    pub fn on_validated_ability_input_received(game: &mut Game, event: &OnValidatedAbilityInputReceived, _fold: &mut (), _priority: ()){
+    pub fn on_validated_ability_input_received(game: &mut Game, event: &OnValidatedControllerInputReceived, _fold: &mut (), _priority: ()){
         let (
             ControllerID::ForwardMessage{player},
-            AbilitySelection::ChatMessage(selection)
+            ControllerSelection::ChatMessage(selection)
         ) = event.input.id_and_selection() else {return};
         if event.actor_ref != player {return}
         let Some(message) = selection.0 else {return};

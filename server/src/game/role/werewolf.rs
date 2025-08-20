@@ -35,9 +35,14 @@ impl RoleStateImpl for Werewolf {
                 let Some(first_visit) = visits.first() else {return};
 
                 let target_ref = first_visit.target;
-                let enraged = Tags::tagged(game, TagSetID::WerewolfTracked(actor_ref)).count().saturating_mul(ENRAGED_DENOMINATOR) >= PlayerReference::all_players(game)
-                    .filter(|p|p.alive(game)||*p==actor_ref)
-                    .count().saturating_mul(ENRAGED_NUMERATOR);
+                let enraged = 
+                    Tags::tagged(game, TagSetID::WerewolfTracked(actor_ref))
+                        .count()
+                        .saturating_mul(ENRAGED_DENOMINATOR) >= 
+                    PlayerReference::all_players(game)
+                        .filter(|p|p.alive(game)||*p==actor_ref)
+                        .count()
+                        .saturating_mul(ENRAGED_NUMERATOR);
 
                 if !enraged && target_ref.all_night_visits_cloned(midnight_variables).is_empty() {return}
                     
@@ -50,8 +55,8 @@ impl RoleStateImpl for Werewolf {
             }
             OnMidnightPriority::Kill => {
                 let visits = actor_ref.untagged_night_visits_cloned(midnight_variables);
-                let Some(first_visit) = visits.first() else {return};
-                let target_ref = first_visit.target;
+                let Some(werewolf_visit) = visits.first() else {return};
+                let target_ref = werewolf_visit.target;
 
                 //If player is untracked, track them
                 if !Tags::has_tag(game, TagSetID::WerewolfTracked(actor_ref), target_ref) {
@@ -63,7 +68,7 @@ impl RoleStateImpl for Werewolf {
                     //rampage target
                     for other_player in NightVisits::all_visits(midnight_variables).into_iter()
                         .filter(|visit|
-                            *first_visit != **visit &&
+                            *werewolf_visit != **visit &&
                             visit.target == target_ref
                         )
                         .map(|v|v.visitor)
@@ -79,8 +84,8 @@ impl RoleStateImpl for Werewolf {
                         );
                     }
                     
-                    //If target visits, attack them
-                    if first_visit.attack {
+                    //If target visits or you are enraged, attack them
+                    if werewolf_visit.attack {
                         target_ref.try_night_kill_single_attacker(
                             actor_ref,
                             game,

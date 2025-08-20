@@ -2,7 +2,7 @@
 use rand::seq::IteratorRandom;
 use serde::Serialize;
 
-use crate::game::ability_input::AvailableIntegerSelection;
+use crate::game::controllers::AvailableIntegerSelection;
 use crate::game::attack_power::{AttackPower, DefensePower};
 use crate::game::components::mafia_recruits::MafiaRecruits;
 use crate::game::components::insider_group::InsiderGroupID;

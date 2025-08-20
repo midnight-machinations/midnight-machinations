@@ -2,7 +2,7 @@ use std::iter::once;
 use serde::{Deserialize, Serialize};
 use crate::game::components::confused::Confused;
 use crate::game::role_outline_reference::RoleOutlineReference;
-use crate::game::ability_input::*;
+use crate::game::controllers::*;
 use crate::game::{attack_power::DefensePower, chat::ChatMessageVariant};
 use crate::game::player::PlayerReference;
 use crate::game::visit::Visit;

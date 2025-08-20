@@ -24,7 +24,7 @@ use vec1::Vec1;
 
 use crate::{
     client_connection::ClientConnection, game::{
-        ability_input::*, chat::{ChatGroup, ChatMessage, ChatMessageIndex},
+        controllers::*, chat::{ChatGroup, ChatMessage, ChatMessageIndex},
         components::{
             graves::{grave::Grave, grave_reference::GraveReference}, insider_group::InsiderGroupID, tags::Tag
         },
@@ -35,7 +35,7 @@ use crate::{
             doomsayer::DoomsayerGuess,
             ClientRoleStateEnum, Role
         },
-        role_list::{RoleList, RoleOutline}, settings::PhaseTimeSettings, verdict::Verdict,
+        role_list::{RoleList, RoleOutline}, settings::PhaseTimeSettings,
         GameOverReason, RejectStartReason
     }, 
     lobby::lobby_client::LobbyClient, room::RoomClientID, vec_map::VecMap, vec_set::VecSet,
@@ -137,8 +137,9 @@ pub enum ToClientPacket{
 
     #[serde(rename_all = "camelCase")]
     YourAllowedControllers{
-        save: VecMap<ControllerID, SavedController>
+        save: VecMap<ControllerID, Controller>
     },
+    YourAllowedController{id: ControllerID, controller: Option<Controller>},
 
     #[serde(rename_all = "camelCase")]
     YourRoleLabels{role_labels: VecMap<PlayerIndex, Role>},
@@ -151,8 +152,6 @@ pub enum ToClientPacket{
     YourDeathNote{death_note: Option<String>},
     #[serde(rename_all = "camelCase")]
     YourRoleState{role_state: ClientRoleStateEnum},
-    #[serde(rename_all = "camelCase")]
-    YourJudgement{verdict: Verdict},
     #[serde(rename_all = "camelCase")]
     YourVoteFastForwardPhase{fast_forward: bool},
 
@@ -231,18 +230,15 @@ pub enum ToServerPacket{
     HostForceSetPlayerName { id: RoomClientID, name: String },
 
     // Game
-    #[serde(rename_all = "camelCase")]
-    Judgement{verdict: Verdict},
-
     SaveNotes{notes: Vec<String>},
     #[serde(rename_all = "camelCase")]
     SaveCrossedOutOutlines{crossed_out_outlines: Vec<u8>},
     #[serde(rename_all = "camelCase")]
     SaveDeathNote{death_note: Option<String>},
 
-    // AbilityInput
+    // ControllerInput
     #[serde(rename_all = "camelCase")]
-    AbilityInput{ability_input: AbilityInput},
+    ControllerInput{controller_input: ControllerInput},
     // Role-specific
     #[serde(rename_all = "camelCase")]
     SetDoomsayerGuess{ guesses: [(PlayerReference, DoomsayerGuess); 3] },
