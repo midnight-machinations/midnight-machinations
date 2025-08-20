@@ -1,0 +1,67 @@
+use crate::{game::{controllers::{ControllerInput, Controllers}, event::{on_controller_changed::OnControllerChanged, on_validated_ability_input_received::OnValidatedControllerInputReceived, Event}, phase::PhaseType, player::PlayerReference, Game}, packet::ToClientPacket, vec_set::VecSet};
+
+impl Controllers{
+    /// returns false if any of these
+    /// - selection is invalid
+    /// - the controllerId doesnt exist
+    /// - the controller is grayed out
+    /// - actor is not allowed for this controller
+    /// - the incoming selection is the same as the current selection
+    pub fn on_ability_input_received(
+        game: &mut Game,
+        actor: PlayerReference,
+        ability_input: ControllerInput
+    )->bool{
+        let ControllerInput{
+            id, selection: incoming_selection
+        } = ability_input.clone();
+
+        if !Self::set_selection_in_controller(game, actor, id.clone(), incoming_selection.clone(), false) {
+            return false;
+        }
+
+        if id.should_send_selection_chat_message(game) {
+            Self::send_selection_message(game, actor, id, incoming_selection);
+        }
+
+        OnValidatedControllerInputReceived::new(actor, ability_input).invoke(game);
+
+        true
+    }
+
+    pub fn on_phase_start(game: &mut Game, phase: PhaseType){
+        Self::update_controllers_from_parameters(game);
+        for (_, saved_controller) in game.controllers.controllers.iter_mut(){
+            saved_controller.reset_on_phase_start(phase);
+        }
+    }
+
+    pub fn on_tick(game: &mut Game){
+        Self::update_controllers_from_parameters(game);
+    }
+
+    pub fn send_controller_to_client(game: &mut Game, event: &OnControllerChanged, _fold: &mut (), _priority: ()){
+        let mut players_to_remove = VecSet::new();
+        let mut players_to_update = VecSet::new();
+
+        if let Some(controller) = &event.old{
+            players_to_remove.extend(controller.parameters.allowed_players().iter());
+        }
+        if let Some(controller) = &event.new{
+            players_to_update.extend(controller.parameters.allowed_players().iter());
+        }
+
+        for player in players_to_remove.sub(&players_to_update) {
+            player.send_packet(game, ToClientPacket::YourAllowedController {
+                id: event.id.clone(),
+                controller: None
+            });
+        }
+        for player in players_to_update {
+            player.send_packet(game, ToClientPacket::YourAllowedController {
+                id: event.id.clone(),
+                controller: event.new.clone()
+            });
+        }
+    }
+}

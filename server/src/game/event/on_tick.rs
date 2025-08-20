@@ -1,5 +1,5 @@
 use crate::game::{
-    ability_input::saved_controllers_map::SavedControllersMap, 
+    controllers::Controllers, 
     Game
 };
 
@@ -10,6 +10,6 @@ impl OnTick{
         Self{}
     }
     pub fn invoke(&self, game: &mut Game){
-        SavedControllersMap::on_tick(game);
+        Controllers::on_tick(game);
     }
 }

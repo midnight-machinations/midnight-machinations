@@ -1,5 +1,5 @@
 use serde::Serialize;
-use crate::game::ability_input::{AvailableRoleListSelection, ControllerID, RoleListSelection};
+use crate::game::controllers::{AvailableRoleListSelection, ControllerID, RoleListSelection};
 use crate::game::event::on_midnight::{MidnightVariables, OnMidnightPriority};
 use crate::game::{attack_power::DefensePower, chat::ChatMessageVariant};
 use crate::game::phase::PhaseType;

@@ -16,7 +16,7 @@ use crate::game::visit::Visit;
 
 use crate::game::Game;
 use super::{GetClientRoleState, Role, RoleStateImpl};
-use crate::game::ability_input::*;
+use crate::game::controllers::*;
 
 #[derive(Debug, Clone, Serialize, Default)]
 #[serde(rename_all = "camelCase")]
