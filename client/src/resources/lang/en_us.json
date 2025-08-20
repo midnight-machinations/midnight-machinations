@@ -771,7 +771,7 @@
     "setNotDefault":"Set Custom",
 
     "union": "|",
-    "union:var.1": " or ",
+    "union:var.0": " or ",
     "onTrial": "On Trial",
     "voted": "Voted",
     "good":"Good",
