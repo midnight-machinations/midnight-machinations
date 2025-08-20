@@ -2,6 +2,7 @@
 
 use std::collections::HashSet;
 use crate::game::components::graves::grave_reference::GraveReference;
+use crate::game::role_list_generation::criteria::GenerationCriterion;
 use crate::vec_set::{vec_set, VecSet};
 
 use crate::game::player::PlayerReference;
@@ -90,6 +91,10 @@ pub trait RoleStateImpl: Clone + std::fmt::Debug + Default + GetClientRoleState<
         );
     }
     fn on_whisper(self, _game: &mut Game, _actor_ref: PlayerReference, _event: &OnWhisper, _fold: &mut WhisperFold, _priority: WhisperPriority) {}
+
+    fn role_list_generation_criteria() -> Vec<GenerationCriterion> {
+        vec![]
+    }
 }
 
 // Creates the Role enum
@@ -231,6 +236,11 @@ mod macros {
                 pub fn defense(&self) -> DefensePower {
                     match self {
                         $(Self::$name => $file::DEFENSE),*
+                    }
+                }
+                pub fn role_list_generation_criteria(&self) -> Vec<GenerationCriterion> {
+                    match self {
+                        $(Self::$name => $file::$name::role_list_generation_criteria()),*
                     }
                 }
             }

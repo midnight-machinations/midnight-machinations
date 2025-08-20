@@ -7,10 +7,6 @@ use super::{RoomClientID, Room};
 pub const MESSAGE_PER_SECOND_LIMIT: u16 = 1;
 pub const MESSAGE_PER_SECOND_LIMIT_TIME: Duration = Duration::from_secs(20);
 
-#[expect(
-    clippy::large_enum_variant,
-    reason = "The lint is lowkey right but it's NBD since this isn't stored anywhere for long"
-)]
 pub enum RoomClientMessageResult {
     LobbyAction(LobbyClientMessageResult),
     GameAction(GameClientMessageResult),

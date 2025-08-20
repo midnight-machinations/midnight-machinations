@@ -100,16 +100,14 @@ impl Controllers{
         for (id, controller_parameters) in new_controller_parameters_map.controller_parameters().iter(){
             let mut new_selection = controller_parameters.default_selection().clone();
             
-            if let Some(Controller{selection: old_selection, ..}) = game.controllers.controllers.get(id) {
-                if 
-                    controller_parameters.validate_selection(game, old_selection) &&
-                    !controller_parameters.dont_save() &&
-                    !controller_parameters.grayed_out()
-                {
-                    new_selection = old_selection.clone();
-                }
+            if
+                let Some(Controller{selection: old_selection, ..}) = game.controllers.controllers.get(id) &&
+                controller_parameters.validate_selection(game, old_selection) &&
+                !controller_parameters.dont_save() &&
+                !controller_parameters.grayed_out()
+            {
+                new_selection = old_selection.clone();
             }
-            
 
             let old = game.controllers.controllers.get(id).cloned();
             let new = Controller::new(

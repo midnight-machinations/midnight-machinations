@@ -60,9 +60,7 @@ impl Game {
                 }
             },
             ToServerPacket::HostForceBackToLobby => {
-                if let Some(player) = self.clients.get(&room_client_id){
-                    if !player.host {break 'packet_match}
-                }
+                if let Some(player) = self.clients.get(&room_client_id) && !player.host {break 'packet_match}
 
                 self.settings.role_list.simplify();
                 let role_list = self.settings.role_list.clone();
@@ -81,42 +79,32 @@ impl Game {
                 return GameClientMessageResult::BackToLobby(lobby);
             }
             ToServerPacket::HostForceEndGame => {
-                if let Some(player) = self.clients.get(&room_client_id){
-                    if !player.host {break 'packet_match}
-                }
+                if let Some(player) = self.clients.get(&room_client_id)
+                    && !player.host {break 'packet_match}
 
                 let conclusion = GameConclusion::get_premature_conclusion(self);
 
                 OnGameEnding::new(conclusion).invoke(self);
             }
             ToServerPacket::HostForceSkipPhase => {
-                if let Some(player) = self.clients.get(&room_client_id){
-                    if !player.host {break 'packet_match}
-                }
+                if let Some(player) = self.clients.get(&room_client_id)
+                    && !player.host {break 'packet_match}
                 
                 OnFastForward::invoke(self);
             }
             ToServerPacket::HostDataRequest => {
-                if let Some(player) = self.clients.get(&room_client_id){
-                    if !player.host {break 'packet_match}
-                }
+                if let Some(player) = self.clients.get(&room_client_id) && !player.host {break 'packet_match}
 
                 self.resend_host_data(sender_player_ref.connection(self));
             }
             ToServerPacket::HostForceSetPlayerName { id, name } => {
-                if let Some(player) = self.clients.get(&room_client_id){
-                    if !player.host {break 'packet_match}
-                }
-                if let Some(player) = self.clients.get(&id) {
-                    if let GameClientLocation::Player(player) = player.client_location {
-                        self.set_player_name(player, name);
-                    }
+                if let Some(player) = self.clients.get(&room_client_id) && !player.host {break 'packet_match}
+                if let Some(player) = self.clients.get(&id) && let GameClientLocation::Player(player) = player.client_location {
+                    self.set_player_name(player, name);
                 }
             }
             ToServerPacket::SetPlayerHost { player_id } => {
-                if let Some(player) = self.clients.get(&room_client_id){
-                    if !player.host {break 'packet_match}
-                }
+                if let Some(player) = self.clients.get(&room_client_id) && !player.host {break 'packet_match}
                 if let Some(player) = self.clients.get_mut(&player_id) {
                     player.set_host();
                 }

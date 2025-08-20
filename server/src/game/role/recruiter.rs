@@ -1,28 +1,24 @@
 
-use rand::seq::IteratorRandom;
 use serde::Serialize;
 
 use crate::game::controllers::AvailableIntegerSelection;
 use crate::game::attack_power::{AttackPower, DefensePower};
 use crate::game::components::mafia_recruits::MafiaRecruits;
-use crate::game::components::insider_group::InsiderGroupID;
-use crate::game::components::win_condition::WinCondition;
 use crate::game::event::on_midnight::{MidnightVariables, OnMidnightPriority};
 use crate::game::components::graves::grave::GraveKiller;
 use crate::game::player::PlayerReference;
-use crate::game::game_conclusion::GameConclusion;
-use crate::game::role_list::{RoleOutline, RoleOutlineOption, RoleOutlineOptionRoles, RoleSet};
+use crate::game::role_list::RoleSet;
+use crate::game::role_list_generation::criteria::{GenerationCriterion, GenerationCriterionResult};
+use crate::game::role_list_generation::PartialOutlineListAssignmentNode;
+use crate::game::settings::Settings;
 use crate::game::visit::Visit;
 
 use crate::game::Game;
-use crate::vec_set::VecSet;
 use super::godfather::Godfather;
 use super::{
     ControllerID,
     ControllerParametersMap, IntegerSelection, Role, RoleStateImpl
 };
-
-use vec1::vec1;
 
 #[derive(Debug, Clone, Serialize)]
 #[serde(rename_all = "camelCase")]
@@ -61,13 +57,11 @@ impl RoleStateImpl for Recruiter {
         match priority {
             OnMidnightPriority::Kill => {
                 let actor_visits = actor_ref.untagged_night_visits_cloned(midnight_variables);
-                if let Some(visit) = actor_visits.first(){
-                    if Recruiter::night_ability(self.clone(), game, midnight_variables, actor_ref, visit.target) {
-                        if choose_attack {
-                            actor_ref.set_role_state(game, Recruiter{recruits_remaining: self.recruits_remaining.saturating_add(1)})
-                        }else{
-                            actor_ref.set_role_state(game, Recruiter{recruits_remaining: self.recruits_remaining.saturating_sub(1)});
-                        }
+                if let Some(visit) = actor_visits.first() && Recruiter::night_ability(self.clone(), game, midnight_variables, actor_ref, visit.target) {
+                    if choose_attack {
+                        actor_ref.set_role_state(game, Recruiter{recruits_remaining: self.recruits_remaining.saturating_add(1)})
+                    }else{
+                        actor_ref.set_role_state(game, Recruiter{recruits_remaining: self.recruits_remaining.saturating_sub(1)});
                     }
                 }
             },
@@ -111,50 +105,13 @@ impl RoleStateImpl for Recruiter {
     fn on_any_death(self, game: &mut Game, actor_ref: PlayerReference, dead_player_ref: PlayerReference){
         Godfather::pass_role_state_down(game, actor_ref, dead_player_ref, self);
     }
-    fn before_initial_role_creation(self, game: &mut Game, actor_ref: PlayerReference) {
-
-        if game.settings.role_list.0.contains(&RoleOutline::new_exact(Role::Recruiter)) {
-            return;
-        }
-
-        //get random mafia player and turn them info a random town role
-
-        let random_mafia_player = PlayerReference::all_players(game)
-            .filter(|p|RoleSet::Mafia.get_roles().contains(&p.role(game)))
-            .filter(|p|*p!=actor_ref)
-            .choose(&mut rand::rng());
-
-        if let Some(random_mafia_player) = random_mafia_player {
-
-            let random_town_role = RoleOutline {options: vec1![RoleOutlineOption {
-                win_condition: Default::default(), 
-                insider_groups: Default::default(), 
-                roles: RoleOutlineOptionRoles::RoleSet{ role_set: RoleSet::TownCommon } ,
-                player_pool: VecSet::new(),
-            }]}.get_random_role_assignments(
-                &game.settings.enabled_roles,
-                PlayerReference::all_players(game).map(|p|p.role(game)).collect::<Vec<_>>().as_slice(),
-                &[]
-            ).map(|assignment| assignment.role());
-
-            if let Some(random_town_role) = random_town_role {
-                //special case here. I don't want to use set_role because it alerts the player their role changed
-                //NOTE: It will still send a packet to the player that their role state updated,
-                //so it might be deducable that there is a recruiter
-                InsiderGroupID::Mafia.remove_player_from_insider_group(game, random_mafia_player);
-                random_mafia_player.set_win_condition(game, WinCondition::GameConclusionReached{
-                    win_if_any: vec![GameConclusion::Town].into_iter().collect()
-                });
-                random_mafia_player.set_role_state(game, random_town_role.new_state(game));
-                
-            }
-        }
-        
-    }
-     fn default_revealed_groups(self) -> crate::vec_set::VecSet<crate::game::components::insider_group::InsiderGroupID> {
+    fn default_revealed_groups(self) -> crate::vec_set::VecSet<crate::game::components::insider_group::InsiderGroupID> {
         vec![
             crate::game::components::insider_group::InsiderGroupID::Mafia
         ].into_iter().collect()
+    }
+    fn role_list_generation_criteria() -> Vec<GenerationCriterion> {
+        vec![ENSURE_ONE_FEWER_SYNDICATE_PER_RECRUITER]
     }
 }
 
@@ -185,3 +142,76 @@ impl Recruiter {
         {*x==0}else{true}
     }
 }
+
+pub const ENSURE_ONE_FEWER_SYNDICATE_PER_RECRUITER: GenerationCriterion = GenerationCriterion {
+    evaluate: |node: &PartialOutlineListAssignmentNode, settings: &Settings| {
+        let enabled_roles = &settings.enabled_roles;
+        let syndicate_roles = RoleSet::Mafia.get_roles().intersection(enabled_roles);
+        let town_common_roles = RoleSet::TownCommon.get_roles().intersection(enabled_roles);
+
+        // There are currently no role sets which have mafia roles and town roles at the same time,
+        // but if there were, this check says "uhh sure let's just say this is fine".
+        if node.assignments
+            .iter()
+            .any(|assignment| 
+                assignment.outline_option
+                    .as_ref()
+                    .is_some_and(|o| {
+                        let outline_roles = o.roles.get_roles().intersection(enabled_roles);
+
+                        !outline_roles.intersection(&syndicate_roles).is_empty() &&
+                        !outline_roles.sub(&syndicate_roles).is_empty()
+                    })
+            )
+        {
+            return GenerationCriterionResult::Met;
+        }
+
+        // Which assignments are supposed to generate syndicate?
+        let expected_syndicate_members = node.assignments.iter()
+            .filter(|assignment| assignment.outline_option.as_ref().is_some_and(|o| {
+                let outline_roles = o.roles.get_roles().intersection(enabled_roles);
+
+                !outline_roles.is_empty() && outline_roles.is_subset(&syndicate_roles)
+            }))
+            .count();
+
+        // Which assignments are actually populated with syndicate roles?
+        let actual_syndicate_members = node.assignments.iter()
+            .filter(|assignment| assignment.role.is_some_and(|role| syndicate_roles.contains(&role)))
+            .count();
+
+        let number_of_recruiters = node.assignments.iter()
+            .filter(|assignment| assignment.role == Some(Role::Recruiter))
+            .count();
+
+        // For each recruiter, we should have one fewer syndicate member.
+        if actual_syndicate_members + number_of_recruiters <= expected_syndicate_members {
+            GenerationCriterionResult::Met
+        } else {
+            let mut new_neighbors = Vec::new();
+
+            #[expect(clippy::indexing_slicing, reason = "Manual bounds checks")]
+            // Take a random syndicate member and replace it with a random town role.
+            for (syndicate_idx, _) in node.assignments.iter()
+                .enumerate()
+                .filter(|(_, assignment)| assignment.role.is_some_and(|role| RoleSet::Mafia.get_roles().contains(&role)))
+                .filter(|(_, assignment)| assignment.role != Some(Role::Recruiter))
+            {
+                for role in town_common_roles.iter() {
+                    let mut new_node = node.clone();
+                    new_node.assignments[syndicate_idx].role = Some(*role);
+                    new_node.assignments[syndicate_idx].win_condition = Some(role.default_state().default_win_condition());
+                    new_node.assignments[syndicate_idx].insider_groups = Some(role.default_state().default_revealed_groups());
+                    new_neighbors.push(new_node);
+                }
+            }
+
+            if new_neighbors.is_empty() {
+                return GenerationCriterionResult::Met;
+            }
+
+            GenerationCriterionResult::Unmet(new_neighbors)
+        }
+    }
+};

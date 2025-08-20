@@ -18,10 +18,8 @@ impl Controller{
         &self.selection
     }
     pub fn reset_on_phase_start(&mut self, phase: PhaseType){
-        if let Some(reset_phase) = self.parameters.reset_on_phase_start(){
-            if phase == reset_phase{
-                self.selection = self.parameters.default_selection().clone();
-            }
+        if let Some(reset_phase) = self.parameters.reset_on_phase_start() && phase == reset_phase{
+            self.selection = self.parameters.default_selection().clone();
         }
     }
 }

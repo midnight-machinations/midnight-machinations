@@ -4,7 +4,7 @@ use std::{ops::Deref, vec};
 
 pub(crate) use kit::{assert_contains, assert_not_contains};
 
-use mafia_server::game::{attack_power::DefensePower, components::{graves::{grave::{Grave, GraveDeathCause, GraveInformation, GraveKiller, GravePhase}, grave_reference::GraveReference}, syndicate_gun_item::SyndicateGunItem}};
+use mafia_server::{game::{attack_power::DefensePower, components::{graves::{grave::{Grave, GraveDeathCause, GraveInformation, GraveKiller, GravePhase}, grave_reference::GraveReference}, syndicate_gun_item::SyndicateGunItem}, role_list::{RoleList, RoleOutline, RoleOutlineOption, RoleOutlineOptionInsiderGroups, RoleOutlineOptionRoles, RoleOutlineOptionWinCondition}, settings::{PhaseTimeSettings, Settings}, test::mock_game}, vec_set};
 pub use mafia_server::game::{
     controllers::{ControllerID, IntegerSelection, PlayerListSelection, RoleListSelection},
     game_conclusion::GameConclusion,
@@ -544,6 +544,7 @@ fn doctor_basic() {
 #[test]
 fn transporter_basic_vigilante_escort() {
     kit::scenario!(game in Night 2 where
+        _godfather: Godfather,
         trans: Transporter,
         vigi: Vigilante,
         escort: Escort,
@@ -983,6 +984,8 @@ fn rabble_rouser_turns_into_jester(){
 #[test]
 fn rabble_rouser_instantly_turns_into_jester(){
     kit::scenario!(_game where
+        _godfather: Godfather,
+        _serial_killer: SerialKiller,
         exe: Revolutionary
     );
     let RoleState::Jester(_) = exe.role_state() else {panic!()};
@@ -991,6 +994,7 @@ fn rabble_rouser_instantly_turns_into_jester(){
 #[test]
 fn can_type_in_jail() {
     kit::scenario!(game in Dusk 1 where
+        _godfather: Godfather,
         jailor: Jailor,
         detective: Detective
     );
@@ -1021,7 +1025,8 @@ fn can_type_in_jail() {
 fn mafioso_cant_kill_mafia() {
     kit::scenario!(game in Night 1 where
         mafioso: Mafioso,
-        mortician: Mortician
+        mortician: Mortician,
+        _detective: Detective
     );
 
     mafioso.send_ability_input_player_list_typical(mortician);
@@ -1514,6 +1519,7 @@ fn polymath_snoop_basic() {
 #[test]
 fn polymath_armorsmith_marksman_basic() {
     kit::scenario!(game in Night 2 where
+        _godfather: Godfather,
         armor: Polymath,
         mark: Polymath,
         phil: Philosopher
@@ -3044,4 +3050,49 @@ fn enraged_werewolf_kills() {
     bystander.send_ability_input_player_list_typical(target);
     game.next_phase();
     assert!(!bystander.alive());
+}
+
+#[test]
+fn recruiter_role_list_is_correct() {
+    let (game, _assignments) = mock_game(
+        Settings {
+            role_list: RoleList(vec![
+                RoleOutline {options: vec1::vec1![RoleOutlineOption {
+                    roles: RoleOutlineOptionRoles::Role { role: Role::Recruiter },
+                    win_condition: RoleOutlineOptionWinCondition::RoleDefault,
+                    insider_groups: RoleOutlineOptionInsiderGroups::RoleDefault,
+                    player_pool: vec_set![0]
+                }]},
+                RoleOutline {options: vec1::vec1![RoleOutlineOption {
+                    roles: RoleOutlineOptionRoles::Role { role: Role::Goon },
+                    win_condition: RoleOutlineOptionWinCondition::RoleDefault,
+                    insider_groups: RoleOutlineOptionInsiderGroups::RoleDefault,
+                    player_pool: vec_set![1]
+                }]},
+                RoleOutline {options: vec1::vec1![RoleOutlineOption {
+                    roles: RoleOutlineOptionRoles::Role { role: Role::Detective },
+                    win_condition: RoleOutlineOptionWinCondition::RoleDefault,
+                    insider_groups: RoleOutlineOptionInsiderGroups::RoleDefault,
+                    player_pool: vec_set![2]
+                }]},
+                RoleOutline {options: vec1::vec1![RoleOutlineOption {
+                    roles: RoleOutlineOptionRoles::Role { role: Role::Detective },
+                    win_condition: RoleOutlineOptionWinCondition::RoleDefault,
+                    insider_groups: RoleOutlineOptionInsiderGroups::RoleDefault,
+                    player_pool: vec_set![3]
+                }]}
+            ]),
+            phase_times: PhaseTimeSettings::default(),
+            enabled_roles: RoleSet::Any.get_roles(),
+            enabled_modifiers: vec_set![],
+        },
+        4
+    ).unwrap();
+
+    let [recruiter, goon, detective1, detective2] = [0, 1, 2, 3].map(|i| unsafe { PlayerReference::new_unchecked(i) } );
+
+    assert!(recruiter.role(&game) == Role::Recruiter);
+    assert!(goon.role(&game) != Role::Goon);
+    assert!(detective1.role(&game) == Role::Detective);
+    assert!(detective2.role(&game) == Role::Detective);
 }

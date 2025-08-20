@@ -30,7 +30,7 @@ impl Lobby {
     pub fn ensure_host_exists(&mut self, skip: Option<RoomClientID>) {
         if !self.clients.iter().any(|p|p.1.is_host()) {
             let next_available_player = self.clients.iter_mut()
-                .filter(|(&id, _)| skip.is_none_or(|s| s != id))
+                .filter(|(id, _)| skip.is_none_or(|s| s != **id))
                 .map(|(_, c)| c).next();
 
             if let Some(new_host) = next_available_player {
@@ -92,10 +92,11 @@ impl Lobby {
         
         let new_name: String = name_validation::sanitize_name(name, &other_player_names);
 
-        if let Some(player) = self.clients.get_mut(&room_client_id){
-            if let LobbyClientType::Player { name } = &mut player.client_type {
-                *name = new_name;
-            }
+        if 
+            let Some(player) = self.clients.get_mut(&room_client_id) &&
+            let LobbyClientType::Player { name } = &mut player.client_type
+        {
+            *name = new_name;
         }
 
         self.send_players();

@@ -72,10 +72,8 @@ impl Pitchfork{
     pub fn before_phase_end(game: &mut Game, phase: PhaseType){
         if phase == PhaseType::Night {
             Pitchfork::set_angry_mobbed_player(game, None);
-            if Pitchfork::pitchfork_uses_remaining(game) > 0 {
-                if let Some(target) = Pitchfork::player_is_voted(game){
-                    Pitchfork::set_angry_mobbed_player(game, Some(target));
-                }
+            if Pitchfork::pitchfork_uses_remaining(game) > 0 && let Some(target) = Pitchfork::player_is_voted(game){
+                Pitchfork::set_angry_mobbed_player(game, Some(target));
             }
         }
     }
