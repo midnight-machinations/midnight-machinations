@@ -108,6 +108,7 @@ macros::roles! {
     Snoop : snoop,
     Gossip : gossip,
     TallyClerk : tally_clerk,
+    Percolator : percolator,
 
     Doctor : doctor,
     Bodyguard : bodyguard,

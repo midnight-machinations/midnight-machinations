@@ -175,6 +175,7 @@ pub enum ChatMessageVariant {
     GossipResult{enemies: bool},
     #[serde(rename_all = "camelCase")]
     TallyClerkResult{evil_count: u8},
+    PercolatorResult{sieve: VecSet<PlayerReference>},
 
     EngineerVisitorsRole{role: Role},
     TrapState{state: TrapState},
