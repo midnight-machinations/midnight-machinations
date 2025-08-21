@@ -2816,7 +2816,7 @@ fn santa_cannot_convert_naughty_player() {
     kit::scenario!(game in Night 1 where
         santa: SantaClaus,
         nice: Villager,
-        naughty: Villager
+        naughty: Mortician
     );
     santa.send_ability_input_player_list_typical(nice);
 
@@ -2937,7 +2937,7 @@ fn santa_always_gets_their_naughty_selection() {
             _potential2: Villager,
             _potential3: Villager,
             _potential4: Villager,
-            _potential5: Villager
+            _potential5: Mortician
         );
         santa.send_ability_input_player_list_typical(nice);
     
