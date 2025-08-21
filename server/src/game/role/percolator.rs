@@ -6,7 +6,6 @@ use crate::game::components::win_condition::WinCondition;
 use crate::game::event::on_midnight::{MidnightVariables, OnMidnightPriority};
 use crate::game::role::{common_role, GetClientRoleState};
 use crate::game::{attack_power::DefensePower, chat::ChatMessageVariant};
-use crate::game::game_conclusion::GameConclusion;
 use crate::game::player::PlayerReference;
 
 use crate::game::visit::Visit;
@@ -24,16 +23,20 @@ pub struct Percolator {
 }
 
 #[derive(Clone, Debug, Serialize, Default)]
-struct PercolatorClientRoleState;
+pub struct PercolatorClientRoleState;
 
 impl RoleStateImpl for Percolator {
     type ClientRoleState = PercolatorClientRoleState;
     fn on_midnight(self, game: &mut Game, midnight_variables: &mut MidnightVariables, actor_ref: PlayerReference, priority: OnMidnightPriority) {
         if priority != OnMidnightPriority::Investigative {return;}
 
-        let mut new_sieve = self.sieve.clone();
+        let new_sieve: VecSet<PlayerReference>;
 
         if let Some(BooleanSelection(true)) = ControllerID::role(actor_ref, Role::Percolator, 0).get_boolean_selection(game) {
+            if actor_ref.night_blocked(midnight_variables) {
+                return;
+            }
+
             new_sieve = PlayerReference::all_players(game).collect();
             actor_ref.set_role_state(game, Percolator { sieve: new_sieve.clone() });
             actor_ref.push_night_message(midnight_variables, 
@@ -42,46 +45,23 @@ impl RoleStateImpl for Percolator {
             return;
         }
 
-        // This is constant throughout a game, but it's probably not expensive enough
-        // to warrant caching it.
-        // Currently, evils are 40% more likely to stay in the sieve.
-        // To change this, change the constant in the `friend_filter_probability` calculation.
-        let (enemy_filter_probability, friend_filter_probability, nightly_narrowing_probability) = {
-            // We want the sieve to have narrowed to 1 player over 1 + ceil(PLAYERS/5) nights (for balance).
-            // We also want enemies to be more likely to be filtered out than friends.
-            // That's why this math is a bit complicated.
-
-            let max_narrowing_probability = 1.0 / game.num_players() as f64;
-            let desired_max_narrowing_time_nights = 1 + common_role::standard_charges(game);
-            let nightly_narrowing_probability = max_narrowing_probability.powf(1.0 / desired_max_narrowing_time_nights as f64);
-
-            let friend_filter_probability = nightly_narrowing_probability * 0.80;
-            let enemy_filter_probability = (
-                2.0 * nightly_narrowing_probability.powi(desired_max_narrowing_time_nights as i32) 
-                - friend_filter_probability.powi(desired_max_narrowing_time_nights as i32)
-            ).powf(1.0 / desired_max_narrowing_time_nights as f64);
-
-            (enemy_filter_probability, friend_filter_probability, nightly_narrowing_probability)
-        };
+        let (enemy_filter_probability, friend_filter_probability, nightly_narrowing_probability) = Self::get_probabilities(game);
 
         if actor_ref.night_blocked(midnight_variables) {
             // Don't narrow the sieve
+            return;
         } else if Confused::is_confused(game, actor_ref) {
-            new_sieve = self.sieve.iter()
-                .filter(|_| rand::random_range(0.0..=1.0) < nightly_narrowing_probability)
-                .copied()
-                .collect();
+            new_sieve = self.try_filter_sieve(|_player| {
+                rand::random_range(0.0..=1.0) < nightly_narrowing_probability
+            });
         } else {
-            new_sieve = self.sieve.iter()
-                .filter(|p| {
-                    if WinCondition::are_friends(p.win_condition(game), actor_ref.win_condition(game)) {
-                        rand::random_range(0.0..=1.0) < friend_filter_probability
-                    } else {
-                        rand::random_range(0.0..=1.0) < enemy_filter_probability
-                    }
-                })
-                .copied()
-                .collect()
+            new_sieve = self.try_filter_sieve(|player| {
+                if WinCondition::are_friends(player.win_condition(game), actor_ref.win_condition(game)) {
+                    rand::random_range(0.0..=1.0) < friend_filter_probability
+                } else {
+                    rand::random_range(0.0..=1.0) < enemy_filter_probability
+                }
+            });
         }
 
         actor_ref.set_role_state(game, Percolator { sieve: new_sieve.clone() });
@@ -89,10 +69,19 @@ impl RoleStateImpl for Percolator {
             ChatMessageVariant::PercolatorResult { sieve: new_sieve }
         );
     }
+    #[expect(clippy::cast_possible_truncation, reason = "We want to send u8s, not f64s")]
+    #[expect(clippy::cast_sign_loss, reason = "We want to send u8s, not f64s")]
     fn on_game_start(self, game: &mut Game, actor_ref: PlayerReference) {
-        actor_ref.set_role_state(game, Percolator {
-            sieve: PlayerReference::all_players(game).collect(),
-        });
+        let new_sieve = PlayerReference::all_players(game).collect::<VecSet<_>>();
+        actor_ref.set_role_state(game, Percolator { sieve: new_sieve.clone() });
+        actor_ref.add_private_chat_message(game, ChatMessageVariant::PercolatorResult { sieve: new_sieve });
+
+        let (enemy_filter_probability, friend_filter_probability, _) = Self::get_probabilities(game);
+
+        let enemy_filter_probability = (enemy_filter_probability * 255.0) as u8;
+        let friend_filter_probability = (friend_filter_probability * 255.0) as u8;
+
+        actor_ref.add_private_chat_message(game, ChatMessageVariant::PercolatorProbabilities { enemy_filter_probability, friend_filter_probability });
     }
     fn controller_parameters_map(self, game: &Game, actor_ref: PlayerReference) -> ControllerParametersMap {
         ControllerParametersMap::builder(game)
@@ -118,13 +107,58 @@ impl GetClientRoleState<PercolatorClientRoleState> for Percolator {
 }
 
 impl Percolator {
-    pub fn player_is_suspicious(game: &Game, midnight_variables: &MidnightVariables, player_ref: PlayerReference) -> bool {
-        if player_ref.has_suspicious_aura(game, midnight_variables){
-            true
-        }else if player_ref.has_innocent_aura(game){
-            false
-        }else{
-            !player_ref.win_condition(game).friends_with_conclusion(GameConclusion::Town)
+    fn try_filter_sieve(self, filter_algorithm: impl Fn(PlayerReference) -> bool) -> VecSet<PlayerReference> {
+        let mut tries = 0u8;
+
+        if self.sieve.is_empty() {
+            return VecSet::new();
         }
+
+        loop {
+            let filtered = self.sieve.iter()
+                .filter(|p| filter_algorithm(**p))
+                .copied()
+                .collect::<VecSet<_>>();
+
+            if filtered.count() < self.sieve.count() {
+                return filtered;
+            }
+
+            tries = tries.saturating_add(1);
+
+            if tries >= 100 {
+                // If we can't filter out any players after 100 tries, just remove a random player.
+                // This will not mess with probabilities that much. Probably.
+                let mut new_sieve = self.sieve.iter().copied().collect::<Vec<_>>();
+
+                let random_index = rand::random_range(0..self.sieve.count());
+                new_sieve.remove(random_index);
+                
+                return new_sieve.into_iter().collect();
+            }
+        }
+    }
+
+    // This is constant throughout a game, but it's probably not expensive enough
+    // to warrant caching it.
+    // Currently, evils are 40% more likely to stay in the sieve.
+    // To change this, change the constant in the `friend_filter_probability` calculation.
+    fn get_probabilities(game: &Game) -> (f64, f64, f64) {
+        // We want the sieve to have narrowed to 1 player over 1 + ceil(PLAYERS/5) nights (for balance).
+        // We also want enemies to be more likely to be filtered out than friends.
+        // That's why this math is a bit complicated.
+
+        let max_narrowing_probability = 1.0 / game.num_players() as f64;
+        let desired_max_narrowing_time_nights = common_role::standard_charges(game).saturating_add(1);
+        let nightly_narrowing_probability = max_narrowing_probability.powf(1.0 / desired_max_narrowing_time_nights as f64);
+
+        let friend_filter_probability = nightly_narrowing_probability * 0.80;
+        let enemy_filter_probability = (
+            2.0 * nightly_narrowing_probability.powi(desired_max_narrowing_time_nights as i32) 
+            - friend_filter_probability.powi(desired_max_narrowing_time_nights as i32)
+        ).powf(1.0 / desired_max_narrowing_time_nights as f64);
+
+        // Yeah this return type is mid but just make sure to update callers if you change this order.
+        (enemy_filter_probability, friend_filter_probability, nightly_narrowing_probability)
     }
 }

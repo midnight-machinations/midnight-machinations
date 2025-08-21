@@ -239,6 +239,12 @@
     "role.tallyClerk.name:var.0": "Tally Clerks",
     "role.tallyClerk.target": "Distribute",
 
+    "role.percolator.name": "Percolator",
+    "role.percolator.name:var.0": "Percolators",
+    "controllerId.role.percolator.0.name": "Filter or Reset Sieve",
+    "controllerId.role.percolator.0.boolean.true": "Reset",
+    "controllerId.role.percolator.0.boolean.false": "Filter",
+
     "role.doctor.name": "Doctor",
     "role.doctor.name:var.0": "Doctors",
     "role.doctor.roleDataText": "\\0 self-heals remaining",
@@ -1015,6 +1021,8 @@
     "chatMessage.gossipResult.none": "Your target didn't visit a player that is enemies with town.",
     "chatMessage.gossipResult.enemies": "Your target visited a player that is enemies with town.",
     "chatMessage.tallyClerkResult": "\\0 evil players voted guilty at some point today.",
+    "chatMessage.percolatorResult": "The sieve contains the following players: \\0.",
+    "chatMessage.percolatorProbabilities": "Enemies will remain in the sieve \\0% of the time, and friends will remain \\1% of the time.",
     "chatMessage.playerForwardedMessage":"\\0 forwarded:",
     "chatMessage.targetsMessage":"Your target got the following message:",
     "chatMessage.youWerePossessed":"You were possessed.",
@@ -1566,6 +1574,12 @@
     "wiki.article.role.tallyClerk.abilities":"- At night, you are told how many players are not town loyalists from the players who voted guilty today\n- If you are blocked, you aren't told anything\n- Your ability doesn't depend on visits",
     "wiki.article.role.tallyClerk.attributes":"- A suspicious aura makes a player register as not a town loyalist\n- An innocent aura makes a player register as a town loyalist\n- A suspicious aura overwrites innocent aura to the Tally Clerk",
     "wiki.article.role.tallyClerk.extra":"",
+
+    "wiki.article.role.percolator.reminder": "You start with a sieve containing every player, which you can filter at night to reduce the number of players inside it - and evil players are less likely to be filtered out.",
+    "wiki.article.role.percolator.guide": "- You are given a sieve containing every player\n- At night, you select whether to filter or reset your sieve\n  - If you filter your sieve, some players will be removed randomly\n  - Players who are enemies with you are less likely to be filtered out\n  - At least one player will always be filtered out\n- If you reset your sieve, it will contain every player again",
+    "wiki.article.role.percolator.abilities":"- At night, you select whether to filter or reset your sieve\n  - If you filter your sieve, some players will be removed randomly\n  - Players who are enemies with you are less likely to be filtered out\n  - At least one player will always be filtered out\n- If you reset your sieve, it will contain every player again\n- If you are blocked, you cannot filter or reset your sieve",
+    "wiki.article.role.percolator.attributes":"- Aura does not affect how your sieve filters players.",
+    "wiki.article.role.percolator.extra":"",
 
     "wiki.article.role.doctor.reminder": "At night, select a player to guard from attacks. You can guard yourself once per game.",
     "wiki.article.role.doctor.guide": "- At night, select a player to guard\n    - Guarding a player gives the protected defense, so most attacks can't kill them.\n- You can select yourself to guard yourself once per game.",
