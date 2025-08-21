@@ -30,7 +30,7 @@ impl RoomState for Game {
             return RoomTickResult { close_room: false }
         }
 
-        if let Some(conclusion) = GameConclusion::game_is_over(self) {
+        if let Some(conclusion) = GameConclusion::game_is_over_game(self) {
             OnGameEnding::new(conclusion).invoke(self);
         }
 

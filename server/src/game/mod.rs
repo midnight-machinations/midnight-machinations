@@ -270,7 +270,7 @@ impl Game {
 
 
     pub fn game_is_over(&self) -> bool {
-        GameConclusion::game_is_over(self).is_some()
+        GameConclusion::game_is_over_game(self).is_some()
     }
 
     pub fn current_phase(&self) -> &PhaseState {

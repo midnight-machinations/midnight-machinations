@@ -194,7 +194,7 @@ impl TestPlayer {
     }
 
     pub fn get_won_game(&self) -> bool {
-        if let Some(conclusion) = GameConclusion::game_is_over(game!(self)) {
+        if let Some(conclusion) = GameConclusion::game_is_over_game(game!(self)) {
             self.0.get_won_game(game!(self), conclusion)
         } else {
             false // Game is not over, so nobody wins!

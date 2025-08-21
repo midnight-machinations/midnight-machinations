@@ -6,15 +6,16 @@ use crate::{game::{components::{insider_group::InsiderGroupID, win_condition::Wi
 
 pub mod criteria;
 
-pub struct RoleListGenerator<'a> {
-    settings: &'a Settings,
+pub struct RoleListGenerator {
+    settings: Settings,
     nodes: Vec<PartialOutlineListAssignmentNode>,
     criteria: Vec<GenerationCriterion>,
 }
 
-impl<'a> RoleListGenerator<'a> {
+impl RoleListGenerator {
 
-    pub fn new(settings: &'a Settings) -> RoleListGenerator<'a> {
+    pub fn new(mut settings: Settings) -> RoleListGenerator {
+        settings.role_list.0.shuffle(&mut rand::rng());
         RoleListGenerator {
             settings,
             nodes: Vec::new(),
@@ -29,10 +30,8 @@ impl<'a> RoleListGenerator<'a> {
                 criteria::FILL_ALL_OUTLINE_OPTIONS,
                 criteria::FILL_ALL_PLAYERS,
                 criteria::FILL_ALL_WIN_CONDITIONS,
-                // The game will check for this too, but might as well try to fix it here anyway
-                // so we don't have to completely restart the DFS.
-                criteria::NOT_ALL_SAME_WIN_CONDITION,
-                criteria::FILL_ALL_INSIDER_GROUPS
+                criteria::FILL_ALL_INSIDER_GROUPS,
+                criteria::GAME_DOESNT_END_INSTANTLY,
             ]
         }
     }
@@ -116,7 +115,7 @@ impl<'a> RoleListGenerator<'a> {
                     .flat_map(|role| role.role_list_generation_criteria())
             )
             .find_map(|criterion| {
-                let result = (criterion.evaluate)(node, self.settings);
+                let result = (criterion.evaluate)(node, &self.settings);
                 if let GenerationCriterionResult::Unmet(neighbors) = result {
                     Some(neighbors)
                 } else {
@@ -156,12 +155,12 @@ impl<'a> RoleListGenerator<'a> {
     }
 }
 
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub struct PartialOutlineListAssignmentNode {
     pub assignments: Vec<PartialOutlineAssignment>
 }
 
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub struct PartialOutlineAssignment {
     pub outline_option: Option<RoleOutlineOption>,
     pub role: Option<Role>,
@@ -170,11 +169,12 @@ pub struct PartialOutlineAssignment {
     pub player: Option<PlayerReference>
 }
 
+#[derive(Debug)]
 pub struct OutlineListAssignment {
     pub assignments: Vec<OutlineAssignment>
 }
 
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub struct OutlineAssignment {
     pub role: Role,
     pub insider_groups: VecSet<InsiderGroupID>,
