@@ -1,6 +1,7 @@
 use serde::Serialize;
 
 use crate::game::attack_power::DefensePower;
+use crate::game::components::aura::Aura;
 use crate::game::components::confused::Confused;
 use crate::game::event::on_midnight::{MidnightVariables, OnMidnightPriority};
 use crate::game::{chat::ChatMessageVariant, components::verdicts_today::VerdictsToday};
@@ -59,9 +60,9 @@ impl TallyClerk {
     }
     fn player_is_suspicious(game: &Game, midnight_variables: &MidnightVariables, player_ref: PlayerReference) -> bool {
 
-        if player_ref.has_suspicious_aura(game, midnight_variables){
+        if Aura::suspicious(game, midnight_variables, player_ref){
             true
-        }else if player_ref.has_innocent_aura(game){
+        }else if Aura::innocent(game, player_ref){
             false
         }else{
             !player_ref.win_condition(game).is_loyalist_for(GameConclusion::Town)

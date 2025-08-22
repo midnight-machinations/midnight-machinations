@@ -1,4 +1,4 @@
-use mafia_server::{game::{ability_input::*, chat::ChatMessageVariant, game_conclusion::GameConclusion, phase::PhaseState, player::{PlayerIndex, PlayerReference}, role::{Role, RoleState}, verdict::Verdict, Game}, packet::ToServerPacket};
+use mafia_server::{game::{controllers::*, chat::ChatMessageVariant, game_conclusion::GameConclusion, phase::PhaseState, player::{PlayerIndex, PlayerReference}, role::{Role, RoleState}, verdict::Verdict, Game}, packet::ToServerPacket};
 
 #[derive(Clone, Copy, Debug)]
 pub struct TestPlayer(PlayerReference, *mut Game);
@@ -30,23 +30,23 @@ impl TestPlayer {
         self.0
     }
 
-    pub fn send_ability_input(&self, ability_input: AbilityInput) {
+    pub fn send_ability_input(&self, ability_input: ControllerInput) {
         game!(self).on_player_message(
             0, // This is only used for host stuff.
             self.0, 
-            ToServerPacket::AbilityInput { ability_input }
+            ToServerPacket::ControllerInput { controller_input: ability_input }
         );
     }
 
     pub fn send_ability_input_integer_typical(&self, int: i8) {
-        self.send_ability_input(AbilityInput::new(
+        self.send_ability_input(ControllerInput::new(
             ControllerID::role(self.player_ref(), self.role(), 0),
             IntegerSelection(int),
         ))
     }
 
     pub fn send_ability_input_role_typical(&self, role: Vec<Role>){
-        self.send_ability_input(AbilityInput::new(
+        self.send_ability_input(ControllerInput::new(
             ControllerID::role(self.player_ref(), self.role(), 0),
             RoleListSelection(role),
         ))
@@ -54,7 +54,7 @@ impl TestPlayer {
 
     pub fn send_ability_input_unit_typical(&self)->bool{
         self.send_ability_input(
-            AbilityInput::new(
+            ControllerInput::new(
                 ControllerID::role(self.player_ref(), self.role(), 0),
                 UnitSelection
             )
@@ -64,7 +64,7 @@ impl TestPlayer {
 
     pub fn send_ability_input_two_player_typical(&self, a: TestPlayer, b: TestPlayer)->bool{
         self.send_ability_input(
-            AbilityInput::new(
+            ControllerInput::new(
                 ControllerID::role(self.player_ref(), self.role(), 0),
                 TwoPlayerOptionSelection(Some((a.player_ref(), b.player_ref())))
             )
@@ -74,7 +74,7 @@ impl TestPlayer {
 
     pub fn send_ability_input_player_list_typical(&self, selection: impl Into<Vec<TestPlayer>>)->bool{
         self.send_ability_input(
-            AbilityInput::new(
+            ControllerInput::new(
                 ControllerID::role(self.player_ref(), self.role(), 0),
                 PlayerListSelection(selection.into().iter().map(TestPlayer::player_ref).collect())
             )
@@ -84,7 +84,7 @@ impl TestPlayer {
 
     pub fn send_ability_input_boolean_typical(&self, selection: bool)->bool{
         self.send_ability_input(
-            AbilityInput::new(
+            ControllerInput::new(
                 ControllerID::role(self.player_ref(), self.role(), 0),
                 BooleanSelection(selection)
             )
@@ -94,7 +94,7 @@ impl TestPlayer {
 
     pub fn send_ability_input_player_list(&self, selection: impl Into<Vec<TestPlayer>>, id: RoleControllerID)->bool{
         self.send_ability_input(
-            AbilityInput::new(
+            ControllerInput::new(
                 ControllerID::role(self.player_ref(), self.role(), id),
                 PlayerListSelection(selection.into().iter().map(|p| p.player_ref()).collect())
             )
@@ -104,21 +104,26 @@ impl TestPlayer {
 
     pub fn vote_for_player(&self, target: impl Into<Option<TestPlayer>>) {
         self.send_ability_input(
-            AbilityInput::new(
+            ControllerInput::new(
                 ControllerID::nominate(self.player_ref()),
                 PlayerListSelection(target.into().iter().map(|p| p.player_ref()).collect())
             )
         );
     }
     pub fn set_verdict(&self, verdict: Verdict) {
-        self.0.set_verdict(game!(self), verdict);
+        self.send_ability_input(
+            ControllerInput::new(
+                ControllerID::judge(self.player_ref()),
+                IntegerSelection(match verdict {Verdict::Innocent=>0,Verdict::Guilty=>1,Verdict::Abstain=>2})
+            )
+        );
     }
 
     pub fn send_message(&self, message: &str) {
         game!(self).on_player_message(
             0, // This is only used for host stuff.
             self.0, 
-            ToServerPacket::AbilityInput { ability_input: AbilityInput::new(
+            ToServerPacket::ControllerInput { controller_input: ControllerInput::new(
                 ControllerID::Chat { player: self.0 },
                 StringSelection(message.to_string())
             ) }
@@ -126,7 +131,7 @@ impl TestPlayer {
         game!(self).on_player_message(
             0, // This is only used for host stuff.
             self.0, 
-            ToServerPacket::AbilityInput { ability_input: AbilityInput::new(
+            ToServerPacket::ControllerInput { controller_input: ControllerInput::new(
                 ControllerID::ChatIsBlock { player: self.0 },
                 BooleanSelection(false)
             ) }
@@ -134,7 +139,7 @@ impl TestPlayer {
         game!(self).on_player_message(
             0, // This is only used for host stuff.
             self.0, 
-            ToServerPacket::AbilityInput { ability_input: AbilityInput::new(
+            ToServerPacket::ControllerInput { controller_input: ControllerInput::new(
                 ControllerID::SendChat { player: self.0 },
                 UnitSelection
             ) }
@@ -189,7 +194,7 @@ impl TestPlayer {
     }
 
     pub fn get_won_game(&self) -> bool {
-        if let Some(conclusion) = GameConclusion::game_is_over(game!(self)) {
+        if let Some(conclusion) = GameConclusion::game_is_over_game(game!(self)) {
             self.0.get_won_game(game!(self), conclusion)
         } else {
             false // Game is not over, so nobody wins!

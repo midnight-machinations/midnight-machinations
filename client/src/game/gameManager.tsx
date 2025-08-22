@@ -363,9 +363,19 @@ export function createGameManager(): GameManager {
         },
 
         sendJudgementPacket(judgement: Verdict) {
-            this.server.sendPacket({
-                type: "judgement",
-                verdict: judgement
+            let player = undefined;
+            // if(player===undefined){
+                if(this.state.stateType==="game" && this.state.clientState.type === "player"){
+                    player = this.state.clientState.myIndex;
+                }
+            // }
+            if(player===undefined){return}
+
+            const verdictInt = judgement==="innocent"?0:judgement==="guilty"?1:2;
+
+            this.sendControllerInput({
+                id: {type:"judge",player},
+                selection: {type:"integer",selection:verdictInt}
             });
         },
 
@@ -382,7 +392,7 @@ export function createGameManager(): GameManager {
             // }
             if(player===undefined){return}
 
-            this.sendAbilityInput({
+            this.sendControllerInput({
                 id: {
                     type: "alibi",
                     player: player
@@ -419,7 +429,7 @@ export function createGameManager(): GameManager {
             }
             if(controllingPlayer===undefined){return}
 
-            this.sendAbilityInput({
+            this.sendControllerInput({
                 id: {
                     type: "chatIsBlock",
                     player: controllingPlayer
@@ -430,7 +440,7 @@ export function createGameManager(): GameManager {
                 }
             });
 
-            this.sendAbilityInput({
+            this.sendControllerInput({
                 id: {
                     type: "chat",
                     player: controllingPlayer
@@ -442,7 +452,7 @@ export function createGameManager(): GameManager {
             });
 
             
-            this.sendAbilityInput({
+            this.sendControllerInput({
                 id: {
                     type: "sendChat",
                     player: controllingPlayer
@@ -461,7 +471,7 @@ export function createGameManager(): GameManager {
             }
             if(controllingPlayer===undefined){return}
 
-            this.sendAbilityInput({
+            this.sendControllerInput({
                 id: {
                     type: "whisperToPlayer",
                     player: controllingPlayer
@@ -472,7 +482,7 @@ export function createGameManager(): GameManager {
                 }
             });
 
-            this.sendAbilityInput({
+            this.sendControllerInput({
                 id: {
                     type: "whisper",
                     player: controllingPlayer
@@ -484,7 +494,7 @@ export function createGameManager(): GameManager {
             });
 
             
-            this.sendAbilityInput({
+            this.sendControllerInput({
                 id: {
                     type: "sendWhisper",
                     player: controllingPlayer
@@ -508,10 +518,10 @@ export function createGameManager(): GameManager {
             });
         },
 
-        sendAbilityInput(input) {
+        sendControllerInput(input) {
             this.server.sendPacket({
-                type: "abilityInput",
-                abilityInput: input
+                type: "controllerInput",
+                controllerInput: input
             });
         },
         sendSetDoomsayerGuess(guesses) {

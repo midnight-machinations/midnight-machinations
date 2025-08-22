@@ -81,10 +81,8 @@ impl Lobby {
                 self.set_player_name(room_client_id, name);
             },
             ToServerPacket::ReadyUp{ ready } => {
-                if let Some(player) = self.clients.get_mut(&room_client_id){
-                    if player.ready != Ready::Host {
-                        player.ready = if ready { Ready::Ready } else { Ready::NotReady }
-                    }
+                if let Some(player) = self.clients.get_mut(&room_client_id) && player.ready != Ready::Host {
+                    player.ready = if ready { Ready::Ready } else { Ready::NotReady }
                 }
 
 
@@ -97,9 +95,10 @@ impl Lobby {
                 self.send_to_all(ToClientPacket::PlayersReady { ready });
             },
             ToServerPacket::SetRoomName{ name } => {
-                if let Some(client) = self.clients.get(&room_client_id) {
-                    if !client.is_host() {break 'packet_match};
-                }
+                if 
+                    let Some(client) = self.clients.get(&room_client_id) && 
+                    !client.is_host()
+                {break 'packet_match};
 
                 let name = sanitize_server_name(name);
                 let name = if name.is_empty() {
@@ -113,9 +112,7 @@ impl Lobby {
                 self.send_to_all(ToClientPacket::RoomName { name })
             },
             ToServerPacket::StartGame => {
-                if let Some(player) = self.clients.get(&room_client_id){
-                    if !player.is_host() {break 'packet_match}
-                }
+                if let Some(player) = self.clients.get(&room_client_id) && !player.is_host() {break 'packet_match}
                 
                 let mut game_clients: VecMap<RoomClientID, GameClient> = VecMap::new();
                 let mut game_player_params = Vec::new();
@@ -185,9 +182,7 @@ impl Lobby {
                 return LobbyClientMessageResult::StartGame(Box::new(game));
             },
             ToServerPacket::SetPhaseTime{phase, time} => {
-                if let Some(player) = self.clients.get(&room_client_id){
-                    if !player.is_host() {break 'packet_match}
-                }
+                if let Some(player) = self.clients.get(&room_client_id) && !player.is_host() {break 'packet_match}
 
                 match phase {
                     PhaseType::Briefing => { self.settings.phase_times.briefing = time; }
@@ -205,18 +200,14 @@ impl Lobby {
                 self.send_to_all(ToClientPacket::PhaseTime { phase, time });
             },
             ToServerPacket::SetPhaseTimes { phase_time_settings } => {
-                if let Some(player) = self.clients.get(&room_client_id){
-                    if !player.is_host() {break 'packet_match}
-                }
+                if let Some(player) = self.clients.get(&room_client_id) && !player.is_host() {break 'packet_match}
 
                 self.settings.phase_times = phase_time_settings.clone();
 
                 self.send_to_all(ToClientPacket::PhaseTimes { phase_time_settings });
             }
             ToServerPacket::SetRoleList { role_list } => {
-                if let Some(player) = self.clients.get(&room_client_id){
-                    if !player.is_host() {break 'packet_match}
-                }
+                if let Some(player) = self.clients.get(&room_client_id) && !player.is_host() {break 'packet_match}
 
                 self.settings.role_list = role_list;
                 self.set_rolelist_length();
@@ -226,9 +217,7 @@ impl Lobby {
                 self.send_to_all(ToClientPacket::RoleList { role_list });
             }
             ToServerPacket::SetRoleOutline { index, role_outline } => {
-                if let Some(player) = self.clients.get(&room_client_id){
-                    if !player.is_host() {break 'packet_match}
-                }
+                if let Some(player) = self.clients.get(&room_client_id) && !player.is_host() {break 'packet_match}
 
                 if self.settings.role_list.0.len() <= index as usize {break 'packet_match}
                 let Some(unset_outline) = self.settings.role_list.0.get_mut(index as usize) else {break 'packet_match};
@@ -237,9 +226,7 @@ impl Lobby {
                 self.send_to_all(ToClientPacket::RoleOutline { index, role_outline });
             }
             ToServerPacket::SimplifyRoleList => {
-                if let Some(player) = self.clients.get(&room_client_id){
-                    if !player.is_host() {break 'packet_match}
-                }
+                if let Some(player) = self.clients.get(&room_client_id) && !player.is_host() {break 'packet_match}
 
                 self.settings.role_list.simplify();
                 let role_list = self.settings.role_list.clone();
@@ -262,15 +249,13 @@ impl Lobby {
                 }
             }
             ToServerPacket::HostForceSetPlayerName { id, name } => {
-                if let Some(player) = self.clients.get(&room_client_id) {
-                    if !player.is_host() { break 'packet_match }
-                }
+                if let Some(player) = self.clients.get(&room_client_id) && !player.is_host() { break 'packet_match }
+
                 self.set_player_name(id, name);
             }
             ToServerPacket::SetPlayerHost { player_id } => {
-                if let Some(player) = self.clients.get(&room_client_id) {
-                    if !player.is_host() { break 'packet_match }
-                }
+                if let Some(player) = self.clients.get(&room_client_id) && !player.is_host() { break 'packet_match }
+
                 if let Some(player) = self.clients.get_mut(&player_id) {
                     player.set_host();
                 }

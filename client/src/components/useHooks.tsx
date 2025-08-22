@@ -4,7 +4,6 @@ import { StateEventType } from "../game/gameManager.d";
 import GameState, { LobbyState, PlayerClientType, PlayerGameState, UnsafeString } from "../game/gameState.d";
 import DUMMY_NAMES from "../resources/dummyNames.json";
 import deepEqual from "deep-equal";
-import { getNamesForPlayerPoolFromLobbyClients } from "./gameModeSettings/OutlineSelector";
 
 export function usePacketListener(listener: (type?: StateEventType) => void) {
     // Catch all the packets we miss between setState and useEffect

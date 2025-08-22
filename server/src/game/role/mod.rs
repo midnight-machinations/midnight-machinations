@@ -2,6 +2,7 @@
 
 use std::collections::HashSet;
 use crate::game::components::graves::grave_reference::GraveReference;
+use crate::game::role_list_generation::criteria::GenerationCriterion;
 use crate::vec_set::{vec_set, VecSet};
 
 use crate::game::player::PlayerReference;
@@ -15,7 +16,7 @@ use serde::{Serialize, Deserialize};
 
 use super::components::win_condition::WinCondition;
 use super::{
-    ability_input::*, components::{insider_group::InsiderGroupID, night_visits::NightVisits},
+    controllers::*, components::{insider_group::InsiderGroupID, night_visits::NightVisits},
     event::{
         on_midnight::{MidnightVariables, OnMidnightPriority},
         on_whisper::{OnWhisper, WhisperFold, WhisperPriority}
@@ -41,8 +42,8 @@ pub trait RoleStateImpl: Clone + std::fmt::Debug + Default + GetClientRoleState<
         ControllerParametersMap::default()
     }
     fn on_controller_selection_changed(self, _game: &mut Game, _actor_ref: PlayerReference, _id: ControllerID) {}
-    fn on_validated_ability_input_received(self, _game: &mut Game, _actor_ref: PlayerReference, _input_player: PlayerReference, _ability_input: AbilityInput) {}
-    fn on_ability_input_received(self, _game: &mut Game, _actor_ref: PlayerReference, _input_player: PlayerReference, _ability_input: AbilityInput) {}
+    fn on_validated_ability_input_received(self, _game: &mut Game, _actor_ref: PlayerReference, _input_player: PlayerReference, _ability_input: ControllerInput) {}
+    fn on_ability_input_received(self, _game: &mut Game, _actor_ref: PlayerReference, _input_player: PlayerReference, _ability_input: ControllerInput) {}
 
     fn convert_selection_to_visits(self, _game: &Game, _actor_ref: PlayerReference) -> Vec<Visit> {
         vec![]
@@ -90,6 +91,10 @@ pub trait RoleStateImpl: Clone + std::fmt::Debug + Default + GetClientRoleState<
         );
     }
     fn on_whisper(self, _game: &mut Game, _actor_ref: PlayerReference, _event: &OnWhisper, _fold: &mut WhisperFold, _priority: WhisperPriority) {}
+
+    fn role_list_generation_criteria() -> Vec<GenerationCriterion> {
+        vec![]
+    }
 }
 
 // Creates the Role enum
@@ -233,6 +238,11 @@ mod macros {
                         $(Self::$name => $file::DEFENSE),*
                     }
                 }
+                pub fn role_list_generation_criteria(&self) -> Vec<GenerationCriterion> {
+                    match self {
+                        $(Self::$name => $file::$name::role_list_generation_criteria()),*
+                    }
+                }
             }
 
             #[derive(Clone, Debug, Serialize)]
@@ -279,12 +289,12 @@ mod macros {
                         $(Self::$name(role_struct) => role_struct.on_controller_selection_changed(game, actor_ref, id)),*
                     }
                 }
-                pub fn on_validated_ability_input_received(self, game: &mut Game, actor_ref: PlayerReference, input_player: PlayerReference, ability_input: AbilityInput){
+                pub fn on_validated_ability_input_received(self, game: &mut Game, actor_ref: PlayerReference, input_player: PlayerReference, ability_input: ControllerInput){
                     match self {
                         $(Self::$name(role_struct) => role_struct.on_validated_ability_input_received(game, actor_ref, input_player, ability_input)),*
                     }
                 }
-                pub fn on_ability_input_received(self, game: &mut Game, actor_ref: PlayerReference, input_player: PlayerReference, ability_input: AbilityInput){
+                pub fn on_ability_input_received(self, game: &mut Game, actor_ref: PlayerReference, input_player: PlayerReference, ability_input: ControllerInput){
                     match self {
                         $(Self::$name(role_struct) => role_struct.on_ability_input_received(game, actor_ref, input_player, ability_input)),*
                     }
