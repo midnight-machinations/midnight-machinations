@@ -149,10 +149,10 @@
         "canWriteDeathNote": false,
         "canBeConvertedTo": [],
         "chatMessages":[
-            {"type": "auditorResult", "outlineIndex": 0, "roleOutline":[{"roleSet": "any"}],"result": ["godfather","jester","apostle","escort"]},
-            {"type": "auditorResult", "outlineIndex": 1, "roleOutline":[{"role":"vigilante"},{"role":"marksman"}],"result": ["vigilante"]},
-            {"type": "auditorResult", "outlineIndex": 2, "roleOutline":[{"role":"arsonist"}],"result": ["arsonist"]},
-            {"type": "auditorResult", "outlineIndex": 3, "roleOutline":[{"roleSet":"townSupport"}],"result": ["escort","medium","coxswain"]}
+            {"type": "auditorResult", "outlineIndex": 15, "result": ["godfather","jester","apostle","escort"]},
+            {"type": "auditorResult", "outlineIndex": 10, "result": ["vigilante"]},
+            {"type": "auditorResult", "outlineIndex": 4, "result": ["arsonist"]},
+            {"type": "auditorResult", "outlineIndex": 11, "result": ["escort","medium","coxswain"]}
         ]
     },
     "snoop": {

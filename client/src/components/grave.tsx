@@ -6,8 +6,9 @@ import { encodeString } from "./ChatMessage";
 import StyledText from "./StyledText";
 import React, { ReactElement, useMemo } from "react";
 import "./grave.css";
-import { useGameState } from "./useHooks";
+import { useGameState, useLobbyOrGameState } from "./useHooks";
 import { UnsafeString } from "../game/gameState.d";
+import { RoleList } from "../game/roleListState.d";
 
 export function translateGraveRole(grave: Grave): string {
     if(grave.information.type === "obscured") {
@@ -19,7 +20,8 @@ export function translateGraveRole(grave: Grave): string {
 
 export default function GraveComponent(props: Readonly<{
     grave: Grave, 
-    playerNames?: UnsafeString[]
+    playerNames?: UnsafeString[],
+    roleList?: RoleList,
     onClick?: () => void
 }>): ReactElement {
     const gamePlayerNames = useGameState(
@@ -29,17 +31,24 @@ export default function GraveComponent(props: Readonly<{
 
     const playerNames = props.playerNames ?? gamePlayerNames;
 
+    const gameRoleList = useLobbyOrGameState(
+        gameState => gameState.roleList,
+        ["roleList"]
+    )!
+
+    const roleList = props.roleList ?? gameRoleList;
 
     if(props.grave.information.type === "obscured") {
         return <ObscuredGrave grave={props.grave} playerNames={playerNames}/>
     } else {
-        return <UnobscuredGrave grave={props.grave as any} playerNames={playerNames}/>;
+        return <UnobscuredGrave grave={props.grave as any} playerNames={playerNames} roleList={roleList}/>;
     }
 }
 
 function UnobscuredGrave(props: Readonly<{
     grave: Grave & { information: GraveInformation & { type: "normal" } },
-    playerNames: UnsafeString[]
+    playerNames: UnsafeString[],
+    roleList: RoleList,
     onClick?: () => void
 }>): ReactElement {
     const graveDeathCause = useMemo(() => {
@@ -80,7 +89,8 @@ function UnobscuredGrave(props: Readonly<{
                 <StyledText>
                     {encodeString(replaceMentions(
                         props.grave.information.will,
-                        props.playerNames
+                        props.playerNames,
+                        props.roleList
                     ))}
                 </StyledText>
             </div>
@@ -92,7 +102,8 @@ function UnobscuredGrave(props: Readonly<{
                     <StyledText>
                         {encodeString(replaceMentions(
                             note,
-                            props.playerNames
+                            props.playerNames,
+                            props.roleList
                         ))}
                     </StyledText>
                 </div>
