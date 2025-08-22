@@ -1,6 +1,6 @@
 use serde::Serialize;
 
-use crate::game::ability_input::{AvailableBooleanSelection, BooleanSelection, ControllerID};
+use crate::game::controllers::{AvailableBooleanSelection, BooleanSelection, ControllerID};
 use crate::game::components::confused::Confused;
 use crate::game::components::win_condition::WinCondition;
 use crate::game::event::on_midnight::{MidnightVariables, OnMidnightPriority};
