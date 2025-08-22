@@ -79,6 +79,8 @@ export default function WikiArticle(props: {
                             playerNames={DUMMY_NAMES} 
                             playerKeywordData={DUMMY_NAMES_KEYWORD_DATA}
                             playerSenderKeywordData={DUMMY_NAMES_SENDER_KEYWORD_DATA}
+                            roleList={DUMMY_ROLE_LIST as RoleList}
+                            roleListKeywordData={DUMMY_ROLE_LIST_KEYWORD_DATA}
                         />
                     )}
                 </div>}

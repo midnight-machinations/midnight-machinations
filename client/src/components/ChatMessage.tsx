@@ -7,7 +7,7 @@ import { ChatGroup, Conclusion, DefensePower, PhaseState, PlayerIndex, Tag, tran
 import { Role, RoleState } from "../game/roleState.d";
 import { Grave } from "../game/graveState";
 import GraveComponent from "./grave";
-import { RoleList, RoleOutline, translateRoleOutline } from "../game/roleListState.d";
+import { RoleList, translateRoleOutline } from "../game/roleListState.d";
 import { CopyButton } from "./ClipboardButtons";
 import { useLobbyOrGameState, usePlayerNames, usePlayerState, useSpectator } from "./useHooks";
 import { KiraResult, KiraResultDisplay } from "../menu/game/gameScreenContent/AbilityMenu/ControllerSelectionTypes/KiraSelectionMenu";
@@ -428,7 +428,7 @@ export function encodeString(text: UnsafeString): string {
 export function translateChatMessage(
     message: ChatMessageVariant,
     playerNames: UnsafeString[],
-    roleList: RoleOutline[]
+    roleList: RoleList
 ): string {
     
     switch (message.type) {
@@ -725,11 +725,10 @@ export function translateChatMessage(
                 encodeString(playerNames[message.player])
             );
         case "auditorResult":
-            return translate("chatMessage.auditorResult",
+            return encodeString(replaceMentions(translate("chatMessage.auditorResult",
                 message.outlineIndex+1,
-                translateRoleOutline(message.roleOutline, playerNames),
                 message.result.map((role)=>translate("role."+role+".name")).join(", ")
-            );
+            ), playerNames, roleList));
         case "engineerVisitorsRole":
             return translate("chatMessage.engineerVisitorsRole", translate("role."+message.role+".name"));
         case "trapState":
@@ -1063,7 +1062,6 @@ export type ChatMessageVariant = {
 } | {
     type: "auditorResult",
     outlineIndex: number,
-    roleOutline: RoleOutline,
     result: AuditorResult,
 } | {
     type: "engineerVisitorsRole",

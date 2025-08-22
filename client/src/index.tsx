@@ -78,7 +78,7 @@ export function replaceMentions(rawText: UnsafeString, playerNames: UnsafeString
         text = (text as string).replace(find(`@${player}`), player as string);
     });
     roleList.map((el, i) => [i, el] as [number, RoleOutline]).reverse().forEach(([i, outline]) => {
-        text = (text as string).replace(find(`\`${i + 1}`), `${i + 1}: ${translateRoleOutline(outline, playerNames)}`);
+        text = (text as string).replace(find(`@o${i + 1}`), `${i + 1}: ${translateRoleOutline(outline, playerNames)}`);
     })
     return text;
 }
