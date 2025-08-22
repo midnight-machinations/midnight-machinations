@@ -78,7 +78,7 @@ export function getDefaultSettings(): Readonly<Settings> {
         accessibilityFont: false,
         language: "en_us",
         defaultName: null,
-        maxMenus: window.innerWidth < 600 ? 1 : 6,
+        maxMenus: window.innerWidth < 600 ? 1 : 3,
         menuOrder: [
             ContentMenu.WikiMenu, 
             ContentMenu.GraveyardMenu, 

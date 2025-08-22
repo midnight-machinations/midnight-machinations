@@ -60,7 +60,7 @@ export default function RoleOutlineSelector(props: RoleOutlineSelectorProps): Re
                             props.onChange(options)
                         }}
                         numPlayers={props.numPlayers}
-                    />
+                    />:
                     <InsiderGroupSelectorLabel
                         disabled={props.disabled}
                         insiderGroups={option.insiderGroups}
@@ -75,7 +75,7 @@ export default function RoleOutlineSelector(props: RoleOutlineSelectorProps): Re
 
                             props.onChange(options)
                         }}
-                    />
+                    />,
                     <ConclusionsSelectorLabel
                         disabled={props.disabled}
                         conclusions={option.winIfAny}
@@ -90,7 +90,7 @@ export default function RoleOutlineSelector(props: RoleOutlineSelectorProps): Re
 
                             props.onChange(options)
                         }}
-                    />
+                    />,
                     <RoleOrRoleSetSelector
                         disabled={props.disabled}
                         roleOrRoleSet={roleOrRoleSet}
@@ -338,7 +338,7 @@ function InsiderGroupSelectorLabel(props: Readonly<{
             </StyledText>
         } else {
             return <StyledText noLinks={true}>
-                {props.insiderGroups.map(g => translate(`chatGroup.${g}.icon`)).join()}
+                {props.insiderGroups.map(g => translate(`chatGroup.${g}.icon`)).join(translate("union"))}
             </StyledText>
         }
     }, [props.insiderGroups])

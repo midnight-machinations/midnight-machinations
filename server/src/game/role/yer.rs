@@ -13,7 +13,7 @@ use crate::game::visit::Visit;
 
 use crate::game::Game;
 use super::{Role, RoleState, RoleStateImpl};
-use crate::game::ability_input::*;
+use crate::game::controllers::*;
 
 #[derive(Debug, Clone, Serialize)]
 #[serde(rename_all = "camelCase")]

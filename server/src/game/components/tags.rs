@@ -18,14 +18,13 @@ impl Tags{
             true
         };
 
-        if added {
-            if let Some(tags_set) = game.tags.tags.get(&id){
-                Self::send_to_clients(game, tags_set.viewers());
-                for player in tags_set.viewers().clone() {
-                    player.add_private_chat_message(game, ChatMessageVariant::TagAdded { player: tagged_player, tag: id.get_tag() });
-                }
+        if added && let Some(tags_set) = game.tags.tags.get(&id){
+            Self::send_to_clients(game, tags_set.viewers());
+            for player in tags_set.viewers().clone() {
+                player.add_private_chat_message(game, ChatMessageVariant::TagAdded { player: tagged_player, tag: id.get_tag() });
             }
         }
+        
     }
     pub fn remove_tag(game: &mut Game, id: TagSetID, tagged_player: PlayerReference){
         let removed = if let Some(val) = game.tags.tags.get_mut(&id){
@@ -34,14 +33,13 @@ impl Tags{
             false
         };
 
-        if removed {
-            if let Some(tags_set) = game.tags.tags.get(&id){
-                Self::send_to_clients(game, tags_set.viewers());
-                for player in tags_set.viewers().clone() {
-                    player.add_private_chat_message(game, ChatMessageVariant::TagRemoved { player: tagged_player, tag: id.get_tag() });
-                }
+        if removed && let Some(tags_set) = game.tags.tags.get(&id){
+            Self::send_to_clients(game, tags_set.viewers());
+            for player in tags_set.viewers().clone() {
+                player.add_private_chat_message(game, ChatMessageVariant::TagRemoved { player: tagged_player, tag: id.get_tag() });
             }
         }
+        
     }
     
     pub fn add_viewer(game: &mut Game, id: TagSetID, player: PlayerReference){
@@ -54,12 +52,10 @@ impl Tags{
             true
         };
 
-        if added {
-            if let Some(tags_set) = game.tags.tags.get(&id){
-                Self::send_to_client(game, player);
-                for tagged_player in tags_set.tagged().clone() {
-                    player.add_private_chat_message(game, ChatMessageVariant::TagAdded { player: tagged_player, tag: id.get_tag() });
-                }
+        if added && let Some(tags_set) = game.tags.tags.get(&id){
+            Self::send_to_client(game, player);
+            for tagged_player in tags_set.tagged().clone() {
+                player.add_private_chat_message(game, ChatMessageVariant::TagAdded { player: tagged_player, tag: id.get_tag() });
             }
         }
     }
@@ -70,14 +66,13 @@ impl Tags{
             false
         };
 
-        if removed {
-            if let Some(tags_set) = game.tags.tags.get(&id){
-                Self::send_to_client(game, player);
-                for tagged_player in tags_set.tagged().clone() {
-                    player.add_private_chat_message(game, ChatMessageVariant::TagRemoved { player: tagged_player, tag: id.get_tag() });
-                }
+        if removed && let Some(tags_set) = game.tags.tags.get(&id){
+            Self::send_to_client(game, player);
+            for tagged_player in tags_set.tagged().clone() {
+                player.add_private_chat_message(game, ChatMessageVariant::TagRemoved { player: tagged_player, tag: id.get_tag() });
             }
         }
+        
     }
 
     pub fn set_tagged(game: &mut Game, id: TagSetID, tagged_players: &VecSet<PlayerReference>){

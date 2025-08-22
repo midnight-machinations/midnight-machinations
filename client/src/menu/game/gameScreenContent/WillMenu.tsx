@@ -6,7 +6,7 @@ import { usePlayerState } from "../../../components/useHooks";
 import { getSingleRoleJsonData } from "../../../game/roleState.d";
 import { TextDropdownArea } from "../../../components/TextAreaDropdown";
 import ListMap from "../../../ListMap";
-import { controllerIdToLinkWithPlayer } from "../../../game/abilityInput";
+import { controllerIdToLinkWithPlayer } from "../../../game/controllerInput";
 import { PlayerIndex, UnsafeString } from "../../../game/gameState.d";
 
 export function defaultAlibi(): string {
@@ -31,7 +31,7 @@ export default function WillMenu(): ReactElement {
 
     const savedAbilities = usePlayerState(
         playerState => playerState.savedControllers,
-        ["yourAllowedControllers"]
+        ["yourAllowedControllers", "yourAllowedController"]
     )!;
     const alibiSelection = new ListMap(savedAbilities, (k1, k2)=>controllerIdToLinkWithPlayer(k1)===controllerIdToLinkWithPlayer(k2)).get({type: "alibi", player: playerIndex});
     const alibi = (alibiSelection?.selection.type === "string")?alibiSelection.selection.selection:"";
@@ -55,12 +55,9 @@ export default function WillMenu(): ReactElement {
     }, [cantChat]);
 
 
-    const canPostAsPlayers: PlayerIndex[] | undefined = usePlayerState(
-        playerState=>playerState.savedControllers
-            .map(([id,_])=>id.type==="chat"?id.player:undefined)
-            .filter((p)=>p!==undefined?true:false) as PlayerIndex[],
-        ["yourAllowedControllers"]
-    );
+    const canPostAsPlayers: PlayerIndex[] = savedAbilities
+        .map(([id,_])=>id.type==="chat"?id.player:undefined)
+        .filter((p)=>p!==undefined?true:false) as PlayerIndex[];
     
     return <div className="will-menu will-menu-colors">
         <ContentTab

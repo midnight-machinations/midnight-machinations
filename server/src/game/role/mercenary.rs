@@ -1,6 +1,6 @@
 use serde::Serialize;
 
-use crate::game::ability_input::{AvailableIntegerSelection, IntegerSelection};
+use crate::game::controllers::{AvailableIntegerSelection, IntegerSelection};
 use crate::game::chat::ChatMessageVariant;
 use crate::game::components::graves::grave::{Grave, GraveKiller};
 use crate::game::event::on_midnight::{MidnightVariables, OnMidnightPriority};
@@ -84,14 +84,14 @@ impl RoleStateImpl for Mercenary {
                 min: 1,
                 max: if game.day_number() <= 1 || self.attacks_remaining == 0 {1} else {2}
             })
-            .default_selection(Self::ability_selection(actor_ref, game))
+            .default_selection(Self::controller_selection(actor_ref, game))
             .allow_players([actor_ref])
             .night_typical(actor_ref)
             .build_map();
 
         ctrl.combine_overwrite(
             ControllerParametersMap::builder(game)
-                .id(ControllerID::role(actor_ref, Role::Mercenary, Self::ability_selection_controller_id(actor_ref, game)))
+                .id(ControllerID::role(actor_ref, Role::Mercenary, Self::controller_selection_controller_id(actor_ref, game)))
                 .single_player_selection_typical(actor_ref, false, true)
                 .night_typical(actor_ref)
                 .build_map()
@@ -99,7 +99,7 @@ impl RoleStateImpl for Mercenary {
         ctrl
     }
     fn convert_selection_to_visits(self, game: &Game, actor_ref: PlayerReference) -> Vec<Visit> {
-        let controller_id = Self::ability_selection_controller_id(actor_ref, game);
+        let controller_id = Self::controller_selection_controller_id(actor_ref, game);
         crate::game::role::common_role::convert_controller_selection_to_visits_visit_tag(
             game,
             actor_ref,
@@ -126,14 +126,14 @@ impl RoleStateImpl for Mercenary {
     }
 }
 impl Mercenary{
-    pub fn ability_selection(actor_ref: PlayerReference, game: &Game)->IntegerSelection{
+    pub fn controller_selection(actor_ref: PlayerReference, game: &Game)->IntegerSelection{
         ControllerID::role(actor_ref, Role::Mercenary, 0)
             .get_integer_selection(game)
             .unwrap_or(&IntegerSelection(1))
             .clone()
     }
-    pub fn ability_selection_controller_id(actor_ref: PlayerReference, game: &Game)->u8{
-        Self::ability_selection(actor_ref, game)
+    pub fn controller_selection_controller_id(actor_ref: PlayerReference, game: &Game)->u8{
+        Self::controller_selection(actor_ref, game)
             .0
             .try_into()
             .expect("1 and 2 should be only possible values here")

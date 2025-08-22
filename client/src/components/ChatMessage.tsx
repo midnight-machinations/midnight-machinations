@@ -10,9 +10,9 @@ import GraveComponent from "./grave";
 import { RoleList, RoleOutline, translateRoleOutline } from "../game/roleListState.d";
 import { CopyButton } from "./ClipboardButtons";
 import { useGameState, useLobbyOrGameState, usePlayerNames, usePlayerState, useSpectator } from "./useHooks";
-import { KiraResult, KiraResultDisplay } from "../menu/game/gameScreenContent/AbilityMenu/AbilitySelectionTypes/KiraSelectionMenu";
+import { KiraResult, KiraResultDisplay } from "../menu/game/gameScreenContent/AbilityMenu/ControllerSelectionTypes/KiraSelectionMenu";
 import { AuditorResult } from "../menu/game/gameScreenContent/AbilityMenu/RoleSpecificMenus/AuditorMenu";
-import { ControllerID, AbilitySelection, translateControllerID, controllerIdToLink } from "../game/abilityInput";
+import { ControllerID, ControllerSelection, translateControllerID, controllerIdToLink } from "../game/controllerInput";
 import DetailsSummary from "./DetailsSummary";
 import ListMap from "../ListMap";
 import { Button } from "./Button";
@@ -39,9 +39,9 @@ const ChatElement = React.memo((
             let controller = new ListMap(playerState.savedControllers, (a,b)=>a.type===b.type)
                 .get({type: "forwardMessage", player: playerState.myIndex});
 
-            return controller!==null&&!controller.availableAbilityData.grayedOut;
+            return controller!==null&&!controller.parameters.grayedOut;
         },
-        ["yourPlayerIndex", "yourAllowedControllers"]
+        ["yourPlayerIndex", "yourAllowedControllers", "yourAllowedController"]
     );
     const myIndex = usePlayerState(
         playerState => playerState.myIndex,
@@ -188,7 +188,7 @@ const ChatElement = React.memo((
                 myIndex!==undefined && mouseHovering && forwardButton
                 && <Button
                     className="chat-message-div-small-button material-icons-round"
-                    onClick={()=>GAME_MANAGER.sendAbilityInput({
+                    onClick={()=>GAME_MANAGER.sendControllerInput({
                         id: {type: "forwardMessage", player: myIndex}, 
                         selection: {type: "chatMessage", selection: props.message}
                     })}
@@ -336,7 +336,7 @@ function NormalChatMessage(props: Readonly<{
                 props.myIndex!==undefined && props.mouseHovering && props.forwardButton
                 && <Button
                     className="chat-message-div-small-button material-icons-round"
-                    onClick={()=>GAME_MANAGER.sendAbilityInput({
+                    onClick={()=>GAME_MANAGER.sendControllerInput({
                         id: {type: "forwardMessage", player: props.myIndex?props.myIndex:0}, 
                         selection: {type: "chatMessage", selection: props.message}
                     })}
@@ -347,11 +347,6 @@ function NormalChatMessage(props: Readonly<{
 }
 
 function useContainsMention(message: ChatMessageVariant & { text: string | UnsafeString }, playerNames: UnsafeString[]): boolean {
-    const myNumber = usePlayerState(
-        gameState => gameState.myIndex,
-        ["yourPlayerIndex"]
-    );
-
     const myName = useLobbyOrGameState(
         state => {
             if (state.stateType === "game" && state.clientState.type === "player")
@@ -372,11 +367,7 @@ function useContainsMention(message: ChatMessageVariant & { text: string | Unsaf
         return false;
     }
     return (
-        find(encodeString(myName)).test(encodeString(replaceMentions(message.text, playerNames))) ||
-        (
-            myNumber !== undefined && 
-            find("" + (myNumber + 1)).test(encodeString(replaceMentions(message.text, playerNames)))
-        )
+        find(encodeString(myName)).test(encodeString(replaceMentions(message.text, playerNames)))
     )
 }
 
@@ -822,6 +813,7 @@ export function translateChatMessage(
         case "doomsayerFailed":
         case "doomsayerWon":
         case "silenced":
+        case "brained":
         case "martyrFailed":
         case "martyrWon":
         case "targetsMessage":
@@ -942,7 +934,7 @@ export type ChatMessageVariant = {
     type: "abilityUsed", 
     player: PlayerIndex,
     abilityId: ControllerID,
-    selection: AbilitySelection
+    selection: ControllerSelection
     
 } | {
     type: "phaseFastForwarded"
@@ -1094,6 +1086,8 @@ export type ChatMessageVariant = {
     backup: PlayerIndex
 } | {
     type: "silenced"
+} | {
+    type: "brained"
 } | {
     type: "playerRoleAndAlibi",
     player: PlayerIndex,

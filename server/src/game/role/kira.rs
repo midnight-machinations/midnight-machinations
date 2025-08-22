@@ -9,7 +9,7 @@ use crate::game::player::PlayerReference;
 
 use crate::game::Game;
 use crate::vec_map::VecMap;
-use crate::game::ability_input::*;
+use crate::game::controllers::*;
 use super::{Role, RoleStateImpl};
 
 #[derive(Clone, Debug, Serialize, Default)]
@@ -158,7 +158,7 @@ pub enum KiraGuessResult {
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize, Default, PartialEq, Eq, PartialOrd, Ord)]
-pub struct KiraAbilityInput(Vec<(PlayerReference, KiraGuess)>);
+pub struct KiraControllerInput(Vec<(PlayerReference, KiraGuess)>);
 
 pub(super) const MAXIMUM_COUNT: Option<u8> = None;
 pub(super) const DEFENSE: DefensePower = DefensePower::Armored;

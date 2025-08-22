@@ -15,6 +15,7 @@ pub mod hidden_whispers;
 pub mod hidden_nomination_votes;
 pub mod hidden_verdict_votes;
 pub mod forfeit_vote;
+pub mod random_player_names;
 
 use dead_can_chat::DeadCanChat;
 use hidden_whispers::HiddenWhispers;
@@ -31,6 +32,7 @@ use unscheduled_nominations::UnscheduledNominations;
 use hidden_nomination_votes::HiddenNominationVotes;
 use hidden_verdict_votes::HiddenVerdictVotes;
 use forfeit_vote::ForfeitNominationVote;
+use random_player_names::RandomPlayerNames;
 
 use serde::{Deserialize, Serialize};
 use skip_day_1::SkipDay1;
@@ -38,7 +40,7 @@ use two_thirds_majority::TwoThirdsMajority;
 
 use crate::{game::components::graves::grave_reference::GraveReference, vec_map::VecMap, vec_set::VecSet};
 
-use super::{ability_input::AbilityInput,
+use super::{controllers::ControllerInput,
     event::{
         on_midnight::{MidnightVariables, OnMidnight, OnMidnightPriority},
         on_whisper::{OnWhisper, WhisperFold, WhisperPriority}
@@ -49,7 +51,7 @@ use super::{ability_input::AbilityInput,
 
 #[enum_delegate::register]
 pub trait ModifierTrait where Self: Clone + Sized{
-    fn on_ability_input_received(self, _game: &mut Game, _actor_ref: PlayerReference, _input: AbilityInput) {}
+    fn on_ability_input_received(self, _game: &mut Game, _actor_ref: PlayerReference, _input: ControllerInput) {}
     fn on_midnight(self, _game: &mut Game, _priority: OnMidnightPriority) {}
     fn before_phase_end(self, _game: &mut Game, _phase: super::phase::PhaseType) {}
     fn on_phase_start(self, _game: &mut Game, _phase: super::phase::PhaseState) {}
@@ -80,6 +82,7 @@ pub enum ModifierState{
     HiddenNominationVotes(HiddenNominationVotes),
     HiddenVerdictVotes(HiddenVerdictVotes),
     ForfeitNominationVote(ForfeitNominationVote),
+    RandomPlayerNames(RandomPlayerNames),
 }
 #[derive(Clone, Serialize, Deserialize, PartialEq, Eq, Debug, Hash)]
 #[serde(rename_all = "camelCase")]
@@ -101,6 +104,7 @@ pub enum ModifierType{
     HiddenNominationVotes,
     HiddenVerdictVotes,
     ForfeitNominationVote,
+    RandomPlayerNames,
 }
 impl ModifierType{
     pub fn default_state(&self)->ModifierState{
@@ -122,6 +126,7 @@ impl ModifierType{
             Self::HiddenNominationVotes => ModifierState::HiddenNominationVotes(HiddenNominationVotes),
             Self::HiddenVerdictVotes => ModifierState::HiddenVerdictVotes(HiddenVerdictVotes),
             Self::ForfeitNominationVote => ModifierState::ForfeitNominationVote(ForfeitNominationVote),
+            Self::RandomPlayerNames => ModifierState::RandomPlayerNames(RandomPlayerNames),
         }
     }
 }
@@ -145,6 +150,7 @@ impl From<&ModifierState> for ModifierType{
             ModifierState::HiddenNominationVotes(_) => Self::HiddenNominationVotes,
             ModifierState::HiddenVerdictVotes(_) => Self::HiddenVerdictVotes,
             ModifierState::ForfeitNominationVote(_) => Self::ForfeitNominationVote,
+            ModifierState::RandomPlayerNames(_) => Self::RandomPlayerNames,
         }
     }
 }
@@ -192,7 +198,7 @@ impl Modifiers{
             modifier.1.on_midnight(game, priority);
         }
     }
-    pub fn on_ability_input_received(game: &mut Game, actor_ref: crate::game::player::PlayerReference, input: crate::game::ability_input::AbilityInput){
+    pub fn on_ability_input_received(game: &mut Game, actor_ref: crate::game::player::PlayerReference, input: crate::game::controllers::ControllerInput){
         for modifier in game.modifiers.modifiers.clone(){
             modifier.1.on_ability_input_received(game, actor_ref, input.clone());
         }
