@@ -134,7 +134,7 @@ impl PartialPlayerSynopsis {
             crumbs: self.crumbs.clone(),
             won: player_ref.get_won_game(game, conclusion),
             #[expect(clippy::unwrap_used, reason = "Player must have an assignment")]
-            outline_assignment: game.assignments.get(&player_ref).unwrap().0,
+            outline_assignment: game.assignments.get(&player_ref).unwrap().role_outline_reference,
         }
     }
 }

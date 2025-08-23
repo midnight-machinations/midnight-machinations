@@ -45,7 +45,6 @@ use components::tags::Tags;
 use components::verdicts_today::VerdictsToday;
 use modifiers::ModifierType;
 use modifiers::Modifiers;
-use role_outline_reference::RoleOutlineReference;
 use serde::Serialize;
 use crate::client_connection::ClientConnection;
 use crate::game::chat::ChatComponent;
@@ -93,7 +92,7 @@ pub struct Game {
     pub spectator_chat_messages: Vec<ChatMessageVariant>,
 
     /// indexed by role outline reference
-    pub assignments: VecMap<PlayerReference, (RoleOutlineReference, OutlineAssignment)>,
+    pub assignments: Assignments,
 
     pub players: Box<[Player]>,
 
@@ -147,7 +146,7 @@ pub enum GameOverReason {
     Draw
 }
 
-type Assignments = VecMap<PlayerReference, (RoleOutlineReference, OutlineAssignment)>;
+type Assignments = VecMap<PlayerReference, OutlineAssignment>;
 
 impl Game {
     pub const DISCONNECT_TIMER_SECS: u16 = 60 * 2;

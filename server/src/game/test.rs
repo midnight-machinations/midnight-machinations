@@ -34,7 +34,7 @@
         for player in unsafe{PlayerReference::all_players_from_count(num_players)} {
             let new_player = mock_player(
                 format!("{}",player.index()),
-                match assignments.get(&player).map(|a|a.1.role){
+                match assignments.get(&player).map(|a|a.role){
                     Some(role) => role,
                     None => return Err(RejectStartReason::RoleListTooSmall),
                 }

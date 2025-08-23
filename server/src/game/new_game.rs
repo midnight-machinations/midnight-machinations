@@ -1,5 +1,5 @@
 
-use crate::{client_connection::ClientConnection, game::{chat::ChatComponent, components::{confused::Confused, cult::Cult, detained::Detained, drunk_aura::DrunkAura, fragile_vest::FragileVestsComponent, graves::Graves, insider_group::{InsiderGroupID, InsiderGroups}, mafia::Mafia, mafia_recruits::MafiaRecruits, pitchfork::Pitchfork, poison::Poison, puppeteer_marionette::PuppeteerMarionette, silenced::Silenced, syndicate_gun_item::SyndicateGunItem, synopsis::SynopsisTracker, tags::Tags, verdicts_today::VerdictsToday, win_condition::WinConditionComponent}, controllers::Controllers, event::on_game_start::OnGameStart, game_client::GameClient, modifiers::{ModifierType, Modifiers}, phase::PhaseStateMachine, player::{Player, PlayerInitializeParameters, PlayerReference}, role_list_generation::{OutlineListAssignment, RoleListGenerator}, role_outline_reference::RoleOutlineReference, settings::Settings, spectator::{spectator_pointer::SpectatorPointer, Spectator, SpectatorInitializeParameters}, Assignments, Game, RejectStartReason}, packet::ToClientPacket, room::{name_validation::generate_random_name, RoomClientID}, vec_map::VecMap};
+use crate::{client_connection::ClientConnection, game::{chat::ChatComponent, components::{confused::Confused, cult::Cult, detained::Detained, drunk_aura::DrunkAura, fragile_vest::FragileVestsComponent, graves::Graves, insider_group::{InsiderGroupID, InsiderGroups}, mafia::Mafia, mafia_recruits::MafiaRecruits, pitchfork::Pitchfork, poison::Poison, puppeteer_marionette::PuppeteerMarionette, silenced::Silenced, syndicate_gun_item::SyndicateGunItem, synopsis::SynopsisTracker, tags::Tags, verdicts_today::VerdictsToday, win_condition::WinConditionComponent}, controllers::Controllers, event::on_game_start::OnGameStart, game_client::GameClient, modifiers::{ModifierType, Modifiers}, phase::PhaseStateMachine, player::{Player, PlayerInitializeParameters, PlayerReference}, role_list_generation::{OutlineListAssignment, RoleListGenerator}, settings::Settings, spectator::{spectator_pointer::SpectatorPointer, Spectator, SpectatorInitializeParameters}, Assignments, Game, RejectStartReason}, packet::ToClientPacket, room::{name_validation::generate_random_name, RoomClientID}, vec_map::VecMap};
 
 use super::event::before_initial_role_creation::BeforeInitialRoleCreation;
 
@@ -51,7 +51,7 @@ impl Game{
                 let ClientConnection::Connected(ref sender) = player.connection else {
                     return Err(RejectStartReason::PlayerDisconnected)
                 };
-                let Some((_, assignment)) = assignments.get(&player_ref) else {
+                let Some(assignment) = assignments.get(&player_ref) else {
                     return Err(RejectStartReason::RoleListTooSmall)
                 };
                 
@@ -117,7 +117,7 @@ impl Game{
 
             // Just distribute insider groups, this is for game over checking (Keeps game running syndicate gun)
             for player in PlayerReference::all_players(&game){
-                let Some((_, assignment)) = assignments.get(&player) else {
+                let Some(assignment) = assignments.get(&player) else {
                     return Err(RejectStartReason::RoleListTooSmall)
                 };
                 
@@ -178,15 +178,11 @@ impl Game{
     }
     
     /// `assignment.assignments` must have length 255 or lower
-    #[expect(clippy::cast_possible_truncation, reason = "See doc comment")]
     pub fn create_assignments(assignment: OutlineListAssignment)->Assignments{
         let mut assignments = Assignments::new();
 
-        for (index, outline_assignment) in assignment.assignments.into_iter().enumerate() {
-            assignments.insert(outline_assignment.player, (
-                unsafe { RoleOutlineReference::new_unchecked(index as u8) }, 
-                outline_assignment
-            ));
+        for outline_assignment in assignment.assignments {
+            assignments.insert(outline_assignment.player, outline_assignment);
         }
 
         assignments
