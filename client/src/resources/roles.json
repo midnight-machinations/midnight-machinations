@@ -770,24 +770,6 @@
             }
         ]
     },
-    "mafiaWitch": {
-        "mainRoleSet": "mafia",
-        "roleSets": ["mafia", "mafiaSupport"],
-        "armor": false,
-        "aura": null,
-        "maxCount": 1,
-        "canWriteDeathNote": false,
-        "canBeConvertedTo": ["godfather"],
-        "chatMessages":[
-            {"type": "targetsMessage", "message": 
-                {"type": "sheriffResult","suspicious":true}
-            },
-            {"type": "targetHasRole", "role":"detective"},
-            {"type": "targetIsPossessionImmune"},
-            {"type": "youWerePossessed", "immune": false},
-            {"type": "youWerePossessed", "immune": true}
-        ]
-    },
     "necromancer": {
         "mainRoleSet": "mafia",
         "roleSets": ["mafia", "mafiaSupport"],

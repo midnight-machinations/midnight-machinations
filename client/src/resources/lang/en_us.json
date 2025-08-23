@@ -432,10 +432,6 @@
     "role.necromancer.name": "Necromancer",
     "role.necromancer.name:var.0": "Necromancers",
     "controllerId.role.necromancer.0.name": "Possess",
-
-    "role.mafiaWitch.name": "Syndicate Witch",
-    "role.mafiaWitch.name:var.0": "Syndicate Witches",
-    "controllerId.role.mafiaWitch.0.name": "Possess",
     
     "role.mortician.name": "Mortician",
     "role.mortician.name:var.0": "Morticians",
@@ -1916,12 +1912,6 @@
     "wiki.article.role.necromancer.attributes":"* The first player you visit is told that they were possessed or immune to possession\n* You are told all night information messages that the player you possess gets told\n* You can't select a dead player who you have previously possessed",
     "wiki.article.role.necromancer.extra":"* You are immune to getting roleblocked or possessed\n* You can force your target to visit any living player\n* If you don't successfully possess the player you select, you can select them again\n* All your visits except the first are cleared after you change your targets visits\n    * A tracker will only see you visit your first target",
 
-    "wiki.article.role.mafiaWitch.reminder": "Each night, possess a player.",
-    "wiki.article.role.mafiaWitch.guide": "- At night, possess a player by selecting 2 players\n    - The first player you select will be forced to visit the second player you select\n\n_For example_\n- You can posses a vigilante to attack another townie by selecting the vigilante first and the townie second",
-    "wiki.article.role.mafiaWitch.abilities":"* Visit 2 players to make the first player visit the second player",
-    "wiki.article.role.mafiaWitch.attributes":"* The first player you visit is told that they were possessed or immune to possession\n* You are told all night information messages that the player you possess gets told",
-    "wiki.article.role.mafiaWitch.extra":"* You are immune to getting roleblocked and possession\n* You can't select other syndicate members for your first target, but you can select any living player for your second target\n* Your second target gets erased after you change your targets visit, so no other roles can interact with it\n    * A tracker will only see you visit your first target",
-
     "wiki.article.role.mortician.reminder": "Each night, select a player to tag them for obscuring. If they die, their role and alibi are hidden.",
     "wiki.article.role.mortician.guide": "- At night, select a player to tag them for obscuring\n    - A player who is tagged for obscuring gets obscured when they die, erasing their role and alibi from their grave so nobody knows who they are\n    - You are told the obscured players role and alibi when they die\n- You can tag as many players as you want, but you can only obscure X players (X = Total players ÷ 5 (round up))",
     "wiki.article.role.mortician.abilities":"* Visit a player to tag them for obscuring\n* If a player is obscured, that player's role and alibi do not appear in the graveyard\n* You are told the role and alibi of the player you obscured when they die.",
@@ -1938,10 +1928,10 @@
     "wiki.article.role.framer.guide": "- At night, select a player to frame\n    - Framed players have suspicious aura for tonight and the next night\n- If you select 2 players\n    - The first is framed\n  * The first player appears to visit all of the other players you visit for only tonight\n    - All your visits except the first is removed\n\n_For example_\n- You frame @15 and make them appear to visit @12. The godfather kills @12. A separate tracker selects @15 and sees that @15 visits @12. Since @12 dies, the tracker might think that @15 was the killer.",
     "wiki.article.role.framer.abilities":"* Visit a player to frame\n    - Framed players have suspicious aura for tonight the next night\n* Visit more players to:\n  * Frame the first player\n  * The first player appears to visit all of the other players you visit for only tonight\n - All your visits except the first is removed",
     "wiki.article.role.framer.attributes":"- For the first visit, you can select living players who aren't insiders with you\n- You can select anyone for the second visit, even dead players or yourself",
-    "wiki.article.role.framer.extra":"- Your second visit is removed, so no other roles can interact with it except bouncer and transporter\n    - A tracker only sees you visit your first target\n    - The marksman wont see you visit the second target\n    - You don't die if your second target is an veteran who is rampaging",
+    "wiki.article.role.framer.extra":"- Your second visit is wardblock immune and then removed, so no other roles can interact with it except transporter\n    - A tracker only sees you visit your first target\n    - The marksman wont see you visit the second target\n    - You don't die if your second target is an veteran who is rampaging",
 
     "wiki.article.role.disguiser.reminder": "Your grave shows whatever role you choose when you die. You have innocent aura. At night, you can visit a player.",
-    "wiki.article.role.disguiser.guide": "- At night, select a player to visit\n - You have your role appear to be what you chose on their grave\n - You have innocent aura",
+    "wiki.article.role.disguiser.guide": "- At night, select a player to visit\n - You have your role appear to be what you chose on your grave\n - You have innocent aura",
     "wiki.article.role.disguiser.abilities":"",
     "wiki.article.role.disguiser.attributes":"",
     "wiki.article.role.disguiser.extra":"- Visits do nothing",
@@ -2019,7 +2009,7 @@
     "wiki.article.role.witch.guide": "- You win if town loses, when town loses you leave town\n- At night, possess a player by selecting 2 players\n    - The first player you select will be forced to visit the second player you select\n\n_For example_\n- You can posses a vigilante to attack another townie by selecting the vigilante first and the townie second",
     "wiki.article.role.witch.abilities":"* Visit 2 players to make the first player visit the second player\n* If there are no living townies, you win, and leave town at the start of the next phase",
     "wiki.article.role.witch.attributes":"* The first player you visit is told that they were possessed or immune to possession\n* You are told all night information messages that the player you possess gets told",
-    "wiki.article.role.witch.extra":"* You are immune to getting roleblocked and possession\n* Your second target gets erased after you change your targets visit, so no other roles can interact with it\n    * A tracker will only see you visit your first target",
+    "wiki.article.role.witch.extra":"* You are immune to getting roleblocked and possession\n* Your second target gets erased after you change your targets visit, so no other roles can interact with it except transporter\n    * A tracker will only see you visit your first target",
     
     "wiki.article.role.scarecrow.reminder": "Each night, select a player to ward them, everyone you wardblock is revealed to you.",
     "wiki.article.role.scarecrow.guide": "- You win if town loses, when town loses you leave town\n- At night, select a player to ward them, stopping almost all abilities from working on them.\n    - The players you ward and wardblock are revealed to you\n\n_For Example_\n- A detective attempts to investigate @11 but you warded @11, so the detective gets wardblocked and doesn't learn anything, but you learn that you stopped the @11\n\nYou aren't told players who are wardblock immune because you can't wardblock them",

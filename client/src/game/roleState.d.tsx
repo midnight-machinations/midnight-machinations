@@ -147,8 +147,6 @@ export type RoleState = {
 } | {
     type: "framer"
 } | {
-    type: "mafiaWitch"
-} | {
     type: "necromancer"
 } | {
     type: "mafiaSupportWildcard"

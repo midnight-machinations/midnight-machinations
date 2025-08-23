@@ -95,7 +95,10 @@ pub(super) fn convert_controller_selection_to_visits_possession(game: &Game, act
 
     if let ControllerSelection::TwoPlayerOption(selection) = selection {
         if let Some((target_1, target_2)) = selection.0 {
-            vec![Visit::new(actor_ref, target_1, false, VisitTag::Role { role: actor_ref.role(game), id: 0 }), Visit::new(actor_ref, target_2, false, VisitTag::Role { role: actor_ref.role(game), id: 1 })]
+            vec![
+                Visit::new(actor_ref, target_1, false, VisitTag::Role { role: actor_ref.role(game), id: 0 }),
+                Visit::new(actor_ref, target_2, false, VisitTag::Role { role: actor_ref.role(game), id: 1 })
+            ]
         }else{
             vec![]
         }
