@@ -33,7 +33,6 @@ pub use mafia_server::game::{
         detective::Detective,
         snoop::Snoop,
         lookout::Lookout,
-        spy::{Spy, SpyBug},
         tracker::Tracker,
         philosopher::Philosopher,
         psychic::Psychic,
@@ -486,13 +485,8 @@ fn spy_basic_transported() {
     witch.send_ability_input_two_player_typical(jester, esc);
 
     game.next_phase();
-
-    assert_contains!(spy.get_messages(), ChatMessageVariant::SpyBug { bug: SpyBug::Silenced });
-    assert_contains!(spy.get_messages(), ChatMessageVariant::SpyBug { bug: SpyBug::Roleblocked });
-    assert_contains!(spy.get_messages(), ChatMessageVariant::SpyBug { bug: SpyBug::Transported });
-    assert_contains!(spy.get_messages(), ChatMessageVariant::SpyBug { bug: SpyBug::Possessed });
-
     
+    assert_contains!(spy.get_messages(), ChatMessageVariant::SpyBug { roles: vec![Role::Blackmailer] });
     assert_contains!(spy.get_messages(), ChatMessageVariant::SpyMafiaVisit { players: vec![bugged.index()] });
 }
 

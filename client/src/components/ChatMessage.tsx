@@ -684,7 +684,7 @@ export function translateChatMessage(
         case "spyMafiaVisit":
             return translate("chatMessage.spyMafiaVisit", playerListToString(message.players, playerNames));
         case "spyBug":
-            return translate("chatMessage.spyBug."+message.bug);
+            return translate("chatMessage.spyBug", roleListToString(message.roles));
         case "trackerResult":
             return translate("chatMessage.trackerResult", playerListToString(message.players, playerNames));
         case "seerResult":
@@ -1020,7 +1020,7 @@ export type ChatMessageVariant = {
     players: PlayerIndex[]
 } | {
     type: "spyBug", 
-    bug: "silenced" | "roleblocked" | "protected" | "transported" | "possessed"
+    roles: Role[]
 } | {
     type: "trackerResult",
     players: PlayerIndex[]

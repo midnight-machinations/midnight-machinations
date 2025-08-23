@@ -3,7 +3,7 @@ use serde::{Deserialize, Serialize};
 use crate::{game::{
     controllers::*, attack_power::DefensePower, components::{graves::grave::Grave, synopsis::Synopsis, tags::Tag, win_condition::WinCondition}, phase::PhaseState, player::{PlayerIndex, PlayerReference}, role::{
             auditor::AuditorResult, engineer::TrapState, kira::KiraResult, krampus::KrampusAbility,
-            santa_claus::SantaListKind, spy::SpyBug, Role
+            santa_claus::SantaListKind, Role
         }, role_list::RoleOutline, role_outline_reference::OutlineIndex, verdict::Verdict
 }, vec_set::VecSet};
 
@@ -164,7 +164,7 @@ pub enum ChatMessageVariant {
     TrackerResult{players: Vec<PlayerIndex>},
     SeerResult{enemies: bool},
     SpyMafiaVisit{players: Vec<PlayerIndex>},
-    SpyBug{bug: SpyBug},
+    SpyBug{roles: Vec<Role>},
     PsychicGood{player: PlayerReference},
     PsychicEvil{first: PlayerReference, second: PlayerReference},
     PsychicFailed,

@@ -128,16 +128,11 @@
         "canWriteDeathNote": false,
         "canBeConvertedTo": [],
         "chatMessages":[
-            {"type": "spyBug", "bug": "silenced"},
-            {"type": "spyBug", "bug": "roleblocked"},
-            {"type": "spyBug", "bug": "protected"},
-            {"type": "spyBug", "bug": "transported"},
-            {"type": "spyBug", "bug": "possessed"},
-            {"type": "spyBug", "bug": "wardblocked"},
+            {"type": "spyBug", "roles": []},
+            {"type": "spyBug", "roles": ["framer"]},
+            {"type": "spyBug", "roles": ["informant", "hypnotist"]},
             {"type": "spyMafiaVisit", "players": [16,17,18,16]},
-            {"type": "spyMafiaVisit", "players": []},
-            {"type": "cultConvertsNext"},
-            {"type": "cultKillsNext"}
+            {"type": "spyMafiaVisit", "players": []}
         ]
     },
     "auditor": {
