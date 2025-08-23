@@ -1652,7 +1652,7 @@
     "wiki.article.role.spy.attributes":"* Appeared visits can change information",
     "wiki.article.role.spy.extra": "- The syndicate visits count all syndicate insiders, even if they don't have a syndicate role",
     "wiki.article.role.spy.exampleAlibi":"Spy\nN1:\nBug @8 - Mortician, Informant\nSyndicate Visited: @1, @8, @8\nN2:\nBug @13 [I was roleblocked]",
-    "wiki.article.role.spy.exampleAlibi.description":"Here is an example of an alibi from a spy who, on night 1, saw that @8 was roleblocked and the syndicate visited @1 and @8 twice, and on night 2, the spy themselves was roleblocked, so their ability did not work.",
+    "wiki.article.role.spy.exampleAlibi.description":"Here is an example of an alibi from a spy who, on night 1, saw that @8 was visited by a Mortician and an Informant, and the syndicate visited @1 and @8 twice, and on night 2, the spy was roleblocked, so their ability did not work.",
 
     "wiki.article.role.tracker.reminder": "At night, select a player to find out who they visited.",
     "wiki.article.role.tracker.guide": "- At night select a player to find out who they visited\n\n_For example_\n- If you select @5 and they visited @10 on the night @10 died, @5 might have attacked @10\n\n You should tell the town the information you get daily.",
