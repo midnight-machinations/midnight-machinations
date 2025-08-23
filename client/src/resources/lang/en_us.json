@@ -993,7 +993,7 @@
     "chatMessage.gameOver.conclusion.unknown": "The game has ended with conclusion \\0!",
     "chatMessage.gameOver.player.won.true": "\\0 won!",
     "chatMessage.gameOver.player.won.false": "\\0 lost!",
-    "chatMessage.gameOver.player.crumb": "\\0 \\1",
+    "chatMessage.gameOver.player.crumb": "\\0, \\1, \\2",
     "chatMessage.playerWon":"\\0 won! They were the \\1.",
     "chatMessage.playerLost":"\\0 lost! They were the \\1.",
     "chatMessage.playerQuit": "\\0 has left the lobby and will certainly die at the end of the next night.",

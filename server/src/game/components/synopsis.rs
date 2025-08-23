@@ -2,7 +2,7 @@ use std::cmp::Ordering;
 
 use serde::{Deserialize, Serialize};
 
-use crate::game::{game_conclusion::GameConclusion, phase::PhaseType, player::PlayerReference, role::Role, Game};
+use crate::{game::{components::insider_group::InsiderGroupID, game_conclusion::GameConclusion, phase::PhaseType, player::PlayerReference, role::Role, role_outline_reference::RoleOutlineReference, Game}, vec_set::VecSet};
 
 use super::win_condition::WinCondition;
 
@@ -28,26 +28,36 @@ impl SynopsisTracker {
                 .map(|(player_index, player_synopsis)|
                     player_synopsis.get(
                         #[expect(clippy::cast_possible_truncation, reason = "Game can only have 255 players")]
-                        unsafe { PlayerReference::new_unchecked(player_index as u8).get_won_game(game, conclusion) }
+                        unsafe { PlayerReference::new_unchecked(player_index as u8) },
+                        game,
+                        conclusion
                     )
                 ).collect(),
             conclusion
         }
     }
 
-    pub fn on_role_switch(game: &mut Game, player: PlayerReference, _: Role, role: Role) {
-        let night = if matches!(game.current_phase().phase(), PhaseType::Night | PhaseType::Obituary) { 
-            Some(game.day_number())
-        } else {
-            None
-        };
-
-        let win_condition = player.win_condition(game).clone();
-
-        game.synopsis_tracker.add_crumb_to_player(player, night, role, win_condition);
+    fn player_synopses(game: &mut Game) -> &mut Vec<PartialPlayerSynopsis> {
+        &mut game.synopsis_tracker.player_synopses
     }
 
-    pub fn on_convert(game: &mut Game, player: PlayerReference, _: WinCondition, win_condition: WinCondition) {
+    pub fn on_role_switch(game: &mut Game, player: PlayerReference, _: Role, _: Role) {
+        SynopsisTracker::add_crumb_to_player(player, game);
+    }
+
+    pub fn on_convert(game: &mut Game, player: PlayerReference, _: WinCondition, _: WinCondition) {
+        SynopsisTracker::add_crumb_to_player(player, game);
+    }
+
+    pub fn on_add_insider(game: &mut Game, player: PlayerReference, _: InsiderGroupID) {
+        SynopsisTracker::add_crumb_to_player(player, game);
+    }
+
+    pub fn on_remove_insider(game: &mut Game, player: PlayerReference, _: InsiderGroupID) {
+        SynopsisTracker::add_crumb_to_player(player, game);
+    }
+
+    fn add_crumb_to_player(player: PlayerReference, game: &mut Game) {
         let night = if matches!(game.current_phase().phase(), PhaseType::Night | PhaseType::Obituary) { 
             Some(game.day_number())
         } else {
@@ -55,13 +65,11 @@ impl SynopsisTracker {
         };
 
         let role = player.role(game);
-        
-        game.synopsis_tracker.add_crumb_to_player(player, night, role, win_condition);
-    }
+        let win_condition = player.win_condition(game).clone();
+        let insider_groups = InsiderGroupID::all_groups_with_player(game, player);
 
-    fn add_crumb_to_player(&mut self, player: PlayerReference, night: Option<u8>, role: Role, win_condition: WinCondition) {
-        if let Some(ref mut synopsis) = self.player_synopses.get_mut(player.index() as usize) {
-            synopsis.add_crumb(SynopsisCrumb { night, role, win_condition });
+        if let Some(ref mut synopsis) = SynopsisTracker::player_synopses(game).get_mut(player.index() as usize) {
+            synopsis.add_crumb(SynopsisCrumb { night, role, win_condition, insider_groups });
         }
     }
 }
@@ -97,6 +105,7 @@ impl Ord for Synopsis {
 #[derive(Clone, Debug, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct PlayerSynopsis {
+    outline_assignment: RoleOutlineReference,
     crumbs: Vec<SynopsisCrumb>,
     won: bool
 }
@@ -120,10 +129,12 @@ impl PartialPlayerSynopsis {
         self.crumbs.push(crumb);
     }
 
-    fn get(&self, won: bool) -> PlayerSynopsis {
+    fn get(&self, player_ref: PlayerReference, game: &Game, conclusion: GameConclusion) -> PlayerSynopsis {
         PlayerSynopsis {
             crumbs: self.crumbs.clone(),
-            won
+            won: player_ref.get_won_game(game, conclusion),
+            #[expect(clippy::unwrap_used, reason = "Player must have an assignment")]
+            outline_assignment: game.assignments.get(&player_ref).unwrap().0,
         }
     }
 }
@@ -134,4 +145,5 @@ pub struct SynopsisCrumb {
     night: Option<u8>,
     role: Role,
     win_condition: WinCondition,
+    insider_groups: VecSet<InsiderGroupID>,
 }
