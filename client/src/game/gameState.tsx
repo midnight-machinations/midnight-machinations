@@ -53,6 +53,7 @@ export function createGameState(): GameState {
         dayNumber: 1,
 
         fastForward: false,
+        chatFilter: null,
         
         roleList: [],
         enabledRoles: [],
@@ -80,7 +81,6 @@ export function createPlayerGameState(): PlayerGameState {
 
         notes: [],
         crossedOutOutlines: [],
-        chatFilter: null,
         deathNote: "",
 
         fellowInsiders: [],
