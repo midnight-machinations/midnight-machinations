@@ -5,7 +5,7 @@ import { ContentMenu, ContentTab } from "../GameScreen";
 import "./graveyardMenu.css";
 import StyledText from "../../../components/StyledText";
 import { EnabledRolesDisplay } from "../../../components/gameModeSettings/EnabledRoleSelector";
-import { useGameState, usePlayerState, useSpectator } from "../../../components/useHooks";
+import { useGameState, useLobbyOrGameState, usePlayerState, useSpectator } from "../../../components/useHooks";
 import { translateRoleOutline } from "../../../game/roleListState.d";
 import { Button } from "../../../components/Button";
 import DetailsSummary from "../../../components/DetailsSummary";
@@ -27,7 +27,7 @@ export default function GraveyardMenu(): ReactElement {
 }
 
 function RoleListDisplay(): ReactElement {
-    const roleList = useGameState(
+    const roleList = useLobbyOrGameState(
         gameState => gameState.roleList,
         ["roleList"]
     )!

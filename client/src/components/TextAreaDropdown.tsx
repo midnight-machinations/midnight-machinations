@@ -7,7 +7,7 @@ import Icon from "./Icon";
 import translate from "../game/lang";
 import "./textAreaDropdown.css";
 import DetailsSummary from "./DetailsSummary";
-import { usePlayerNames, usePlayerState } from "./useHooks";
+import { useLobbyOrGameState, usePlayerNames, usePlayerState } from "./useHooks";
 import { PlayerIndex, UnsafeString } from "../game/gameState.d";
 import PlayerOptionDropdown from "./PlayerOptionDropdown";
 
@@ -126,6 +126,11 @@ function TextDropdownLabel(
 
     const playerNames = usePlayerNames();
 
+    const roleList = useLobbyOrGameState(
+        gameState => gameState.roleList,
+        ["roleList"]
+    ) ?? [];
+
     function save(field: UnsafeString) {
         props.onSave(field);
     }
@@ -136,7 +141,7 @@ function TextDropdownLabel(
     }
 
     return <div>
-        <StyledText>{encodeString(replaceMentions(props.titleString, playerNames))}</StyledText>
+        <StyledText>{encodeString(replaceMentions(props.titleString, playerNames, roleList))}</StyledText>
         <span>
             {props.onSubtract ? <Button
                 onClick={(e) => {
@@ -211,6 +216,11 @@ function PrettyTextArea(props: Readonly<{
     const [hover, setHover] = useState<boolean>(false);
     const playerNames = usePlayerNames();
 
+    const roleList = useLobbyOrGameState(
+        gameState => gameState.roleList,
+        ["roleList"]
+    ) ?? [];
+
     const textareaRef = useRef<HTMLTextAreaElement>(null);
     const prettyTextAreaRef = useRef<HTMLDivElement>(null);
 
@@ -253,7 +263,7 @@ function PrettyTextArea(props: Readonly<{
                 className="textarea"
             >
                 <StyledText noLinks={true}>
-                    {encodeString(replaceMentions(props.field, playerNames))}
+                    {encodeString(replaceMentions(props.field, playerNames, roleList))}
                 </StyledText>
             </div>
             :

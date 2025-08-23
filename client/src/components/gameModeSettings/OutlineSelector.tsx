@@ -10,10 +10,11 @@ import Select, { dropdownPlacementFunction, SelectOptionsSearch } from "../Selec
 import StyledText from "../StyledText";
 import { Button, RawButton } from "../Button";
 import { useLobbyOrGameState, useLobbyState } from "../useHooks";
-import { Conclusion, CONCLUSIONS, INSIDER_GROUPS, InsiderGroup, PlayerClientType, PlayerIndex, translateConclusion, translateWinCondition, UnsafeString } from "../../game/gameState.d";
+import { Conclusion, CONCLUSIONS, INSIDER_GROUPS, InsiderGroup, LobbyClient, LobbyClientID, PlayerClientType, PlayerIndex, translateConclusion, translateWinCondition, UnsafeString } from "../../game/gameState.d";
 import Popover from "../Popover";
 import DUMMY_NAMES from "../../resources/dummyNames.json";
 import { encodeString } from "../ChatMessage";
+import ListMap from "../../ListMap";
 
 type RoleOutlineSelectorProps = {
     roleOutline: RoleOutline,
@@ -366,14 +367,17 @@ function InsiderGroupSelectorLabel(props: Readonly<{
     </>
 }
 
-function useNamesForPlayerPool(numPlayers?: number): UnsafeString[] {
+export function useNamesForPlayerPool(numPlayers?: number): UnsafeString[] {
     return useLobbyState(
-        state => 
-            state.players.list
-                .filter(([_id, client]) => client.clientType.type === "player")
-                .map(([_id, player]) => (player.clientType as PlayerClientType).name),
+        state => getNamesForPlayerPoolFromLobbyClients(state.players),
         ["lobbyClients"]
     )??DUMMY_NAMES.slice(0, numPlayers??0)
+}
+
+export function getNamesForPlayerPoolFromLobbyClients(players: ListMap<LobbyClientID, LobbyClient>): UnsafeString[] {
+    return players.list
+        .filter(([_id, client]) => client.clientType.type === "player")
+        .map(([_id, player]) => (player.clientType as PlayerClientType).name)
 }
 
 function PlayerPoolSelector(props: Readonly<{

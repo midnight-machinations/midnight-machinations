@@ -1063,7 +1063,7 @@
     "chatMessage.psychicGood":"Between your target, and \\0, at least one player is a town loyalist.",
     "chatMessage.psychicEvil":"Between your target, \\0, and \\1, at least one player is not a town loyalist.",
     "chatMessage.psychicFailed":"This vision is impossible.",
-    "chatMessage.auditorResult":"You audited \\0: \\1. It generated one of: \\2.",
+    "chatMessage.auditorResult":"You audited @o\\0 It generated one of: \\1.",
     "chatMessage.snoopResult.townie":"Your target is a town loyalist.",
     "chatMessage.snoopResult.inconclusive":"You can't tell what your target is.",
     "chatMessage.gossipResult.none": "Your target didn't visit a player that is enemies with town.",
@@ -1677,11 +1677,11 @@
     "wiki.article.role.psychic.exampleAlibi.description": "As the psychic, it's important to be clear about which player you selected. Some people use an asterisk, surround the selection with parentheses, or use a separate line. Here's an example of both:",
 
     "wiki.article.role.auditor.reminder": "At night, select up to 2 outlines to learn what roles were generated from them.",
-    "wiki.article.role.auditor.guide": "- At night, choose up to 2 outlines from the list\n    - For each outline, you are told up to 4 roles, one of those roles were assigned to a player from that outline, and the other roles are random\n    - You visit the player who was assigned that role, but you are not told who that player is\n    - You are told the minimum of 4 and the number the roles from that role outline - 1\n    - You can't choose an outline with only 1 role",
-    "wiki.article.role.auditor.abilities":"- At night, choose up to 2 outlines from the list\n    - For each outline, you are told up to 4 roles, one of those roles were assigned to a player from that outline, and the other roles are random\n    - You visit the player who was assigned that role, but you are not told who that player is\n    - You are told the minimum of 4 and the number the roles from that role outline - 1\n    - You can't choose an outline with only 1 role",
+    "wiki.article.role.auditor.guide": "- At night, choose up to 2 outlines from the list\n    - For each outline, you are told up to 4 roles, one of those roles were assigned to a player from that outline, and the other roles are random\n    - You visit the player who was assigned that role, but you are not told who that player is\n    - If the number of possible enabled roles from that outline - 1 is less than 4, you are told that number of roles, otherwise you are told four roles\n    - You can't choose an outline with only 1 role",
+    "wiki.article.role.auditor.abilities":"- At night, choose up to 2 outlines from the list\n    - For each outline, you are told up to 4 roles, one of those roles were assigned to a player from that outline, and the other roles are random\n    - You visit the player who was assigned that role, but you are not told who that player is\n    - if the number of possible enabled roles from that outline - 1 is less than 4, you are told that number of roles, otherwise you are told four roles\n    - You can't choose an outline with only 1 role",
     "wiki.article.role.auditor.attributes":"- You are not told the names of any players\n- The random role you are told is from the outline you chose",
     "wiki.article.role.auditor.extra":"- Your ability works independently of your visits, Your visit getting transported or getting possessed doesn't usually impact your ability\n    - If you are blocked, you don't get results, but you can select that outline again\n- It is possible for you to visit dead players",
-    "wiki.article.role.auditor.exampleAlibi":"Auditor\nN1:\n4: TC -> Gossip, Detective, Snoop, Philosopher\n5: TC -> Lookout, Escort, Doctor, Cop\nN2:\n1: SS -> Hypnotist, Reeducator, Framer, Forger\n3: SS U Minion -> Warper, Informant, Disguiser, Scarecrow",
+    "wiki.article.role.auditor.exampleAlibi":"Auditor\nN1:\n@o8 -> Gossip, Detective, Snoop, Philosopher\n@o15 -> Lookout, Escort, Doctor, Cop\nN2:\n@o3 -> Hypnotist, Informant, Framer, Mortician\n@o6 -> Jester, Witch, Mercenary, Scarecrow",
     "wiki.article.role.auditor.exampleAlibi.description":"The auditor gets a lot of information, so make sure to format your alibi so it is as easy to read as possible. Here's an example:",
 
     "wiki.article.role.snoop.reminder": "At night, select a player to learn if they are a town loyalist, but you can't tell if you are visited a player who isn't your buddy.",

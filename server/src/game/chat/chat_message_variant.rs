@@ -2,9 +2,9 @@ use serde::{Deserialize, Serialize};
 
 use crate::{game::{
     controllers::*, attack_power::DefensePower, components::{graves::grave::Grave, synopsis::Synopsis, tags::Tag, win_condition::WinCondition}, phase::PhaseState, player::{PlayerIndex, PlayerReference}, role::{
-            auditor::AuditorResult, engineer::TrapState, kira::KiraResult, krampus::KrampusAbility,
-            santa_claus::SantaListKind, Role
-        }, role_list::RoleOutline, role_outline_reference::OutlineIndex, verdict::Verdict
+        auditor::AuditorResult, engineer::TrapState, kira::KiraResult, krampus::KrampusAbility,
+        santa_claus::SantaListKind, Role
+    }, role_outline_reference::OutlineIndex, verdict::Verdict
 }, vec_set::VecSet};
 
 
@@ -169,7 +169,7 @@ pub enum ChatMessageVariant {
     PsychicEvil{first: PlayerReference, second: PlayerReference},
     PsychicFailed,
     #[serde(rename_all = "camelCase")]
-    AuditorResult{outline_index: OutlineIndex, role_outline: RoleOutline, result: AuditorResult},
+    AuditorResult{outline_index: OutlineIndex, result: AuditorResult},
     SnoopResult{townie: bool},
     PolymathSnoopResult{inno: bool},
     GossipResult{enemies: bool},

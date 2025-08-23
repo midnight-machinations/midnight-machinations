@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import GAME_MANAGER from "..";
 import { StateEventType } from "../game/gameManager.d";
-import GameState, { LobbyState, PlayerGameState, UnsafeString } from "../game/gameState.d";
+import GameState, { LobbyState, PlayerClientType, PlayerGameState, UnsafeString } from "../game/gameState.d";
 import DUMMY_NAMES from "../resources/dummyNames.json";
 import deepEqual from "deep-equal";
 
@@ -143,7 +143,9 @@ export function usePlayerNames(): UnsafeString[] {
             if (state.stateType === "game") {
                 return state.players.map(player => player.toString())
             } else {
-                return []
+                return state.players.list
+                    .filter(([_id, client]) => client.clientType.type === "player")
+                    .map(([_id, player]) => (player.clientType as PlayerClientType).name)
             }
         },
         ["gamePlayers", "lobbyClients"],
