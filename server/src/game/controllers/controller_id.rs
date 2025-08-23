@@ -97,6 +97,9 @@ impl ControllerID{
 
 
 impl ControllerID{
+    pub fn current_used_ids(game: &Game)->Box<[Self]>{
+        game.controllers.controllers.iter().map(|(id,_)|id).cloned().collect()
+    }
     pub fn should_send_selection_chat_message(&self, game: &Game)->bool{
         if 
             matches!(self, ControllerID::Nominate { .. }) &&
