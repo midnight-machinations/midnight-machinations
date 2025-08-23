@@ -1940,11 +1940,11 @@
     "wiki.article.role.framer.attributes":"- For the first visit, you can select living players who aren't insiders with you\n- You can select anyone for the second visit, even dead players or yourself",
     "wiki.article.role.framer.extra":"- Your second visit is removed, so no other roles can interact with it except bouncer and transporter\n    - A tracker only sees you visit your first target\n    - The marksman wont see you visit the second target\n    - You don't die if your second target is an veteran who is rampaging",
 
-    "wiki.article.role.disguiser.reminder": "At night, choose an insider to disguise until the next night, making their grave show the wrong role when they die. You have innocent aura.",
-    "wiki.article.role.disguiser.guide": "- At night, select a player to disguise\n    - The player you visit becomes your disguised target until the start of next night, or they die, or you die\n    - The disguised player has their role appear to be what you chose on their grave\n    - You can disguise any player in your insider group, including yourself\n- You have innocent aura",
-    "wiki.article.role.disguiser.abilities":"- At night, select a player to disguise\n    - The player you visit becomes your disguised target until the start of next night, or they die, or you die\n    - The disguised player has their role appear to be what you chose on their grave\n    - You can disguise any player in your insider group, including yourself\n- You have innocent aura",
-    "wiki.article.role.disguiser.attributes":" - When the disguised player dies, you choose what role is on their grave, and can choose that role up until the moment they die",
-    "wiki.article.role.disguiser.extra":"- You can typically only visit other living syndicate insiders, so be careful of enemy spies\n- You can change the role on your own grave assuming you have disguised yourself\n- If you visit a non fellow insider, your ability does nothing",
+    "wiki.article.role.disguiser.reminder": "Your grave shows whatever role you choose when you die. You have innocent aura. At night, you can visit a player.",
+    "wiki.article.role.disguiser.guide": "- At night, select a player to visit\n - You have your role appear to be what you chose on their grave\n - You have innocent aura",
+    "wiki.article.role.disguiser.abilities":"",
+    "wiki.article.role.disguiser.attributes":"",
+    "wiki.article.role.disguiser.extra":"- Visits do nothing",
 
     "wiki.article.role.reeducator.reminder": "At night, choose a fellow insider to become a syndicate support role that you choose. Once per game, convert a player to join the syndicate, but attack yourself.",
     "wiki.article.role.reeducator.guide": "- At night, either select a player and syndicate support role\n    - If you visit a syndicate insider\n        - Their role switches to the role you choose\n    - If you visit someone who isn't a syndicate insider\n        - Their role switches to the role you choose\n        - They become a syndicate insider\n        - They become a syndicate loyalist\n        - You attack yourself with an indirect protection-piercing attack\n        - You can only convert somebody once, if you visit a non syndicate insider again, your ability does nothing\n- On night 1, you can't use your ability.",

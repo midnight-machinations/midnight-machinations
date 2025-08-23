@@ -738,14 +738,7 @@
         "maxCount": 1,
         "canWriteDeathNote": false,
         "canBeConvertedTo": ["godfather"],
-        "chatMessages":[
-            {
-                "type": "playerRoleAndAlibi",
-                "player":14,
-                "role":"hypnotist",
-                "will":"Philosopher\nN1: @1 and @2 are enemies"
-            }
-        ]
+        "chatMessages":[]
     },
     "reeducator": {
         "mainRoleSet": "mafia",
