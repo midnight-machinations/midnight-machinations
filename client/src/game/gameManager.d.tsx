@@ -1,6 +1,6 @@
 import { WikiArticleLink } from "../components/WikiArticleLink";
 import { DoomsayerGuess } from "../menu/game/gameScreenContent/AbilityMenu/RoleSpecificMenus/LargeDoomsayerMenu";
-import { AbilityInput } from "./abilityInput";
+import { ControllerInput } from "./controllerInput";
 import { PhaseType, PhaseTimes, PlayerIndex, State, Verdict, ModifierType } from "./gameState.d";
 import { ToClientPacket, ToServerPacket } from "./packet";
 import { RoleList, RoleOutline } from "./roleListState.d";
@@ -83,12 +83,12 @@ export type GameManager = {
     sendSaveNotesPacket(notes: string[]): void;
     sendSaveCrossedOutOutlinesPacket(crossedOutOutlines: number[]): void;
     sendSaveDeathNotePacket(notes: string): void;
-    sendSendChatMessagePacket(text: string, block: boolean): void;
-    sendSendWhisperPacket(playerIndex: number, text: string): void;
+    sendSendChatMessagePacket(text: string, block: boolean, controllingPlayer?: PlayerIndex): void;
+    sendSendWhisperPacket(playerIndex: number, text: string, controllingPlayer?: PlayerIndex): void;
     sendEnabledRolesPacket(roles: Role[]): void;
     sendEnabledModifiersPacket(modifiers: ModifierType[]): void;
 
-    sendAbilityInput(input: AbilityInput): void;
+    sendControllerInput(input: ControllerInput): void;
     sendSetDoomsayerGuess(guesses: [
         [number, DoomsayerGuess],
         [number, DoomsayerGuess],

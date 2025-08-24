@@ -1,5 +1,5 @@
 use serde::Serialize;
-use crate::game::ability_input::{AvailableRoleListSelection, ControllerID, RoleListSelection};
+use crate::game::controllers::{AvailableRoleListSelection, ControllerID, RoleListSelection};
 use crate::game::event::on_midnight::{MidnightVariables, OnMidnightPriority};
 use crate::game::{attack_power::DefensePower, chat::ChatMessageVariant};
 use crate::game::phase::PhaseType;
@@ -62,7 +62,7 @@ impl RoleStateImpl for Steward {
 
                 self.self_heals_remaining = self.self_heals_remaining
                     .saturating_sub(
-                        if roles.iter().any(|role|*role == Role::Steward){1}else{0}
+                        if roles.contains(&Role::Steward){1}else{0}
                     );
                 
                 actor_ref.set_role_state(game, Steward{

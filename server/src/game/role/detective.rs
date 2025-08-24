@@ -1,6 +1,7 @@
 use serde::Serialize;
 
-use crate::game::ability_input::ControllerID;
+use crate::game::controllers::ControllerID;
+use crate::game::components::aura::Aura;
 use crate::game::components::confused::Confused;
 use crate::game::event::on_midnight::{MidnightVariables, OnMidnightPriority};
 use crate::game::{attack_power::DefensePower, chat::ChatMessageVariant};
@@ -58,12 +59,12 @@ impl RoleStateImpl for Detective {
 
 impl Detective {
     pub fn player_is_suspicious(game: &Game, midnight_variables: &MidnightVariables, player_ref: PlayerReference) -> bool {
-        if player_ref.has_suspicious_aura(game, midnight_variables){
+        if Aura::suspicious(game, midnight_variables, player_ref){
             true
-        }else if player_ref.has_innocent_aura(game){
+        }else if Aura::innocent(game, player_ref){
             false
         }else{
-            !player_ref.win_condition(game).friends_with_resolution_state(GameConclusion::Town)
+            !player_ref.win_condition(game).friends_with_conclusion(GameConclusion::Town)
         }
     }
 }

@@ -2,13 +2,13 @@ use std::collections::HashSet;
 
 use serde::Serialize;
 
-use crate::game::ability_input::AvailableBooleanSelection;
+use crate::game::controllers::AvailableBooleanSelection;
 use crate::game::attack_power::{AttackPower, DefensePower};
 use crate::game::chat::{ChatGroup, ChatMessageVariant};
 use crate::game::components::detained::Detained;
 use crate::game::event::on_midnight::{MidnightVariables, OnMidnightPriority};
 use crate::game::game_conclusion::GameConclusion;
-use crate::game::grave::GraveKiller;
+use crate::game::components::graves::grave::GraveKiller;
 use crate::game::phase::PhaseType;
 use crate::game::player::PlayerReference;
 
@@ -45,7 +45,7 @@ impl RoleStateImpl for Jailor {
     type ClientRoleState = Jailor;
     fn new_state(game: &Game) -> Self {
         Self{
-            executions_remaining: game.num_players().div_ceil(5),
+            executions_remaining: crate::game::role::common_role::standard_charges(game),
             ..Self::default()
         }
     }

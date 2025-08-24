@@ -1,42 +1,73 @@
 import React, { ReactElement, useEffect, useMemo, useRef, useState } from "react";
 import StyledText from "./StyledText";
-import { sanitizePlayerMessage } from "./ChatMessage";
+import { encodeString } from "./ChatMessage";
 import GAME_MANAGER, { replaceMentions } from "..";
 import { Button } from "./Button";
 import Icon from "./Icon";
 import translate from "../game/lang";
 import "./textAreaDropdown.css";
 import DetailsSummary from "./DetailsSummary";
-import { usePlayerNames } from "./useHooks";
+import { useLobbyOrGameState, usePlayerNames, usePlayerState } from "./useHooks";
+import { PlayerIndex, UnsafeString } from "../game/gameState.d";
+import PlayerOptionDropdown from "./PlayerOptionDropdown";
 
 export function TextDropdownArea(props: Readonly<{
-    titleString: string,
-    savedText: string,
+    titleString: UnsafeString,
+    savedText: UnsafeString,
     defaultOpen?: boolean,
     open?: boolean,
     dropdownArrow?: boolean,
     onAdd?: () => void,
     onSubtract?: () => void,
     onSave: (text: string) => void,
-    cantPost: boolean
+    cantPost: boolean,
+
+    canPostAs?: PlayerIndex[]
 }>): ReactElement {
-    const [field, setField] = useState<string>(props.savedText);
+    const [field, setField] = useState<UnsafeString>(props.savedText);
+
+    const myIndex = usePlayerState((p, _)=>p.myIndex);
 
     useEffect(() => {
         setField(props.savedText)
-    }, [props.savedText])
+    }, [props.savedText]);
+    
 
     const unsaved = useMemo(() => {
+        if(field==="bruh"){
+            console.log(props.savedText);
+            console.log(field);
+            console.log(props.savedText !== field);
+        }
         return props.savedText !== field
     }, [field, props.savedText]);
 
-    function send(field: string){
+    let canPostAs =(
+        props.canPostAs===undefined ||
+        (myIndex !== undefined && props.canPostAs.length === 1 && props.canPostAs.includes(myIndex))
+    )?(
+        undefined
+    ):props.canPostAs;
+
+    const [postingAsPlayer, setPostingAsPlayer] = useState<PlayerIndex|null>(
+        canPostAs!==undefined?canPostAs[0]:null
+    );
+
+    useEffect(()=>{
+        if(canPostAs === undefined){
+            setPostingAsPlayer(null);
+        }else if(postingAsPlayer === null || !canPostAs.includes(postingAsPlayer)){
+            setPostingAsPlayer(canPostAs[0]);
+        }
+    }, [canPostAs, postingAsPlayer]);
+
+    function send(field: UnsafeString){
         save(field);
-        GAME_MANAGER.sendSendChatMessagePacket('\n' + field, true);
+        GAME_MANAGER.sendSendChatMessagePacket(field as string, true, postingAsPlayer??undefined);
     }
 
-    function save(field: string) {
-        props.onSave(field);
+    function save(field: UnsafeString) {
+        props.onSave(field as string);
     }
 
     return (
@@ -52,7 +83,12 @@ export function TextDropdownArea(props: Readonly<{
                 onAdd={props.onAdd}
                 onSubtract={props.onSubtract}
                 onSave={save}
+                onSend={()=>send(field)}
                 cantPost={props.cantPost}
+
+                postingAs={postingAsPlayer??undefined}
+                canPostAs={canPostAs}
+                onSetPostingAs={(p)=>setPostingAsPlayer(p)}
             />}
         >
             {unsaved ? "Unsaved" : ""}
@@ -68,14 +104,19 @@ export function TextDropdownArea(props: Readonly<{
 
 function TextDropdownLabel(
     props: Readonly<{
-        titleString: string,
-        savedText: string,
-        field: string,
+        titleString: UnsafeString,
+        savedText: UnsafeString,
+        field: UnsafeString,
         open?: boolean,
         onAdd?: () => void,
         onSubtract?: () => void,
-        onSave: (text: string) => void,
-        cantPost: boolean
+        onSave: (text: UnsafeString) => void,
+        onSend: ()=>void,
+        cantPost: boolean,
+
+        onSetPostingAs?: (player: PlayerIndex | null) => void,
+        canPostAs?: PlayerIndex[],
+        postingAs?: PlayerIndex
     }>
 ): ReactElement {
     
@@ -85,17 +126,22 @@ function TextDropdownLabel(
 
     const playerNames = usePlayerNames();
 
-    function save(field: string) {
+    const roleList = useLobbyOrGameState(
+        gameState => gameState.roleList,
+        ["roleList"]
+    ) ?? [];
+
+    function save(field: UnsafeString) {
         props.onSave(field);
     }
 
-    function send(field: string){
+    function send(field: UnsafeString){
         save(field);
-        GAME_MANAGER.sendSendChatMessagePacket('\n' + field, true);
+        props.onSend();
     }
 
     return <div>
-        <StyledText>{replaceMentions(props.titleString, playerNames)}</StyledText>
+        <StyledText>{encodeString(replaceMentions(props.titleString, playerNames, roleList))}</StyledText>
         <span>
             {props.onSubtract ? <Button
                 onClick={(e) => {
@@ -131,6 +177,19 @@ function TextDropdownLabel(
             >
                 <Icon size="small">save</Icon>
             </Button>
+            {
+                (props.canPostAs!==undefined)&&(props.canPostAs.length > 0)?
+                <PlayerOptionDropdown
+                    value={props.postingAs??props.canPostAs[0]}
+                    onChange={(p)=>{
+                        if(props.onSetPostingAs!==undefined){
+                            props.onSetPostingAs(p)
+                        }
+                    }}
+                    choosablePlayers={props.canPostAs}
+                    canChooseNone={false}
+                />:null
+            }
             <Button
                 disabled={props.cantPost}
                 onClick={(e) => {
@@ -148,14 +207,19 @@ function TextDropdownLabel(
 }
 
 function PrettyTextArea(props: Readonly<{
-    field: string,
-    setField: (field: string) => void,
-    save: (field: string) => void,
-    send: (field: string) => void,
+    field: UnsafeString,
+    setField: (field: UnsafeString) => void,
+    save: (field: UnsafeString) => void,
+    send: (field: UnsafeString) => void,
 }>): ReactElement {
     const [writing, setWriting] = useState<boolean>(false);
     const [hover, setHover] = useState<boolean>(false);
     const playerNames = usePlayerNames();
+
+    const roleList = useLobbyOrGameState(
+        gameState => gameState.roleList,
+        ["roleList"]
+    ) ?? [];
 
     const textareaRef = useRef<HTMLTextAreaElement>(null);
     const prettyTextAreaRef = useRef<HTMLDivElement>(null);
@@ -199,14 +263,14 @@ function PrettyTextArea(props: Readonly<{
                 className="textarea"
             >
                 <StyledText noLinks={true}>
-                    {sanitizePlayerMessage(replaceMentions(props.field, playerNames))}
+                    {encodeString(replaceMentions(props.field, playerNames, roleList))}
                 </StyledText>
             </div>
             :
             <textarea
                 className="textarea"
                 ref={textareaRef}
-                value={props.field}
+                value={props.field as string}
                 onChange={e => props.setField(e.target.value)}
                 onKeyDown={(e) => {
                     if (e.ctrlKey) {

@@ -1,13 +1,12 @@
 
 use serde::Serialize;
 
-use crate::game::ability_input::{AvailableRoleListSelection, AvailableStringSelection, RoleListSelection};
+use crate::game::controllers::{AvailableRoleListSelection, AvailableStringSelection, RoleListSelection};
 use crate::game::attack_power::DefensePower;
 use crate::game::chat::ChatMessageVariant;
 use crate::game::event::on_midnight::{MidnightVariables, OnMidnightPriority};
 use crate::game::phase::PhaseType;
 use crate::game::player::PlayerReference;
-
 use crate::game::visit::Visit;
 
 use crate::game::Game;
@@ -45,7 +44,7 @@ impl RoleStateImpl for Forger {
     type ClientRoleState = ClientRoleState;
     fn new_state(game: &Game) -> Self {
         Self{
-            forges_remaining: game.num_players().div_ceil(5),
+            forges_remaining: crate::game::role::common_role::standard_charges(game),
             ..Self::default()
         }
     }
@@ -79,14 +78,12 @@ impl RoleStateImpl for Forger {
                 });
             },
             OnMidnightPriority::Investigative=>{
-                if let Some(forged_ref) = self.forged_ref {
-                    if forged_ref.night_died(midnight_variables) {
-                        actor_ref.push_night_message(midnight_variables, ChatMessageVariant::PlayerRoleAndAlibi{
-                            player: forged_ref,
-                            role: forged_ref.role(game),
-                            will: forged_ref.will(game).to_string(),
-                        });
-                    }
+                if let Some(forged_ref) = self.forged_ref && forged_ref.night_died(midnight_variables) {
+                    actor_ref.push_night_message(midnight_variables, ChatMessageVariant::PlayerRoleAndAlibi{
+                        player: forged_ref,
+                        role: forged_ref.role(game),
+                        will: forged_ref.alibi(game).to_string(),
+                    });
                 }
             },
             _ => {}

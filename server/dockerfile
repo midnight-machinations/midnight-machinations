@@ -1,9 +1,9 @@
-FROM rust:1.86.0-slim-bookworm AS builder
+FROM rust:1.89.0-slim-bookworm AS builder
 WORKDIR /app
 COPY . .
 RUN cargo build --release
 
-FROM rust:1.86.0-slim-bookworm
+FROM rust:1.89.0-slim-bookworm
 COPY --from=builder /app/target/release/mafia_server /
 COPY --from=builder /app/resources /resources
 

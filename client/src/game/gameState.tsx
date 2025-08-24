@@ -1,5 +1,5 @@
 import ListMap from "../ListMap"
-import GameState, { LobbyClient, LobbyState, PhaseTimes, Player, LobbyClientID, PlayerGameState } from "./gameState.d"
+import GameState, { LobbyClient, LobbyState, PhaseTimes, Player, LobbyClientID, PlayerGameState, UnsafeString } from "./gameState.d"
 
 
 export function defaultPhaseTimes(): PhaseTimes {
@@ -30,7 +30,7 @@ export function createLobbyState(): LobbyState {
         enabledModifiers: [],
 
         players: new ListMap<LobbyClientID, LobbyClient>(),
-        chatMessages: [],
+        chatMessages: new ListMap(),
     }
 }
 
@@ -44,8 +44,8 @@ export function createGameState(): GameState {
 
         myId: null,
 
-        chatMessages : [],
-        graves: [],
+        chatMessages : new ListMap(),
+        graves: new ListMap(),
         players: [],
         
         phaseState: {type:"briefing"},
@@ -78,12 +78,10 @@ export function createPlayerGameState(): PlayerGameState {
 
         savedControllers: [],
 
-        will: "",
         notes: [],
         crossedOutOutlines: [],
         chatFilter: null,
         deathNote: "",
-        judgement: "abstain",
 
         fellowInsiders: [],
 
@@ -94,7 +92,7 @@ export function createPlayerGameState(): PlayerGameState {
     }
 }
 
-export function createPlayer(name: string, index: number): Player {
+export function createPlayer(name: UnsafeString, index: number): Player {
     return{
         name: name,
         index: index,

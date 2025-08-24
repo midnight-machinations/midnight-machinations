@@ -4,12 +4,12 @@ use serde::{Serialize, Deserialize};
 use crate::game::attack_power::AttackPower;
 use crate::game::event::on_midnight::{MidnightVariables, OnMidnightPriority};
 use crate::game::{attack_power::DefensePower, chat::ChatMessageVariant};
-use crate::game::grave::GraveKiller;
+use crate::game::components::graves::grave::GraveKiller;
 use crate::game::player::PlayerReference;
 
 use crate::game::Game;
 use crate::vec_map::VecMap;
-use crate::game::ability_input::*;
+use crate::game::controllers::*;
 use super::{Role, RoleStateImpl};
 
 #[derive(Clone, Debug, Serialize, Default)]
@@ -25,7 +25,7 @@ pub enum KiraGuess{
     Detective, Lookout, Tracker, Psychic, Philosopher, Gossip, Auditor, Snoop, Spy, TallyClerk,
     Doctor, Bodyguard, Cop, Bouncer, Engineer, Armorsmith, Steward,
     Vigilante, Veteran, Marksman, Deputy, Rabblerouser,
-    Escort, Medium, Retributionist, Reporter, Mayor, Transporter, Porter, Coxswain, Polymath
+    Escort, Medium, Retributionist, Reporter, Mayor, Transporter, Porter, Coxswain, Polymath, Courtesan
 }
 impl KiraGuess{
     fn convert_to_guess(role: Role)->Option<KiraGuess>{
@@ -59,6 +59,7 @@ impl KiraGuess{
             Role::Rabblerouser => Some(Self::Rabblerouser),
 
             Role::Escort => Some(Self::Escort),
+            Role::Courtesan => Some(Self::Courtesan),
             Role::Medium => Some(Self::Medium),
             Role::Retributionist => Some(Self::Retributionist),
             Role::Reporter => Some(Self::Reporter),
@@ -72,15 +73,15 @@ impl KiraGuess{
             Role::Godfather | Role::Mafioso |
             Role::Counterfeiter | Role::Recruiter | Role::Impostor | Role::MafiaKillingWildcard |
             Role::Goon |
-            Role::Hypnotist | Role::Blackmailer | Role::Informant | 
-            Role::MafiaWitch | Role::Necromancer | Role::Consort |
+            Role::Hypnotist | Role::Blackmailer | Role::Cerenovous | Role::Informant | 
+            Role::Necromancer | Role::Consort |
             Role::Mortician | Role::Framer | Role::Forger | 
             Role::Disguiser | Role::Reeducator |
             Role::Ambusher | Role::MafiaSupportWildcard => Some(Self::NonTown),
 
             //Neutral
             Role::Jester | Role::Revolutionary | Role::Politician |
-            Role::Doomsayer |
+            Role::Doomsayer | Role::Mercenary |
             Role::Witch | Role::Scarecrow | Role::Warper | Role::Kidnapper | Role::Chronokaiser |
             Role::Wildcard | Role::TrueWildcard | Role::Drunk | Role::Spiral |
             Role::SantaClaus | Role::Krampus => Some(Self::NonTown),
@@ -156,7 +157,7 @@ pub enum KiraGuessResult {
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize, Default, PartialEq, Eq, PartialOrd, Ord)]
-pub struct KiraAbilityInput(Vec<(PlayerReference, KiraGuess)>);
+pub struct KiraControllerInput(Vec<(PlayerReference, KiraGuess)>);
 
 pub(super) const MAXIMUM_COUNT: Option<u8> = None;
 pub(super) const DEFENSE: DefensePower = DefensePower::Armored;

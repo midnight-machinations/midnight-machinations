@@ -1,10 +1,11 @@
 use serde::{Deserialize, Serialize};
 
-use crate::game::{
-    ability_input::*, attack_power::DefensePower, components::{synopsis::Synopsis, tags::Tag, win_condition::WinCondition}, grave::Grave, phase::PhaseState, player::{PlayerIndex, PlayerReference}, role::{
-        auditor::AuditorResult, engineer::TrapState, kira::KiraResult, krampus::KrampusAbility, santa_claus::SantaListKind, spy::SpyBug, Role
-    }, role_list::RoleOutline, verdict::Verdict
-};
+use crate::{game::{
+    controllers::*, attack_power::DefensePower, components::{graves::grave::Grave, synopsis::Synopsis, tags::Tag, win_condition::WinCondition}, phase::PhaseState, player::{PlayerIndex, PlayerReference}, role::{
+        auditor::AuditorResult, engineer::TrapState, kira::KiraResult, krampus::KrampusAbility,
+        santa_claus::SantaListKind, Role
+    }, role_outline_reference::OutlineIndex, verdict::Verdict
+}, vec_set::VecSet};
 
 
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq, PartialOrd, Ord)]
@@ -99,7 +100,7 @@ pub enum ChatMessageVariant {
     AbilityUsed{
         player: PlayerIndex,
         ability_id: ControllerID,
-        selection: AbilitySelection
+        selection: ControllerSelection
     },
 
     #[serde(rename_all = "camelCase")]
@@ -163,12 +164,12 @@ pub enum ChatMessageVariant {
     TrackerResult{players: Vec<PlayerIndex>},
     SeerResult{enemies: bool},
     SpyMafiaVisit{players: Vec<PlayerIndex>},
-    SpyBug{bug: SpyBug},
+    SpyBug{roles: Vec<Role>},
     PsychicGood{player: PlayerReference},
     PsychicEvil{first: PlayerReference, second: PlayerReference},
     PsychicFailed,
     #[serde(rename_all = "camelCase")]
-    AuditorResult{role_outline: RoleOutline, result: AuditorResult},
+    AuditorResult{outline_index: OutlineIndex, result: AuditorResult},
     SnoopResult{townie: bool},
     PolymathSnoopResult{inno: bool},
     GossipResult{enemies: bool},
@@ -185,6 +186,7 @@ pub enum ChatMessageVariant {
     Transported,
 
     Silenced,
+    Brained,
     #[serde(rename_all = "camelCase")]
     GodfatherBackup{backup: Option<PlayerIndex>},
     #[serde(rename_all = "camelCase")]
@@ -195,8 +197,6 @@ pub enum ChatMessageVariant {
     PlayerRoleAndAlibi { player: PlayerReference, role: Role, will: String },
     #[serde(rename_all = "camelCase")]
     InformantResult{player: PlayerReference, role: Role, visited_by: Vec<PlayerIndex>, visited: Vec<PlayerIndex>},
-    #[serde(rename_all = "camelCase")]
-    FramerResult{ mafia_member: PlayerIndex, visitors: Vec<Role>},
     #[serde(rename_all = "camelCase")]
     ScarecrowResult{players: Vec<PlayerIndex>},
     #[serde(rename_all = "camelCase")]
@@ -218,6 +218,9 @@ pub enum ChatMessageVariant {
     ChronokaiserSpeedUp{percent: u32},
     DoomsayerWon,
     DoomsayerFailed,
+    MercenaryYouAreAHit,
+    MercenaryResult{hit: bool},
+    MercenaryHits{roles: VecSet<Role>},
     KiraResult{result: KiraResult},
     MartyrRevealed { martyr: PlayerIndex },
     MartyrWon,

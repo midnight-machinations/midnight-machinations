@@ -29,6 +29,10 @@
     "role/gossip/0": {
         "midnight": true
     },
+    "role/auditor/0": {
+        "midnight": true,
+        "visible": false
+    },
     "role/bouncer/0": {
         "midnight": true
     },
@@ -45,6 +49,9 @@
         "midnight": false
     },
     "role/escort/0": {
+        "midnight": true
+    },
+    "role/courtesan/0": {
         "midnight": true
     },
     "role/mayor/0": {
@@ -155,6 +162,9 @@
     "role/blackmailer/0": {
         "midnight": true
     },
+    "role/cerenovous/0": {
+        "midnight": true
+    },
     "role/consort/0": {
         "midnight": true
     },
@@ -172,6 +182,15 @@
     },
     "role/politician/0": {
         "midnight": false
+    },
+    "role/mercenary/0": {
+        "midnight": true
+    },
+    "role/mercenary/1": {
+        "midnight": true
+    },
+    "role/mercenary/2": {
+        "midnight": true
     },
     "role/santaClaus/0": {
         "midnight": true
@@ -202,6 +221,9 @@
     },
     "role/werewolf/0": {
         "midnight": true
+    },
+    "role/werewolf/1": {
+        "midnight": false
     },
     "role/puppeteer/0": {
         "midnight": true
@@ -259,5 +281,44 @@
     },
     "syndicateBackupAttack": {
         "midnight": true
+    },
+    "forwardMessage": {
+        "midnight": false,
+        "visible": false
+    },
+    "nominate": {
+        "midnight": false
+    },
+    "judge": {
+        "midnight": false,
+        "visible": false
+    },
+    "chat": {
+        "midnight": false,
+        "visible": false
+    },
+    "chatIsBlock": {
+        "midnight": false,
+        "visible": false
+    },
+    "sendChat":{
+        "midnight": false,
+        "visible": false
+    },
+    "whisper": {
+        "midnight": false,
+        "visible": false
+    },
+    "whisperToPlayer": {
+        "midnight": false,
+        "visible": false
+    },
+    "sendWhisper":{
+        "midnight": false,
+        "visible": false
+    },
+    "alibi": {
+        "midnight": false,
+        "visible": false
     }
 }

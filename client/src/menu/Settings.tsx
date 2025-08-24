@@ -9,11 +9,13 @@ import AudioController from "./AudioController";
 import CheckBox from "../components/CheckBox";
 import { DragAndDrop } from "../components/DragAndDrop";
 import { MENU_THEMES, MENU_TRANSLATION_KEYS } from "./game/GameScreen";
+import { UnsafeString } from "../game/gameState.d";
+import { encodeString } from "../components/ChatMessage";
 
 export default function SettingsMenu(): ReactElement {
     const [volume, setVolume] = useState<number>(loadSettingsParsed().volume);
     const [fontSizeState, setFontSize] = useState<number>(loadSettingsParsed().fontSize);
-    const [defaultName, setDefaultName] = useState<string | null>(loadSettingsParsed().defaultName);
+    const [defaultName, setDefaultName] = useState<UnsafeString | null>(loadSettingsParsed().defaultName);
     const [accessibilityFontEnabled, setAccessibilityFontEnabled] = useState(loadSettingsParsed().accessibilityFont);
     const [menuOrder, setMenuOrder] = useState(loadSettingsParsed().menuOrder);
     const [maxMenus, setMaxMenus] = useState(loadSettingsParsed().maxMenus);
@@ -120,7 +122,7 @@ export default function SettingsMenu(): ReactElement {
                 <section>
                     <h2>{translate("menu.settings.defaultName")}</h2>
                     <input type="text"
-                        value={defaultName===null?"":defaultName} 
+                        value={defaultName===null ? "" : encodeString(defaultName)} 
                         placeholder={translate("menu.lobby.field.namePlaceholder")}
                         onChange={(e) => {
                             const defaultName = e.target.value === "" ? null : e.target.value;

@@ -1,6 +1,7 @@
 use serde::Serialize;
 
-use crate::game::ability_input::AvailableTwoPlayerOptionSelection;
+use crate::game::controllers::AvailableTwoPlayerOptionSelection;
+use crate::game::components::aura::Aura;
 use crate::game::components::confused::Confused;
 use crate::game::components::win_condition::WinCondition;
 use crate::game::event::on_midnight::{MidnightVariables, OnMidnightPriority};
@@ -67,9 +68,9 @@ impl RoleStateImpl for Philosopher {
 }
 impl Philosopher{
     pub fn players_are_enemies_night(game: &Game, midnight_variables: &MidnightVariables, a: PlayerReference, b: PlayerReference) -> bool {
-        if a.has_suspicious_aura(game, midnight_variables) || b.has_suspicious_aura(game, midnight_variables){
+        if Aura::suspicious(game, midnight_variables, a) || Aura::suspicious(game, midnight_variables, b){
             true
-        }else if a.has_innocent_aura(game) || b.has_innocent_aura(game){
+        }else if Aura::innocent(game, a) || Aura::innocent(game, b){
             false
         }else{
             !WinCondition::are_friends(a.win_condition(game), b.win_condition(game))

@@ -9,6 +9,7 @@ import Icon from "../../components/Icon";
 import { Button } from "../../components/Button";
 import { useGameState, usePlayerState, useSpectator } from "../../components/useHooks";
 import { MobileContext } from "../Anchor";
+import { encodeString } from "../../components/ChatMessage";
 
 
 export default function HeaderMenu(props: Readonly<{
@@ -126,7 +127,7 @@ function Information(): ReactElement {
                     </div>
                 </h3>
                 {spectator || <StyledText>
-                    {myName + " (" + translate("role."+(roleState!.type)+".name") + ")"}
+                    {encodeString(myName ?? "undefined") + " (" + translate("role."+(roleState!.type)+".name") + ")"}
                 </StyledText>}
             </div>
         </div>
@@ -139,56 +140,55 @@ export function PhaseSpecificInformation(props: Readonly<{
     players: Player[],
     myIndex: number | undefined
 }>): ReactElement | null {
-    const enabledModifiers = useGameState(
-        gameState => gameState.enabledModifiers,
-        ["enabledModifiers"]
-    )!
+    const controllers = usePlayerState(
+        playerState => playerState.savedControllers,
+        ["yourAllowedControllers", "yourAllowedController"]
+    )??[];
 
     const spectator = useSpectator();
 
-    if (
-        props.phaseState.type === "testimony"
-        || props.phaseState.type === "finalWords"
-        || props.phaseState.type === "judgement"
-    ) {
-        return <div className="phase-specific">
-            <div className="highlighted">
-                <StyledText>
-                    {translate(`${props.phaseState.type}.playerOnTrial`, props.players[props.phaseState.playerOnTrial].toString())}
-                </StyledText>
-                {!spectator && props.phaseState.type === "judgement" && <div className="judgement-info">
-                    {(() => {
-                        if (props.phaseState.playerOnTrial === props.myIndex) {
-                            return translate("judgement.cannotVote.onTrial");
-                        } else if (!props.players[props.myIndex!].alive) {
-                            return translate("judgement.cannotVote.dead");
-                        } else {
-                            return (
-                                enabledModifiers.includes("abstaining") ? 
-                                    ["guilty", "abstain", "innocent"] as const :
-                                    ["guilty", "innocent"] as const 
-                                ).map((verdict) => {
-                                return <VerdictButton key={verdict} verdict={verdict}/>
-                            })
-                        }
-                    })()}
-                </div>}
-            </div>
-        </div>
-        
-    } else {
+    if(
+        props.phaseState.type !== "testimony" &&
+        props.phaseState.type !== "judgement" &&
+        props.phaseState.type !== "finalWords"
+    ){
         return null;
     }
+
+    return <div className="phase-specific">
+        <div className="highlighted">
+            <StyledText>
+                {translate(`${props.phaseState.type}.playerOnTrial`, encodeString(props.players[props.phaseState.playerOnTrial].toString()))}
+            </StyledText>
+            {(!spectator && props.phaseState.type === "judgement")?<div className="judgement-info">
+                {
+                    (props.phaseState.playerOnTrial === props.myIndex)?translate("judgement.cannotVote.onTrial"):
+                    (!props.players[props.myIndex!].alive)?translate("judgement.cannotVote.dead"):
+                    controllers.map(([id, controller])=>{
+                        if(
+                            id.type !== "judge" ||
+                            controller.parameters.available.type !== "integer" ||
+                            controller.selection.type !== "integer"
+                        ){return null;}
+                        const availableVerdicts: Verdict[] = ["innocent", "guilty"];
+                        if(2 === controller.parameters.available.selection.max){availableVerdicts.push("abstain")}
+                        const selected = controller.selection.selection;
+
+                        return <>
+                            {availableVerdicts.map((verdict, idx)=>
+                                <VerdictButton key={verdict} verdict={verdict} selected={selected === idx}/>
+                            )}
+                        </>
+                    })
+                }
+            </div>:null}
+        </div>
+    </div>
 }
 
-function VerdictButton(props: Readonly<{ verdict: Verdict }>) {
-    const judgement = usePlayerState(
-        clientState => clientState.judgement,
-        ["yourJudgement"]
-    )!
-
+function VerdictButton(props: Readonly<{ verdict: Verdict, selected: boolean }>) {
     return <Button
-        highlighted={judgement === props.verdict}
+        highlighted={props.selected}
         onClick={()=>{GAME_MANAGER.sendJudgementPacket(props.verdict)}}
     >
         <StyledText noLinks={true}>

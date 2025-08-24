@@ -1,9 +1,10 @@
 use serde::Serialize;
 
-use crate::game::ability_input::{AvailableBooleanSelection, ControllerParametersMap};
+use crate::game::controllers::{AvailableBooleanSelection, ControllerParametersMap};
 use crate::game::attack_power::AttackPower;
+use crate::game::components::graves::grave::GraveKiller;
 use crate::game::event::on_midnight::{MidnightVariables, OnMidnightPriority};
-use crate::game::{attack_power::DefensePower, grave::GraveKiller};
+use crate::game::attack_power::DefensePower;
 use crate::game::phase::PhaseType;
 use crate::game::player::PlayerReference;
 
@@ -40,7 +41,7 @@ impl RoleStateImpl for Veteran {
     type ClientRoleState = ClientRoleState;
     fn new_state(game: &Game) -> Self {
         Self{
-            alerts_remaining: game.num_players().div_ceil(5),
+            alerts_remaining: crate::game::role::common_role::standard_charges(game),
             ..Self::default()
         }
     }

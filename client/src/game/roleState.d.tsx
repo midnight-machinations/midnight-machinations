@@ -1,10 +1,10 @@
-import { PlayerIndex } from "./gameState.d"
+import { PlayerIndex, UnsafeString } from "./gameState.d"
 import { RoleSet } from "./roleListState.d"
 import ROLES from "./../resources/roles.json";
 import { ChatMessageVariant } from "../components/ChatMessage";
 import { AuditorResult } from "../menu/game/gameScreenContent/AbilityMenu/RoleSpecificMenus/AuditorMenu";
 import { Doomsayer } from "../menu/game/gameScreenContent/AbilityMenu/RoleSpecificMenus/LargeDoomsayerMenu";
-import { TwoRoleOptionSelection } from "./abilityInput";
+import { TwoRoleOptionSelection } from "./controllerInput";
 import { Hypnotist } from "../menu/game/gameScreenContent/AbilityMenu/RoleSpecificMenus/HypnotistMenu";
 
 export type RoleState = {
@@ -13,6 +13,9 @@ export type RoleState = {
     jailedTargetRef: number | null
 } | {
     type: "villager"
+} | {
+    type: "courtesan",
+    previous: PlayerIndex[]
 } | {
     type: "mayor"
 } | {
@@ -92,7 +95,7 @@ export type RoleState = {
 } | {
     type: "reporter",
     public: boolean,
-    report: string,
+    report: UnsafeString,
     interviewedTarget: PlayerIndex | null
 } | {
     type: "godfather"
@@ -116,8 +119,14 @@ export type RoleState = {
 (Hypnotist & {type: "hypnotist"})
  | {
     type: "consort"
- } | {
-    type: "blackmailer"
+} | {
+    type: "blackmailer",
+    previous: PlayerIndex | null
+} | {
+    type: "cerenovous",
+    previous: PlayerIndex | null,
+    currentlyBrained: PlayerIndex | null,
+    charges: number,
 } | {
     type: "informant",
 } | {
@@ -138,8 +147,6 @@ export type RoleState = {
 } | {
     type: "framer"
 } | {
-    type: "mafiaWitch"
-} | {
     type: "necromancer"
 } | {
     type: "mafiaSupportWildcard"
@@ -151,6 +158,11 @@ export type RoleState = {
 } | 
 Doomsayer 
 | {
+    type: "mercenary",
+    roles: Role[],
+    attacksRemaining: number,
+    won: boolean
+} | {
     type: "politician"
 } | {
     type: "santaClaus",

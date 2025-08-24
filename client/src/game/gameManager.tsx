@@ -13,6 +13,7 @@ import { createGameState, createLobbyState } from "./gameState";
 import { deleteReconnectData } from "./localStorage";
 import AudioController from "../menu/AudioController";
 import ListMap from "../ListMap";
+import { defaultAlibi } from "../menu/game/gameScreenContent/WillMenu";
 
 export function createGameManager(): GameManager {
 
@@ -362,16 +363,44 @@ export function createGameManager(): GameManager {
         },
 
         sendJudgementPacket(judgement: Verdict) {
-            this.server.sendPacket({
-                type: "judgement",
-                verdict: judgement
+            let player = undefined;
+            // if(player===undefined){
+                if(this.state.stateType==="game" && this.state.clientState.type === "player"){
+                    player = this.state.clientState.myIndex;
+                }
+            // }
+            if(player===undefined){return}
+
+            const verdictInt = judgement==="innocent"?0:judgement==="guilty"?1:2;
+
+            this.sendControllerInput({
+                id: {type:"judge",player},
+                selection: {type:"integer",selection:verdictInt}
             });
         },
 
         sendSaveWillPacket(will) {
-            this.server.sendPacket({
-                type: "saveWill",
-                will: will
+            if(will === ""){
+                will = defaultAlibi();
+            }
+
+            let player = undefined;
+            // if(player===undefined){
+                if(this.state.stateType==="game" && this.state.clientState.type === "player"){
+                    player = this.state.clientState.myIndex;
+                }
+            // }
+            if(player===undefined){return}
+
+            this.sendControllerInput({
+                id: {
+                    type: "alibi",
+                    player: player
+                }, 
+                selection: {
+                    type: "string",
+                    selection: will
+                }
             });
         },
         sendSaveNotesPacket(notes) {
@@ -392,18 +421,88 @@ export function createGameManager(): GameManager {
                 deathNote: notes.trim().length === 0 ? null : notes
             });
         },
-        sendSendChatMessagePacket(text, block) {
-            this.server.sendPacket({
-                type: "sendChatMessage",
-                text: text,
-                block: block
+        sendSendChatMessagePacket(text, block, controllingPlayer) {
+            if(controllingPlayer===undefined){
+                if(this.state.stateType==="game" && this.state.clientState.type === "player"){
+                    controllingPlayer = this.state.clientState.myIndex;
+                }
+            }
+            if(controllingPlayer===undefined){return}
+
+            this.sendControllerInput({
+                id: {
+                    type: "chatIsBlock",
+                    player: controllingPlayer
+                }, 
+                selection: {
+                    type: "boolean",
+                    selection: block
+                }
+            });
+
+            this.sendControllerInput({
+                id: {
+                    type: "chat",
+                    player: controllingPlayer
+                }, 
+                selection: {
+                    type: "string",
+                    selection: text
+                }
+            });
+
+            
+            this.sendControllerInput({
+                id: {
+                    type: "sendChat",
+                    player: controllingPlayer
+                }, 
+                selection: {
+                    type: "unit",
+                    selection: null
+                }
             });
         },
-        sendSendWhisperPacket(playerIndex, text) {
-            this.server.sendPacket({
-                type: "sendWhisper",
-                playerIndex: playerIndex,
-                text: text
+        sendSendWhisperPacket(whisperToPlayer, text, controllingPlayer) {
+            if(controllingPlayer===undefined){
+                if(this.state.stateType==="game" && this.state.clientState.type === "player"){
+                    controllingPlayer = this.state.clientState.myIndex;
+                }
+            }
+            if(controllingPlayer===undefined){return}
+
+            this.sendControllerInput({
+                id: {
+                    type: "whisperToPlayer",
+                    player: controllingPlayer
+                }, 
+                selection: {
+                    type: "playerList",
+                    selection: [whisperToPlayer]
+                }
+            });
+
+            this.sendControllerInput({
+                id: {
+                    type: "whisper",
+                    player: controllingPlayer
+                }, 
+                selection: {
+                    type: "string",
+                    selection: text
+                }
+            });
+
+            
+            this.sendControllerInput({
+                id: {
+                    type: "sendWhisper",
+                    player: controllingPlayer
+                }, 
+                selection: {
+                    type: "unit",
+                    selection: null
+                }
             });
         },
         sendEnabledRolesPacket(roles) {
@@ -419,10 +518,10 @@ export function createGameManager(): GameManager {
             });
         },
 
-        sendAbilityInput(input) {
+        sendControllerInput(input) {
             this.server.sendPacket({
-                type: "abilityInput",
-                abilityInput: input
+                type: "controllerInput",
+                controllerInput: input
             });
         },
         sendSetDoomsayerGuess(guesses) {

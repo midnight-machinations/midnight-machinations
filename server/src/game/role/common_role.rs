@@ -1,7 +1,7 @@
 use std::collections::HashSet;
 
 use crate::game::{
-    ability_input::*,
+    controllers::*,
     chat::ChatGroup,
     components::{
         detained::Detained,
@@ -17,6 +17,11 @@ use crate::game::{
 use super::{medium::Medium, reporter::Reporter, warden::Warden, InsiderGroupID, Role, RoleState};
 
 
+pub(super) fn standard_charges(game: &Game)->u8{
+    game.num_players().div_ceil(5)
+}
+
+
 /// This function uses defaults. When using this function, consider if you need to override the defaults.
 /// Defaults to VisitTag::Role { role: actor_ref.role(game), id: 0 }
 pub(super) fn convert_controller_selection_to_visits(game: &Game, actor_ref: PlayerReference, controller_id: ControllerID, attack: bool) -> Vec<Visit> {
@@ -28,21 +33,21 @@ pub(super) fn convert_controller_selection_to_visits_visit_tag(game: &Game, acto
     let Some(selection) = controller_id.get_selection(game) else {return Vec::new()};
 
     match selection {
-        AbilitySelection::Unit(_) => vec![Visit::new(actor_ref, actor_ref, attack, tag)],
-        AbilitySelection::TwoPlayerOption(selection) => {
+        ControllerSelection::Unit(_) => vec![Visit::new(actor_ref, actor_ref, attack, tag)],
+        ControllerSelection::TwoPlayerOption(selection) => {
             if let Some((target_1, target_2)) = selection.0 {
                 vec![Visit::new(actor_ref, target_1, attack, tag), Visit::new(actor_ref, target_2, attack, tag)]
             }else{
                 vec![]
             }
         },
-        AbilitySelection::PlayerList(selection) => {
+        ControllerSelection::PlayerList(selection) => {
             selection.0
                 .iter()
                 .map(|target_ref| Visit::new(actor_ref, *target_ref, attack, tag))
                 .collect()
         }
-        AbilitySelection::RoleList(selection) => {
+        ControllerSelection::RoleList(selection) => {
             selection.0
                 .iter()
                 .flat_map(|role|
@@ -57,7 +62,7 @@ pub(super) fn convert_controller_selection_to_visits_visit_tag(game: &Game, acto
                 )
                 .collect()
         }
-        AbilitySelection::TwoRoleOption(selection) => {
+        ControllerSelection::TwoRoleOption(selection) => {
             let mut out = Vec::new();
             for player in PlayerReference::all_players(game){
                 if Some(player.role(game)) == selection.0 {
@@ -69,7 +74,7 @@ pub(super) fn convert_controller_selection_to_visits_visit_tag(game: &Game, acto
             }
             out
         }
-        AbilitySelection::TwoRoleOutlineOption(selection) => {
+        ControllerSelection::TwoRoleOutlineOption(selection) => {
             let mut out = vec![];
             if let Some(chosen_outline) = selection.0{
                 let (_, player) = chosen_outline.deref_as_role_and_player_originally_generated(game);
@@ -88,9 +93,12 @@ pub(super) fn convert_controller_selection_to_visits_visit_tag(game: &Game, acto
 pub(super) fn convert_controller_selection_to_visits_possession(game: &Game, actor_ref: PlayerReference, controller_id: ControllerID) -> Vec<Visit> {
     let Some(selection) = controller_id.get_selection(game) else {return Vec::new()};
 
-    if let AbilitySelection::TwoPlayerOption(selection) = selection {
+    if let ControllerSelection::TwoPlayerOption(selection) = selection {
         if let Some((target_1, target_2)) = selection.0 {
-            vec![Visit::new(actor_ref, target_1, false, VisitTag::Role { role: actor_ref.role(game), id: 0 }), Visit::new(actor_ref, target_2, false, VisitTag::Role { role: actor_ref.role(game), id: 1 })]
+            vec![
+                Visit::new(actor_ref, target_1, false, VisitTag::Role { role: actor_ref.role(game), id: 0 }),
+                Visit::new(actor_ref, target_2, false, VisitTag::Role { role: actor_ref.role(game), id: 1 })
+            ]
         }else{
             vec![]
         }

@@ -128,16 +128,11 @@
         "canWriteDeathNote": false,
         "canBeConvertedTo": [],
         "chatMessages":[
-            {"type": "spyBug", "bug": "silenced"},
-            {"type": "spyBug", "bug": "roleblocked"},
-            {"type": "spyBug", "bug": "protected"},
-            {"type": "spyBug", "bug": "transported"},
-            {"type": "spyBug", "bug": "possessed"},
-            {"type": "spyBug", "bug": "wardblocked"},
+            {"type": "spyBug", "roles": []},
+            {"type": "spyBug", "roles": ["framer"]},
+            {"type": "spyBug", "roles": ["informant", "hypnotist"]},
             {"type": "spyMafiaVisit", "players": [16,17,18,16]},
-            {"type": "spyMafiaVisit", "players": []},
-            {"type": "cultConvertsNext"},
-            {"type": "cultKillsNext"}
+            {"type": "spyMafiaVisit", "players": []}
         ]
     },
     "auditor": {
@@ -149,10 +144,10 @@
         "canWriteDeathNote": false,
         "canBeConvertedTo": [],
         "chatMessages":[
-            {"type": "auditorResult", "roleOutline":[{"roleSet": "any"}],"result": ["godfather","jester","apostle","escort"]},
-            {"type": "auditorResult", "roleOutline":[{"role":"vigilante"},{"role":"marksman"}],"result": ["vigilante"]},
-            {"type": "auditorResult", "roleOutline":[{"role":"arsonist"}],"result": ["arsonist"]},
-            {"type": "auditorResult", "roleOutline":[{"roleSet":"townSupport"}],"result": ["escort","medium","coxswain"]}
+            {"type": "auditorResult", "outlineIndex": 15, "result": ["godfather","jester","apostle","escort"]},
+            {"type": "auditorResult", "outlineIndex": 10, "result": ["vigilante"]},
+            {"type": "auditorResult", "outlineIndex": 4, "result": ["arsonist"]},
+            {"type": "auditorResult", "outlineIndex": 11, "result": ["escort","medium","coxswain"]}
         ]
     },
     "snoop": {
@@ -332,7 +327,7 @@
         "roleSets": ["town", "townCommon", "townKilling"],
         "armor": false,
         "aura": null,
-        "maxCount": null,
+        "maxCount": 1,
         "canWriteDeathNote": false,
         "canBeConvertedTo": [],
         "chatMessages":[
@@ -377,8 +372,19 @@
         "canWriteDeathNote": false,
         "canBeConvertedTo": [],
         "chatMessages":[
-            {"type": "roleBlocked", "immune": true},
-            {"type": "roleBlocked", "immune": false}
+            {"type": "roleBlocked"}
+        ]
+    },
+    "courtesan": {
+        "mainRoleSet": "town",
+        "roleSets": ["town", "townCommon", "townSupport"],
+        "armor": false,
+        "aura": null,
+        "maxCount": null,
+        "canWriteDeathNote": false,
+        "canBeConvertedTo": [],
+        "chatMessages":[
+            {"type": "roleBlocked"}
         ]
     },
     "medium": {
@@ -635,8 +641,7 @@
         "canWriteDeathNote": false,
         "canBeConvertedTo": ["godfather"],
         "chatMessages":[
-            {"type": "roleBlocked","immune": true},
-            {"type": "roleBlocked","immune": false},
+            {"type": "roleBlocked"},
             {"type": "youSurvivedAttack"},
             {"type": "youWereGuarded"},
             {"type": "transported"},
@@ -654,8 +659,7 @@
         "canWriteDeathNote": false,
         "canBeConvertedTo": ["godfather"],
         "chatMessages":[
-            {"type": "roleBlocked", "immune": true},
-            {"type": "roleBlocked", "immune": false}
+            {"type": "roleBlocked"}
         ]
     },
     "blackmailer": {
@@ -668,6 +672,18 @@
         "canBeConvertedTo": ["godfather"],
         "chatMessages":[
             {"type":"silenced"}
+        ]
+    },
+    "cerenovous": {
+        "mainRoleSet": "mafia",
+        "roleSets": ["mafia", "mafiaSupport"],
+        "armor": false,
+        "aura": null,
+        "maxCount": 1,
+        "canWriteDeathNote": false,
+        "canBeConvertedTo": ["godfather"],
+        "chatMessages":[
+            {"type":"brained"}
         ]
     },
     "informant": {
@@ -709,9 +725,6 @@
         "canWriteDeathNote": false,
         "canBeConvertedTo": ["godfather"],
         "chatMessages":[
-            {"type": "framerResult", "mafiaMember": 1, "visitors": ["gossip", "detective"]},
-            {"type": "framerResult", "mafiaMember": 4, "visitors": ["doctor"]},
-            {"type": "framerResult", "mafiaMember": 20, "visitors": []},
             {"type": "sheriffResult","suspicious": true},
             {"type": "snoopResult", "townie": false},
             {"type": "seerResult", "enemies": true}
@@ -721,18 +734,11 @@
         "mainRoleSet": "mafia",
         "roleSets": ["mafia", "mafiaSupport"],
         "armor": false,
-        "aura": null,
+        "aura": "innocent",
         "maxCount": 1,
         "canWriteDeathNote": false,
         "canBeConvertedTo": ["godfather"],
-        "chatMessages":[
-            {
-                "type": "playerRoleAndAlibi",
-                "player":14,
-                "role":"hypnotist",
-                "will":"Philosopher\nN1: @1 and @2 are enemies"
-            }
-        ]
+        "chatMessages":[]
     },
     "reeducator": {
         "mainRoleSet": "mafia",
@@ -742,7 +748,10 @@
         "maxCount": 1,
         "canWriteDeathNote": false,
         "canBeConvertedTo": ["godfather"],
-        "chatMessages":[]
+        "chatMessages":[
+            {"type": "yourConvertFailed"},
+            {"type": "roleBlocked"}
+        ]
     },
     "forger": {
         "mainRoleSet": "mafia",
@@ -759,24 +768,6 @@
                 "role": "jailor",
                 "will": "I am very confident in my doctors ability to protect me, especially because he knows there could be a forger in the game."
             }
-        ]
-    },
-    "mafiaWitch": {
-        "mainRoleSet": "mafia",
-        "roleSets": ["mafia", "mafiaSupport"],
-        "armor": false,
-        "aura": null,
-        "maxCount": 1,
-        "canWriteDeathNote": false,
-        "canBeConvertedTo": ["godfather"],
-        "chatMessages":[
-            {"type": "targetsMessage", "message": 
-                {"type": "sheriffResult","suspicious":true}
-            },
-            {"type": "targetHasRole", "role":"detective"},
-            {"type": "targetIsPossessionImmune"},
-            {"type": "youWerePossessed", "immune": false},
-            {"type": "youWerePossessed", "immune": true}
         ]
     },
     "necromancer": {
@@ -874,6 +865,22 @@
         "chatMessages":[
             {"type": "doomsayerWon"},
             {"type": "doomsayerFailed"}
+        ]
+    },
+    "mercenary":{
+        "mainRoleSet": "neutral",
+        "roleSets": ["neutral"],
+        "armor": false,
+        "aura": null,
+        "maxCount": null,
+        "canWriteDeathNote": true,
+        "canBeConvertedTo": [],
+        "chatMessages":[
+            {"type": "mercenaryHits", "roles":["vigilante", "godfather", "witch"]},
+            {"type": "mercenaryHits", "roles":["informant", "arsonist"]},
+            {"type": "mercenaryResult", "hit":true},
+            {"type": "mercenaryResult", "hit":false},
+            {"type": "mercenaryYouAreAHit"}
         ]
     },
     "chronokaiser": {
@@ -1248,8 +1255,7 @@
             {"type": "wardenPlayersImprisoned", "players": [5,2,10]},
             {"type": "youAttackedSomeone"},
             {"type": "someoneSurvivedYourAttack"},
-            {"type": "roleBlocked", "immune": true},
-            {"type": "roleBlocked", "immune": false},
+            {"type": "roleBlocked"},
             {"type": "wardblocked"}
         ]
     },

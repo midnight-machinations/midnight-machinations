@@ -18,6 +18,19 @@
     text-indent: 0;
     text-align: center !important;
 }
+.keyword-outline-number {
+	border-radius: 0.5em;
+    border: solid .13rem;
+    border-bottom-color: darkgray;
+    border-right-color: darkgray;
+    background-color: var(--primary-color);
+    display: inline-block;
+    height: 1em;
+    padding: 0.1em 0.35em 1.2em;
+    font-size: 0.8em;
+    text-indent: 0;
+    text-align: center !important;
+}
 .keyword-player-sender {
     color: rgb(168, 168, 168);
     font-style: italic; 
@@ -32,6 +45,10 @@
     color: whitesmoke;
     font-style: italic; 
     font-weight: bold;
+}
+.keyword-outline.keyword-outline {
+    display: inline;
+    line-height: 1.75em;
 }
 .keyword-evil {
     color: red;

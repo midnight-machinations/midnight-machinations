@@ -25,6 +25,18 @@ impl Visit {
             tag,
         }
     }
+    pub fn wardblock_immune(&self)->bool{
+        matches!(self.tag, 
+            VisitTag::Role { role: Role::Bouncer, id: 0 } |
+            VisitTag::Role { role: Role::Scarecrow, id: 0 } |
+
+            VisitTag::Role { role: Role::Witch, id: 1 } |
+            VisitTag::Role { role: Role::Necromancer, id: 1 } |
+            VisitTag::Role { role: Role::Retributionist, id: 1 } |
+            
+            VisitTag::Role { role: Role::Framer, id: 1 }
+        )
+    }
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]

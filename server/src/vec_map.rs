@@ -1,3 +1,4 @@
+use rand::{seq::SliceRandom, Rng};
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Debug)]
@@ -46,7 +47,9 @@ impl<K, V> VecMap<K, V> where K: Eq {
     /// This function is unsafe because it does not check if the key exists in the map
     /// and will panic if the key does not exist
     pub unsafe fn get_unchecked_mut(&mut self, key: &K) -> &mut V {
-        self.get_unchecked_kvp_mut(key).1
+        unsafe {
+            self.get_unchecked_kvp_mut(key).1
+        }
     }
 
     pub fn get_kvp(&self, key: &K) -> Option<(&K, &V)> {
@@ -130,6 +133,10 @@ impl<K, V> VecMap<K, V> where K: Eq {
 
     pub fn contains(&self, key: &K) -> bool {
         self.vec.iter().any(|(k, _)| k == key)
+    }
+
+    pub fn shuffle<R: Rng + ?Sized>(&mut self, rng: &mut R){
+        self.vec.shuffle(rng);
     }
 }
 

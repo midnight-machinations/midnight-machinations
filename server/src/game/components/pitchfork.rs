@@ -1,6 +1,6 @@
 use crate::{
     game::{
-        ability_input::*, attack_power::AttackPower, event::on_midnight::{MidnightVariables, OnMidnight, OnMidnightPriority}, game_conclusion::GameConclusion, grave::GraveKiller, phase::PhaseType, player::PlayerReference, role::Role, role_list::RoleSet, Game
+        controllers::*, attack_power::AttackPower, components::graves::grave::GraveKiller, event::on_midnight::{MidnightVariables, OnMidnight, OnMidnightPriority}, game_conclusion::GameConclusion, phase::PhaseType, player::PlayerReference, role::Role, role_list::RoleSet, Game
     },
     vec_map::VecMap, vec_set::VecSet
 };
@@ -72,10 +72,8 @@ impl Pitchfork{
     pub fn before_phase_end(game: &mut Game, phase: PhaseType){
         if phase == PhaseType::Night {
             Pitchfork::set_angry_mobbed_player(game, None);
-            if Pitchfork::pitchfork_uses_remaining(game) > 0 {
-                if let Some(target) = Pitchfork::player_is_voted(game){
-                    Pitchfork::set_angry_mobbed_player(game, Some(target));
-                }
+            if Pitchfork::pitchfork_uses_remaining(game) > 0 && let Some(target) = Pitchfork::player_is_voted(game){
+                Pitchfork::set_angry_mobbed_player(game, Some(target));
             }
         }
     }

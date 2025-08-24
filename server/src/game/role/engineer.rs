@@ -1,10 +1,10 @@
 use serde::{Deserialize, Serialize};
 
-use crate::game::ability_input::AvailableBooleanSelection;
+use crate::game::controllers::AvailableBooleanSelection;
 use crate::game::attack_power::AttackPower;
 use crate::game::components::night_visits::NightVisits;
 use crate::game::event::on_midnight::{MidnightVariables, OnMidnightPriority};
-use crate::game::grave::GraveKiller;
+use crate::game::components::graves::grave::GraveKiller;
 use crate::game::{attack_power::DefensePower, chat::ChatMessageVariant};
 use crate::game::phase::PhaseType;
 use crate::game::player::PlayerReference;

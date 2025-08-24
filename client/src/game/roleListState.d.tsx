@@ -1,5 +1,6 @@
 
-import { Conclusion, InsiderGroup, translateWinCondition } from "./gameState.d";
+import { encodeString } from "../components/ChatMessage";
+import { Conclusion, InsiderGroup, PlayerIndex, translateWinCondition, UnsafeString } from "./gameState.d";
 import translate from "./lang";
 import { Role, roleJsonData } from "./roleState.d";
 
@@ -53,6 +54,7 @@ export type RoleOutlineOption = ({
 }) & {
     winIfAny?: Conclusion[],
     insiderGroups?: InsiderGroup[]
+    playerPool?: PlayerIndex[]
 }
 
 export type RoleOrRoleSet = ({
@@ -66,21 +68,37 @@ export type RoleOrRoleSet = ({
 
 
 
-export function translateRoleOutline(roleOutline: RoleOutline): string {
-    return roleOutline.map(translateRoleOutlineOption).join(" "+translate("union")+" ")
+export function translateRoleOutline(roleOutline: RoleOutline, playerNames: UnsafeString[]): string {
+    return roleOutline.map(outline => translateRoleOutlineOption(outline, playerNames)).join(" "+translate("union:var.0")+" ")
 }
-export function translateRoleOutlineOption(roleOutlineOption: RoleOutlineOption): string {
+
+export function translatePlayerPool(playerPool: PlayerIndex[], playerNames: UnsafeString[]): string {
+    let out = '';
+    if (playerPool.length === 0) {
+        out += translate("nobody");
+    }
+    out += playerPool
+        .map(playerNumber => encodeString(playerNames.at(playerNumber) ?? translate("player.unknown", playerNumber)))
+        .join(' ' + translate("union") + ' ')
+    return out;
+}
+
+export function translateRoleOutlineOption(roleOutlineOption: RoleOutlineOption, playerNames: UnsafeString[]): string {
     let out = "";
+    if (roleOutlineOption.playerPool) {
+        out += translatePlayerPool(roleOutlineOption.playerPool, playerNames) + ': ';
+    }
     if (roleOutlineOption.insiderGroups) {
         if (roleOutlineOption.insiderGroups.length === 0) {
             out += translate("chatGroup.all.icon")
         }
-        for (const insiderGroup of roleOutlineOption.insiderGroups) {
-            out += translate(`chatGroup.${insiderGroup}.icon`) + ' '
-        }
+        out += roleOutlineOption.insiderGroups
+            .map(insiderGroup => translate(`chatGroup.${insiderGroup}.icon`))
+            .join(' ' + translate("union") + ' ');
+        out += ', '
     }
     if (roleOutlineOption.winIfAny) {
-        out += `${translateWinCondition({ type: "gameConclusionReached", winIfAny: roleOutlineOption.winIfAny })} `
+        out += `${translateWinCondition({ type: "gameConclusionReached", winIfAny: roleOutlineOption.winIfAny })}, `;
     }
     if ("roleSet" in roleOutlineOption) {
         out += translate(roleOutlineOption.roleSet)

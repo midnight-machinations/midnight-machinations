@@ -4,6 +4,7 @@ import translate from "../../game/lang";
 import Icon from "../../components/Icon";
 import { useLobbyState } from "../../components/useHooks";
 import { Button } from "../../components/Button";
+import { encodeString } from "../../components/ChatMessage";
 
 
 
@@ -54,7 +55,8 @@ function NameSelector(): ReactElement {
 
     return <div className="name-pane-selector">
         <div className="lobby-name">
-            <section><h2>{myName ?? ""}</h2></section>
+            {/* This might be a little crazy */}
+            <section><h2 dangerouslySetInnerHTML={{ __html: encodeString(myName ?? "") }} /></section>
         </div>
         <div className="name-box">
             <input type="text" value={enteredName}

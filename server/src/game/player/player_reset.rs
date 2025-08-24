@@ -1,5 +1,5 @@
 use std::time::Duration;
-use crate::{client_connection::ClientConnection, game::{modifiers::{ModifierType, Modifiers}, phase::PhaseType, verdict::Verdict, Game}};
+use crate::{client_connection::ClientConnection, game::{phase::PhaseType, Game}};
 use super::PlayerReference;
 
 
@@ -22,28 +22,6 @@ impl PlayerReference{
     }
 
     pub fn on_phase_start(&self, game: &mut Game, phase: PhaseType){
-        match phase {
-            PhaseType::Briefing => {},
-            PhaseType::Obituary => {},
-            PhaseType::Discussion => {},
-            PhaseType::Nomination => {
-                self.set_verdict(
-                    game, 
-                    if Modifiers::is_enabled(game, ModifierType::Abstaining) {
-                        Verdict::Abstain
-                    } else {
-                        Verdict::Innocent
-                    }
-                );
-            },
-            PhaseType::Testimony => {},
-            PhaseType::Judgement => {},
-            PhaseType::FinalWords => {},
-            PhaseType::Dusk => {},
-            PhaseType::Night => {},
-            PhaseType::Recess => {}
-        }
-
         self.set_fast_forward_vote(game, false);
         self.role_state(game).clone().on_phase_start(game, *self, phase)
     }

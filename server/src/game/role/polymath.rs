@@ -1,10 +1,10 @@
 use serde::Serialize;
 
-use crate::game::ability_input::{AvailableIntegerSelection, AvailableTwoPlayerOptionSelection, IntegerSelection, PlayerListSelection};
+use crate::game::controllers::{AvailableIntegerSelection, AvailableTwoPlayerOptionSelection, IntegerSelection, PlayerListSelection};
 use crate::game::attack_power::AttackPower;
 use crate::game::components::transport::{Transport, TransportPriority};
 use crate::game::event::on_midnight::{MidnightVariables, OnMidnightPriority};
-use crate::game::grave::GraveKiller;
+use crate::game::components::graves::grave::GraveKiller;
 use crate::game::{attack_power::DefensePower, chat::ChatMessageVariant};
 use crate::game::player::PlayerReference;
 
@@ -117,13 +117,17 @@ impl RoleStateImpl for Polymath {
             PolymathAbilityType::Support => ctrl.combine_overwrite(
                 ControllerParametersMap::builder(game)
                 .id(ControllerID::role(actor_ref, Role::Polymath, 3))
-                .available_selection(AvailableTwoPlayerOptionSelection::same_players(
-                    PlayerReference::all_players(game)
+                .available_selection(AvailableTwoPlayerOptionSelection{
+                    available_first_players: PlayerReference::all_players(game)
                         .filter(|p|p.alive(game))
-                        .collect(), 
-                    false, 
-                    true
-                )).night_typical(actor_ref)
+                        .filter(|p|*p != actor_ref)
+                        .collect(),
+                    available_second_players:PlayerReference::all_players(game)
+                        .filter(|p|p.alive(game))
+                        .collect(),
+                    can_choose_duplicates: false, 
+                    can_choose_none: true
+                }).night_typical(actor_ref)
                 .add_grayed_out_condition(false)
                 .build_map()
             ),
@@ -139,7 +143,7 @@ impl RoleStateImpl for Polymath {
                 ctrl.combine_overwrite( //
                     ControllerParametersMap::builder(game)
                     .id(ControllerID::role(actor_ref, Role::Polymath, 5))
-                    .single_player_selection_typical(actor_ref, true, true)
+                    .single_player_selection_typical(actor_ref, false, true)
                     .night_typical(actor_ref)
                     .add_grayed_out_condition(game.day_number() == 1)
                     .build_map()

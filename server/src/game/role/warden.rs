@@ -1,10 +1,10 @@
 use serde::Serialize;
-use crate::game::ability_input::{AvailableBooleanSelection, AvailablePlayerListSelection};
+use crate::game::controllers::{AvailableBooleanSelection, AvailablePlayerListSelection};
 use crate::game::components::insider_group::InsiderGroupID;
 use crate::game::event::on_midnight::{MidnightVariables, OnMidnightPriority};
 use crate::{game::attack_power::AttackPower, vec_set::VecSet};
 use crate::game::chat::ChatMessageVariant;
-use crate::game::grave::GraveKiller;
+use crate::game::components::graves::grave::GraveKiller;
 use crate::game::phase::PhaseType;
 use crate::game::attack_power::DefensePower;
 use crate::game::player::PlayerReference;

@@ -1,14 +1,11 @@
 use serde::Serialize;
-
 use crate::game::components::tags::{TagSetID, Tags};
-use crate::game::ability_input::AvailablePlayerListSelection;
+use crate::game::controllers::AvailablePlayerListSelection;
 use crate::game::event::on_midnight::{MidnightVariables, OnMidnightPriority};
-use crate::game::role_list::RoleSet;
 use crate::game::{attack_power::DefensePower, player::PlayerReference};
-
 use crate::game::visit::{Visit, VisitTag};
-
 use crate::game::Game;
+use crate::vec_set::vec_set;
 use super::{ControllerID, ControllerParametersMap, Role, RoleStateImpl};
 
 
@@ -23,21 +20,37 @@ impl RoleStateImpl for Framer {
     fn on_midnight(self, game: &mut Game, midnight_variables: &mut MidnightVariables, actor_ref: PlayerReference, priority: OnMidnightPriority) {
         match priority {
             OnMidnightPriority::Deception => {
-                let framer_visits = actor_ref.untagged_night_visits_cloned(midnight_variables).clone();
+                let framer_visits = actor_ref.untagged_night_visits_cloned(midnight_variables);
 
                 let Some(first_visit) = framer_visits.first() else {return};
 
-                Tags::add_tag(game, TagSetID::Framer(actor_ref), first_visit.target);
-
+                first_visit.target.set_night_framed(midnight_variables, true);
                 for framed_target in Tags::tagged(game, TagSetID::Framer(actor_ref)){
                     framed_target.set_night_framed(midnight_variables, true);
                 }
 
-                let Some(second_visit) = framer_visits.get(1) else {return};
-            
-                first_visit.target.set_night_appeared_visits(midnight_variables, Some(vec![
-                    Visit::new_role(first_visit.target, second_visit.target, false, first_visit.target.role(game), 0)
-                ]));
+                Tags::set_tagged(game, TagSetID::Framer(actor_ref), &vec_set![first_visit.target]);
+
+                let other_visits: Vec<Visit> = framer_visits
+                    .iter()
+                    .filter(|v|v.tag == VisitTag::Role { role: Role::Framer, id: 1 })
+                    .map(|v|Visit::new_role(
+                        first_visit.target,
+                        v.target,
+                        false,
+                        first_visit.target.role(game),
+                        0
+                    ))
+                    .collect();
+
+                if !other_visits.is_empty() {
+                    first_visit
+                        .target
+                        .set_night_appeared_visits(
+                            midnight_variables,
+                            Some(other_visits)
+                        );
+                }
 
                 actor_ref.set_night_visits(
                     midnight_variables,
@@ -45,20 +58,6 @@ impl RoleStateImpl for Framer {
                         .into_iter()
                         .filter(|v|v.tag!=VisitTag::Role { role: Role::Framer, id: 1 })
                         .collect::<Vec<_>>()
-                );
-            },
-            OnMidnightPriority::Investigative => {
-                Tags::set_tagged(
-                    game,
-                    TagSetID::Framer(actor_ref),
-                    &Tags::tagged(game, TagSetID::Framer(actor_ref))
-                        .into_iter()
-                        .filter(|p|
-                            !p.all_night_visitors_cloned(midnight_variables).iter().any(|visitor| {
-                                RoleSet::TownInvestigative.get_roles().contains(&visitor.role(game))
-                            })
-                        )
-                        .collect()
                 );
             },
             _ => {}
@@ -76,7 +75,7 @@ impl RoleStateImpl for Framer {
                 .available_selection(AvailablePlayerListSelection {
                     available_players: PlayerReference::all_players(game).collect(),
                     can_choose_duplicates: false,
-                    max_players: Some(1)
+                    max_players: None
                 })
                 .night_typical(actor_ref)
                 .add_grayed_out_condition(

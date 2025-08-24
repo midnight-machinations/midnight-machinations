@@ -2,7 +2,7 @@ use std::iter::once;
 use serde::{Deserialize, Serialize};
 use crate::game::components::confused::Confused;
 use crate::game::role_outline_reference::RoleOutlineReference;
-use crate::game::ability_input::*;
+use crate::game::controllers::*;
 use crate::game::{attack_power::DefensePower, chat::ChatMessageVariant};
 use crate::game::player::PlayerReference;
 use crate::game::visit::Visit;
@@ -39,7 +39,7 @@ impl RoleStateImpl for Auditor {
         if let Some(chosen_outline) = first{
             let result = Self::get_result(game, chosen_outline, Confused::is_confused(game, actor_ref));
             actor_ref.push_night_message(midnight_variables, ChatMessageVariant::AuditorResult {
-                role_outline: chosen_outline.deref(game).clone(),
+                outline_index: chosen_outline.index(),
                 result: result.clone(),
             });
 
@@ -49,7 +49,7 @@ impl RoleStateImpl for Auditor {
         if let Some(chosen_outline) = second{
             let result = Self::get_result(game, chosen_outline, Confused::is_confused(game, actor_ref));
             actor_ref.push_night_message(midnight_variables, ChatMessageVariant::AuditorResult {
-                role_outline: chosen_outline.deref(game).clone(),
+                outline_index: chosen_outline.index(),
                 result: result.clone()
             });
 
@@ -88,9 +88,8 @@ impl Auditor{
         let outline = chosen_outline.deref(game);
 
         let mut all_possible_fake_roles = outline
-            .get_role_assignments()
+            .get_all_roles()
             .into_iter()
-            .map(|data| data.role())
             .filter(|x|game.settings.enabled_roles.contains(x))
             .collect::<Vec<Role>>();
         all_possible_fake_roles.shuffle(&mut rand::rng());

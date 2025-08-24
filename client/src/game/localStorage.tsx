@@ -5,6 +5,7 @@ import { Role } from "./roleState.d";
 import parseFromJson from "../components/gameModeSettings/gameMode/dataFixer";
 import { ContentMenu } from "../menu/game/GameScreen";
 import { ParseResult, Success } from "../components/gameModeSettings/gameMode/parse";
+import { UnsafeString } from "./gameState.d";
 
 
 export function saveReconnectData(roomCode: number, playerId: number) {
@@ -50,7 +51,7 @@ export type Settings = {
     volume: number;
     fontSize: number;
     accessibilityFont: boolean;
-    defaultName: string | null;
+    defaultName: UnsafeString | null;
     language: Language;
     maxMenus: number;
     menuOrder: ContentMenu[]
@@ -77,7 +78,7 @@ export function getDefaultSettings(): Readonly<Settings> {
         accessibilityFont: false,
         language: "en_us",
         defaultName: null,
-        maxMenus: window.innerWidth < 600 ? 1 : 6,
+        maxMenus: window.innerWidth < 600 ? 1 : 3,
         menuOrder: [
             ContentMenu.WikiMenu, 
             ContentMenu.GraveyardMenu, 

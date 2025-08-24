@@ -1,17 +1,19 @@
 use crate::{
     game::{
-        ability_input::*,
-        phase::PhaseType, player::PlayerReference, role::Role, Game
+        controllers::*, modifiers::{ModifierType, Modifiers},
+        phase::PhaseType, player::PlayerReference, Game
     },
-    vec_set::{vec_set, VecSet}
+    vec_set::VecSet
 };
 
-use super::{silenced::Silenced, tags::{TagSetID, Tags}};
+use super::tags::{TagSetID, Tags};
 
-pub struct ForfeitVote;
-impl ForfeitVote{
+pub struct ForfeitNominationVote;
+impl ForfeitNominationVote{
     pub fn controller_parameters_map(game: &Game)->ControllerParametersMap {
-        if !game.settings.enabled_roles.contains(&Role::Blackmailer) {
+        if
+            !Modifiers::is_enabled(game, ModifierType::ForfeitNominationVote)
+        {
             return ControllerParametersMap::default();
         }
 
@@ -23,7 +25,7 @@ impl ForfeitVote{
                         .available_selection(AvailableBooleanSelection)
                         .add_grayed_out_condition(!player.alive(game) || game.current_phase().phase() != PhaseType::Discussion)
                         .reset_on_phase_start(PhaseType::Obituary)
-                        .allow_players(vec_set![player])
+                        .allow_players([player])
                         .build_map()
                 )
         )
@@ -34,27 +36,32 @@ impl ForfeitVote{
         match phase {
             PhaseType::Nomination => {
                 for player in PlayerReference::all_players(game){
-                    let choose_forfeit = matches!(ControllerID::forfeit_vote(player).get_boolean_selection(game),Some(BooleanSelection(true)));
                     if 
-                        (Silenced::silenced(game, player) || choose_forfeit) &&
-                        player.alive(game)
+                        Self::player_chose_forfeit(game, player) && player.alive(game)
                     {
-                        Tags::add_tag(game, TagSetID::ForfeitVote, player);
+                        Tags::add_tag(game, TagSetID::ForfeitNominationVote, player);
                     }
                 }
             },
             PhaseType::Dusk => {
-                Tags::set_tagged(game, TagSetID::ForfeitVote, &VecSet::new());
+                Tags::set_tagged(game, TagSetID::ForfeitNominationVote, &VecSet::new());
             },
             _ => {}
         }
     }
 
     pub fn on_game_start(game: &mut Game){
-        Tags::set_viewers(game, TagSetID::ForfeitVote, &PlayerReference::all_players(game).collect());
+        Tags::set_viewers(game, TagSetID::ForfeitNominationVote, &PlayerReference::all_players(game).collect());
     }
 
     pub fn forfeited_vote(game: &Game, player: PlayerReference)->bool{
-        Tags::has_tag(game, TagSetID::ForfeitVote, player)
+        Tags::has_tag(game, TagSetID::ForfeitNominationVote, player)
+    }
+
+    fn player_chose_forfeit(game: &Game, player: PlayerReference)->bool{
+        matches!(
+            ControllerID::forfeit_vote(player).get_boolean_selection(game),
+            Some(BooleanSelection(true))
+        )
     }
 }

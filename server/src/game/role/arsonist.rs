@@ -3,7 +3,7 @@ use serde::Serialize;
 use crate::game::event::on_midnight::{MidnightVariables, OnMidnightPriority};
 use crate::game::attack_power::AttackPower;
 use crate::game::components::tags::{TagSetID, Tags};
-use crate::game::grave::GraveKiller;
+use crate::game::components::graves::grave::GraveKiller;
 use crate::game::attack_power::DefensePower;
 use crate::game::player::PlayerReference;
 
@@ -45,10 +45,8 @@ impl RoleStateImpl for Arsonist {
                 if game.day_number() <= 1 {return};
 
                 let actor_visits = actor_ref.untagged_night_visits_cloned(midnight_variables);             
-                if let Some(visit) = actor_visits.first(){
-                    if actor_ref == visit.target{
-                        Self::ignite(game, actor_ref, midnight_variables);
-                    }
+                if let Some(visit) = actor_visits.first() && actor_ref == visit.target{
+                    Self::ignite(game, actor_ref, midnight_variables);
                 }
             }
             _ => {}

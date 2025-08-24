@@ -1,9 +1,10 @@
 pub mod spectator_pointer;
 
+use std::collections::VecDeque;
+
 use crate::{
-    client_connection::ClientConnection,
-    packet::ToClientPacket,
-    game::chat::ChatMessageVariant,
+    client_connection::ClientConnection, game::chat::{ChatMessageIndex, ChatMessageVariant},
+    packet::ToClientPacket
 };
 
 #[derive(Debug, Clone)]
@@ -15,7 +16,7 @@ pub struct Spectator {
     pub connection: ClientConnection,
     pub fast_forward_vote: bool,
 
-    pub queued_chat_messages: Vec<ChatMessageVariant>,
+    pub queued_chat_messages: VecDeque<(ChatMessageIndex, ChatMessageVariant)>,
 }
 impl Spectator {
     pub fn new(params: SpectatorInitializeParameters) -> Self {
@@ -23,7 +24,7 @@ impl Spectator {
             connection: params.connection,
             fast_forward_vote: false,
 
-            queued_chat_messages: Vec::new(),
+            queued_chat_messages: VecDeque::new(),
         }
     }
     pub fn send_packet(&self, packet: ToClientPacket) {

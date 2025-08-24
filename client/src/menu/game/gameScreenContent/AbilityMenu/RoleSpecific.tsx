@@ -1,4 +1,4 @@
-import { useGameState, usePlayerState } from "../../../../components/useHooks";
+import { useGameState, usePlayerNames, usePlayerState } from "../../../../components/useHooks";
 import React, { ReactElement } from "react";
 import AuditorMenu from "./RoleSpecificMenus/AuditorMenu";
 import LargeDoomsayerMenu from "./RoleSpecificMenus/LargeDoomsayerMenu";
@@ -9,9 +9,10 @@ import SmallPuppeteerMenu from "./RoleSpecificMenus/SmallPuppeteerMenu";
 import StewardMenu from "./RoleSpecificMenus/StewardMenu";
 import RecruiterMenu from "./RoleSpecificMenus/RecruiterMenu";
 import { RoleState } from "../../../../game/roleState.d";
-import { PhaseState } from "../../../../game/gameState.d";
+import { PhaseState, UnsafeString } from "../../../../game/gameState.d";
 import DetailsSummary from "../../../../components/DetailsSummary";
 import HypnotistMenu from "./RoleSpecificMenus/HypnotistMenu";
+import ChatElement, { encodeString } from "../../../../components/ChatMessage";
 
     
 
@@ -34,7 +35,9 @@ export default function RoleSpecificSection(): ReactElement{
         ["gamePlayers"]
     )!;
 
-    const inner = roleSpecificSectionInner(phaseState, dayNumber, roleState, numPlayers);
+    const playerNames = usePlayerNames();
+
+    const inner = roleSpecificSectionInner(phaseState, dayNumber, roleState, numPlayers, playerNames);
 
     return <>{inner===null ? null : 
         <DetailsSummary
@@ -53,7 +56,8 @@ function roleSpecificSectionInner(
     phaseState: PhaseState,
     dayNumber: number,
     roleState: RoleState,
-    numPlayers: number
+    numPlayers: number,
+    playerNames: UnsafeString[]
 ): ReactElement | null{
     let maxChargesCounter = abilityChargesCounter(numPlayers);
 
@@ -143,6 +147,13 @@ function roleSpecificSectionInner(
             >
                 <StyledText>{translate("role.forger.roleDataText", roleState.forgesRemaining)}</StyledText>
             </Counter>
+        case "cerenovous":
+            return <Counter
+                max={maxChargesCounter}
+                current={roleState.charges}
+            >
+                <StyledText>{translate("role.cerenovous.roleDataText", roleState.charges)}</StyledText>
+            </Counter>
         case "mortician":
             return <Counter
                 max={maxChargesCounter}
@@ -152,6 +163,8 @@ function roleSpecificSectionInner(
             </Counter>
         case "steward":
             return <StewardMenu roleState={roleState}/>;
+        case "courtesan":
+            return <StyledText>{roleState.previous.map((p)=>encodeString(playerNames[p])).join()}</StyledText>;
         case "spiral": 
             return <SpiralMenu />;
         case "puppeteer":
@@ -173,6 +186,19 @@ function roleSpecificSectionInner(
                 dayNumber={dayNumber}
                 phase={phaseState.type}
             />;
+        case "mercenary":
+            return <div>
+                <Counter
+                    max={maxChargesCounter}
+                    current={roleState.attacksRemaining}
+                >
+                    <StyledText>{translate("role.mercenary.roleDataText", roleState.attacksRemaining)}</StyledText>
+                </Counter>
+                <ChatElement message={{
+                    chatGroup: null,
+                    variant: {type:"mercenaryHits", roles:roleState.roles??[]}
+                }}/>
+            </div>
         case "martyr":
             if (roleState.state.type === "stillPlaying") {
                 return <>
@@ -237,7 +263,7 @@ function MediumRoleSpecificMenu(props: Readonly<{
             {counter}
             <div className="role-information">
                 <StyledText>{translate("role.medium.roleDataText", 
-                    players[props.roleState.seancedTarget].toString(),
+                    encodeString(players[props.roleState.seancedTarget].toString()),
                 )}</StyledText>
             </div>
         </>;

@@ -1,7 +1,10 @@
 use crate::{event_priority, game::{
-    attack_power::DefensePower, chat::ChatMessageVariant, components::{
-        detained::Detained, fragile_vest::FragileVests, guard::Guard, mafia::Mafia, mafia_recruits::MafiaRecruits, pitchfork::Pitchfork, player_component::PlayerComponent, poison::Poison, puppeteer_marionette::PuppeteerMarionette, syndicate_gun_item::SyndicateGunItem
-    }, grave::GraveKiller, modifiers::Modifiers, player::PlayerReference, role::{Role, RoleState}, visit::Visit, Game
+    attack_power::DefensePower, chat::ChatMessageVariant, 
+    components::{
+        detained::Detained, fragile_vest::FragileVests, graves::grave::GraveKiller, guard::Guard, mafia::Mafia, mafia_recruits::MafiaRecruits, pitchfork::Pitchfork, player_component::PlayerComponent, poison::Poison, puppeteer_marionette::PuppeteerMarionette, syndicate_gun_item::SyndicateGunItem
+    },
+    modifiers::Modifiers, player::PlayerReference,
+    role::{Role, RoleState}, visit::Visit, Game
 }};
 use super::Event;
 
@@ -31,8 +34,6 @@ event_priority!(OnMidnightPriority{
     Investigative,  //use aura
 
     DeleteMessages, //set messages
-
-    SpyBug, //use non stolen messages
 
     StealMessages,  //use messages + set messages (specficially set stolen messages)
 
@@ -159,7 +160,7 @@ impl PlayerMidnightVariables {
 
             grave_role: None,
             grave_killers: Vec::new(),
-            grave_will: player_ref.will(game).clone(),
+            grave_will: player_ref.alibi(game).to_owned(),
             grave_death_notes: Vec::new(),
             guarded_players: Vec::new(),
         }

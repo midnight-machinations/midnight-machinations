@@ -3,7 +3,7 @@ use serde::{Serialize, Deserialize};
 use crate::game::attack_power::{AttackPower, DefensePower};
 use crate::game::chat::ChatMessageVariant;
 use crate::game::event::on_midnight::{MidnightVariables, OnMidnightPriority};
-use crate::game::grave::GraveKiller;
+use crate::game::components::graves::grave::GraveKiller;
 use crate::game::phase::PhaseType;
 use crate::game::player::PlayerReference;
 
@@ -32,7 +32,7 @@ pub enum DoomsayerGuess{
     // No TI
     Doctor, Bodyguard, Cop, Bouncer, Engineer, Armorsmith, Steward,
     Vigilante, Veteran, Marksman, Deputy, Rabblerouser,
-    Escort, Medium, Retributionist, Reporter, Mayor, Porter, Transporter, Coxswain, Polymath
+    Escort, Medium, Retributionist, Reporter, Mayor, Porter, Transporter, Coxswain, Polymath, Courtesan
 }
 impl DoomsayerGuess{
     fn convert_to_guess(role: Role)->Option<DoomsayerGuess>{
@@ -59,6 +59,7 @@ impl DoomsayerGuess{
             Role::Rabblerouser => Some(DoomsayerGuess::Rabblerouser),
 
             Role::Escort => Some(DoomsayerGuess::Escort),
+            Role::Courtesan => Some(DoomsayerGuess::Courtesan),
             Role::Medium => Some(DoomsayerGuess::Medium),
             Role::Retributionist => Some(DoomsayerGuess::Retributionist),
             Role::Reporter => Some(DoomsayerGuess::Reporter),
@@ -72,15 +73,15 @@ impl DoomsayerGuess{
             Role::Godfather | Role::Mafioso | 
             Role::Counterfeiter | Role::Recruiter | Role::Impostor | Role::MafiaKillingWildcard |
             Role::Goon |
-            Role::Hypnotist | Role::Blackmailer | Role::Informant | 
-            Role::MafiaWitch | Role::Necromancer | Role::Consort |
+            Role::Hypnotist | Role::Blackmailer | Role::Cerenovous | Role::Informant | 
+            Role::Necromancer | Role::Consort |
             Role::Mortician | Role::Framer | Role::Forger | 
             Role::Disguiser | Role::Reeducator |
             Role::Ambusher | Role::MafiaSupportWildcard => Some(DoomsayerGuess::NonTown),
 
             //Neutral
             Role::Jester | Role::Revolutionary | Role::Politician |
-            Role::Doomsayer |
+            Role::Doomsayer | Role::Mercenary |
             Role::Witch | Role::Scarecrow | Role::Warper | Role::Kidnapper | Role::Chronokaiser |
             Role::Wildcard | Role::TrueWildcard | Role::Drunk | Role::Spiral |
             Role::SantaClaus | Role::Krampus => Some(DoomsayerGuess::NonTown),

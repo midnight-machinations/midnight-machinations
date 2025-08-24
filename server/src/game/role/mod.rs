@@ -1,6 +1,8 @@
 #![allow(clippy::single_match, reason = "May add more cases for more priorities later")]
 
 use std::collections::HashSet;
+use crate::game::components::graves::grave_reference::GraveReference;
+use crate::game::role_list_generation::criteria::GenerationCriterion;
 use crate::vec_set::{vec_set, VecSet};
 
 use crate::game::player::PlayerReference;
@@ -14,9 +16,12 @@ use serde::{Serialize, Deserialize};
 
 use super::components::win_condition::WinCondition;
 use super::{
-    ability_input::*, components::{insider_group::InsiderGroupID, night_visits::NightVisits},
-    event::{on_midnight::{MidnightVariables, OnMidnightPriority}, on_whisper::{OnWhisper, WhisperFold, WhisperPriority}},
-    grave::GraveReference, visit::VisitTag,
+    controllers::*, components::{insider_group::InsiderGroupID, night_visits::NightVisits},
+    event::{
+        on_midnight::{MidnightVariables, OnMidnightPriority},
+        on_whisper::{OnWhisper, WhisperFold, WhisperPriority}
+    },
+    visit::VisitTag,
 };
 
 pub trait GetClientRoleState<CRS> {
@@ -37,8 +42,8 @@ pub trait RoleStateImpl: Clone + std::fmt::Debug + Default + GetClientRoleState<
         ControllerParametersMap::default()
     }
     fn on_controller_selection_changed(self, _game: &mut Game, _actor_ref: PlayerReference, _id: ControllerID) {}
-    fn on_validated_ability_input_received(self, _game: &mut Game, _actor_ref: PlayerReference, _input_player: PlayerReference, _ability_input: AbilityInput) {}
-    fn on_ability_input_received(self, _game: &mut Game, _actor_ref: PlayerReference, _input_player: PlayerReference, _ability_input: AbilityInput) {}
+    fn on_validated_ability_input_received(self, _game: &mut Game, _actor_ref: PlayerReference, _input_player: PlayerReference, _ability_input: ControllerInput) {}
+    fn on_ability_input_received(self, _game: &mut Game, _actor_ref: PlayerReference, _input_player: PlayerReference, _ability_input: ControllerInput) {}
 
     fn convert_selection_to_visits(self, _game: &Game, _actor_ref: PlayerReference) -> Vec<Visit> {
         vec![]
@@ -63,6 +68,7 @@ pub trait RoleStateImpl: Clone + std::fmt::Debug + Default + GetClientRoleState<
 
     fn on_phase_start(self, _game: &mut Game, _actor_ref: PlayerReference, _phase: PhaseType) {}
     fn on_role_creation(self, _game: &mut Game, _actor_ref: PlayerReference) {}
+    fn on_role_switch(self, _game: &mut Game, _actor_ref: PlayerReference, _player: PlayerReference, _new: RoleState, _old: RoleState) {}
     fn before_role_switch(self, _game: &mut Game, _actor_ref: PlayerReference, _player: PlayerReference, _new: RoleState, _old: RoleState) {}
     fn on_any_death(self, _game: &mut Game, _actor_ref: PlayerReference, _dead_player_ref: PlayerReference) {}
     fn on_grave_added(self, _game: &mut Game, _actor_ref: PlayerReference, _grave: GraveReference) {}
@@ -70,21 +76,25 @@ pub trait RoleStateImpl: Clone + std::fmt::Debug + Default + GetClientRoleState<
     fn on_game_start(self, _game: &mut Game, _actor_ref: PlayerReference) {}
     fn before_initial_role_creation(self, _game: &mut Game, _actor_ref: PlayerReference) {}
     fn on_conceal_role(self, _game: &mut Game, _actor_ref: PlayerReference, _player: PlayerReference, _concealed_player: PlayerReference) {}
-    fn on_player_roleblocked(self, _game: &mut Game, midnight_machinations: &mut MidnightVariables, actor_ref: PlayerReference, player: PlayerReference, _invisible: bool) {
+    fn on_player_roleblocked(self, _game: &mut Game, midnight_variables: &mut MidnightVariables, actor_ref: PlayerReference, player: PlayerReference, _invisible: bool) {
         if player != actor_ref {return}
 
-        NightVisits::retain(midnight_machinations, |v|
+        NightVisits::retain(midnight_variables, |v|
             !matches!(v.tag, VisitTag::Role{..}) || v.visitor != actor_ref
         );
     }
-    fn on_visit_wardblocked(self, _game: &mut Game, midnight_machinations: &mut MidnightVariables, actor_ref: PlayerReference, visit: Visit) {
+    fn on_visit_wardblocked(self, _game: &mut Game, midnight_variables: &mut MidnightVariables, actor_ref: PlayerReference, visit: Visit) {
         if actor_ref != visit.visitor {return};
 
-        NightVisits::retain(midnight_machinations, |v|
+        NightVisits::retain(midnight_variables, |v|
             !matches!(v.tag, VisitTag::Role{..}) || v.visitor != actor_ref
         );
     }
     fn on_whisper(self, _game: &mut Game, _actor_ref: PlayerReference, _event: &OnWhisper, _fold: &mut WhisperFold, _priority: WhisperPriority) {}
+
+    fn role_list_generation_criteria() -> Vec<GenerationCriterion> {
+        vec![]
+    }
 }
 
 // Creates the Role enum
@@ -127,6 +137,7 @@ macros::roles! {
     Porter : porter,
     Coxswain : coxswain,
     Polymath : polymath,
+    Courtesan : courtesan,
 
     // Mafia
     Godfather : godfather,
@@ -141,8 +152,8 @@ macros::roles! {
     
     Hypnotist : hypnotist,
     Blackmailer : blackmailer,
+    Cerenovous : cerenovous,
     Informant: informant,
-    MafiaWitch : mafia_witch,
     Necromancer : necromancer,
     Mortician : mortician,
     Framer : framer,
@@ -157,6 +168,7 @@ macros::roles! {
     Revolutionary : revolutionary,
     Politician : politician,
     Doomsayer : doomsayer,
+    Mercenary : mercenary,
     Wildcard : wild_card,
     TrueWildcard : true_wildcard,
     Martyr : martyr,
@@ -225,6 +237,11 @@ mod macros {
                         $(Self::$name => $file::DEFENSE),*
                     }
                 }
+                pub fn role_list_generation_criteria(&self) -> Vec<GenerationCriterion> {
+                    match self {
+                        $(Self::$name => $file::$name::role_list_generation_criteria()),*
+                    }
+                }
             }
 
             #[derive(Clone, Debug, Serialize)]
@@ -271,12 +288,12 @@ mod macros {
                         $(Self::$name(role_struct) => role_struct.on_controller_selection_changed(game, actor_ref, id)),*
                     }
                 }
-                pub fn on_validated_ability_input_received(self, game: &mut Game, actor_ref: PlayerReference, input_player: PlayerReference, ability_input: AbilityInput){
+                pub fn on_validated_ability_input_received(self, game: &mut Game, actor_ref: PlayerReference, input_player: PlayerReference, ability_input: ControllerInput){
                     match self {
                         $(Self::$name(role_struct) => role_struct.on_validated_ability_input_received(game, actor_ref, input_player, ability_input)),*
                     }
                 }
-                pub fn on_ability_input_received(self, game: &mut Game, actor_ref: PlayerReference, input_player: PlayerReference, ability_input: AbilityInput){
+                pub fn on_ability_input_received(self, game: &mut Game, actor_ref: PlayerReference, input_player: PlayerReference, ability_input: ControllerInput){
                     match self {
                         $(Self::$name(role_struct) => role_struct.on_ability_input_received(game, actor_ref, input_player, ability_input)),*
                     }
@@ -319,6 +336,11 @@ mod macros {
                 pub fn on_role_creation(self, game: &mut Game, actor_ref: PlayerReference){
                     match self {
                         $(Self::$name(role_struct) => role_struct.on_role_creation(game, actor_ref)),*
+                    }
+                }
+                pub fn on_role_switch(self, game: &mut Game, actor_ref: PlayerReference, player: PlayerReference, old: RoleState, new: RoleState){
+                    match self {
+                        $(Self::$name(role_struct) => role_struct.on_role_switch(game, actor_ref, player, old, new)),*
                     }
                 }
                 pub fn before_role_switch(self, game: &mut Game, actor_ref: PlayerReference, player: PlayerReference, old: RoleState, new: RoleState){
@@ -380,12 +402,13 @@ impl Role{
             | Role::Veteran | Role::Coxswain
             | Role::Transporter | Role::Retributionist
             | Role::Witch | Role::Doomsayer | Role::Scarecrow | Role::Warper | Role::Porter
-            | Role::MafiaWitch | Role::Necromancer 
+            | Role::Necromancer 
         )
     }
     pub fn has_innocent_aura(&self, game: &Game)->bool{
         match self {
             Role::Godfather => true,
+            Role::Disguiser => true,
             Role::Pyrolisk => {
                 game.day_number() == 1
             },

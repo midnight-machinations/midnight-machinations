@@ -24,11 +24,22 @@ use vec1::Vec1;
 
 use crate::{
     client_connection::ClientConnection, game::{
-        ability_input::*, chat::{ChatGroup, ChatMessage}, components::{insider_group::InsiderGroupID, tags::Tag}, game_client::GameClientLocation, grave::Grave, modifiers::ModifierType, phase::{PhaseState, PhaseType}, player::{PlayerIndex, PlayerReference}, role::{
+        controllers::*, chat::{ChatGroup, ChatMessage, ChatMessageIndex},
+        components::{
+            graves::{grave::Grave, grave_reference::GraveReference}, insider_group::InsiderGroupID, tags::Tag
+        },
+        game_client::GameClientLocation,
+        modifiers::ModifierType, phase::{PhaseState, PhaseType},
+        player::{PlayerIndex, PlayerReference},
+        role::{
             doomsayer::DoomsayerGuess,
             ClientRoleStateEnum, Role
-        }, role_list::{RoleList, RoleOutline}, settings::PhaseTimeSettings, verdict::Verdict, GameOverReason, RejectStartReason
-    }, lobby::lobby_client::LobbyClient, room::RoomClientID, vec_map::VecMap, vec_set::VecSet, websocket_listener::RoomCode
+        },
+        role_list::{RoleList, RoleOutline}, settings::PhaseTimeSettings,
+        GameOverReason, RejectStartReason
+    }, 
+    lobby::lobby_client::LobbyClient, room::RoomClientID, vec_map::VecMap, vec_set::VecSet,
+    websocket_listener::RoomCode
 };
 
 #[derive(Serialize, Debug, Clone)]
@@ -126,14 +137,14 @@ pub enum ToClientPacket{
 
     #[serde(rename_all = "camelCase")]
     YourAllowedControllers{
-        save: VecMap<ControllerID, SavedController>
+        save: VecMap<ControllerID, Controller>
     },
+    YourAllowedController{id: ControllerID, controller: Option<Controller>},
 
     #[serde(rename_all = "camelCase")]
     YourRoleLabels{role_labels: VecMap<PlayerIndex, Role>},
     #[serde(rename_all = "camelCase")]
     YourPlayerTags{player_tags: VecMap<PlayerReference, Vec1<Tag>>},
-    YourWill{will: String},
     YourNotes{notes: Vec<String>},
     #[serde(rename_all = "camelCase")]
     YourCrossedOutOutlines{crossed_out_outlines: Vec<u8>},
@@ -142,13 +153,12 @@ pub enum ToClientPacket{
     #[serde(rename_all = "camelCase")]
     YourRoleState{role_state: ClientRoleStateEnum},
     #[serde(rename_all = "camelCase")]
-    YourJudgement{verdict: Verdict},
-    #[serde(rename_all = "camelCase")]
     YourVoteFastForwardPhase{fast_forward: bool},
 
     #[serde(rename_all = "camelCase")]
-    AddChatMessages{chat_messages: Vec<ChatMessage>},
-    AddGrave{grave: Grave},
+    AddChatMessages{chat_messages: VecMap<ChatMessageIndex, ChatMessage>},
+    #[serde(rename_all = "camelCase")]
+    AddGrave{grave: Grave, grave_ref: GraveReference},
 
     #[serde(rename_all = "camelCase")]
     NightMessages{chat_messages: Vec<ChatMessage>},
@@ -220,22 +230,15 @@ pub enum ToServerPacket{
     HostForceSetPlayerName { id: RoomClientID, name: String },
 
     // Game
-    #[serde(rename_all = "camelCase")]
-    Judgement{verdict: Verdict},
-
-    SendChatMessage{text: String, block: bool},
-    #[serde(rename_all = "camelCase")]
-    SendWhisper{player_index: PlayerIndex, text: String},
-    SaveWill{will: String},
     SaveNotes{notes: Vec<String>},
     #[serde(rename_all = "camelCase")]
     SaveCrossedOutOutlines{crossed_out_outlines: Vec<u8>},
     #[serde(rename_all = "camelCase")]
     SaveDeathNote{death_note: Option<String>},
 
-    // AbilityInput
+    // ControllerInput
     #[serde(rename_all = "camelCase")]
-    AbilityInput{ability_input: AbilityInput},
+    ControllerInput{controller_input: ControllerInput},
     // Role-specific
     #[serde(rename_all = "camelCase")]
     SetDoomsayerGuess{ guesses: [(PlayerReference, DoomsayerGuess); 3] },

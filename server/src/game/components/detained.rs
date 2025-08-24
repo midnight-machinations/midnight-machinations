@@ -20,7 +20,7 @@ impl Detained{
             OnMidnightPriority::Ward => {
                 for player in PlayerReference::all_players(game){
                     if Self::is_detained(game, player){
-                        player.ward(game, midnight_variables, &[]);
+                        player.ward(game, midnight_variables);
                     }
                 }
             }

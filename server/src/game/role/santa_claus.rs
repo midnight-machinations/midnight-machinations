@@ -1,5 +1,5 @@
 use serde::{Deserialize, Serialize};
-use crate::game::ability_input::AvailablePlayerListSelection;
+use crate::game::controllers::AvailablePlayerListSelection;
 use crate::game::chat::ChatMessageVariant;
 use crate::game::event::on_midnight::{MidnightVariables, OnMidnightPriority};
 use crate::game::game_conclusion::GameConclusion;
@@ -194,7 +194,7 @@ pub fn get_nice_listers(game: &Game) -> Vec<PlayerReference> {
     PlayerReference::all_players(game)
         .filter(|player|
             player.win_condition(game)
-                .required_resolution_states_for_win()
+                .win_if_any_conclusions()
                 .is_some_and(|states| states.contains(&GameConclusion::NiceList))
         ).collect()
 }
@@ -203,7 +203,7 @@ pub fn get_naughty_listers(game: &Game) -> Vec<PlayerReference> {
     PlayerReference::all_players(game)
         .filter(|player|
             player.win_condition(game)
-                .required_resolution_states_for_win()
+                .win_if_any_conclusions()
                 .is_some_and(|states| states.contains(&GameConclusion::NaughtyList))
         ).collect()
 }
