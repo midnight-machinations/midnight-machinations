@@ -734,7 +734,7 @@
         "mainRoleSet": "mafia",
         "roleSets": ["mafia", "mafiaSupport"],
         "armor": false,
-        "aura": null,
+        "aura": "innocent",
         "maxCount": 1,
         "canWriteDeathNote": false,
         "canBeConvertedTo": ["godfather"],

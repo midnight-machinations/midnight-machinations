@@ -1584,6 +1584,7 @@
     "wiki.article.role.chatMessages": "Chat Messages",
     "wiki.article.role.reminder": "Reminder",
     "wiki.article.role.noReminder": "There is no reminder section written for this role.",
+    "wiki.article.role.lore": "Lore",
     "wiki.article.role.guide": "Abilities",
     "wiki.article.role.noGuide": "There is no abilities section written for this role.",
     "wiki.article.role.exampleAlibi": "Alibi Example",
@@ -1603,12 +1604,14 @@
     "wiki.article.role.jailor.extra":"* You can't kill someone on night one\n* Players in jail don't see your name on your messages. The messages you send appear to be from the jailor",
 
     "wiki.article.role.villager.reminder": "No ability.",
+    "wiki.article.role.villager.lore": "Not in education, employment, or training.",
     "wiki.article.role.villager.guide": "You have no nighttime ability, but you can still speak and vote. Try to help find out who is evil and vote them. Your only ability is your own critical thinking.",
     "wiki.article.role.villager.abilities":"None",
     "wiki.article.role.villager.attributes":"None",
     "wiki.article.role.villager.extra":"None",
 
     "wiki.article.role.mayor.reminder": "Once per game you can enfranchise to gain 3x voting power.",
+    "wiki.article.role.mayor.lore": "Who voted for this idiot?",
     "wiki.article.role.mayor.guide": "Choose to enfranchise during the day to make your vote count as three votes for the rest of the game.\n- When you enfranchise\n    - Everyone is told you have enfranchised\n    - You can't whisper or be whispered to\n    - You have triple voting power every day",
     "wiki.article.role.mayor.abilities":"* Enfranchise during the day to triple your voting power, revealing to everyone that you are the Mayor",
     "wiki.article.role.mayor.attributes":"* You get 3 votes during both nomination and judgement after you enfranchise\n* After you enfranchise you can't whisper or be whispered to",
@@ -1657,6 +1660,7 @@
     "wiki.article.role.tracker.extra": "* Appeared visits can make you get false information, _for example_ a Framer makes their target player appear to visit someone else (See appeared visits)",
 
     "wiki.article.role.philosopher.reminder": "At night, select 2 players to learn if they are friends or enemies.",
+    "wiki.article.role.philosopher.lore": "The Philosopher immerses themself in crepuscular cogitation, endeavoring to unravel the ontological interplay of amity and antipathy obscured within the town’s tenuous existential façade. Each interrogation they proffer transcends mere epistemic inquiry, becoming instead an exegesis upon the cosmological harmonics and cacophonies that circumscribe the teleology of all beings. To their apprehension, every concord and contention is but a diaphanous filament entwined within the ineffable, inexorable palimpsest of destiny.",
     "wiki.article.role.philosopher.guide": "- At night, select 2 players and learn if they are friends or enemies\n    - If they're friends, it is possible for both of them to win in the same game\n\n_For example_\n- A jester is friends with a detective, because they can both win in the same game\n- A Doctor is enemies with a godfather because they need the other person to lose in order to win\n- A hypnotist is enemies with a disciple because they can't win together\n\n You should tell the town the information you get daily.",
     "wiki.article.role.philosopher.abilities":"* Visit 2 players to learn if they are friends or enemies",
     "wiki.article.role.philosopher.attributes":"* If 2 players are friends they can win together\n* If 2 players are enemies they can't win together",
@@ -1681,12 +1685,14 @@
     "wiki.article.role.auditor.exampleAlibi.description":"The auditor gets a lot of information, so make sure to format your alibi so it is as easy to read as possible. Here's an example:",
 
     "wiki.article.role.snoop.reminder": "At night, select a player to learn if they are a town loyalist, but you can't tell if you are visited a player who isn't your buddy.",
+    "wiki.article.role.snoop.lore":"\"Dude! Dude! Check this out!\"",
     "wiki.article.role.snoop.guide": "- At night, select a player. You are either told that they are a town loyalist, or that you can't tell\n    - You can't tell what your target was if:\n        - They aren't a town loyalist\n        - You are visited by at least one player who does not have the role you chose as your buddy.\n        - They have a suspicious aura\n\n    - Otherwise, you are told they are a town loyalist",
     "wiki.article.role.snoop.abilities":"- Visit a player to snoop them",
     "wiki.article.role.snoop.attributes":"",
     "wiki.article.role.snoop.extra":"- innocent aura doesn't effect your results",
 
     "wiki.article.role.gossip.reminder": "At night, select a player to eavesdrop on, and learn if they visited a player who is enemies with town.",
+    "wiki.article.role.gossip.lore":"The gossip never shuts up. No secret is safe with them. You would think that's a bad thing... and many do...",
     "wiki.article.role.gossip.guide": "- At night, select a player. You are told if they visited a player who is enemies with town\n- If they visited a friend, or nobody, they did not visit an enemy",
     "wiki.article.role.gossip.abilities":"- Visit a player to eavesdrop on\n    - If your target visited a player who is enemies with town, you are told so\n    - If your target visited nobody, then they didn't visit an enemy of the town",
     "wiki.article.role.gossip.attributes":"- If any player your target visits has a suspicious aura, then you are told they visited a town enemy",
@@ -1699,6 +1705,7 @@
     "wiki.article.role.tallyClerk.extra":"",
 
     "wiki.article.role.doctor.reminder": "At night, select a player to guard from attacks. You can guard yourself once per game.",
+    "wiki.article.role.doctor.lore": "The doctor is so unimaginably talented that they can save anyone from any physical ailment conceivable. According to the doctor, saving someone is only worth the time if they are \"seriously\" in need of help, so the doctor only shows up when their patient is about to die. But it's nomatter, the doctor never fails.",
     "wiki.article.role.doctor.guide": "- At night, select a player to guard\n    - Guarding a player gives the protected defense, so most attacks can't kill them.\n- You can select yourself to guard yourself once per game.",
     "wiki.article.role.doctor.abilities":"* Visit a player to guard for the night",
     "wiki.article.role.doctor.attributes":"* If you visit yourself, you use the self guard charge, and you can't select yourself again",
@@ -1713,6 +1720,7 @@
     "wiki.article.role.bodyguard.extra":"* If your target is attacked, you attack each attacking visitor.",
 
     "wiki.article.role.cop.reminder": "At night, select a player to guard. You attack a random visitor of the player you guard.",
+    "wiki.article.role.cop.lore": "\"This is for your safety!\"",
     "wiki.article.role.cop.guide": "- At night, select a player to guard\n    - Guarding a player gives the protected defense, so most attacks can't kill them.\n - You attack one random other player who visits your target\n- You can't use your ability night 1.",
     "wiki.article.role.cop.abilities":"* Visit a player to guard for the night\n* Attack a random visitor of the player you guard",
     "wiki.article.role.cop.attributes":"* Your attack prioritizes non town loyalists\n* You can attack yourself if you somehow visit yourself with another ability.",
@@ -1798,12 +1806,14 @@
     "wiki.article.role.rabblerouser.extra":"- The pitchfork menu stays available\n   - Even if all Rabblerousers are dead\n    - Even if there is no Rabblerouser\n    - Even if all three uses are consumed\n- Multiple Rabblerousers does not mean multiple attacks or more uses. There is a maximum of 3 uses and a maximum of 1 attack per night",
 
     "wiki.article.role.veteran.reminder":"Each night, choose to rampage yourself, killing all visitors to you.",
+    "wiki.article.role.veteran.lore": "Nobody actually knows what war they were in, but they said they are a veteran. Nobody really wants to ask them anything about themselves because it's just a bit too dangerous.",
     "wiki.article.role.veteran.guide": "- At night, you can choose to alert to gain protected defense for the night and rampage yourself, attacking everyone who visits you\n- You can only use your ability X times (X = Total players ÷ 5 (round up))\n- You can't use your ability on night 1\n* You should try to trick evil players into visiting you, so you can block the attack and kill them. Try to avoid killing unnecessary townies.",
     "wiki.article.role.veteran.abilities":"* Select yourself\n    - rampage yourself\n    - gain protected defense for the night",
     "wiki.article.role.veteran.attributes":"* You only have three uses of your ability\n* You are told when a visitor is attacked by your rampage\n* You have an indirect, armor-piercing attack\n- You can't use your ability night 1",
     "wiki.article.role.veteran.extra":"* You are immune to getting roleblocked and getting possessed\n* When you select yourself, you don't visit yourself\n* You can't attack dead players",
 
     "wiki.article.role.marksman.reminder": "Each night, mark up to 3 players and camp up to 3 players. If a marked player visits a camped player, you attack the marked player.",
+    "wiki.article.role.marksman.lore": "When the syndicate showed up, the marksman decided it's time the town had a curfew. If anyone steps out of line, its not the marksman's fault. \"Just don't be stupid and you'll be safe.\"",
     "wiki.article.role.marksman.guide": "- Each night, choose up to three players to mark, and camp up to three players to camp\n    - If a marked player visits a camped player, you attack the marked player\n- You can't do anything on the first night\n- If you kill a townie, you can't use your ability again\n- You should try to mark players who act suspicious, and camp players that they would only visit if they're evil",
     "wiki.article.role.marksman.abilities":"* Choose to mark up to 3 players\n* Select up to 3 players, if you have nobody marked, you can't camp anyone\n    - If a marked player visits any of your targets, you attack them",
     "wiki.article.role.marksman.attributes":"* You can't mark or camp to camp on night 1\n* If you kill a town loyalist, you can't mark or camp again\n* You have an indirect, basic attack",
@@ -1812,6 +1822,7 @@
     "wiki.article.role.marksman.exampleAlibi.description":"Here is an example of an alibi from a Marksman who, on night 2, marked @8 @19 and @4, and camped @7 and @23. They also were told a message saying they attacked a player who had defense and survived.",
 
     "wiki.article.role.deputy.reminder": "Once per game, during the day, shoot someone. If you kill a town loyalist you leave town.",
+    "wiki.article.role.deputy.lore": "\"When you know, you know.\"",
     "wiki.article.role.deputy.guide":"- Once per game, you can shoot a player during the day\n- If you kill a townie, you instantly leave town\n- If you kill someone, everyone is told that a deputy shot someone\n- If the player you shoot survives your attack, only the player you attacked is told, nobody else is told\n- You can only shoot during discussion or nomination\n\nIf you attack someone and they survive it is likely that they are a role that is armored. Most roles that are armored are evil.",
     "wiki.article.role.deputy.abilities":"* Once per game, during the discussion or nomination phase after day 1, you may choose a player to attack.",
     "wiki.article.role.deputy.attributes":"* If the player you attack has defense, they are told they were attacked by a deputy\n* When you kill someone, everyone is told a deputy shot someone\n* If you kill a town loyalist, you instantly leave town",
@@ -1878,6 +1889,7 @@
     "wiki.article.role.goon.extra":"None",
 
     "wiki.article.role.hypnotist.reminder": "Each night, select a player to roleblock and/or send false messages.",
+    "wiki.article.role.hypnotist.lore": "They were a hypnotherapist whose \"uncanny\" abilities were used to help townsfolk deal with mental troubles. But when the town decided that their methods were too mysterious, they drove the hypnotist out of town. With nowhere left to turn, they have resorted to using their powers of suggestion for the syndicate, holding out a vain hope they may convince the town to accept them once again.",
     "wiki.article.role.hypnotist.guide": "- At night, select a player to roleblock or hypnotize\n- If you roleblock your target, they can not use their ability that night\n- You can choose to send a false message to your target, or to not send them the message saying they are roleblocked",
     "wiki.article.role.hypnotist.abilities":"* Visit a player to roleblock and choose a message to show them\n    * You can send that they were attempted to be roleblocked\n    * You can send that they were attacked but had defense\n    * You can send that they were protected by someone\n    * You can send that they were transported\n    * You can send that they were attempted to be possessed\n    * You can send that they are wardblocked",
     "wiki.article.role.hypnotist.attributes":"* You are immune to roleblocks\n* You may choose to not roleblock your target\n* You can't choose to send no messages",
@@ -1931,6 +1943,7 @@
     "wiki.article.role.framer.extra":"- Your second visit is wardblock immune and then removed, so no other roles can interact with it except transporter\n    - A tracker only sees you visit your first target\n    - The marksman wont see you visit the second target\n    - You don't die if your second target is an veteran who is rampaging",
 
     "wiki.article.role.disguiser.reminder": "Your grave shows whatever role you choose when you die. You have innocent aura. At night, you can visit a player.",
+    "wiki.article.role.disguiser.lore": "The town did not approve of the costumes the disguiser made.",
     "wiki.article.role.disguiser.guide": "- At night, select a player to visit\n - You have your role appear to be what you chose on your grave\n - You have innocent aura",
     "wiki.article.role.disguiser.abilities":"",
     "wiki.article.role.disguiser.attributes":"",
@@ -1954,6 +1967,7 @@
     "wiki.article.role.mafiaSupportWildcard.extra":"* If you choose a role that was disabled you stay as the Syndicate Support Wildcard\n* You can choose Syndicate Wildcard to stay as Syndicate Wildcard\n* You can't become a role that is at its role limit, for example, you can't become a witch even if there is already one in the game, even if that witch is dead",
 
     "wiki.article.role.jester.reminder": "If you are executed you win, after you are executed, you must kill a player.",
+    "wiki.article.role.jester.lore": "D:",
     "wiki.article.role.jester.guide": "- Get executed during the day to win\n- After you win by getting executed, you can attack any living player who voted you guilty or abstained\n\nTry to look evil so people vote you, without making it obvious that you are the Jester.",
     "wiki.article.role.jester.abilities":"* When you are executed, you win\n* On the night after you are executed, attack the player you select\n",
     "wiki.article.role.jester.attributes":"* You always have an innocent aura\n* If you select nobody on the night after you are executed, you will attack a random living player who did not vote you innocent\n* You have a protection-piercing, indirect attack",
@@ -1972,6 +1986,7 @@
     "wiki.article.role.doomsayer.extra":"* Your three guesses must be three different players\n* If the players you guessed correctly don't die, you still win\n* You do not visit when you attack\n* You can't try to guess a martyr\n* If you are blocked, your ability does nothing",
     
     "wiki.article.role.mercenary.reminder": "You are told a hit list of roles, if at least one player with each of those roles is dead, you win.",
+    "wiki.article.role.mercenary.lore":"Don't mind the mercenary, just doing what their paid to do.",
     "wiki.article.role.mercenary.guide": "- At the start of the game, you are told a hit list of X different roles (X = Total players ÷ 5 (round up)), You win if, for each role, there is a dead player with that role or there is no player with that role\n    - Each player on your hit list is told they are on a mercenaries hit list\n    - The role Mercenary can't be on your hit list\n    - For each role on your hit list, there is at least one player with that role\n    - If there are not enough roles available to fill your hit list, your hit list is smaller, filling with as many roles as possible up to X\n- Choose between Investigate or Attack\n    - Investigate: Choose a player to visit and learn if they have a role on your hit list\n    - Attack: Choose a player to visit and attack with a basic attack\n        - You can't choose to attack night 1\n        - You can only attack up to X times (X = Total players ÷ 5 (round up)), if you are roleblocked it doesn't use an ability charge",
     "wiki.article.role.mercenary.abilities": "",
     "wiki.article.role.mercenary.attributes": "",
@@ -2042,6 +2057,7 @@
     "wiki.article.role.arsonist.extra":"* If you are roleblocked, you still douse visitors\n* Igniting a is an indirect, protection-piercing attack\n* When you ignite, you don't attack dead players\n* When you become an arsonist, you clean the gas off yourself\n* An arsonist can not be attacked by an arsonist igniting",
 
     "wiki.article.role.werewolf.reminder": "Each day, track a player. Each night, camp a tracked player to rampage them, if they visit anybody, you also attack them.",
+    "wiki.article.role.werewolf.lore":"\"Woof woof ...\"",
     "wiki.article.role.werewolf.guide": "- Before the start of night, choose a player to sniff\n     - For each sniffed player, you are told who they visit\n    - At the start of night, all sniffed players are told they are sniffed\n- At night, choose a player to camp\n    - If the camped player is already sniffed then you rampage them\n    - If the camped player is already sniffed, and either they visit any player or you are enraged, then you attack them\n    - If the camped player is not already sniffed then you sniff them\n- If at least 2/3rds of living players are either sniffed or are yourself then you are enraged",
     "wiki.article.role.werewolf.abilities":"- You only visit the players you camp\n- Your attack is armor-piercing",
     "wiki.article.role.werewolf.attributes":"",
@@ -2060,6 +2076,7 @@
     "wiki.article.role.puppeteer.extra":"- You can't select anybody who is a puppeteer, marionette, or is being strung into a marionette\n- A puppeteer can't be stringed into a marionette\n- A marionette can't be stringed into a marionette twice, if 2 puppeteers choose a player to be turned into a marionette on the same night, they get the message only once",
 
     "wiki.article.role.kira.reminder": "Each night, guess players roles, if all your guesses are correct, you attack all of the players you guessed.",
+    "wiki.article.role.kira.lore": "Do you know? Gods of death who love apples have red hands.",
     "wiki.article.role.kira.guide":"- Each night, guess players roles, if all your guesses are correct, you attack all of the players you guessed.\n- You can choose not to guess a players role by selecting none, this doesn't count as a wrong guess\n- Each night you get a result, for each guess, you are told if your guess was correct, incorrect but someone has that role, or incorrect and nobody has that role\n- You can't attack night 1, but you can still make guesses\n\n_For Example_\n- You guess @1 is a lookout, @2 is a tracker, and don't guess anyone else by selecting none. If @1 is a lookout, @2 is a tracker, you attack @1 and @2, but nobody else.",
     "wiki.article.role.kira.abilities":"- Each night, make a guess for every living player\n    - Your options for guesses are, any specific town role, none, and non town. So if they aren't town, you don't need to know their exact role\n    - If all of your guesses are one of either correct or none, you attack all of the players you guessed correctly with an indirect armor-piercing attack\n- Every night, you get a result\n    - For each player you guessed as something non none, you learn one of three things\n        - Your guess is correct, that player has that role\n        - Your guess is incorrect, that player doesn't have that role, but someone else in the game does have that role\n        - Your guess is incorrect, that player doesn't have that role, and nobody else in the game has that role\n- If it is night 1, you don't attack anyone, but you still get your result",
     "wiki.article.role.kira.attributes":"- You don't visit anyone\n- Your attack is armor-piercing\n- You don't attack anyone night 1",
