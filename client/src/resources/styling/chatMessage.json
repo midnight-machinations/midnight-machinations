@@ -47,6 +47,8 @@
     "polymathSnoopResult": "result",
     "gossipResult": "result",
     "tallyClerkResult": "result",
+    "percolatorResult": "result",
+    "percolatorProbabilities": "result",
     "playerRoleAndAlibi": "result",
     "informantResult": "result",
     "scarecrowResult": "result",
