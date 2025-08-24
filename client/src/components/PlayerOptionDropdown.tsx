@@ -1,10 +1,9 @@
 import { ReactElement } from "react"
 import React from "react"
-import translate from "../game/lang"
 import { PlayerIndex } from "../game/gameState.d"
 import { useGameState } from "./useHooks"
 import StyledText from "./StyledText"
-import Select, { SelectOptionsSearch } from "./Select"
+import Select, { SelectOptionsSearch, set_option_typical } from "./Select"
 
 /// A dropdown menu for selecting a player.
 /// canChooseNone defaults to false.
@@ -24,7 +23,7 @@ export default function PlayerOptionDropdown(props: {
     const optionMap: SelectOptionsSearch<PlayerIndex | "none"> = new Map();
 
     if(props.canChooseNone === true){
-        optionMap.set("none", [<StyledText noLinks={true}>{translate("none")}</StyledText>, translate("none")]);
+        set_option_typical(optionMap, "none")
     }
 
     for (const [index, name] of players) {
@@ -32,7 +31,7 @@ export default function PlayerOptionDropdown(props: {
             props.choosablePlayers === undefined ||
             props.choosablePlayers.includes(index)
         ){
-            optionMap.set(index, [<StyledText noLinks={true}>{name.toString()}</StyledText>, name]);
+            optionMap.set(index, [<StyledText noLinks={true}>{name}</StyledText>, name]);
         }
     }
 

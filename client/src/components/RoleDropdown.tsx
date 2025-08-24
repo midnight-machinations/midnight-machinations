@@ -1,9 +1,7 @@
 import { ReactElement } from "react"
 import { Role } from "../game/roleState.d"
 import React from "react"
-import translate from "../game/lang"
-import Select, { SelectOptionsSearch } from "./Select"
-import StyledText from "./StyledText"
+import Select, { SelectOptionsSearch, set_option_typical } from "./Select"
 import { getAllRoles } from "../game/roleListState.d"
 
 
@@ -23,19 +21,13 @@ export default function RoleDropdown(props: RoleDropdownProps): ReactElement {
 
     const optionMap: SelectOptionsSearch<Role | "none"> = new Map();
 
-    if (props.canChooseNone){
-        optionMap.set(
-            "none", 
-            [<StyledText noLinks={true}>{translate("none")}</StyledText>, translate("none")]
-        );
+    if (props.canChooseNone) {
+        set_option_typical(optionMap, "none")
     }
     
     for (const role of getAllRoles()) {
         if (props.enabledRoles === undefined || props.enabledRoles.includes(role)) {
-            optionMap.set(
-                role, 
-                [<StyledText noLinks={true}>{translate("role."+role+".name")}</StyledText>, translate("role."+role+".name")]
-            );
+            set_option_typical(optionMap, role, "role."+role+".name")
         }
     }
 

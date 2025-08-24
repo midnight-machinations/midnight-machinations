@@ -1,0 +1,25 @@
+.modifier-selectors > .modifier-selector {
+    max-height: 50vh;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    margin-bottom: 0.25rem;
+}
+
+.modifier-selectors > .modifier-selector > div {
+    display: flex;
+    flex-basis: 11rem;
+    flex-grow: 1;
+    background-color: var(--secondary-color);
+    align-items: center;
+    justify-content:space-between;
+}
+.modifier-selectors > .modifier-selector > div > span {
+    white-space: pre;
+}
+.modifier-selectors > .modifier-selector > div > input {
+    width: 3rem;
+    margin: 0;
+    padding: 0;
+}

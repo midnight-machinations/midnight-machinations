@@ -825,29 +825,71 @@
     "pitchfork.description": "Vote for a player before midnight. If two-thirds of town loyalists vote for a player, that player dies.",
     "nobodyDiedLastNight": "Nobody died last night.",
     "nobody": "nobody",
-    "player.unknown": "Player \\0",
-    "modifiers": "Modifiers",
-    "obscuredGraves": "Obscured Graves",
-    "skipDay1": "Skip Day 1",
-    "deadCanChat": "Dead Can Chat",
-    "unscheduledNominations": "Unscheduled Nominations",
-    "abstaining": "Abstaining",
-    "noDeathCause": "No Death Cause",
-    "roleSetGraveKillers": "Role Set Grave Killers",
-    "autoGuilty": "Auto-Guilty",
-    "twoThirdsMajority": "Two-thirds Majority",
-    "noTrialPhases": "No Trial Phases",
-    "noWhispers": "No Whispers",
-    "hiddenWhispers": "Hidden Whispers",
-    "noNightChat": "No Night Chat",
-    "noChat": "No Chat",
-    "hiddenNominationVotes": "Hidden Nomination Votes",
-    "hiddenVerdictVotes": "Hidden Verdict Votes",
-    "forfeitNominationVote": "Forfeit Nomination Vote",
-    "randomPlayerNames": "Random Player Names",
 
     "syndicateGunItem": "Syndicate Gun",
     "nightMessages": "Night Messages",
+
+    "player.unknown": "Player \\0",
+
+    "modifiers": "Modifiers",
+    
+    "modifierMenu.trialPhases": "Trial Phases:",
+    "modifierMenu.trialPhases.fake": "Scheduled Nominations",
+    "noTrialPhases": "No Trial Phases",
+    "unscheduledNominations": "Instant Nominations",
+
+    "modifierMenu.guiltyVoteRequirement": "Guilty Vote Requirement:",
+    "modifierMenu.guiltyVoteRequirement.fake": "Popular Vote",
+    "twoThirdsMajority": "Two-thirds Majority",
+    "autoGuilty": "Auto-Guilty",
+
+    "modifierMenu.abstaining": "Abstaining:",
+    "modifierMenu.abstaining.false": "Disabled",
+    "modifierMenu.abstaining.true": "Enabled",
+    "abstaining": "Abstaining",
+
+    "modifierMenu.graveInfo": "Grave Info:",
+    "modifierMenu.graveInfo.fake": "Role Grave Killers",
+    "roleSetGraveKillers": "Role Set Grave Killers",
+    "noDeathCause": "No Death Cause",
+    "obscuredGraves": "Obscured Graves",
+
+    "modifierMenu.chat": "Chat:",
+    "noChat": "No Chat",
+
+    "noNightChat": "No Night Chat",
+    "modifierMenu.chat.fake": "All Chat",
+
+    "modifierMenu.deadCanChat": "Dead Chat:",
+    "modifierMenu.deadCanChat.false": "Separate",
+    "modifierMenu.deadCanChat.true": "Included",
+    "deadCanChat": "Dead Can Chat",
+
+    "modifierMenu.whispers": "Whispers:",
+    "modifierMenu.whispers.fake": "Broadcast Whispers",
+    "noWhispers": "No Whispers",
+
+    "modifierMenu.skipDay1": "Skip Day 1:",
+    "modifierMenu.skipDay1.false": "Disabled",
+    "modifierMenu.skipDay1.true": "Enabled",
+    "skipDay1": "Skip Day 1",
+
+
+    "hiddenNominationVotes.false": "Shown",
+    "hiddenNominationVotes.true": "Hidden",
+    "hiddenNominationVotes": "Nomination Votes",
+    
+    "hiddenVerdictVotes.false": "Shown",
+    "hiddenVerdictVotes.true": "Hidden",
+    "hiddenVerdictVotes": "Verdict Votes",
+  
+    "forfeitNominationVote.false": "Allowed",
+    "forfeitNominationVote.true": "Unavailable",
+    "forfeitNominationVote": "Forfeit Nomination Vote",
+  
+    "randomPlayerNames.false": "Normal",
+    "randomPlayerNames.true": "Random",
+    "randomPlayerNames": "Player Names",
     
     "simplify":"Simplify",
     "backToLobby": "Back To Lobby",

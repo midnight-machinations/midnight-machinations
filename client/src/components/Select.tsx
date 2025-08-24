@@ -4,9 +4,19 @@ import "./select.css";
 import Icon from "./Icon";
 import Popover from "./Popover";
 import translate from "../game/lang";
+import StyledText from "./StyledText";
 
 export type SelectOptionsNoSearch<K extends { toString(): string}> = Map<K, React.ReactNode>;
 export type SelectOptionsSearch<K extends { toString(): string}> = Map<K, [React.ReactNode, string]>;
+
+
+export function set_option_typical<K extends { toString(): string}>(optionMap: SelectOptionsSearch<K>, option: K, translationKey: string = option.toString()): void {
+    const translation = translate(translationKey)
+    optionMap.set(option, [<StyledText noLinks={true}>{translation}</StyledText>, translation])
+}
+export function set_options_typical<K extends { toString(): string}>(optionMap: SelectOptionsSearch<K>, options: readonly K[]): void {
+    options.forEach(option => set_option_typical(optionMap, option))
+}
 
 export default function Select<K extends { toString(): string}>(props: Readonly<{
     value: K,

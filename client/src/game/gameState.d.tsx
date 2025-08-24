@@ -162,19 +162,22 @@ export type Tag =
     "spiraling";
 
 export const MODIFIERS = [
-    "obscuredGraves",
+    "obscuredGraves", "noDeathCause", "roleSetGraveKillers",
     "skipDay1",
-    "deadCanChat", "abstaining",
-    "noDeathCause",
-    "roleSetGraveKillers", "autoGuilty", 
-    "twoThirdsMajority", "noTrialPhases", 
+    "deadCanChat",
+    "noChat", "noNightChat",
     "noWhispers", "hiddenWhispers",
-    "noNightChat", "noChat", 
-    "unscheduledNominations",
-    "hiddenNominationVotes", "hiddenVerdictVotes",
-    "forfeitNominationVote", "randomPlayerNames"
+    "abstaining",
+    "autoGuilty", "twoThirdsMajority",
+    "noTrialPhases", "unscheduledNominations"
+    "hiddenNominationVotes", "hiddenVerdictVotes",//add
+    "forfeitNominationVote", "randomPlayerNames"//add
 ] as const;
 export type ModifierType = (typeof MODIFIERS)[number];
+
+export function toModifierType(modifier: string | undefined | null): ModifierType | undefined {
+    return MODIFIERS.find(mod => {return mod.toString() === modifier})
+}
 
 export type Player = {
     name: UnsafeString,
