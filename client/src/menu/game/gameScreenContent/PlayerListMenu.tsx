@@ -74,8 +74,8 @@ function PlayerCard(props: Readonly<{
         ["yourPlayerIndex"],
         false
     )!;
-    const chatFilter = usePlayerState(
-        playerState => playerState.chatFilter,
+    const chatFilter = useGameState(
+        gameState => gameState.chatFilter,
         ["filterUpdate"],
     );
     const playerAlive = useGameState(
@@ -208,7 +208,7 @@ function PlayerCard(props: Readonly<{
                 {whisperNotification===true && <div className="chat-notification highlighted">!</div>}
             </Button>
         }
-        {spectator || (() => {
+        {(() => {
             const filter = props.playerIndex;
             const isFilterSet = chatFilter?.type === "playerNameInMessage" && (chatFilter.player === filter);
             

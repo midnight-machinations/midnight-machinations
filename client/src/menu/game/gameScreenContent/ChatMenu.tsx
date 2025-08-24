@@ -18,8 +18,8 @@ import { RoleList } from "../../../game/roleListState.d";
 
 
 export default function ChatMenu(): ReactElement {
-    const filter = usePlayerState(
-        playerState => playerState.chatFilter,
+    const filter = useGameState(
+        gameState => gameState.chatFilter,
         ["filterUpdate"]
     );
 
