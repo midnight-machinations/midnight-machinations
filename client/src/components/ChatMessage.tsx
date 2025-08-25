@@ -3,7 +3,7 @@ import React, { ReactElement } from "react";
 import GAME_MANAGER, { find, replaceMentions } from "..";
 import StyledText, { KeywordDataMap, PLAYER_SENDER_KEYWORD_DATA } from "./StyledText";
 import "./chatMessage.css"
-import { ChatGroup, Conclusion, DefensePower, PhaseState, PlayerIndex, Tag, translateConclusion, translateWinCondition, UnsafeString, Verdict, WinCondition } from "../game/gameState.d";
+import { ChatGroup, Conclusion, DefensePower, InsiderGroup, PhaseState, PlayerIndex, Tag, translateConclusion, translateWinCondition, UnsafeString, Verdict, WinCondition } from "../game/gameState.d";
 import { Role, RoleState } from "../game/roleState.d";
 import { Grave } from "../game/graveState";
 import GraveComponent from "./grave";
@@ -795,12 +795,15 @@ export function translateChatMessage(
             return conclusionString + '\n'
                 + message.synopsis.playerSynopses.map((synopsis, index) => 
                     translate(`chatMessage.gameOver.player.won.${synopsis.won}`, encodeString(playerNames![index]))
-                        + ` (${
-                            synopsis.crumbs.map(crumb => translate("chatMessage.gameOver.player.crumb",
+                        + ` (${synopsis.outlineAssignment + 1}: ${translateRoleOutline(roleList[synopsis.outlineAssignment], playerNames)}`
+                        + `: ${synopsis.crumbs.map(crumb => 
+                            translate("chatMessage.gameOver.player.crumb",
+                                crumb.insiderGroups.map(group => translate("chatGroup."+group+".icon")).join("|") || translate("chatGroup.all.icon"),
                                 translateWinCondition(crumb.winCondition), 
                                 translate(`role.${crumb.role}.name`)
-                            )).join(" → ")
-                        })`
+                            )
+                        ).join(" → ")}`
+                        + `)`
                 ).join('\n');
         }
         case "playerForwardedMessage":
@@ -902,10 +905,12 @@ export type ChatMessageVariant = {
     type: "gameOver"
     synopsis: {
         playerSynopses: {
+            outlineAssignment: number // role outline index
             crumbs: {
                 night: number | null,
                 role: Role,
-                winCondition: WinCondition
+                winCondition: WinCondition,
+                insiderGroups: InsiderGroup[]
             }[],
             won: boolean
         }[],

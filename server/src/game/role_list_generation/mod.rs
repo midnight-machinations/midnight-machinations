@@ -2,22 +2,29 @@ use std::collections::VecDeque;
 
 use rand::seq::SliceRandom;
 
-use crate::{game::{components::{insider_group::InsiderGroupID, win_condition::WinCondition}, player::PlayerReference, role::Role, role_list::RoleOutlineOption, role_list_generation::criteria::{GenerationCriterion, GenerationCriterionResult}, settings::Settings}, vec_set::VecSet};
+use crate::{game::{components::{insider_group::InsiderGroupID, win_condition::WinCondition}, player::PlayerReference, role::Role, role_list::RoleOutlineOption, role_list_generation::criteria::{GenerationCriterion, GenerationCriterionResult}, role_outline_reference::RoleOutlineReference, settings::Settings}, vec_set::VecSet};
 
 pub mod criteria;
 
 pub struct RoleListGenerator {
     settings: Settings,
+    new_to_original_role_outline_indices_map: Vec<usize>,
     nodes: Vec<PartialOutlineListAssignmentNode>,
     criteria: Vec<GenerationCriterion>,
 }
 
 impl RoleListGenerator {
 
+    #[expect(clippy::indexing_slicing, reason = "Indices are guaranteed to be in-bounds")]
     pub fn new(mut settings: Settings) -> RoleListGenerator {
-        settings.role_list.0.shuffle(&mut rand::rng());
+        let mut new_to_original_role_outline_indices_map: Vec<usize> = (0..settings.role_list.0.len()).collect();
+        new_to_original_role_outline_indices_map.shuffle(&mut rand::rng());
+        // Reorder according to the shuffled indices.
+        settings.role_list.0 = new_to_original_role_outline_indices_map.iter().map(|&i| settings.role_list.0[i].clone()).collect();
+
         RoleListGenerator {
             settings,
+            new_to_original_role_outline_indices_map,
             nodes: Vec::new(),
             criteria: vec![
                 // Though it's less efficient, we want to fill roles first
@@ -143,8 +150,10 @@ impl RoleListGenerator {
     #[expect(clippy::unwrap_used, reason = "We ensure all fields are set before this point")]
     unsafe fn finalize(&self, node: &PartialOutlineListAssignmentNode) -> OutlineListAssignment {
         let mut assignments = Vec::new();
-        for assignment in node.assignments.iter() {
+        for (index, assignment) in node.assignments.iter().enumerate() {
+            #[expect(clippy::indexing_slicing, clippy::cast_possible_truncation, reason = "Indices are guaranteed to be in-bounds")]
             assignments.push(OutlineAssignment {
+                role_outline_reference: unsafe { RoleOutlineReference::new_unchecked(self.new_to_original_role_outline_indices_map[index] as u8) },
                 role: assignment.role.unwrap(),
                 insider_groups: assignment.insider_groups.clone().unwrap(),
                 win_condition: assignment.win_condition.clone().unwrap(),
@@ -176,6 +185,7 @@ pub struct OutlineListAssignment {
 
 #[derive(Clone, Debug)]
 pub struct OutlineAssignment {
+    pub role_outline_reference: RoleOutlineReference,
     pub role: Role,
     pub insider_groups: VecSet<InsiderGroupID>,
     pub win_condition: WinCondition,
