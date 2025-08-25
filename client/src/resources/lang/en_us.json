@@ -862,12 +862,13 @@
 
     "modifierMenu.deadCanChat": "Dead Chat:",
     "modifierMenu.deadCanChat.false": "Separate",
-    "modifierMenu.deadCanChat.true": "Included",
+    "modifierMenu.deadCanChat.true": "Same",
     "deadCanChat": "Dead Can Chat",
 
     "modifierMenu.whispers": "Whispers:",
     "modifierMenu.whispers.fake": "Broadcast Whispers",
     "noWhispers": "No Whispers",
+    "hiddenWhispers": "Hidden Whispers",
 
     "modifierMenu.skipDay1": "Skip Day 1:",
     "modifierMenu.skipDay1.false": "Disabled",

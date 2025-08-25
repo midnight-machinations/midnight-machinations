@@ -169,7 +169,7 @@ export const MODIFIERS = [
     "noWhispers", "hiddenWhispers",
     "abstaining",
     "autoGuilty", "twoThirdsMajority",
-    "noTrialPhases", "unscheduledNominations"
+    "noTrialPhases", "unscheduledNominations",
     "hiddenNominationVotes", "hiddenVerdictVotes",//add
     "forfeitNominationVote", "randomPlayerNames"//add
 ] as const;
