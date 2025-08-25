@@ -202,6 +202,10 @@ const MODIFIER_SELECTIONS = [
     ModifierSelection.boolean("deadCanChat"),
     ModifierSelection.dropdown("whispers", ["hiddenWhispers", "noWhispers"]),
     ModifierSelection.boolean("skipDay1"),
+    ModifierSelection.boolean("hiddenNominationVotes"),
+    ModifierSelection.boolean("hiddenVerdictVotes"),
+    ModifierSelection.boolean("forfeitNominationVote"),
+    ModifierSelection.boolean("randomPlayerNames"),
 ] as const
 
 export function EnabledModifiersDisplay(props: EnabledModifiersDisplayProps): ReactElement {

@@ -170,8 +170,8 @@ export const MODIFIERS = [
     "abstaining",
     "autoGuilty", "twoThirdsMajority",
     "noTrialPhases", "unscheduledNominations",
-    "hiddenNominationVotes", "hiddenVerdictVotes",//add
-    "forfeitNominationVote", "randomPlayerNames"//add
+    "hiddenNominationVotes", "hiddenVerdictVotes",
+    "forfeitNominationVote", "randomPlayerNames",
 ] as const;
 export type ModifierType = (typeof MODIFIERS)[number];
 

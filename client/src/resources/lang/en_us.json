@@ -876,20 +876,24 @@
     "skipDay1": "Skip Day 1",
 
 
-    "hiddenNominationVotes.false": "Shown",
-    "hiddenNominationVotes.true": "Hidden",
+    "modifierMenu.hiddenNominationVotes.false": "Shown",
+    "modifierMenu.hiddenNominationVotes.true": "Hidden",
+    "modifierMenu.hiddenNominationVotes": "Nomination Votes:",
     "hiddenNominationVotes": "Nomination Votes",
     
-    "hiddenVerdictVotes.false": "Shown",
-    "hiddenVerdictVotes.true": "Hidden",
+    "modifierMenu.hiddenVerdictVotes.false": "Shown",
+    "modifierMenu.hiddenVerdictVotes.true": "Hidden",
+    "modifierMenu.hiddenVerdictVotes": "Verdict Votes:",
     "hiddenVerdictVotes": "Verdict Votes",
   
-    "forfeitNominationVote.false": "Allowed",
-    "forfeitNominationVote.true": "Unavailable",
+    "modifierMenu.forfeitNominationVote.false": "Allowed",
+    "modifierMenu.forfeitNominationVote.true": "Disabled",
+    "modifierMenu.forfeitNominationVote": "Forfeit Nomination Vote:",
     "forfeitNominationVote": "Forfeit Nomination Vote",
-  
-    "randomPlayerNames.false": "Normal",
-    "randomPlayerNames.true": "Random",
+    
+    "modifierMenu.randomPlayerNames.false": "Normal",
+    "modifierMenu.randomPlayerNames.true": "Random",
+    "modifierMenu.randomPlayerNames": "Player Names",
     "randomPlayerNames": "Player Names",
     
     "simplify":"Simplify",
