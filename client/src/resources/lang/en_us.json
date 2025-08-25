@@ -1855,7 +1855,7 @@
     "wiki.article.role.veteran.extra":"* You are immune to getting roleblocked and getting possessed\n* When you select yourself, you don't visit yourself\n* You can't attack dead players",
 
     "wiki.article.role.marksman.reminder": "Each night, mark up to 3 players and camp up to 3 players. If a marked player visits a camped player, you attack the marked player.",
-    "wiki.article.role.marksman.lore": "When the syndicate showed up, the marksman decided it's time the town had a curfew. If anyone steps out of line, its not the marksman's fault. \"Just don't be stupid and you'll be safe.\"",
+    "wiki.article.role.marksman.lore": "When the killings started, the marksman decided it's time the town had a curfew. If anyone steps out of line, its not the marksman's fault. \"Just don't be stupid and you'll be safe.\"",
     "wiki.article.role.marksman.guide": "- Each night, choose up to three players to mark, and camp up to three players to camp\n    - If a marked player visits a camped player, you attack the marked player\n- You can't do anything on the first night\n- If you kill a townie, you can't use your ability again\n- You should try to mark players who act suspicious, and camp players that they would only visit if they're evil",
     "wiki.article.role.marksman.abilities":"* Choose to mark up to 3 players\n* Select up to 3 players, if you have nobody marked, you can't camp anyone\n    - If a marked player visits any of your targets, you attack them",
     "wiki.article.role.marksman.attributes":"* You can't mark or camp to camp on night 1\n* If you kill a town loyalist, you can't mark or camp again\n* You have an indirect, basic attack",
