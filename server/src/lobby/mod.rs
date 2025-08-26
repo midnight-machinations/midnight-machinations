@@ -11,12 +11,14 @@ pub struct Lobby {
     pub name: String,
     pub settings: Settings,
     pub clients: VecMap<RoomClientID, LobbyClient>,
-
+    
+    pub created: Instant,
     pub chat_message_index: usize
 }
 
 impl Lobby {
     const DISCONNECT_TIMER_SECS: u64 = 5;
+    const CLOSE_TIMER: Duration = Duration::from_secs(120); // 2 hours (unless i forgot to change it after testing)
 
     pub fn new() -> Self {
         Self {
@@ -24,6 +26,7 @@ impl Lobby {
             settings: Settings::default(),
             clients: VecMap::new(),
             chat_message_index: 0,
+            created: Instant::now(),
         }
     }
 
@@ -124,7 +127,7 @@ impl Lobby {
     }
     
     pub fn new_from_game(name: String, settings: Settings, clients: VecMap<RoomClientID, LobbyClient>) -> Self {
-        let new = Self { name, settings, clients, chat_message_index: 0 };
+        let new = Self { name, settings, clients, chat_message_index: 0, created: Instant::now() };
 
         for (id, client) in new.clients.iter() {
             client.send(ToClientPacket::YourId { player_id: *id });
@@ -251,6 +254,10 @@ impl RoomState for Lobby {
     }
     
     fn tick(&mut self, time_passed: Duration) -> RoomTickResult {
+        if self.created.elapsed() > Self::CLOSE_TIMER {
+            return RoomTickResult { close_room: true };
+        }
+
         let mut to_remove = vec![];
 
         for client in self.clients.iter_mut() {
