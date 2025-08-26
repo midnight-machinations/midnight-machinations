@@ -1,7 +1,7 @@
 use std::time::Duration;
 use tokio_tungstenite::tungstenite::Message;
 
-use crate::{room::RoomState, log, packet::ToServerPacket, websocket_connections::connection::Connection};
+use crate::{game::on_client_message::GameClientMessageResult, log, packet::ToServerPacket, room::{Room, RoomState}, websocket_connections::connection::Connection};
 
 use super::{client::ClientReference, WebsocketListener, ValidateClientError};
 
@@ -22,7 +22,7 @@ impl WebsocketListener{
         log!(info "Listener"; "{}: {}", &connection.address().to_string(), message);
 
         let Ok(packet) = serde_json::from_str::<ToServerPacket>(message.to_string().as_str()) else {
-            log!(error "Listener"; "Recieved message but could not parse packet");
+            log!(error "Listener"; "Received message but could not parse packet");
             return
         };
 
@@ -36,14 +36,40 @@ impl WebsocketListener{
             }
         }
     }
+    
     pub(super) fn tick(&mut self, delta_time: Duration){
         let mut closed_rooms = Vec::new();
         let mut closed_clients = Vec::new();
+        let mut sent_to_lobby = Vec::new();
 
         for (room_code, room) in self.rooms_mut().iter_mut() {
             let tick_data = room.tick(delta_time);
             if tick_data.close_room {
                 closed_rooms.push(*room_code);
+            } else if tick_data.send_to_lobby {
+                'to_lobby: { match &mut **room {
+                    Room::Game(game) => {
+                        //creating the lobby now not later to prevent borrow errors
+                        let GameClientMessageResult::BackToLobby(lobby) = game.back_to_lobby() else {
+                            log!(error "Listener"; "Game.back_to_lobby() did not return a GameClientMessageResult::BackToLobby. Room code: {room_code}");
+                            break 'to_lobby;
+                        };
+                        sent_to_lobby.push((*room_code, lobby));
+                    },
+
+                    Room::Lobby(_) => {
+                        log!(error "Listener"; "Lobby tried to return to lobby. Room code: {:?}", room_code);
+                    },
+                }}
+            }
+        }
+
+        for (room_code, lobby) in sent_to_lobby {
+            if let Some(room) = self.get_room_mut(&room_code) {
+                *room = Room::Lobby(lobby);
+                log!(info "Listener"; "Room {room_code} forcibly moved to lobby.");
+            } else {
+                log!(error "Listener"; "Room {room_code} was supposed to be moved from game to lobby but does not exist.");
             }
         }
 
@@ -62,4 +88,5 @@ impl WebsocketListener{
             self.delete_client(&client);
         }
     }
+
 }

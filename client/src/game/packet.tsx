@@ -22,6 +22,10 @@ export type ToClientPacket = {
 } | {
     type: "rateLimitExceeded",
 } | {
+    type: "lobbyCloseWarning"
+} | {
+    type: "gameCloseWarning"
+} | {
     type: "forcedOutsideLobby"
 } | {
     type: "forcedDisconnect"

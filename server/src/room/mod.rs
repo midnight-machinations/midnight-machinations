@@ -50,6 +50,7 @@ pub enum RemoveRoomClientResult {
 #[must_use = "You may need to close the room"]
 pub struct RoomTickResult {
     pub close_room: bool,
+    pub send_to_lobby: bool,
 }
 
 impl Room {

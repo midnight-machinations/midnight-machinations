@@ -27,6 +27,7 @@ use std::time::Instant;
 use ability_input::saved_controllers_map::SavedControllersMap;
 use ability_input::ControllerID;
 use ability_input::PlayerListSelection;
+use std::time::Duration;
 use components::confused::Confused;
 use components::drunk_aura::DrunkAura;
 use components::enfranchise::Enfranchise;
@@ -124,7 +125,10 @@ pub struct Game {
     pub silenced: Silenced,
     pub fragile_vests: FragileVestsComponent,
     pub win_condition: WinConditionComponent,
-    pub chat_messages: ChatComponent
+    pub chat_messages: ChatComponent,
+
+    pub sent_warning: bool,
+    pub recess_start: Option<Instant>,
 }
 
 #[derive(Serialize, Debug, Clone, Copy)]
@@ -150,7 +154,8 @@ type Assignments = VecMap<PlayerReference, (RoleOutlineReference, RoleAssignment
 
 impl Game {
     pub const DISCONNECT_TIMER_SECS: u16 = 60 * 2;
-
+    const CLOSE_TIMER: Duration = Duration::from_secs(60*30); // 30 minutes
+    const CLOSE_WARNING_TIMER: Duration = Duration::from_secs(60*2); // 2 minutes
     
 
     #[expect(clippy::cast_possible_truncation, reason = "Game can only have 255 players maximum")]
