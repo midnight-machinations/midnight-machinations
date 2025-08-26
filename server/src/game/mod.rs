@@ -25,10 +25,8 @@ pub mod new_game;
 
 use std::collections::VecDeque;
 use std::time::Instant;
-use ability_input::saved_controllers_map::SavedControllersMap;
-use ability_input::ControllerID;
-use ability_input::PlayerListSelection;
 use std::time::Duration;
+use crate::game::controllers::ControllerID;
 use crate::game::controllers::Controllers;
 use controllers::PlayerListSelection;
 use components::confused::Confused;
