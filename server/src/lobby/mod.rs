@@ -18,7 +18,7 @@ pub struct Lobby {
 
 impl Lobby {
     const DISCONNECT_TIMER_SECS: u64 = 5;
-    const CLOSE_TIMER: Duration = Duration::from_secs(120); // 2 hours (unless i forgot to change it after testing)
+    const CLOSE_TIMER: Duration = Duration::from_secs(60*60*2); // 2 hours
 
     pub fn new() -> Self {
         Self {
