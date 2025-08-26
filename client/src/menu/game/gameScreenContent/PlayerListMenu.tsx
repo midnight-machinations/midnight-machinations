@@ -8,13 +8,13 @@ import { ContentMenu, ContentTab } from "../GameScreen";
 import StyledText from "../../../components/StyledText";
 import Icon from "../../../components/Icon";
 import { Button } from "../../../components/Button";
-import { useGameState, usePlayerNames, usePlayerState, useSpectator } from "../../../components/useHooks";
+import { useGameState, useLobbyOrGameState, usePlayerNames, usePlayerState, useSpectator } from "../../../components/useHooks";
 import PlayerNamePlate from "../../../components/PlayerNamePlate";
 import ChatMessage, { translateChatMessage } from "../../../components/ChatMessage";
 import GraveComponent, { translateGraveRole } from "../../../components/grave";
 import { ChatMessageSection, ChatTextInput } from "./ChatMenu";
 import ListMap from "../../../ListMap";
-import { controllerIdToLinkWithPlayer } from "../../../game/abilityInput";
+import { controllerIdToLinkWithPlayer } from "../../../game/controllerInput";
 
 export default function PlayerListMenu(): ReactElement {
     const players = useGameState(
@@ -91,10 +91,14 @@ function PlayerCard(props: Readonly<{
         ["gamePlayers", "playerVotes"]
     )!;
     const playerNames = usePlayerNames();
+    const roleList = useLobbyOrGameState(
+        gameState => gameState.roleList,
+        ["roleList"]
+    )!;
 
 
     const controllers = new ListMap(
-        usePlayerState(playerState=>playerState.savedControllers, ["yourAllowedControllers"])??[],
+        usePlayerState(playerState=>playerState.savedControllers, ["yourAllowedControllers", "yourAllowedController"])??[],
         (k1, k2)=>controllerIdToLinkWithPlayer(k1)===controllerIdToLinkWithPlayer(k2)
     );
     const whisperAsPlayers = controllers.list
@@ -166,7 +170,7 @@ function PlayerCard(props: Readonly<{
             <Button onClick={()=>setAlibiOpen(!alibiOpen)}>
                 <StyledText noLinks={true}>
                     {
-                        translateChatMessage(mostRecentBlockMessage.variant, playerNames)
+                        translateChatMessage(mostRecentBlockMessage.variant, playerNames, roleList)
                             .split("\n")[1]
                             .trim()
                             .substring(0,30)
@@ -243,7 +247,7 @@ function PlayerCard(props: Readonly<{
                 return <>
                     <ChatTextInput 
                         key={"input: "+JSON.stringify(id)}
-                        disabled={sendChatController.availableAbilityData.grayedOut}
+                        disabled={sendChatController.parameters.grayedOut}
                         whispering={props.playerIndex}
                         controllingPlayer={id.player}
                     />

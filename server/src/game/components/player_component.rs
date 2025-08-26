@@ -7,7 +7,7 @@ impl<T> PlayerComponent<T>{
     /// # Safety
     /// player_count <= the games real player count
     pub unsafe fn new_component_box(player_count: u8, map: impl FnMut(PlayerReference)->T)->Self{
-        Self { data: PlayerReference::all_players_from_count(player_count).map(map).collect() }
+        Self { data: unsafe { PlayerReference::all_players_from_count(player_count).map(map).collect() } }
     }
 
     pub fn get(&self, player: PlayerReference)->&T{

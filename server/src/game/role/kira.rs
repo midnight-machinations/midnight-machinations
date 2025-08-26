@@ -9,7 +9,7 @@ use crate::game::player::PlayerReference;
 
 use crate::game::Game;
 use crate::vec_map::VecMap;
-use crate::game::ability_input::*;
+use crate::game::controllers::*;
 use super::{Role, RoleStateImpl};
 
 #[derive(Clone, Debug, Serialize, Default)]
@@ -74,7 +74,7 @@ impl KiraGuess{
             Role::Counterfeiter | Role::Recruiter | Role::Impostor | Role::MafiaKillingWildcard |
             Role::Goon |
             Role::Hypnotist | Role::Blackmailer | Role::Cerenovous | Role::Informant | 
-            Role::MafiaWitch | Role::Necromancer | Role::Consort |
+            Role::Necromancer | Role::Consort |
             Role::Mortician | Role::Framer | Role::Forger | 
             Role::Disguiser | Role::Reeducator |
             Role::Ambusher | Role::MafiaSupportWildcard => Some(Self::NonTown),
@@ -157,7 +157,7 @@ pub enum KiraGuessResult {
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize, Default, PartialEq, Eq, PartialOrd, Ord)]
-pub struct KiraAbilityInput(Vec<(PlayerReference, KiraGuess)>);
+pub struct KiraControllerInput(Vec<(PlayerReference, KiraGuess)>);
 
 pub(super) const MAXIMUM_COUNT: Option<u8> = None;
 pub(super) const DEFENSE: DefensePower = DefensePower::Armored;

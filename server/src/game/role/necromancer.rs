@@ -1,6 +1,6 @@
 use serde::Serialize;
 
-use crate::game::ability_input::AvailableTwoPlayerOptionSelection;
+use crate::game::controllers::AvailableTwoPlayerOptionSelection;
 use crate::game::event::on_midnight::{MidnightVariables, OnMidnightPriority};
 use crate::game::{attack_power::DefensePower, phase::PhaseType};
 use crate::game::player::PlayerReference;

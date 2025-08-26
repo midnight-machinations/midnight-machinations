@@ -9,11 +9,12 @@ import { ContentMenu, ContentTab } from "../GameScreen";
 import { HistoryPoller, HistoryQueue } from "../../../history";
 import { Button } from "../../../components/Button";
 import Icon from "../../../components/Icon";
-import StyledText, { KeywordDataMap, PLAYER_KEYWORD_DATA, PLAYER_SENDER_KEYWORD_DATA } from "../../../components/StyledText";
+import StyledText, { KeywordDataMap, PLAYER_KEYWORD_DATA, PLAYER_SENDER_KEYWORD_DATA, ROLE_LIST_KEYWORD_DATA } from "../../../components/StyledText";
 import { useGameState, useLobbyOrGameState, usePlayerNames, usePlayerState } from "../../../components/useHooks";
 import { Virtuoso } from 'react-virtuoso';
 import ListMap from "../../../ListMap";
-import { controllerIdToLinkWithPlayer } from "../../../game/abilityInput";
+import { controllerIdToLinkWithPlayer } from "../../../game/controllerInput";
+import { RoleList } from "../../../game/roleListState.d";
 
 
 export default function ChatMenu(): ReactElement {
@@ -42,7 +43,7 @@ export default function ChatMenu(): ReactElement {
     }, [filter, playerNames]);
 
     const controllers = new ListMap(
-        usePlayerState(playerState=>playerState.savedControllers, ["yourAllowedControllers"]),
+        usePlayerState(playerState=>playerState.savedControllers, ["yourAllowedControllers", "yourAllowedController"]),
         (k1, k2)=>controllerIdToLinkWithPlayer(k1)===controllerIdToLinkWithPlayer(k2)
     );
 
@@ -68,7 +69,8 @@ export default function ChatMenu(): ReactElement {
             .map(([id, _])=>{
                 if(id.type!=="chat"){return null}
 
-                const sendChatController = controllers.get({type: "sendChat", player: id.player})!;
+                const sendChatController = controllers.get({type: "sendChat", player: id.player});
+                if(sendChatController===null){return null}
 
                 return <>
                     <div key={"header: "+JSON.stringify(id)} className="chat-menu-icons">
@@ -87,7 +89,7 @@ export default function ChatMenu(): ReactElement {
                     </div>
                     <ChatTextInput 
                         key={"input: "+JSON.stringify(id)}
-                        disabled={sendChatController.availableAbilityData.grayedOut}
+                        disabled={sendChatController.parameters.grayedOut}
                         controllingPlayer={id.player}
                     />
                 </>
@@ -112,6 +114,7 @@ function filterMessage(
     filter: ChatFilter,
     message: ChatMessage,
     playerNames: UnsafeString[],
+    roleList: RoleList
 ): boolean{
     if(filter === null || filter === undefined)
         return true;
@@ -135,11 +138,11 @@ function filterMessage(
                     }
                     break;
                 case "targetsMessage":
-                    msgTxt = translateChatMessage(message.variant.message, playerNames);
+                    msgTxt = translateChatMessage(message.variant.message, playerNames, roleList);
                     break;
             }
 
-            msgTxt += translateChatMessage(message.variant, playerNames);
+            msgTxt += translateChatMessage(message.variant, playerNames, roleList);
 
             return msgTxt.includes(encodeString(playerNames[filter.player]));
         // case "myWhispersWithPlayer":
@@ -182,9 +185,13 @@ export function ChatMessageSection(props: Readonly<{
         state => state.chatMessages.values(),
         ["addChatMessages"]
     )!;
+    const roleList = useLobbyOrGameState(
+        gameState => gameState.roleList,
+        ["roleList"]
+    ) ?? [];
 
     const allMessages = messages
-        .filter((msg)=>filterMessage(filter, msg, players.map((p)=>p.toString())))
+        .filter((msg)=>filterMessage(filter, msg, players.map((p)=>p.toString()), roleList))
         .filter((msg, index, array)=>{
             //if there is a filter, remove repeat phaseChange message
             if(filter === null){return true}
@@ -224,6 +231,7 @@ export function ChatMessageSection(props: Readonly<{
                     
                     return newKeywordData;
                 })()}
+                roleListKeywordData={ROLE_LIST_KEYWORD_DATA}
             />;
         })
 

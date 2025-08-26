@@ -13,7 +13,7 @@ use super::{
         on_game_ending::OnGameEnding
     },
     game_client::GameClientLocation,
-    game_conclusion::GameConclusion, phase::PhaseType,
+    game_conclusion::GameConclusion,
     player::PlayerReference,
     role::RoleState,
     spectator::spectator_pointer::SpectatorPointer, Game
@@ -78,49 +78,37 @@ impl Game {
                 }
             },
             ToServerPacket::HostForceBackToLobby => {
-                if let Some(player) = self.clients.get(&room_client_id){
-                    if !player.host {break 'packet_match}
-                }
+                if let Some(player) = self.clients.get(&room_client_id) && !player.host {break 'packet_match}
 
                 return self.back_to_lobby();
             }
             ToServerPacket::HostForceEndGame => {
-                if let Some(player) = self.clients.get(&room_client_id){
-                    if !player.host {break 'packet_match}
-                }
+                if let Some(player) = self.clients.get(&room_client_id)
+                    && !player.host {break 'packet_match}
 
                 let conclusion = GameConclusion::get_premature_conclusion(self);
 
                 OnGameEnding::new(conclusion).invoke(self);
             }
             ToServerPacket::HostForceSkipPhase => {
-                if let Some(player) = self.clients.get(&room_client_id){
-                    if !player.host {break 'packet_match}
-                }
+                if let Some(player) = self.clients.get(&room_client_id)
+                    && !player.host {break 'packet_match}
                 
                 OnFastForward::invoke(self);
             }
             ToServerPacket::HostDataRequest => {
-                if let Some(player) = self.clients.get(&room_client_id){
-                    if !player.host {break 'packet_match}
-                }
+                if let Some(player) = self.clients.get(&room_client_id) && !player.host {break 'packet_match}
 
                 self.resend_host_data(sender_player_ref.connection(self));
             }
             ToServerPacket::HostForceSetPlayerName { id, name } => {
-                if let Some(player) = self.clients.get(&room_client_id){
-                    if !player.host {break 'packet_match}
-                }
-                if let Some(player) = self.clients.get(&id) {
-                    if let GameClientLocation::Player(player) = player.client_location {
-                        self.set_player_name(player, name);
-                    }
+                if let Some(player) = self.clients.get(&room_client_id) && !player.host {break 'packet_match}
+                if let Some(player) = self.clients.get(&id) && let GameClientLocation::Player(player) = player.client_location {
+                    self.set_player_name(player, name);
                 }
             }
             ToServerPacket::SetPlayerHost { player_id } => {
-                if let Some(player) = self.clients.get(&room_client_id){
-                    if !player.host {break 'packet_match}
-                }
+                if let Some(player) = self.clients.get(&room_client_id) && !player.host {break 'packet_match}
                 if let Some(player) = self.clients.get_mut(&player_id) {
                     player.set_host();
                 }
@@ -135,11 +123,6 @@ impl Game {
                 self.ensure_host_exists(Some(room_client_id));
                 self.send_players();
                 self.resend_host_data_to_all_hosts();
-            }
-            ToServerPacket::Judgement { verdict } => {
-                if self.current_phase().phase() != PhaseType::Judgement {break 'packet_match;}
-                
-                sender_player_ref.set_verdict(self, verdict);
             },
             ToServerPacket::SaveNotes { notes } => {
                 sender_player_ref.set_notes(self, notes);
@@ -150,7 +133,7 @@ impl Game {
             ToServerPacket::SaveDeathNote { death_note } => {
                 sender_player_ref.set_death_note(self, death_note);
             },
-            ToServerPacket::AbilityInput { ability_input } => 
+            ToServerPacket::ControllerInput { controller_input: ability_input } => 
                 ability_input.on_client_message(self, sender_player_ref),
             ToServerPacket::SetDoomsayerGuess { guesses } => {
                 if let RoleState::Doomsayer(mut doomsayer) = sender_player_ref.role_state(self).clone(){

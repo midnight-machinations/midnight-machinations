@@ -4,7 +4,7 @@ import ROLES from "./../resources/roles.json";
 import { ChatMessageVariant } from "../components/ChatMessage";
 import { AuditorResult } from "../menu/game/gameScreenContent/AbilityMenu/RoleSpecificMenus/AuditorMenu";
 import { Doomsayer } from "../menu/game/gameScreenContent/AbilityMenu/RoleSpecificMenus/LargeDoomsayerMenu";
-import { TwoRoleOptionSelection } from "./abilityInput";
+import { TwoRoleOptionSelection } from "./controllerInput";
 import { Hypnotist } from "../menu/game/gameScreenContent/AbilityMenu/RoleSpecificMenus/HypnotistMenu";
 
 export type RoleState = {
@@ -13,6 +13,9 @@ export type RoleState = {
     jailedTargetRef: number | null
 } | {
     type: "villager"
+} | {
+    type: "courtesan",
+    previous: PlayerIndex[]
 } | {
     type: "mayor"
 } | {
@@ -143,8 +146,6 @@ export type RoleState = {
     convertRole: Role,
 } | {
     type: "framer"
-} | {
-    type: "mafiaWitch"
 } | {
     type: "necromancer"
 } | {

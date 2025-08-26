@@ -68,8 +68,8 @@ export type RoleOrRoleSet = ({
 
 
 
-export function translateRoleOutline(roleOutline: RoleOutline, playerNames?: UnsafeString[]): string {
-    return roleOutline.map(outline => translateRoleOutlineOption(outline, playerNames)).join(" "+translate("union")+" ")
+export function translateRoleOutline(roleOutline: RoleOutline, playerNames: UnsafeString[]): string {
+    return roleOutline.map(outline => translateRoleOutlineOption(outline, playerNames)).join(" "+translate("union:var.0")+" ")
 }
 
 export function translatePlayerPool(playerPool: PlayerIndex[], playerNames: UnsafeString[]): string {
@@ -83,21 +83,22 @@ export function translatePlayerPool(playerPool: PlayerIndex[], playerNames: Unsa
     return out;
 }
 
-export function translateRoleOutlineOption(roleOutlineOption: RoleOutlineOption, playerNames?: UnsafeString[]): string {
+export function translateRoleOutlineOption(roleOutlineOption: RoleOutlineOption, playerNames: UnsafeString[]): string {
     let out = "";
-    if (roleOutlineOption.playerPool && playerNames !== undefined) {
+    if (roleOutlineOption.playerPool) {
         out += translatePlayerPool(roleOutlineOption.playerPool, playerNames) + ': ';
     }
     if (roleOutlineOption.insiderGroups) {
         if (roleOutlineOption.insiderGroups.length === 0) {
             out += translate("chatGroup.all.icon")
         }
-        for (const insiderGroup of roleOutlineOption.insiderGroups) {
-            out += translate(`chatGroup.${insiderGroup}.icon`) + ' '
-        }
+        out += roleOutlineOption.insiderGroups
+            .map(insiderGroup => translate(`chatGroup.${insiderGroup}.icon`))
+            .join(' ' + translate("union") + ' ');
+        out += ', '
     }
     if (roleOutlineOption.winIfAny) {
-        out += `${translateWinCondition({ type: "gameConclusionReached", winIfAny: roleOutlineOption.winIfAny })} `
+        out += `${translateWinCondition({ type: "gameConclusionReached", winIfAny: roleOutlineOption.winIfAny })}, `;
     }
     if ("roleSet" in roleOutlineOption) {
         out += translate(roleOutlineOption.roleSet)

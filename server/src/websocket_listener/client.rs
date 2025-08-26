@@ -18,7 +18,7 @@ impl ClientReference{
     pub(super) unsafe fn new_unchecked(addr: SocketAddr)->Self{
         Self { addr }
     }
-    pub(super) fn all_clients(listener: &WebsocketListener) -> impl Iterator<Item=ClientReference> {
+    pub(super) fn all_clients(listener: &WebsocketListener) -> impl Iterator<Item=ClientReference> + use<> {
         unsafe{
             listener
                 .clients()

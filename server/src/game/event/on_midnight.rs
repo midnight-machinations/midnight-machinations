@@ -35,8 +35,6 @@ event_priority!(OnMidnightPriority{
 
     DeleteMessages, //set messages
 
-    SpyBug, //use non stolen messages
-
     StealMessages,  //use messages + set messages (specficially set stolen messages)
 
     FinalizeNight

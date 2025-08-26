@@ -1,6 +1,6 @@
 use crate::{
     game::{
-        ability_input::*, modifiers::{ModifierType, Modifiers},
+        controllers::*, modifiers::{ModifierType, Modifiers},
         phase::PhaseType, player::PlayerReference, Game
     },
     vec_set::VecSet

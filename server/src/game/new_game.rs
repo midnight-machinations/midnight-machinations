@@ -1,35 +1,7 @@
 
-use super::event::before_initial_role_creation::BeforeInitialRoleCreation;
-use rand::seq::SliceRandom;
+use crate::{client_connection::ClientConnection, game::{chat::ChatComponent, components::{confused::Confused, cult::Cult, detained::Detained, drunk_aura::DrunkAura, fragile_vest::FragileVestsComponent, graves::Graves, insider_group::{InsiderGroupID, InsiderGroups}, mafia::Mafia, mafia_recruits::MafiaRecruits, pitchfork::Pitchfork, poison::Poison, puppeteer_marionette::PuppeteerMarionette, silenced::Silenced, syndicate_gun_item::SyndicateGunItem, synopsis::SynopsisTracker, tags::Tags, verdicts_today::VerdictsToday, win_condition::WinConditionComponent}, controllers::Controllers, event::on_game_start::OnGameStart, game_client::GameClient, modifiers::{ModifierType, Modifiers}, phase::PhaseStateMachine, player::{Player, PlayerInitializeParameters, PlayerReference}, role_list_generation::{OutlineListAssignment, RoleListGenerator}, role_outline_reference::RoleOutlineReference, settings::Settings, spectator::{spectator_pointer::SpectatorPointer, Spectator, SpectatorInitializeParameters}, Assignments, Game, RejectStartReason}, packet::ToClientPacket, room::{name_validation::generate_random_name, RoomClientID}, vec_map::VecMap};
 
-use crate::{
-    client_connection::ClientConnection,
-    game::{
-        ability_input::SavedControllersMap,
-        chat::ChatComponent,
-        components::{
-            confused::Confused, cult::Cult, detained::Detained,
-            drunk_aura::DrunkAura, fragile_vest::FragileVestsComponent,
-            graves::Graves, insider_group::{InsiderGroupID, InsiderGroups},
-            mafia::Mafia, mafia_recruits::MafiaRecruits, pitchfork::Pitchfork,
-            poison::Poison,
-            puppeteer_marionette::PuppeteerMarionette, silenced::Silenced,
-            syndicate_gun_item::SyndicateGunItem, synopsis::SynopsisTracker,
-            tags::Tags, verdicts_today::VerdictsToday,
-            win_condition::WinConditionComponent
-        },
-        event::on_game_start::OnGameStart, game_client::GameClient,
-        modifiers::Modifiers, phase::PhaseStateMachine,
-        player::{Player, PlayerIndex, PlayerInitializeParameters, PlayerReference},
-        role_list::RoleAssignment, role_outline_reference::RoleOutlineReference,
-        settings::Settings,
-        spectator::{
-            spectator_pointer::SpectatorPointer, Spectator,SpectatorInitializeParameters
-        },
-        Assignments, Game, RejectStartReason
-    },
-    packet::ToClientPacket, room::RoomClientID, vec_map::VecMap
-};
+use super::event::before_initial_role_creation::BeforeInitialRoleCreation;
 
 impl Game{
     /// `players` must have length 255 or lower.
@@ -55,21 +27,23 @@ impl Game{
             }
 
             let settings = settings.clone();
-            let role_list = settings.role_list.clone();
 
-            let random_outline_assignments = match role_list.create_random_role_assignments(&settings.enabled_roles){
-                Some(roles) => {roles},
+            let mut role_list_generator = RoleListGenerator::new(settings.clone());
+
+            let outline_list_assignment = match role_list_generator.generate_role_list() {
+                Some(assignment) => {assignment},
                 None => {
                     role_generation_tries = role_generation_tries.saturating_add(1);
                     continue;
                 }
             };
 
-            let assignments = Self::assign_players_to_assignments(random_outline_assignments);            
+            let assignments = Self::create_assignments(outline_list_assignment);            
 
 
             // Create list of players
             let mut new_players = Vec::new();
+            let mut new_players_names = Vec::new();
             for (player_index, player) in players.iter().enumerate() {
                 let Ok(player_index) = player_index.try_into() else {return Err(RejectStartReason::TooManyClients)};
                 let player_ref = unsafe{PlayerReference::new_unchecked(player_index)};
@@ -80,11 +54,23 @@ impl Game{
                 let Some((_, assignment)) = assignments.get(&player_ref) else {
                     return Err(RejectStartReason::RoleListTooSmall)
                 };
+                
+                let name = if settings.enabled_modifiers.contains(&ModifierType::RandomPlayerNames) {
+                    generate_random_name(
+                        &new_players_names
+                            .iter()
+                            .map(|p: &String|p.as_str())
+                            .collect::<Vec<&str>>()
+                    )
+                }else{
+                    player.name.clone()
+                };
+                new_players_names.push(name.clone());
 
                 let new_player = Player::new(
-                    player.name.clone(),
+                    name,
                     sender.clone(),
-                    assignment.role()
+                    assignment.role
                 );
                 
                 new_players.push(new_player);
@@ -107,7 +93,7 @@ impl Game{
                 modifiers: Modifiers::default_from_settings(settings.enabled_modifiers.clone()),
                 settings,
 
-                saved_controllers: SavedControllersMap::default(),
+                controllers: Controllers::default(),
                 syndicate_gun_item: SyndicateGunItem::default(),
                 cult: Cult::default(),
                 mafia: Mafia,
@@ -138,9 +124,9 @@ impl Game{
                     return Err(RejectStartReason::RoleListTooSmall)
                 };
                 
-                let insider_groups = assignment.insider_groups();
-                
-                for group in insider_groups{
+                let insider_groups = assignment.insider_groups.clone();
+
+                for group in insider_groups {
                     unsafe {
                         group.add_player_to_revealed_group_unchecked(&mut game, player);
                     }
@@ -194,33 +180,18 @@ impl Game{
         Ok(game)
     }
     
-    /// `initialization_data` must have length 255 or lower
+    /// `assignment.assignments` must have length 255 or lower
     #[expect(clippy::cast_possible_truncation, reason = "See doc comment")]
-    pub fn assign_players_to_assignments(
-        initialization_data: Vec<RoleAssignment>
-    )->Assignments{
+    pub fn create_assignments(assignment: OutlineListAssignment)->Assignments{
+        let mut assignments = Assignments::new();
 
-        let mut player_indices: Vec<PlayerIndex> = (0..initialization_data.len() as PlayerIndex).collect();
-        //remove all players that are already assigned
-        player_indices.retain(|p|!initialization_data.iter().any(|a|a.player() == Some(*p)));
-        player_indices.shuffle(&mut rand::rng());
+        for (index, outline_assignment) in assignment.assignments.into_iter().enumerate() {
+            assignments.insert(outline_assignment.player, (
+                unsafe { RoleOutlineReference::new_unchecked(index as u8) }, 
+                outline_assignment
+            ));
+        }
 
-        initialization_data
-            .into_iter()
-            .enumerate()
-            .map(|(o_index, assignment)|{
-
-                let p_index = if let Some(player) = assignment.player() {
-                    player
-                }else{
-                    player_indices.swap_remove(0)
-                };
-
-                // We are iterating through playerlist and outline list, so this unsafe should be fine
-                unsafe {
-                    (PlayerReference::new_unchecked(p_index), (RoleOutlineReference::new_unchecked(o_index as u8), assignment))
-                }
-            })
-            .collect()
+        assignments
     }
 }

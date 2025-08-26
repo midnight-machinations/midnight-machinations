@@ -4,7 +4,7 @@ import { Role, RoleState } from "./roleState.d";
 import { RoleList } from "./roleListState.d";
 import { LobbyPreviewData } from "./packet";
 import { ChatFilter } from "../menu/game/gameScreenContent/ChatMenu";
-import { ControllerID, SavedController } from "./abilityInput";
+import { ControllerID, SavedController } from "./controllerInput";
 import translate from "./lang";
 import ListMap, { ListMapData } from "../ListMap";
 
@@ -110,7 +110,6 @@ export type PlayerGameState = {
     crossedOutOutlines: number[],
     chatFilter: ChatFilter,
     deathNote: UnsafeString,
-    judgement: Verdict,
 
     savedControllers: ListMapData<ControllerID, SavedController>,
 
@@ -173,7 +172,7 @@ export const MODIFIERS = [
     "noNightChat", "noChat", 
     "unscheduledNominations",
     "hiddenNominationVotes", "hiddenVerdictVotes",
-    "forfeitNominationVote"
+    "forfeitNominationVote", "randomPlayerNames"
 ] as const;
 export type ModifierType = (typeof MODIFIERS)[number];
 

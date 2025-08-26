@@ -35,7 +35,7 @@ impl RoleOutlineReference{
         game.assignments
             .iter()
             .find(|(_, (outline, _))| outline.index == self.index)
-            .map(|(player, (_, assignment))| (assignment.role(), *player))
+            .map(|(player, (_, assignment))| (assignment.role, *player))
             .expect("RoleOutlineReference does not correspond to any role in the game")
     }
 

@@ -7,7 +7,7 @@ import { ToClientPacket } from "./packet";
 import { GameClient, PlayerIndex, Tag } from "./gameState.d";
 import { Role } from "./roleState.d";
 import translate from "./lang";
-import { computePlayerKeywordData, computePlayerKeywordDataForLobby } from "../components/StyledText";
+import { computePlayerKeywordData, computePlayerKeywordDataForLobby, computeRoleListKeywordData } from "../components/StyledText";
 import { deleteReconnectData, loadSettingsParsed, saveReconnectData } from "./localStorage";
 import { WikiArticleLink } from "../components/WikiArticleLink";
 import React from "react";
@@ -20,7 +20,8 @@ import NightMessagePopup from "../components/NightMessagePopup";
 import PlayMenu from "../menu/main/PlayMenu";
 import StartMenu from "../menu/main/StartMenu";
 import ListMap from "../ListMap";
-import { sortControllerIdCompare } from "./abilityInput";
+import { controllerIdToLinkWithPlayer, sortControllerIdCompare } from "./controllerInput";
+import { getNamesForPlayerPoolFromLobbyClients } from "../components/gameModeSettings/OutlineSelector";
 
 function sendDefaultName() {
     const defaultName = loadSettingsParsed().defaultName;
@@ -235,6 +236,9 @@ export default function messageListener(packet: ToClientPacket){
                         .filter(client => client.clientType.type === "player")
                         .map(client => (client.clientType as { type: "player", name: string }).name)
                 );
+                // Recompute keyword data, since role list entries are keywords.
+                const names = getNamesForPlayerPoolFromLobbyClients(GAME_MANAGER.state.players)
+                computeRoleListKeywordData(names, GAME_MANAGER.state.roleList);
             }
         break;
         case "hostData":
@@ -301,12 +305,23 @@ export default function messageListener(packet: ToClientPacket){
 
                 // Recompute keyword data, since player names are keywords.
                 computePlayerKeywordData(GAME_MANAGER.state.players);
+                // Recompute keyword data, since role list entries are keywords.
+                computeRoleListKeywordData(GAME_MANAGER.state.players.map(toString), GAME_MANAGER.state.roleList);
             }
         break;
         case "roleList":
             //list of role list entriy
-            if(GAME_MANAGER.state.stateType === "lobby" || GAME_MANAGER.state.stateType === "game")
+            if(GAME_MANAGER.state.stateType === "lobby" || GAME_MANAGER.state.stateType === "game") {
                 GAME_MANAGER.state.roleList = packet.roleList;
+
+                // Recompute keyword data, since role list entries are keywords.
+                if(GAME_MANAGER.state.stateType === "game") {
+                    computeRoleListKeywordData(GAME_MANAGER.state.players.map(toString), GAME_MANAGER.state.roleList);
+                } else {
+                    const names = getNamesForPlayerPoolFromLobbyClients(GAME_MANAGER.state.players)
+                    computeRoleListKeywordData(names, GAME_MANAGER.state.roleList);
+                }
+            }
         break;
         case "roleOutline":
             //role list entriy
@@ -314,6 +329,14 @@ export default function messageListener(packet: ToClientPacket){
                 GAME_MANAGER.state.roleList = structuredClone(GAME_MANAGER.state.roleList);
                 GAME_MANAGER.state.roleList[packet.index] = packet.roleOutline;
                 GAME_MANAGER.state.roleList = [...GAME_MANAGER.state.roleList];
+
+                // Recompute keyword data, since role list entries are keywords.
+                if(GAME_MANAGER.state.stateType === "game") {
+                    computeRoleListKeywordData(GAME_MANAGER.state.players.map(toString), GAME_MANAGER.state.roleList);
+                } else {
+                    const names = getNamesForPlayerPoolFromLobbyClients(GAME_MANAGER.state.players)
+                    computeRoleListKeywordData(names, GAME_MANAGER.state.roleList);
+                }
             }
         break;
         case "phaseTime":
@@ -387,6 +410,19 @@ export default function messageListener(packet: ToClientPacket){
                     packet.save.sort((a, b) => sortControllerIdCompare(a[0],b[0]));
             }
         break;
+        case "yourAllowedController":
+            if(GAME_MANAGER.state.stateType === "game" && GAME_MANAGER.state.clientState.type === "player"){
+                let savedControllers = new ListMap(GAME_MANAGER.state.clientState.savedControllers,
+                    (k1,k2)=>controllerIdToLinkWithPlayer(k1)===controllerIdToLinkWithPlayer(k2)
+                );
+                if(packet.controller===null){
+                    savedControllers.delete(packet.id);
+                }else{
+                    savedControllers.insert(packet.id, packet.controller);
+                }
+                GAME_MANAGER.state.clientState.savedControllers = [...savedControllers.entries().sort((a, b) => sortControllerIdCompare(a[0],b[0]))]
+            }
+        break;
         case "yourRoleLabels":
             if(GAME_MANAGER.state.stateType === "game"){
                 for (const player of GAME_MANAGER.state.players) {
@@ -435,10 +471,6 @@ export default function messageListener(packet: ToClientPacket){
             if(GAME_MANAGER.state.stateType === "game" && GAME_MANAGER.state.clientState.type === "player"){
                 GAME_MANAGER.state.clientState.roleState = packet.roleState;
             }
-        break;
-        case "yourJudgement":
-            if(GAME_MANAGER.state.stateType === "game" && GAME_MANAGER.state.clientState.type === "player")
-                GAME_MANAGER.state.clientState.judgement = packet.verdict;
         break;
         case "yourVoteFastForwardPhase":
             if(GAME_MANAGER.state.stateType === "game")

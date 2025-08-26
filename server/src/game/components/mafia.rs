@@ -1,7 +1,7 @@
 use rand::seq::IndexedRandom;
 
 use crate::{game::{
-    ability_input::{AvailablePlayerListSelection, ControllerParametersMap}, attack_power::{AttackPower, DefensePower}, chat::{ChatGroup, ChatMessageVariant}, components::graves::grave::GraveKiller, event::{
+    controllers::{AvailablePlayerListSelection, ControllerParametersMap}, attack_power::{AttackPower, DefensePower}, chat::{ChatGroup, ChatMessageVariant}, components::graves::grave::GraveKiller, event::{
         on_add_insider::OnAddInsider,
         on_midnight::{MidnightVariables, OnMidnight, OnMidnightPriority}, on_remove_insider::OnRemoveInsider
     }, phase::PhaseType, player::PlayerReference, role::RoleState, role_list::RoleSet, visit::{Visit, VisitTag}, ControllerID, Game, PlayerListSelection
@@ -52,32 +52,33 @@ impl Mafia{
             .allow_players(players_with_gun.clone())
             .build_map();
 
-        if let Some(PlayerListSelection(player_list)) = ControllerID::syndicate_choose_backup().get_player_list_selection(game){
-            if let Some(backup) = player_list.first(){
+        if 
+            let Some(PlayerListSelection(player_list)) = ControllerID::syndicate_choose_backup().get_player_list_selection(game) &&
+            let Some(backup) = player_list.first()
+        {
+            let attackable_players = PlayerReference::all_players(game)
+                .filter(|p|
+                    !InsiderGroupID::Mafia.contains_player(game, *p) &&
+                    p.alive(game) &&
+                    *p != *backup
+                )
+                .collect::<VecSet<_>>();
 
-                let attackable_players = PlayerReference::all_players(game)
-                    .filter(|p|
-                        !InsiderGroupID::Mafia.contains_player(game, *p) &&
-                        p.alive(game) &&
-                        *p != *backup
-                    )
-                    .collect::<VecSet<_>>();
-
-                out.combine_overwrite(
-                    ControllerParametersMap::builder(game)
-                        .id(ControllerID::syndicate_backup_attack())
-                        .available_selection(AvailablePlayerListSelection {
-                            available_players: attackable_players,
-                            can_choose_duplicates: false,
-                            max_players: Some(1)
-                        })
-                        .add_grayed_out_condition(!backup.alive(game) || Detained::is_detained(game, *backup) || game.day_number() <= 1)
-                        .reset_on_phase_start(PhaseType::Obituary)
-                        .allow_players(players_with_gun.union(&vec_set!(*backup)))
-                        .build_map()
-                );
-            }
+            out.combine_overwrite(
+                ControllerParametersMap::builder(game)
+                    .id(ControllerID::syndicate_backup_attack())
+                    .available_selection(AvailablePlayerListSelection {
+                        available_players: attackable_players,
+                        can_choose_duplicates: false,
+                        max_players: Some(1)
+                    })
+                    .add_grayed_out_condition(!backup.alive(game) || Detained::is_detained(game, *backup) || game.day_number() <= 1)
+                    .reset_on_phase_start(PhaseType::Obituary)
+                    .allow_players(players_with_gun.union(&vec_set!(*backup)))
+                    .build_map()
+            );
         }
+        
 
         out
     }

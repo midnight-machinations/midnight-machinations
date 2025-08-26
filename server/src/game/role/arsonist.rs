@@ -45,10 +45,8 @@ impl RoleStateImpl for Arsonist {
                 if game.day_number() <= 1 {return};
 
                 let actor_visits = actor_ref.untagged_night_visits_cloned(midnight_variables);             
-                if let Some(visit) = actor_visits.first(){
-                    if actor_ref == visit.target{
-                        Self::ignite(game, actor_ref, midnight_variables);
-                    }
+                if let Some(visit) = actor_visits.first() && actor_ref == visit.target{
+                    Self::ignite(game, actor_ref, midnight_variables);
                 }
             }
             _ => {}

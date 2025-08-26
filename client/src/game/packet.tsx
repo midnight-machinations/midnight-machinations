@@ -4,8 +4,8 @@ import { ChatMessage, ChatMessageIndex } from "../components/ChatMessage"
 import { RoleList, RoleOutline } from "./roleListState.d"
 import { Role, RoleState } from "./roleState.d"
 import { DoomsayerGuess } from "../menu/game/gameScreenContent/AbilityMenu/RoleSpecificMenus/LargeDoomsayerMenu"
-import { KiraGuess } from "../menu/game/gameScreenContent/AbilityMenu/AbilitySelectionTypes/KiraSelectionMenu"
-import { AbilityInput, ControllerID, SavedController } from "./abilityInput"
+import { KiraGuess } from "../menu/game/gameScreenContent/AbilityMenu/ControllerSelectionTypes/KiraSelectionMenu"
+import { ControllerInput, ControllerID, SavedController } from "./controllerInput"
 import { ListMapData } from "../ListMap"
 
 export type LobbyPreviewData = {
@@ -124,6 +124,10 @@ export type ToClientPacket = {
     type: "yourAllowedControllers",
     save: ListMapData<ControllerID, SavedController>,
 } | {
+    type: "yourAllowedController",
+    id: ControllerID, 
+    controller: SavedController
+} | {
     type: "yourRoleLabels",
     roleLabels: ListMapData<PlayerIndex, Role> 
 } | {
@@ -141,9 +145,6 @@ export type ToClientPacket = {
 } | {
     type: "yourRoleState",
     roleState: RoleState
-} | {
-    type: "yourJudgement",
-    verdict: Verdict
 } | {
     type: "yourVoteFastForwardPhase",
     fastForward: boolean
@@ -232,9 +233,6 @@ export type ToServerPacket = {
 } |
 // Game
 {
-    type: "judgement", 
-    verdict: Verdict
-} | {
     type: "saveNotes", 
     notes: string[]
 } | {
@@ -246,8 +244,8 @@ export type ToServerPacket = {
 } | {
     type: "leave",
 } | {
-    type: "abilityInput",
-    abilityInput: AbilityInput
+    type: "controllerInput",
+    controllerInput: ControllerInput
 } | {
     type: "setKiraGuess",
     guesses: [PlayerIndex, KiraGuess][]
