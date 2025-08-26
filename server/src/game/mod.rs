@@ -43,8 +43,7 @@ use components::syndicate_gun_item::SyndicateGunItem;
 use components::synopsis::SynopsisTracker;
 use components::tags::Tags;
 use components::verdicts_today::VerdictsToday;
-use modifiers::ModifierType;
-use modifiers::Modifiers;
+use modifiers::ModifierID;
 use role_outline_reference::RoleOutlineReference;
 use serde::Serialize;
 use crate::client_connection::ClientConnection;
@@ -115,7 +114,6 @@ pub struct Game {
     pub verdicts_today: VerdictsToday,
     pub pitchfork: Pitchfork,
     pub poison: Poison,
-    pub modifiers: Modifiers,
     pub insider_groups: InsiderGroups,
     pub detained: Detained,
     pub confused: Confused,
@@ -251,7 +249,7 @@ impl Game {
             .filter(|p| p.alive(self) && !ForfeitNominationVote::forfeited_vote(self, *p))
             .count() as u8;
 
-        if Modifiers::is_enabled(self, ModifierType::TwoThirdsMajority) {
+        if self.settings.modifiers.is_enabled(ModifierID::TwoThirdsMajority) {
             // equivalent to x - (x - (x + 1)/3)/2 to prevent overflow issues
             eligible_voters
             .saturating_sub(
@@ -268,6 +266,9 @@ impl Game {
         }
     }
 
+    pub fn modifier_settings(&self) -> &modifiers::ModifierSettings {
+        &self.settings.modifiers
+    }
 
     pub fn game_is_over(&self) -> bool {
         GameConclusion::game_is_over_game(self).is_some()

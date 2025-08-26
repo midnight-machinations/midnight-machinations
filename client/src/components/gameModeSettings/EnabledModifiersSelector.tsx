@@ -1,34 +1,36 @@
 import React, { ReactElement, useCallback, useContext, useState } from "react";
-import { MODIFIERS, ModifierType } from "../../game/gameState.d";
+import { MODIFIERS, ModifierID, ModifierState } from "../../game/gameState.d";
 import translate from "../../game/lang";
 import StyledText from "../StyledText";
 import { GameModeContext } from "./GameModesEditor";
 import { Button } from "../Button";
 import CheckBox from "../CheckBox";
+import ListMap, { ListMapData } from "../../ListMap";
 
-export function EnabledModifiersSelector(props: Readonly<{
+export function ModifiersSelector(props: Readonly<{
     disabled?: boolean,
-    enabledModifiers?: ModifierType[],
-    onChange?: (modifiers: ModifierType[]) => void,
+    modifierSettings?: ListMapData<ModifierID, ModifierState>,
+    onEnableModifiers?: (modifiers: ModifierID[]) => void,
+    onDisableModifiers?: (modifiers: ModifierID[]) => void,
+    onModifierStateChange?: (modifiers: ListMapData<ModifierID, ModifierState>) => void
 }>): ReactElement {
-    let { enabledModifiers } = useContext(GameModeContext);
-    enabledModifiers = props.enabledModifiers ?? enabledModifiers;
-    
+    let { modifierSettings } = useContext(GameModeContext);
+    modifierSettings = props.modifierSettings ?? modifierSettings;
 
     return <div className="chat-menu-colors selector-section">
         <h2>{translate("modifiers")}</h2>
-        <EnabledModifiersDisplay
+        <ModifierSettingsDisplay
             disabled={props.disabled===undefined ? false : props.disabled}
             modifiable={!props.disabled}
-            enabledModifiers={enabledModifiers}
-            onEnableModifiers={(modifiers: ModifierType[]) => {
-                if (props.onChange) {
-                    props.onChange(enabledModifiers.concat(modifiers))
+            modifierSettings={modifierSettings}
+            onEnableModifiers={(modifiers: ModifierID[]) => {
+                if (props.onEnableModifiers) {
+                    props.onEnableModifiers(modifiers)
                 }
             }}
-            onDisableModifiers={(modifiers: ModifierType[]) => {
-                if (props.onChange) {
-                    props.onChange(enabledModifiers.filter(modifier => !modifiers.includes(modifier)))
+            onDisableModifiers={(modifiers: ModifierID[]) => {
+                if (props.onDisableModifiers) {
+                    props.onDisableModifiers(modifiers)
                 }
             }}
         />
@@ -36,12 +38,13 @@ export function EnabledModifiersSelector(props: Readonly<{
 }
 
 type EnabledModifiersDisplayProps = {
-    enabledModifiers: ModifierType[],
+    modifierSettings: ListMapData<ModifierID, ModifierState>,
 } & (
     {
         modifiable: true,
-        onDisableModifiers: (modifiers: ModifierType[]) => void,
-        onEnableModifiers: (modifiers: ModifierType[]) => void,
+        onDisableModifiers: (modifiers: ModifierID[]) => void,
+        onEnableModifiers: (modifiers: ModifierID[]) => void,
+        onModifierStateChange: (modifiers: ListMapData<ModifierID, ModifierState>) => void,
         disabled?: boolean,
     } |
     {
@@ -49,10 +52,12 @@ type EnabledModifiersDisplayProps = {
     }
 )
 
-export function EnabledModifiersDisplay(props: EnabledModifiersDisplayProps): ReactElement {
-    const isEnabled = useCallback((modifier: ModifierType) => props.enabledModifiers.includes(modifier), [props.enabledModifiers]);
+export function ModifierSettingsDisplay(props: EnabledModifiersDisplayProps): ReactElement {
+    const isEnabled = useCallback((modifier: ModifierID) => {
+        return props.modifierSettings.some(([id, _]) => id === modifier)
+    }, [props.modifierSettings]);
 
-    const modifierTextElement = (modifier: ModifierType) => {
+    const modifierTextElement = (modifier: ModifierID) => {
 
         return <StyledText 
             noLinks={props.modifiable ?? false}

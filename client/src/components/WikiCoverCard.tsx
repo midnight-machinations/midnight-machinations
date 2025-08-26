@@ -4,7 +4,7 @@ import Wiki from '../components/Wiki';
 import "./wiki.css";
 import { WikiArticleLink } from './WikiArticleLink';
 import { useLobbyOrGameState } from './useHooks';
-import { MODIFIERS, ModifierType } from '../game/gameState.d';
+import { MODIFIERS, ModifierID } from '../game/gameState.d';
 import { getAllRoles } from '../game/roleListState.d';
 
 export default function WikiCoverCard(props: Readonly<{
@@ -16,9 +16,9 @@ export default function WikiCoverCard(props: Readonly<{
         getAllRoles()
     )!;
     const enabledModifiers = useLobbyOrGameState(
-        state => state.enabledModifiers,
+        state => state.modifiers,
         ["enabledModifiers"],
-        MODIFIERS as any as ModifierType[]
+        MODIFIERS as any as ModifierID[]
     )!;
 
     return <div className='wiki-cover-card'>

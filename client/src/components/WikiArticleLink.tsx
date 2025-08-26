@@ -1,4 +1,4 @@
-import { MODIFIERS, ModifierType } from "../game/gameState.d";
+import { MODIFIERS, ModifierID } from "../game/gameState.d";
 import translate, { langJson } from "../game/lang";
 import { Role, roleJsonData } from "../game/roleState.d";
 import { partitionWikiPages, WIKI_CATEGORIES, WikiCategory } from "./Wiki";
@@ -7,7 +7,7 @@ import { getAllRoles } from "../game/roleListState.d"
 
 export type WikiArticleLink = 
     `role/${Role}` | 
-    `modifier/${ModifierType}` |
+    `modifier/${ModifierID}` |
     `category/${WikiCategory}` |
     `standard/${StandardArticle}` |
     `generated/${GeneratedArticle}`;
@@ -56,7 +56,7 @@ export function getArticleTitle(page: WikiArticleLink): string {
 export function wikiPageIsEnabled(
     page: WikiArticleLink,
     enabledRoles: Role[],
-    enabledModifiers: ModifierType[]
+    enabledModifiers: ModifierID[]
 ): boolean {
     switch (page.split("/")[0]) {
         case "role":

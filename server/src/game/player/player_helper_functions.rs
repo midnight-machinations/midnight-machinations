@@ -16,7 +16,7 @@ use crate::{
             on_visit_wardblocked::OnVisitWardblocked
         },
         game_conclusion::GameConclusion,
-        modifiers::{ModifierType, Modifiers}, phase::PhaseType,
+        modifiers::ModifierID, phase::PhaseType,
         role::{chronokaiser::Chronokaiser, Role, RoleState},
         visit::{Visit, VisitTag},
         Game
@@ -399,9 +399,9 @@ impl PlayerReference{
         self.role_state(game).clone().on_role_creation(game, *self)
     }
     pub fn get_current_send_chat_groups(&self, game: &Game) -> HashSet<ChatGroup> {
-        if Modifiers::is_enabled(game, ModifierType::NoChat)
+        if game.modifier_settings().is_enabled(ModifierID::NoChat)
             || (
-                Modifiers::is_enabled(game, ModifierType::NoNightChat) 
+                game.modifier_settings().is_enabled(ModifierID::NoNightChat)
                 && self.alive(game)
                 && matches!(game.current_phase().phase(), PhaseType::Night | PhaseType::Obituary)
             )

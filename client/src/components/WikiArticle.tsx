@@ -12,7 +12,7 @@ import GAME_MANAGER, { replaceMentions } from "..";
 import { useLobbyOrGameState } from "./useHooks";
 import DetailsSummary from "./DetailsSummary";
 import { partitionWikiPages, WikiCategory } from "./Wiki";
-import { MODIFIERS, ModifierType } from "../game/gameState.d";
+import { MODIFIERS, ModifierID } from "../game/gameState.d";
 import DUMMY_ROLE_LIST from "../resources/dummyRoleList.json";
 import Masonry from "react-responsive-masonry";
 
@@ -150,9 +150,9 @@ function CategoryArticle(props: Readonly<{ category: WikiCategory }>): ReactElem
     )!;
 
     const enabledModifiers = useLobbyOrGameState(
-        state => state.enabledModifiers,
+        state => state.modifiers,
         ["enabledModifiers"],
-        MODIFIERS as any as ModifierType[]
+        MODIFIERS as any as ModifierID[]
     )!;
 
     return <section className="wiki-article">
@@ -173,7 +173,7 @@ export function PageCollection(props: Readonly<{
     title: string,
     pages: WikiArticleLink[],
     enabledRoles: Role[],
-    enabledModifiers: ModifierType[],
+    enabledModifiers: ModifierID[],
     children?: ReactNode
 }>): ReactElement | null {
     if (props.pages.length === 0) {

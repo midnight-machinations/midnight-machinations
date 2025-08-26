@@ -5,20 +5,21 @@ import { getAllRoles, RoleList, RoleOutline } from "../../game/roleListState.d";
 import translate from "../../game/lang";
 import "./gameModesEditor.css";
 import PhaseTimesSelector from "./PhaseTimeSelector";
-import { ModifierType, PhaseTimes } from "../../game/gameState.d";
+import { ModifierID, ModifierState, PhaseTimes } from "../../game/gameState.d";
 import EnabledRoleSelector from "./EnabledRoleSelector";
 import { Role } from "../../game/roleState.d";
 import "./selectorSection.css";
 import { defaultPhaseTimes } from "../../game/gameState";
 import { GameModeSelector } from "./GameModeSelector";
 import { ShareableGameMode } from "./gameMode";
-import { EnabledModifiersSelector } from "./EnabledModifiersSelector";
+import { ModifiersSelector } from "./EnabledModifiersSelector";
+import ListMap, { ListMapData } from "../../ListMap";
 
 const GameModeContext = createContext({
     roleList: [] as RoleList,
     phaseTimes: defaultPhaseTimes(),
     enabledRoles: [] as Role[],
-    enabledModifiers: [] as ModifierType[]
+    modifierSettings: [] as ListMapData<ModifierID, ModifierState>
 });
 export {GameModeContext};
 
@@ -45,11 +46,11 @@ export default function GameModesEditor(props: Readonly<{
         }
         return [];
     });
-    const [enabledModifiers, setEnabledModifiers] = useState<ModifierType[]>(()=>{
+    const [modifierSettings, setModifierSettings] = useState<ListMapData<ModifierID, ModifierState>>(()=>{
         if(props.initialGameMode){
-            return props.initialGameMode.enabledModifiers;
+            return props.initialGameMode.modifierSettings;
         }
-        return [];
+        return [] as ListMapData<ModifierID, ModifierState>;
     });
 
 
@@ -85,8 +86,8 @@ export default function GameModesEditor(props: Readonly<{
         setEnabledRoles(getAllRoles());
     }
 
-    const onSetEnabledModifiers = (modifiers: ModifierType[]) => {
-        setEnabledModifiers(modifiers);
+    const onSetModifierSettings = (modifiers: ListMapData<ModifierID, ModifierState>) => {
+        setModifierSettings(modifiers);
     }
     
     
@@ -94,7 +95,7 @@ export default function GameModesEditor(props: Readonly<{
         <header>
             <h1>{translate("menu.globalMenu.gameSettingsEditor")}</h1>
         </header>
-        <GameModeContext.Provider value={{roleList, phaseTimes, enabledRoles, enabledModifiers}}>
+        <GameModeContext.Provider value={{roleList, phaseTimes, enabledRoles, modifierSettings}}>
             <main>
                 <div>
                     <GameModeSelector 
@@ -103,7 +104,7 @@ export default function GameModesEditor(props: Readonly<{
                             setRoleList(gameMode.roleList);
                             setEnabledRoles(gameMode.enabledRoles);
                             setPhaseTimes(gameMode.phaseTimes);
-                            setEnabledModifiers(gameMode.enabledModifiers);
+                            setModifierSettings(gameMode.modifierSettings);
                         }}
                     />
                     <PhaseTimesSelector 
@@ -113,9 +114,9 @@ export default function GameModesEditor(props: Readonly<{
                     />
                 </div>
                 <div>
-                    <EnabledModifiersSelector
+                    <ModifiersSelector
                         disabled={false}
-                        onChange={onSetEnabledModifiers}
+                        onChange={onSetModifierSettings}
                     />
                     <OutlineListSelector
                         onChangeRolePicker={onChangeRolePicker}

@@ -1,17 +1,19 @@
+use serde::{Deserialize, Serialize};
+
 use crate::game::{phase::{PhaseState, PhaseStateMachine}, Game};
 
-use super::{ModifierTrait, ModifierType};
+use super::{ModifierStateImpl, ModifierID};
 
-#[derive(Clone, Default, PartialEq, Eq, Hash)]
+#[derive(Clone, Default, PartialEq, Eq, Hash, Serialize, Deserialize, Debug)]
 pub struct NoTrialPhases;
 
-impl From<&NoTrialPhases> for ModifierType{
+impl From<&NoTrialPhases> for ModifierID{
     fn from(_: &NoTrialPhases) -> Self {
-        ModifierType::NoTrialPhases
+        ModifierID::NoTrialPhases
     }
 }
 
-impl ModifierTrait for NoTrialPhases{
+impl ModifierStateImpl for NoTrialPhases{
     fn on_phase_start(self, game: &mut Game, phase: PhaseState) {
         match phase {
             PhaseState::Nomination { .. }

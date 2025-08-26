@@ -511,10 +511,12 @@ export function createGameManager(): GameManager {
                 roles: roles
             });
         },
-        sendEnabledModifiersPacket(modifiers) {
+        sendModifierSettingsPacket(modifiers) {
             this.server.sendPacket({
-                type: "setEnabledModifiers",
-                modifiers: modifiers
+                type: "setModifierSettings",
+                modifierSettings: {
+                    modifiers
+                }
             });
         },
 

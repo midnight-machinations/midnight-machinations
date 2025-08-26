@@ -1,7 +1,8 @@
 import { VersionConverter } from ".";
 import { GameMode, GameModeData, GameModeStorage, ShareableGameMode } from "..";
+import { ModifierID, PhaseTimes } from "../../../../game/gameState.d";
 import { getDefaultSettings, Settings } from "../../../../game/localStorage";
-import { RoleOutline, RoleOutlineOption } from "../../../../game/roleListState.d";
+import { RoleList, RoleOutline, RoleOutlineOption } from "../../../../game/roleListState.d";
 import { Role } from "../../../../game/roleState.d";
 import { Failure, ParseResult, ParseSuccess, Success, isFailure } from "../parse";
 import { parseName, parsePhaseTimes, parseRole, parseRoleSet } from "./initial";
@@ -16,10 +17,25 @@ const v3: VersionConverter = {
 
 export default v3;
 
-type v4GameModeData = GameModeData
-type v4ShareableGameMode = ShareableGameMode
-type v4GameMode = GameMode
-type v4GameModeStorage = GameModeStorage
+type v4GameModeStorage = {
+    format: 'v4',
+    gameModes: v4GameMode[]
+};
+
+type v4GameMode = {
+    name: string,
+    // A mapping from number-of-players to game mode data
+    data: Record<number, v4GameModeData>
+};
+
+type v4GameModeData = {
+    roleList: RoleList,
+    phaseTimes: PhaseTimes,
+    enabledRoles: Role[],
+    enabledModifiers: ModifierID[]
+}
+
+type v4ShareableGameMode = v4GameModeData & { format: 'v4', name: string }
 
 function parseSettings(json: NonNullable<any>): ParseResult<Settings> {
     if (typeof json !== "object" || Array.isArray(json)) {
@@ -124,7 +140,7 @@ function parseGameModeDataRecord(json: NonNullable<any>): ParseResult<Record<num
         return Failure("gameModeDataRecordNotObject", json);
     }
     
-    const parsedEntries: Record<number, GameModeData> = {};
+    const parsedEntries: Record<number, v4GameModeData> = {};
     for (const [key, value] of Object.entries(json)) {
         let players;
         try {

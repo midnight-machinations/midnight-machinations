@@ -33,7 +33,7 @@ export type LobbyState = {
     roleList: RoleList,
     phaseTimes: PhaseTimes,
     enabledRoles: Role[],
-    enabledModifiers: ModifierType[],
+    modifierSettings: ListMap<ModifierID, ModifierState>,
 
     players: ListMap<LobbyClientID, LobbyClient>,
     chatMessages: ListMap<ChatMessageIndex, ChatMessage>,
@@ -86,7 +86,7 @@ type GameState = {
     roleList: RoleList,
     enabledRoles: Role[],
     phaseTimes: PhaseTimes,
-    enabledModifiers: ModifierType[],
+    modifierSettings: ListMap<ModifierID, ModifierState>,
 
     ticking: boolean,
 
@@ -174,7 +174,45 @@ export const MODIFIERS = [
     "hiddenNominationVotes", "hiddenVerdictVotes",
     "forfeitNominationVote", "randomPlayerNames"
 ] as const;
-export type ModifierType = (typeof MODIFIERS)[number];
+export type ModifierID = (typeof MODIFIERS)[number];
+
+export type ModifierState = {
+    type: "obscuredGraves"
+} | {
+    type: "skipDay1"
+} | {
+    type: "deadCanChat"
+} | {
+    type: "abstaining"
+} | {
+    type: "noDeathCause"
+} | {
+    type: "roleSetGraveKillers"
+} | {
+    type: "autoGuilty"
+} | {
+    type: "twoThirdsMajority"
+} | {
+    type: "noTrialPhases"
+} | {
+    type: "noWhispers"
+} | {
+    type: "hiddenWhispers"
+} | {
+    type: "noNightChat"
+} | {
+    type: "noChat"
+} | {
+    type: "unscheduledNominations"
+} | {
+    type: "hiddenNominationVotes"
+} | {
+    type: "hiddenVerdictVotes"
+} | {
+    type: "forfeitNominationVote"
+} | {
+    type: "randomPlayerNames"
+}
 
 export type Player = {
     name: UnsafeString,

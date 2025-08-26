@@ -64,7 +64,6 @@
             mafia_recruits: MafiaRecruits::default(),
             verdicts_today: VerdictsToday::default(),
             poison: Poison::default(),
-            modifiers: Default::default(),
             insider_groups: unsafe{InsiderGroups::new(num_players, &assignments)},
             detained: Default::default(),
             confused: Default::default(),

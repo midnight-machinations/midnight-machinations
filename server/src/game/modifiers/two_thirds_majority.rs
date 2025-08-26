@@ -1,12 +1,14 @@
-use super::{ModifierTrait, ModifierType};
+use serde::{Deserialize, Serialize};
 
-#[derive(Clone, Default, PartialEq, Eq, Hash)]
+use super::{ModifierStateImpl, ModifierID};
+
+#[derive(Clone, Default, PartialEq, Eq, Hash, Serialize, Deserialize, Debug)]
 pub struct TwoThirdsMajority;
 
-impl From<&TwoThirdsMajority> for ModifierType{
+impl From<&TwoThirdsMajority> for ModifierID{
     fn from(_: &TwoThirdsMajority) -> Self {
-        ModifierType::TwoThirdsMajority
+        ModifierID::TwoThirdsMajority
     }
 }
 
-impl ModifierTrait for TwoThirdsMajority {}
+impl ModifierStateImpl for TwoThirdsMajority {}

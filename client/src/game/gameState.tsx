@@ -1,5 +1,5 @@
 import ListMap from "../ListMap"
-import GameState, { LobbyClient, LobbyState, PhaseTimes, Player, LobbyClientID, PlayerGameState, UnsafeString } from "./gameState.d"
+import GameState, { LobbyClient, LobbyState, PhaseTimes, Player, LobbyClientID, PlayerGameState, UnsafeString, ModifierID, ModifierState } from "./gameState.d"
 
 
 export function defaultPhaseTimes(): PhaseTimes {
@@ -27,7 +27,7 @@ export function createLobbyState(): LobbyState {
         roleList: [],
         phaseTimes: defaultPhaseTimes(),
         enabledRoles: [],
-        enabledModifiers: [],
+        modifierSettings: new ListMap<ModifierID, ModifierState>(),
 
         players: new ListMap<LobbyClientID, LobbyClient>(),
         chatMessages: new ListMap(),
@@ -57,7 +57,7 @@ export function createGameState(): GameState {
         roleList: [],
         enabledRoles: [],
         phaseTimes: defaultPhaseTimes(),
-        enabledModifiers: [],
+        modifierSettings: new ListMap<ModifierID, ModifierState>(),
 
         ticking: true,
 

@@ -1,6 +1,6 @@
 import { VersionConverter } from ".";
 import { GameMode, GameModeData } from "..";
-import { MODIFIERS, ModifierType, PhaseTimes } from "../../../../game/gameState.d";
+import { MODIFIERS, ModifierID, PhaseTimes } from "../../../../game/gameState.d";
 import { RoleSet } from "../../../../game/roleListState.d";
 import { Role } from "../../../../game/roleState.d";
 import { Failure, ParseFailure, ParseResult, ParseSuccess, Success, isFailure } from "../parse";
@@ -32,7 +32,7 @@ type v3GameModeData = {
     roleList: v3RoleOutline[],
     phaseTimes: PhaseTimes,
     enabledRoles: Role[],
-    enabledModifiers: ModifierType[]
+    enabledModifiers: ModifierID[]
 }
 type v3ShareableGameMode = v3GameModeData & { format: "v3", name: string }
 type v3GameMode = {
@@ -213,7 +213,7 @@ export function parseEnabledRoles(json: NonNullable<any>): ParseResult<Role[]> {
     return Success(listOfRoles.map(role => (role as ParseSuccess<Role>).value) as Role[]);
 }
 
-export function parseEnabledModifiers(json: NonNullable<any>): ParseResult<ModifierType[]> {
+export function parseEnabledModifiers(json: NonNullable<any>): ParseResult<ModifierID[]> {
     if (!Array.isArray(json)) {
         return Failure("enabledModifiersIsNotArray", json);
     }
@@ -223,16 +223,16 @@ export function parseEnabledModifiers(json: NonNullable<any>): ParseResult<Modif
         if (isFailure(modifier)) return modifier;
     }
 
-    return Success(listOfModifiers.map(modifier => (modifier as ParseSuccess<ModifierType>).value) as ModifierType[]);
+    return Success(listOfModifiers.map(modifier => (modifier as ParseSuccess<ModifierID>).value) as ModifierID[]);
 }
 
-export function parseModifier(json: NonNullable<any>): ParseResult<ModifierType> {
+export function parseModifier(json: NonNullable<any>): ParseResult<ModifierID> {
 
     if (typeof json !== "string") {
         return Failure("modifierIsNotString", json);
     }
-    if (!Object.values(MODIFIERS).includes(json as ModifierType)) {
+    if (!Object.values(MODIFIERS).includes(json as ModifierID)) {
         return Failure("invalidModifier", json);
     }
-    return Success(json as ModifierType);
+    return Success(json as ModifierID);
 }

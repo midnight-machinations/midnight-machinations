@@ -2,7 +2,7 @@ use crate::{
     game::{
         controllers::{ControllerID, IntegerSelection}, chat::{ChatMessage, ChatMessageVariant, ChatPlayerComponent}, components::player_component::PlayerComponent, event::{
             on_conceal_role::OnConcealRole, on_fast_forward::OnFastForward
-        }, modifiers::{ModifierType, Modifiers}, role::{Role, RoleState}, verdict::Verdict, Game
+        }, modifiers::ModifierID, role::{Role, RoleState}, verdict::Verdict, Game
     }, 
     packet::ToClientPacket, vec_set::VecSet, 
 };
@@ -46,7 +46,7 @@ impl PlayerReference{
         }
         game.send_packet_to_all(ToClientPacket::PlayerAlive { alive: alive_players });
         game.count_nomination_and_start_trial(
-            Modifiers::is_enabled(game, ModifierType::UnscheduledNominations)
+            game.modifier_settings().is_enabled(ModifierID::UnscheduledNominations)
         );
     }
     

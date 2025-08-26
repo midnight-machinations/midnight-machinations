@@ -1,7 +1,9 @@
+import { Modifier } from "typescript";
 import { WikiArticleLink } from "../components/WikiArticleLink";
+import ListMap from "../ListMap";
 import { DoomsayerGuess } from "../menu/game/gameScreenContent/AbilityMenu/RoleSpecificMenus/LargeDoomsayerMenu";
 import { ControllerInput } from "./controllerInput";
-import { PhaseType, PhaseTimes, PlayerIndex, State, Verdict, ModifierType } from "./gameState.d";
+import { PhaseType, PhaseTimes, PlayerIndex, State, Verdict, ModifierID, ModifierState } from "./gameState.d";
 import { ToClientPacket, ToServerPacket } from "./packet";
 import { RoleList, RoleOutline } from "./roleListState.d";
 import { Role } from "./roleState.d";
@@ -86,7 +88,7 @@ export type GameManager = {
     sendSendChatMessagePacket(text: string, block: boolean, controllingPlayer?: PlayerIndex): void;
     sendSendWhisperPacket(playerIndex: number, text: string, controllingPlayer?: PlayerIndex): void;
     sendEnabledRolesPacket(roles: Role[]): void;
-    sendEnabledModifiersPacket(modifiers: ModifierType[]): void;
+    sendModifierSettingsPacket(modifiers: ListMap<ModifierID, ModifierState>): void;
 
     sendControllerInput(input: ControllerInput): void;
     sendSetDoomsayerGuess(guesses: [

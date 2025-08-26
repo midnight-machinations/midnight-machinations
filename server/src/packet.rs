@@ -24,19 +24,12 @@ use vec1::Vec1;
 
 use crate::{
     client_connection::ClientConnection, game::{
-        controllers::*, chat::{ChatGroup, ChatMessage, ChatMessageIndex},
-        components::{
+        chat::{ChatGroup, ChatMessage, ChatMessageIndex}, components::{
             graves::{grave::Grave, grave_reference::GraveReference}, insider_group::InsiderGroupID, tags::Tag
-        },
-        game_client::GameClientLocation,
-        modifiers::ModifierType, phase::{PhaseState, PhaseType},
-        player::{PlayerIndex, PlayerReference},
-        role::{
+        }, controllers::*, game_client::GameClientLocation, modifiers::{ModifierID, ModifierSettings}, phase::{PhaseState, PhaseType}, player::{PlayerIndex, PlayerReference}, role::{
             doomsayer::DoomsayerGuess,
             ClientRoleStateEnum, Role
-        },
-        role_list::{RoleList, RoleOutline}, settings::PhaseTimeSettings,
-        GameOverReason, RejectStartReason
+        }, role_list::{RoleList, RoleOutline}, settings::PhaseTimeSettings, GameOverReason, RejectStartReason
     }, 
     lobby::lobby_client::LobbyClient, room::RoomClientID, vec_map::VecMap, vec_set::VecSet,
     websocket_listener::RoomCode
@@ -108,7 +101,7 @@ pub enum ToClientPacket{
     #[serde(rename_all = "camelCase")]
     EnabledRoles{roles: Vec<Role>},
     #[serde(rename_all = "camelCase")]
-    EnabledModifiers{modifiers: Vec<ModifierType>},
+    ModifierSettings{modifier_settings: ModifierSettings},
 
     // Host
     HostData { clients: VecMap<RoomClientID, HostDataPacketGameClient> },
@@ -220,7 +213,11 @@ pub enum ToServerPacket{
     #[serde(rename_all = "camelCase")]
     SetEnabledRoles{roles: Vec<Role>},
     #[serde(rename_all = "camelCase")]
-    SetEnabledModifiers{modifiers: Vec<ModifierType>},
+    SetModifierSettings{modifier_settings: ModifierSettings},
+    #[serde(rename_all = "camelCase")]
+    EnableModifier{modifier: ModifierID},
+    #[serde(rename_all = "camelCase")]
+    DisableModifier{modifier: ModifierID},
 
     // Host
     HostDataRequest,

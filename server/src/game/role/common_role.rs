@@ -8,7 +8,7 @@ use crate::game::{
         puppeteer_marionette::PuppeteerMarionette, silenced::Silenced, win_condition::WinCondition
     },
     game_conclusion::GameConclusion,
-    modifiers::{ModifierType, Modifiers},
+    modifiers::ModifierID,
     phase::{PhaseState, PhaseType}, player::PlayerReference,
     role_list::RoleSet, visit::{Visit, VisitTag},
     Game
@@ -117,7 +117,7 @@ pub(super) fn get_current_send_chat_groups(game: &Game, actor_ref: PlayerReferen
     }
     if 
         !actor_ref.alive(game) && 
-        !Modifiers::is_enabled(game, ModifierType::DeadCanChat)
+        !game.modifier_settings().is_enabled(ModifierID::DeadCanChat)
     {
         if PuppeteerMarionette::marionettes_and_puppeteer(game).contains(&actor_ref){
             return vec![ChatGroup::Dead, ChatGroup::Puppeteer].into_iter().collect();

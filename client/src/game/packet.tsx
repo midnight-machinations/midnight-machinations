@@ -1,4 +1,4 @@
-import { PhaseType, PlayerIndex, Verdict, PhaseTimes, Tag, LobbyClientID, ChatGroup, PhaseState, LobbyClient, ModifierType, InsiderGroup, GameClient, UnsafeString } from "./gameState.d"
+import { PhaseType, PlayerIndex, Verdict, PhaseTimes, Tag, LobbyClientID, ChatGroup, PhaseState, LobbyClient, ModifierID, InsiderGroup, GameClient, UnsafeString, ModifierState } from "./gameState.d"
 import { Grave, GraveIndex } from "./graveState"
 import { ChatMessage, ChatMessageIndex } from "../components/ChatMessage"
 import { RoleList, RoleOutline } from "./roleListState.d"
@@ -6,7 +6,7 @@ import { Role, RoleState } from "./roleState.d"
 import { DoomsayerGuess } from "../menu/game/gameScreenContent/AbilityMenu/RoleSpecificMenus/LargeDoomsayerMenu"
 import { KiraGuess } from "../menu/game/gameScreenContent/AbilityMenu/ControllerSelectionTypes/KiraSelectionMenu"
 import { ControllerInput, ControllerID, SavedController } from "./controllerInput"
-import { ListMapData } from "../ListMap"
+import ListMap, { ListMapData } from "../ListMap"
 
 export type LobbyPreviewData = {
     name: UnsafeString,
@@ -93,8 +93,10 @@ export type ToClientPacket = {
     type: "enabledRoles",
     roles: Role[]
 } | {
-    type: "enabledModifiers",
-    modifiers: ModifierType[]
+    type: "modifierSettings",
+    modifierSettings: {
+        modifiers: ListMap<ModifierID, ModifierState>,
+    }
 } |
 // Game
 {
@@ -224,8 +226,10 @@ export type ToServerPacket = {
     type: "setEnabledRoles", 
     roles: Role[], 
 } | {
-    type: "setEnabledModifiers",
-    modifiers: ModifierType[]
+    type: "setModifierSettings",
+    modifierSettings: {
+        modifiers: ListMap<ModifierID, ModifierState>,
+    }
 } |
 // Game
 {
