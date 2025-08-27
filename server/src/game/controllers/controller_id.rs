@@ -17,6 +17,7 @@ pub type RoleControllerID = u8;
 #[serde(rename_all = "camelCase")]
 #[serde(tag="type")]
 pub enum ControllerID{
+    CallWitness{player: PlayerReference},
     Nominate{player: PlayerReference},
     Judge{player: PlayerReference},
     
@@ -97,6 +98,9 @@ impl ControllerID{
 
 
 impl ControllerID{
+    pub fn current_used_ids(game: &Game)->Box<[Self]>{
+        game.controllers.controllers.iter().map(|(id,_)|id).cloned().collect()
+    }
     pub fn should_send_selection_chat_message(&self, game: &Game)->bool{
         if 
             matches!(self, ControllerID::Nominate { .. }) &&

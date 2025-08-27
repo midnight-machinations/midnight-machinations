@@ -25,6 +25,7 @@ pub mod new_game;
 
 use std::collections::VecDeque;
 use std::time::Instant;
+use crate::game::components::fast_forward::FastForwardComponent;
 use crate::game::controllers::Controllers;
 use controllers::ControllerID;
 use controllers::PlayerListSelection;
@@ -124,6 +125,7 @@ pub struct Game {
     pub silenced: Silenced,
     pub fragile_vests: FragileVestsComponent,
     pub win_condition: WinConditionComponent,
+    pub fast_forward: FastForwardComponent,
     pub chat_messages: ChatComponent
 }
 

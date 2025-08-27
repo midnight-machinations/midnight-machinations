@@ -43,6 +43,9 @@ export default function WikiArticle(props: {
                         {"### "+translate("wiki.article.role.reminder")+"\n"}
                         {replaceMentions(translateChecked("wiki.article.role."+role+".reminder") ?? translate("wiki.article.role.noReminder"), DUMMY_NAMES, (DUMMY_ROLE_LIST as RoleList))+"\n"}
 
+                        {translateChecked("wiki.article.role."+role+".lore")!==null?("### "+translate("wiki.article.role.lore")+"\n"):""}
+                        {replaceMentions(translateChecked("wiki.article.role."+role+".lore") ?? "", DUMMY_NAMES, (DUMMY_ROLE_LIST as RoleList))+"\n"}
+
                         {"### "+translate("wiki.article.role.guide")+"\n"}
                         {replaceMentions(translateChecked("wiki.article.role."+role+".guide") ?? translate("wiki.article.role.noGuide"), DUMMY_NAMES, (DUMMY_ROLE_LIST as RoleList))+"\n"}
                     </WikiStyledText>

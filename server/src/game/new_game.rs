@@ -1,6 +1,4 @@
-
-use crate::{client_connection::ClientConnection, game::{chat::ChatComponent, components::{confused::Confused, cult::Cult, detained::Detained, drunk_aura::DrunkAura, fragile_vest::FragileVestsComponent, graves::Graves, insider_group::{InsiderGroupID, InsiderGroups}, mafia::Mafia, mafia_recruits::MafiaRecruits, pitchfork::Pitchfork, poison::Poison, puppeteer_marionette::PuppeteerMarionette, silenced::Silenced, syndicate_gun_item::SyndicateGunItem, synopsis::SynopsisTracker, tags::Tags, verdicts_today::VerdictsToday, win_condition::WinConditionComponent}, controllers::Controllers, event::on_game_start::OnGameStart, game_client::GameClient, modifiers::{ModifierType, Modifiers}, phase::PhaseStateMachine, player::{Player, PlayerInitializeParameters, PlayerReference}, role_list_generation::{OutlineListAssignment, RoleListGenerator}, settings::Settings, spectator::{spectator_pointer::SpectatorPointer, Spectator, SpectatorInitializeParameters}, Assignments, Game, RejectStartReason}, packet::ToClientPacket, room::{name_validation::generate_random_name, RoomClientID}, vec_map::VecMap};
-
+use crate::{client_connection::ClientConnection, game::{chat::ChatComponent, components::{confused::Confused, cult::Cult, detained::Detained, drunk_aura::DrunkAura, fast_forward::FastForwardComponent, fragile_vest::FragileVestsComponent, graves::Graves, insider_group::{InsiderGroupID, InsiderGroups}, mafia::Mafia, mafia_recruits::MafiaRecruits, pitchfork::Pitchfork, poison::Poison, puppeteer_marionette::PuppeteerMarionette, silenced::Silenced, syndicate_gun_item::SyndicateGunItem, synopsis::SynopsisTracker, tags::Tags, verdicts_today::VerdictsToday, win_condition::WinConditionComponent}, controllers::Controllers, event::on_game_start::OnGameStart, game_client::GameClient, modifiers::{ModifierType, Modifiers}, phase::PhaseStateMachine, player::{Player, PlayerInitializeParameters, PlayerReference}, role_list_generation::{OutlineListAssignment, RoleListGenerator}, settings::Settings, spectator::{spectator_pointer::SpectatorPointer, Spectator, SpectatorInitializeParameters}, Assignments, Game, RejectStartReason}, packet::ToClientPacket, room::{name_validation::generate_random_name, RoomClientID}, vec_map::VecMap};
 use super::event::before_initial_role_creation::BeforeInitialRoleCreation;
 
 impl Game{
@@ -112,6 +110,7 @@ impl Game{
                 silenced: Silenced::default(),
                 fragile_vests: unsafe{FragileVestsComponent::new(num_players)},
                 win_condition: unsafe{WinConditionComponent::new(num_players, &assignments)},
+                fast_forward: unsafe{FastForwardComponent::new(num_players)},
                 chat_messages: unsafe{ChatComponent::new(num_players)}
             };
 

@@ -154,7 +154,6 @@ macros::roles! {
     Blackmailer : blackmailer,
     Cerenovous : cerenovous,
     Informant: informant,
-    MafiaWitch : mafia_witch,
     Necromancer : necromancer,
     Mortician : mortician,
     Framer : framer,
@@ -403,7 +402,7 @@ impl Role{
             | Role::Veteran | Role::Coxswain
             | Role::Transporter | Role::Retributionist
             | Role::Witch | Role::Doomsayer | Role::Scarecrow | Role::Warper | Role::Porter
-            | Role::MafiaWitch | Role::Necromancer 
+            | Role::Necromancer 
         )
     }
     pub fn has_innocent_aura(&self, game: &Game)->bool{

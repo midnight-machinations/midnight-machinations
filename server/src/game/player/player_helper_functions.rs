@@ -30,10 +30,10 @@ impl PlayerReference{
     pub fn roleblock(&self, game: &mut Game, midnight_variables: &mut MidnightVariables, send_messages: bool) {
         OnPlayerRoleblocked::new(*self, !send_messages).invoke(game, midnight_variables);
     }
-    pub fn ward(&self, game: &mut Game, midnight_variables: &mut MidnightVariables, dont_wardblock: &[Visit]) -> Vec<PlayerReference> {
+    pub fn ward(&self, game: &mut Game, midnight_variables: &mut MidnightVariables) -> Vec<PlayerReference> {
         let mut out = Vec::new();
         for visit in NightVisits::all_visits_cloned(midnight_variables) {
-            if dont_wardblock.contains(&visit) {
+            if visit.wardblock_immune(){
                 continue;
             }
             if visit.target != *self {continue;}
@@ -193,7 +193,10 @@ impl PlayerReference{
                 //remove the second role visit from the possessor
                 self.set_night_visits(
                     midnight_variables,
-                    self.all_night_visits_cloned(midnight_variables).into_iter().filter(|v|v.tag != VisitTag::Role { role: self.role(game), id: 1 }).collect()
+                    self.all_night_visits_cloned(midnight_variables)
+                        .into_iter()
+                        .filter(|v|v.tag != VisitTag::Role { role: self.role(game), id: 1 })
+                        .collect()
                 );
                 Some(possessed_visit.target)
             },

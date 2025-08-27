@@ -160,7 +160,9 @@ export function sortControllerIdCompare(
         syndicateChooseBackup: 4,
         syndicateBackupAttack: 5,
         forfeitNominationVote: 6,
-        pitchforkVote: 7
+        pitchforkVote: 7,
+        nominate: 8,
+        callWitness: 9,
     };
 
     // Get priority of types
