@@ -41,11 +41,11 @@ export default function EnabledRoleSelector(props: Readonly<{
             <Button
                 onClick={props.onIncludeAll}
                 disabled={props.disabled}
-                ><Icon>deselect</Icon> {translate("menu.enabledRoles.includeAll")}</Button>
+                ><Icon>select_all</Icon> {translate("menu.enabledRoles.includeAll")}</Button>
             <Button
                 onClick={disableAll}
                 disabled={props.disabled}
-            ><Icon>select_all</Icon> {translate("menu.enabledRoles.excludeAll")}</Button>
+            ><Icon>deselect</Icon> {translate("menu.enabledRoles.excludeAll")}</Button>
 
             <div className="disabled-role-selector-area">
                 <Button

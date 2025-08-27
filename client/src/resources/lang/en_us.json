@@ -738,6 +738,7 @@
     "messageSender.livingToDead.icon": "🔮",
 
     "controllerId.nominate.name": "Nominate",
+    "controllerId.callWitness.name": "Call Witness",
     "controllerId.judge.name": "Judge",
     "controllerId.judge.integer.0": "Innocent",
     "controllerId.judge.integer.1": "Guilty",

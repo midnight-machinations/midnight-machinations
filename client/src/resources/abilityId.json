@@ -293,6 +293,9 @@
         "midnight": false,
         "visible": false
     },
+    "callWitness": {
+        "midnight": false
+    },
     "chat": {
         "midnight": false,
         "visible": false
