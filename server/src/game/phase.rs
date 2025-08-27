@@ -227,13 +227,11 @@ impl PhaseState {
             PhaseState::Nomination {trials_left, ..} => {
                 if Modifiers::is_enabled(game, ModifierType::UnscheduledNominations){
                     if trials_left == 0 {
-                        return Self::Dusk
+                        Self::Dusk
                     } else {
-                        return Self::Adjournment { trials_left: 0 } //you only get an adjournment that is the length of the normal one rather than more than one adjournment or 1 longer one if you have more than 1 trial remaining
+                        Self::Adjournment { trials_left: 0 }
                     }
-                }
-                
-                if let Some(player_on_trial) = game.count_nomination_and_start_trial(false){    
+                }else if let Some(player_on_trial) = game.count_nomination_and_start_trial(false){    
                     Self::Testimony{
                         trials_left: trials_left.saturating_sub(1), 
                         player_on_trial, 

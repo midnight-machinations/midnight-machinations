@@ -125,9 +125,9 @@ export type FastForwardSetting = {type:"none"}|{type:"skip"}|{type:"phase",phase
 export type PlayerIndex = number;
 export type LobbyClientID = number;
 export type Verdict = "innocent"|"guilty"|"abstain";
-export const PHASES = ["obituary", "discussion", "nomination", "testimony", "judgement", "finalWords", "briefing", "dusk", "night", "recess"] as const;
+export const PHASES = ["obituary", "discussion", "nomination", "adjournment", "testimony", "judgement", "finalWords", "briefing", "dusk", "night", "recess"] as const;
 export type PhaseType = (typeof PHASES)[number];
-export type PhaseState = {type: "briefing"} | {type: "dusk"} | {type: "night"} | {type: "obituary"} | {type: "discussion"} | 
+export type PhaseState = {type: "briefing"} | {type: "dusk"} | {type: "night"} | {type: "obituary"} | {type: "adjournment"} | {type: "discussion"} | 
 {
     type: "nomination",
     trialsLeft: number
