@@ -239,7 +239,7 @@ impl PhaseState {
                         player_on_trial, 
                         nomination_time_remaining: PhaseStateMachine::get_phase_time_length(game, PhaseType::Nomination)
                     }
-                } else if trials_left > 1 {
+                } else if trials_left > 0 {
                     Self::Adjournment {trials_left: trials_left.saturating_sub(1)}
                 } else {
                     Self::Adjournment {trials_left}
