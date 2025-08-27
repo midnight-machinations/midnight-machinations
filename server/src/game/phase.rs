@@ -252,7 +252,7 @@ impl PhaseState {
                         nomination_time_remaining: PhaseStateMachine::get_phase_time_length(game, PhaseType::Nomination)
                     }
                 }
-            }
+            },
             PhaseState::Testimony { trials_left, player_on_trial, nomination_time_remaining } => {
                 Self::Judgement { trials_left, player_on_trial, nomination_time_remaining }
             },
