@@ -918,11 +918,14 @@
 
 
     "phase.briefing": "Briefing",
+    "phase.briefing.var.0": "Briefings",
     "phase.briefing.subtitle": "Vote to start the game by clicking fast forward.",
 
     "phase.obituary": "Obituary",
+    "phase.obituary.var.0": "Obituaries",
     
     "phase.discussion": "Discussion",
+    "phase.discussion:var.0": "Discussions",
     "phase.discussion.subtitle": "Discuss information you gathered during the night.",
     
     "phase.nomination": "Nomination",
@@ -933,23 +936,33 @@
     "trialsRemaining": "\\0 trials remaining.",
     "trialsRemaining.1": "1 trial remaining.",
     
+    "phase.adjournment": "Adjournment",
+    "phase.adjournment.var.0": "Adjournment",
+    "phase.adjournment.subtitle": "A break between nominations/nomination and dusk.",
+
     "phase.testimony": "Testimony",
-    "phase.testimony:var.0": "Trial",
+    "phase.testimony:var.0": "Testimonies",
+    "phase.testimony:var.1": "Trial",
+    "phase.testimony:var.2": "Trials",
     "phase.testimony.subtitle": "\\0 is on trial.\nLet them defend themselves.",
     
     "phase.judgement": "Judgement",
-    "phase.judgement:var.0": "Judgment",
+    "phase.judgement:var.0": "Judgements",
+    "phase.judgement:var.1": "Judgment",
+    "phase.judgement:var.2": "Judgments",
     "phase.judgement.subtitle": "\\0 is on trial.\nVote guilty or innocent.",
     
     "phase.finalWords": "Final Words",
     "phase.finalWords.subtitle": "The town has decided to execute \\0.",
     
     "phase.dusk": "Dusk",
+    "phase.dusk:var.0": "Dusks",
     "phase.dusk.subtitle": "It will be night very soon.",
     
     "phase.night": "Night",
-    "phase.night:var.0": "Nighttime",
-    "phase.night:var.1": "N",
+    "phase.night:var.0": "Nights",
+    "phase.night:var.1": "Nighttime",
+    "phase.night:var.2": "N",
     "phase.night.subtitle": "Use your abilities to help your team.",
 
     "phase.recess": "Recess",

@@ -21,6 +21,7 @@ pub enum PhaseType {
     Obituary,
     Discussion,
     Nomination,
+    Adjournment,
     Testimony,
     Judgement,
     FinalWords,
@@ -40,6 +41,8 @@ pub enum PhaseState {
     Discussion,
     #[serde(rename_all = "camelCase")]
     Nomination { trials_left: u8, nomination_time_remaining: Option<Duration> },
+    #[serde(rename_all = "camelCase")]
+    Adjournment {trials_left: u8},
     #[serde(rename_all = "camelCase")]
     Testimony { trials_left: u8, player_on_trial: PlayerReference, nomination_time_remaining: Option<Duration> },
     #[serde(rename_all = "camelCase")]
@@ -126,6 +129,7 @@ impl PhaseState {
             PhaseState::Obituary {..} => PhaseType::Obituary,
             PhaseState::Discussion => PhaseType::Discussion,
             PhaseState::Nomination {..} => PhaseType::Nomination,
+            PhaseState::Adjournment { .. } => PhaseType::Adjournment,
             PhaseState::Testimony {..} => PhaseType::Testimony,
             PhaseState::Judgement {..} => PhaseType::Judgement,
             PhaseState::FinalWords {..} => PhaseType::FinalWords,
@@ -198,7 +202,9 @@ impl PhaseState {
             | PhaseState::Judgement { .. } 
             | PhaseState::FinalWords { .. }
             | PhaseState::Dusk
-            | PhaseState::Recess => {}
+            | PhaseState::Recess 
+            | PhaseState::Adjournment { .. }
+            => {}
         }
         
     }
@@ -219,29 +225,36 @@ impl PhaseState {
                 }
             },
             PhaseState::Nomination {trials_left, ..} => {
-
-
-                if !Modifiers::is_enabled(game, ModifierType::UnscheduledNominations){
-                    
-                    if let Some(player_on_trial) = game.count_nomination_and_start_trial(false){    
-                        Self::Testimony{
-                            trials_left: trials_left.saturating_sub(1), 
-                            player_on_trial, 
-                            nomination_time_remaining: PhaseStateMachine::get_phase_time_length(game, PhaseType::Nomination)
-                        }
-                    }else if trials_left > 1  {
-                        Self::Nomination {
-                            trials_left: trials_left.saturating_sub(1),
-                            nomination_time_remaining: PhaseStateMachine::get_phase_time_length(game, PhaseType::Nomination)
-                        }
-                    }else{
-                        Self::Dusk
+                if Modifiers::is_enabled(game, ModifierType::UnscheduledNominations){
+                    if trials_left == 0 {
+                        return Self::Dusk
+                    } else {
+                        return Self::Adjournment { trials_left: 0 } //you only get an adjournment that is the length of the normal one rather than more than one adjournment or 1 longer one if you have more than 1 trial remaining
                     }
-
-                }else{
-                    Self::Dusk
+                }
+                
+                if let Some(player_on_trial) = game.count_nomination_and_start_trial(false){    
+                    Self::Testimony{
+                        trials_left: trials_left.saturating_sub(1), 
+                        player_on_trial, 
+                        nomination_time_remaining: PhaseStateMachine::get_phase_time_length(game, PhaseType::Nomination)
+                    }
+                } else if trials_left > 1 {
+                    Self::Adjournment {trials_left: trials_left.saturating_sub(1)}
+                } else {
+                    Self::Adjournment {trials_left}
                 }
             },
+            PhaseState::Adjournment {trials_left} => {
+                if trials_left == 0 {
+                    Self::Dusk
+                } else {
+                    Self::Nomination {
+                        trials_left,
+                        nomination_time_remaining: PhaseStateMachine::get_phase_time_length(game, PhaseType::Nomination)
+                    }
+                }
+            }
             PhaseState::Testimony { trials_left, player_on_trial, nomination_time_remaining } => {
                 Self::Judgement { trials_left, player_on_trial, nomination_time_remaining }
             },

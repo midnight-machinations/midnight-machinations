@@ -39,7 +39,9 @@ impl PhaseTimeSettings {
             PhaseType::Night => Some(Duration::from_secs(self.night as u64)),
             PhaseType::Testimony => Some(Duration::from_secs(self.testimony as u64)),
             PhaseType::Nomination => Some(Duration::from_secs(self.nomination as u64)),
-            PhaseType::Recess => None
+            #[expect(clippy::arithmetic_side_effects, reason = "adding u16 won't overflow a u64")]
+            PhaseType::Adjournment => Some(Duration::from_secs(self.nomination as u64 + self.discussion as u64)),
+            PhaseType::Recess => None,
         }
     }
     pub fn game_ends_instantly(&self)->bool{
