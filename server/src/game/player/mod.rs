@@ -31,8 +31,6 @@ pub struct Player {
     death_note: Option<String>,
 
     role_labels: VecSet<PlayerReference>,
-
-    fast_forward_vote: bool,
 }
 impl Player {
     pub fn new(name: String, sender: ClientSender, role: Role) -> Self {
@@ -47,8 +45,6 @@ impl Player {
             death_note: None,
 
             role_labels: VecSet::new(),
-
-            fast_forward_vote: false,
         }
     }
 }
@@ -73,8 +69,6 @@ pub mod test {
             death_note: None,
 
             role_labels: VecSet::new(),
-
-            fast_forward_vote: false,
         }
     }
 }

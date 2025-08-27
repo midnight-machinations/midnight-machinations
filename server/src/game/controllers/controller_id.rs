@@ -17,6 +17,7 @@ pub type RoleControllerID = u8;
 #[serde(rename_all = "camelCase")]
 #[serde(tag="type")]
 pub enum ControllerID{
+    CallWitness{player: PlayerReference},
     Nominate{player: PlayerReference},
     Judge{player: PlayerReference},
     

@@ -37,12 +37,6 @@ impl Game{
         
         self.ticking = false;
     }
-    pub fn on_fast_forward(&mut self){
-        self.phase_machine.time_remaining = Some(std::time::Duration::from_secs(0));
-        
-        self.add_message_to_chat_group(ChatGroup::All, ChatMessageVariant::PhaseFastForwarded);
-        self.send_packet_to_all(ToClientPacket::PhaseTimeLeft{ seconds_left: self.phase_machine.time_remaining.map(|o|o.as_secs().try_into().expect("Phase time should be below 18 hours")) });
-    }
     pub fn on_grave_added(&mut self, grave_ref: GraveReference){   
         let grave = grave_ref.deref(self).clone();     
         self.send_packet_to_all(ToClientPacket::AddGrave{grave: grave.clone(), grave_ref});

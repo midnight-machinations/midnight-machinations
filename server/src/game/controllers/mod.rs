@@ -13,7 +13,7 @@ use crate::{
     game::{
         chat::{ChatComponent, ChatMessageVariant},
         components::{
-            alibi::Alibi, forfeit_vote::ForfeitNominationVote, forward_messages::ForwardMessages, insider_group::InsiderGroupID, judgement_controller::JudgementController, mafia::Mafia, nomination_controller::NominationController, pitchfork::Pitchfork, syndicate_gun_item::SyndicateGunItem
+            alibi::Alibi, call_witness::CallWitness, forfeit_vote::ForfeitNominationVote, forward_messages::ForwardMessages, insider_group::InsiderGroupID, judgement_controller::JudgementController, mafia::Mafia, nomination_controller::NominationController, pitchfork::Pitchfork, syndicate_gun_item::SyndicateGunItem
         }, 
         event::{
             on_controller_changed::OnControllerChanged, Event
@@ -52,7 +52,8 @@ impl Controllers{
             Pitchfork::controller_parameters_map(game),
             ForwardMessages::controller_parameters_map(game),
             ChatComponent::controller_parameters_map(game),
-            Alibi::controller_parameters_map(game)
+            Alibi::controller_parameters_map(game),
+            CallWitness::controller_parameters_map(game)
         ]);
 
         if *current_controller_parameters != new_controller_parameters_map {
