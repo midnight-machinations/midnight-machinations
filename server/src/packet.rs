@@ -96,6 +96,11 @@ pub enum ToClientPacket{
     #[serde(rename_all = "camelCase")]
     RejectStart{reason: RejectStartReason},
 
+    #[serde(rename_all = "camelCase")]
+    LobbyCloseWarning,
+    #[serde(rename_all = "camelCase")]
+    GameCloseWarning,
+
     // Settings
     #[serde(rename_all = "camelCase")]
     RoleList{role_list: RoleList},

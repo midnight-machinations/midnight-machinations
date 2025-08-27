@@ -52,6 +52,24 @@ impl Game {
         }
     }
 
+    pub fn back_to_lobby(&mut self) -> GameClientMessageResult {
+        self.settings.role_list.simplify();
+        let role_list = self.settings.role_list.clone();
+        
+        self.send_to_all(ToClientPacket::RoleList { role_list });
+
+        let mut new_clients = VecMap::new();
+        for (room_client_id, game_client) in self.clients.clone() {
+            new_clients.insert(room_client_id, LobbyClient::new_from_game_client(self, game_client));
+        }
+
+        self.send_to_all(ToClientPacket::BackToLobby);
+
+        let lobby = Lobby::new_from_game(self.room_name.clone(), self.settings.clone(), new_clients);
+
+        GameClientMessageResult::BackToLobby(lobby)
+    }
+
     pub fn on_player_message(&mut self, room_client_id: RoomClientID, sender_player_ref: PlayerReference, incoming_packet: ToServerPacket) -> GameClientMessageResult {
         'packet_match: {match incoming_packet {
             ToServerPacket::Leave => {
@@ -62,21 +80,7 @@ impl Game {
             ToServerPacket::HostForceBackToLobby => {
                 if let Some(player) = self.clients.get(&room_client_id) && !player.host {break 'packet_match}
 
-                self.settings.role_list.simplify();
-                let role_list = self.settings.role_list.clone();
-                
-                self.send_to_all(ToClientPacket::RoleList { role_list });
-
-                let mut new_clients = VecMap::new();
-                for (room_client_id, game_client) in self.clients.clone() {
-                    new_clients.insert(room_client_id, LobbyClient::new_from_game_client(self, game_client));
-                }
-
-                self.send_to_all(ToClientPacket::BackToLobby);
-
-                let lobby = Lobby::new_from_game(self.room_name.clone(), self.settings.clone(), new_clients);
-
-                return GameClientMessageResult::BackToLobby(lobby);
+                return self.back_to_lobby();
             }
             ToServerPacket::HostForceEndGame => {
                 if let Some(player) = self.clients.get(&room_client_id)

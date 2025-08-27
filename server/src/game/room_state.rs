@@ -1,4 +1,5 @@
 use std::time::Duration;
+use std::time::Instant;
 use super::event::on_tick::OnTick;
 use crate::client_connection::ClientConnection;
 use crate::game::chat::ChatGroup;
@@ -26,8 +27,29 @@ use crate::websocket_connections::connection::ClientSender;
 
 impl RoomState for Game {
     fn tick(&mut self, time_passed: Duration) -> RoomTickResult {
-        if !self.ticking { 
-            return RoomTickResult { close_room: false }
+        if !self.ticking {
+            match self.recess_start {
+                None => {
+                    self.recess_start = Some(Instant::now());
+                    return RoomTickResult { close_room: false, send_to_lobby: false }
+                },
+                Some(start) => {
+                    let elapsed = start.elapsed();
+
+                    if elapsed > Self::CLOSE_TIMER {
+                        return RoomTickResult { close_room: false, send_to_lobby: true }
+                    }
+
+                    #[expect(clippy::arithmetic_side_effects, 
+                        reason="values are constants and there is no risk of subtracting 1 minute from 2 hours and having an under/overflow error"
+                    )]
+                    if !self.sent_warning && elapsed > Self::CLOSE_TIMER-Self::CLOSE_WARNING_TIMER {
+                        self.send_to_all(ToClientPacket::GameCloseWarning);
+                        self.sent_warning = true;
+                    }
+                    return RoomTickResult { close_room: false, send_to_lobby: false }
+                }
+            }
         }
 
         if let Some(conclusion) = GameConclusion::game_is_over_game(self) {
@@ -40,7 +62,7 @@ impl RoomState for Game {
             });
             self.send_packet_to_all(ToClientPacket::GameOver{ reason: GameOverReason::ReachedMaxDay });
             self.ticking = false;
-            return RoomTickResult { close_room: !self.is_any_client_connected() };
+            return RoomTickResult { close_room: !self.is_any_client_connected(), send_to_lobby: false };
         }
 
         while self.phase_machine.time_remaining.is_some_and(|d| d.is_zero()) {
@@ -54,7 +76,8 @@ impl RoomState for Game {
         OnTick::new().invoke(self);
 
         RoomTickResult {
-            close_room: !self.is_any_client_connected()
+            close_room: !self.is_any_client_connected(),
+            send_to_lobby: false,
         }
     }
     

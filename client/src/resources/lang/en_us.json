@@ -177,6 +177,11 @@
     "notification.saveGameMode.failure.noRoles": "Role list is empty",
     "notification.saveGameMode.failure.didNotConfirm": "Confirmation failed",
 
+    "notification.lobbyCloseWarning.title": "This lobby will automatically close in 2 minutes",
+    "notification.lobbyCloseWarning.body": "Any lobby running for 2 hours without a game will automatically close.",
+    "notification.gameCloseWarning.title": "This game will automatically move the lobby in 2 minutes",
+    "notification.gameCloseWarning.body": "Any game in recess for 30 minutes will automatically move to the lobby.",
+
     "outdatedGameModesSaveData": "Your game modes were last saved using an unsupported save format, or have become corrupted. Delete your game mode save data to be able to save and load game modes. Here is the reason your saved game modes couldn't be loaded:",
     "outdatedGameModeSaveData": "Unsupported format",
     "outdatedGameModeSaveData.details": "This game mode is using an unsupported save format, or has become corrupted. Here is the reason your saved game mode couldn't be loaded:",

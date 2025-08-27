@@ -74,7 +74,10 @@
             silenced: Silenced::default(),
             fragile_vests: unsafe{PlayerComponent::<FragileVests>::new(num_players)},
             win_condition: unsafe{PlayerComponent::<WinCondition>::new(num_players, &assignments)},
-            chat_messages: unsafe{ChatComponent::new(num_players)}
+            chat_messages: unsafe{ChatComponent::new(num_players)},
+
+            sent_warning: false,
+            recess_start: None,
         };
 
 

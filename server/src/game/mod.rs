@@ -25,8 +25,9 @@ pub mod new_game;
 
 use std::collections::VecDeque;
 use std::time::Instant;
+use std::time::Duration;
+use crate::game::controllers::ControllerID;
 use crate::game::controllers::Controllers;
-use controllers::ControllerID;
 use controllers::PlayerListSelection;
 use components::confused::Confused;
 use components::drunk_aura::DrunkAura;
@@ -125,7 +126,10 @@ pub struct Game {
     pub silenced: Silenced,
     pub fragile_vests: FragileVestsComponent,
     pub win_condition: WinConditionComponent,
-    pub chat_messages: ChatComponent
+    pub chat_messages: ChatComponent,
+
+    pub sent_warning: bool,
+    pub recess_start: Option<Instant>,
 }
 
 #[derive(Serialize, Debug, Clone, Copy)]
@@ -151,7 +155,8 @@ type Assignments = VecMap<PlayerReference, (RoleOutlineReference, OutlineAssignm
 
 impl Game {
     pub const DISCONNECT_TIMER_SECS: u16 = 60 * 2;
-
+    const CLOSE_TIMER: Duration = Duration::from_secs(60*30); // 30 minutes
+    const CLOSE_WARNING_TIMER: Duration = Duration::from_secs(60*2); // 2 minutes
     
 
     #[expect(clippy::cast_possible_truncation, reason = "Game can only have 255 players maximum")]

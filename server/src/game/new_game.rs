@@ -12,7 +12,7 @@ impl Game{
         players: Vec<PlayerInitializeParameters>,
         spectators: Vec<SpectatorInitializeParameters>
     ) -> Result<Self, RejectStartReason>{
-        //check settings are not completly off the rails
+        //check settings are not completely off the rails
         if settings.phase_times.game_ends_instantly() {
             return Err(RejectStartReason::ZeroTimeGame);
         }
@@ -112,7 +112,10 @@ impl Game{
                 silenced: Silenced::default(),
                 fragile_vests: unsafe{FragileVestsComponent::new(num_players)},
                 win_condition: unsafe{WinConditionComponent::new(num_players, &assignments)},
-                chat_messages: unsafe{ChatComponent::new(num_players)}
+                chat_messages: unsafe{ChatComponent::new(num_players)},
+
+                sent_warning: false,
+                recess_start: None,
             };
 
             // Just distribute insider groups, this is for game over checking (Keeps game running syndicate gun)

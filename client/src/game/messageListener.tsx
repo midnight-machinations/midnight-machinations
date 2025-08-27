@@ -44,6 +44,18 @@ export default function messageListener(packet: ToClientPacket){
         case "rateLimitExceeded":
             ANCHOR_CONTROLLER?.pushErrorCard({ title: translate("notification.rateLimitExceeded"), body: "" });
         break;
+        case "lobbyCloseWarning":
+            ANCHOR_CONTROLLER?.pushErrorCard({ 
+                title: translate("notification.lobbyCloseWarning.title"), 
+                body: translate("notification.lobbyCloseWarning.body") 
+            });
+        break;
+        case "gameCloseWarning":
+            ANCHOR_CONTROLLER?.pushErrorCard({ 
+                title: translate("notification.gameCloseWarning.title"), 
+                body: translate("notification.gameCloseWarning.body") 
+            });
+        break;
         case "forcedOutsideLobby":
             GAME_MANAGER.setOutsideLobbyState();
             ANCHOR_CONTROLLER?.setContent(<PlayMenu/>);

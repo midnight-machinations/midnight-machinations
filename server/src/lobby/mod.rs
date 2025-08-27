@@ -5,18 +5,22 @@ use std::{collections::VecDeque, time::{Duration, Instant}};
 
 use lobby_client::{LobbyClient, LobbyClientType, Ready};
 
-use crate::{client_connection::ClientConnection, game::{role_list::RoleOutline, settings::Settings}, packet::{RoomPreviewData, RejectJoinReason, ToClientPacket}, room::{name_validation, JoinRoomClientResult, RemoveRoomClientResult, RoomClientID, RoomState, RoomTickResult}, vec_map::VecMap, websocket_connections::connection::ClientSender};
+use crate::{client_connection::ClientConnection, game::{role_list::RoleOutline, settings::Settings}, packet::{RejectJoinReason, RoomPreviewData, ToClientPacket}, room::{name_validation, JoinRoomClientResult, RemoveRoomClientResult, RoomClientID, RoomState, RoomTickResult}, vec_map::VecMap, websocket_connections::connection::ClientSender};
 
 pub struct Lobby {
     pub name: String,
     pub settings: Settings,
     pub clients: VecMap<RoomClientID, LobbyClient>,
-
+    
+    pub created: Instant,
+    pub sent_warning: bool,
     pub chat_message_index: usize
 }
 
 impl Lobby {
     const DISCONNECT_TIMER_SECS: u64 = 5;
+    const CLOSE_TIMER: Duration = Duration::from_secs(60*60*2); // 2 hours
+    const CLOSE_WARNING_TIMER: Duration = Duration::from_secs(60*2); //2 minutes
 
     pub fn new() -> Self {
         Self {
@@ -24,6 +28,8 @@ impl Lobby {
             settings: Settings::default(),
             clients: VecMap::new(),
             chat_message_index: 0,
+            sent_warning: false,
+            created: Instant::now(),
         }
     }
 
@@ -125,7 +131,14 @@ impl Lobby {
     }
     
     pub fn new_from_game(name: String, settings: Settings, clients: VecMap<RoomClientID, LobbyClient>) -> Self {
-        let new = Self { name, settings, clients, chat_message_index: 0 };
+        let new = Self { 
+            name, 
+            settings, 
+            clients, 
+            chat_message_index: 0, 
+            created: Instant::now(),
+            sent_warning: false,
+        };
 
         for (id, client) in new.clients.iter() {
             client.send(ToClientPacket::YourId { player_id: *id });
@@ -251,6 +264,20 @@ impl RoomState for Lobby {
     }
     
     fn tick(&mut self, time_passed: Duration) -> RoomTickResult {
+        let elapsed = self.created.elapsed();
+
+        if elapsed > Self::CLOSE_TIMER {
+            return RoomTickResult { close_room: false, send_to_lobby: true };
+        }
+
+        #[expect(clippy::arithmetic_side_effects, 
+            reason="values are constants and there is no risk of subtracting 1 minute from 2 hours and having an under/overflow error"
+        )]
+        if !self.sent_warning && elapsed > Self::CLOSE_TIMER-Self::CLOSE_WARNING_TIMER {
+            self.send_to_all(ToClientPacket::LobbyCloseWarning);
+            self.sent_warning = true;
+        }
+        
         let mut to_remove = vec![];
 
         for client in self.clients.iter_mut() {
@@ -268,11 +295,11 @@ impl RoomState for Lobby {
 
         for client in to_remove {
             if let RemoveRoomClientResult::RoomShouldClose = self.remove_client(client) {
-                return RoomTickResult { close_room: true };
+                return RoomTickResult { close_room: true,  send_to_lobby: false };
             }
         }
 
-        RoomTickResult { close_room: false }
+        RoomTickResult { close_room: false, send_to_lobby: false}
     }
     
     fn get_preview_data(&self) -> RoomPreviewData {
