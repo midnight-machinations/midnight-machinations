@@ -939,7 +939,6 @@
     
     "phase.adjournment": "Adjournment",
     "phase.adjournment.var.0": "Adjournment",
-    "phase.adjournment.subtitle": "A break between nominations/nomination and dusk.",
 
     "phase.testimony": "Testimony",
     "phase.testimony:var.0": "Testimonies",
@@ -1457,6 +1456,10 @@
     "wiki.article.standard.nomination.title:var.10": "Votes up",
     "wiki.article.standard.nomination.text": "The nomination phase comes after the discussion phase.\n\nDuring nomination, players can vote other players on to trial in order to execute them.\nThe best way for townies to kill syndicate members is to use their vote:\n- Even if you aren't certain someone is evil, voting them onto trial as a threat will often convince them to give information (or, if they were evil, to try to come up with a defense).\n- Typically, if more than half of the living players vote for one player, that player is put on trial and given a testimony phase to explain themselves.\n\nIf there aren’t enough votes to start a trial in time, the game skips directly to the dusk phase.",
 
+    "wiki.article.standard.adjournment.title": "Adjournment",
+    "wiki.article.standard.adjournment.title:var.5": "Adjournments",
+    "wiki.article.standard.adjournment.text": "The Adjournment phase comes after nomination only if there was no player nominated. It replaces the trial that was missed.",
+    
     "wiki.article.standard.testimony.title": "Testimony",
     "wiki.article.standard.testimony.title:var.0": "Testify",
     "wiki.article.standard.testimony.title:var.1": "Testified",
@@ -1837,8 +1840,8 @@
 
     "wiki.article.role.deputy.reminder": "Once per game, during the day, shoot someone. If you kill a town loyalist you leave town.",
     "wiki.article.role.deputy.lore": "\"When you know, you know.\"",
-    "wiki.article.role.deputy.guide":"- Once per game, you can shoot a player during the day\n- If you kill a townie, you instantly leave town\n- If you kill someone, everyone is told that a deputy shot someone\n- If the player you shoot survives your attack, only the player you attacked is told, nobody else is told\n- You can only shoot during discussion or nomination\n\nIf you attack someone and they survive it is likely that they are a role that is armored. Most roles that are armored are evil.",
-    "wiki.article.role.deputy.abilities":"* Once per game, during the discussion or nomination phase after day 1, you may choose a player to attack.",
+    "wiki.article.role.deputy.guide":"- Once per game, you can shoot a player during the day\n- If you kill a townie, you instantly leave town\n- If you kill someone, everyone is told that a deputy shot someone\n- If the player you shoot survives your attack, only the player you attacked is told, nobody else is told\n- You can only shoot during discussion, nomination, adjournment, or dusk\n\nIf you attack someone and they survive it is likely that they are a role that is armored. Most roles that are armored are evil.",
+    "wiki.article.role.deputy.abilities":"* Once per game, you may choose a player to attack instantly. You can do this during discussion, nomination, adjournment, or dusk.",
     "wiki.article.role.deputy.attributes":"* If the player you attack has defense, they are told they were attacked by a deputy\n* When you kill someone, everyone is told a deputy shot someone\n* If you kill a town loyalist, you instantly leave town",
     "wiki.article.role.deputy.extra":"* You only have a basic attack\n* You can not attack day 1",
 

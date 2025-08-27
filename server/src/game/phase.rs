@@ -313,12 +313,4 @@ impl PhaseState {
             PhaseState::Recess => Self::Recess
         }
     }
-    
-    pub fn is_day(&self) -> bool {
-        self.phase() != PhaseType::Night
-    }
-
-    pub fn is_night(&self) -> bool {
-        self.phase() == PhaseType::Night
-    }
 }
