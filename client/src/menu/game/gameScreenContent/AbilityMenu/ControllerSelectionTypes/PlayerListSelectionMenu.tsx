@@ -31,7 +31,7 @@ export default function PlayerListSelectionMenu(props: Readonly<{
         props.availableSelection.canChooseDuplicates || !props.selection.includes(p)
     ) as PlayerIndex[];
 
-    return <div>
+    return <div className="generic-list-controller-menu">
         {
             props.selection.map((p,i)=><PlayerOptionDropdown
                 key={i}
@@ -52,27 +52,29 @@ export default function PlayerListSelectionMenu(props: Readonly<{
                 canChooseNone={true}
             /> : null
         }
-        {
-            ((props.availableSelection.maxPlayers??Infinity) >= props.availableSelection.availablePlayers.length) && newChoosablePlayers.length !== 0
-            ?
-                <Button
-                    onClick={()=>props.onChoose(props.availableSelection.availablePlayers)}
-                >
-                    <Icon>select_all</Icon>
-                </Button>
-            :null
-        }
-        {
-            ((props.availableSelection.maxPlayers??Infinity) > 1) &&
-            props.availableSelection.availablePlayers.length > 1 &&
-            props.selection.length > 0
-            ?
-                <Button
-                    onClick={()=>props.onChoose([])}
-                >
-                    <Icon>deselect</Icon>
-                </Button>
-            :null
-        }
+        <div>
+            {
+                ((props.availableSelection.maxPlayers??Infinity) >= props.availableSelection.availablePlayers.length) && newChoosablePlayers.length !== 0
+                ?
+                    <Button
+                        onClick={()=>props.onChoose(props.availableSelection.availablePlayers)}
+                    >
+                        <Icon>select_all</Icon>
+                    </Button>
+                :null
+            }
+            {
+                ((props.availableSelection.maxPlayers??Infinity) > 1) &&
+                props.availableSelection.availablePlayers.length > 1 &&
+                props.selection.length > 0
+                ?
+                    <Button
+                        onClick={()=>props.onChoose([])}
+                    >
+                        <Icon>deselect</Icon>
+                    </Button>
+                :null
+            }
+        </div>
     </div>
 }

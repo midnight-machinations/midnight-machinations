@@ -38,6 +38,7 @@ import Icon from "../../../../components/Icon";
 import PlayerListSelectionMenu from "./ControllerSelectionTypes/PlayerListSelectionMenu";
 import IntegerSelectionMenu from "./ControllerSelectionTypes/IntegerSelectionMenu";
 import BooleanSelectionMenu from "./ControllerSelectionTypes/BooleanSelectionMenu";
+import "./ControllerSelectionTypes/genericListController.css"
 
 type GroupName = `${PlayerIndex}/${Role}` | 
     "syndicateGunItem" | 
@@ -85,7 +86,7 @@ function translateGroupName(id: ControllerID): string {
         case "syndicateChooseBackup":
             return translate("backup");
         default:
-            return id.type;
+            return translateControllerID(id);
     }
 }
 

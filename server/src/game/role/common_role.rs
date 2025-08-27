@@ -1,17 +1,9 @@
 use std::collections::HashSet;
 
 use crate::game::{
-    controllers::*,
-    chat::ChatGroup,
-    components::{
-        detained::Detained,
-        puppeteer_marionette::PuppeteerMarionette, silenced::Silenced, win_condition::WinCondition
-    },
-    game_conclusion::GameConclusion,
-    modifiers::{ModifierType, Modifiers},
-    phase::{PhaseState, PhaseType}, player::PlayerReference,
-    role_list::RoleSet, visit::{Visit, VisitTag},
-    Game
+    chat::ChatGroup, components::{
+        call_witness::CallWitness, detained::Detained, puppeteer_marionette::PuppeteerMarionette, silenced::Silenced, win_condition::WinCondition
+    }, controllers::*, game_conclusion::GameConclusion, modifiers::{ModifierType, Modifiers}, phase::{PhaseState, PhaseType}, player::PlayerReference, role_list::RoleSet, visit::{Visit, VisitTag}, Game
 };
 
 use super::{medium::Medium, reporter::Reporter, warden::Warden, InsiderGroupID, Role, RoleState};
@@ -166,12 +158,12 @@ pub(super) fn get_current_send_chat_groups(game: &Game, actor_ref: PlayerReferen
         | PhaseState::FinalWords {..}
         | PhaseState::Dusk 
         | PhaseState::Recess => vec![ChatGroup::All].into_iter().collect(),
-        &PhaseState::Testimony { player_on_trial, .. } => {
-            if player_on_trial == actor_ref {
-                vec![ChatGroup::All].into_iter().collect()
-            } else {
-                HashSet::new()
+        &PhaseState::Testimony { .. } => {
+            let mut out = HashSet::new();
+            if CallWitness::witness_called(game).contains(&actor_ref) {
+                out.insert(ChatGroup::All);
             }
+            out
         },
         PhaseState::Night => {
             let mut out = vec![];

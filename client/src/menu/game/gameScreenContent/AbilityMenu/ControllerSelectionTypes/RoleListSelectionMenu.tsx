@@ -32,7 +32,7 @@ export default function RoleListSelectionMenu(props: Readonly<{
         props.availableSelection.canChooseDuplicates || !props.selection.includes(p)
     ) as Role[];
 
-    return <div>
+    return <div className="generic-list-controller-menu">
         {
             props.selection.map((p,i)=><RoleDropdown
                 enabledRoles={props.availableSelection.availableRoles.filter((p)=>
@@ -51,27 +51,29 @@ export default function RoleListSelectionMenu(props: Readonly<{
                 onChange={(p)=>handleSelection(p, props.selection.length)}
             /> : null
         }
-        {
-            ((props.availableSelection.maxRoles??Infinity) >= props.availableSelection.availableRoles.length) && newChoosableRoles.length !== 0
-            ?
-                <Button
-                    onClick={()=>props.onChoose(props.availableSelection.availableRoles)}
-                >
-                    <Icon>select_all</Icon>
-                </Button>
-            :null
-        }
-        {
-            ((props.availableSelection.maxRoles??Infinity) > 1) &&
-            props.availableSelection.availableRoles.length > 1 &&
-            props.selection.length > 0
-            ?
-                <Button
-                    onClick={()=>props.onChoose([])}
-                >
-                    <Icon>deselect</Icon>
-                </Button>
-            :null
-        }
+        <div>
+            {
+                ((props.availableSelection.maxRoles??Infinity) >= props.availableSelection.availableRoles.length) && newChoosableRoles.length !== 0
+                ?
+                    <Button
+                        onClick={()=>props.onChoose(props.availableSelection.availableRoles)}
+                    >
+                        <Icon>select_all</Icon>
+                    </Button>
+                :null
+            }
+            {
+                ((props.availableSelection.maxRoles??Infinity) > 1) &&
+                props.availableSelection.availableRoles.length > 1 &&
+                props.selection.length > 0
+                ?
+                    <Button
+                        onClick={()=>props.onChoose([])}
+                    >
+                        <Icon>deselect</Icon>
+                    </Button>
+                :null
+            }
+        </div>
     </div>
 }
