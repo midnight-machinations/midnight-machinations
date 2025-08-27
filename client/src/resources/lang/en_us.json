@@ -1407,7 +1407,7 @@
     "wiki.article.standard.fastForward.title:var.4": "Skips",
     "wiki.article.standard.fastForward.title:var.5": "Skipping",
     "wiki.article.standard.fastForward.title:var.6": "Skipped",
-    "wiki.article.standard.fastForward.text": "If all living players vote to fast forward, the current phase instantly ends. Voting to fast forward is completely anonymous, nobody even knows when you press the button. To vote to fast forward, press the fast forward button in the top left.",
+    "wiki.article.standard.fastForward.text": "If all living players vote to fast forward, the current phase instantly ends. Voting to fast forward is completely anonymous, nobody even knows when you press the button. To vote to fast forward, open the fast forward drop down in the top left. You can either choose to fast forward the current phase, or to fast forward to a specific phase.",
     "wiki.article.standard.told.title": "Told",
     "wiki.article.standard.told.text": "If you are told something, you were sent a chat message stating it.",
 
