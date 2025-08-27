@@ -3,7 +3,7 @@ import StartMenu from "./../menu/main/StartMenu";
 import GAME_MANAGER from "./../index";
 import messageListener from "./messageListener";
 import React from "react";
-import { PhaseType, PhaseTimes, Verdict, PlayerIndex } from "./gameState.d";
+import { PhaseType, PhaseTimes, Verdict, PlayerIndex, FastForwardSetting } from "./gameState.d";
 import { GameManager, Server, StateListener } from "./gameManager.d";
 import { LobbyPreviewData, ToClientPacket, ToServerPacket } from "./packet";
 import { RoleOutline } from "./roleListState.d";
@@ -552,7 +552,7 @@ export function createGameManager(): GameManager {
             });
         },
 
-        sendVoteFastForwardPhase(fastForward: boolean) {
+        sendVoteFastForwardPhase(fastForward: FastForwardSetting) {
             this.server.sendPacket({
                 type: "voteFastForwardPhase",
                 fastForward: fastForward

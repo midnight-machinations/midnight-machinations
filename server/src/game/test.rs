@@ -1,5 +1,5 @@
 
-    use crate::{game::{chat::ChatComponent, components::graves::Graves, role_list_generation::RoleListGenerator}, vec_map::VecMap};
+    use crate::{game::{chat::ChatComponent, components::{fast_forward::FastForwardComponent, graves::Graves}, role_list_generation::RoleListGenerator}, vec_map::VecMap};
 
     use super::{
         controllers::Controllers, components::{
@@ -74,6 +74,7 @@
             silenced: Silenced::default(),
             fragile_vests: unsafe{PlayerComponent::<FragileVests>::new(num_players)},
             win_condition: unsafe{PlayerComponent::<WinCondition>::new(num_players, &assignments)},
+            fast_forward: unsafe{FastForwardComponent::new(num_players)},
             chat_messages: unsafe{ChatComponent::new(num_players)}
         };
 

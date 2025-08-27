@@ -52,7 +52,7 @@ export function createGameState(): GameState {
         timeLeftMs: 0,
         dayNumber: 1,
 
-        fastForward: false,
+        fastForward: {type:"none"},
         
         roleList: [],
         enabledRoles: [],
