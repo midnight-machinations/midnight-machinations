@@ -88,10 +88,10 @@ function RoleListDisplay(props: {
                 {
                     props.strikenOutlineIndexs.includes(index) ? 
                     <s><StyledText>
-                        {translateRoleOutline(entry, props.playerNames) ?? ""}
+                        {`${index + 1}: ` + translateRoleOutline(entry, props.playerNames)}
                     </StyledText></s> : 
                     <StyledText>
-                        {translateRoleOutline(entry, props.playerNames) ?? ""}
+                        {`${index + 1}: ` + translateRoleOutline(entry, props.playerNames)}
                     </StyledText>
                 }
             </Button>

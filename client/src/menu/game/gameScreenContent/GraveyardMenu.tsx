@@ -46,8 +46,8 @@ function RoleListDisplay(): ReactElement {
     return <>
         {roleList.map((entry, index)=>{
             return <Button
-                className="role-list-button placard"
-                style={{ gridRow: index + 1 }}
+                className="role-list-button"
+                style={{ gridRow: index + 1}}
                 key={index}
                 onClick={()=>{
                     if (spectator) return;
@@ -64,10 +64,10 @@ function RoleListDisplay(): ReactElement {
                 {
                     crossedOutOutlines.includes(index) ? 
                     <s><StyledText>
-                        {translateRoleOutline(entry, playerNames)}
+                        {`${index + 1}: ` + translateRoleOutline(entry, playerNames)}
                     </StyledText></s> : 
                     <StyledText>
-                        {translateRoleOutline(entry, playerNames)}
+                        {`${index + 1}: ` + translateRoleOutline(entry, playerNames)}
                     </StyledText>
                 }
             </Button>

@@ -30,6 +30,7 @@
     font-size: 0.8em;
     text-indent: 0;
     text-align: center !important;
+    margin: 0
 }
 .keyword-player-sender {
     color: rgb(168, 168, 168);
