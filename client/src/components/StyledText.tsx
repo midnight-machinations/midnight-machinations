@@ -218,6 +218,7 @@ export function computeRoleListKeywordData(playerNames: UnsafeString[], roleList
     for(const [index, outline] of roleList.entries()) {
         ROLE_LIST_KEYWORD_DATA[`${index + 1}: ` + translateRoleOutline(outline, playerNames)] = [
             { style: "keyword-outline-number", replacement: (index + 1).toString() },
+            { replacement: " " },
             { style: "keyword-outline", replacement: getStyledHtmlFromString(translateRoleOutline(outline, playerNames), PLAYER_KEYWORD_DATA, {}) },
         ];
     }
@@ -263,6 +264,7 @@ function computeDummyKeywordData() {
     for (const [index, outline] of (DUMMY_ROLE_LIST as RoleList).entries()) {
         DUMMY_ROLE_LIST_KEYWORD_DATA[`${index + 1}: ` + translateRoleOutline(outline, DUMMY_NAMES)] = [
             { style: "keyword-outline-number", replacement: (index + 1).toString() },
+            { replacement: " " },
             { style: "keyword-outline", replacement: getStyledHtmlFromString(translateRoleOutline(outline, DUMMY_NAMES), DUMMY_NAMES_KEYWORD_DATA, {}) },
         ];
     }
