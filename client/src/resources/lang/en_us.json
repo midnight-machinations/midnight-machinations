@@ -1765,7 +1765,7 @@
     "wiki.article.role.medium.attributes":"",
     "wiki.article.role.medium.extra":"- You can't chat with the dead while in jail, but a haunted player can.\n- You are immune to possession",
     "wiki.article.role.medium.exampleAlibi":"Medium\nN1: n/a\nN2: @2 (Detective)\n@2 said they got @5 as enemies with town\n @2 told me to say \"17253\".",
-    "wiki.article.role.medium.exampleAlibi.description":"Here is an example of an alibi from a Coxswain who, on night 2, used their ability to give @2, a player who claims to be detective, their ability back, and then talked to them at night and wrote some important ntoes from what @2 said.",
+    "wiki.article.role.medium.exampleAlibi.description":"Here is an example of an alibi from a Medium who, on night 2, used their ability to give @2, a player who claims to be detective, their ability back, and then talked to them at night and wrote some important ntoes from what @2 said.",
 
     "wiki.article.role.retributionist.guide": "- At night, Select a dead town role to possess them, forcing them to use their ability on a living player\n- You can only possess dead players who's grave has a town role on it\n- You can possess the same player up to 2 times",
     "wiki.article.role.retributionist.abilities":"- Visit 2 players\n    - The first player has their first visit changed to the second player you visit\n- You can only select certain players\n    - The first player you select must be a dead player with a town role on their grave\n    - The second player you select must be any living player",
