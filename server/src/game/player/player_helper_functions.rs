@@ -3,23 +3,14 @@ use rand::seq::SliceRandom;
 
 use crate::{
     game::{
-        controllers::{ControllerSelection, BooleanSelection, ControllerID, ControllerParametersMap, PlayerListSelection, Controllers, TwoPlayerOptionSelection},
-        attack_power::{AttackPower, DefensePower},
-        chat::{ChatGroup, ChatMessage, ChatMessageVariant},
-        components::{
+        attack_power::{AttackPower, DefensePower}, chat::{ChatGroup, ChatMessage, ChatMessageVariant}, components::{
             fragile_vest::FragileVests, graves::{grave::{Grave, GraveKiller}, Graves}, insider_group::InsiderGroupID, night_visits::NightVisits, player_component::PlayerComponent, win_condition::WinCondition
-        },
-        event::{
+        }, controllers::{BooleanSelection, ControllerID, ControllerParametersMap, ControllerSelection, Controllers, PlayerListSelection, TwoPlayerOptionSelection}, event::{
             before_role_switch::BeforeRoleSwitch, on_any_death::OnAnyDeath,
             on_midnight::{MidnightVariables, OnMidnightPriority},
             on_player_roleblocked::OnPlayerRoleblocked, on_role_switch::OnRoleSwitch,
             on_visit_wardblocked::OnVisitWardblocked
-        },
-        game_conclusion::GameConclusion,
-        modifiers::{ModifierType, Modifiers}, phase::PhaseType,
-        role::{chronokaiser::Chronokaiser, Role, RoleState},
-        visit::{Visit, VisitTag},
-        Game
+        }, game_conclusion::GameConclusion, modifiers::{ModifierType, Modifiers}, phase::PhaseType, role::{chronokaiser::Chronokaiser, medium::Medium, Role, RoleState}, visit::{Visit, VisitTag}, Game
     },
     packet::ToClientPacket, vec_map::VecMap, vec_set::VecSet
 };
@@ -337,8 +328,8 @@ impl PlayerReference{
             self.alive(game) ||
             (
                 PlayerReference::all_players(game).any(|p|
-                    if let RoleState::Coxswain(c) = p.role_state(game) {
-                        c.targets.contains(self)
+                    if let RoleState::Medium(Medium{seanced_target: Some(player), ..}) = p.role_state(game) {
+                        *player == *self
                     }else{
                         false
                     }

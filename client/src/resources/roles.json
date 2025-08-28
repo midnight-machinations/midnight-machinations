@@ -147,7 +147,7 @@
             {"type": "auditorResult", "outlineIndex": 15, "result": ["godfather","jester","apostle","escort"]},
             {"type": "auditorResult", "outlineIndex": 10, "result": ["vigilante"]},
             {"type": "auditorResult", "outlineIndex": 4, "result": ["arsonist"]},
-            {"type": "auditorResult", "outlineIndex": 11, "result": ["escort","medium","coxswain"]}
+            {"type": "auditorResult", "outlineIndex": 11, "result": ["escort","medium","transporter"]}
         ]
     },
     "snoop": {
@@ -398,6 +398,7 @@
         "chatMessages":[
             {"type": "mediumExists"},
             {"type": "mediumHauntStarted", "medium":32, "player":10},
+            {"type": "mediumSeance", "medium":32, "player":10},
             {
                 "type": "normal", 
                 "messageSender": {
@@ -491,16 +492,6 @@
         "chatMessages":[
             {"type": "transported"}
         ]
-    },
-    "coxswain":{
-        "mainRoleSet": "town",
-        "roleSets": ["town", "townCommon", "townSupport"],
-        "armor": false,
-        "aura": null,
-        "maxCount": 1,
-        "canWriteDeathNote": false,
-        "canBeConvertedTo": [],
-        "chatMessages":[]
     },
     "retributionist": {
         "mainRoleSet": "town",

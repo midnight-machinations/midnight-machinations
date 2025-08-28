@@ -762,6 +762,8 @@ export function translateChatMessage(
             return translate("chatMessage.mercenaryResult."+(message.hit?"hit":"notHit"));
         case "mediumHauntStarted":
             return translate("chatMessage.mediumHauntStarted", encodeString(playerNames[message.medium]), encodeString(playerNames[message.player]));
+        case "mediumSeance":
+            return translate("chatMessage.mediumSeance", encodeString(playerNames[message.medium]), encodeString(playerNames[message.player]));
         case "youWerePossessed":
             return translate("chatMessage.youWerePossessed" + (message.immune ? ".immune" : ""));
         case "targetHasRole":
@@ -994,6 +996,10 @@ export type ChatMessageVariant = {
     type: "cultKillsNext"
 } | {
     type: "mediumHauntStarted",
+    medium: PlayerIndex,
+    player: PlayerIndex
+} | {
+    type: "mediumSeance",
     medium: PlayerIndex,
     player: PlayerIndex
 } | {

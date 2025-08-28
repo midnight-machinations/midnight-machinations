@@ -121,6 +121,7 @@ pub enum ChatMessageVariant {
     #[serde(rename_all = "camelCase")]
     JailedSomeone{player_index: PlayerIndex},
     MediumHauntStarted{medium: PlayerIndex, player: PlayerIndex},
+    MediumSeance{medium: PlayerIndex, player: PlayerIndex},
     MediumExists,
     #[serde(rename_all = "camelCase")]
     DeputyKilled{shot_index: PlayerIndex},
