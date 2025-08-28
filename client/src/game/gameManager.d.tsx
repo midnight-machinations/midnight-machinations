@@ -1,4 +1,3 @@
-import { Modifier } from "typescript";
 import { WikiArticleLink } from "../components/WikiArticleLink";
 import ListMap from "../ListMap";
 import { DoomsayerGuess } from "../menu/game/gameScreenContent/AbilityMenu/RoleSpecificMenus/LargeDoomsayerMenu";

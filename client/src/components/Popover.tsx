@@ -126,7 +126,7 @@ export default function Popover<T extends HTMLElement = HTMLElement>(props: Read
         } else {
             popoverElement.hidden = true;
         }
-    }, [props, popoverRoot])
+    }, [props, popoverRoot, anchorControllerContext, menuControllerContext, gameModeContext, mobileContext]);
 
     //close on click outside
     useEffect(() => {
