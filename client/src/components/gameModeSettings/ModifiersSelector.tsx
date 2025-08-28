@@ -11,7 +11,6 @@ import Select, { dropdownPlacementFunction } from "../Select";
 import { Role, roleJsonData } from "../../game/roleState.d";
 import Icon from "../Icon";
 import { getAllRoles, sortRolesCanonically } from "../../game/roleListState.d";
-import { useLobbyOrGameState } from "../useHooks";
 
 export function ModifiersSelector(props: Readonly<{
     disabled?: boolean,
@@ -241,7 +240,6 @@ function CustomRoleLimitsConfigMenu(props: Readonly<{
                         .filter(([_role, data]) => data.maxCount !== null)
                         .map(([role, data]) => [role as Role, data.maxCount!])
                 })
-                props.close();
             }}>
                 <Icon>autorenew</Icon>
             </Button>
@@ -250,7 +248,6 @@ function CustomRoleLimitsConfigMenu(props: Readonly<{
                     type: "customRoleLimits",
                     limits: getAllRoles().map(role => [role, 1])
                 });
-                props.close();
             }}>
                 <Icon>filter_1</Icon>
             </Button>
