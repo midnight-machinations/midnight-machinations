@@ -277,10 +277,7 @@ function CustomRoleLimitSelection(props: Readonly<{
     onChange: (role: Role, limit: number) => void,
     remove: () => void,
 }>): ReactElement {
-    const enabledRoles = useLobbyOrGameState(
-        state => state.enabledRoles,
-        ["enabledRoles"]
-    )!;
+    const enabledRoles = useContext(GameModeContext).enabledRoles;
 
     const optionsSearch = new Map<Role, [ReactElement, string]>();
 
