@@ -25,7 +25,9 @@ pub mod new_game;
 
 use std::collections::VecDeque;
 use std::time::Instant;
+use crate::game::components::fast_forward::FastForwardComponent;
 use crate::game::controllers::Controllers;
+use crate::game::modifiers::ModifierID;
 use controllers::ControllerID;
 use controllers::PlayerListSelection;
 use components::confused::Confused;
@@ -43,8 +45,6 @@ use components::syndicate_gun_item::SyndicateGunItem;
 use components::synopsis::SynopsisTracker;
 use components::tags::Tags;
 use components::verdicts_today::VerdictsToday;
-use modifiers::ModifierID;
-use role_outline_reference::RoleOutlineReference;
 use serde::Serialize;
 use crate::client_connection::ClientConnection;
 use crate::game::chat::ChatComponent;
@@ -92,7 +92,7 @@ pub struct Game {
     pub spectator_chat_messages: Vec<ChatMessageVariant>,
 
     /// indexed by role outline reference
-    pub assignments: VecMap<PlayerReference, (RoleOutlineReference, OutlineAssignment)>,
+    pub assignments: Assignments,
 
     pub players: Box<[Player]>,
 
@@ -123,6 +123,7 @@ pub struct Game {
     pub silenced: Silenced,
     pub fragile_vests: FragileVestsComponent,
     pub win_condition: WinConditionComponent,
+    pub fast_forward: FastForwardComponent,
     pub chat_messages: ChatComponent
 }
 
@@ -145,7 +146,7 @@ pub enum GameOverReason {
     Draw
 }
 
-type Assignments = VecMap<PlayerReference, (RoleOutlineReference, OutlineAssignment)>;
+type Assignments = VecMap<PlayerReference, OutlineAssignment>;
 
 impl Game {
     pub const DISCONNECT_TIMER_SECS: u16 = 60 * 2;

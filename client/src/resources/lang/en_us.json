@@ -738,6 +738,7 @@
     "messageSender.livingToDead.icon": "🔮",
 
     "controllerId.nominate.name": "Nominate",
+    "controllerId.callWitness.name": "Call Witness",
     "controllerId.judge.name": "Judge",
     "controllerId.judge.integer.0": "Innocent",
     "controllerId.judge.integer.1": "Guilty",
@@ -990,7 +991,7 @@
     "chatMessage.gameOver.conclusion.unknown": "The game has ended with conclusion \\0!",
     "chatMessage.gameOver.player.won.true": "\\0 won!",
     "chatMessage.gameOver.player.won.false": "\\0 lost!",
-    "chatMessage.gameOver.player.crumb": "\\0 \\1",
+    "chatMessage.gameOver.player.crumb": "\\0, \\1, \\2",
     "chatMessage.playerWon":"\\0 won! They were the \\1.",
     "chatMessage.playerLost":"\\0 lost! They were the \\1.",
     "chatMessage.playerQuit": "\\0 has left the lobby and will certainly die at the end of the next night.",
@@ -1395,7 +1396,7 @@
     "wiki.article.standard.fastForward.title:var.4": "Skips",
     "wiki.article.standard.fastForward.title:var.5": "Skipping",
     "wiki.article.standard.fastForward.title:var.6": "Skipped",
-    "wiki.article.standard.fastForward.text": "If all living players vote to fast forward, the current phase instantly ends. Voting to fast forward is completely anonymous, nobody even knows when you press the button. To vote to fast forward, press the fast forward button in the top left.",
+    "wiki.article.standard.fastForward.text": "If all living players vote to fast forward, the current phase instantly ends. Voting to fast forward is completely anonymous, nobody even knows when you press the button. To vote to fast forward, open the fast forward drop down in the top left. You can either choose to fast forward the current phase, or to fast forward to a specific phase.",
     "wiki.article.standard.told.title": "Told",
     "wiki.article.standard.told.text": "If you are told something, you were sent a chat message stating it.",
 

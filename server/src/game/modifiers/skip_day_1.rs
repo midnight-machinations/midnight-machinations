@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 
-use crate::game::{event::on_fast_forward::OnFastForward, phase::{PhaseState, PhaseType::*}, Game};
+use crate::game::{components::fast_forward::FastForwardComponent, phase::{PhaseState, PhaseType::*}, Game};
 
 use super::{ModifierStateImpl, ModifierID};
 
@@ -24,7 +24,7 @@ impl ModifierStateImpl for SkipDay1{
             (Testimony, 2) |
             (Judgement, 2) |
             (FinalWords, 2)
-                => OnFastForward::invoke(game),
+                => FastForwardComponent::skip(game),
             _ => ()
         }
     }

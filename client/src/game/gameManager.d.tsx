@@ -3,7 +3,7 @@ import { WikiArticleLink } from "../components/WikiArticleLink";
 import ListMap from "../ListMap";
 import { DoomsayerGuess } from "../menu/game/gameScreenContent/AbilityMenu/RoleSpecificMenus/LargeDoomsayerMenu";
 import { ControllerInput } from "./controllerInput";
-import { PhaseType, PhaseTimes, PlayerIndex, State, Verdict } from "./gameState.d";
+import { PhaseType, PhaseTimes, PlayerIndex, State, Verdict, FastForwardSetting } from "./gameState.d";
 import { ToClientPacket, ToServerPacket } from "./packet";
 import { RoleList, RoleOutline } from "./roleListState.d";
 import { Role } from "./roleState.d";
@@ -107,7 +107,7 @@ export type GameManager = {
         yourTargetWasJailedMessage: boolean
     ): void
 
-    sendVoteFastForwardPhase(fastForward: boolean): void;
+    sendVoteFastForwardPhase(fastForward: FastForwardSetting): void;
     sendHostDataRequest(): void;
     sendHostEndGamePacket(): void;
     sendHostSkipPhase(): void;

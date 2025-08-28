@@ -82,7 +82,9 @@ type GameState = {
     timeLeftMs: number | null,
     dayNumber: number,
 
-    fastForward: boolean,
+
+    chatFilter: ChatFilter,
+    fastForward: FastForwardSetting,
     
     roleList: RoleList,
     enabledRoles: Role[],
@@ -109,7 +111,6 @@ export type PlayerGameState = {
 
     notes: UnsafeString[],
     crossedOutOutlines: number[],
-    chatFilter: ChatFilter,
     deathNote: UnsafeString,
 
     savedControllers: ListMapData<ControllerID, SavedController>,
@@ -122,12 +123,13 @@ export type PlayerGameState = {
     missedWhispers: PlayerIndex[]
 }
 
+export type FastForwardSetting = {type:"none"}|{type:"skip"}|{type:"phase",phase:PhaseType,day:number};
 export type PlayerIndex = number;
 export type LobbyClientID = number;
 export type Verdict = "innocent"|"guilty"|"abstain";
-export const PHASES = ["briefing", "obituary", "discussion", "nomination", "testimony", "judgement", "finalWords", "dusk", "night", "recess"] as const;
+export const PHASES = ["obituary", "discussion", "nomination", "testimony", "judgement", "finalWords", "briefing", "dusk", "night", "recess"] as const;
 export type PhaseType = (typeof PHASES)[number];
-export type PhaseState = {type: "briefing"} | {type: "recess"} | {type: "dusk"} | {type: "night"} | {type: "obituary"} | {type: "discussion"} | 
+export type PhaseState = {type: "briefing"} | {type: "dusk"} | {type: "night"} | {type: "obituary"} | {type: "discussion"} | 
 {
     type: "nomination",
     trialsLeft: number
@@ -142,7 +144,7 @@ export type PhaseState = {type: "briefing"} | {type: "recess"} | {type: "dusk"} 
 } | {
     type: "finalWords",
     playerOnTrial: PlayerIndex
-}
+} | {type: "recess"}
 
 export type ChatGroup = "all" | "dead" | "mafia" | "cult" | "jail" | "kidnapper" | "interview" | "puppeteer";
 export type InsiderGroup = (typeof INSIDER_GROUPS)[number];

@@ -1,17 +1,9 @@
 use crate::{
-    lobby::{lobby_client::LobbyClient, Lobby},
-    log,
-    packet::{ToClientPacket, ToServerPacket},
-    room::{RemoveRoomClientResult, RoomClientID, RoomState},
-    vec_map::VecMap,
-    websocket_connections::connection::ClientSender
+    game::components::fast_forward::FastForwardComponent, lobby::{lobby_client::LobbyClient, Lobby}, log, packet::{ToClientPacket, ToServerPacket}, room::{RemoveRoomClientResult, RoomClientID, RoomState}, vec_map::VecMap, websocket_connections::connection::ClientSender
 };
 
 use super::{
-    event::{
-        on_fast_forward::OnFastForward,
-        on_game_ending::OnGameEnding
-    },
+    event::on_game_ending::OnGameEnding,
     game_client::GameClientLocation,
     game_conclusion::GameConclusion,
     player::PlayerReference,
@@ -90,7 +82,7 @@ impl Game {
                 if let Some(player) = self.clients.get(&room_client_id)
                     && !player.host {break 'packet_match}
                 
-                OnFastForward::invoke(self);
+                FastForwardComponent::skip(self);
             }
             ToServerPacket::HostDataRequest => {
                 if let Some(player) = self.clients.get(&room_client_id) && !player.host {break 'packet_match}

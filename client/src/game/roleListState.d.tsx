@@ -69,7 +69,9 @@ export type RoleOrRoleSet = ({
 
 
 export function translateRoleOutline(roleOutline: RoleOutline, playerNames: UnsafeString[]): string {
-    return roleOutline.map(outline => translateRoleOutlineOption(outline, playerNames)).join(" "+translate("union:var.0")+" ")
+    return roleOutline.map(outline => 
+        translateRoleOutlineOption(outline, playerNames)).join(" "+translate("union:var.0")+" "
+    )
 }
 
 export function translatePlayerPool(playerPool: PlayerIndex[], playerNames: UnsafeString[]): string {
@@ -78,8 +80,11 @@ export function translatePlayerPool(playerPool: PlayerIndex[], playerNames: Unsa
         out += translate("nobody");
     }
     out += playerPool
-        .map(playerNumber => encodeString(playerNames.at(playerNumber) ?? translate("player.unknown", playerNumber)))
+        .map(playerNumber => encodeString(
+            playerNames.at(playerNumber) ?? translate("player.unknown", playerNumber)
+        ))
         .join(' ' + translate("union") + ' ')
+    
     return out;
 }
 

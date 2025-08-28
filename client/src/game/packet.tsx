@@ -1,4 +1,4 @@
-import { PhaseType, PlayerIndex, Verdict, PhaseTimes, Tag, LobbyClientID, ChatGroup, PhaseState, LobbyClient, InsiderGroup, GameClient, UnsafeString } from "./gameState.d"
+import { PhaseType, PlayerIndex, PhaseTimes, Tag, LobbyClientID, ChatGroup, PhaseState, LobbyClient, InsiderGroup, GameClient, UnsafeString, FastForwardSetting } from "./gameState.d"
 import { Grave, GraveIndex } from "./graveState"
 import { ChatMessage, ChatMessageIndex } from "../components/ChatMessage"
 import { RoleList, RoleOutline } from "./roleListState.d"
@@ -146,7 +146,7 @@ export type ToClientPacket = {
     roleState: RoleState
 } | {
     type: "yourVoteFastForwardPhase",
-    fastForward: boolean
+    fastForward: FastForwardSetting
 } | {
     type: "addChatMessages",
     chatMessages: [ChatMessageIndex, ChatMessage][]
@@ -275,7 +275,7 @@ export type ToServerPacket = {
     youWereWardblockedMessage: boolean
 } | {
     type: "voteFastForwardPhase",
-    fastForward: boolean
+    fastForward: FastForwardSetting
 } | {
     type: "hostForceBackToLobby"
 } | {

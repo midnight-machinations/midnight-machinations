@@ -1,5 +1,5 @@
 
-    use crate::{game::{chat::ChatComponent, components::graves::Graves, role_list_generation::RoleListGenerator}, vec_map::VecMap};
+    use crate::{game::{chat::ChatComponent, components::{fast_forward::FastForwardComponent, graves::Graves}, role_list_generation::RoleListGenerator}, vec_map::VecMap};
 
     use super::{
         controllers::Controllers, components::{
@@ -34,7 +34,7 @@
         for player in unsafe{PlayerReference::all_players_from_count(num_players)} {
             let new_player = mock_player(
                 format!("{}",player.index()),
-                match assignments.get(&player).map(|a|a.1.role){
+                match assignments.get(&player).map(|a|a.role){
                     Some(role) => role,
                     None => return Err(RejectStartReason::RoleListTooSmall),
                 }
@@ -73,6 +73,7 @@
             silenced: Silenced::default(),
             fragile_vests: unsafe{PlayerComponent::<FragileVests>::new(num_players)},
             win_condition: unsafe{PlayerComponent::<WinCondition>::new(num_players, &assignments)},
+            fast_forward: unsafe{FastForwardComponent::new(num_players)},
             chat_messages: unsafe{ChatComponent::new(num_players)}
         };
 

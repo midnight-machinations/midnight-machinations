@@ -21,19 +21,8 @@ use std::collections::HashMap;
 use serde::{Deserialize, Serialize};
 use vec1::Vec1;
 
+use crate::{client_connection::ClientConnection, game::{chat::{ChatGroup, ChatMessage, ChatMessageIndex}, components::{fast_forward::FastForwardSetting, graves::{grave::Grave, grave_reference::GraveReference}, insider_group::InsiderGroupID, tags::Tag}, controllers::{Controller, ControllerID, ControllerInput}, game_client::GameClientLocation, modifiers::ModifierSettings, phase::{PhaseState, PhaseType}, player::{PlayerIndex, PlayerReference}, role::{doomsayer::DoomsayerGuess, ClientRoleStateEnum, Role}, role_list::{RoleList, RoleOutline}, settings::PhaseTimeSettings, GameOverReason, RejectStartReason}, lobby::lobby_client::LobbyClient, room::RoomClientID, vec_map::VecMap, vec_set::VecSet, websocket_listener::RoomCode};
 
-use crate::{
-    client_connection::ClientConnection, game::{
-        chat::{ChatGroup, ChatMessage, ChatMessageIndex}, components::{
-            graves::{grave::Grave, grave_reference::GraveReference}, insider_group::InsiderGroupID, tags::Tag
-        }, controllers::*, game_client::GameClientLocation, modifiers::ModifierSettings, phase::{PhaseState, PhaseType}, player::{PlayerIndex, PlayerReference}, role::{
-            doomsayer::DoomsayerGuess,
-            ClientRoleStateEnum, Role
-        }, role_list::{RoleList, RoleOutline}, settings::PhaseTimeSettings, GameOverReason, RejectStartReason
-    }, 
-    lobby::lobby_client::LobbyClient, room::RoomClientID, vec_map::VecMap, vec_set::VecSet,
-    websocket_listener::RoomCode
-};
 
 #[derive(Serialize, Debug, Clone)]
 #[serde(rename_all = "camelCase")]
@@ -146,7 +135,7 @@ pub enum ToClientPacket{
     #[serde(rename_all = "camelCase")]
     YourRoleState{role_state: ClientRoleStateEnum},
     #[serde(rename_all = "camelCase")]
-    YourVoteFastForwardPhase{fast_forward: bool},
+    YourVoteFastForwardPhase{fast_forward: FastForwardSetting},
 
     #[serde(rename_all = "camelCase")]
     AddChatMessages{chat_messages: VecMap<ChatMessageIndex, ChatMessage>},
@@ -248,5 +237,5 @@ pub enum ToServerPacket{
     },
 
     #[serde(rename_all = "camelCase")]
-    VoteFastForwardPhase{fast_forward: bool},
+    VoteFastForwardPhase{fast_forward: FastForwardSetting},
 }

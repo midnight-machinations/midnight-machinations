@@ -3,9 +3,18 @@
         width: 100%;
     }
 }
-.graveyard-menu .role-list-button{
+.role-list-button{
     text-align: left;
     text-wrap: wrap;
+    border: 0;
+    margin: 0;
+    padding: 0;
+}
+.role-list-button:nth-last-child(even) {
+    background-color: var(--primary-color);
+}
+.role-list-button:nth-last-child(odd) {
+    background-color: var(--secondary-color);
 }
 .graveyard-menu .graveyard-menu-enabledRoles{
     display: flex;
