@@ -106,7 +106,7 @@ impl Mafia{
                 let Some(PlayerListSelection(backup_target)) = ControllerID::syndicate_backup_attack().get_player_list_selection(game) else {return};
                 let Some(backup_target) = backup_target.first() else {return};
 
-                let new_visit = Visit::new(*backup, *backup_target, true, crate::game::visit::VisitTag::SyndicateBackupAttack);
+                let new_visit = Visit::new(*backup, *backup_target, crate::game::visit::VisitTag::SyndicateBackupAttack, true, true, true, false);
                 NightVisits::add_visit(midnight_variables, new_visit);
             }
             OnMidnightPriority::Deception => {

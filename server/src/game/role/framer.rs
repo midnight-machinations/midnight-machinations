@@ -100,7 +100,7 @@ impl RoleStateImpl for Framer {
                 ControllerID::role(actor_ref, Role::Framer, 1),
                 false,
                 VisitTag::Role { role: Role::Framer, id: 1 }
-            )
+            ).into_iter().map(|mut v|{v.indirect=true; v.wardblockable=false; v})
         ).collect()
     }
     fn default_revealed_groups(self) -> crate::vec_set::VecSet<crate::game::components::insider_group::InsiderGroupID> {

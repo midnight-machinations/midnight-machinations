@@ -66,23 +66,15 @@ impl RoleStateImpl for Werewolf {
                     if game.day_number() <= 1 {return}
                 
                     //rampage target
-                    for other_player in NightVisits::all_visits(midnight_variables).into_iter()
-                        .filter(|visit|
-                            *werewolf_visit != **visit &&
-                            visit.target == target_ref
-                        )
-                        .map(|v|v.visitor)
-                        .collect::<Vec<_>>()
-                    {
-                        other_player.try_night_kill_single_attacker(
-                            actor_ref,
-                            game,
-                            midnight_variables,
-                            GraveKiller::Role(Role::Werewolf),
-                            AttackPower::ArmorPiercing,
-                            true
-                        );
-                    }
+                    werewolf_visit.target.rampage(
+                        game,
+                        midnight_variables,
+                        actor_ref,
+                        GraveKiller::Role(Role::Werewolf),
+                        AttackPower::ArmorPiercing,
+                        true,
+                        |v|v!=werewolf_visit
+                    );
                     
                     //If target visits or you are enraged, attack them
                     if werewolf_visit.attack {

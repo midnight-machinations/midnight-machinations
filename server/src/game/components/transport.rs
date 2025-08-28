@@ -28,7 +28,8 @@ impl TransportPriority{
             Role::Transporter => TransportPriority::Transporter,
     
             Role::Warper |
-            Role::Porter => TransportPriority::Warper,
+            Role::Porter | 
+            Role::Polymath => TransportPriority::Warper,
     
             Role::Bodyguard => TransportPriority::Bodyguard,
     
@@ -57,6 +58,7 @@ impl Transport{
         
         NightVisits::all_visits_mut(midnight_variables)
             .filter(|v|filter(v))
+            .filter(|v|v.transportable)
             .filter(|v|transport_priority.can_transport(&TransportPriority::from_visit_tag(&v.tag)))
             .for_each(|v|
                 if let Some(new_target) = player_map.get(&v.target){

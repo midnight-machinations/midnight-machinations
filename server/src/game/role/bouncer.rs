@@ -42,7 +42,7 @@ impl RoleStateImpl for Bouncer {
             actor_ref,
             ControllerID::role(actor_ref, Role::Bouncer, 0),
             false
-        )
+        ).into_iter().map(|mut v|{v.wardblockable = false; v}).collect()
     }
     fn on_visit_wardblocked(self, _game: &mut Game, _midnight_variables: &mut MidnightVariables, _actor_ref: PlayerReference, _visit: Visit) {}
     fn on_player_roleblocked(self, _game: &mut Game, _midnight_variables: &mut MidnightVariables, _actor_ref: PlayerReference, _player: PlayerReference, _invisible: bool) {}

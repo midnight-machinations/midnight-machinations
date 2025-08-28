@@ -107,7 +107,7 @@ impl SyndicateGunItem {
 
                 NightVisits::add_visit(
                     midnight_variables, 
-                    Visit::new(player_with_gun, *gun_target, true, VisitTag::SyndicateGunItem)
+                    Visit::new(player_with_gun, *gun_target, VisitTag::SyndicateGunItem, true, true, true, false)
                 );
             }
             OnMidnightPriority::Kill => {
