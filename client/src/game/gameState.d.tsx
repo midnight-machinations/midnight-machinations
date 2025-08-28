@@ -81,6 +81,8 @@ type GameState = {
     timeLeftMs: number | null,
     dayNumber: number,
 
+
+    chatFilter: ChatFilter,
     fastForward: FastForwardSetting,
     
     roleList: RoleList,
@@ -108,7 +110,6 @@ export type PlayerGameState = {
 
     notes: UnsafeString[],
     crossedOutOutlines: number[],
-    chatFilter: ChatFilter,
     deathNote: UnsafeString,
 
     savedControllers: ListMapData<ControllerID, SavedController>,
