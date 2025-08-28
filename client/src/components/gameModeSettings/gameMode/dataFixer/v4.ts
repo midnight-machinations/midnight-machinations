@@ -1,9 +1,9 @@
 import { VersionConverter } from ".";
-import { GameMode, GameModeData, GameModeStorage, ShareableGameMode } from "..";
-import { Conclusion, CONCLUSIONS, INSIDER_GROUPS, InsiderGroup } from "../../../../game/gameState.d";
+import { GameMode } from "..";
+import { Conclusion, CONCLUSIONS, INSIDER_GROUPS, InsiderGroup, PhaseTimes } from "../../../../game/gameState.d";
 import { getDefaultSettings, Settings } from "../../../../game/localStorage";
 import { defaultModifierState, ModifierID, ModifierState } from "../../../../game/modifiers";
-import { RoleOutline, RoleOutlineOption, RoleSet } from "../../../../game/roleListState.d";
+import { RoleList, RoleOutline, RoleOutlineOption, RoleSet } from "../../../../game/roleListState.d";
 import { Role } from "../../../../game/roleState.d";
 import { ListMapData } from "../../../../ListMap";
 import { Failure, ParseResult, ParseSuccess, Success, isFailure } from "../parse";
@@ -19,10 +19,25 @@ const v4: VersionConverter = {
 
 export default v4;
 
-type v5GameModeStorage = GameModeStorage;
-type v5GameMode = GameMode;
-type v5GameModeData = GameModeData;
-type v5ShareableGameMode = ShareableGameMode;
+type v5GameModeStorage = {
+    format: 'v5',
+    gameModes: v5GameMode[]
+};
+
+type v5GameMode = {
+    name: string,
+    // A mapping from number-of-players to game mode data
+    data: Record<number, v5GameModeData>
+};
+
+type v5GameModeData = {
+    roleList: RoleList,
+    phaseTimes: Omit<PhaseTimes, 'adjournment'>,
+    enabledRoles: Role[],
+    modifierSettings: ListMapData<ModifierID, ModifierState>
+}
+
+type v5ShareableGameMode = v5GameModeData & { format: 'v5', name: string }
 
 export function parseSettings(json: NonNullable<any>): ParseResult<Settings> {
     if (typeof json !== "object" || Array.isArray(json)) {

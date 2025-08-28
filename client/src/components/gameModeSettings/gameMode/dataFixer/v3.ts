@@ -31,7 +31,7 @@ type v4GameMode = {
 
 type v4GameModeData = {
     roleList: RoleList,
-    phaseTimes: PhaseTimes,
+    phaseTimes: Omit<PhaseTimes, 'adjournment'>,
     enabledRoles: Role[],
     enabledModifiers: ModifierID[]
 }
