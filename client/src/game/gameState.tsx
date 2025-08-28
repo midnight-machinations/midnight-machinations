@@ -1,5 +1,6 @@
 import ListMap from "../ListMap"
-import GameState, { LobbyClient, LobbyState, PhaseTimes, Player, LobbyClientID, PlayerGameState, UnsafeString, ModifierID, ModifierState } from "./gameState.d"
+import GameState, { LobbyClient, LobbyState, PhaseTimes, Player, LobbyClientID, PlayerGameState, UnsafeString } from "./gameState.d"
+import { ModifierID, ModifierState } from "./modifiers"
 
 
 export function defaultPhaseTimes(): PhaseTimes {

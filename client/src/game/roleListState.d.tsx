@@ -164,10 +164,19 @@ function outlineOptionCompare(optionA: RoleOutlineOption, optionB: RoleOutlineOp
 }
 
 export function getAllRoles(): Role[] {
-    return Object.entries(roleJsonData())
-        .sort((a, b) => translate(`role.${a[0]}.name`).localeCompare(translate(`role.${b[0]}.name`)))
-        .sort((a, b) => ROLE_SETS.indexOf(a[1].mainRoleSet) - ROLE_SETS.indexOf(b[1].mainRoleSet))
-        .map((a) => a[0]) as Role[];
+    return (Object.keys(roleJsonData()) as Role[])
+        .sort(sortRolesCanonically);
+}
+
+export function sortRolesCanonically(a: Role, b: Role): number {
+    const roleJson = roleJsonData()
+    const roleSetA = ROLE_SETS.indexOf(roleJson[a].mainRoleSet)
+    const roleSetB = ROLE_SETS.indexOf(roleJson[b].mainRoleSet)
+    if (roleSetA !== roleSetB) {
+        return roleSetA - roleSetB
+    } else {
+        return translate(`role.${a}.name`).localeCompare(translate(`role.${b}.name`))
+    }
 }
 
 

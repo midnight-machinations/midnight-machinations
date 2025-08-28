@@ -343,7 +343,7 @@ export default function messageListener(packet: ToClientPacket){
         break;
         case "modifierSettings":
             if(GAME_MANAGER.state.stateType === "lobby" || GAME_MANAGER.state.stateType === "game")
-                GAME_MANAGER.state.modifierSettings = packet.modifierSettings.modifiers;
+                GAME_MANAGER.state.modifierSettings = new ListMap(packet.modifierSettings.modifiers);
         break;
         case "phase":
             if(GAME_MANAGER.state.stateType === "game"){

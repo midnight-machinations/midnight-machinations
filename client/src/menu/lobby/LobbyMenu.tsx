@@ -18,7 +18,7 @@ import { GameModeSelector } from "../../components/gameModeSettings/GameModeSele
 import LobbyChatMenu from "./LobbyChatMenu";
 import { useLobbyState } from "../../components/useHooks";
 import { Button } from "../../components/Button";
-import { ModifiersSelector } from "../../components/gameModeSettings/EnabledModifiersSelector";
+import { ModifiersSelector } from "../../components/gameModeSettings/ModifiersSelector";
 import LobbyNamePane from "./LobbyNamePane";
 import { UnsafeString } from "../../game/gameState.d";
 import { encodeString } from "../../components/ChatMessage";
@@ -98,7 +98,7 @@ function LobbyMenuSettings(props: Readonly<{
         ["phaseTimes"]
     )!;
     const modifierSettings = useLobbyState(
-        lobbyState => lobbyState.modifierSettings,
+        lobbyState => lobbyState.modifierSettings.list,
         ["modifierSettings"]
     )!;
 
@@ -144,7 +144,7 @@ function LobbyMenuSettings(props: Readonly<{
         />}
         <ModifiersSelector
             disabled={!props.isHost}
-            onChange={modifiers => GAME_MANAGER.sendModifierSettingsPacket(new ListMap(modifiers))}
+            setModifiers={modifiers => GAME_MANAGER.sendModifierSettingsPacket(new ListMap(modifiers))}
         />
         <PhaseTimesSelector 
             disabled={!props.isHost}

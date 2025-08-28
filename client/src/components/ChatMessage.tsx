@@ -549,7 +549,7 @@ export function translateChatMessage(
         case "trialVerdict":{
             let hang;
             // Damn
-            if (GAME_MANAGER.state.stateType === "game" && GAME_MANAGER.state.modifierSettings.includes("twoThirdsMajority")) {
+            if (GAME_MANAGER.state.stateType === "game" && GAME_MANAGER.state.modifierSettings.keys().includes("twoThirdsMajority")) {
                 hang = message.innocent <= 2 * message.guilty
             } else {
                 hang = message.innocent < message.guilty

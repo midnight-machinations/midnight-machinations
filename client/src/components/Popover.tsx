@@ -1,6 +1,9 @@
-import React, { ReactElement, ReactNode, useEffect, useMemo, useRef } from "react";
+import React, { ReactElement, ReactNode, useContext, useEffect, useMemo, useRef } from "react";
 import ReactDOM from "react-dom/client";
 import { THEME_CSS_ATTRIBUTES } from "..";
+import { AnchorControllerContext, MobileContext } from "../menu/Anchor";
+import { MenuControllerContext } from "../menu/game/GameScreen";
+import { GameModeContext } from "./gameModeSettings/GameModesEditor";
 
 export default function Popover<T extends HTMLElement = HTMLElement>(props: Readonly<{
     open: boolean,
@@ -8,7 +11,8 @@ export default function Popover<T extends HTMLElement = HTMLElement>(props: Read
     setOpenOrClosed: (open: boolean) => void,
     onRender?: (popoverElement: HTMLDivElement, anchorElement?: T | undefined) => void
     anchorForPositionRef?: React.RefObject<T>,
-    className?: string
+    className?: string,
+    doNotCloseOnOutsideClick?: boolean
 }>): ReactElement {
     const thisRef = useRef<HTMLDivElement>(null);
     const popoverRef = useRef<HTMLDivElement>(document.createElement('div'));
@@ -83,13 +87,28 @@ export default function Popover<T extends HTMLElement = HTMLElement>(props: Read
         }
     })
 
+    const anchorControllerContext = useContext(AnchorControllerContext);
+    const menuControllerContext = useContext(MenuControllerContext);
+    const gameModeContext = useContext(GameModeContext);
+    const mobileContext = useContext(MobileContext);
+
     //open and set position
     useEffect(() => {
         const popoverElement = popoverRef.current;
         const anchorElement = props.anchorForPositionRef?.current;
 
         if (props.open) {
-            popoverRoot.render(props.children);
+            popoverRoot.render(
+                <AnchorControllerContext.Provider value={anchorControllerContext}>
+                    <MenuControllerContext.Provider value={menuControllerContext}>
+                        <GameModeContext.Provider value={gameModeContext}>
+                            <MobileContext.Provider value={mobileContext}>
+                                {props.children}
+                            </MobileContext.Provider>
+                        </GameModeContext.Provider>
+                    </MenuControllerContext.Provider>
+                </AnchorControllerContext.Provider>
+            );
 
             if (anchorElement) {
                 const anchorBounds = anchorElement.getBoundingClientRect();
@@ -111,6 +130,10 @@ export default function Popover<T extends HTMLElement = HTMLElement>(props: Read
 
     //close on click outside
     useEffect(() => {
+        if (props.doNotCloseOnOutsideClick) {
+            return;
+        }
+
         const handleClickOutside = (event: MouseEvent) => {
             if (!popoverRef.current?.contains(event.target as Node) && props.open) {
                 props.setOpenOrClosed(false);

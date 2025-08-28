@@ -12,7 +12,7 @@ import { AnchorController } from "../menu/Anchor";
 import WikiCoverCard from "./WikiCoverCard";
 import { getAllRoles } from "../game/roleListState.d";
 import { useLobbyOrGameState } from "./useHooks";
-import { MODIFIERS, ModifierID } from "../game/gameState.d";
+import { MODIFIERS, ModifierID } from "../game/modifiers";
 import Masonry from "react-responsive-masonry";
 import CheckBox from "./CheckBox";
 

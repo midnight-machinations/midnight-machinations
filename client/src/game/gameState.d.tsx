@@ -7,6 +7,7 @@ import { ChatFilter } from "../menu/game/gameScreenContent/ChatMenu";
 import { ControllerID, SavedController } from "./controllerInput";
 import translate from "./lang";
 import ListMap, { ListMapData } from "../ListMap";
+import { ModifierID, ModifierState } from "./modifiers";
 
 export type State = Disconnected | OutsideLobbyState | LobbyState | GameState;
 
@@ -160,59 +161,6 @@ export type Tag =
     "frame" |
     "forfeitNominationVote" |
     "spiraling";
-
-export const MODIFIERS = [
-    "obscuredGraves",
-    "skipDay1",
-    "deadCanChat", "abstaining",
-    "noDeathCause",
-    "roleSetGraveKillers", "autoGuilty", 
-    "twoThirdsMajority", "noTrialPhases", 
-    "noWhispers", "hiddenWhispers",
-    "noNightChat", "noChat", 
-    "unscheduledNominations",
-    "hiddenNominationVotes", "hiddenVerdictVotes",
-    "forfeitNominationVote", "randomPlayerNames"
-] as const;
-export type ModifierID = (typeof MODIFIERS)[number];
-
-export type ModifierState = {
-    type: "obscuredGraves"
-} | {
-    type: "skipDay1"
-} | {
-    type: "deadCanChat"
-} | {
-    type: "abstaining"
-} | {
-    type: "noDeathCause"
-} | {
-    type: "roleSetGraveKillers"
-} | {
-    type: "autoGuilty"
-} | {
-    type: "twoThirdsMajority"
-} | {
-    type: "noTrialPhases"
-} | {
-    type: "noWhispers"
-} | {
-    type: "hiddenWhispers"
-} | {
-    type: "noNightChat"
-} | {
-    type: "noChat"
-} | {
-    type: "unscheduledNominations"
-} | {
-    type: "hiddenNominationVotes"
-} | {
-    type: "hiddenVerdictVotes"
-} | {
-    type: "forfeitNominationVote"
-} | {
-    type: "randomPlayerNames"
-}
 
 export type Player = {
     name: UnsafeString,

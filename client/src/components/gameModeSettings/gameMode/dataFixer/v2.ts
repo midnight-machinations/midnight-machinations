@@ -1,6 +1,7 @@
 import { VersionConverter } from ".";
 import { GameMode, GameModeData } from "..";
-import { MODIFIERS, ModifierID, PhaseTimes } from "../../../../game/gameState.d";
+import { PhaseTimes } from "../../../../game/gameState.d";
+import { ModifierID, MODIFIERS } from "../../../../game/modifiers";
 import { RoleSet } from "../../../../game/roleListState.d";
 import { Role } from "../../../../game/roleState.d";
 import { Failure, ParseFailure, ParseResult, ParseSuccess, Success, isFailure } from "../parse";

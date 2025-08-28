@@ -3,10 +3,11 @@ import { WikiArticleLink } from "../components/WikiArticleLink";
 import ListMap from "../ListMap";
 import { DoomsayerGuess } from "../menu/game/gameScreenContent/AbilityMenu/RoleSpecificMenus/LargeDoomsayerMenu";
 import { ControllerInput } from "./controllerInput";
-import { PhaseType, PhaseTimes, PlayerIndex, State, Verdict, ModifierID, ModifierState } from "./gameState.d";
+import { PhaseType, PhaseTimes, PlayerIndex, State, Verdict } from "./gameState.d";
 import { ToClientPacket, ToServerPacket } from "./packet";
 import { RoleList, RoleOutline } from "./roleListState.d";
 import { Role } from "./roleState.d";
+import { ModifierID, ModifierState } from "./modifiers";
 
 export type Server = {
     ws: WebSocket | null,

@@ -1,4 +1,5 @@
-import { ModifierID, ModifierState, PhaseTimes } from "../../../game/gameState.d";
+import { PhaseTimes } from "../../../game/gameState.d";
+import { ModifierID, ModifierState } from "../../../game/modifiers";
 import { RoleList } from "../../../game/roleListState.d";
 import { Role } from "../../../game/roleState.d";
 import { ListMapData } from "../../../ListMap";

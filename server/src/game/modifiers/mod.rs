@@ -1,6 +1,7 @@
 pub mod obscured_graves;
 pub mod dead_can_chat;
 pub mod abstaining;
+pub mod custom_role_limits;
 pub mod no_death_cause;
 pub mod role_set_grave_killers;
 pub mod no_due_process;
@@ -59,7 +60,8 @@ macros::modifiers! {
     hidden_nomination_votes: HiddenNominationVotes,
     hidden_verdict_votes: HiddenVerdictVotes,
     forfeit_vote: ForfeitNominationVote,
-    random_player_names: RandomPlayerNames
+    random_player_names: RandomPlayerNames,
+    custom_role_limits: CustomRoleLimits
 }
 
 
@@ -87,7 +89,7 @@ impl ModifierSettings{
     }
     pub fn set_modifier(&mut self, state: ModifierState){
         self.modifiers.insert(
-            <&ModifierState as Into<ModifierID>>::into(&state).clone(),
+            <&ModifierState as Into<ModifierID>>::into(&state),
             state
         );
     }
@@ -142,13 +144,14 @@ mod macros {
     macro_rules! modifiers {
         ($($file:ident: $name:ident),*) => {
             #[derive(Clone, PartialEq, Eq, Serialize, Deserialize, Debug)]
+            #[serde(tag = "type", rename_all = "camelCase")]
             pub enum ModifierState {
                 $(
                     $name($file::$name),
                 )*
             }
 
-            #[derive(Clone, Serialize, Deserialize, PartialEq, Eq, Debug, Hash)]
+            #[derive(Clone, Copy, Serialize, Deserialize, PartialEq, Eq, Debug, Hash)]
             #[serde(rename_all = "camelCase")]
             pub enum ModifierID {
                 $(

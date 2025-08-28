@@ -9,7 +9,7 @@ import { useGameState, useLobbyOrGameState, usePlayerState, useSpectator } from 
 import { translateRoleOutline } from "../../../game/roleListState.d";
 import { Button } from "../../../components/Button";
 import DetailsSummary from "../../../components/DetailsSummary";
-import { ModifierSettingsDisplay } from "../../../components/gameModeSettings/EnabledModifiersSelector";
+import { ModifierSettingsDisplay } from "../../../components/gameModeSettings/ModifiersSelector";
 
 export default function GraveyardMenu(): ReactElement {
     return <div className="graveyard-menu graveyard-menu-colors">
@@ -92,7 +92,7 @@ function EnabledRoles(): ReactElement {
 
 function EnabledModifiers(): ReactElement {
     const modifierSettings = useGameState(
-        gameState=>gameState.modifierSettings,
+        gameState=>gameState.modifierSettings.list,
         ["modifierSettings"]
     )!
 

@@ -1,7 +1,8 @@
 import { VersionConverter } from ".";
 import { GameMode, GameModeData, GameModeStorage, ShareableGameMode } from "..";
-import { Conclusion, CONCLUSIONS, INSIDER_GROUPS, InsiderGroup, ModifierID, ModifierState } from "../../../../game/gameState.d";
+import { Conclusion, CONCLUSIONS, INSIDER_GROUPS, InsiderGroup } from "../../../../game/gameState.d";
 import { getDefaultSettings, Settings } from "../../../../game/localStorage";
+import { defaultModifierState, ModifierID, ModifierState } from "../../../../game/modifiers";
 import { RoleOutline, RoleOutlineOption, RoleSet } from "../../../../game/roleListState.d";
 import { Role } from "../../../../game/roleState.d";
 import { ListMapData } from "../../../../ListMap";
@@ -317,7 +318,8 @@ function parseModifierSettingsFromEnabledModifiers(json: NonNullable<any>): Pars
     const enabledModifiers = parseEnabledModifiers(json);
     if (isFailure(enabledModifiers)) return enabledModifiers;
 
-    const modifierSettings: ListMapData<ModifierID, ModifierState> = enabledModifiers.value.map(modifierId => [modifierId, { type: modifierId }]) as ListMapData<ModifierID, ModifierState>;
+    const modifierSettings: ListMapData<ModifierID, ModifierState> = enabledModifiers.value
+        .map(modifierId => [modifierId, defaultModifierState(modifierId)]);
 
     return Success(modifierSettings);
 }

@@ -12,7 +12,7 @@ import GAME_MANAGER, { replaceMentions } from "..";
 import { useLobbyOrGameState } from "./useHooks";
 import DetailsSummary from "./DetailsSummary";
 import { partitionWikiPages, WikiCategory } from "./Wiki";
-import { MODIFIERS, ModifierID } from "../game/gameState.d";
+import { MODIFIERS, ModifierID } from "../game/modifiers";
 import DUMMY_ROLE_LIST from "../resources/dummyRoleList.json";
 import Masonry from "react-responsive-masonry";
 
@@ -150,8 +150,8 @@ function CategoryArticle(props: Readonly<{ category: WikiCategory }>): ReactElem
     )!;
 
     const enabledModifiers = useLobbyOrGameState(
-        state => state.modifiers,
-        ["enabledModifiers"],
+        state => state.modifierSettings.keys(),
+        ["modifierSettings"],
         MODIFIERS as any as ModifierID[]
     )!;
 

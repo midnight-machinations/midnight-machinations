@@ -3,7 +3,7 @@ import Wiki from "../../components/Wiki";
 import translate from "../../game/lang";
 import "./standaloneWiki.css";
 import { WikiArticleLink } from "../../components/WikiArticleLink";
-import { MODIFIERS, ModifierID } from "../../game/gameState.d";
+import { MODIFIERS, ModifierID } from "../../game/modifiers";
 import { getAllRoles } from "../../game/roleListState.d";
 
 export default function StandaloneWiki(props: Readonly<{

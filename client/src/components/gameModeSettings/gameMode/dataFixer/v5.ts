@@ -1,6 +1,6 @@
 import { VersionConverter } from ".";
 import { GameMode, GameModeData, GameModeStorage, ShareableGameMode } from "..";
-import { ModifierID, ModifierState } from "../../../../game/gameState.d";
+import { ModifierID, ModifierState } from "../../../../game/modifiers";
 import { ListMapData } from "../../../../ListMap";
 import { Failure, ParseResult, ParseSuccess, Success, isFailure } from "../parse";
 import { parseName, parsePhaseTimes } from "./initial";
@@ -108,7 +108,7 @@ function parseGameModeData(json: NonNullable<any>): ParseResult<GameModeData> {
         return Failure("gameModeDataNotObject", json);
     }
 
-    for (const key of ['roleList', 'phaseTimes', 'enabledRoles', 'enabledModifiers']) {
+    for (const key of ['roleList', 'phaseTimes', 'enabledRoles', 'modifierSettings']) {
         if (!Object.keys(json).includes(key)) {
             return Failure(`${key as keyof GameModeData}KeyMissingFromGameModeData`, json)
         }
@@ -123,7 +123,7 @@ function parseGameModeData(json: NonNullable<any>): ParseResult<GameModeData> {
     const enabledRoles = parseEnabledRoles(json.enabledRoles);
     if (isFailure(enabledRoles)) return enabledRoles;
 
-    const modifierSettings = parseModifierSettings(json.enabledModifiers);
+    const modifierSettings = parseModifierSettings(json.modifierSettings);
     if (isFailure(modifierSettings)) return modifierSettings;
 
     return Success({

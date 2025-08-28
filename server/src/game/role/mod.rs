@@ -8,6 +8,9 @@ use crate::vec_set::{vec_set, VecSet};
 use crate::game::player::PlayerReference;
 use crate::game::visit::Visit;
 use crate::game::Game;
+use crate::game::Settings;
+use crate::game::ModifierID;
+use crate::game::modifiers::ModifierState;
 use crate::game::chat::ChatGroup;
 use crate::game::phase::PhaseType;
 use crate::game::attack_power::DefensePower;
@@ -227,9 +230,13 @@ mod macros {
                         $(Self::$name => RoleState::$name($file::$name::new_state(game))),*
                     }
                 }
-                pub fn maximum_count(&self) -> Option<u8> {
-                    match self {
-                        $(Self::$name => $file::MAXIMUM_COUNT),*
+                pub fn maximum_count(&self, settings: &Settings) -> Option<u8> {
+                    if let Some(ModifierState::CustomRoleLimits(custom_role_limits)) = settings.modifiers.get_modifier_inner(ModifierID::CustomRoleLimits) {
+                        custom_role_limits.limits.get(&self).copied()
+                    } else {
+                        match self {
+                            $(Self::$name => $file::MAXIMUM_COUNT),*
+                        }
                     }
                 }
                 pub fn defense(&self) -> DefensePower {

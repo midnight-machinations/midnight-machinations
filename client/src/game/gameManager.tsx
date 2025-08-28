@@ -515,7 +515,7 @@ export function createGameManager(): GameManager {
             this.server.sendPacket({
                 type: "setModifierSettings",
                 modifierSettings: {
-                    modifiers
+                    modifiers: modifiers.list
                 }
             });
         },

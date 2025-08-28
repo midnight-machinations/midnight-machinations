@@ -242,14 +242,6 @@ impl Lobby {
                 self.settings.modifiers = modifier_settings.clone();
                 self.send_to_all(ToClientPacket::ModifierSettings { modifier_settings });
             }
-            ToServerPacket::EnableModifier { modifier } => {
-                self.settings.modifiers.insert(modifier);
-                self.send_to_all(ToClientPacket::ModifierSettings { modifier_settings: self.settings.modifiers.clone() });
-            }
-            ToServerPacket::DisableModifier { modifier } => {
-                self.settings.modifiers.remove(&modifier);
-                self.send_to_all(ToClientPacket::ModifierSettings { modifier_settings: self.settings.modifiers.clone() });
-            }
             ToServerPacket::Leave => {
                 if let RemoveRoomClientResult::RoomShouldClose = self.remove_client(room_client_id) {
                     return LobbyClientMessageResult::Close;

@@ -26,7 +26,7 @@ use crate::{
     client_connection::ClientConnection, game::{
         chat::{ChatGroup, ChatMessage, ChatMessageIndex}, components::{
             graves::{grave::Grave, grave_reference::GraveReference}, insider_group::InsiderGroupID, tags::Tag
-        }, controllers::*, game_client::GameClientLocation, modifiers::{ModifierID, ModifierSettings}, phase::{PhaseState, PhaseType}, player::{PlayerIndex, PlayerReference}, role::{
+        }, controllers::*, game_client::GameClientLocation, modifiers::ModifierSettings, phase::{PhaseState, PhaseType}, player::{PlayerIndex, PlayerReference}, role::{
             doomsayer::DoomsayerGuess,
             ClientRoleStateEnum, Role
         }, role_list::{RoleList, RoleOutline}, settings::PhaseTimeSettings, GameOverReason, RejectStartReason
@@ -214,10 +214,6 @@ pub enum ToServerPacket{
     SetEnabledRoles{roles: Vec<Role>},
     #[serde(rename_all = "camelCase")]
     SetModifierSettings{modifier_settings: ModifierSettings},
-    #[serde(rename_all = "camelCase")]
-    EnableModifier{modifier: ModifierID},
-    #[serde(rename_all = "camelCase")]
-    DisableModifier{modifier: ModifierID},
 
     // Host
     HostDataRequest,

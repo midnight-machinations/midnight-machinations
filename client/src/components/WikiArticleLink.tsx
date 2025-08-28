@@ -1,4 +1,4 @@
-import { MODIFIERS, ModifierID } from "../game/gameState.d";
+import { MODIFIERS, ModifierID } from "../game/modifiers";
 import translate, { langJson } from "../game/lang";
 import { Role, roleJsonData } from "../game/roleState.d";
 import { partitionWikiPages, WIKI_CATEGORIES, WikiCategory } from "./Wiki";
