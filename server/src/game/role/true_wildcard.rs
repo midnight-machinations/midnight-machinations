@@ -47,7 +47,7 @@ impl TrueWildcard {
         if 
             role_enabled_and_not_taken(
                 role, 
-                &game.settings.enabled_roles, 
+                &game.settings, 
                 &Vec::new(),    //True wildcard can be whatever they want
             )
         {

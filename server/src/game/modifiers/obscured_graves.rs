@@ -1,17 +1,19 @@
+use serde::{Deserialize, Serialize};
+
 use crate::game::{components::graves::{grave::GraveInformation, grave_reference::GraveReference}, Game};
 
-use super::{ModifierTrait, ModifierType};
+use super::{ModifierStateImpl, ModifierID};
 
-#[derive(Clone, Default, PartialEq, Eq, Hash)]
+#[derive(Clone, Default, PartialEq, Eq, Hash, Serialize, Deserialize, Debug)]
 pub struct ObscuredGraves;
 
-impl From<&ObscuredGraves> for ModifierType{
+impl From<&ObscuredGraves> for ModifierID{
     fn from(_: &ObscuredGraves) -> Self {
-        ModifierType::ObscuredGraves
+        ModifierID::ObscuredGraves
     }
 }
 
-impl ModifierTrait for ObscuredGraves{
+impl ModifierStateImpl for ObscuredGraves{
     fn on_grave_added(self, game: &mut Game, grave: GraveReference) {
         grave.deref_mut(game).information = GraveInformation::Obscured;
     }

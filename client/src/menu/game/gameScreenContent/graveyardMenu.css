@@ -16,21 +16,9 @@
 .role-list-button:nth-last-child(odd) {
     background-color: var(--secondary-color);
 }
-.graveyard-menu .graveyard-menu-enabledRoles{
-    display: flex;
-    flex-direction: column;
-    margin-bottom: 1rem;
-    user-select: none;
-}
-.graveyard-menu .graveyard-menu-enabledRoles > section{
-    flex: 0 0 1;
-}
-.graveyard-menu .graveyard-menu-enabledRoles > div{
-    display: block;
-}
-.graveyard-menu .graveyard-menu-enabledRoles > div > *{
-    width: min-content;
-}
 .graveyard-menu label {
-    display: block
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
 }

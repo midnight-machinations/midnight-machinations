@@ -137,8 +137,8 @@ function PlayerCard(props: Readonly<{
     const [graveOpen, setGraveOpen] = React.useState(false);
     const [whisperChatOpen, setWhisperChatOpen] = React.useState(false);
     const whispersDisabled = useGameState(
-        gameState => gameState.enabledModifiers.includes("noWhispers"),
-        ["enabledModifiers"]
+        gameState => gameState.modifierSettings.keys().includes("noWhispers"),
+        ["modifierSettings"]
     )!;
 
     const grave = useGameState(

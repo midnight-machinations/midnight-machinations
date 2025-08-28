@@ -4,7 +4,7 @@ use vec1::{
     Vec1
 };
 
-use crate::{game::player::PlayerIndex, vec_set::{vec_set, VecSet}};
+use crate::{game::{player::PlayerIndex, settings::Settings}, vec_set::{vec_set, VecSet}};
 
 use super::{components::{insider_group::InsiderGroupID}, game_conclusion::GameConclusion, role::Role};
 
@@ -319,12 +319,12 @@ impl RoleSet{
 
 
 
-pub fn role_enabled_and_not_taken(role: Role, enabled_roles: &VecSet<Role>, taken_roles: &[Role]) -> bool {
-    if !enabled_roles.contains(&role) {
+pub fn role_enabled_and_not_taken(role: Role, settings: &Settings, taken_roles: &[Role]) -> bool {
+    if !settings.enabled_roles.contains(&role) {
         return false;
     }
 
-    match role.maximum_count() {
+    match role.maximum_count(settings) {
         Some(max) => taken_roles.iter().filter(|r|**r==role).count() < max.into(),
         None => true,
     }

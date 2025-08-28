@@ -1,8 +1,5 @@
-use crate::game::{
-    components::{
-        cult::Cult, detained::Detained, fast_forward::FastForwardComponent, forfeit_vote::ForfeitNominationVote, mafia::Mafia, silenced::Silenced, verdicts_today::VerdictsToday
-    }, controllers::Controllers, modifiers::Modifiers, phase::PhaseState, player::PlayerReference, Game
-};
+use crate::game::{components::{cult::Cult, detained::Detained, fast_forward::FastForwardComponent, forfeit_vote::ForfeitNominationVote, mafia::Mafia, silenced::Silenced, verdicts_today::VerdictsToday}, controllers::Controllers, modifiers::ModifierSettings, phase::PhaseState, player::PlayerReference, Game};
+
 
 #[must_use = "Event must be invoked"]
 pub struct OnPhaseStart{
@@ -24,7 +21,7 @@ impl OnPhaseStart{
         Mafia::on_phase_start(game, self.phase.phase());
         Cult::on_phase_start(game, self.phase.phase());
         Controllers::on_phase_start(game, self.phase.phase());
-        Modifiers::on_phase_start(game, self.phase.clone());
+        ModifierSettings::on_phase_start(game, self.phase.clone());
         FastForwardComponent::on_phase_start(game, self.phase.clone());
 
         game.on_phase_start(self.phase.phase());

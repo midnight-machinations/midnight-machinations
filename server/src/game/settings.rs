@@ -2,9 +2,9 @@ use std::time::Duration;
 
 use serde::{Serialize, Deserialize};
 
-use crate::vec_set::VecSet;
+use crate::{game::modifiers::{ModifierSettings}, vec_set::VecSet};
 
-use super::{modifiers::ModifierType, phase::PhaseType, role::Role, role_list::RoleList};
+use super::{phase::PhaseType, role::Role, role_list::RoleList};
 
 #[derive(Debug, Default, Clone, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
@@ -12,7 +12,7 @@ pub struct Settings{
     pub role_list: RoleList,
     pub phase_times: PhaseTimeSettings,
     pub enabled_roles: VecSet<Role>,
-    pub enabled_modifiers: VecSet<ModifierType>
+    pub modifiers: ModifierSettings,
 }
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
