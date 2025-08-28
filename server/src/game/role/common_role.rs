@@ -1,10 +1,8 @@
 use std::collections::HashSet;
 
-use crate::game::{
-    chat::ChatGroup, components::{
-        call_witness::CallWitness, detained::Detained, puppeteer_marionette::PuppeteerMarionette, silenced::Silenced, win_condition::WinCondition
-    }, controllers::*, game_conclusion::GameConclusion, modifiers::{ModifierType, Modifiers}, phase::{PhaseState, PhaseType}, player::PlayerReference, role_list::RoleSet, visit::{Visit, VisitTag}, Game
-};
+
+
+use crate::game::{chat::ChatGroup, components::{call_witness::CallWitness, detained::Detained, puppeteer_marionette::PuppeteerMarionette, silenced::Silenced, win_condition::WinCondition}, controllers::{ControllerID, ControllerSelection}, game_conclusion::GameConclusion, modifiers::ModifierID, phase::{PhaseState, PhaseType}, player::PlayerReference, role_list::RoleSet, visit::{Visit, VisitTag}, Game};
 
 use super::{medium::Medium, reporter::Reporter, warden::Warden, InsiderGroupID, Role, RoleState};
 
@@ -109,7 +107,7 @@ pub(super) fn get_current_send_chat_groups(game: &Game, actor_ref: PlayerReferen
     }
     if 
         !actor_ref.alive(game) && 
-        !Modifiers::is_enabled(game, ModifierType::DeadCanChat)
+        !game.modifier_settings().is_enabled(ModifierID::DeadCanChat)
     {
         if PuppeteerMarionette::marionettes_and_puppeteer(game).contains(&actor_ref){
             return vec![ChatGroup::Dead, ChatGroup::Puppeteer].into_iter().collect();
@@ -140,7 +138,7 @@ pub(super) fn get_current_send_chat_groups(game: &Game, actor_ref: PlayerReferen
             if PlayerReference::all_players(game)
                 .any(|med|{
                     match med.role_state(game) {
-                        RoleState::Medium(Medium{ seanced_target: Some(seanced_target), .. }) => {
+                        RoleState::Medium(Medium{ haunted_target: Some(seanced_target), .. }) => {
                             actor_ref == *seanced_target
                         },
                         _ => false
@@ -172,7 +170,7 @@ pub(super) fn get_current_send_chat_groups(game: &Game, actor_ref: PlayerReferen
             if PlayerReference::all_players(game)
                 .any(|med|{
                     match med.role_state(game) {
-                        RoleState::Medium(Medium{ seanced_target: Some(seanced_target), .. }) => {
+                        RoleState::Medium(Medium{ haunted_target: Some(seanced_target), .. }) => {
                             actor_ref == *seanced_target
                         },
                         _ => false
@@ -294,7 +292,7 @@ pub(super) fn get_current_receive_chat_groups(game: &Game, actor_ref: PlayerRefe
         PlayerReference::all_players(game)
             .any(|med|{
                 match med.role_state(game) {
-                    RoleState::Medium(Medium{ seanced_target: Some(seanced_target), .. }) => {
+                    RoleState::Medium(Medium{ haunted_target: Some(seanced_target), .. }) => {
                         actor_ref == *seanced_target
                     },
                     _ => false

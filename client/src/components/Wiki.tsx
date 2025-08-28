@@ -12,7 +12,7 @@ import { AnchorController } from "../menu/Anchor";
 import WikiCoverCard from "./WikiCoverCard";
 import { getAllRoles } from "../game/roleListState.d";
 import { useLobbyOrGameState } from "./useHooks";
-import { MODIFIERS, ModifierType } from "../game/gameState.d";
+import { MODIFIERS, ModifierID } from "../game/modifiers";
 import Masonry from "react-responsive-masonry";
 import CheckBox from "./CheckBox";
 
@@ -34,7 +34,7 @@ export function setWikiSearchPage(page: WikiArticleLink, anchorController: Ancho
 
 export default function Wiki(props: Readonly<{
     enabledRoles: Role[],
-    enabledModifiers: ModifierType[],
+    enabledModifiers: ModifierID[],
     initialWikiPage?: WikiArticleLink,
     onPageChange?: (page: WikiArticleLink | null) => void,
     static?: boolean
@@ -130,7 +130,7 @@ function WikiSearchBar(props: Readonly<{
 function WikiSearchResults(props: Readonly<{
     searchQuery: string,
     enabledRoles: Role[],
-    enabledModifiers: ModifierType[],
+    enabledModifiers: ModifierID[],
     onChooseArticle: (article: WikiArticleLink) => void,
     static: boolean
 }>): ReactElement {
@@ -140,9 +140,9 @@ function WikiSearchResults(props: Readonly<{
         getAllRoles()
     )!;
     const enabledModifiers = useLobbyOrGameState(
-        gameState => gameState.enabledModifiers,
-        ["enabledModifiers"],
-        MODIFIERS as any as ModifierType[]
+        gameState => gameState.modifierSettings.keys(),
+        ["modifierSettings"],
+        MODIFIERS as any as ModifierID[]
     )!;
 
     const [hideDisabled, setHideDisabled] = useState(true);
@@ -189,7 +189,7 @@ function WikiSearchResults(props: Readonly<{
 function WikiMainPage(props: Readonly<{
     articles: WikiArticleLink[],
     enabledRoles: Role[],
-    enabledModifiers: ModifierType[],
+    enabledModifiers: ModifierID[],
     hideDisabled: boolean,
     onChooseArticle: (article: WikiArticleLink) => void
 }>): ReactElement {
@@ -254,7 +254,7 @@ type WikiPagePartitions = Record<WikiCategory | "uncategorized", WikiArticleLink
 export function partitionWikiPages(
     wikiPages: WikiArticleLink[],
     enabledRoles: Role[],
-    enabledModifiers: ModifierType[],
+    enabledModifiers: ModifierID[],
     sort?: boolean
 ): WikiPagePartitions {
     const partitions: WikiPagePartitions = Object.fromEntries([
@@ -347,7 +347,7 @@ function getCategoryForRole(role: Role): WikiCategory {
 
 function getWikiPageSortFunction(
     enabledRole: Role[],
-    enabledModifiers: ModifierType[]
+    enabledModifiers: ModifierID[]
 ): (first: WikiArticleLink, second: WikiArticleLink) => number {
     return (first, second) => wikiPageSortFunction(first, second, enabledRole, enabledModifiers)
 }
@@ -356,7 +356,7 @@ function wikiPageSortFunction(
     first: WikiArticleLink,
     second: WikiArticleLink,
     enabledRoles: Role[],
-    enabledModifiers: ModifierType[]
+    enabledModifiers: ModifierID[]
 ): number {
     const isPageEnabled = (page: WikiArticleLink) => wikiPageIsEnabled(page, enabledRoles, enabledModifiers);
 

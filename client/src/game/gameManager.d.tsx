@@ -1,10 +1,12 @@
 import { WikiArticleLink } from "../components/WikiArticleLink";
+import ListMap from "../ListMap";
 import { DoomsayerGuess } from "../menu/game/gameScreenContent/AbilityMenu/RoleSpecificMenus/LargeDoomsayerMenu";
 import { ControllerInput } from "./controllerInput";
-import { PhaseType, PhaseTimes, PlayerIndex, State, Verdict, ModifierType, FastForwardSetting } from "./gameState.d";
+import { PhaseType, PhaseTimes, PlayerIndex, State, Verdict, FastForwardSetting } from "./gameState.d";
 import { ToClientPacket, ToServerPacket } from "./packet";
 import { RoleList, RoleOutline } from "./roleListState.d";
 import { Role } from "./roleState.d";
+import { ModifierID, ModifierState } from "./modifiers";
 
 export type Server = {
     ws: WebSocket | null,
@@ -86,7 +88,7 @@ export type GameManager = {
     sendSendChatMessagePacket(text: string, block: boolean, controllingPlayer?: PlayerIndex): void;
     sendSendWhisperPacket(playerIndex: number, text: string, controllingPlayer?: PlayerIndex): void;
     sendEnabledRolesPacket(roles: Role[]): void;
-    sendEnabledModifiersPacket(modifiers: ModifierType[]): void;
+    sendModifierSettingsPacket(modifiers: ListMap<ModifierID, ModifierState>): void;
 
     sendControllerInput(input: ControllerInput): void;
     sendSetDoomsayerGuess(guesses: [

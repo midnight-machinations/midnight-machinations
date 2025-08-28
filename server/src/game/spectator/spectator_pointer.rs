@@ -81,8 +81,8 @@ impl SpectatorPointer {
             },
             ToClientPacket::EnabledRoles { roles: game.settings.enabled_roles.clone().into_iter().collect() },
             ToClientPacket::RoleList {role_list: game.settings.role_list.clone()},
-            ToClientPacket::EnabledModifiers {
-                modifiers: game.settings.enabled_modifiers.clone().into_iter().collect()
+            ToClientPacket::ModifierSettings {
+                modifier_settings: game.modifier_settings().clone()
             },
             ToClientPacket::PlayerAlive{
                 alive: PlayerReference::all_players(game).map(|p|p.alive(game)).collect()

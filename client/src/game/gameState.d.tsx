@@ -7,6 +7,7 @@ import { ChatFilter } from "../menu/game/gameScreenContent/ChatMenu";
 import { ControllerID, SavedController } from "./controllerInput";
 import translate from "./lang";
 import ListMap, { ListMapData } from "../ListMap";
+import { ModifierID, ModifierState } from "./modifiers";
 
 export type State = Disconnected | OutsideLobbyState | LobbyState | GameState;
 
@@ -33,7 +34,7 @@ export type LobbyState = {
     roleList: RoleList,
     phaseTimes: PhaseTimes,
     enabledRoles: Role[],
-    enabledModifiers: ModifierType[],
+    modifierSettings: ListMap<ModifierID, ModifierState>,
 
     players: ListMap<LobbyClientID, LobbyClient>,
     chatMessages: ListMap<ChatMessageIndex, ChatMessage>,
@@ -81,12 +82,14 @@ type GameState = {
     timeLeftMs: number | null,
     dayNumber: number,
 
+
+    chatFilter: ChatFilter,
     fastForward: FastForwardSetting,
     
     roleList: RoleList,
     enabledRoles: Role[],
     phaseTimes: PhaseTimes,
-    enabledModifiers: ModifierType[],
+    modifierSettings: ListMap<ModifierID, ModifierState>,
 
     ticking: boolean,
 
@@ -108,7 +111,6 @@ export type PlayerGameState = {
 
     notes: UnsafeString[],
     crossedOutOutlines: number[],
-    chatFilter: ChatFilter,
     deathNote: UnsafeString,
 
     savedControllers: ListMapData<ControllerID, SavedController>,
@@ -161,21 +163,6 @@ export type Tag =
     "frame" |
     "forfeitNominationVote" |
     "spiraling";
-
-export const MODIFIERS = [
-    "obscuredGraves",
-    "skipDay1",
-    "deadCanChat", "abstaining",
-    "noDeathCause",
-    "roleSetGraveKillers", "autoGuilty", 
-    "twoThirdsMajority", "noTrialPhases", 
-    "noWhispers", "hiddenWhispers",
-    "noNightChat", "noChat", 
-    "unscheduledNominations",
-    "hiddenNominationVotes", "hiddenVerdictVotes",
-    "forfeitNominationVote", "randomPlayerNames"
-] as const;
-export type ModifierType = (typeof MODIFIERS)[number];
 
 export type Player = {
     name: UnsafeString,

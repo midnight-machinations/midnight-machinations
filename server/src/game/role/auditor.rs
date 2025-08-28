@@ -97,17 +97,17 @@ impl Auditor{
         let role = chosen_outline.deref_as_role_and_player_originally_generated(game).0;
         let mut out = VecSet::new();
 
-        if !confused {
+        // this check says dont put the real role in if either your confused OR if a recruiter messed with the role
+        // We dont want an auditor seeing that a recruiter is in the game
+        if !confused && all_possible_fake_roles.contains(&role) {
             out.insert(role);
         }
 
-        //add fake roles
-        //at most 2 fake roles
-        //at most outline_size - 1 fake roles
         for role in all_possible_fake_roles.iter(){
             if out.count() >= Auditor::MAX_RESULT_COUNT || out.count() >= all_possible_fake_roles.len().saturating_sub(1) {break}
             out.insert(*role);
         }
+        out.shuffle(&mut rand::rng());
 
         AuditorResult(out)
     }

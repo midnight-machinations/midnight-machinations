@@ -1,15 +1,17 @@
-use super::{ModifierTrait, ModifierType};
+use serde::{Deserialize, Serialize};
 
-#[derive(Clone, Default, PartialEq, Eq, Hash)]
+use super::{ModifierStateImpl, ModifierID};
+
+#[derive(Clone, Default, PartialEq, Eq, Hash, Serialize, Deserialize, Debug)]
 pub struct DeadCanChat;
 
 /*
     There is modifier specific code in the common_role::get_send_chat_groups() function
 */
-impl From<&DeadCanChat> for ModifierType{
+impl From<&DeadCanChat> for ModifierID{
     fn from(_: &DeadCanChat) -> Self {
-        ModifierType::DeadCanChat
+        ModifierID::DeadCanChat
     }
 }
 
-impl ModifierTrait for DeadCanChat{}
+impl ModifierStateImpl for DeadCanChat{}

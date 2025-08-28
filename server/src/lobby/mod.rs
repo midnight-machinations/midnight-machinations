@@ -73,7 +73,7 @@ impl Lobby {
         send.send(ToClientPacket::PhaseTimes { phase_time_settings: self.settings.phase_times.clone() });
         send.send(ToClientPacket::RoleList { role_list: self.settings.role_list.clone() });
         send.send(ToClientPacket::EnabledRoles { roles: self.settings.enabled_roles.clone().into_iter().collect() });
-        send.send(ToClientPacket::EnabledModifiers { modifiers: self.settings.enabled_modifiers.clone().into_iter().collect() });
+        send.send(ToClientPacket::ModifierSettings { modifier_settings: self.settings.modifiers.clone() });
     }
 
     pub fn set_player_name(&mut self, room_client_id: RoomClientID, name: String) {

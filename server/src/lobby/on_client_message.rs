@@ -238,10 +238,9 @@ impl Lobby {
                 let roles = self.settings.enabled_roles.clone().into_iter().collect();
                 self.send_to_all(ToClientPacket::EnabledRoles { roles });
             }
-            ToServerPacket::SetEnabledModifiers {modifiers } => {
-                self.settings.enabled_modifiers = modifiers.into_iter().collect();
-                let modifiers = self.settings.enabled_modifiers.clone().into_iter().collect();
-                self.send_to_all(ToClientPacket::EnabledModifiers { modifiers });
+            ToServerPacket::SetModifierSettings { modifier_settings } => {
+                self.settings.modifiers = modifier_settings.clone();
+                self.send_to_all(ToClientPacket::ModifierSettings { modifier_settings });
             }
             ToServerPacket::Leave => {
                 if let RemoveRoomClientResult::RoomShouldClose = self.remove_client(room_client_id) {

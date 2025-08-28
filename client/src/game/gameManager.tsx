@@ -116,8 +116,8 @@ export function createGameManager(): GameManager {
         },
 
         updateChatFilter(filter: PlayerIndex | null) {
-            if(GAME_MANAGER.state.stateType === "game" && GAME_MANAGER.state.clientState.type === "player"){
-                GAME_MANAGER.state.clientState.chatFilter = filter===null?null:{
+            if(GAME_MANAGER.state.stateType === "game"){
+                GAME_MANAGER.state.chatFilter = filter===null?null:{
                     type: "playerNameInMessage",
                     player: filter
                 };
@@ -511,10 +511,12 @@ export function createGameManager(): GameManager {
                 roles: roles
             });
         },
-        sendEnabledModifiersPacket(modifiers) {
+        sendModifierSettingsPacket(modifiers) {
             this.server.sendPacket({
-                type: "setEnabledModifiers",
-                modifiers: modifiers
+                type: "setModifierSettings",
+                modifierSettings: {
+                    modifiers: modifiers.list
+                }
             });
         },
 

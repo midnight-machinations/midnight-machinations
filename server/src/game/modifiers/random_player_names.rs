@@ -1,12 +1,14 @@
 
-use super::{ModifierTrait, ModifierType};
+use serde::{Deserialize, Serialize};
 
-#[derive(Clone, Default, PartialEq, Eq, Hash)]
+use super::{ModifierStateImpl, ModifierID};
+
+#[derive(Clone, Default, PartialEq, Eq, Hash, Serialize, Deserialize, Debug)]
 pub struct RandomPlayerNames;
 
-impl From<&RandomPlayerNames> for ModifierType{
+impl From<&RandomPlayerNames> for ModifierID{
     fn from(_: &RandomPlayerNames) -> Self {
-        ModifierType::RandomPlayerNames
+        ModifierID::RandomPlayerNames
     }
 }
-impl ModifierTrait for RandomPlayerNames{}
+impl ModifierStateImpl for RandomPlayerNames{}

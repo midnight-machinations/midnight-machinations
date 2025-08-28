@@ -2,7 +2,7 @@ use std::{ops::Div, time::Duration};
 
 use serde::{Serialize, Deserialize};
 
-use crate::game::{components::graves::{grave::Grave, Graves}, modifiers::{hidden_nomination_votes::HiddenNominationVotes, hidden_verdict_votes::HiddenVerdictVotes, ModifierType, Modifiers}};
+use crate::game::{components::graves::{grave::Grave, Graves}, modifiers::{hidden_nomination_votes::HiddenNominationVotes, hidden_verdict_votes::HiddenVerdictVotes, ModifierID}};
 
 use super::{
     chat::{ChatGroup, ChatMessageVariant},
@@ -113,7 +113,7 @@ impl PhaseStateMachine {
 
         if
             phase == PhaseType::Nomination &&
-            !Modifiers::is_enabled(game, ModifierType::UnscheduledNominations)
+            !game.modifier_settings().is_enabled(ModifierID::UnscheduledNominations)
         {
             time = time.map(|o|o.div(3));
         }
@@ -225,7 +225,7 @@ impl PhaseState {
                 }
             },
             PhaseState::Nomination {trials_left, ..} => {
-                if Modifiers::is_enabled(game, ModifierType::UnscheduledNominations){
+                if game.modifier_settings().is_enabled(ModifierID::UnscheduledNominations){
                     if trials_left == 0 {
                         Self::Dusk
                     } else {
@@ -285,7 +285,7 @@ impl PhaseState {
                 }
                 
 
-                let hang = if Modifiers::is_enabled(game, ModifierType::TwoThirdsMajority) {
+                let hang = if game.modifier_settings().is_enabled(ModifierID::TwoThirdsMajority) {
                     innocent <= guilty.div(2)
                 } else {
                     innocent < guilty

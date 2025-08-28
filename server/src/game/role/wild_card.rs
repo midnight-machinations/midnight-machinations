@@ -48,7 +48,7 @@ impl Wildcard {
         if 
             role_enabled_and_not_taken(
                 role, 
-                &game.settings.enabled_roles, 
+                &game.settings, 
                 &PlayerReference::all_players(game)
                     .map(|player_ref| player_ref.role(game))
                     .collect::<Vec<Role>>()

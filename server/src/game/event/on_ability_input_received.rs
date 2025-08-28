@@ -1,6 +1,6 @@
 use crate::game::{
     controllers::{Controllers, ControllerInput},
-    modifiers::Modifiers, 
+    modifiers::ModifierSettings, 
     player::PlayerReference,
     Game
 };
@@ -18,7 +18,7 @@ impl OnControllerInputReceived{
         for player_ref in PlayerReference::all_players(game){
             player_ref.on_ability_input_received(game, self.actor_ref, self.input.clone())
         }
-        Modifiers::on_ability_input_received(game, self.actor_ref, self.input.clone());
+        ModifierSettings::on_ability_input_received(game, self.actor_ref, self.input.clone());
         Controllers::on_ability_input_received(game, self.actor_ref, self.input);
     }
 }
