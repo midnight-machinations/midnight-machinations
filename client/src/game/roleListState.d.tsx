@@ -85,10 +85,6 @@ export function translatePlayerPool(playerPool: PlayerIndex[], playerNames: Unsa
         ))
         .join(' ' + translate("union") + ' ')
     
-    console.log("PlayerPool: Names: ", playerNames);
-    console.log("PlayerPool: ",out);
-    console.trace();
-    
     return out;
 }
 

@@ -100,14 +100,12 @@ impl Auditor{
         if !confused {
             out.insert(role);
         }
-
-        //add fake roles
-        //at most 2 fake roles
-        //at most outline_size - 1 fake roles
+        
         for role in all_possible_fake_roles.iter(){
             if out.count() >= Auditor::MAX_RESULT_COUNT || out.count() >= all_possible_fake_roles.len().saturating_sub(1) {break}
             out.insert(*role);
         }
+        out.shuffle(&mut rand::rng());
 
         AuditorResult(out)
     }
