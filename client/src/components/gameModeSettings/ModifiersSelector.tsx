@@ -8,7 +8,7 @@ import CheckBox from "../CheckBox";
 import ListMap, { ListMapData } from "../../ListMap";
 import Popover from "../Popover";
 import Select, { dropdownPlacementFunction } from "../Select";
-import { Role } from "../../game/roleState.d";
+import { Role, roleJsonData } from "../../game/roleState.d";
 import Icon from "../Icon";
 import { getAllRoles, sortRolesCanonically } from "../../game/roleListState.d";
 import { useLobbyOrGameState } from "../useHooks";
@@ -234,6 +234,26 @@ function CustomRoleLimitsConfigMenu(props: Readonly<{
             </div>}
         </div>
         {props.modifiable && <div>
+            <Button onClick={() => {
+                props.setModifier({
+                    type: "customRoleLimits",
+                    limits: Object.entries(roleJsonData())
+                        .filter(([_role, data]) => data.maxCount !== null)
+                        .map(([role, data]) => [role as Role, data.maxCount!])
+                })
+                props.close();
+            }}>
+                <Icon>autorenew</Icon>
+            </Button>
+            <Button onClick={() => {
+                props.setModifier({
+                    type: "customRoleLimits",
+                    limits: getAllRoles().map(role => [role, 1])
+                });
+                props.close();
+            }}>
+                <Icon>filter_1</Icon>
+            </Button>
             <Button onClick={() => {
                 props.setModifier(undefined)
                 props.close();
