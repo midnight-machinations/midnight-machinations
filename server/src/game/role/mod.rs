@@ -138,7 +138,6 @@ macros::roles! {
     Mayor : mayor,
     Transporter : transporter,
     Porter : porter,
-    Coxswain : coxswain,
     Polymath : polymath,
     Courtesan : courtesan,
 
@@ -406,7 +405,7 @@ impl Role{
     pub fn possession_immune(&self)->bool{
         matches!(self, 
             | Role::Bouncer
-            | Role::Veteran | Role::Coxswain
+            | Role::Veteran | Role::Medium
             | Role::Transporter | Role::Retributionist
             | Role::Witch | Role::Doomsayer | Role::Scarecrow | Role::Warper | Role::Porter
             | Role::Necromancer 

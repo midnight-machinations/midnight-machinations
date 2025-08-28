@@ -266,7 +266,7 @@ impl RoleSet{
                 ],
             RoleSet::TownSupport => 
                 vec_set![
-                    Role::Medium, Role::Coxswain, Role::Retributionist,
+                    Role::Medium, Role::Retributionist,
                     Role::Transporter, Role::Porter,
                     Role::Mayor, Role::Reporter,
                     Role::Courtesan, Role::Escort,

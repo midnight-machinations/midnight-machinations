@@ -138,7 +138,7 @@ pub(super) fn get_current_send_chat_groups(game: &Game, actor_ref: PlayerReferen
             if PlayerReference::all_players(game)
                 .any(|med|{
                     match med.role_state(game) {
-                        RoleState::Medium(Medium{ seanced_target: Some(seanced_target), .. }) => {
+                        RoleState::Medium(Medium{ haunted_target: Some(seanced_target), .. }) => {
                             actor_ref == *seanced_target
                         },
                         _ => false
@@ -169,7 +169,7 @@ pub(super) fn get_current_send_chat_groups(game: &Game, actor_ref: PlayerReferen
             if PlayerReference::all_players(game)
                 .any(|med|{
                     match med.role_state(game) {
-                        RoleState::Medium(Medium{ seanced_target: Some(seanced_target), .. }) => {
+                        RoleState::Medium(Medium{ haunted_target: Some(seanced_target), .. }) => {
                             actor_ref == *seanced_target
                         },
                         _ => false
@@ -291,7 +291,7 @@ pub(super) fn get_current_receive_chat_groups(game: &Game, actor_ref: PlayerRefe
         PlayerReference::all_players(game)
             .any(|med|{
                 match med.role_state(game) {
-                    RoleState::Medium(Medium{ seanced_target: Some(seanced_target), .. }) => {
+                    RoleState::Medium(Medium{ haunted_target: Some(seanced_target), .. }) => {
                         actor_ref == *seanced_target
                     },
                     _ => false

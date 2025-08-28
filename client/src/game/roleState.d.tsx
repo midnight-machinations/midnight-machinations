@@ -23,8 +23,6 @@ export type RoleState = {
 } | {
     type: "porter"
 } | {
-    type: "coxswain"
-} | {
     type: "polymath"
 } | {
     type: "detective"
@@ -88,8 +86,9 @@ export type RoleState = {
     type: "escort"
 } | {
     type: "medium",
-    seancesRemaining: number,
+    hauntsRemaining: number,
     seancedTarget: PlayerIndex | null
+    hauntedTarget: PlayerIndex | null
 } | {
     type: "retributionist"
 } | {
