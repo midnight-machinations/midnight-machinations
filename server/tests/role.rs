@@ -68,7 +68,6 @@ pub use mafia_server::game::{
         hypnotist::Hypnotist,
         blackmailer::Blackmailer,
         informant::Informant,
-        mafia_witch::MafiaWitch,
         necromancer::Necromancer,
         mortician::Mortician,
         mafia_support_wildcard::MafiaSupportWildcard, 
@@ -1270,9 +1269,9 @@ fn framer_second_visit_erased() {
 #[test]
 fn witch_second_visit_erased() {
     kit::scenario!(game in Night 2 where
-        witch: MafiaWitch,
+        witch: Witch,
         lookout: Lookout,
-        v: Villager
+        v: Mortician
     );
 
     witch.send_ability_input_two_player_typical(lookout, v);

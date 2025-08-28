@@ -1,17 +1,9 @@
 use std::collections::HashSet;
 
 use crate::game::{
-    controllers::*,
-    chat::ChatGroup,
-    components::{
-        detained::Detained,
-        puppeteer_marionette::PuppeteerMarionette, silenced::Silenced, win_condition::WinCondition
-    },
-    game_conclusion::GameConclusion,
-    modifiers::{ModifierType, Modifiers},
-    phase::{PhaseState, PhaseType}, player::PlayerReference,
-    role_list::RoleSet, visit::{Visit, VisitTag},
-    Game
+    chat::ChatGroup, components::{
+        call_witness::CallWitness, detained::Detained, puppeteer_marionette::PuppeteerMarionette, silenced::Silenced, win_condition::WinCondition
+    }, controllers::*, game_conclusion::GameConclusion, modifiers::{ModifierType, Modifiers}, phase::{PhaseState, PhaseType}, player::PlayerReference, role_list::RoleSet, visit::{Visit, VisitTag}, Game
 };
 
 use super::{medium::Medium, reporter::Reporter, warden::Warden, InsiderGroupID, Role, RoleState};
@@ -95,7 +87,10 @@ pub(super) fn convert_controller_selection_to_visits_possession(game: &Game, act
 
     if let ControllerSelection::TwoPlayerOption(selection) = selection {
         if let Some((target_1, target_2)) = selection.0 {
-            vec![Visit::new(actor_ref, target_1, false, VisitTag::Role { role: actor_ref.role(game), id: 0 }), Visit::new(actor_ref, target_2, false, VisitTag::Role { role: actor_ref.role(game), id: 1 })]
+            vec![
+                Visit::new(actor_ref, target_1, false, VisitTag::Role { role: actor_ref.role(game), id: 0 }),
+                Visit::new(actor_ref, target_2, false, VisitTag::Role { role: actor_ref.role(game), id: 1 })
+            ]
         }else{
             vec![]
         }
@@ -163,12 +158,12 @@ pub(super) fn get_current_send_chat_groups(game: &Game, actor_ref: PlayerReferen
         | PhaseState::FinalWords {..}
         | PhaseState::Dusk 
         | PhaseState::Recess => vec![ChatGroup::All].into_iter().collect(),
-        &PhaseState::Testimony { player_on_trial, .. } => {
-            if player_on_trial == actor_ref {
-                vec![ChatGroup::All].into_iter().collect()
-            } else {
-                HashSet::new()
+        &PhaseState::Testimony { .. } => {
+            let mut out = HashSet::new();
+            if CallWitness::witness_called(game).contains(&actor_ref) {
+                out.insert(ChatGroup::All);
             }
+            out
         },
         PhaseState::Night => {
             let mut out = vec![];

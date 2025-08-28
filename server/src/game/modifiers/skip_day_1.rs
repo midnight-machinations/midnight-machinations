@@ -1,4 +1,4 @@
-use crate::game::{event::on_fast_forward::OnFastForward, phase::{PhaseState, PhaseType::*}, Game};
+use crate::game::{components::fast_forward::FastForwardComponent, phase::{PhaseState, PhaseType::*}, Game};
 
 use super::{ModifierTrait, ModifierType};
 
@@ -22,7 +22,7 @@ impl ModifierTrait for SkipDay1{
             (Testimony, 2) |
             (Judgement, 2) |
             (FinalWords, 2)
-                => OnFastForward::invoke(game),
+                => FastForwardComponent::skip(game),
             _ => ()
         }
     }

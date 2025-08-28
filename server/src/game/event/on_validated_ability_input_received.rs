@@ -1,8 +1,7 @@
 use crate::game::{
-    controllers::ControllerInput, chat::ChatComponent, components::{
-        forward_messages::ForwardMessages, nomination_controller::NominationController,
-        syndicate_gun_item::SyndicateGunItem
-    }, event::Event, player::PlayerReference, Game
+    chat::ChatComponent, components::{
+        call_witness::CallWitness, forward_messages::ForwardMessages, nomination_controller::NominationController, syndicate_gun_item::SyndicateGunItem
+    }, controllers::ControllerInput, event::Event, player::PlayerReference, Game
 };
 
 #[must_use = "Event must be invoked"]
@@ -26,6 +25,7 @@ impl Event for OnValidatedControllerInputReceived{
             ForwardMessages::on_validated_ability_input_received,
             NominationController::on_validated_ability_input_received,
             ChatComponent::on_validated_ability_input_received,
+            CallWitness::on_validated_ability_input_received
         ]
     }
 

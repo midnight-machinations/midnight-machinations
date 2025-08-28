@@ -1,4 +1,11 @@
-use crate::{game::{controllers::{ControllerInput, Controllers}, event::{on_controller_changed::OnControllerChanged, on_validated_ability_input_received::OnValidatedControllerInputReceived, Event}, phase::PhaseType, player::PlayerReference, Game}, packet::ToClientPacket, vec_set::VecSet};
+use crate::{
+    game::{
+        controllers::{ControllerID, ControllerInput, Controllers}, 
+        event::{on_controller_changed::OnControllerChanged, on_validated_ability_input_received::OnValidatedControllerInputReceived, Event}, 
+        phase::PhaseType, player::PlayerReference, Game
+    }, 
+    packet::ToClientPacket, vec_set::VecSet
+};
 
 impl Controllers{
     /// returns false if any of these
@@ -31,8 +38,19 @@ impl Controllers{
 
     pub fn on_phase_start(game: &mut Game, phase: PhaseType){
         Self::update_controllers_from_parameters(game);
-        for (_, saved_controller) in game.controllers.controllers.iter_mut(){
-            saved_controller.reset_on_phase_start(phase);
+        
+        for id in ControllerID::current_used_ids(game){
+            let Some(controller) = game.controllers.controllers.get_mut(&id) else {continue};
+            let old = controller.clone();
+            controller.reset_on_phase_start(phase);
+
+            if old != *controller {
+                OnControllerChanged::new(
+                    id.clone(),
+                    Some(old),
+                    Some(controller.clone())
+                ).invoke(game);
+            }
         }
     }
 

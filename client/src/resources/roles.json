@@ -734,18 +734,11 @@
         "mainRoleSet": "mafia",
         "roleSets": ["mafia", "mafiaSupport"],
         "armor": false,
-        "aura": null,
+        "aura": "innocent",
         "maxCount": 1,
         "canWriteDeathNote": false,
         "canBeConvertedTo": ["godfather"],
-        "chatMessages":[
-            {
-                "type": "playerRoleAndAlibi",
-                "player":14,
-                "role":"hypnotist",
-                "will":"Philosopher\nN1: @1 and @2 are enemies"
-            }
-        ]
+        "chatMessages":[]
     },
     "reeducator": {
         "mainRoleSet": "mafia",
@@ -775,24 +768,6 @@
                 "role": "jailor",
                 "will": "I am very confident in my doctors ability to protect me, especially because he knows there could be a forger in the game."
             }
-        ]
-    },
-    "mafiaWitch": {
-        "mainRoleSet": "mafia",
-        "roleSets": ["mafia", "mafiaSupport"],
-        "armor": false,
-        "aura": null,
-        "maxCount": 1,
-        "canWriteDeathNote": false,
-        "canBeConvertedTo": ["godfather"],
-        "chatMessages":[
-            {"type": "targetsMessage", "message": 
-                {"type": "sheriffResult","suspicious":true}
-            },
-            {"type": "targetHasRole", "role":"detective"},
-            {"type": "targetIsPossessionImmune"},
-            {"type": "youWerePossessed", "immune": false},
-            {"type": "youWerePossessed", "immune": true}
         ]
     },
     "necromancer": {
