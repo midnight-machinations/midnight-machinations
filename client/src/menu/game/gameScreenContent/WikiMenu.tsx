@@ -5,7 +5,7 @@ import translate from "../../../game/lang";
 import Wiki from "../../../components/Wiki";
 import { useLobbyOrGameState } from "../../../components/useHooks";
 import { getAllRoles } from "../../../game/roleListState.d";
-import { MODIFIERS, ModifierType } from "../../../game/gameState.d";
+import { MODIFIERS, ModifierID } from "../../../game/modifiers";
 
 export default function WikiMenu(): ReactElement {
     const enabledRoles = useLobbyOrGameState(
@@ -14,9 +14,9 @@ export default function WikiMenu(): ReactElement {
         getAllRoles()
     )!;
     const enabledModifiers = useLobbyOrGameState(
-        state => state.enabledModifiers,
-        ["enabledModifiers"],
-        MODIFIERS as any as ModifierType[]
+        state => state.modifierSettings.keys(),
+        ["modifierSettings"],
+        MODIFIERS as any as ModifierID[]
     )!;
 
     return <div className="wiki-menu wiki-menu-colors">

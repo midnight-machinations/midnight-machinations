@@ -1,13 +1,6 @@
-use crate::{
-    game::{
-        controllers::{ControllerID, IntegerSelection},
-        chat::{ChatMessage, ChatMessageVariant, ChatPlayerComponent},
-        components::player_component::PlayerComponent,
-        event::on_conceal_role::OnConcealRole, modifiers::{ModifierType, Modifiers},
-        role::{Role, RoleState}, verdict::Verdict, Game
-    }, 
-    packet::ToClientPacket, vec_set::VecSet, 
-};
+
+use crate::{game::{chat::{ChatMessage, ChatMessageVariant, ChatPlayerComponent}, components::player_component::PlayerComponent, controllers::{ControllerID, IntegerSelection}, event::on_conceal_role::OnConcealRole, modifiers::ModifierID, role::{Role, RoleState}, verdict::Verdict, Game}, packet::ToClientPacket, vec_set::VecSet};
+
 use super::PlayerReference;
 
 
@@ -48,7 +41,7 @@ impl PlayerReference{
         }
         game.send_packet_to_all(ToClientPacket::PlayerAlive { alive: alive_players });
         game.count_nomination_and_start_trial(
-            Modifiers::is_enabled(game, ModifierType::UnscheduledNominations)
+            game.modifier_settings().is_enabled(ModifierID::UnscheduledNominations)
         );
     }
     

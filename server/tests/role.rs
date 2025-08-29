@@ -4,7 +4,7 @@ use std::{ops::Deref, vec};
 
 pub(crate) use kit::{assert_contains, assert_not_contains};
 
-use mafia_server::{game::{attack_power::DefensePower, components::{graves::{grave::{Grave, GraveDeathCause, GraveInformation, GraveKiller, GravePhase}, grave_reference::GraveReference}, syndicate_gun_item::SyndicateGunItem}, role_list::{RoleList, RoleOutline, RoleOutlineOption, RoleOutlineOptionInsiderGroups, RoleOutlineOptionRoles, RoleOutlineOptionWinCondition}, settings::{PhaseTimeSettings, Settings}, test::mock_game}, vec_set};
+use mafia_server::{game::{attack_power::DefensePower, components::{graves::{grave::{Grave, GraveDeathCause, GraveInformation, GraveKiller, GravePhase}, grave_reference::GraveReference}, syndicate_gun_item::SyndicateGunItem}, modifiers::ModifierSettings, role_list::{RoleList, RoleOutline, RoleOutlineOption, RoleOutlineOptionInsiderGroups, RoleOutlineOptionRoles, RoleOutlineOptionWinCondition}, settings::{PhaseTimeSettings, Settings}, test::mock_game}, vec_set};
 pub use mafia_server::game::{
     controllers::{ControllerID, IntegerSelection, PlayerListSelection, RoleListSelection},
     game_conclusion::GameConclusion,
@@ -3077,7 +3077,7 @@ fn recruiter_role_list_is_correct() {
             ]),
             phase_times: PhaseTimeSettings::default(),
             enabled_roles: RoleSet::Any.get_roles(),
-            enabled_modifiers: vec_set![],
+            modifiers: ModifierSettings::default(),
         },
         4
     ).unwrap();

@@ -1,6 +1,6 @@
 use crate::game::{
     components::{pitchfork::Pitchfork, verdicts_today::VerdictsToday},
-    modifiers::Modifiers, phase::PhaseType, Game
+    modifiers::ModifierSettings, phase::PhaseType, Game
 };
 
 #[must_use = "Event must be invoked"]
@@ -14,6 +14,6 @@ impl BeforePhaseEnd{
     pub fn invoke(self, game: &mut Game){
         VerdictsToday::before_phase_end(game, self.phase);
         Pitchfork::before_phase_end(game, self.phase);
-        Modifiers::before_phase_end(game, self.phase);
+        ModifierSettings::before_phase_end(game, self.phase);
     }
 }

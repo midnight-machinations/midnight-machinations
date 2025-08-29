@@ -24,3 +24,30 @@
 .placard.disabled {
     background-color: var(--secondary-color);
 }
+
+.modifier-settings-display {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+.modifier-config-popover {
+    background-color: var(--background-color);
+    border: .13rem solid var(--primary-border-color);
+    border-radius: .25rem;
+    padding: .13rem;
+    min-width: fit-content;
+}
+.modifier-config-popover .role-list-setter-list {
+    overflow-y: auto;
+    max-height: 20rem;
+}
+.custom-role-limit-selection {
+    display: flex;
+    flex-direction: row;
+}
+.custom-role-limit-selection > .custom-select {
+    flex-grow: 1;
+}
+.custom-role-limit-selection > input {
+    width: 3rem;
+}

@@ -2,7 +2,7 @@ use crate::game::{
         controllers::{
             AvailablePlayerListSelection, ControllerID,
             ControllerParametersMap, PlayerListSelection
-        }, chat::{ChatGroup, ChatMessageVariant}, event::on_validated_ability_input_received::OnValidatedControllerInputReceived, modifiers::{hidden_nomination_votes::HiddenNominationVotes, ModifierType, Modifiers}, player::PlayerReference, Game
+        }, chat::{ChatGroup, ChatMessageVariant}, event::on_validated_ability_input_received::OnValidatedControllerInputReceived, modifiers::{hidden_nomination_votes::HiddenNominationVotes, ModifierID}, player::PlayerReference, Game
     };
 
 use super::forfeit_vote::ForfeitNominationVote;
@@ -44,7 +44,7 @@ impl NominationController{
             }
 
             game.count_nomination_and_start_trial(
-                Modifiers::is_enabled(game, ModifierType::UnscheduledNominations)
+                game.modifier_settings().is_enabled(ModifierID::UnscheduledNominations)
             );
 
             game.send_player_votes();

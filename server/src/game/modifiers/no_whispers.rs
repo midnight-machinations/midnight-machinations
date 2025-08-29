@@ -1,17 +1,19 @@
+use serde::{Deserialize, Serialize};
+
 use crate::game::{event::on_whisper::{OnWhisper, WhisperFold, WhisperPriority}, Game};
 
-use super::{ModifierTrait, ModifierType};
+use super::{ModifierStateImpl, ModifierID};
 
-#[derive(Clone, Default, PartialEq, Eq, Hash)]
+#[derive(Clone, Default, PartialEq, Eq, Hash, Serialize, Deserialize, Debug)]
 pub struct NoWhispers;
 
-impl From<&NoWhispers> for ModifierType{
+impl From<&NoWhispers> for ModifierID{
     fn from(_: &NoWhispers) -> Self {
-        ModifierType::NoWhispers
+        ModifierID::NoWhispers
     }
 }
 
-impl ModifierTrait for NoWhispers {
+impl ModifierStateImpl for NoWhispers {
     fn on_whisper(self, _game: &mut Game, _event: &OnWhisper, fold: &mut WhisperFold, priority: WhisperPriority) {
         if WhisperPriority::Cancel == priority {
             fold.cancelled = true;

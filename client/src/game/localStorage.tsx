@@ -72,7 +72,7 @@ export function loadSettingsParsed(): Settings {
 }
 export function getDefaultSettings(): Readonly<Settings> {
     return {
-        format: "v4",
+        format: "v5",
         volume: 0.5,
         fontSize: 1,
         accessibilityFont: false,
