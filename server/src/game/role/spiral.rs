@@ -93,8 +93,8 @@ impl Spiral {
     }
 
     fn spiral_visitors(game: &mut Game, midnight_variables: &mut MidnightVariables, actor_ref: PlayerReference, target: PlayerReference) {
-        for visitor_to_spiraling in target.all_night_visitors_cloned(midnight_variables)
-            .into_iter().filter(|other_player_ref|
+        for visitor_to_spiraling in target.all_direct_night_visitors_cloned(midnight_variables)
+            .filter(|other_player_ref|
                 other_player_ref.alive(game) &&
                 *other_player_ref != target // Let doctor self-heal
             ).collect::<Vec<PlayerReference>>()

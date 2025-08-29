@@ -4,7 +4,7 @@ use rand::seq::SliceRandom;
 use crate::{
     game::{
         attack_power::{AttackPower, DefensePower}, chat::{ChatGroup, ChatMessage, ChatMessageVariant}, components::{
-            fragile_vest::FragileVests, graves::{grave::{Grave, GraveKiller}, Graves}, insider_group::InsiderGroupID, night_visits::NightVisits, player_component::PlayerComponent, win_condition::WinCondition
+            fragile_vest::FragileVests, graves::{grave::{Grave, GraveKiller}, Graves}, insider_group::InsiderGroupID, night_visits::{NightVisitsIterator, Visits}, player_component::PlayerComponent, win_condition::WinCondition
         }, controllers::{BooleanSelection, ControllerID, ControllerParametersMap, ControllerSelection, Controllers, PlayerListSelection, TwoPlayerOptionSelection}, event::{
             before_role_switch::BeforeRoleSwitch, on_any_death::OnAnyDeath,
             on_midnight::{MidnightVariables, OnMidnightPriority},
@@ -28,8 +28,8 @@ impl PlayerReference{
     }
     pub fn ward(&self, game: &mut Game, midnight_variables: &mut MidnightVariables) -> Vec<PlayerReference> {
         let mut out = Vec::new();
-        for visit in NightVisits::all_visits_cloned(midnight_variables) {
-            if visit.wardblock_immune(){
+        for visit in Visits::into_iter(midnight_variables) {
+            if !visit.wardblockable {
                 continue;
             }
             if visit.target != *self {continue;}
@@ -37,6 +37,33 @@ impl PlayerReference{
             out.push(visit.visitor);
         }
         out
+    }
+
+    #[expect(clippy::too_many_arguments, reason="this function is goated tho")]
+    pub fn rampage(
+        &self, game: &mut Game,
+        midnight_variables: &mut MidnightVariables,
+        attacker: PlayerReference,
+        grave_killer: GraveKiller,
+        attack: AttackPower,
+        should_leave_death_note: bool,
+        filter_visit: impl FnMut(&Visit) -> bool
+    ){
+        Visits::into_iter(midnight_variables)
+            .filter(filter_visit)
+            .with_target(*self)
+            .with_direct()
+            .map_visitor()
+            .for_each(|p|{
+                p.try_night_kill_single_attacker(
+                    attacker,
+                    game,
+                    midnight_variables,
+                    grave_killer.clone(),
+                    attack,
+                    should_leave_death_note
+                );
+            });
     }
 
 

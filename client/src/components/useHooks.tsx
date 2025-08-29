@@ -46,7 +46,7 @@ export function useGameState<T>(
         if (GAME_MANAGER.state.stateType === "game" && (events ?? []).includes(type as StateEventType)) {
             const value = getValue(GAME_MANAGER.state);
             if (!strictDeepEqual(value, state)) {
-                setState(value);
+                setState((_previous)=>value);
             }
         }
     })
@@ -71,7 +71,7 @@ export function useLobbyState<T>(
         if (GAME_MANAGER.state.stateType === "lobby" && (events ?? []).includes(type as StateEventType)) {
             const value = getValue(GAME_MANAGER.state);
             if (!strictDeepEqual(value, state)) {
-                setState(value);
+                setState((_previous)=>value);
             }
         }
     });
@@ -99,7 +99,7 @@ export function useLobbyOrGameState<T>(
         ) {
             const value = getValue(GAME_MANAGER.state);
             if (!strictDeepEqual(value, state)) {
-                setState(value);
+                setState((_previous)=>value);
             }
         }
     });

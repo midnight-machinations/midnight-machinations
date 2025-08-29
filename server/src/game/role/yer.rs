@@ -3,6 +3,7 @@ use serde::Serialize;
 use crate::game::attack_power::AttackPower;
 use crate::game::chat::ChatMessageVariant;
 use crate::game::components::graves::grave::GraveKiller;
+use crate::game::components::night_visits::Visits;
 use crate::game::event::on_midnight::{MidnightVariables, OnMidnightPriority};
 
 use crate::game::components::win_condition::WinCondition;
@@ -50,8 +51,7 @@ impl RoleStateImpl for Yer {
             .map(|selection| selection.0)
             .unwrap_or(false);
 
-        let actor_visits = actor_ref.untagged_night_visits_cloned(midnight_variables);
-        if let Some(visit) = actor_visits.first(){
+        if let Some(visit) = Visits::default_visit(game, midnight_variables, actor_ref) {
             let target_ref = visit.target;
 
             if !chose_to_convert {

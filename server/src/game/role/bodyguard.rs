@@ -63,7 +63,7 @@ impl RoleStateImpl for Bodyguard {
                 let redirected_player_refs = Transport::transport(
                     midnight_variables, TransportPriority::Bodyguard,
                     &vec_map![(target_ref, actor_ref)], |v| v.attack, false, 
-                ).iter().map(|v| v.visitor).collect();
+                ).iter().filter(|v|!v.indirect).map(|v| v.visitor).collect();
 
                 actor_ref.set_role_state(game, Bodyguard {
                     redirected_player_refs,
