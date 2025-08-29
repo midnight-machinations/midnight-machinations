@@ -24,8 +24,8 @@ impl Visit {
             target,
             tag: VisitTag::Role{role, id},
             attack,
-            wardblockable: false,
-            transportable: false,
+            wardblockable: true,
+            transportable: true,
             indirect: false,
         }
     }

@@ -8,7 +8,7 @@ use crate::game::{
 };
 use crate::vec_map::VecMap;
 
-use super::night_visits::NightVisits;
+use super::night_visits::Visits;
 
 
 #[derive(PartialOrd, Ord, PartialEq, Eq)]
@@ -56,7 +56,7 @@ impl Transport{
         }
         let mut out = vec![];
         
-        NightVisits::all_visits_mut(midnight_variables)
+        Visits::iter_mut(midnight_variables)
             .filter(|v|filter(v))
             .filter(|v|v.transportable)
             .filter(|v|transport_priority.can_transport(&TransportPriority::from_visit_tag(&v.tag)))

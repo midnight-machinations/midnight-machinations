@@ -1,6 +1,7 @@
 use rand::seq::IndexedRandom;
 use serde::Serialize;
 
+use crate::game::components::night_visits::Visits;
 use crate::game::controllers::ControllerParametersMap;
 use crate::game::components::fragile_vest::FragileVests;
 use crate::game::components::player_component::PlayerComponent;
@@ -41,34 +42,37 @@ pub(super) const DEFENSE: DefensePower = DefensePower::None;
 impl RoleStateImpl for Armorsmith {
     type ClientRoleState = ClientRoleState;
     fn on_midnight(mut self, game: &mut Game, midnight_variables: &mut MidnightVariables, actor_ref: PlayerReference, priority: OnMidnightPriority) {
+        if priority != OnMidnightPriority::Heal {return;}
+        let Some(target) = Visits::default_target(game, midnight_variables, actor_ref) else {return};
+        if self.open_shops_remaining == 0 {return}
 
-        match priority {
-            OnMidnightPriority::Heal => {
-                let actor_visits = actor_ref.untagged_night_visits_cloned(midnight_variables);
-                if let Some(visit) = actor_visits.first() && self.open_shops_remaining != 0 {
-                    self.night_open_shop = true;
-                    self.open_shops_remaining = self.open_shops_remaining.saturating_sub(1);
+        self.night_open_shop = true;
+        self.open_shops_remaining = self.open_shops_remaining.saturating_sub(1);
 
-                    actor_ref.guard_player(game, midnight_variables, actor_ref);
+        actor_ref.guard_player(game, midnight_variables, actor_ref);
 
+        let visitors: Vec<PlayerReference> = actor_ref.all_direct_night_visitors_cloned(midnight_variables).collect();
 
-                    let visitors = actor_ref.all_night_visitors_cloned(midnight_variables);
-
-                    for visitor in visitors.iter(){
-                        actor_ref.guard_player(game, midnight_variables, *visitor);
-                    }
-
-                    if visitors.contains(&visit.target){
-                        PlayerComponent::<FragileVests>::add_defense_item_midnight(game, midnight_variables, visit.target, DefensePower::Protected, vec_set![actor_ref]);
-                    }else if let Some(random_visitor) = visitors.choose(&mut rand::rng()) {
-                        PlayerComponent::<FragileVests>::add_defense_item_midnight(game, midnight_variables, *random_visitor, DefensePower::Protected, vec_set![actor_ref]);
-                    }
-                };
-
-                actor_ref.set_role_state(game, self);
-            }
-            _ => {}
+        if let Some(player) = if visitors.contains(&target){
+            Some(target)
+        }else { 
+            visitors.choose(&mut rand::rng()).copied() 
+        }{
+            PlayerComponent::<FragileVests>::add_defense_item_midnight(
+                game,
+                midnight_variables,
+                player,
+                DefensePower::Protected,
+                vec_set![actor_ref]
+            );
         }
+
+        for visitor in visitors{
+            actor_ref.guard_player(game, midnight_variables, visitor);
+        }
+        
+
+        actor_ref.set_role_state(game, self);
     }
     fn controller_parameters_map(self, game: &Game, actor_ref: PlayerReference) -> ControllerParametersMap {
         ControllerParametersMap::builder(game)

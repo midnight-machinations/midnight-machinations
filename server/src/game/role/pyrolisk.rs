@@ -36,8 +36,7 @@ impl RoleStateImpl for Pyrolisk {
 
                 let mut killed_at_least_once = false;
 
-                for other_player_ref in actor_ref.all_night_visitors_cloned(midnight_variables)
-                    .into_iter().filter(|other_player_ref|
+                for other_player_ref in actor_ref.all_direct_night_visitors_cloned(midnight_variables).filter(|other_player_ref|
                         other_player_ref.alive(game) &&
                         *other_player_ref != actor_ref
                     ).collect::<Vec<PlayerReference>>()

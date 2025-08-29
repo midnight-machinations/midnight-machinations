@@ -1,10 +1,10 @@
 use crate::{game::{
-    controllers::*, attack_power::AttackPower, components::graves::grave::GraveKiller, event::{on_add_insider::OnAddInsider,
+    attack_power::AttackPower, components::{graves::grave::GraveKiller, night_visits::NightVisitsIterator}, controllers::*, event::{on_add_insider::OnAddInsider,
     on_midnight::{MidnightVariables, OnMidnight, OnMidnightPriority},
     on_remove_insider::OnRemoveInsider, on_validated_ability_input_received::OnValidatedControllerInputReceived}, phase::PhaseType, player::PlayerReference, role_list::RoleSet, visit::{Visit, VisitTag}, Game
 }, vec_set};
 
-use super::{detained::Detained, insider_group::InsiderGroupID, night_visits::NightVisits, tags::Tags};
+use super::{detained::Detained, insider_group::InsiderGroupID, night_visits::Visits, tags::Tags};
 
 #[derive(Default)]
 pub struct SyndicateGunItem {
@@ -13,12 +13,12 @@ pub struct SyndicateGunItem {
 
 impl SyndicateGunItem {
     pub fn on_visit_wardblocked(_game: &mut Game, midnight_variables: &mut MidnightVariables, visit: Visit){
-        NightVisits::retain(midnight_variables, |v|
+        Visits::retain(midnight_variables, |v|
             v.tag != VisitTag::SyndicateGunItem || v.visitor != visit.visitor
         );
     }
     pub fn on_player_roleblocked(_game: &mut Game, midnight_variables: &mut MidnightVariables, player: PlayerReference){
-        NightVisits::retain(midnight_variables, |v|
+        Visits::retain(midnight_variables, |v|
             v.tag != VisitTag::SyndicateGunItem || v.visitor != player
         );
     }
@@ -105,19 +105,16 @@ impl SyndicateGunItem {
                 let Some(PlayerListSelection(gun_target)) = ControllerID::syndicate_gun_item_shoot().get_player_list_selection(game) else {return};
                 let Some(gun_target) = gun_target.first() else {return};
 
-                NightVisits::add_visit(
+                Visits::add_visit(
                     midnight_variables, 
                     Visit::new(player_with_gun, *gun_target, VisitTag::SyndicateGunItem, true, true, true, false)
                 );
             }
             OnMidnightPriority::Kill => {
-                let targets: Vec<(PlayerReference, PlayerReference)> = NightVisits::all_visits(midnight_variables)
-                    .iter()
-                    .filter(|visit| visit.tag == VisitTag::SyndicateGunItem)
+                for (attacker, target) in Visits::into_iter(midnight_variables)
+                    .with_tag(VisitTag::SyndicateGunItem)
                     .map(|visit| (visit.visitor, visit.target))
-                    .collect();
-
-                for (attacker, target) in targets {
+                {
                     target.try_night_kill_single_attacker(
                         attacker,
                         game, midnight_variables,

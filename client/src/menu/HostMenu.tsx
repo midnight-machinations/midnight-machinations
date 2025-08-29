@@ -23,7 +23,7 @@ export default function HostMenu(): ReactElement {
         }
 
         if (type === "hostData") {
-            setLastRefreshed(new Date(Date.now()))
+            setLastRefreshed((_previous)=>new Date(Date.now()))
         }
     });
 

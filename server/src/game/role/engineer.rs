@@ -2,7 +2,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::game::controllers::AvailableBooleanSelection;
 use crate::game::attack_power::AttackPower;
-use crate::game::components::night_visits::NightVisits;
+use crate::game::components::night_visits::Visits;
 use crate::game::event::on_midnight::{MidnightVariables, OnMidnightPriority};
 use crate::game::components::graves::grave::GraveKiller;
 use crate::game::{attack_power::DefensePower, chat::ChatMessageVariant};
@@ -102,11 +102,12 @@ impl RoleStateImpl for Engineer {
             }
             OnMidnightPriority::Kill => {
                 if let Trap::Set { target, .. } = self.trap {
-                    for visit in NightVisits::all_visits(midnight_variables).into_iter().copied().collect::<Vec<_>>() {
+                    for visit in Visits::into_iter(midnight_variables) {
                         if 
                             visit.attack &&
                             visit.target == target &&
-                            visit.visitor != actor_ref
+                            visit.visitor != actor_ref &&
+                            !visit.indirect
                         {
                             visit.visitor.try_night_kill_single_attacker(actor_ref, game, midnight_variables, GraveKiller::Role(Role::Engineer), AttackPower::ArmorPiercing, false);
                         }
@@ -122,7 +123,7 @@ impl RoleStateImpl for Engineer {
                         should_dismantle = true;
                     }
 
-                    for visitor in target.all_night_visitors_cloned(midnight_variables) {
+                    for visitor in target.all_direct_night_visitors_cloned(midnight_variables) {
                         if visitor != actor_ref{
                             actor_ref.push_night_message(midnight_variables, ChatMessageVariant::EngineerVisitorsRole { role: visitor.role(game) });
                             should_dismantle = true;

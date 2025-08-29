@@ -33,8 +33,7 @@ impl RoleStateImpl for Arsonist {
                 }
                 
                 //douse all visitors
-                for other_player_ref in actor_ref.all_night_visitors_cloned(midnight_variables)
-                    .into_iter()
+                for other_player_ref in actor_ref.all_direct_night_visitors_cloned(midnight_variables)
                     .filter(|other_player_ref| *other_player_ref != actor_ref)
                     .collect::<Vec<PlayerReference>>()
                 {
