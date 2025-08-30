@@ -1,6 +1,7 @@
 use rand::seq::SliceRandom;
 use serde::Serialize;
 
+use crate::game::components::night_visits::Visits;
 use crate::game::event::on_midnight::MidnightVariables;
 use crate::game::role_list::RoleSet;
 use crate::game::{attack_power::DefensePower, event::on_midnight::OnMidnightPriority};
@@ -40,12 +41,14 @@ impl RoleStateImpl for Spy {
         
         mafia_visits.shuffle(&mut rand::rng());
 
-        let mut roles: Vec<Role> = my_visit.target.all_night_visitors_cloned(midnight_variables)
-            .into_iter()
+        let mut roles: Vec<Role> = Visits::into_iter(midnight_variables)
+            .filter(|v|v.target == my_visit.target)
+            .map(|v|v.visitor)
             .filter_map(|p|
                 if RoleSet::Mafia.get_roles().contains(&p.role(game)) {Some(p.role(game))} else {None}
             )
             .collect();
+        
         roles.shuffle(&mut rand::rng());
         
         actor_ref.push_night_message(midnight_variables, ChatMessageVariant::SpyMafiaVisit { players: mafia_visits });

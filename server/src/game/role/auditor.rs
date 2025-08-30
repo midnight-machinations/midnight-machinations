@@ -73,12 +73,17 @@ impl RoleStateImpl for Auditor {
             .build_map()
     }
     fn convert_selection_to_visits(self, game: &Game, actor_ref: PlayerReference) -> Vec<Visit> {
-        common_role::convert_controller_selection_to_visits(
+        let mut out = common_role::convert_controller_selection_to_visits(
             game,
             actor_ref,
             ControllerID::role(actor_ref, Role::Auditor, 0),
             false
-        )
+        );
+        out.iter_mut().for_each(|v|{
+            v.transportable = false;
+            v.indirect = true;
+        });
+        out
     }
 }
 

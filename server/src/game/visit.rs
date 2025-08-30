@@ -6,36 +6,47 @@ pub struct Visit {
     pub target: PlayerReference,
 
     pub tag: VisitTag,
+    
     pub attack: bool,
+    pub wardblockable: bool,
+    pub transportable: bool,
+
+    /// Things that cant touch astral visits (Everything can see its OWN astral visit but maybe not others astral visits)
+    /// Engineer Trap triggering
+    /// Werewolf, Cop, Ambusher, Veteran, Marksman, Rampage 
+    /// Snoop getting CT due to being visited
+    pub indirect: bool
 }
 impl Visit {
     pub fn new_role(visitor: PlayerReference, target: PlayerReference, attack: bool, role: Role, id: u8) -> Self {
         Self {
             visitor,
             target,
-            attack,
             tag: VisitTag::Role{role, id},
+            attack,
+            wardblockable: true,
+            transportable: true,
+            indirect: false,
         }
     }
-    pub fn new(visitor: PlayerReference, target: PlayerReference, attack: bool, tag: VisitTag) -> Self {
+    pub fn new(
+        visitor: PlayerReference,
+        target: PlayerReference,
+        tag: VisitTag,
+        attack: bool,
+        wardblockable: bool,
+        transportable: bool,
+        indirect: bool,
+    ) -> Self {
         Self {
             visitor,
             target,
-            attack,
             tag,
+            attack,
+            wardblockable,
+            transportable,
+            indirect
         }
-    }
-    pub fn wardblock_immune(&self)->bool{
-        matches!(self.tag, 
-            VisitTag::Role { role: Role::Bouncer, id: 0 } |
-            VisitTag::Role { role: Role::Scarecrow, id: 0 } |
-
-            VisitTag::Role { role: Role::Witch, id: 1 } |
-            VisitTag::Role { role: Role::Necromancer, id: 1 } |
-            VisitTag::Role { role: Role::Retributionist, id: 1 } |
-            
-            VisitTag::Role { role: Role::Framer, id: 1 }
-        )
     }
 }
 

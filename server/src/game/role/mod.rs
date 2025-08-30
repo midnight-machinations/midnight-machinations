@@ -19,7 +19,7 @@ use serde::{Serialize, Deserialize};
 
 use super::components::win_condition::WinCondition;
 use super::{
-    controllers::*, components::{insider_group::InsiderGroupID, night_visits::NightVisits},
+    controllers::*, components::{insider_group::InsiderGroupID, night_visits::Visits},
     event::{
         on_midnight::{MidnightVariables, OnMidnightPriority},
         on_whisper::{OnWhisper, WhisperFold, WhisperPriority}
@@ -82,14 +82,14 @@ pub trait RoleStateImpl: Clone + std::fmt::Debug + Default + GetClientRoleState<
     fn on_player_roleblocked(self, _game: &mut Game, midnight_variables: &mut MidnightVariables, actor_ref: PlayerReference, player: PlayerReference, _invisible: bool) {
         if player != actor_ref {return}
 
-        NightVisits::retain(midnight_variables, |v|
+        Visits::retain(midnight_variables, |v|
             !matches!(v.tag, VisitTag::Role{..}) || v.visitor != actor_ref
         );
     }
     fn on_visit_wardblocked(self, _game: &mut Game, midnight_variables: &mut MidnightVariables, actor_ref: PlayerReference, visit: Visit) {
         if actor_ref != visit.visitor {return};
 
-        NightVisits::retain(midnight_variables, |v|
+        Visits::retain(midnight_variables, |v|
             !matches!(v.tag, VisitTag::Role{..}) || v.visitor != actor_ref
         );
     }
