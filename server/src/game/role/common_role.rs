@@ -158,7 +158,8 @@ pub(super) fn get_current_send_chat_groups(game: &Game, actor_ref: PlayerReferen
 
             out
         },
-        PhaseState::Discussion 
+        PhaseState::Discussion
+        | PhaseState::Adjournment { .. }
         | PhaseState::Nomination {..}
         | PhaseState::Judgement {..}
         | PhaseState::FinalWords {..}

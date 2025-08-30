@@ -15,7 +15,7 @@ export default v1;
 
 type v2GameModeData = {
     roleList: InitialRoleOutline[],
-    phaseTimes: PhaseTimes,
+    phaseTimes: Omit<PhaseTimes, 'adjournment'>,
     enabledRoles: Role[],
     enabledModifiers: ModifierID[]
 }

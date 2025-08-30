@@ -73,7 +73,7 @@ impl RoleStateImpl for Deputy {
                 actor_ref.ability_deactivated_from_death(game) ||
                 self.bullets_remaining == 0 || 
                 game.day_number() <= 1 || 
-                !(PhaseType::Discussion == game.current_phase().phase() || PhaseType::Nomination == game.current_phase().phase())
+                !matches!(game.current_phase().phase(), PhaseType::Discussion | PhaseType::Nomination | PhaseType::Adjournment | PhaseType::Dusk)
             )
             .dont_save()
             .allow_players([actor_ref])
