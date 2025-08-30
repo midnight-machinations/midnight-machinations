@@ -44,7 +44,7 @@ pub const FILL_ALL_ROLES: GenerationCriterion = GenerationCriterion {
 };
 
 pub const REJECT_EXCEEDED_ROLE_LIMITS: GenerationCriterion = GenerationCriterion {
-    evaluate: |node, _| {
+    evaluate: |node, settings| {
         let mut role_appearances = HashMap::new();
 
         for assignment in node.assignments.iter() {
@@ -56,7 +56,7 @@ pub const REJECT_EXCEEDED_ROLE_LIMITS: GenerationCriterion = GenerationCriterion
         let mut exceeded_roles = vec![];
 
         for role in role_appearances.keys() {
-            if let Some(max) = role.maximum_count() && role_appearances[role] > max && !exceeded_roles.contains(role) {
+            if let Some(max) = role.maximum_count(settings) && role_appearances[role] > max && !exceeded_roles.contains(role) {
                 exceeded_roles.push(*role);
             }
         }

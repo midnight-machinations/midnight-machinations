@@ -27,6 +27,10 @@ impl <K> VecSet<K> where K: Eq {
         }
     }
 
+    pub fn shuffle<R: rand::Rng + ?Sized>(&mut self, rng: &mut R) {
+        self.vec.shuffle(rng);
+    }
+
     pub fn contains(&self, key: &K) -> bool {
         self.vec.get_kvp(key).is_some()
     }

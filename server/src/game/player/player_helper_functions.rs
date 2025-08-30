@@ -3,21 +3,17 @@ use rand::seq::SliceRandom;
 
 use crate::{
     game::{
-        controllers::{ControllerSelection, BooleanSelection, ControllerID, ControllerParametersMap, PlayerListSelection, Controllers, TwoPlayerOptionSelection},
-        attack_power::{AttackPower, DefensePower},
-        chat::{ChatGroup, ChatMessage, ChatMessageVariant},
-        components::{
-            fragile_vest::FragileVests, graves::{grave::{Grave, GraveKiller}, Graves}, insider_group::InsiderGroupID, night_visits::NightVisits, player_component::PlayerComponent, win_condition::WinCondition
-        },
-        event::{
+        attack_power::{AttackPower, DefensePower}, chat::{ChatGroup, ChatMessage, ChatMessageVariant}, components::{
+            fragile_vest::FragileVests, graves::{grave::{Grave, GraveKiller}, Graves}, insider_group::InsiderGroupID, night_visits::{NightVisitsIterator, Visits}, player_component::PlayerComponent, win_condition::WinCondition
+        }, controllers::{BooleanSelection, ControllerID, ControllerParametersMap, ControllerSelection, Controllers, PlayerListSelection, TwoPlayerOptionSelection}, event::{
             before_role_switch::BeforeRoleSwitch, on_any_death::OnAnyDeath,
             on_midnight::{MidnightVariables, OnMidnightPriority},
             on_player_roleblocked::OnPlayerRoleblocked, on_role_switch::OnRoleSwitch,
             on_visit_wardblocked::OnVisitWardblocked
         },
         game_conclusion::GameConclusion,
-        modifiers::{ModifierType, Modifiers}, phase::PhaseType,
-        role::{chronokaiser::Chronokaiser, Role, RoleState},
+        modifiers::ModifierID, phase::PhaseType,
+        role::{chronokaiser::Chronokaiser, medium::Medium, Role, RoleState},
         visit::{Visit, VisitTag},
         Game
     },
@@ -32,8 +28,8 @@ impl PlayerReference{
     }
     pub fn ward(&self, game: &mut Game, midnight_variables: &mut MidnightVariables) -> Vec<PlayerReference> {
         let mut out = Vec::new();
-        for visit in NightVisits::all_visits_cloned(midnight_variables) {
-            if visit.wardblock_immune(){
+        for visit in Visits::into_iter(midnight_variables) {
+            if !visit.wardblockable {
                 continue;
             }
             if visit.target != *self {continue;}
@@ -41,6 +37,33 @@ impl PlayerReference{
             out.push(visit.visitor);
         }
         out
+    }
+
+    #[expect(clippy::too_many_arguments, reason="this function is goated tho")]
+    pub fn rampage(
+        &self, game: &mut Game,
+        midnight_variables: &mut MidnightVariables,
+        attacker: PlayerReference,
+        grave_killer: GraveKiller,
+        attack: AttackPower,
+        should_leave_death_note: bool,
+        filter_visit: impl FnMut(&Visit) -> bool
+    ){
+        Visits::into_iter(midnight_variables)
+            .filter(filter_visit)
+            .with_target(*self)
+            .with_direct()
+            .map_visitor()
+            .for_each(|p|{
+                p.try_night_kill_single_attacker(
+                    attacker,
+                    game,
+                    midnight_variables,
+                    grave_killer.clone(),
+                    attack,
+                    should_leave_death_note
+                );
+            });
     }
 
 
@@ -337,8 +360,8 @@ impl PlayerReference{
             self.alive(game) ||
             (
                 PlayerReference::all_players(game).any(|p|
-                    if let RoleState::Coxswain(c) = p.role_state(game) {
-                        c.targets.contains(self)
+                    if let RoleState::Medium(Medium{seanced_target: Some(player), ..}) = p.role_state(game) {
+                        *player == *self
                     }else{
                         false
                     }
@@ -399,9 +422,9 @@ impl PlayerReference{
         self.role_state(game).clone().on_role_creation(game, *self)
     }
     pub fn get_current_send_chat_groups(&self, game: &Game) -> HashSet<ChatGroup> {
-        if Modifiers::is_enabled(game, ModifierType::NoChat)
+        if game.modifier_settings().is_enabled(ModifierID::NoChat)
             || (
-                Modifiers::is_enabled(game, ModifierType::NoNightChat) 
+                game.modifier_settings().is_enabled(ModifierID::NoNightChat)
                 && self.alive(game)
                 && matches!(game.current_phase().phase(), PhaseType::Night | PhaseType::Obituary)
             )

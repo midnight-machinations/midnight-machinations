@@ -32,7 +32,7 @@ impl RoleStateImpl for Polymath {
                 let Some(target) = actor_visits.first().map(|v|v.target) else {return};
                 actor_ref.push_night_message(midnight_variables, 
                     ChatMessageVariant::PolymathSnoopResult {inno:
-                        actor_ref.all_night_visitors_cloned(midnight_variables).is_empty() &&
+                        actor_ref.all_direct_night_visitors_cloned(midnight_variables).collect::<Box<[PlayerReference]>>().is_empty() &&
                         !Detective::player_is_suspicious(game, midnight_variables, target)
                     }
                 );
@@ -40,7 +40,7 @@ impl RoleStateImpl for Polymath {
             (OnMidnightPriority::Heal, PolymathAbilityType::Protect) => {
                 let actor_visits = actor_ref.untagged_night_visits_cloned(midnight_variables);
                 let Some(target) = actor_visits.first().map(|v|v.target) else {return};
-                if target.all_night_visits_cloned(midnight_variables).into_iter().any(|v|v.target == actor_ref) {
+                if target.all_night_visits_cloned(midnight_variables).into_iter().any(|v|v.target == actor_ref&&!v.indirect) {
                     actor_ref.guard_player(game, midnight_variables, target);
                 }
             },
@@ -63,7 +63,7 @@ impl RoleStateImpl for Polymath {
                     .get_player_list_selection(game)
                     .cloned() else {return};
                 let Some(mark) = mark.first() else {return};
-                if !actor_visit.target.all_night_visitors_cloned(midnight_variables).contains(mark) {return};
+                if !actor_visit.target.all_direct_night_visitors_cloned(midnight_variables).any(|p|p == *mark) {return};
                 
                 mark.try_night_kill_single_attacker (
                     actor_ref,

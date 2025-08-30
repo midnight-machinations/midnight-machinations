@@ -54,7 +54,7 @@ function GameModeSelectorPanel(props: {
     loadGameMode: (gameMode: GameModeData) => void,
 }): ReactElement {
     const [gameModeNameField, setGameModeNameField] = useState<string>("");
-    const {roleList, phaseTimes, enabledRoles, enabledModifiers} = useContext(GameModeContext);
+    const {roleList, phaseTimes, enabledRoles, modifierSettings} = useContext(GameModeContext);
     const anchorController = useContext(AnchorControllerContext)!;
 
     const validateName = (name: string) => {
@@ -72,7 +72,7 @@ function GameModeSelectorPanel(props: {
             if (validateName(name)) {
                 newGameModeStorage.gameModes.push({
                     name,
-                    data: { [roleList.length]: { enabledRoles, phaseTimes, roleList, enabledModifiers } }
+                    data: { [roleList.length]: { enabledRoles, phaseTimes, roleList, modifierSettings } }
                 })
             } else {
                 return "invalidName";
@@ -86,14 +86,14 @@ function GameModeSelectorPanel(props: {
                 roleList,
                 phaseTimes,
                 enabledRoles,
-                enabledModifiers
+                modifierSettings
             }
         }
 
         saveGameModes(newGameModeStorage);
         props.reloadGameModeStorage();
         return "success";
-    }, [enabledRoles, props, phaseTimes, roleList, enabledModifiers]);
+    }, [enabledRoles, props, phaseTimes, roleList, modifierSettings]);
 
     useEffect(() => {
         const listener = (e: KeyboardEvent) => {
@@ -152,7 +152,7 @@ function GameModeSelectorPanel(props: {
         roleList,
         phaseTimes,
         enabledRoles,
-        enabledModifiers
+        modifierSettings
     });
 
     const shareableGameModeURL = new URL(window.location.href);
@@ -207,7 +207,7 @@ function GameModeSelectorPanel(props: {
                                 roleList: parsedGameMode.value.roleList,
                                 phaseTimes: parsedGameMode.value.phaseTimes,
                                 enabledRoles: parsedGameMode.value.enabledRoles,
-                                enabledModifiers: parsedGameMode.value.enabledModifiers
+                                modifierSettings: parsedGameMode.value.modifierSettings
                             })
                         } else {
                             anchorController.pushErrorCard({

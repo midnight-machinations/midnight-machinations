@@ -1,10 +1,8 @@
 use std::collections::HashSet;
 
-use crate::game::{
-    chat::ChatGroup, components::{
-        call_witness::CallWitness, detained::Detained, puppeteer_marionette::PuppeteerMarionette, silenced::Silenced, win_condition::WinCondition
-    }, controllers::*, game_conclusion::GameConclusion, modifiers::{ModifierType, Modifiers}, phase::{PhaseState, PhaseType}, player::PlayerReference, role_list::RoleSet, visit::{Visit, VisitTag}, Game
-};
+
+
+use crate::game::{chat::ChatGroup, components::{call_witness::CallWitness, detained::Detained, puppeteer_marionette::PuppeteerMarionette, silenced::Silenced, win_condition::WinCondition}, controllers::{ControllerID, ControllerSelection}, game_conclusion::GameConclusion, modifiers::ModifierID, phase::{PhaseState, PhaseType}, player::PlayerReference, role_list::RoleSet, visit::{Visit, VisitTag}, Game};
 
 use super::{medium::Medium, reporter::Reporter, warden::Warden, InsiderGroupID, Role, RoleState};
 
@@ -25,10 +23,10 @@ pub(super) fn convert_controller_selection_to_visits_visit_tag(game: &Game, acto
     let Some(selection) = controller_id.get_selection(game) else {return Vec::new()};
 
     match selection {
-        ControllerSelection::Unit(_) => vec![Visit::new(actor_ref, actor_ref, attack, tag)],
+        ControllerSelection::Unit(_) => vec![Visit::new(actor_ref, actor_ref, tag, attack, true, true, false)],
         ControllerSelection::TwoPlayerOption(selection) => {
             if let Some((target_1, target_2)) = selection.0 {
-                vec![Visit::new(actor_ref, target_1, attack, tag), Visit::new(actor_ref, target_2, attack, tag)]
+                vec![Visit::new(actor_ref, target_1, tag, attack, true, true, false), Visit::new(actor_ref, target_2, tag, attack,  true, true, false)]
             }else{
                 vec![]
             }
@@ -36,7 +34,7 @@ pub(super) fn convert_controller_selection_to_visits_visit_tag(game: &Game, acto
         ControllerSelection::PlayerList(selection) => {
             selection.0
                 .iter()
-                .map(|target_ref| Visit::new(actor_ref, *target_ref, attack, tag))
+                .map(|target_ref| Visit::new(actor_ref, *target_ref, tag, attack, true, true, false))
                 .collect()
         }
         ControllerSelection::RoleList(selection) => {
@@ -46,7 +44,7 @@ pub(super) fn convert_controller_selection_to_visits_visit_tag(game: &Game, acto
                     PlayerReference::all_players(game)
                         .filter_map(|player|
                             if player.role(game) == *role {
-                                Some(Visit::new(actor_ref, player, attack, tag))
+                                Some(Visit::new(actor_ref, player, tag, attack ,true, true, false))
                             }else{
                                 None
                             }
@@ -58,10 +56,10 @@ pub(super) fn convert_controller_selection_to_visits_visit_tag(game: &Game, acto
             let mut out = Vec::new();
             for player in PlayerReference::all_players(game){
                 if Some(player.role(game)) == selection.0 {
-                    out.push(Visit::new(actor_ref, player, attack, tag));
+                    out.push(Visit::new(actor_ref, player, tag, attack, true, true, false));
                 }
                 if Some(player.role(game)) == selection.1 {
-                    out.push(Visit::new(actor_ref, player, attack, tag));
+                    out.push(Visit::new(actor_ref, player, tag, attack, true, true, false));
                 }
             }
             out
@@ -70,11 +68,11 @@ pub(super) fn convert_controller_selection_to_visits_visit_tag(game: &Game, acto
             let mut out = vec![];
             if let Some(chosen_outline) = selection.0{
                 let (_, player) = chosen_outline.deref_as_role_and_player_originally_generated(game);
-                out.push(Visit::new(actor_ref, player, false, tag));
+                out.push(Visit::new(actor_ref, player, tag, attack, true, true, false));
             }
             if let Some(chosen_outline) = selection.1{
                 let (_, player) = chosen_outline.deref_as_role_and_player_originally_generated(game);
-                out.push(Visit::new(actor_ref, player, false, tag));
+                out.push(Visit::new(actor_ref, player, tag, attack, true, true, false));
             }
             out
         },
@@ -88,8 +86,16 @@ pub(super) fn convert_controller_selection_to_visits_possession(game: &Game, act
     if let ControllerSelection::TwoPlayerOption(selection) = selection {
         if let Some((target_1, target_2)) = selection.0 {
             vec![
-                Visit::new(actor_ref, target_1, false, VisitTag::Role { role: actor_ref.role(game), id: 0 }),
-                Visit::new(actor_ref, target_2, false, VisitTag::Role { role: actor_ref.role(game), id: 1 })
+                Visit::new_role(actor_ref, target_1, false, actor_ref.role(game), 0 ),
+                Visit::new(
+                    actor_ref,
+                    target_2,
+                    VisitTag::Role { role: actor_ref.role(game), id: 1 },
+                    false,
+                    false,
+                    false,
+                    true
+                )
             ]
         }else{
             vec![]
@@ -109,7 +115,7 @@ pub(super) fn get_current_send_chat_groups(game: &Game, actor_ref: PlayerReferen
     }
     if 
         !actor_ref.alive(game) && 
-        !Modifiers::is_enabled(game, ModifierType::DeadCanChat)
+        !game.modifier_settings().is_enabled(ModifierID::DeadCanChat)
     {
         if PuppeteerMarionette::marionettes_and_puppeteer(game).contains(&actor_ref){
             return vec![ChatGroup::Dead, ChatGroup::Puppeteer].into_iter().collect();
@@ -140,7 +146,7 @@ pub(super) fn get_current_send_chat_groups(game: &Game, actor_ref: PlayerReferen
             if PlayerReference::all_players(game)
                 .any(|med|{
                     match med.role_state(game) {
-                        RoleState::Medium(Medium{ seanced_target: Some(seanced_target), .. }) => {
+                        RoleState::Medium(Medium{ haunted_target: Some(seanced_target), .. }) => {
                             actor_ref == *seanced_target
                         },
                         _ => false
@@ -171,7 +177,7 @@ pub(super) fn get_current_send_chat_groups(game: &Game, actor_ref: PlayerReferen
             if PlayerReference::all_players(game)
                 .any(|med|{
                     match med.role_state(game) {
-                        RoleState::Medium(Medium{ seanced_target: Some(seanced_target), .. }) => {
+                        RoleState::Medium(Medium{ haunted_target: Some(seanced_target), .. }) => {
                             actor_ref == *seanced_target
                         },
                         _ => false
@@ -293,7 +299,7 @@ pub(super) fn get_current_receive_chat_groups(game: &Game, actor_ref: PlayerRefe
         PlayerReference::all_players(game)
             .any(|med|{
                 match med.role_state(game) {
-                    RoleState::Medium(Medium{ seanced_target: Some(seanced_target), .. }) => {
+                    RoleState::Medium(Medium{ haunted_target: Some(seanced_target), .. }) => {
                         actor_ref == *seanced_target
                     },
                     _ => false

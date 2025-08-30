@@ -60,14 +60,14 @@
     "role/medium/0": {
         "midnight": false
     },
+    "role/medium/1": {
+        "midnight": false
+    },
     "role/transporter/0": {
         "midnight": true
     },
     "role/porter/0": {
         "midnight": true
-    },
-    "role/coxswain/0": {
-        "midnight": false
     },
     "role/retributionist/0": {
         "midnight": true

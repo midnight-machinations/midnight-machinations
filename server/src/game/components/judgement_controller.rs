@@ -2,7 +2,7 @@ use crate::game::{
     controllers::{
         AvailableIntegerSelection, ControllerParametersMap, IntegerSelection,
     }, 
-    modifiers::{ModifierType, Modifiers},
+    modifiers::ModifierID,
     player::PlayerReference, Game
 };
 
@@ -16,7 +16,7 @@ impl JudgementController{
         )
     }
     fn one_player_controller(game: &mut Game, actor: PlayerReference)->ControllerParametersMap{
-        let abstain_enabled = Modifiers::is_enabled(game, ModifierType::Abstaining);
+        let abstain_enabled = game.modifier_settings().is_enabled(ModifierID::Abstaining);
 
         ControllerParametersMap::builder(game)
             .id(crate::game::controllers::ControllerID::Judge { player: actor })

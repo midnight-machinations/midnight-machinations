@@ -1,4 +1,4 @@
-use crate::{game::{modifiers::Modifiers, player::PlayerReference, Game}, event_priority};
+use crate::{game::{modifiers::ModifierSettings, player::PlayerReference, Game}, event_priority};
 use super::Event;
 
 #[derive(Clone)]
@@ -30,7 +30,7 @@ impl Event for OnWhisper {
     fn listeners() -> Vec<super::EventListenerFunction<Self>> {
         vec![
             Game::on_whisper,
-            Modifiers::on_whisper,
+            ModifierSettings::on_whisper,
             PlayerReference::on_whisper,
         ]
     }

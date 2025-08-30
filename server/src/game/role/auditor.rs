@@ -73,12 +73,17 @@ impl RoleStateImpl for Auditor {
             .build_map()
     }
     fn convert_selection_to_visits(self, game: &Game, actor_ref: PlayerReference) -> Vec<Visit> {
-        common_role::convert_controller_selection_to_visits(
+        let mut out = common_role::convert_controller_selection_to_visits(
             game,
             actor_ref,
             ControllerID::role(actor_ref, Role::Auditor, 0),
             false
-        )
+        );
+        out.iter_mut().for_each(|v|{
+            v.transportable = false;
+            v.indirect = true;
+        });
+        out
     }
 }
 
@@ -97,17 +102,17 @@ impl Auditor{
         let role = chosen_outline.deref_as_role_and_player_originally_generated(game).0;
         let mut out = VecSet::new();
 
-        if !confused {
+        // this check says dont put the real role in if either your confused OR if a recruiter messed with the role
+        // We dont want an auditor seeing that a recruiter is in the game
+        if !confused && all_possible_fake_roles.contains(&role) {
             out.insert(role);
         }
 
-        //add fake roles
-        //at most 2 fake roles
-        //at most outline_size - 1 fake roles
         for role in all_possible_fake_roles.iter(){
             if out.count() >= Auditor::MAX_RESULT_COUNT || out.count() >= all_possible_fake_roles.len().saturating_sub(1) {break}
             out.insert(*role);
         }
+        out.shuffle(&mut rand::rng());
 
         AuditorResult(out)
     }

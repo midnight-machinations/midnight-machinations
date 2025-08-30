@@ -9,7 +9,7 @@ import { useGameState, useLobbyOrGameState, usePlayerState, useSpectator } from 
 import { translateRoleOutline } from "../../../game/roleListState.d";
 import { Button } from "../../../components/Button";
 import DetailsSummary from "../../../components/DetailsSummary";
-import { EnabledModifiersDisplay } from "../../../components/gameModeSettings/EnabledModifiersSelector";
+import { ModifierSettingsDisplay } from "../../../components/gameModeSettings/ModifiersSelector";
 
 export default function GraveyardMenu(): ReactElement {
     return <div className="graveyard-menu graveyard-menu-colors">
@@ -46,8 +46,8 @@ function RoleListDisplay(): ReactElement {
     return <>
         {roleList.map((entry, index)=>{
             return <Button
-                className="role-list-button placard"
-                style={{ gridRow: index + 1 }}
+                className="role-list-button"
+                style={{ gridRow: index + 1}}
                 key={index}
                 onClick={()=>{
                     if (spectator) return;
@@ -64,10 +64,10 @@ function RoleListDisplay(): ReactElement {
                 {
                     crossedOutOutlines.includes(index) ? 
                     <s><StyledText>
-                        {translateRoleOutline(entry, playerNames)}
+                        {`${index + 1}: ` + translateRoleOutline(entry, playerNames)}
                     </StyledText></s> : 
                     <StyledText>
-                        {translateRoleOutline(entry, playerNames)}
+                        {`${index + 1}: ` + translateRoleOutline(entry, playerNames)}
                     </StyledText>
                 }
             </Button>
@@ -91,16 +91,16 @@ function EnabledRoles(): ReactElement {
 }
 
 function EnabledModifiers(): ReactElement {
-    const enabledModifiers = useGameState(
-        gameState=>gameState.enabledModifiers,
-        ["enabledModifiers"]
+    const modifierSettings = useGameState(
+        gameState=>gameState.modifierSettings.list,
+        ["modifierSettings"]
     )!
 
     return <div className="graveyard-menu-excludedRoles">
         <DetailsSummary
             summary={translate("modifiers")}
         >
-            <EnabledModifiersDisplay disabled={true} enabledModifiers={enabledModifiers}/>
+            <ModifierSettingsDisplay disabled={true} modifierSettings={modifierSettings}/>
         </DetailsSummary>
     </div>
 }

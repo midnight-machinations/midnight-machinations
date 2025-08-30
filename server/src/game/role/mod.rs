@@ -8,6 +8,9 @@ use crate::vec_set::{vec_set, VecSet};
 use crate::game::player::PlayerReference;
 use crate::game::visit::Visit;
 use crate::game::Game;
+use crate::game::Settings;
+use crate::game::ModifierID;
+use crate::game::modifiers::ModifierState;
 use crate::game::chat::ChatGroup;
 use crate::game::phase::PhaseType;
 use crate::game::attack_power::DefensePower;
@@ -16,7 +19,7 @@ use serde::{Serialize, Deserialize};
 
 use super::components::win_condition::WinCondition;
 use super::{
-    controllers::*, components::{insider_group::InsiderGroupID, night_visits::NightVisits},
+    controllers::*, components::{insider_group::InsiderGroupID, night_visits::Visits},
     event::{
         on_midnight::{MidnightVariables, OnMidnightPriority},
         on_whisper::{OnWhisper, WhisperFold, WhisperPriority}
@@ -79,14 +82,14 @@ pub trait RoleStateImpl: Clone + std::fmt::Debug + Default + GetClientRoleState<
     fn on_player_roleblocked(self, _game: &mut Game, midnight_variables: &mut MidnightVariables, actor_ref: PlayerReference, player: PlayerReference, _invisible: bool) {
         if player != actor_ref {return}
 
-        NightVisits::retain(midnight_variables, |v|
+        Visits::retain(midnight_variables, |v|
             !matches!(v.tag, VisitTag::Role{..}) || v.visitor != actor_ref
         );
     }
     fn on_visit_wardblocked(self, _game: &mut Game, midnight_variables: &mut MidnightVariables, actor_ref: PlayerReference, visit: Visit) {
         if actor_ref != visit.visitor {return};
 
-        NightVisits::retain(midnight_variables, |v|
+        Visits::retain(midnight_variables, |v|
             !matches!(v.tag, VisitTag::Role{..}) || v.visitor != actor_ref
         );
     }
@@ -135,7 +138,6 @@ macros::roles! {
     Mayor : mayor,
     Transporter : transporter,
     Porter : porter,
-    Coxswain : coxswain,
     Polymath : polymath,
     Courtesan : courtesan,
 
@@ -227,9 +229,13 @@ mod macros {
                         $(Self::$name => RoleState::$name($file::$name::new_state(game))),*
                     }
                 }
-                pub fn maximum_count(&self) -> Option<u8> {
-                    match self {
-                        $(Self::$name => $file::MAXIMUM_COUNT),*
+                pub fn maximum_count(&self, settings: &Settings) -> Option<u8> {
+                    if let Some(ModifierState::CustomRoleLimits(custom_role_limits)) = settings.modifiers.get_modifier_inner(ModifierID::CustomRoleLimits) {
+                        custom_role_limits.limits.get(&self).copied()
+                    } else {
+                        match self {
+                            $(Self::$name => $file::MAXIMUM_COUNT),*
+                        }
                     }
                 }
                 pub fn defense(&self) -> DefensePower {
@@ -399,7 +405,7 @@ impl Role{
     pub fn possession_immune(&self)->bool{
         matches!(self, 
             | Role::Bouncer
-            | Role::Veteran | Role::Coxswain
+            | Role::Veteran | Role::Medium
             | Role::Transporter | Role::Retributionist
             | Role::Witch | Role::Doomsayer | Role::Scarecrow | Role::Warper | Role::Porter
             | Role::Necromancer 

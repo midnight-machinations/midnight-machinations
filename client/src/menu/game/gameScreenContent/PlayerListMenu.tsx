@@ -74,8 +74,8 @@ function PlayerCard(props: Readonly<{
         ["yourPlayerIndex"],
         false
     )!;
-    const chatFilter = usePlayerState(
-        playerState => playerState.chatFilter,
+    const chatFilter = useGameState(
+        gameState => gameState.chatFilter,
         ["filterUpdate"],
     );
     const playerAlive = useGameState(
@@ -137,8 +137,8 @@ function PlayerCard(props: Readonly<{
     const [graveOpen, setGraveOpen] = React.useState(false);
     const [whisperChatOpen, setWhisperChatOpen] = React.useState(false);
     const whispersDisabled = useGameState(
-        gameState => gameState.enabledModifiers.includes("noWhispers"),
-        ["enabledModifiers"]
+        gameState => gameState.modifierSettings.keys().includes("noWhispers"),
+        ["modifierSettings"]
     )!;
 
     const grave = useGameState(
@@ -208,7 +208,7 @@ function PlayerCard(props: Readonly<{
                 {whisperNotification===true && <div className="chat-notification highlighted">!</div>}
             </Button>
         }
-        {spectator || (() => {
+        {(() => {
             const filter = props.playerIndex;
             const isFilterSet = chatFilter?.type === "playerNameInMessage" && (chatFilter.player === filter);
             
