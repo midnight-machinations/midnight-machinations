@@ -16,7 +16,7 @@ const initial: VersionConverter = {
     convertShareableGameMode
 }
 
-type InitialGameMode = { name: string, roleList: InitialRoleOutline[], phaseTimes: PhaseTimes, disabledRoles: Role[] }
+type InitialGameMode = { name: string, roleList: InitialRoleOutline[], phaseTimes: Omit<PhaseTimes, 'adjournment'>, disabledRoles: Role[] }
 type InitialGameModeStorage = Record<string, InitialGameMode>;
 
 const FACTIONS = ["mafia", "town", "neutral", "cult", "fiends"]
@@ -268,9 +268,9 @@ function parseRoleOutlineOption(json: NonNullable<any>): ParseResult<InitialRole
     }
 }
 
-export function parsePhaseTimes(json: NonNullable<any>): ParseResult<PhaseTimes> {
+export function parsePhaseTimes(json: NonNullable<any>): ParseResult<Omit<PhaseTimes, "adjournment">> {
     for (const phase of PHASES) {
-        if (phase !== "recess" && !Object.keys(json).includes(phase)) {
+        if (phase !== "recess" && phase !== "adjournment" && !Object.keys(json).includes(phase)) {
             return Failure(`${phase}KeyMissingFromPhaseTimes`, json);
         }
     }

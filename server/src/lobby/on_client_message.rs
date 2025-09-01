@@ -194,7 +194,7 @@ impl Lobby {
                     PhaseType::Night => { self.settings.phase_times.night = time; }
                     PhaseType::Testimony => { self.settings.phase_times.testimony = time; }
                     PhaseType::Nomination => { self.settings.phase_times.nomination = time; }
-                    PhaseType::Recess => { }
+                    PhaseType::Adjournment | PhaseType::Recess => { }
                 };
                 
                 self.send_to_all(ToClientPacket::PhaseTime { phase, time });

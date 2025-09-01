@@ -59,7 +59,7 @@ impl Game{
         match priority {
             WhisperPriority::Cancel => {
                 if 
-                    !self.current_phase().is_day() || 
+                    self.current_phase().phase() == PhaseType::Night || 
                     !event.receiver.alive(self) ||
                     !event.sender.alive(self) ||
                     event.receiver == event.sender || 

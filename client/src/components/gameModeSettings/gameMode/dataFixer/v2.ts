@@ -31,7 +31,7 @@ type v3RoleOutline = {
 
 type v3GameModeData = {
     roleList: v3RoleOutline[],
-    phaseTimes: PhaseTimes,
+    phaseTimes: Omit<PhaseTimes, 'adjournment'>,
     enabledRoles: Role[],
     enabledModifiers: ModifierID[]
 }

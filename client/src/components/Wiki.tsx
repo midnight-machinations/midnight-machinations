@@ -308,13 +308,15 @@ export function partitionWikiPages(
         }
 
         if ([
-            "category/trial", "standard/briefing", "standard/night", "standard/obituary", "standard/discussion", "standard/nomination", "standard/testimony", "standard/judgement", "standard/dusk", "standard/finalWords"
+            "category/trial", "standard/briefing", "standard/night", "standard/obituary",
+            "standard/discussion", "standard/nomination", "standard/adjournment", "standard/testimony",
+            "standard/judgement", "standard/dusk", "standard/finalWords"
         ].includes(wikiPage)) {
             categories.push("phases")
         }
 
         if ([
-            "standard/nomination", "standard/testimony", "standard/judgement", "standard/finalWords",
+            "standard/nomination", "standard/adjournment", "standard/testimony", "standard/judgement", "standard/finalWords",
         ].includes(wikiPage)) {
             categories.push("trial")
         }

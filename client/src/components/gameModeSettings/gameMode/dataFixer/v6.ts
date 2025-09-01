@@ -1,54 +1,47 @@
 import { VersionConverter } from ".";
 import { GameMode, GameModeData, GameModeStorage, ShareableGameMode } from "..";
-import { defaultPhaseTimes } from "../../../../game/gameState";
 import { PHASES, PhaseTimes } from "../../../../game/gameState.d";
-import { ModifierID, ModifierState } from "../../../../game/modifiers";
-import { ListMapData } from "../../../../ListMap";
 import { Failure, ParseResult, ParseSuccess, Success, isFailure } from "../parse";
 import { parseName } from "./initial";
 import { parseEnabledRoles } from "./v2";
 import { parseRoleList, parseSettings } from "./v4";
+import { parseModifierSettings } from "./v5";
 
-const v5: VersionConverter = {
+const v6: VersionConverter = {
     convertSettings: parseSettings,
 
     convertShareableGameMode: parseShareableGameModeData,
     convertGameModeStorage: parseGameModeStorage
 }
 
-export default v5;
+export default v6;
 
-type v6GameModeStorage = GameModeStorage;
-type v6GameMode = GameMode
-type v6GameModeData = GameModeData
-type v6ShareableGameMode = ShareableGameMode
-
-function parseGameModeStorage(json: NonNullable<any>): ParseResult<v6GameModeStorage> {
+function parseGameModeStorage(json: NonNullable<any>): ParseResult<GameModeStorage> {
     if (typeof json !== "object" || Array.isArray(json)) {
         return Failure("gameModeStorageNotObject", json);
     }
 
     for (const key of ['format', 'gameModes']) {
         if (!Object.keys(json).includes(key)) {
-            return Failure(`${key as keyof v6GameModeStorage}KeyMissingFromGameModeStorage`, json)
+            return Failure(`${key as keyof GameModeStorage}KeyMissingFromGameModeStorage`, json)
         }
     }
 
-    const gameModeList = (json.gameModes as v6GameMode[]).map(parseGameMode);
+    const gameModeList = (json.gameModes as GameMode[]).map(parseGameMode);
     for (const gameMode of gameModeList) {
         if (isFailure(gameMode)) return gameMode;
     }
 
     return Success({
         format: "v5",
-        gameModes: gameModeList.map(gameMode => (gameMode as ParseSuccess<v6GameMode>).value)
+        gameModes: gameModeList.map(gameMode => (gameMode as ParseSuccess<GameMode>).value)
     })
 }
 
-function parseGameMode(json: NonNullable<any>): ParseResult<v6GameMode> {
+function parseGameMode(json: NonNullable<any>): ParseResult<GameMode> {
     for (const key of ['name', 'data']) {
         if (!Object.keys(json).includes(key)) {
-            return Failure(`${key as keyof v6GameMode}KeyMissingFromGameMode`, json)
+            return Failure(`${key as keyof GameMode}KeyMissingFromGameMode`, json)
         }
     }
 
@@ -64,7 +57,7 @@ function parseGameMode(json: NonNullable<any>): ParseResult<v6GameMode> {
     })
 }
 
-function parseShareableGameModeData(json: NonNullable<any>): ParseResult<v6ShareableGameMode> {
+function parseShareableGameModeData(json: NonNullable<any>): ParseResult<ShareableGameMode> {
     const gameMode = parseGameModeData(json);
     if (isFailure(gameMode)) {
         return gameMode;
@@ -80,12 +73,12 @@ function parseShareableGameModeData(json: NonNullable<any>): ParseResult<v6Share
     }
 }
 
-function parseGameModeDataRecord(json: NonNullable<any>): ParseResult<Record<number, v6GameModeData>> {
+function parseGameModeDataRecord(json: NonNullable<any>): ParseResult<Record<number, GameModeData>> {
     if (typeof json !== "object" || Array.isArray(json)) {
         return Failure("gameModeDataRecordNotObject", json);
     }
     
-    const parsedEntries: Record<number, v6GameModeData> = {};
+    const parsedEntries: Record<number, GameModeData> = {};
     for (const [key, value] of Object.entries(json)) {
         let players;
         try {
@@ -110,14 +103,14 @@ function parseGameModeDataRecord(json: NonNullable<any>): ParseResult<Record<num
     return Success(parsedEntries);
 }
 
-function parseGameModeData(json: NonNullable<any>): ParseResult<v6GameModeData> {
+function parseGameModeData(json: NonNullable<any>): ParseResult<GameModeData> {
     if (typeof json !== "object" || Array.isArray(json)) {
         return Failure("gameModeDataNotObject", json);
     }
 
     for (const key of ['roleList', 'phaseTimes', 'enabledRoles', 'modifierSettings']) {
         if (!Object.keys(json).includes(key)) {
-            return Failure(`${key as keyof v6GameModeData}KeyMissingFromGameModeData`, json)
+            return Failure(`${key as keyof GameModeData}KeyMissingFromGameModeData`, json)
         }
     }
 
@@ -143,7 +136,7 @@ function parseGameModeData(json: NonNullable<any>): ParseResult<v6GameModeData> 
 
 export function parsePhaseTimes(json: NonNullable<any>): ParseResult<PhaseTimes> {
     for (const phase of PHASES) {
-        if (phase !== "recess" && phase !== "adjournment" && !Object.keys(json).includes(phase)) {
+        if (phase !== "recess" && !Object.keys(json).includes(phase)) {
             return Failure(`${phase}KeyMissingFromPhaseTimes`, json);
         }
     }
@@ -164,32 +157,5 @@ export function parsePhaseTimes(json: NonNullable<any>): ParseResult<PhaseTimes>
         Success({}) as ParseResult<Partial<PhaseTimes>>
     )
 
-    if (!isFailure(phaseTimes)) {
-        if (phaseTimes.value.adjournment === undefined) {
-            phaseTimes.value.adjournment = defaultPhaseTimes().adjournment;
-        }
-    }
-
     return phaseTimes as ParseResult<PhaseTimes>;
-}
-
-// This is lowkey bare-minimum and could easily cause problems, but let's hope it doesn't.
-export function parseModifierSettings(json: NonNullable<any>): ParseResult<ListMapData<ModifierID, ModifierState>> {
-    if (typeof json !== "object" || !Array.isArray(json)) {
-        return Failure("modifierSettingsNotArray", json);
-    }
-
-    for (const item of json) {
-        if (typeof item !== "object" || !Array.isArray(item)) {
-            return Failure("modifierSettingsItemNotArray", item);
-        }
-
-        if (item.length !== 2) {
-            return Failure("modifierSettingsItemInvalidLength", item);
-        }
-        
-        // Here we should make sure the state is valid, but... I'm not doing all that.
-    }
-
-    return Success(json as ListMapData<ModifierID, ModifierState>);
 }
