@@ -1,4 +1,2875 @@
 {
-    "format":"v4",
-    "gameModes":[]
+  "format": "v5",
+  "gameModes": [
+    {
+      "name": "Basic",
+      "data": {
+        "8": {
+          "roleList": [
+            [
+              {
+                "role": "mafioso"
+              }
+            ],
+            [
+              {
+                "role": "consort"
+              }
+            ],
+            [
+              {
+                "role": "jester"
+              }
+            ],
+            [
+              {
+                "role": "doctor"
+              }
+            ],
+            [
+              {
+                "role": "detective"
+              }
+            ],
+            [
+              {
+                "roleSet": "townInvestigative"
+              }
+            ],
+            [
+              {
+                "roleSet": "townInvestigative"
+              }
+            ],
+            [
+              {
+                "roleSet": "townCommon"
+              }
+            ]
+          ],
+          "phaseTimes": {
+            "obituary": 20,
+            "discussion": 100,
+            "nomination": 100,
+            "adjournment": 60,
+            "testimony": 30,
+            "judgement": 30,
+            "finalWords": 10,
+            "briefing": 45,
+            "dusk": 30,
+            "night": 60,
+            "recess": 0
+          },
+          "enabledRoles": [
+            "doctor",
+            "escort",
+            "lookout",
+            "mayor",
+            "philosopher",
+            "veteran",
+            "vigilante",
+            "framer",
+            "informant",
+            "mortician",
+            "jester",
+            "consort",
+            "deputy",
+            "detective",
+            "mafioso"
+          ],
+          "modifierSettings": []
+        },
+        "10": {
+          "roleList": [
+            [
+              {
+                "role": "mafioso"
+              }
+            ],
+            [
+              {
+                "role": "consort"
+              }
+            ],
+            [
+              {
+                "role": "framer"
+              }
+            ],
+            [
+              {
+                "role": "jester"
+              }
+            ],
+            [
+              {
+                "role": "doctor"
+              }
+            ],
+            [
+              {
+                "role": "detective"
+              }
+            ],
+            [
+              {
+                "roleSet": "townInvestigative"
+              }
+            ],
+            [
+              {
+                "roleSet": "townInvestigative"
+              }
+            ],
+            [
+              {
+                "roleSet": "townCommon"
+              }
+            ],
+            [
+              {
+                "roleSet": "townCommon"
+              }
+            ]
+          ],
+          "phaseTimes": {
+            "obituary": 20,
+            "discussion": 100,
+            "nomination": 100,
+            "adjournment": 60,
+            "testimony": 30,
+            "judgement": 30,
+            "finalWords": 10,
+            "briefing": 45,
+            "dusk": 30,
+            "night": 60,
+            "recess": 0
+          },
+          "enabledRoles": [
+            "doctor",
+            "escort",
+            "lookout",
+            "mayor",
+            "philosopher",
+            "veteran",
+            "vigilante",
+            "framer",
+            "informant",
+            "mortician",
+            "jester",
+            "consort",
+            "deputy",
+            "detective",
+            "mafioso"
+          ],
+          "modifierSettings": []
+        },
+        "12": {
+          "roleList": [
+            [
+              {
+                "role": "mafioso"
+              }
+            ],
+            [
+              {
+                "role": "consort"
+              }
+            ],
+            [
+              {
+                "role": "framer"
+              }
+            ],
+            [
+              {
+                "role": "informant"
+              }
+            ],
+            [
+              {
+                "role": "jester"
+              }
+            ],
+            [
+              {
+                "role": "doctor"
+              }
+            ],
+            [
+              {
+                "role": "detective"
+              }
+            ],
+            [
+              {
+                "roleSet": "townInvestigative"
+              }
+            ],
+            [
+              {
+                "roleSet": "townInvestigative"
+              }
+            ],
+            [
+              {
+                "roleSet": "townInvestigative"
+              }
+            ],
+            [
+              {
+                "roleSet": "townCommon"
+              }
+            ],
+            [
+              {
+                "roleSet": "townCommon"
+              }
+            ]
+          ],
+          "phaseTimes": {
+            "obituary": 20,
+            "discussion": 100,
+            "nomination": 100,
+            "adjournment": 60,
+            "testimony": 30,
+            "judgement": 30,
+            "finalWords": 10,
+            "briefing": 45,
+            "dusk": 30,
+            "night": 60,
+            "recess": 0
+          },
+          "enabledRoles": [
+            "doctor",
+            "escort",
+            "lookout",
+            "mayor",
+            "philosopher",
+            "veteran",
+            "vigilante",
+            "framer",
+            "informant",
+            "mortician",
+            "jester",
+            "consort",
+            "deputy",
+            "detective",
+            "mafioso"
+          ],
+          "modifierSettings": []
+        },
+        "14": {
+          "roleList": [
+            [
+              {
+                "role": "mafioso"
+              }
+            ],
+            [
+              {
+                "role": "consort"
+              }
+            ],
+            [
+              {
+                "role": "framer"
+              }
+            ],
+            [
+              {
+                "role": "informant"
+              }
+            ],
+            [
+              {
+                "role": "mortician"
+              }
+            ],
+            [
+              {
+                "role": "jester"
+              }
+            ],
+            [
+              {
+                "role": "doctor"
+              }
+            ],
+            [
+              {
+                "role": "detective"
+              }
+            ],
+            [
+              {
+                "roleSet": "townInvestigative"
+              }
+            ],
+            [
+              {
+                "roleSet": "townInvestigative"
+              }
+            ],
+            [
+              {
+                "roleSet": "townInvestigative"
+              }
+            ],
+            [
+              {
+                "roleSet": "townKilling"
+              }
+            ],
+            [
+              {
+                "roleSet": "townCommon"
+              }
+            ],
+            [
+              {
+                "roleSet": "townCommon"
+              }
+            ]
+          ],
+          "phaseTimes": {
+            "obituary": 20,
+            "discussion": 100,
+            "nomination": 100,
+            "adjournment": 60,
+            "testimony": 30,
+            "judgement": 30,
+            "finalWords": 10,
+            "briefing": 45,
+            "dusk": 30,
+            "night": 60,
+            "recess": 0
+          },
+          "enabledRoles": [
+            "doctor",
+            "escort",
+            "lookout",
+            "mayor",
+            "philosopher",
+            "veteran",
+            "vigilante",
+            "framer",
+            "informant",
+            "mortician",
+            "jester",
+            "consort",
+            "deputy",
+            "detective",
+            "mafioso"
+          ],
+          "modifierSettings": []
+        },
+        "16": {
+          "roleList": [
+            [
+              {
+                "role": "mafioso"
+              }
+            ],
+            [
+              {
+                "role": "consort"
+              }
+            ],
+            [
+              {
+                "role": "framer"
+              }
+            ],
+            [
+              {
+                "role": "informant"
+              }
+            ],
+            [
+              {
+                "role": "mortician"
+              }
+            ],
+            [
+              {
+                "role": "jester"
+              }
+            ],
+            [
+              {
+                "role": "jester"
+              }
+            ],
+            [
+              {
+                "role": "doctor"
+              }
+            ],
+            [
+              {
+                "role": "detective"
+              }
+            ],
+            [
+              {
+                "roleSet": "townInvestigative"
+              }
+            ],
+            [
+              {
+                "roleSet": "townInvestigative"
+              }
+            ],
+            [
+              {
+                "roleSet": "townInvestigative"
+              }
+            ],
+            [
+              {
+                "roleSet": "townKilling"
+              }
+            ],
+            [
+              {
+                "roleSet": "townSupport"
+              }
+            ],
+            [
+              {
+                "roleSet": "townCommon"
+              }
+            ],
+            [
+              {
+                "roleSet": "townCommon"
+              }
+            ]
+          ],
+          "phaseTimes": {
+            "obituary": 20,
+            "discussion": 100,
+            "nomination": 100,
+            "adjournment": 60,
+            "testimony": 30,
+            "judgement": 30,
+            "finalWords": 10,
+            "briefing": 45,
+            "dusk": 30,
+            "night": 60,
+            "recess": 0
+          },
+          "enabledRoles": [
+            "doctor",
+            "escort",
+            "lookout",
+            "mayor",
+            "philosopher",
+            "veteran",
+            "vigilante",
+            "framer",
+            "informant",
+            "mortician",
+            "jester",
+            "consort",
+            "deputy",
+            "detective",
+            "mafioso"
+          ],
+          "modifierSettings": []
+        }
+      }
+    },
+    {
+      "name": "Intermediate",
+      "data": {
+        "8": {
+          "roleList": [
+            [
+              {
+                "role": "mafiaKillingWildcard"
+              }
+            ],
+            [
+              {
+                "roleSet": "mafiaSupport"
+              }
+            ],
+            [
+              {
+                "roleSet": "minions"
+              }
+            ],
+            [
+              {
+                "roleSet": "townInvestigative"
+              }
+            ],
+            [
+              {
+                "roleSet": "townProtective"
+              },
+              {
+                "roleSet": "townKilling"
+              }
+            ],
+            [
+              {
+                "roleSet": "townCommon"
+              }
+            ],
+            [
+              {
+                "roleSet": "townCommon"
+              }
+            ],
+            [
+              {
+                "roleSet": "townCommon"
+              }
+            ]
+          ],
+          "phaseTimes": {
+            "obituary": 20,
+            "discussion": 100,
+            "nomination": 100,
+            "adjournment": 60,
+            "testimony": 30,
+            "judgement": 30,
+            "finalWords": 10,
+            "briefing": 45,
+            "dusk": 30,
+            "night": 60,
+            "recess": 0
+          },
+          "enabledRoles": [
+            "auditor",
+            "bouncer",
+            "deputy",
+            "doctor",
+            "escort",
+            "lookout",
+            "mayor",
+            "medium",
+            "philosopher",
+            "psychic",
+            "reporter",
+            "snoop",
+            "spy",
+            "veteran",
+            "vigilante",
+            "framer",
+            "hypnotist",
+            "informant",
+            "mortician",
+            "jester",
+            "scarecrow",
+            "witch",
+            "ojo",
+            "puppeteer",
+            "arsonist",
+            "mercenary",
+            "impostor",
+            "godfather",
+            "counterfeiter",
+            "werewolf",
+            "armorsmith",
+            "revolutionary"
+          ],
+          "modifierSettings": []
+        },
+        "10": {
+          "roleList": [
+            [
+              {
+                "role": "mafiaKillingWildcard"
+              }
+            ],
+            [
+              {
+                "roleSet": "mafiaSupport"
+              }
+            ],
+            [
+              {
+                "roleSet": "mafiaSupport"
+              },
+              {
+                "roleSet": "minions"
+              }
+            ],
+            [
+              {
+                "roleSet": "neutral"
+              }
+            ],
+            [
+              {
+                "roleSet": "townInvestigative"
+              }
+            ],
+            [
+              {
+                "roleSet": "townKilling"
+              }
+            ],
+            [
+              {
+                "roleSet": "townProtective"
+              }
+            ],
+            [
+              {
+                "roleSet": "townCommon"
+              }
+            ],
+            [
+              {
+                "roleSet": "townCommon"
+              }
+            ],
+            [
+              {
+                "roleSet": "townCommon"
+              }
+            ]
+          ],
+          "phaseTimes": {
+            "obituary": 20,
+            "discussion": 100,
+            "nomination": 100,
+            "adjournment": 60,
+            "testimony": 30,
+            "judgement": 30,
+            "finalWords": 10,
+            "briefing": 45,
+            "dusk": 30,
+            "night": 60,
+            "recess": 0
+          },
+          "enabledRoles": [
+            "auditor",
+            "bouncer",
+            "deputy",
+            "doctor",
+            "escort",
+            "lookout",
+            "mayor",
+            "medium",
+            "philosopher",
+            "psychic",
+            "reporter",
+            "snoop",
+            "spy",
+            "veteran",
+            "vigilante",
+            "framer",
+            "hypnotist",
+            "informant",
+            "mortician",
+            "jester",
+            "scarecrow",
+            "witch",
+            "ojo",
+            "puppeteer",
+            "arsonist",
+            "mercenary",
+            "impostor",
+            "godfather",
+            "counterfeiter",
+            "werewolf",
+            "armorsmith",
+            "revolutionary"
+          ],
+          "modifierSettings": []
+        },
+        "12": {
+          "roleList": [
+            [
+              {
+                "role": "mafiaKillingWildcard"
+              }
+            ],
+            [
+              {
+                "roleSet": "mafiaSupport"
+              }
+            ],
+            [
+              {
+                "roleSet": "mafiaSupport"
+              }
+            ],
+            [
+              {
+                "roleSet": "fiends"
+              }
+            ],
+            [
+              {
+                "roleSet": "neutral"
+              }
+            ],
+            [
+              {
+                "roleSet": "townInvestigative"
+              }
+            ],
+            [
+              {
+                "roleSet": "townInvestigative"
+              }
+            ],
+            [
+              {
+                "roleSet": "townKilling"
+              },
+              {
+                "roleSet": "townProtective"
+              }
+            ],
+            [
+              {
+                "roleSet": "townSupport"
+              }
+            ],
+            [
+              {
+                "roleSet": "townCommon"
+              }
+            ],
+            [
+              {
+                "roleSet": "townCommon"
+              }
+            ],
+            [
+              {
+                "roleSet": "townCommon"
+              }
+            ]
+          ],
+          "phaseTimes": {
+            "obituary": 20,
+            "discussion": 100,
+            "nomination": 100,
+            "adjournment": 60,
+            "testimony": 30,
+            "judgement": 30,
+            "finalWords": 10,
+            "briefing": 45,
+            "dusk": 30,
+            "night": 60,
+            "recess": 0
+          },
+          "enabledRoles": [
+            "auditor",
+            "bouncer",
+            "deputy",
+            "doctor",
+            "escort",
+            "lookout",
+            "mayor",
+            "medium",
+            "philosopher",
+            "psychic",
+            "reporter",
+            "snoop",
+            "spy",
+            "veteran",
+            "vigilante",
+            "framer",
+            "hypnotist",
+            "informant",
+            "mortician",
+            "jester",
+            "scarecrow",
+            "witch",
+            "ojo",
+            "puppeteer",
+            "arsonist",
+            "mercenary",
+            "impostor",
+            "godfather",
+            "counterfeiter",
+            "werewolf",
+            "armorsmith",
+            "revolutionary"
+          ],
+          "modifierSettings": []
+        },
+        "14": {
+          "roleList": [
+            [
+              {
+                "role": "mafiaKillingWildcard"
+              }
+            ],
+            [
+              {
+                "roleSet": "mafiaSupport"
+              }
+            ],
+            [
+              {
+                "roleSet": "mafiaSupport"
+              }
+            ],
+            [
+              {
+                "roleSet": "mafiaSupport"
+              }
+            ],
+            [
+              {
+                "roleSet": "fiends"
+              }
+            ],
+            [
+              {
+                "roleSet": "minions"
+              },
+              {
+                "roleSet": "neutral"
+              }
+            ],
+            [
+              {
+                "roleSet": "townInvestigative"
+              }
+            ],
+            [
+              {
+                "roleSet": "townInvestigative"
+              }
+            ],
+            [
+              {
+                "roleSet": "townKilling"
+              }
+            ],
+            [
+              {
+                "roleSet": "townProtective"
+              }
+            ],
+            [
+              {
+                "roleSet": "townSupport"
+              }
+            ],
+            [
+              {
+                "roleSet": "townCommon"
+              }
+            ],
+            [
+              {
+                "roleSet": "townCommon"
+              }
+            ],
+            [
+              {
+                "roleSet": "townCommon"
+              }
+            ]
+          ],
+          "phaseTimes": {
+            "obituary": 20,
+            "discussion": 100,
+            "nomination": 100,
+            "adjournment": 60,
+            "testimony": 30,
+            "judgement": 30,
+            "finalWords": 10,
+            "briefing": 45,
+            "dusk": 30,
+            "night": 60,
+            "recess": 0
+          },
+          "enabledRoles": [
+            "auditor",
+            "bouncer",
+            "deputy",
+            "doctor",
+            "escort",
+            "lookout",
+            "mayor",
+            "medium",
+            "philosopher",
+            "psychic",
+            "reporter",
+            "snoop",
+            "spy",
+            "veteran",
+            "vigilante",
+            "framer",
+            "hypnotist",
+            "informant",
+            "mortician",
+            "jester",
+            "scarecrow",
+            "witch",
+            "ojo",
+            "puppeteer",
+            "arsonist",
+            "mercenary",
+            "impostor",
+            "godfather",
+            "counterfeiter",
+            "werewolf",
+            "armorsmith",
+            "revolutionary"
+          ],
+          "modifierSettings": []
+        },
+        "16": {
+          "roleList": [
+            [
+              {
+                "role": "mafiaKillingWildcard"
+              }
+            ],
+            [
+              {
+                "roleSet": "mafiaSupport"
+              }
+            ],
+            [
+              {
+                "roleSet": "mafiaSupport"
+              }
+            ],
+            [
+              {
+                "roleSet": "mafiaSupport"
+              }
+            ],
+            [
+              {
+                "roleSet": "fiends"
+              }
+            ],
+            [
+              {
+                "roleSet": "minions"
+              }
+            ],
+            [
+              {
+                "roleSet": "neutral"
+              }
+            ],
+            [
+              {
+                "roleSet": "townInvestigative"
+              }
+            ],
+            [
+              {
+                "roleSet": "townInvestigative"
+              }
+            ],
+            [
+              {
+                "roleSet": "townInvestigative"
+              }
+            ],
+            [
+              {
+                "roleSet": "townKilling"
+              }
+            ],
+            [
+              {
+                "roleSet": "townProtective"
+              }
+            ],
+            [
+              {
+                "roleSet": "townSupport"
+              }
+            ],
+            [
+              {
+                "roleSet": "townCommon"
+              }
+            ],
+            [
+              {
+                "roleSet": "townCommon"
+              }
+            ],
+            [
+              {
+                "roleSet": "townCommon"
+              }
+            ]
+          ],
+          "phaseTimes": {
+            "obituary": 20,
+            "discussion": 100,
+            "nomination": 100,
+            "adjournment": 60,
+            "testimony": 30,
+            "judgement": 30,
+            "finalWords": 10,
+            "briefing": 45,
+            "dusk": 30,
+            "night": 60,
+            "recess": 0
+          },
+          "enabledRoles": [
+            "auditor",
+            "bouncer",
+            "deputy",
+            "doctor",
+            "escort",
+            "lookout",
+            "mayor",
+            "medium",
+            "philosopher",
+            "psychic",
+            "reporter",
+            "snoop",
+            "spy",
+            "veteran",
+            "vigilante",
+            "framer",
+            "hypnotist",
+            "informant",
+            "mortician",
+            "jester",
+            "scarecrow",
+            "witch",
+            "ojo",
+            "puppeteer",
+            "arsonist",
+            "mercenary",
+            "impostor",
+            "godfather",
+            "counterfeiter",
+            "werewolf",
+            "armorsmith",
+            "revolutionary"
+          ],
+          "modifierSettings": []
+        }
+      }
+    },
+    {
+      "name": "Ranked",
+      "data": {
+        "8": {
+          "roleList": [
+            [
+              {
+                "roleSet": "mafiaKilling"
+              }
+            ],
+            [
+              {
+                "roleSet": "mafiaSupport"
+              }
+            ],
+            [
+              {
+                "roleSet": "minions"
+              }
+            ],
+            [
+              {
+                "roleSet": "townInvestigative"
+              }
+            ],
+            [
+              {
+                "roleSet": "townProtective"
+              },
+              {
+                "roleSet": "townKilling"
+              }
+            ],
+            [
+              {
+                "roleSet": "townCommon"
+              }
+            ],
+            [
+              {
+                "roleSet": "townCommon"
+              }
+            ],
+            [
+              {
+                "roleSet": "townCommon"
+              }
+            ]
+          ],
+          "phaseTimes": {
+            "obituary": 20,
+            "discussion": 100,
+            "nomination": 100,
+            "adjournment": 60,
+            "testimony": 30,
+            "judgement": 30,
+            "finalWords": 10,
+            "briefing": 45,
+            "dusk": 30,
+            "night": 60,
+            "recess": 0
+          },
+          "enabledRoles": [
+            "armorsmith",
+            "auditor",
+            "bouncer",
+            "cop",
+            "deputy",
+            "doctor",
+            "engineer",
+            "escort",
+            "gossip",
+            "lookout",
+            "marksman",
+            "mayor",
+            "medium",
+            "philosopher",
+            "psychic",
+            "snoop",
+            "spy",
+            "steward",
+            "transporter",
+            "veteran",
+            "vigilante",
+            "framer",
+            "hypnotist",
+            "informant",
+            "mortician",
+            "jester",
+            "revolutionary",
+            "scarecrow",
+            "warper",
+            "witch",
+            "ojo",
+            "puppeteer",
+            "pyrolisk",
+            "werewolf",
+            "arsonist",
+            "mercenary",
+            "impostor",
+            "godfather",
+            "counterfeiter"
+          ],
+          "modifierSettings": [
+            [
+              "roleSetGraveKillers",
+              {
+                "type": "roleSetGraveKillers"
+              }
+            ]
+          ]
+        },
+        "10": {
+          "roleList": [
+            [
+              {
+                "roleSet": "mafiaKilling"
+              }
+            ],
+            [
+              {
+                "roleSet": "mafiaSupport"
+              }
+            ],
+            [
+              {
+                "roleSet": "mafiaSupport"
+              },
+              {
+                "roleSet": "minions"
+              }
+            ],
+            [
+              {
+                "roleSet": "neutral"
+              }
+            ],
+            [
+              {
+                "roleSet": "townInvestigative"
+              }
+            ],
+            [
+              {
+                "roleSet": "townKilling"
+              },
+              {
+                "roleSet": "townProtective"
+              }
+            ],
+            [
+              {
+                "roleSet": "townSupport"
+              }
+            ],
+            [
+              {
+                "roleSet": "townCommon"
+              }
+            ],
+            [
+              {
+                "roleSet": "townCommon"
+              }
+            ],
+            [
+              {
+                "roleSet": "townCommon"
+              }
+            ]
+          ],
+          "phaseTimes": {
+            "obituary": 20,
+            "discussion": 100,
+            "nomination": 100,
+            "adjournment": 60,
+            "testimony": 30,
+            "judgement": 30,
+            "finalWords": 10,
+            "briefing": 45,
+            "dusk": 30,
+            "night": 60,
+            "recess": 0
+          },
+          "enabledRoles": [
+            "armorsmith",
+            "auditor",
+            "bouncer",
+            "cop",
+            "deputy",
+            "doctor",
+            "engineer",
+            "escort",
+            "gossip",
+            "lookout",
+            "marksman",
+            "mayor",
+            "medium",
+            "philosopher",
+            "psychic",
+            "snoop",
+            "spy",
+            "steward",
+            "transporter",
+            "veteran",
+            "vigilante",
+            "framer",
+            "hypnotist",
+            "informant",
+            "mortician",
+            "jester",
+            "revolutionary",
+            "scarecrow",
+            "warper",
+            "witch",
+            "ojo",
+            "puppeteer",
+            "pyrolisk",
+            "werewolf",
+            "arsonist",
+            "mercenary",
+            "impostor",
+            "godfather",
+            "counterfeiter"
+          ],
+          "modifierSettings": [
+            [
+              "roleSetGraveKillers",
+              {
+                "type": "roleSetGraveKillers"
+              }
+            ]
+          ]
+        },
+        "12": {
+          "roleList": [
+            [
+              {
+                "roleSet": "mafiaKilling"
+              }
+            ],
+            [
+              {
+                "roleSet": "mafiaSupport"
+              }
+            ],
+            [
+              {
+                "roleSet": "mafiaSupport"
+              }
+            ],
+            [
+              {
+                "roleSet": "fiends"
+              }
+            ],
+            [
+              {
+                "roleSet": "neutral"
+              }
+            ],
+            [
+              {
+                "roleSet": "townInvestigative"
+              }
+            ],
+            [
+              {
+                "roleSet": "townInvestigative"
+              }
+            ],
+            [
+              {
+                "roleSet": "townKilling"
+              },
+              {
+                "roleSet": "townProtective"
+              }
+            ],
+            [
+              {
+                "roleSet": "townSupport"
+              }
+            ],
+            [
+              {
+                "roleSet": "townCommon"
+              }
+            ],
+            [
+              {
+                "roleSet": "townCommon"
+              }
+            ],
+            [
+              {
+                "roleSet": "townCommon"
+              }
+            ]
+          ],
+          "phaseTimes": {
+            "obituary": 20,
+            "discussion": 100,
+            "nomination": 100,
+            "adjournment": 60,
+            "testimony": 30,
+            "judgement": 30,
+            "finalWords": 10,
+            "briefing": 45,
+            "dusk": 30,
+            "night": 60,
+            "recess": 0
+          },
+          "enabledRoles": [
+            "armorsmith",
+            "auditor",
+            "bouncer",
+            "cop",
+            "deputy",
+            "doctor",
+            "engineer",
+            "escort",
+            "gossip",
+            "lookout",
+            "marksman",
+            "mayor",
+            "medium",
+            "philosopher",
+            "psychic",
+            "snoop",
+            "spy",
+            "steward",
+            "transporter",
+            "veteran",
+            "vigilante",
+            "framer",
+            "hypnotist",
+            "informant",
+            "mortician",
+            "jester",
+            "revolutionary",
+            "scarecrow",
+            "warper",
+            "witch",
+            "ojo",
+            "puppeteer",
+            "pyrolisk",
+            "werewolf",
+            "arsonist",
+            "mercenary",
+            "impostor",
+            "godfather",
+            "counterfeiter"
+          ],
+          "modifierSettings": [
+            [
+              "roleSetGraveKillers",
+              {
+                "type": "roleSetGraveKillers"
+              }
+            ]
+          ]
+        },
+        "14": {
+          "roleList": [
+            [
+              {
+                "roleSet": "mafiaKilling"
+              }
+            ],
+            [
+              {
+                "roleSet": "mafiaSupport"
+              }
+            ],
+            [
+              {
+                "roleSet": "mafiaSupport"
+              }
+            ],
+            [
+              {
+                "roleSet": "mafiaSupport"
+              }
+            ],
+            [
+              {
+                "roleSet": "fiends"
+              }
+            ],
+            [
+              {
+                "roleSet": "neutral"
+              },
+              {
+                "roleSet": "minions"
+              }
+            ],
+            [
+              {
+                "roleSet": "townInvestigative"
+              }
+            ],
+            [
+              {
+                "roleSet": "townInvestigative"
+              }
+            ],
+            [
+              {
+                "roleSet": "townKilling"
+              }
+            ],
+            [
+              {
+                "roleSet": "townKilling"
+              }
+            ],
+            [
+              {
+                "roleSet": "townProtective"
+              }
+            ],
+            [
+              {
+                "roleSet": "townSupport"
+              }
+            ],
+            [
+              {
+                "roleSet": "townCommon"
+              }
+            ],
+            [
+              {
+                "roleSet": "townCommon"
+              }
+            ]
+          ],
+          "phaseTimes": {
+            "obituary": 20,
+            "discussion": 100,
+            "nomination": 100,
+            "adjournment": 60,
+            "testimony": 30,
+            "judgement": 30,
+            "finalWords": 10,
+            "briefing": 45,
+            "dusk": 30,
+            "night": 60,
+            "recess": 0
+          },
+          "enabledRoles": [
+            "armorsmith",
+            "auditor",
+            "bouncer",
+            "cop",
+            "deputy",
+            "doctor",
+            "engineer",
+            "escort",
+            "gossip",
+            "lookout",
+            "marksman",
+            "mayor",
+            "medium",
+            "philosopher",
+            "psychic",
+            "snoop",
+            "spy",
+            "steward",
+            "transporter",
+            "veteran",
+            "vigilante",
+            "framer",
+            "hypnotist",
+            "informant",
+            "mortician",
+            "jester",
+            "revolutionary",
+            "scarecrow",
+            "warper",
+            "witch",
+            "ojo",
+            "puppeteer",
+            "pyrolisk",
+            "werewolf",
+            "arsonist",
+            "mercenary",
+            "impostor",
+            "godfather",
+            "counterfeiter"
+          ],
+          "modifierSettings": [
+            [
+              "roleSetGraveKillers",
+              {
+                "type": "roleSetGraveKillers"
+              }
+            ]
+          ]
+        },
+        "16": {
+          "roleList": [
+            [
+              {
+                "roleSet": "mafiaKilling"
+              }
+            ],
+            [
+              {
+                "roleSet": "mafiaSupport"
+              }
+            ],
+            [
+              {
+                "roleSet": "mafiaSupport"
+              }
+            ],
+            [
+              {
+                "roleSet": "mafiaSupport"
+              }
+            ],
+            [
+              {
+                "roleSet": "fiends"
+              }
+            ],
+            [
+              {
+                "roleSet": "minions"
+              }
+            ],
+            [
+              {
+                "roleSet": "neutral"
+              }
+            ],
+            [
+              {
+                "roleSet": "townInvestigative"
+              }
+            ],
+            [
+              {
+                "roleSet": "townInvestigative"
+              }
+            ],
+            [
+              {
+                "roleSet": "townKilling"
+              }
+            ],
+            [
+              {
+                "roleSet": "townKilling"
+              }
+            ],
+            [
+              {
+                "roleSet": "townProtective"
+              }
+            ],
+            [
+              {
+                "roleSet": "townSupport"
+              }
+            ],
+            [
+              {
+                "roleSet": "townCommon"
+              }
+            ],
+            [
+              {
+                "roleSet": "townCommon"
+              }
+            ],
+            [
+              {
+                "roleSet": "townCommon"
+              }
+            ]
+          ],
+          "phaseTimes": {
+            "obituary": 20,
+            "discussion": 100,
+            "nomination": 100,
+            "adjournment": 60,
+            "testimony": 30,
+            "judgement": 30,
+            "finalWords": 10,
+            "briefing": 45,
+            "dusk": 30,
+            "night": 60,
+            "recess": 0
+          },
+          "enabledRoles": [
+            "armorsmith",
+            "auditor",
+            "bouncer",
+            "cop",
+            "deputy",
+            "doctor",
+            "engineer",
+            "escort",
+            "gossip",
+            "lookout",
+            "marksman",
+            "mayor",
+            "medium",
+            "philosopher",
+            "psychic",
+            "snoop",
+            "spy",
+            "steward",
+            "transporter",
+            "veteran",
+            "vigilante",
+            "framer",
+            "hypnotist",
+            "informant",
+            "mortician",
+            "jester",
+            "revolutionary",
+            "scarecrow",
+            "warper",
+            "witch",
+            "ojo",
+            "puppeteer",
+            "pyrolisk",
+            "werewolf",
+            "arsonist",
+            "mercenary",
+            "impostor",
+            "godfather",
+            "counterfeiter"
+          ],
+          "modifierSettings": [
+            [
+              "roleSetGraveKillers",
+              {
+                "type": "roleSetGraveKillers"
+              }
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "name": "Experimental",
+      "data": {
+        "8": {
+          "roleList": [
+            [
+              {
+                "roleSet": "mafiaSupport"
+              }
+            ],
+            [
+              {
+                "roleSet": "mafiaSupport"
+              }
+            ],
+            [
+              {
+                "roleSet": "minions"
+              }
+            ],
+            [
+              {
+                "roleSet": "townInvestigative"
+              }
+            ],
+            [
+              {
+                "roleSet": "townProtective"
+              },
+              {
+                "roleSet": "townKilling"
+              }
+            ],
+            [
+              {
+                "roleSet": "townCommon"
+              }
+            ],
+            [
+              {
+                "roleSet": "townCommon"
+              }
+            ],
+            [
+              {
+                "roleSet": "townCommon"
+              }
+            ]
+          ],
+          "phaseTimes": {
+            "obituary": 20,
+            "discussion": 100,
+            "nomination": 100,
+            "adjournment": 60,
+            "testimony": 30,
+            "judgement": 30,
+            "finalWords": 10,
+            "briefing": 45,
+            "dusk": 30,
+            "night": 60,
+            "recess": 0
+          },
+          "enabledRoles": [
+            "armorsmith",
+            "auditor",
+            "bouncer",
+            "cop",
+            "deputy",
+            "doctor",
+            "engineer",
+            "gossip",
+            "lookout",
+            "marksman",
+            "mayor",
+            "medium",
+            "philosopher",
+            "psychic",
+            "snoop",
+            "spy",
+            "steward",
+            "transporter",
+            "veteran",
+            "vigilante",
+            "framer",
+            "hypnotist",
+            "informant",
+            "mortician",
+            "jester",
+            "revolutionary",
+            "scarecrow",
+            "warper",
+            "witch",
+            "ojo",
+            "puppeteer",
+            "pyrolisk",
+            "werewolf",
+            "arsonist",
+            "mercenary",
+            "forger",
+            "disguiser",
+            "reeducator",
+            "politician",
+            "polymath",
+            "warden",
+            "escort",
+            "blackmailer",
+            "reporter"
+          ],
+          "modifierSettings": [
+            [
+              "roleSetGraveKillers",
+              {
+                "type": "roleSetGraveKillers"
+              }
+            ]
+          ]
+        },
+        "10": {
+          "roleList": [
+            [
+              {
+                "roleSet": "mafiaSupport"
+              }
+            ],
+            [
+              {
+                "roleSet": "mafiaSupport"
+              }
+            ],
+            [
+              {
+                "roleSet": "mafiaSupport"
+              },
+              {
+                "roleSet": "minions"
+              }
+            ],
+            [
+              {
+                "roleSet": "neutral"
+              }
+            ],
+            [
+              {
+                "roleSet": "townInvestigative"
+              }
+            ],
+            [
+              {
+                "roleSet": "townProtective"
+              },
+              {
+                "roleSet": "townProtective"
+              }
+            ],
+            [
+              {
+                "roleSet": "townSupport"
+              }
+            ],
+            [
+              {
+                "roleSet": "townCommon"
+              }
+            ],
+            [
+              {
+                "roleSet": "townCommon"
+              }
+            ],
+            [
+              {
+                "roleSet": "townCommon"
+              }
+            ]
+          ],
+          "phaseTimes": {
+            "obituary": 20,
+            "discussion": 100,
+            "nomination": 100,
+            "adjournment": 60,
+            "testimony": 30,
+            "judgement": 30,
+            "finalWords": 10,
+            "briefing": 45,
+            "dusk": 30,
+            "night": 60,
+            "recess": 0
+          },
+          "enabledRoles": [
+            "armorsmith",
+            "auditor",
+            "bouncer",
+            "cop",
+            "deputy",
+            "doctor",
+            "engineer",
+            "gossip",
+            "lookout",
+            "marksman",
+            "mayor",
+            "medium",
+            "philosopher",
+            "psychic",
+            "snoop",
+            "spy",
+            "steward",
+            "transporter",
+            "veteran",
+            "vigilante",
+            "framer",
+            "hypnotist",
+            "informant",
+            "mortician",
+            "jester",
+            "revolutionary",
+            "scarecrow",
+            "warper",
+            "witch",
+            "ojo",
+            "puppeteer",
+            "pyrolisk",
+            "werewolf",
+            "arsonist",
+            "mercenary",
+            "forger",
+            "disguiser",
+            "reeducator",
+            "politician",
+            "polymath",
+            "warden",
+            "escort",
+            "blackmailer",
+            "reporter"
+          ],
+          "modifierSettings": [
+            [
+              "roleSetGraveKillers",
+              {
+                "type": "roleSetGraveKillers"
+              }
+            ]
+          ]
+        },
+        "12": {
+          "roleList": [
+            [
+              {
+                "roleSet": "mafiaSupport"
+              }
+            ],
+            [
+              {
+                "roleSet": "mafiaSupport"
+              }
+            ],
+            [
+              {
+                "roleSet": "mafiaSupport"
+              }
+            ],
+            [
+              {
+                "roleSet": "fiends"
+              }
+            ],
+            [
+              {
+                "roleSet": "neutral"
+              }
+            ],
+            [
+              {
+                "roleSet": "townInvestigative"
+              }
+            ],
+            [
+              {
+                "roleSet": "townInvestigative"
+              }
+            ],
+            [
+              {
+                "roleSet": "townKilling"
+              },
+              {
+                "roleSet": "townProtective"
+              }
+            ],
+            [
+              {
+                "roleSet": "townSupport"
+              }
+            ],
+            [
+              {
+                "roleSet": "townCommon"
+              }
+            ],
+            [
+              {
+                "roleSet": "townCommon"
+              }
+            ],
+            [
+              {
+                "roleSet": "townCommon"
+              }
+            ]
+          ],
+          "phaseTimes": {
+            "obituary": 20,
+            "discussion": 100,
+            "nomination": 100,
+            "adjournment": 60,
+            "testimony": 30,
+            "judgement": 30,
+            "finalWords": 10,
+            "briefing": 45,
+            "dusk": 30,
+            "night": 60,
+            "recess": 0
+          },
+          "enabledRoles": [
+            "armorsmith",
+            "auditor",
+            "bouncer",
+            "cop",
+            "deputy",
+            "doctor",
+            "engineer",
+            "gossip",
+            "lookout",
+            "marksman",
+            "mayor",
+            "medium",
+            "philosopher",
+            "psychic",
+            "snoop",
+            "spy",
+            "steward",
+            "transporter",
+            "veteran",
+            "vigilante",
+            "framer",
+            "hypnotist",
+            "informant",
+            "mortician",
+            "jester",
+            "revolutionary",
+            "scarecrow",
+            "warper",
+            "witch",
+            "ojo",
+            "puppeteer",
+            "pyrolisk",
+            "werewolf",
+            "arsonist",
+            "mercenary",
+            "forger",
+            "disguiser",
+            "reeducator",
+            "politician",
+            "polymath",
+            "warden",
+            "escort",
+            "blackmailer",
+            "reporter"
+          ],
+          "modifierSettings": [
+            [
+              "roleSetGraveKillers",
+              {
+                "type": "roleSetGraveKillers"
+              }
+            ]
+          ]
+        },
+        "14": {
+          "roleList": [
+            [
+              {
+                "roleSet": "mafiaSupport"
+              }
+            ],
+            [
+              {
+                "roleSet": "mafiaSupport"
+              }
+            ],
+            [
+              {
+                "roleSet": "mafiaSupport"
+              }
+            ],
+            [
+              {
+                "roleSet": "mafiaSupport"
+              }
+            ],
+            [
+              {
+                "roleSet": "fiends"
+              }
+            ],
+            [
+              {
+                "roleSet": "minions"
+              },
+              {
+                "roleSet": "neutral"
+              }
+            ],
+            [
+              {
+                "roleSet": "townInvestigative"
+              }
+            ],
+            [
+              {
+                "roleSet": "townInvestigative"
+              }
+            ],
+            [
+              {
+                "roleSet": "townKilling"
+              }
+            ],
+            [
+              {
+                "roleSet": "townKilling"
+              }
+            ],
+            [
+              {
+                "roleSet": "townProtective"
+              }
+            ],
+            [
+              {
+                "roleSet": "townSupport"
+              }
+            ],
+            [
+              {
+                "roleSet": "townCommon"
+              }
+            ],
+            [
+              {
+                "roleSet": "townCommon"
+              }
+            ]
+          ],
+          "phaseTimes": {
+            "obituary": 20,
+            "discussion": 100,
+            "nomination": 100,
+            "adjournment": 60,
+            "testimony": 30,
+            "judgement": 30,
+            "finalWords": 10,
+            "briefing": 45,
+            "dusk": 30,
+            "night": 60,
+            "recess": 0
+          },
+          "enabledRoles": [
+            "armorsmith",
+            "auditor",
+            "bouncer",
+            "cop",
+            "deputy",
+            "doctor",
+            "engineer",
+            "gossip",
+            "lookout",
+            "marksman",
+            "mayor",
+            "medium",
+            "philosopher",
+            "psychic",
+            "snoop",
+            "spy",
+            "steward",
+            "transporter",
+            "veteran",
+            "vigilante",
+            "framer",
+            "hypnotist",
+            "informant",
+            "mortician",
+            "jester",
+            "revolutionary",
+            "scarecrow",
+            "warper",
+            "witch",
+            "ojo",
+            "puppeteer",
+            "pyrolisk",
+            "werewolf",
+            "arsonist",
+            "mercenary",
+            "forger",
+            "disguiser",
+            "reeducator",
+            "politician",
+            "polymath",
+            "warden",
+            "escort",
+            "blackmailer",
+            "reporter"
+          ],
+          "modifierSettings": [
+            [
+              "roleSetGraveKillers",
+              {
+                "type": "roleSetGraveKillers"
+              }
+            ]
+          ]
+        },
+        "16": {
+          "roleList": [
+            [
+              {
+                "roleSet": "mafiaSupport"
+              }
+            ],
+            [
+              {
+                "roleSet": "mafiaSupport"
+              }
+            ],
+            [
+              {
+                "roleSet": "mafiaSupport"
+              }
+            ],
+            [
+              {
+                "roleSet": "mafiaSupport"
+              }
+            ],
+            [
+              {
+                "roleSet": "fiends"
+              }
+            ],
+            [
+              {
+                "roleSet": "minions"
+              }
+            ],
+            [
+              {
+                "roleSet": "neutral"
+              }
+            ],
+            [
+              {
+                "roleSet": "townInvestigative"
+              }
+            ],
+            [
+              {
+                "roleSet": "townInvestigative"
+              }
+            ],
+            [
+              {
+                "roleSet": "townKilling"
+              }
+            ],
+            [
+              {
+                "roleSet": "townKilling"
+              }
+            ],
+            [
+              {
+                "roleSet": "townProtective"
+              }
+            ],
+            [
+              {
+                "roleSet": "townSupport"
+              }
+            ],
+            [
+              {
+                "roleSet": "townCommon"
+              }
+            ],
+            [
+              {
+                "roleSet": "townCommon"
+              }
+            ],
+            [
+              {
+                "roleSet": "townCommon"
+              }
+            ]
+          ],
+          "phaseTimes": {
+            "obituary": 20,
+            "discussion": 100,
+            "nomination": 100,
+            "adjournment": 60,
+            "testimony": 30,
+            "judgement": 30,
+            "finalWords": 10,
+            "briefing": 45,
+            "dusk": 30,
+            "night": 60,
+            "recess": 0
+          },
+          "enabledRoles": [
+            "armorsmith",
+            "auditor",
+            "bouncer",
+            "cop",
+            "deputy",
+            "doctor",
+            "engineer",
+            "gossip",
+            "lookout",
+            "marksman",
+            "mayor",
+            "medium",
+            "philosopher",
+            "psychic",
+            "snoop",
+            "spy",
+            "steward",
+            "transporter",
+            "veteran",
+            "vigilante",
+            "framer",
+            "hypnotist",
+            "informant",
+            "mortician",
+            "jester",
+            "revolutionary",
+            "scarecrow",
+            "warper",
+            "witch",
+            "ojo",
+            "puppeteer",
+            "pyrolisk",
+            "werewolf",
+            "arsonist",
+            "mercenary",
+            "forger",
+            "disguiser",
+            "reeducator",
+            "politician",
+            "polymath",
+            "warden",
+            "escort",
+            "blackmailer",
+            "reporter"
+          ],
+          "modifierSettings": [
+            [
+              "roleSetGraveKillers",
+              {
+                "type": "roleSetGraveKillers"
+              }
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "name": "Cult",
+      "data": {
+        "8": {
+          "roleList": [
+            [
+              {
+                "role": "apostle"
+              }
+            ],
+            [
+              {
+                "roleSet": "minions"
+              }
+            ],
+            [
+              {
+                "roleSet": "townInvestigative"
+              }
+            ],
+            [
+              {
+                "roleSet": "townInvestigative"
+              }
+            ],
+            [
+              {
+                "roleSet": "townProtective"
+              },
+              {
+                "roleSet": "townKilling"
+              }
+            ],
+            [
+              {
+                "roleSet": "townCommon"
+              }
+            ],
+            [
+              {
+                "roleSet": "townCommon"
+              }
+            ],
+            [
+              {
+                "roleSet": "townCommon"
+              }
+            ]
+          ],
+          "phaseTimes": {
+            "obituary": 20,
+            "discussion": 100,
+            "nomination": 100,
+            "adjournment": 60,
+            "testimony": 30,
+            "judgement": 30,
+            "finalWords": 10,
+            "briefing": 45,
+            "dusk": 30,
+            "night": 60,
+            "recess": 0
+          },
+          "enabledRoles": [
+            "cop",
+            "deputy",
+            "mayor",
+            "detective",
+            "doctor",
+            "steward",
+            "vigilante",
+            "apostle",
+            "disciple",
+            "zealot",
+            "lookout",
+            "scarecrow",
+            "transporter",
+            "warper",
+            "witch",
+            "philosopher"
+          ],
+          "modifierSettings": []
+        },
+        "10": {
+          "roleList": [
+            [
+              {
+                "role": "apostle"
+              }
+            ],
+            [
+              {
+                "role": "zealot"
+              }
+            ],
+            [
+              {
+                "roleSet": "minions"
+              }
+            ],
+            [
+              {
+                "roleSet": "townInvestigative"
+              }
+            ],
+            [
+              {
+                "roleSet": "townInvestigative"
+              }
+            ],
+            [
+              {
+                "roleSet": "townKilling"
+              }
+            ],
+            [
+              {
+                "roleSet": "townProtective"
+              }
+            ],
+            [
+              {
+                "roleSet": "townCommon"
+              }
+            ],
+            [
+              {
+                "roleSet": "townCommon"
+              }
+            ],
+            [
+              {
+                "roleSet": "townCommon"
+              }
+            ]
+          ],
+          "phaseTimes": {
+            "obituary": 20,
+            "discussion": 100,
+            "nomination": 100,
+            "adjournment": 60,
+            "testimony": 30,
+            "judgement": 30,
+            "finalWords": 10,
+            "briefing": 45,
+            "dusk": 30,
+            "night": 60,
+            "recess": 0
+          },
+          "enabledRoles": [
+            "cop",
+            "deputy",
+            "mayor",
+            "detective",
+            "doctor",
+            "steward",
+            "vigilante",
+            "apostle",
+            "disciple",
+            "zealot",
+            "lookout",
+            "scarecrow",
+            "transporter",
+            "warper",
+            "witch",
+            "philosopher"
+          ],
+          "modifierSettings": []
+        },
+        "12": {
+          "roleList": [
+            [
+              {
+                "role": "apostle"
+              }
+            ],
+            [
+              {
+                "role": "zealot"
+              }
+            ],
+            [
+              {
+                "roleSet": "minions"
+              }
+            ],
+            [
+              {
+                "roleSet": "minions"
+              }
+            ],
+            [
+              {
+                "roleSet": "townInvestigative"
+              }
+            ],
+            [
+              {
+                "roleSet": "townInvestigative"
+              }
+            ],
+            [
+              {
+                "roleSet": "townKilling"
+              }
+            ],
+            [
+              {
+                "roleSet": "townProtective"
+              }
+            ],
+            [
+              {
+                "roleSet": "townSupport"
+              }
+            ],
+            [
+              {
+                "roleSet": "townCommon"
+              }
+            ],
+            [
+              {
+                "roleSet": "townCommon"
+              }
+            ],
+            [
+              {
+                "roleSet": "townCommon"
+              }
+            ]
+          ],
+          "phaseTimes": {
+            "obituary": 20,
+            "discussion": 100,
+            "nomination": 100,
+            "adjournment": 60,
+            "testimony": 30,
+            "judgement": 30,
+            "finalWords": 10,
+            "briefing": 45,
+            "dusk": 30,
+            "night": 60,
+            "recess": 0
+          },
+          "enabledRoles": [
+            "cop",
+            "deputy",
+            "mayor",
+            "detective",
+            "doctor",
+            "steward",
+            "vigilante",
+            "apostle",
+            "disciple",
+            "zealot",
+            "lookout",
+            "scarecrow",
+            "transporter",
+            "warper",
+            "witch",
+            "philosopher"
+          ],
+          "modifierSettings": []
+        },
+        "14": {
+          "roleList": [
+            [
+              {
+                "role": "apostle"
+              }
+            ],
+            [
+              {
+                "role": "disciple"
+              }
+            ],
+            [
+              {
+                "role": "zealot"
+              }
+            ],
+            [
+              {
+                "roleSet": "minions"
+              }
+            ],
+            [
+              {
+                "roleSet": "minions"
+              }
+            ],
+            [
+              {
+                "roleSet": "townInvestigative"
+              }
+            ],
+            [
+              {
+                "roleSet": "townInvestigative"
+              }
+            ],
+            [
+              {
+                "roleSet": "townKilling"
+              }
+            ],
+            [
+              {
+                "roleSet": "townKilling"
+              }
+            ],
+            [
+              {
+                "roleSet": "townProtective"
+              }
+            ],
+            [
+              {
+                "roleSet": "townSupport"
+              }
+            ],
+            [
+              {
+                "roleSet": "townCommon"
+              }
+            ],
+            [
+              {
+                "roleSet": "townCommon"
+              }
+            ],
+            [
+              {
+                "roleSet": "townCommon"
+              }
+            ]
+          ],
+          "phaseTimes": {
+            "obituary": 20,
+            "discussion": 100,
+            "nomination": 100,
+            "adjournment": 60,
+            "testimony": 30,
+            "judgement": 30,
+            "finalWords": 10,
+            "briefing": 45,
+            "dusk": 30,
+            "night": 60,
+            "recess": 0
+          },
+          "enabledRoles": [
+            "cop",
+            "deputy",
+            "mayor",
+            "detective",
+            "doctor",
+            "steward",
+            "vigilante",
+            "apostle",
+            "disciple",
+            "zealot",
+            "lookout",
+            "scarecrow",
+            "transporter",
+            "warper",
+            "witch",
+            "philosopher"
+          ],
+          "modifierSettings": []
+        },
+        "16": {
+          "roleList": [
+            [
+              {
+                "role": "apostle"
+              }
+            ],
+            [
+              {
+                "role": "disciple"
+              }
+            ],
+            [
+              {
+                "role": "zealot"
+              }
+            ],
+            [
+              {
+                "role": "scarecrow"
+              }
+            ],
+            [
+              {
+                "role": "warper"
+              }
+            ],
+            [
+              {
+                "role": "witch"
+              }
+            ],
+            [
+              {
+                "roleSet": "townInvestigative"
+              }
+            ],
+            [
+              {
+                "roleSet": "townInvestigative"
+              }
+            ],
+            [
+              {
+                "roleSet": "townInvestigative"
+              }
+            ],
+            [
+              {
+                "roleSet": "townKilling"
+              }
+            ],
+            [
+              {
+                "roleSet": "townKilling"
+              }
+            ],
+            [
+              {
+                "roleSet": "townProtective"
+              }
+            ],
+            [
+              {
+                "roleSet": "townSupport"
+              }
+            ],
+            [
+              {
+                "roleSet": "townCommon"
+              }
+            ],
+            [
+              {
+                "roleSet": "townCommon"
+              }
+            ],
+            [
+              {
+                "roleSet": "townCommon"
+              }
+            ]
+          ],
+          "phaseTimes": {
+            "obituary": 20,
+            "discussion": 100,
+            "nomination": 100,
+            "adjournment": 60,
+            "testimony": 30,
+            "judgement": 30,
+            "finalWords": 10,
+            "briefing": 45,
+            "dusk": 30,
+            "night": 60,
+            "recess": 0
+          },
+          "enabledRoles": [
+            "cop",
+            "deputy",
+            "mayor",
+            "detective",
+            "doctor",
+            "steward",
+            "vigilante",
+            "apostle",
+            "disciple",
+            "zealot",
+            "lookout",
+            "scarecrow",
+            "transporter",
+            "warper",
+            "witch",
+            "philosopher"
+          ],
+          "modifierSettings": []
+        }
+      }
+    }
+  ]
 }
