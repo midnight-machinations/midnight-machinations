@@ -5,15 +5,15 @@ import { ModifierID, ModifierState } from "./modifiers"
 
 export function defaultPhaseTimes(): PhaseTimes {
     return {
-        briefing: 45,
-        obituary: 60,
-        discussion: 120,
-        nomination: 120,
-        testimony: 30,
-        judgement: 60,
-        finalWords: 30,
-        dusk: 30,
-        night: 60,
+        briefing:45,
+        obituary:20,
+        discussion:100,
+        nomination:100,
+        testimony:30,
+        judgement:30,
+        finalWords:10,
+        dusk:30,
+        night:60,
     }
 }
 
