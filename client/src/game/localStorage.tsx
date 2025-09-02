@@ -72,13 +72,13 @@ export function loadSettingsParsed(): Settings {
 }
 export function getDefaultSettings(): Readonly<Settings> {
     return {
-        format: "v5",
+        format: "v6",
         volume: 0.5,
         fontSize: 1,
         accessibilityFont: false,
         language: "en_us",
         defaultName: null,
-        maxMenus: window.innerWidth < 600 ? 1 : 6,
+        maxMenus: window.innerWidth < 600 ? 1 : 3,
         menuOrder: [
             ContentMenu.WikiMenu, 
             ContentMenu.GraveyardMenu, 
@@ -103,6 +103,8 @@ export function loadSettings(): unknown {
 }
 export function saveSettings(newSettings: Partial<Settings>) {
     const currentSettings = parseFromJson("Settings", loadSettings());
+
+    console.log(currentSettings);
 
 
     if(currentSettings.type === "failure") {

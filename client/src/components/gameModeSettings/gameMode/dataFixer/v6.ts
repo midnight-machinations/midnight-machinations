@@ -34,7 +34,7 @@ function parseGameModeStorage(json: NonNullable<any>): ParseResult<GameModeStora
     }
 
     return Success({
-        format: "v5",
+        format: "v6",
         gameModes: gameModeList.map(gameMode => (gameMode as ParseSuccess<GameMode>).value)
     })
 }
@@ -70,7 +70,7 @@ function parseShareableGameModeData(json: NonNullable<any>): ParseResult<Shareab
         const name = parseName(json.name);
         if (isFailure(name)) return name;
 
-        return Success({ format: "v5", name: name.value, ...gameMode.value });
+        return Success({ format: "v6", name: name.value, ...gameMode.value });
     }
 }
 

@@ -59,7 +59,7 @@ export function parseSettings(json: NonNullable<any>): ParseResult<Settings> {
     const roleSpecificMenus = parseRoleSpecificMenus(json.roleSpecificMenus);
     if (isFailure(roleSpecificMenus)) return roleSpecificMenus;
 
-    return Success({ ...json, format: "v5" });
+    return Success({ ...json, format: "v6" });
 }
 
 function parseRoleSpecificMenus(json: NonNullable<any>): ParseResult<Role[]> {

@@ -5,7 +5,7 @@ import { Role } from "../../../game/roleState.d";
 import { ListMapData } from "../../../ListMap";
 
 
-export type CurrentFormat = "v5";
+export type CurrentFormat = "v6";
 
 export type GameModeStorage = {
     format: CurrentFormat,
