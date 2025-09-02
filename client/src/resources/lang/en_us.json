@@ -1702,8 +1702,8 @@
 
     "wiki.article.role.snoop.reminder": "At night, select a player to learn if they are a town loyalist, but you can't tell if you are visited a player who isn't your buddy.",
     "wiki.article.role.snoop.lore":"\"Dude! Dude! Check this out!\"",
-    "wiki.article.role.snoop.guide": "- At night, select a player. You are either told that they are a town loyalist, or that you can't tell\n    - You can't tell what your target was if:\n        - They aren't a town loyalist\n        - You are visited by at least one player who does not have the role you chose as your buddy.\n        - They have a suspicious aura\n\n    - Otherwise, you are told they are a town loyalist",
-    "wiki.article.role.snoop.abilities":"- Visit a player to snoop them",
+    "wiki.article.role.snoop.guide": "- At night, select a player and a role. You are either told that the player you chose is a town loyalist, or that you can't tell\n    - You can't tell what your target was if:\n        - They aren't a town loyalist\n        - You are visited by at least one player who does not have the role you chose.\n        - They have a suspicious aura\n\n    - Otherwise, you are told they are a town loyalist",
+    "wiki.article.role.snoop.abilities":"",
     "wiki.article.role.snoop.attributes":"",
     "wiki.article.role.snoop.extra":"- innocent aura doesn't effect your results",
 
@@ -1997,7 +1997,7 @@
     
     "wiki.article.role.mercenary.reminder": "You are told a hit list of roles, if at least one player with each of those roles is dead, you win.",
     "wiki.article.role.mercenary.lore":"Don't mind the mercenary, just doing what their paid to do.",
-    "wiki.article.role.mercenary.guide": "- At the start of the game, you are told a hit list of X different roles (X = Total players ÷ 5 (round up)), You win if, for each role, there is a dead player with that role or there is no player with that role\n    - Each player on your hit list is told they are on a mercenaries hit list\n    - The role Mercenary can't be on your hit list\n    - For each role on your hit list, there is at least one player with that role\n    - If there are not enough roles available to fill your hit list, your hit list is smaller, filling with as many roles as possible up to X\n- Choose between Investigate or Attack\n    - Investigate: Choose a player to visit and learn if they have a role on your hit list\n    - Attack: Choose a player to visit and attack with a basic attack\n        - You can't choose to attack night 1\n        - You can only attack up to X times (X = Total players ÷ 5 (round up)), if you are roleblocked it doesn't use an ability charge",
+    "wiki.article.role.mercenary.guide": "- At the start of the game, you are told a hit list of X different roles (X = Total players ÷ 5 (round up)), You win if, you live until the end of the game, and for each role, there is a dead player with that role or there is no player with that role\n    - Each player on your hit list is told they are on a mercenaries hit list\n    - The role Mercenary can't be on your hit list\n    - For each role on your hit list, there is at least one player with that role\n    - If there are not enough roles available to fill your hit list, your hit list is smaller, filling with as many roles as possible up to X\n- Choose between Investigate or Attack\n    - Investigate: Choose a player to visit and learn if they have a role on your hit list\n    - Attack: Choose a player to visit and attack with a basic attack\n        - You can't choose to attack night 1\n        - You can only attack up to X times (X = Total players ÷ 5 (round up)), if you are roleblocked it doesn't use an ability charge",
     "wiki.article.role.mercenary.abilities": "",
     "wiki.article.role.mercenary.attributes": "",
     "wiki.article.role.mercenary.extra": "",
