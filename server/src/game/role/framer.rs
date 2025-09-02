@@ -51,14 +51,6 @@ impl RoleStateImpl for Framer {
                             Some(other_visits)
                         );
                 }
-
-                actor_ref.set_night_visits(
-                    midnight_variables,
-                    actor_ref.all_night_visits_cloned(midnight_variables)
-                        .into_iter()
-                        .filter(|v|v.tag!=VisitTag::Role { role: Role::Framer, id: 1 })
-                        .collect::<Vec<_>>()
-                );
             },
             _ => {}
         }
@@ -100,7 +92,7 @@ impl RoleStateImpl for Framer {
                 ControllerID::role(actor_ref, Role::Framer, 1),
                 false,
                 VisitTag::Role { role: Role::Framer, id: 1 }
-            ).into_iter().map(|mut v|{v.indirect=true; v.wardblockable=false; v})
+            ).into_iter().map(|mut v|{v.indirect=true; v.wardblock_immune=true; v.investigate_immune=true; v})
         ).collect()
     }
     fn default_revealed_groups(self) -> crate::vec_set::VecSet<crate::game::components::insider_group::InsiderGroupID> {

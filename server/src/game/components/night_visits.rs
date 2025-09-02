@@ -56,7 +56,7 @@ impl PlayerReference{
     /// Returns all vists where the player is the visitor
     pub fn all_night_visits_cloned(&self, midnight_variables: &MidnightVariables) -> Vec<Visit>{
         Visits::into_iter(midnight_variables)
-            .filter(|visit| visit.visitor == *self)
+            .with_visitor(*self)
             .collect()
     }
     /// Returns all vists where the player is the target
@@ -103,6 +103,7 @@ pub trait NightVisitsIterator: Sized {
     fn with_alive_visitor(self, game: &Game) -> impl Iterator<Item = Self::Item>;
     fn with_loyalist_visitor(self, game: &Game, conclusion: GameConclusion) -> impl Iterator<Item = Self::Item>;
     fn without_loyalist_visitor(self, game: &Game, conclusion: GameConclusion) -> impl Iterator<Item = Self::Item>;
+    fn with_investigatable(self) -> impl Iterator<Item = Self::Item>;
     fn with_direct(self) -> impl Iterator<Item = Self::Item>;
     fn with_tag(self, visit_tag: VisitTag) -> impl Iterator<Item = Self::Item>;
     fn map_visitor(self) -> impl Iterator<Item = PlayerReference>;
@@ -135,6 +136,9 @@ where
     }
     fn with_direct(self) -> impl Iterator<Item = Self::Item>{
         self.filter(|v|!v.borrow().indirect)
+    }
+    fn with_investigatable(self) -> impl Iterator<Item = Self::Item>{
+        self.filter(move |v|!v.borrow().investigate_immune)
     }
     fn with_tag(self, visit_tag: VisitTag) -> impl Iterator<Item = Self::Item>{
         self.filter(move |v|v.borrow().tag == visit_tag)

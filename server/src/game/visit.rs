@@ -8,9 +8,9 @@ pub struct Visit {
     pub tag: VisitTag,
     
     pub attack: bool,
-    pub wardblockable: bool,
-    pub transportable: bool,
-
+    pub wardblock_immune: bool,
+    pub transport_immune: bool,
+    pub investigate_immune: bool,
     /// Things that cant touch indirect visits (Everything can see its OWN astral visit but maybe not others astral visits)
     /// Engineer Trap triggering
     /// Werewolf, Cop, Ambusher, Veteran, Marksman, Rampage 
@@ -24,28 +24,10 @@ impl Visit {
             target,
             tag: VisitTag::Role{role, id},
             attack,
-            wardblockable: true,
-            transportable: true,
+            wardblock_immune: false,
+            transport_immune: false,
+            investigate_immune: false,
             indirect: false,
-        }
-    }
-    pub fn new(
-        visitor: PlayerReference,
-        target: PlayerReference,
-        tag: VisitTag,
-        attack: bool,
-        wardblockable: bool,
-        transportable: bool,
-        indirect: bool,
-    ) -> Self {
-        Self {
-            visitor,
-            target,
-            tag,
-            attack,
-            wardblockable,
-            transportable,
-            indirect
         }
     }
 }

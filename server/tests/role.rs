@@ -1250,7 +1250,7 @@ fn drunk_suspicious_aura() {
 
 #[test]
 fn framer_second_visit_erased() {
-    kit::scenario!(game in Night 2 where
+    kit::scenario!(game in Night 1 where
         framer: Framer,
         lookout: Lookout,
         v: Villager
@@ -1260,15 +1260,21 @@ fn framer_second_visit_erased() {
     framer.send_ability_input_player_list(v, 1);
     lookout.send_ability_input_player_list_typical(v);
 
+    game.skip_to(Obituary, 2);
+
     assert_not_contains!(
         lookout.get_messages(),
         ChatMessageVariant::LookoutResult { players: vec![framer.index()] }
-    )
+    );
+    assert_contains!(
+        lookout.get_messages(),
+        ChatMessageVariant::LookoutResult { players: vec![] }
+    );
 }
 
 #[test]
 fn witch_second_visit_erased() {
-    kit::scenario!(game in Night 2 where
+    kit::scenario!(game in Night 1 where
         witch: Witch,
         lookout: Lookout,
         v: Mortician
@@ -1277,44 +1283,16 @@ fn witch_second_visit_erased() {
     witch.send_ability_input_two_player_typical(lookout, v);
     lookout.send_ability_input_player_list_typical(v);
 
+    game.skip_to(Obituary, 2);
+
     assert_not_contains!(
         lookout.get_messages(),
         ChatMessageVariant::LookoutResult { players: vec![witch.index()] }
-    )
-}
-
-#[test]
-fn drunk_framer() {
-    kit::scenario!(game in Night 2 where
-        drunk: Drunk,
-        lookout: Lookout,
-        lookout2: Lookout,
-        mafioso: Mafioso,
-        townie: Doctor,
-        framer: Framer
     );
-
-    assert!(mafioso.send_ability_input_player_list_typical(townie));
-    assert!(lookout.send_ability_input_player_list_typical(townie));
-    assert!(lookout2.send_ability_input_player_list_typical(mafioso));
-    framer.send_ability_input_player_list_typical(drunk);
-    framer.send_ability_input_player_list(mafioso, 1);
-
-    game.next_phase();
-
-    let messages2 = lookout2.get_messages();
-    if !(
-        messages2.contains(&ChatMessageVariant::LookoutResult { players: vec![drunk.index()] })
-    ){
-        panic!("{messages2:?}");
-    }
-
-    let messages = lookout.get_messages();
-    if !(
-        messages.contains(&ChatMessageVariant::LookoutResult { players: vec![mafioso.index()] })
-    ){
-        panic!("{messages:?}");
-    }
+    assert_contains!(
+        lookout.get_messages(),
+        ChatMessageVariant::LookoutResult { players: vec![] }
+    );
 }
 
 #[test]

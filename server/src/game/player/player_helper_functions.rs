@@ -5,7 +5,7 @@ use crate::{
     game::{
         attack_power::{AttackPower, DefensePower}, chat::{ChatGroup, ChatMessage, ChatMessageVariant}, components::{
             fragile_vest::FragileVests, graves::{grave::{Grave, GraveKiller}, Graves}, insider_group::InsiderGroupID, night_visits::{NightVisitsIterator, Visits}, player_component::PlayerComponent, win_condition::WinCondition
-        }, controllers::{BooleanSelection, ControllerID, ControllerParametersMap, ControllerSelection, Controllers, PlayerListSelection, TwoPlayerOptionSelection}, event::{
+        }, controllers::{BooleanSelection, Controller, ControllerID, ControllerParametersMap, ControllerSelection, Controllers, PlayerListSelection, TwoPlayerOptionSelection}, event::{
             before_role_switch::BeforeRoleSwitch, on_any_death::OnAnyDeath,
             on_midnight::{MidnightVariables, OnMidnightPriority},
             on_player_roleblocked::OnPlayerRoleblocked, on_role_switch::OnRoleSwitch,
@@ -14,7 +14,7 @@ use crate::{
         game_conclusion::GameConclusion,
         modifiers::ModifierID, phase::PhaseType,
         role::{chronokaiser::Chronokaiser, medium::Medium, Role, RoleState},
-        visit::{Visit, VisitTag},
+        visit::Visit,
         Game
     },
     packet::ToClientPacket, vec_map::VecMap, vec_set::VecSet
@@ -29,7 +29,7 @@ impl PlayerReference{
     pub fn ward(&self, game: &mut Game, midnight_variables: &mut MidnightVariables) -> Vec<PlayerReference> {
         let mut out = Vec::new();
         for visit in Visits::into_iter(midnight_variables) {
-            if !visit.wardblockable {
+            if visit.wardblock_immune {
                 continue;
             }
             if visit.target != *self {continue;}
@@ -152,75 +152,14 @@ impl PlayerReference{
 
 
                 //change all controller inputs to be selecting this player as well
-                for (controller_id, controller_data) in game.controllers.all_controllers().clone().iter() {
-                    match controller_data.selection() {
-                        ControllerSelection::Boolean(..) => {
-                            if possessed_visit.target == possessed_into_visit.target {
-                                Controllers::set_selection_in_controller(
-                                    game,
-                                    possessed_visit.target,
-                                    controller_id.clone(),
-                                    BooleanSelection(true),
-                                    true
-                                );
-                            }
-                        },
-                        ControllerSelection::TwoPlayerOption(selection) => {
-
-                            let mut selection = selection.0;
-                            if let Some((_, second)) = selection {
-                                selection = Some((possessed_into_visit.target, second));
-                            }
-
-                            Controllers::set_selection_in_controller(
-                                game,
-                                possessed_visit.target,
-                                controller_id.clone(),
-                                TwoPlayerOptionSelection(selection),
-                                true
-                            );
-                        },
-                        ControllerSelection::PlayerList(selection) => {
-
-                            let mut selection = selection.0.clone();
-                            if let Some(first) = selection.first_mut(){
-                                *first = possessed_into_visit.target;
-                            }else{
-                                selection = vec![possessed_into_visit.target];
-                            }
-
-
-                            Controllers::set_selection_in_controller(
-                                game,
-                                possessed_visit.target,
-                                controller_id.clone(),
-                                PlayerListSelection(selection),
-                                true
-                            );
-                        },
-                        ControllerSelection::Unit(..) |
-                        ControllerSelection::ChatMessage(..) |
-                        ControllerSelection::RoleList(..) |
-                        ControllerSelection::TwoRoleOption(..) |
-                        ControllerSelection::TwoRoleOutlineOption(..) |
-                        ControllerSelection::String(..) |
-                        ControllerSelection::Integer(..) |
-                        ControllerSelection::Kira(..) => {}
-                    }
+                for (id, controller) in game.controllers.all_controllers().clone().iter() {
+                    PlayerReference::possess_controller(game, id.clone(), controller, possessed_visit.target, possessed_into_visit.target)
                 }
 
                 possessed_visit.target.set_night_visits(midnight_variables,
                     possessed_visit.target.convert_selection_to_visits(game)
                 );
 
-                //remove the second role visit from the possessor
-                self.set_night_visits(
-                    midnight_variables,
-                    self.all_night_visits_cloned(midnight_variables)
-                        .into_iter()
-                        .filter(|v|v.tag != VisitTag::Role { role: self.role(game), id: 1 })
-                        .collect()
-                );
                 Some(possessed_visit.target)
             },
             OnMidnightPriority::Investigative => {
@@ -244,6 +183,62 @@ impl PlayerReference{
             _ => {
                 None
             }
+        }
+    }
+    fn possess_controller(game: &mut Game, id: ControllerID, controller: &Controller, possessed: PlayerReference, possessed_into: PlayerReference){
+        match controller.selection() {
+            ControllerSelection::Boolean(..) => {
+                if possessed == possessed_into {
+                    Controllers::set_selection_in_controller(
+                        game,
+                        possessed,
+                        id,
+                        BooleanSelection(true),
+                        true
+                    );
+                }
+            },
+            ControllerSelection::TwoPlayerOption(selection) => {
+
+                let mut selection = selection.0;
+                if let Some((_, second)) = selection {
+                    selection = Some((possessed_into, second));
+                }
+
+                Controllers::set_selection_in_controller(
+                    game,
+                    possessed,
+                    id,
+                    TwoPlayerOptionSelection(selection),
+                    true
+                );
+            },
+            ControllerSelection::PlayerList(selection) => {
+
+                let mut selection = selection.0.clone();
+                if let Some(first) = selection.first_mut(){
+                    *first = possessed_into;
+                }else{
+                    selection = vec![possessed_into];
+                }
+
+
+                Controllers::set_selection_in_controller(
+                    game,
+                    possessed,
+                    id,
+                    PlayerListSelection(selection),
+                    true
+                );
+            },
+            ControllerSelection::Unit(..) |
+            ControllerSelection::ChatMessage(..) |
+            ControllerSelection::RoleList(..) |
+            ControllerSelection::TwoRoleOption(..) |
+            ControllerSelection::TwoRoleOutlineOption(..) |
+            ControllerSelection::String(..) |
+            ControllerSelection::Integer(..) |
+            ControllerSelection::Kira(..) => {}
         }
     }
 
@@ -318,7 +313,10 @@ impl PlayerReference{
         if let Some(v) = self.night_appeared_visits(midnight_variables) {
             v.clone()
         } else {
-            self.all_night_visits_cloned(midnight_variables)
+            Visits::into_iter(midnight_variables)
+                .with_visitor(self)
+                .with_investigatable()
+                .collect()
         }
     }
     pub fn all_appeared_visitors(self, game: &Game, midnight_variables: &MidnightVariables) -> Vec<PlayerReference> {

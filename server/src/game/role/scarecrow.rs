@@ -63,7 +63,7 @@ impl RoleStateImpl for Scarecrow {
             actor_ref,
             ControllerID::role(actor_ref, Role::Scarecrow, 0),
             false
-        ).into_iter().map(|mut v|{v.wardblockable = false; v}).collect()
+        ).into_iter().map(|mut v|{v.wardblock_immune = true; v}).collect()
     }
     fn on_phase_start(self, game: &mut Game, actor_ref: PlayerReference, _phase: PhaseType){
         if

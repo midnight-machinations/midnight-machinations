@@ -1,6 +1,8 @@
 use serde::Serialize;
 use crate::game::controllers::{AvailableRoleListSelection, ControllerID, RoleListSelection};
 use crate::game::event::on_midnight::{MidnightVariables, OnMidnightPriority};
+use crate::game::role::common_role;
+use crate::game::visit::Visit;
 use crate::game::{attack_power::DefensePower, chat::ChatMessageVariant};
 use crate::game::phase::PhaseType;
 use crate::game::player::PlayerReference;
@@ -109,6 +111,19 @@ impl RoleStateImpl for Steward {
             })
             .night_typical(actor_ref)
             .build_map()
+    }
+    fn convert_selection_to_visits(self, game: &Game, actor_ref: PlayerReference) -> Vec<Visit> {
+        let mut out = common_role::convert_controller_selection_to_visits(
+            game,
+            actor_ref,
+            ControllerID::role(actor_ref, Role::Steward, 0),
+            false
+        );
+        out.iter_mut().for_each(|v|{
+            v.transport_immune = true;
+            v.indirect = true;
+        });
+        out
     }
     fn on_phase_start(self, game: &mut Game, actor_ref: PlayerReference, _phase: PhaseType){
         actor_ref.set_role_state(game, Steward{

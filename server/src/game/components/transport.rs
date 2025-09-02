@@ -58,7 +58,7 @@ impl Transport{
         
         Visits::iter_mut(midnight_variables)
             .filter(|v|filter(v))
-            .filter(|v|v.transportable)
+            .filter(|v|!v.transport_immune)
             .filter(|v|transport_priority.can_transport(&TransportPriority::from_visit_tag(&v.tag)))
             .for_each(|v|
                 if let Some(new_target) = player_map.get(&v.target){

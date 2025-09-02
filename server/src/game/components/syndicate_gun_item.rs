@@ -106,8 +106,17 @@ impl SyndicateGunItem {
                 let Some(gun_target) = gun_target.first() else {return};
 
                 Visits::add_visit(
-                    midnight_variables, 
-                    Visit::new(player_with_gun, *gun_target, VisitTag::SyndicateGunItem, true, true, true, false)
+                    midnight_variables,
+                    Visit {
+                        visitor: player_with_gun,
+                        target: *gun_target,
+                        tag: VisitTag::SyndicateGunItem,
+                        attack: true,
+                        wardblock_immune: false,
+                        transport_immune: false,
+                        investigate_immune: false,
+                        indirect: false
+                    } 
                 );
             }
             OnMidnightPriority::Kill => {

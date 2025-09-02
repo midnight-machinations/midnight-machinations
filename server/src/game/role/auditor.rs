@@ -80,7 +80,7 @@ impl RoleStateImpl for Auditor {
             false
         );
         out.iter_mut().for_each(|v|{
-            v.transportable = false;
+            v.transport_immune = true;
             v.indirect = true;
         });
         out
