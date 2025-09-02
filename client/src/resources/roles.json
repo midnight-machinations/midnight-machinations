@@ -194,7 +194,7 @@
             {"type": "tallyClerkResult", "evilCount": 0}
         ]
     },
-    "percolator": {
+    "alien": {
         "mainRoleSet": "town",
         "roleSets": ["town", "townCommon", "townInvestigative"],
         "armor": false,
@@ -203,10 +203,10 @@
         "canWriteDeathNote": false,
         "canBeConvertedTo": [],
         "chatMessages":[
-            {"type": "percolatorProbabilities", "enemyFilterProbability": 176, "friendFilterProbability": 140},
-            {"type": "percolatorResult", "sieve": [2, 3, 6, 7]},
-            {"type": "percolatorResult", "sieve": [30]},
-            {"type": "percolatorResult", "sieve": []}
+            {"type": "alienProbabilities", "enemyFilterProbability": 176, "friendFilterProbability": 140},
+            {"type": "alienResult", "sieve": [2, 3, 6, 7]},
+            {"type": "alienResult", "sieve": [30]},
+            {"type": "alienResult", "sieve": []}
         ]
     },
     "doctor": {

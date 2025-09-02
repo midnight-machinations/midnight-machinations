@@ -18,29 +18,29 @@ pub(super) const MAXIMUM_COUNT: Option<u8> = None;
 pub(super) const DEFENSE: DefensePower = DefensePower::None;
 
 #[derive(Clone, Debug, Default)]
-pub struct Percolator {
+pub struct Alien {
     sieve: VecSet<PlayerReference>,
 }
 
 #[derive(Clone, Debug, Serialize, Default)]
-pub struct PercolatorClientRoleState;
+pub struct AlienClientRoleState;
 
-impl RoleStateImpl for Percolator {
-    type ClientRoleState = PercolatorClientRoleState;
+impl RoleStateImpl for Alien {
+    type ClientRoleState = AlienClientRoleState;
     fn on_midnight(self, game: &mut Game, midnight_variables: &mut MidnightVariables, actor_ref: PlayerReference, priority: OnMidnightPriority) {
         if priority != OnMidnightPriority::Investigative {return;}
 
         let new_sieve: VecSet<PlayerReference>;
 
-        if let Some(BooleanSelection(true)) = ControllerID::role(actor_ref, Role::Percolator, 0).get_boolean_selection(game) {
+        if let Some(BooleanSelection(true)) = ControllerID::role(actor_ref, Role::Alien, 0).get_boolean_selection(game) {
             if actor_ref.night_blocked(midnight_variables) {
                 return;
             }
 
             new_sieve = PlayerReference::all_players(game).collect();
-            actor_ref.set_role_state(game, Percolator { sieve: new_sieve.clone() });
+            actor_ref.set_role_state(game, Alien { sieve: new_sieve.clone() });
             actor_ref.push_night_message(midnight_variables, 
-                ChatMessageVariant::PercolatorResult { sieve: new_sieve }
+                ChatMessageVariant::AlienResult { sieve: new_sieve }
             );
             return;
         }
@@ -64,28 +64,28 @@ impl RoleStateImpl for Percolator {
             });
         }
 
-        actor_ref.set_role_state(game, Percolator { sieve: new_sieve.clone() });
+        actor_ref.set_role_state(game, Alien { sieve: new_sieve.clone() });
         actor_ref.push_night_message(midnight_variables, 
-            ChatMessageVariant::PercolatorResult { sieve: new_sieve }
+            ChatMessageVariant::AlienResult { sieve: new_sieve }
         );
     }
     #[expect(clippy::cast_possible_truncation, reason = "We want to send u8s, not f64s")]
     #[expect(clippy::cast_sign_loss, reason = "We want to send u8s, not f64s")]
     fn on_game_start(self, game: &mut Game, actor_ref: PlayerReference) {
         let new_sieve = PlayerReference::all_players(game).collect::<VecSet<_>>();
-        actor_ref.set_role_state(game, Percolator { sieve: new_sieve.clone() });
-        actor_ref.add_private_chat_message(game, ChatMessageVariant::PercolatorResult { sieve: new_sieve });
+        actor_ref.set_role_state(game, Alien { sieve: new_sieve.clone() });
+        actor_ref.add_private_chat_message(game, ChatMessageVariant::AlienResult { sieve: new_sieve });
 
         let (enemy_filter_probability, friend_filter_probability, _) = Self::get_probabilities(game);
 
         let enemy_filter_probability = (enemy_filter_probability * 255.0) as u8;
         let friend_filter_probability = (friend_filter_probability * 255.0) as u8;
 
-        actor_ref.add_private_chat_message(game, ChatMessageVariant::PercolatorProbabilities { enemy_filter_probability, friend_filter_probability });
+        actor_ref.add_private_chat_message(game, ChatMessageVariant::AlienProbabilities { enemy_filter_probability, friend_filter_probability });
     }
     fn controller_parameters_map(self, game: &Game, actor_ref: PlayerReference) -> ControllerParametersMap {
         ControllerParametersMap::builder(game)
-            .id(ControllerID::role(actor_ref, Role::Percolator, 0))
+            .id(ControllerID::role(actor_ref, Role::Alien, 0))
             .available_selection(AvailableBooleanSelection)
             .night_typical(actor_ref)
             .build_map()
@@ -94,19 +94,19 @@ impl RoleStateImpl for Percolator {
         crate::game::role::common_role::convert_controller_selection_to_visits(
             game,
             actor_ref,
-            ControllerID::role(actor_ref, Role::Percolator, 0),
+            ControllerID::role(actor_ref, Role::Alien, 0),
             false
         )
     }
 }
 
-impl GetClientRoleState<PercolatorClientRoleState> for Percolator {
-    fn get_client_role_state(self, _game: &Game, _actor_ref: PlayerReference) -> PercolatorClientRoleState {
-        PercolatorClientRoleState
+impl GetClientRoleState<AlienClientRoleState> for Alien {
+    fn get_client_role_state(self, _game: &Game, _actor_ref: PlayerReference) -> AlienClientRoleState {
+        AlienClientRoleState
     }
 }
 
-impl Percolator {
+impl Alien {
     fn try_filter_sieve(self, filter_algorithm: impl Fn(PlayerReference) -> bool) -> VecSet<PlayerReference> {
         let mut tries = 0u8;
 

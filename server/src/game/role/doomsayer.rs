@@ -42,7 +42,7 @@ impl DoomsayerGuess{
 
             Role::Detective | Role::Lookout | Role::Spy | 
             Role::Tracker | Role::Philosopher | Role::Psychic | 
-            Role::Auditor | Role::Snoop | Role::Gossip | Role::TallyClerk | Role::Percolator => None,
+            Role::Auditor | Role::Snoop | Role::Gossip | Role::TallyClerk | Role::Alien => None,
 
             Role::Doctor => Some(DoomsayerGuess::Doctor),
             Role::Bodyguard => Some(DoomsayerGuess::Bodyguard),
