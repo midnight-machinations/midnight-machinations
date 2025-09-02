@@ -189,6 +189,21 @@
             {"type": "tallyClerkResult", "evilCount": 0}
         ]
     },
+    "percolator": {
+        "mainRoleSet": "town",
+        "roleSets": ["town", "townCommon", "townInvestigative"],
+        "armor": false,
+        "aura": null,
+        "maxCount": null,
+        "canWriteDeathNote": false,
+        "canBeConvertedTo": [],
+        "chatMessages":[
+            {"type": "percolatorProbabilities", "enemyFilterProbability": 176, "friendFilterProbability": 140},
+            {"type": "percolatorResult", "sieve": [2, 3, 6, 7]},
+            {"type": "percolatorResult", "sieve": [30]},
+            {"type": "percolatorResult", "sieve": []}
+        ]
+    },
     "doctor": {
         "mainRoleSet": "town",
         "roleSets": ["town", "townCommon", "townProtective"],

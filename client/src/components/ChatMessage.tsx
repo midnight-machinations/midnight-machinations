@@ -703,6 +703,10 @@ export function translateChatMessage(
             return translate("chatMessage.gossipResult." + (message.enemies ? "enemies" : "none"));
         case "tallyClerkResult":
             return translate("chatMessage.tallyClerkResult", message.evilCount);
+        case "percolatorResult":
+            return translate("chatMessage.percolatorResult", playerListToString(message.sieve, playerNames));
+        case "percolatorProbabilities":
+            return translate("chatMessage.percolatorProbabilities", Math.round(message.enemyFilterProbability / 255 * 100), Math.round(message.friendFilterProbability / 255 * 100));
         case "lookoutResult":
             return translate("chatMessage.lookoutResult", playerListToString(message.players, playerNames));
         case "spyMafiaVisit":
@@ -1046,6 +1050,14 @@ export type ChatMessageVariant = {
 } | {
     type: "tallyClerkResult",
     evilCount: number
+} | {
+    type: "percolatorResult",
+    sieve: PlayerIndex[]
+} | {
+    type: "percolatorProbabilities",
+    // 0-255
+    enemyFilterProbability: number,
+    friendFilterProbability: number
 } | {
     type: "lookoutResult", 
     players: PlayerIndex[]

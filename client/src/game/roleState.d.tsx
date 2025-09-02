@@ -50,6 +50,8 @@ export type RoleState = {
 } | {
     type: "tallyClerk"
 } | {
+    type: "percolator"
+} | {
     type: "doctor",
     selfHealsRemaining: number,
 } | {
