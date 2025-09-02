@@ -17,6 +17,7 @@ impl ModifierStateImpl for NoTrialPhases{
     fn on_phase_start(self, game: &mut Game, phase: PhaseState) {
         match phase {
             PhaseState::Nomination { .. }
+            | PhaseState::Adjournment { .. }
             | PhaseState::Testimony { .. }
             | PhaseState::Judgement { .. } => {
                 PhaseStateMachine::next_phase(game, Some(PhaseState::Dusk))

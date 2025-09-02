@@ -1697,7 +1697,7 @@
     "wiki.article.role.auditor.guide": "- At night, choose up to 2 outlines from the list\n    - For each outline, you are told up to 4 roles, one of those roles were assigned to a player from that outline, and the other roles are random\n    - You visit the player who was assigned that role, but you are not told who that player is\n    - If the number of possible enabled roles from that outline - 1 is less than 4, you are told that number of roles, otherwise you are told four roles\n    - You can't choose an outline with only 1 role",
     "wiki.article.role.auditor.abilities":"- At night, choose up to 2 outlines from the list\n    - For each outline, you are told up to 4 roles, one of those roles were assigned to a player from that outline, and the other roles are random\n    - You visit the player who was assigned that role, but you are not told who that player is\n    - if the number of possible enabled roles from that outline - 1 is less than 4, you are told that number of roles, otherwise you are told four roles\n    - You can't choose an outline with only 1 role",
     "wiki.article.role.auditor.attributes":"- You are not told the names of any players\n- The random role you are told is from the outline you chose",
-    "wiki.article.role.auditor.extra":"- Your ability works independently of your visits, Your visit getting transported or getting possessed doesn't usually impact your ability\n    - If you are blocked, you don't get results, but you can select that outline again\n- It is possible for you to visit dead players",
+    "wiki.article.role.auditor.extra":"- Your visits are transport immune\n    - If you are blocked, you don't get results, but you can select that outline again\n- It is possible for you to visit dead players",
     "wiki.article.role.auditor.exampleAlibi":"Auditor\nN1:\n@o8 -> Gossip, Detective, Snoop, Philosopher\n@o15 -> Lookout, Escort, Doctor, Cop\nN2:\n@o3 -> Hypnotist, Informant, Framer, Mortician\n@o6 -> Jester, Witch, Mercenary, Scarecrow",
     "wiki.article.role.auditor.exampleAlibi.description":"The auditor gets a lot of information, so make sure to format your alibi so it is as easy to read as possible. Here's an example:",
 
@@ -2062,10 +2062,10 @@
     "wiki.article.role.politician.extra":"* If the only players left are politicians, you win",
 
     "wiki.article.role.arsonist.reminder": "Each night, douse a player in gasoline. Ignite to attack all doused players.",
-    "wiki.article.role.arsonist.guide":"- Select a player to douse\n- Select yourself to ignite, attacking doused players with an indirect protection piercing attack.\n   - If you visit yourself on night 1, nothing happens.\n- You know who is doused.\n* If a player visits you, they become doused.\n- Doused players have suspicious aura as long as an arsonist is alive.",
-    "wiki.article.role.arsonist.abilities":"* Visit a player to douse them\n* Visit yourself to ignite to all doused players\n* If a player visits you, they become doused.",
+    "wiki.article.role.arsonist.guide":"- Select a player to douse\n- Choose to ignite, attacking doused players with an indirect protection piercing attack.\n- You know who is doused.\n* If a player visits you, they become doused.\n- Doused players have suspicious aura as long as an arsonist is alive.",
+    "wiki.article.role.arsonist.abilities":"* Visit a player to douse them\n* Choose to ignite to all doused players\n* If a player visits you, they become doused.",
     "wiki.article.role.arsonist.attributes":"* You can't be doused\n* You are shown who is doused\n* All doused players have a suspicious aura while you are alive",
-    "wiki.article.role.arsonist.extra":"* If you are roleblocked, you still douse visitors\n* Igniting a is an indirect, protection-piercing attack\n* When you ignite, you don't attack dead players\n* When you become an arsonist, you clean the gas off yourself\n* An arsonist can not be attacked by an arsonist igniting",
+    "wiki.article.role.arsonist.extra":"* If you are roleblocked, you still douse visitors\n* Igniting a is an indirect, protection-piercing attack\n* When you ignite, you don't attack dead players\n* When you become an arsonist, you clean the gas off yourself\n* An arsonist can not be attacked by an arsonist igniting\n - If you are blocked, you can't ignite",
 
     "wiki.article.role.werewolf.reminder": "Each day, track a player. Each night, camp a tracked player to rampage them, if they visit anybody, you also attack them.",
     "wiki.article.role.werewolf.lore":"\"Woof woof ...\"",
