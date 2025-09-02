@@ -62,8 +62,8 @@
         "canWriteDeathNote": false,
         "canBeConvertedTo": [],
         "chatMessages":[
-            {"type":"sheriffResult","suspicious":true},
-            {"type":"sheriffResult","suspicious":false}
+            {"type":"detectiveResult","suspicious":true},
+            {"type":"detectiveResult","suspicious":false}
         ]
     },
     "lookout": {
@@ -503,7 +503,7 @@
         "canBeConvertedTo": [],
         "chatMessages":[
             {"type": "targetsMessage", "message": 
-                {"type": "sheriffResult","suspicious":true}
+                {"type": "detectiveResult","suspicious":true}
             },
             {"type": "youWerePossessed", "immune": false},
             {"type": "youWerePossessed", "immune": true},
@@ -716,7 +716,7 @@
         "canWriteDeathNote": false,
         "canBeConvertedTo": ["godfather"],
         "chatMessages":[
-            {"type": "sheriffResult","suspicious": true},
+            {"type": "detectiveResult","suspicious": true},
             {"type": "snoopResult", "townie": false},
             {"type": "seerResult", "enemies": true}
         ]
@@ -771,7 +771,7 @@
         "canBeConvertedTo": ["godfather"],
         "chatMessages":[
             {"type": "targetsMessage", "message": 
-                {"type": "sheriffResult","suspicious":true}
+                {"type": "detectiveResult","suspicious":true}
             },
             {"type": "targetIsPossessionImmune"},
             {"type": "youWerePossessed", "immune": false},
@@ -975,7 +975,7 @@
         "canBeConvertedTo": [],
         "chatMessages":[
             {"type": "targetsMessage", "message": 
-                {"type": "sheriffResult","suspicious":true}
+                {"type": "detectiveResult","suspicious":true}
             },
             {"type": "targetHasRole", "role":"detective"},
             {"type": "targetIsPossessionImmune"},

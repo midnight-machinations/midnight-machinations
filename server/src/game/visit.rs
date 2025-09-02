@@ -11,7 +11,7 @@ pub struct Visit {
     pub wardblockable: bool,
     pub transportable: bool,
 
-    /// Things that cant touch astral visits (Everything can see its OWN astral visit but maybe not others astral visits)
+    /// Things that cant touch indirect visits (Everything can see its OWN astral visit but maybe not others astral visits)
     /// Engineer Trap triggering
     /// Werewolf, Cop, Ambusher, Veteran, Marksman, Rampage 
     /// Snoop getting CT due to being visited

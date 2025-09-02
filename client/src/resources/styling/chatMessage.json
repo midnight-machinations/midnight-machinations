@@ -32,7 +32,7 @@
     "puppeteerPlayerIsNowMarionette": "result",
     "recruiterPlayerIsNowRecruit": "result",
     "roleBlocked": "result",
-    "sheriffResult": "result",
+    "detectiveResult": "result",
     "lookoutResult": "result",
     "spyMafiaVisit": "result",
     "spyMafiaVisit.nobody": "result",

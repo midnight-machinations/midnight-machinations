@@ -33,7 +33,7 @@ impl RoleStateImpl for Detective {
             Detective::player_is_suspicious(game, midnight_variables, target)
         };
         
-        actor_ref.push_night_message(midnight_variables, ChatMessageVariant::SheriffResult {
+        actor_ref.push_night_message(midnight_variables, ChatMessageVariant::DetectiveResult {
             suspicious
         });
         

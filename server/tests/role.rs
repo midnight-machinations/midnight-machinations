@@ -120,7 +120,7 @@ fn detective_basic() {
     game.next_phase();
     assert_contains!(
         sher.get_messages_after_night(1),
-        ChatMessageVariant::SheriffResult { suspicious: true }
+        ChatMessageVariant::DetectiveResult { suspicious: true }
     );
 
     game.skip_to(Night, 2);
@@ -128,7 +128,7 @@ fn detective_basic() {
     game.next_phase();
     assert_contains!(
         sher.get_messages_after_night(2),
-        ChatMessageVariant::SheriffResult { suspicious: false }
+        ChatMessageVariant::DetectiveResult { suspicious: false }
     );
 }
 
@@ -146,7 +146,7 @@ fn detective_neutrals(){
     game.next_phase();
     assert_contains!(
         sher.get_messages_after_night(1),
-        ChatMessageVariant::SheriffResult { suspicious: true }
+        ChatMessageVariant::DetectiveResult { suspicious: true }
     );
     
     game.skip_to(Night, 2);
@@ -154,7 +154,7 @@ fn detective_neutrals(){
     game.next_phase();
     assert_contains!(
         sher.get_messages_after_night(2),
-        ChatMessageVariant::SheriffResult { suspicious: false }
+        ChatMessageVariant::DetectiveResult { suspicious: false }
     );
     
     game.skip_to(Night, 3);
@@ -162,7 +162,7 @@ fn detective_neutrals(){
     game.next_phase();
     assert_contains!(
         sher.get_messages_after_night(3),
-        ChatMessageVariant::SheriffResult { suspicious: true }
+        ChatMessageVariant::DetectiveResult { suspicious: true }
     );
 
 }
@@ -228,7 +228,7 @@ fn detective_godfather() {
     );
     sher.send_ability_input_player_list_typical(mafia);
     game.next_phase();
-    assert_contains!(sher.get_messages(), ChatMessageVariant::SheriffResult { suspicious: false });
+    assert_contains!(sher.get_messages(), ChatMessageVariant::DetectiveResult { suspicious: false });
 }
 
 #[test]
@@ -583,11 +583,11 @@ fn transporter_basic_seer_sheriff_framer() {
     );
     assert_contains!(
         town1.get_messages_after_night(1),
-        ChatMessageVariant::SheriffResult { suspicious: false }
+        ChatMessageVariant::DetectiveResult { suspicious: false }
     );
     assert_contains!(
         town2.get_messages_after_night(1),
-        ChatMessageVariant::SheriffResult { suspicious: true }
+        ChatMessageVariant::DetectiveResult { suspicious: true }
     );
 }
 
@@ -655,7 +655,7 @@ fn retributionist_basic(){
     assert_contains!(
         ret.get_messages_after_night(4),
         ChatMessageVariant::TargetsMessage{message: Box::new(
-            ChatMessageVariant::SheriffResult{ suspicious: true }
+            ChatMessageVariant::DetectiveResult{ suspicious: true }
         )}
     );
 
@@ -665,7 +665,7 @@ fn retributionist_basic(){
     assert_contains!(
         ret.get_messages_after_night(5),
         ChatMessageVariant::TargetsMessage{message: Box::new(
-            ChatMessageVariant::SheriffResult{ suspicious: true }
+            ChatMessageVariant::DetectiveResult{ suspicious: true }
         )}
     );
 
@@ -675,7 +675,7 @@ fn retributionist_basic(){
     assert_not_contains!(
         ret.get_messages_after_night(6),
         ChatMessageVariant::TargetsMessage{message: Box::new(
-            ChatMessageVariant::SheriffResult{ suspicious: true }
+            ChatMessageVariant::DetectiveResult{ suspicious: true }
         )}
     );
 }
@@ -720,7 +720,7 @@ fn witch_basic(){
     assert!(witch.send_ability_input_two_player_typical(sher, mafioso));
     game.next_phase();
     assert_contains!(witch.get_messages(), ChatMessageVariant::TargetsMessage{message: Box::new(
-        ChatMessageVariant::SheriffResult{ suspicious: true }
+        ChatMessageVariant::DetectiveResult{ suspicious: true }
     )});
     
     game.skip_to(Night, 2);
@@ -1244,7 +1244,7 @@ fn drunk_suspicious_aura() {
 
     assert_contains!(
         detective.get_messages(),
-        ChatMessageVariant::SheriffResult { suspicious: true }
+        ChatMessageVariant::DetectiveResult { suspicious: true }
     );
 }
 
@@ -2057,7 +2057,7 @@ fn arsonist_ignites_and_aura(){
     );
 
     assert!(townie.send_ability_input_player_list_typical(arso));
-    assert!(arso.send_ability_input_player_list_typical(arso));
+    assert!(arso.send_ability_input_boolean_typical(true));
     assert!(det.send_ability_input_player_list_typical(townie));
 
     game.next_phase();
@@ -2070,19 +2070,23 @@ fn arsonist_ignites_and_aura(){
 
     assert_contains!(
         det.get_messages_after_night(2), 
-        ChatMessageVariant::SheriffResult{ suspicious: true }
+        ChatMessageVariant::DetectiveResult{ suspicious: true }
     );
 
     game.skip_to(Night, 3);
     
-    assert!(arso.send_ability_input_player_list_typical(townie2));
+    assert!(arso.send_ability_input_boolean_typical(false));
+    arso.send_ability_input(ControllerInput::new(
+        ControllerID::role(arso.player_ref(), Role::Arsonist, 1),
+        PlayerListSelection(vec![townie2.player_ref()])
+    ));
     assert!(det.send_ability_input_player_list_typical(townie2));
 
     game.next_phase();
 
     assert_contains!(
         det.get_messages_after_night(3), 
-        ChatMessageVariant::SheriffResult{ suspicious: true }
+        ChatMessageVariant::DetectiveResult{ suspicious: true }
     );
 
     game.skip_to(Nomination, 4);
@@ -2106,7 +2110,7 @@ fn arsonist_ignites_and_aura(){
     
     assert_contains!(
         det.get_messages_after_night(4), 
-        ChatMessageVariant::SheriffResult{ suspicious: false }
+        ChatMessageVariant::DetectiveResult{ suspicious: false }
     );
 
     

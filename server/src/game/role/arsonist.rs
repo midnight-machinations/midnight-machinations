@@ -1,5 +1,6 @@
 use serde::Serialize;
 
+use crate::game::controllers::AvailableBooleanSelection;
 use crate::game::event::on_midnight::{MidnightVariables, OnMidnightPriority};
 use crate::game::attack_power::AttackPower;
 use crate::game::components::tags::{TagSetID, Tags};
@@ -41,12 +42,13 @@ impl RoleStateImpl for Arsonist {
                 }
             },
             OnMidnightPriority::Kill => {
-                if game.day_number() <= 1 {return};
+                if 
+                    game.day_number() <= 1 ||
+                    actor_ref.night_blocked(midnight_variables) ||
+                    !Self::chose_to_ignite(game, actor_ref)
+                {return};
 
-                let actor_visits = actor_ref.untagged_night_visits_cloned(midnight_variables);             
-                if let Some(visit) = actor_visits.first() && actor_ref == visit.target{
-                    Self::ignite(game, actor_ref, midnight_variables);
-                }
+                Self::ignite(game, actor_ref, midnight_variables);
             }
             _ => {}
         }
@@ -54,16 +56,31 @@ impl RoleStateImpl for Arsonist {
     fn controller_parameters_map(self, game: &Game, actor_ref: PlayerReference) -> ControllerParametersMap {
         ControllerParametersMap::builder(game)
             .id(ControllerID::role(actor_ref, Role::Arsonist, 0))
-            .single_player_selection_typical(actor_ref, game.day_number() > 1, true)
+            .available_selection(AvailableBooleanSelection)
             .night_typical(actor_ref)
-            .add_grayed_out_condition(false)
+            .add_grayed_out_condition(game.day_number() <= 1)
             .build_map()
+            .combine_overwrite_owned(
+                if !Self::chose_to_ignite(game, actor_ref) {
+                    ControllerParametersMap::builder(game)
+                        .id(ControllerID::role(actor_ref, Role::Arsonist, 1))
+                        .single_player_selection_typical(
+                            actor_ref,
+                            false,
+                            true
+                        )
+                        .night_typical(actor_ref)
+                        .build_map()
+                }else{
+                    ControllerParametersMap::default()
+                }
+            )
     }
     fn convert_selection_to_visits(self, game: &Game, actor_ref: PlayerReference) -> Vec<Visit> {
         crate::game::role::common_role::convert_controller_selection_to_visits(
             game,
             actor_ref,
-            ControllerID::role(actor_ref, Role::Arsonist, 0),
+            ControllerID::role(actor_ref, Role::Arsonist, 1),
             false
         )
     }
@@ -105,5 +122,8 @@ impl Arsonist{
             !player_ref.ability_deactivated_from_death(game) &&
             player_ref.role(game) == Role::Arsonist
         )
+    }
+    fn chose_to_ignite(game: &Game, actor: PlayerReference)->bool{
+        ControllerID::role(actor, Role::Arsonist, 0).get_boolean_selection(game).is_some_and(|b|b.0)
     }
 }

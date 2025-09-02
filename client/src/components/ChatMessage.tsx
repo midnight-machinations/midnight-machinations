@@ -693,12 +693,12 @@ export function translateChatMessage(
         /* NIGHT */
         case "godfatherBackupKilled":
             return translate("chatMessage.godfatherBackupKilled", encodeString(playerNames[message.backup]));
-        case "sheriffResult":
-            return translate("chatMessage.sheriffResult." + (message.suspicious ? "suspicious" : "innocent"));
+        case "detectiveResult":
+            return translate("chatMessage.detectiveResult." + (message.suspicious ? "suspicious" : "innocent"));
         case "snoopResult":
             return translate("chatMessage.snoopResult." + (message.townie ? "townie" : "inconclusive"));
         case "polymathSnoopResult":
-            return translate(message.inno ? "chatMessage.sheriffResult.innocent" : "chatMessage.snoopResult.inconclusive");
+            return translate(message.inno ? "chatMessage.detectiveResult.innocent" : "chatMessage.snoopResult.inconclusive");
         case "gossipResult":
             return translate("chatMessage.gossipResult." + (message.enemies ? "enemies" : "none"));
         case "tallyClerkResult":
@@ -1032,7 +1032,7 @@ export type ChatMessageVariant = {
 {
     type: "wardblocked"
 } | {
-    type: "sheriffResult", 
+    type: "detectiveResult", 
     suspicious: boolean
 } | {
     type: "snoopResult", 

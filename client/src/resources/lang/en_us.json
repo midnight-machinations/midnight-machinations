@@ -514,7 +514,8 @@
 
     "role.arsonist.name": "Arsonist",
     "role.arsonist.name:var.0": "Arsonists",
-    "controllerId.role.arsonist.0.name": "Douse Or Ignite",
+    "controllerId.role.arsonist.0.name": "Ignite",
+    "controllerId.role.arsonist.1.name": "Douse",
 
     "role.werewolf.name": "Werewolf",
     "role.werewolf.name:var.0": "Werewolves",
@@ -1058,8 +1059,8 @@
     
     "chatMessage.youArePoisoned": "You are poisoned, you will be attacked tomorrow night.",
 
-    "chatMessage.sheriffResult.suspicious":"Your target is enemies with the town.",
-    "chatMessage.sheriffResult.innocent":"Your target is friends with the town.",
+    "chatMessage.detectiveResult.suspicious":"Your target is enemies with the town.",
+    "chatMessage.detectiveResult.innocent":"Your target is friends with the town.",
     "chatMessage.lookoutResult":"Your target was visited by \\0.",
     "chatMessage.trackerResult":"Your target visited \\0.",
     "chatMessage.seerResult.friends":"Your targets are friends.",

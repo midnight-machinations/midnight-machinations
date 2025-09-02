@@ -35,6 +35,12 @@ impl ControllerParametersMap{
             self.controllers.insert(ability_id, controller_selection);
         }
     }
+    pub fn combine_overwrite_owned(mut self, other: Self)->Self{
+        for (ability_id, controller_selection) in other.controllers {
+            self.controllers.insert(ability_id, controller_selection);
+        }
+        self
+    }
     pub fn combine(maps: impl IntoIterator<Item=ControllerParametersMap>) -> Self {
         let mut curr = ControllerParametersMap::default();
 
