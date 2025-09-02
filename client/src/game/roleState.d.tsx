@@ -52,7 +52,7 @@ export type RoleState = {
 } | {
     type: "tallyClerk"
 } | {
-    type: "percolator"
+    type: "alien"
 } | {
     type: "doctor",
     selfHealsRemaining: number,

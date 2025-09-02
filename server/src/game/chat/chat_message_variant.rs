@@ -175,10 +175,10 @@ pub enum ChatMessageVariant {
     GossipResult{enemies: bool},
     #[serde(rename_all = "camelCase")]
     TallyClerkResult{evil_count: u8},
-    PercolatorResult{sieve: VecSet<PlayerReference>},
+    AlienResult{sieve: VecSet<PlayerReference>},
     // This has to send u8s because f64 doesn't implement Ord
     #[serde(rename_all = "camelCase")]
-    PercolatorProbabilities {
+    AlienProbabilities {
         // 0-255
         enemy_filter_probability: u8,
         friend_filter_probability: u8
