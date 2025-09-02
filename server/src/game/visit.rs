@@ -30,10 +30,22 @@ impl Visit {
             indirect: false,
         }
     }
+    pub fn new_none(visitor: PlayerReference, target: PlayerReference)->Self{
+        Self {
+            visitor, target,
+            tag: VisitTag::None,
+            attack: false,
+            wardblock_immune: false,
+            transport_immune: false,
+            investigate_immune: false,
+            indirect: false
+        }
+    }
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum VisitTag{
+    None,
     Role{role: Role, id: u8},
     SyndicateGunItem,
     SyndicateBackupAttack
