@@ -36,7 +36,6 @@ pub enum GraveDeathCause {
     None,
     Execution,
     LeftTown,
-    BrokenHeart,
     Killers(Vec<GraveKiller>)
 }
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq, PartialOrd, Ord, Hash)]
@@ -127,20 +126,6 @@ impl Grave{
                 role: player_ref.role(game), 
                 death_cause: GraveDeathCause::LeftTown, 
                 will: player_ref.alibi(game).to_owned(), 
-                death_notes: vec![]
-            }
-        }
-    }
-    
-    pub fn from_broken_heart(game: &Game, player_ref: PlayerReference) -> Grave {
-        Grave {
-            player: player_ref,
-            died_phase: GravePhase::from_phase_type(game.current_phase().phase()), 
-            day_number: game.phase_machine.day_number,
-            information: GraveInformation::Normal { 
-                role: player_ref.role(game),
-                death_cause: GraveDeathCause::BrokenHeart, 
-                will: player_ref.alibi(game).to_owned(),
                 death_notes: vec![]
             }
         }
