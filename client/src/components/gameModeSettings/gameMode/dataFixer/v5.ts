@@ -7,7 +7,8 @@ import { ListMapData } from "../../../../ListMap";
 import { Failure, ParseResult, ParseSuccess, Success, isFailure } from "../parse";
 import { parseName } from "./initial";
 import { parseEnabledRoles } from "./v2";
-import { parseRoleList, parseSettings } from "./v4";
+import { parseSettings } from "./v3";
+import { parseRoleList } from "./v4";
 
 const v5: VersionConverter = {
     convertSettings: parseSettings,

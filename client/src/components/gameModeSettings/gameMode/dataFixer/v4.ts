@@ -1,7 +1,6 @@
 import { VersionConverter } from ".";
 import { GameMode } from "..";
 import { Conclusion, CONCLUSIONS, INSIDER_GROUPS, InsiderGroup, PhaseTimes } from "../../../../game/gameState.d";
-import { getDefaultSettings, Settings } from "../../../../game/localStorage";
 import { defaultModifierState, ModifierID, ModifierState } from "../../../../game/modifiers";
 import { RoleList, RoleOutline, RoleOutlineOption, RoleSet } from "../../../../game/roleListState.d";
 import { Role } from "../../../../game/roleState.d";
@@ -9,6 +8,7 @@ import { ListMapData } from "../../../../ListMap";
 import { Failure, ParseResult, ParseSuccess, Success, isFailure } from "../parse";
 import { parseName, parsePhaseTimes, parseRole, parseRoleSet } from "./initial";
 import { parseEnabledModifiers, parseEnabledRoles } from "./v2";
+import { parseSettings } from "./v3";
 
 const v4: VersionConverter = {
     convertSettings: parseSettings,
@@ -38,34 +38,6 @@ type v5GameModeData = {
 }
 
 type v5ShareableGameMode = v5GameModeData & { format: 'v5', name: string }
-
-export function parseSettings(json: NonNullable<any>): ParseResult<Settings> {
-    if (typeof json !== "object" || Array.isArray(json)) {
-        return Failure("settingsNotObject", json);
-    }
-
-    for(const key of ['format', 'volume', 'fontSize', 'accessibilityFont', 'defaultName', 'language', 'roleSpecificMenus']) {
-        if (!Object.keys(json).includes(key)) {
-            return Failure(`${key as keyof Settings}KeyMissingFromSettings`, json);
-        }
-    }
-
-    for(const key of ['maxMenus', 'menuOrder']) {
-        if (!Object.keys(json).includes(key)) {
-            json.maxMenus = getDefaultSettings().maxMenus
-            json.menuOrder = getDefaultSettings().menuOrder
-        }
-    }
-
-    if (json.format !== "v4") {
-        return Failure("settingsFormatNotV4", json);
-    }
-    
-    const roleSpecificMenus = parseRoleSpecificMenus(json.roleSpecificMenus);
-    if (isFailure(roleSpecificMenus)) return roleSpecificMenus;
-
-    return Success(json);
-}
 
 function parseRoleSpecificMenus(json: NonNullable<any>): ParseResult<Role[]> {
     if (!Array.isArray(json)) {

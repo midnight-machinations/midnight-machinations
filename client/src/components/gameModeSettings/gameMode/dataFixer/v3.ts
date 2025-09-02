@@ -38,7 +38,7 @@ type v4GameModeData = {
 
 type v4ShareableGameMode = v4GameModeData & { format: 'v4', name: string }
 
-function parseSettings(json: NonNullable<any>): ParseResult<Settings> {
+export function parseSettings(json: NonNullable<any>): ParseResult<Settings> {
     if (typeof json !== "object" || Array.isArray(json)) {
         return Failure("settingsNotObject", json);
     }
@@ -55,15 +55,11 @@ function parseSettings(json: NonNullable<any>): ParseResult<Settings> {
             json.menuOrder = getDefaultSettings().menuOrder
         }
     }
-
-    if (json.format !== "v3") {
-        return Failure("settingsFormatNotV3", json);
-    }
     
     const roleSpecificMenus = parseRoleSpecificMenus(json.roleSpecificMenus);
     if (isFailure(roleSpecificMenus)) return roleSpecificMenus;
 
-    return Success(json);
+    return Success({ ...json, format: "v5" });
 }
 
 function parseRoleSpecificMenus(json: NonNullable<any>): ParseResult<Role[]> {

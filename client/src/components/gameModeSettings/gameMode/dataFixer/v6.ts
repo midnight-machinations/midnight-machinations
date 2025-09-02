@@ -4,7 +4,8 @@ import { PHASES, PhaseTimes } from "../../../../game/gameState.d";
 import { Failure, ParseResult, ParseSuccess, Success, isFailure } from "../parse";
 import { parseName } from "./initial";
 import { parseEnabledRoles } from "./v2";
-import { parseRoleList, parseSettings } from "./v4";
+import { parseSettings } from "./v3";
+import { parseRoleList } from "./v4";
 import { parseModifierSettings } from "./v5";
 
 const v6: VersionConverter = {
