@@ -39,19 +39,6 @@ type v5GameModeData = {
 
 type v5ShareableGameMode = v5GameModeData & { format: 'v5', name: string }
 
-function parseRoleSpecificMenus(json: NonNullable<any>): ParseResult<Role[]> {
-    if (!Array.isArray(json)) {
-        return Failure("roleSpecificMenusNotArray", json);
-    }
-
-    const roleList = json.map(parseRole);
-    for (const role of roleList) {
-        if (isFailure(role)) return role;
-    }
-
-    return Success(roleList.map(success => (success as ParseSuccess<Role>).value));
-}
-
 function parseGameModeStorage(json: NonNullable<any>): ParseResult<v5GameModeStorage> {
     if (typeof json !== "object" || Array.isArray(json)) {
         return Failure("gameModeStorageNotObject", json);
