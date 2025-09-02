@@ -1702,7 +1702,7 @@
 
     "wiki.article.role.snoop.reminder": "At night, select a player to learn if they are a town loyalist, but you can't tell if you are visited a player who isn't your buddy.",
     "wiki.article.role.snoop.lore":"\"Dude! Dude! Check this out!\"",
-    "wiki.article.role.snoop.guide": "- At night, select a player and a role. You are either told that the player you chose is a town loyalist, or that you can't tell\n    - You can't tell what your target was if:\n        - They aren't a town loyalist\n        - You are visited by at least one player who does not have the role you chose.\n        - They have a suspicious aura\n\n    - Otherwise, you are told they are a town loyalist",
+    "wiki.article.role.snoop.guide": "- At night, select a player and a role. You are either told that the player you chose is a town loyalist, or that you can't tell\n    - You can't tell what your target was if:\n        - They aren't a town loyalist\n        - You are visited by a non-buddy player (visited by any player who doesn't have the role you chose).\n        - They have a suspicious aura\n\n    - Otherwise, you are told they are a town loyalist",
     "wiki.article.role.snoop.abilities":"",
     "wiki.article.role.snoop.attributes":"",
     "wiki.article.role.snoop.extra":"- innocent aura doesn't effect your results",
