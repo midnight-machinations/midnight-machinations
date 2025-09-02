@@ -43,9 +43,15 @@ def main():
         lang_dict: dict[str, str] = dict(lang)
 
         scrambled_dict: dict[str, str] = {}
+
+        # Load the existing scrambled language data
+        with open(SCRAMBLED_LANG_FILE_PATH, "r") as scrambled_lang_file:
+            scrambled_dict = json.loads(scrambled_lang_file.read())
+            cache = scrambled_dict.copy()
+
         for (key, value) in lang_dict.items():
             scrambled_dict[key] = scramble(key, value, cache=cache)
-        
+
         with open(SCRAMBLED_LANG_FILE_PATH, "w+") as scrambled_lang_file:
             scrambled_lang_file.write(json.dumps(scrambled_dict, indent=4))
 
