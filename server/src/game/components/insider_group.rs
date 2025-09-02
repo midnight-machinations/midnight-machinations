@@ -6,7 +6,8 @@ use crate::{game::{chat::{ChatGroup, ChatMessageVariant}, event::{on_add_insider
 pub struct InsiderGroups{
     mafia: InsiderGroup,
     cult: InsiderGroup,
-    puppeteer: InsiderGroup
+    puppeteer: InsiderGroup,
+    extra: InsiderGroup
 }
 impl InsiderGroups{
 
@@ -15,6 +16,7 @@ impl InsiderGroups{
             mafia: InsiderGroup::default(),
             cult: InsiderGroup::default(),
             puppeteer: InsiderGroup::default(),
+            extra: InsiderGroup::default(),
         }
     }
 
@@ -25,7 +27,8 @@ impl InsiderGroups{
         let mut out = Self {
             mafia: InsiderGroup::default(),
             cult: InsiderGroup::default(),
-            puppeteer: InsiderGroup::default()
+            puppeteer: InsiderGroup::default(),
+            extra: InsiderGroup::default()
         };
         for player in unsafe { PlayerReference::all_players_from_count(player_count) }{
             for group in assignments
@@ -72,6 +75,7 @@ impl InsiderGroups{
             InsiderGroupID::Mafia => &self.mafia,
             InsiderGroupID::Cult => &self.cult,
             InsiderGroupID::Puppeteer => &self.puppeteer,
+            InsiderGroupID::Extra => &self.extra,
         }
     }
     fn get_group_mut(&mut self, id: InsiderGroupID)->&mut InsiderGroup{
@@ -79,6 +83,7 @@ impl InsiderGroups{
             InsiderGroupID::Mafia => &mut self.mafia,
             InsiderGroupID::Cult => &mut self.cult,
             InsiderGroupID::Puppeteer => &mut self.puppeteer,
+            InsiderGroupID::Extra => &mut self.extra,
         }
     }
 }
@@ -87,7 +92,8 @@ impl InsiderGroups{
 pub enum InsiderGroupID{
     Mafia,
     Cult,
-    Puppeteer
+    Puppeteer,
+    Extra
 }
 #[derive(Default, Debug)]
 pub struct InsiderGroup{
@@ -100,14 +106,16 @@ impl InsiderGroupID{
         vec![
             InsiderGroupID::Mafia,
             InsiderGroupID::Cult,
-            InsiderGroupID::Puppeteer
+            InsiderGroupID::Puppeteer,
+            InsiderGroupID::Extra
         ].into_iter().collect()
     }
     pub const fn get_insider_chat_group(&self)->ChatGroup{
         match self{
             InsiderGroupID::Mafia=>ChatGroup::Mafia,
             InsiderGroupID::Cult=>ChatGroup::Cult,
-            InsiderGroupID::Puppeteer=>ChatGroup::Puppeteer
+            InsiderGroupID::Puppeteer=>ChatGroup::Puppeteer,
+            InsiderGroupID::Extra=>ChatGroup::Extra
         }
     }
     pub fn get_insider_group_from_chat_group(chat: &ChatGroup)->Option<InsiderGroupID>{

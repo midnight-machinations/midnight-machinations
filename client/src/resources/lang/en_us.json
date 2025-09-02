@@ -729,6 +729,8 @@
     "chatGroup.puppeteer.icon": "🧵",
     "chatGroup.puppeteer.name": "Puppeteer",
     "chatGroup.warden.icon": "🕹️",
+    "chatGroup.extra.icon": "🔰",
+    "chatGroup.extra.name": "Extra",
 
     "messageSender.livingToDead.icon": "🔮",
 
