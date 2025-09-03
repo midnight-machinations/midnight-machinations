@@ -160,11 +160,11 @@ export default function SettingsMenu(): ReactElement {
                 </section>
                 <section>
                     <h2><StyledText className="keyword-evil">{translate("menu.settings.dangerZone")}</StyledText></h2>
-                    <button onClick={()=>{
+                    <Button onClick={()=>{
                         if(!window.confirm(translate("confirmDelete"))) return;
                         localStorage.clear();
                         anchorController.clearCoverCard();
-                    }}><Icon>delete_forever</Icon> {translate('menu.settings.eraseSaveData')}</button>
+                    }}><Icon>delete_forever</Icon> {translate('menu.settings.eraseSaveData')}</Button>
                 </section>
             </div>
         </main>
