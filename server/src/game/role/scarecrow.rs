@@ -1,6 +1,7 @@
 use serde::Serialize;
 
 use crate::game::components::graves::grave::Grave;
+use crate::game::components::night_visits::Visits;
 use crate::game::event::on_midnight::{MidnightVariables, OnMidnightPriority};
 
 use crate::game::components::win_condition::WinCondition;
@@ -26,27 +27,18 @@ pub(super) const DEFENSE: DefensePower = DefensePower::None;
 impl RoleStateImpl for Scarecrow {
     type ClientRoleState = Scarecrow;
     fn on_midnight(self, game: &mut Game, midnight_variables: &mut MidnightVariables, actor_ref: PlayerReference, priority: OnMidnightPriority) {
-        if priority != OnMidnightPriority::Ward {return;}
+        let Some(target) = Visits::default_target(game, midnight_variables, actor_ref) else {return};
+        if !matches!(priority, OnMidnightPriority::PreWard | OnMidnightPriority::Ward) {return};
         
+        let mut players = target.ward_night_action(game, midnight_variables, priority);
+        players.shuffle(&mut rand::rng());
 
-        let actor_visits = actor_ref.untagged_night_visits_cloned(midnight_variables);
-        let Some(visit) = actor_visits.first() else {return};
-
-        let target_ref = visit.target;
-
-        let mut blocked_players = target_ref.ward(game, midnight_variables);
-        blocked_players.shuffle(&mut rand::rng());
-
-        let message = ChatMessageVariant::ScarecrowResult { players:
-            PlayerReference::ref_vec_to_index(blocked_players.as_slice())
-        };
-
-        for player_ref in blocked_players.iter(){
-            actor_ref.reveal_players_role(game, *player_ref);
+        for player in players.iter(){
+            actor_ref.reveal_players_role(game, *player);
         }
-        actor_ref.reveal_players_role(game, target_ref);
+        actor_ref.reveal_players_role(game, target);
         
-        actor_ref.push_night_message(midnight_variables, message);
+        actor_ref.push_night_message(midnight_variables, ChatMessageVariant::ScarecrowResult { players });
         
     }
     fn controller_parameters_map(self, game: &Game, actor_ref: PlayerReference) -> ControllerParametersMap {

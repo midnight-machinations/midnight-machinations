@@ -20,12 +20,8 @@ pub(super) const DEFENSE: DefensePower = DefensePower::None;
 impl RoleStateImpl for Bouncer {
     type ClientRoleState = Bouncer;
     fn on_midnight(self, game: &mut Game, midnight_variables: &mut MidnightVariables, actor_ref: PlayerReference, priority: OnMidnightPriority) {
-        if priority != OnMidnightPriority::Ward {return;}
-        
-
-        if let Some(visit) = Visits::default_visit(game, midnight_variables, actor_ref) {
-            let target_ref = visit.target;
-            target_ref.ward(game, midnight_variables);
+        if let Some(target) = Visits::default_target(game, midnight_variables, actor_ref) {
+            target.ward_night_action(game, midnight_variables, priority);
         }
     }
     fn controller_parameters_map(self, game: &Game, actor_ref: PlayerReference) -> ControllerParametersMap {

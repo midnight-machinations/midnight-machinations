@@ -15,12 +15,13 @@ event_priority!(OnMidnightPriority{
     InitializeNight,
 
     TopPriority,
-    Ward,
+    PreWard,
 
     Transporter,
     Warper,
 
     Possess,
+    Ward,
     Roleblock,
 
     Deception,  //set aura //set attack

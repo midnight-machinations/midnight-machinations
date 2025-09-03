@@ -16,22 +16,18 @@ impl Detained{
         }
     }
     pub fn on_midnight(game: &mut Game, _event: &OnMidnight, midnight_variables: &mut MidnightVariables, priority: OnMidnightPriority){
-        match priority {
-            OnMidnightPriority::Ward => {
-                for player in PlayerReference::all_players(game){
-                    if Self::is_detained(game, player){
-                        player.ward(game, midnight_variables);
-                    }
+        for player in PlayerReference::all_players(game){
+            if Self::is_detained(game, player){
+                player.ward_night_action(game, midnight_variables, priority);
+            }
+        }
+
+        if OnMidnightPriority::Roleblock == priority {
+            for player in PlayerReference::all_players(game){
+                if Self::is_detained(game, player){
+                    player.roleblock(game, midnight_variables, true);
                 }
             }
-            OnMidnightPriority::Roleblock => {
-                for player in PlayerReference::all_players(game){
-                    if Self::is_detained(game, player){
-                        player.roleblock(game, midnight_variables, true);
-                    }
-                }
-            }
-            _ => {}
         }
     }
 

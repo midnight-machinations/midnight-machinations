@@ -14,7 +14,7 @@ use crate::{
         game_conclusion::GameConclusion,
         modifiers::ModifierID, phase::PhaseType,
         role::{chronokaiser::Chronokaiser, medium::Medium, Role, RoleState},
-        visit::Visit,
+        visit::{Visit, VisitTag},
         Game
     },
     packet::ToClientPacket, vec_map::VecMap, vec_set::VecSet
@@ -25,18 +25,6 @@ use super::PlayerReference;
 impl PlayerReference{
     pub fn roleblock(&self, game: &mut Game, midnight_variables: &mut MidnightVariables, send_messages: bool) {
         OnPlayerRoleblocked::new(*self, !send_messages).invoke(game, midnight_variables);
-    }
-    pub fn ward(&self, game: &mut Game, midnight_variables: &mut MidnightVariables) -> Vec<PlayerReference> {
-        let mut out = Vec::new();
-        for visit in Visits::into_iter(midnight_variables) {
-            if visit.wardblock_immune {
-                continue;
-            }
-            if visit.target != *self {continue;}
-            OnVisitWardblocked::new(visit).invoke(game, midnight_variables);
-            out.push(visit.visitor);
-        }
-        out
     }
 
     #[expect(clippy::too_many_arguments, reason="this function is goated tho")]
@@ -241,6 +229,55 @@ impl PlayerReference{
             ControllerSelection::Kira(..) => {}
         }
     }
+    pub fn possession_immune(&self, game: &Game) -> bool {
+        self.role(game).possession_immune()
+    }
+
+    pub fn ward_night_action(&self, game: &mut Game, midnight_variables: &mut MidnightVariables, priority: OnMidnightPriority) -> Vec<PlayerReference> {
+        match priority {
+            OnMidnightPriority::PreWard => self.pre_ward(game, midnight_variables),
+            OnMidnightPriority::Ward => self.ward(game, midnight_variables),
+            _ => vec![]
+        }
+    }
+
+    fn pre_ward(&self, game: &mut Game, midnight_variables: &mut MidnightVariables) -> Vec<PlayerReference> {
+        let mut out = Vec::new();
+        for visit in Visits::into_iter(midnight_variables) {
+            if visit.wardblock_immune {
+                continue;
+            }
+            if !matches!(visit.tag,
+                VisitTag::Role { role: Role::Transporter, .. } |
+                VisitTag::Role { role: Role::Warper, .. } |
+                VisitTag::Role { role: Role::Porter, .. } |
+                VisitTag::Role { role: Role::Polymath, id: 3 } |
+
+                VisitTag::Role { role: Role::Witch, .. } |
+                VisitTag::Role { role: Role::Retributionist, .. } |
+                VisitTag::Role { role: Role::Necromancer, .. }
+            ) {
+                continue;
+            }
+            if visit.target != *self {continue;}
+            OnVisitWardblocked::new(visit).invoke(game, midnight_variables);
+            out.push(visit.visitor);
+        }
+        out
+    }
+    fn ward(&self, game: &mut Game, midnight_variables: &mut MidnightVariables) -> Vec<PlayerReference> {
+        let mut out = Vec::new();
+        for visit in Visits::into_iter(midnight_variables) {
+            if visit.wardblock_immune {
+                continue;
+            }
+            if visit.target != *self {continue;}
+            OnVisitWardblocked::new(visit).invoke(game, midnight_variables);
+            out.push(visit.visitor);
+        }
+        out
+    }
+
 
     pub fn die_and_add_grave(&self, game: &mut Game, grave: Grave){
         if !self.alive(game) { return }
@@ -348,9 +385,7 @@ impl PlayerReference{
             )
         )
     }
-    pub fn possession_immune(&self, game: &Game) -> bool {
-        self.role(game).possession_immune()
-    }
+    
     pub fn get_won_game(&self, game: &Game, conclusion: GameConclusion) -> bool {
         match self.win_condition(game){
             WinCondition::GameConclusionReached { win_if_any } => win_if_any.contains(&conclusion),
