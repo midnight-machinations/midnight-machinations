@@ -179,7 +179,7 @@ impl PlayerReference{
                 if possessed == possessed_into {
                     Controllers::set_selection_in_controller(
                         game,
-                        possessed,
+                        Some(possessed),
                         id,
                         BooleanSelection(true),
                         true
@@ -195,7 +195,7 @@ impl PlayerReference{
 
                 Controllers::set_selection_in_controller(
                     game,
-                    possessed,
+                    Some(possessed),
                     id,
                     TwoPlayerOptionSelection(selection),
                     true
@@ -213,7 +213,7 @@ impl PlayerReference{
 
                 Controllers::set_selection_in_controller(
                     game,
-                    possessed,
+                    Some(possessed),
                     id,
                     PlayerListSelection(selection),
                     true

@@ -1008,6 +1008,7 @@
     "chatMessage.trialInformation":"\\0 votes are needed for a trial. There are \\1 trials left today.",
     "chatMessage.voted":"\\0 voted for \\1.",
     "chatMessage.voted.cleared":"\\0 decided not to vote.",
+    "chatMessage.witnessesCalled":"\\0 called these witnesses: \\1.",
     "chatMessage.playerNominated":"\\0 was nominated by these players: \\1.",
     "chatMessage.judgementVerdict":"\\0 decided \\1.",
     "chatMessage.trialVerdict":"\\0 was voted \\1 with \\2 innocent votes and \\3 guilty votes.",
@@ -1909,8 +1910,8 @@
     "wiki.article.role.consort.attributes":"* You can't be roleblocked\n* Your target is told when they are roleblocked, even if they are immune to being roleblocked",
     "wiki.article.role.consort.extra":"* When someone is roleblocked, their visits are wiped, so they don't visit anyone\n* You can't select other syndicate members",
 
-    "wiki.article.role.blackmailer.reminder": "Each night, select a player to silence until the next night.",
-    "wiki.article.role.blackmailer.guide": "- At night, select a player to silence\n- The silenced player can't speak during the next day.\n- While a blackmailer is alive, nomination votes are hidden and verdict votes are hidden.\n- You can't choose to silence the player you silenced yesterday.",
+    "wiki.article.role.blackmailer.reminder": "Each night, select a player to silence until the next night. All votes are hidden while you are alive.",
+    "wiki.article.role.blackmailer.guide": "- At night, select a player to silence\n- The silenced player can't speak during the next day.\n- While a blackmailer is alive, nomination votes are hidden and verdict votes are hidden.\n- You can't choose to silence the player you silenced yesterday.\n- Silenced players call all witnesses at the start of testimony.",
     "wiki.article.role.blackmailer.abilities":"* Visit a player to silence them during the next day",
     "wiki.article.role.blackmailer.attributes":"- Silenced players can not talk in chat or out loud during the entire next day.",
     "wiki.article.role.blackmailer.extra":"* The silenced player is no longer be silenced at the start of the next night\n* You can't select other syndicate members",

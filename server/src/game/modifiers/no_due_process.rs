@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 
-use crate::game::{phase::{PhaseState, PhaseStateMachine}, Game};
+use crate::game::{event::on_phase_start::OnPhaseStart, phase::{PhaseState, PhaseStateMachine}, Game};
 
 use super::{ModifierStateImpl, ModifierID};
 
@@ -14,8 +14,8 @@ impl From<&AutoGuilty> for ModifierID{
 }
 
 impl ModifierStateImpl for AutoGuilty{
-    fn on_phase_start(self, game: &mut Game, phase: PhaseState) {
-        match phase {
+    fn on_phase_start(self, game: &mut Game, event: &OnPhaseStart, _fold: &mut (), _priority: ()) {
+        match event.phase {
             PhaseState::Testimony { player_on_trial, .. }
             | PhaseState::Judgement { player_on_trial, .. } => {
                 PhaseStateMachine::next_phase(game, Some(PhaseState::FinalWords { player_on_trial }))

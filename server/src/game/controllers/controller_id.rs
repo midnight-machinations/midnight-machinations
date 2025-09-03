@@ -1,10 +1,7 @@
 use serde::{Deserialize, Serialize};
 
 use crate::game::{
-    modifiers::hidden_nomination_votes::HiddenNominationVotes, 
-    player::PlayerReference,
-    role::Role,
-    Game
+    controllers::Controllers, modifiers::hidden_nomination_votes::HiddenNominationVotes, player::PlayerReference, role::Role, Game
 };
 
 use super::{
@@ -149,5 +146,15 @@ impl ControllerID{
                     None
                 }
             )
+    }
+
+    pub fn set_selection(self, game: &mut Game, actor: Option<PlayerReference>, selection: impl Into<ControllerSelection>, overwrite_gray_out: bool){
+        Controllers::set_selection_in_controller(
+            game,
+            actor,
+            self,
+            selection,
+            overwrite_gray_out
+        );
     }
 }

@@ -1,8 +1,11 @@
 use crate::{
     game::{
         controllers::{ControllerID, ControllerInput, Controllers}, 
-        event::{on_controller_changed::OnControllerChanged, on_validated_ability_input_received::OnValidatedControllerInputReceived, Event}, 
-        phase::PhaseType, player::PlayerReference, Game
+        event::{
+            on_controller_changed::OnControllerChanged, on_phase_start::OnPhaseStart,
+            on_validated_ability_input_received::OnValidatedControllerInputReceived, Event
+        }, 
+        player::PlayerReference, Game
     }, 
     packet::ToClientPacket, vec_set::VecSet
 };
@@ -23,7 +26,7 @@ impl Controllers{
             id, selection: incoming_selection
         } = ability_input.clone();
 
-        if !Self::set_selection_in_controller(game, actor, id.clone(), incoming_selection.clone(), false) {
+        if !Self::set_selection_in_controller(game, Some(actor), id.clone(), incoming_selection.clone(), false) {
             return false;
         }
 
@@ -36,13 +39,13 @@ impl Controllers{
         true
     }
 
-    pub fn on_phase_start(game: &mut Game, phase: PhaseType){
+    pub fn on_phase_start(game: &mut Game, event: &OnPhaseStart, _fold: &mut (), _priority: ()){
         Self::update_controllers_from_parameters(game);
         
         for id in ControllerID::current_used_ids(game){
             let Some(controller) = game.controllers.controllers.get_mut(&id) else {continue};
             let old = controller.clone();
-            controller.reset_on_phase_start(phase);
+            controller.reset_on_phase_start(event.phase.phase());
 
             if old != *controller {
                 OnControllerChanged::new(

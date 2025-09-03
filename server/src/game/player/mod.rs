@@ -1,16 +1,16 @@
 mod player_accessors;
 mod player_reference;
 mod player_send_packet;
-mod player_reset;
+mod player_tick;
 mod player_helper_functions;
 mod player_event_listeners;
 
 pub use player_reference::PlayerIndex;
 pub use player_reference::PlayerReference;
 
-use crate::client_connection::ClientConnection;
-use crate::vec_set::VecSet;
 use crate::{
+    vec_set::VecSet,
+    client_connection::ClientConnection,
     game::role::{Role, RoleState},
     websocket_connections::connection::ClientSender,
 };

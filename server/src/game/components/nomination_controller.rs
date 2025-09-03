@@ -34,20 +34,20 @@ impl NominationController{
             .build_map()
     }
     pub fn on_validated_ability_input_received(game: &mut Game, event: &OnValidatedControllerInputReceived, _fold: &mut (), _priority: ()){
-        if let Some(PlayerListSelection(voted)) = event.input.get_player_list_selection_if_id(ControllerID::Nominate{ player: event.actor_ref }){
+        let Some(PlayerListSelection(voted)) =
+            event.input.get_player_list_selection_if_id(ControllerID::nominate(event.actor_ref)) else {return};
 
-            if !HiddenNominationVotes::nomination_votes_are_hidden(game) {
-                game.add_message_to_chat_group(ChatGroup::All, ChatMessageVariant::Voted{
-                    voter: event.actor_ref.index(), 
-                    votee: voted.first().map(|p|p.index())
-                });
-            }
-
-            game.count_nomination_and_start_trial(
-                game.modifier_settings().is_enabled(ModifierID::UnscheduledNominations)
-            );
-
-            game.send_player_votes();
+        if !HiddenNominationVotes::nomination_votes_are_hidden(game) {
+            game.add_message_to_chat_group(ChatGroup::All, ChatMessageVariant::Voted{
+                voter: event.actor_ref.index(), 
+                votee: voted.first().map(|p|p.index())
+            });
         }
+
+        game.count_nomination_and_start_trial(
+            game.modifier_settings().is_enabled(ModifierID::UnscheduledNominations)
+        );
+
+        game.send_player_votes();
     }
 }

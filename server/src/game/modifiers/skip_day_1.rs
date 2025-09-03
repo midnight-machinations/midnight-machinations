@@ -1,6 +1,9 @@
 use serde::{Deserialize, Serialize};
 
-use crate::game::{components::fast_forward::FastForwardComponent, phase::{PhaseState, PhaseType::*}, Game};
+use crate::game::{
+    components::fast_forward::FastForwardComponent, event::on_phase_start::OnPhaseStart,
+    phase::PhaseType::*, Game
+};
 
 use super::{ModifierStateImpl, ModifierID};
 
@@ -14,8 +17,8 @@ impl From<&SkipDay1> for ModifierID{
 }
 
 impl ModifierStateImpl for SkipDay1{
-    fn on_phase_start(self, game: &mut Game, phase: PhaseState) {
-        match (phase.phase(), game.day_number()) {
+    fn on_phase_start(self, game: &mut Game, event: &OnPhaseStart, _fold: &mut (), _priority: ()) {
+        match (event.phase.phase(), game.day_number()) {
             (Dusk, 1) |
             (Night, 1) |
             (Obituary, 2) |

@@ -1,4 +1,4 @@
-use crate::game::{chat::{ChatGroup, ChatMessageVariant}, phase::PhaseType, player::PlayerReference, role::Role, role_list::RoleSet, Game};
+use crate::game::{chat::{ChatGroup, ChatMessageVariant}, event::on_phase_start::OnPhaseStart, phase::PhaseType, player::PlayerReference, role::Role, role_list::RoleSet, Game};
 
 use super::insider_group::InsiderGroupID;
 
@@ -22,10 +22,10 @@ pub enum CultAbility{
     #[default] Convert,
 }
 impl Cult{
-    pub fn on_phase_start(game: &mut Game, phase: PhaseType){
+    pub fn on_phase_start(game: &mut Game, event: &OnPhaseStart, _fold: &mut (), _priority: ()){
         Cult::set_ordered_cultists(game);
         
-        if phase == PhaseType::Night {
+        if event.phase.phase() == PhaseType::Night {
             if let Some(ability) = Cult::ability_used_last_night(game) {
                 match ability {
                     CultAbility::Kill => {

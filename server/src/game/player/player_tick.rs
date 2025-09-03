@@ -1,5 +1,5 @@
 use std::time::Duration;
-use crate::{client_connection::ClientConnection, game::{phase::PhaseType, Game}};
+use crate::{client_connection::ClientConnection, game::Game};
 use super::PlayerReference;
 
 
@@ -19,11 +19,7 @@ impl PlayerReference{
             },
             _ => {}
         }
-    }
-
-    pub fn on_phase_start(&self, game: &mut Game, phase: PhaseType){
-        self.role_state(game).clone().on_phase_start(game, *self, phase)
-    }
+    }    
 }
 
 

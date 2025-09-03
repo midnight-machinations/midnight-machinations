@@ -1,7 +1,6 @@
 use crate::{
     game::{
-        controllers::*, modifiers::ModifierID,
-        phase::PhaseType, player::PlayerReference, Game
+        controllers::*, event::on_phase_start::OnPhaseStart, modifiers::ModifierID, phase::PhaseType, player::PlayerReference, Game
     },
     vec_set::VecSet
 };
@@ -32,8 +31,8 @@ impl ForfeitNominationVote{
     }
 
     /// Must go before saved_controllers on phase start
-    pub fn on_phase_start(game: &mut Game, phase: PhaseType){
-        match phase {
+    pub fn on_phase_start(game: &mut Game, event: &OnPhaseStart, _fold: &mut (), _priority: ()){
+        match event.phase.phase() {
             PhaseType::Nomination => {
                 for player in PlayerReference::all_players(game){
                     if 

@@ -94,6 +94,11 @@ pub enum ChatMessageVariant {
         innocent: u8, 
         guilty: u8 
     },
+    #[serde(rename_all = "camelCase")]
+    WitnessesCalled {
+        player_on_trial: PlayerReference,
+        witnesses: Vec<PlayerReference> 
+    },
     
     /* Misc */
     #[serde(rename_all = "camelCase")]

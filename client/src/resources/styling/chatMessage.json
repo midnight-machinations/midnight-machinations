@@ -11,6 +11,7 @@
     "phaseChange": "phase-change",
     "trialInformation": "special",
     "voted": "trial",
+    "witnessesCalled": "trial",
     "playerOnTrial": "trial",
     "judgementVerdict": "trial",
     "trialVerdict": "important",

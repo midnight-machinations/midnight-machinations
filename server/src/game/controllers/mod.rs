@@ -129,32 +129,16 @@ impl Controllers{
     /// if selection is invalid then nothing happens, nothing is updated
     pub fn set_selection_in_controller(
         game: &mut Game,
-        actor: PlayerReference,
+        actor: Option<PlayerReference>,
         id: ControllerID,
-        selection: impl Into<ControllerSelection>,
+        new_selection: impl Into<ControllerSelection>,
         overwrite_gray_out: bool
     )->bool{
-        let selection = selection.into();
+        let new_selection = new_selection.into();
         
         Self::update_controllers_from_parameters(game);
 
-        // validate input using available selection
-        {
-            let Some(Controller {
-                selection: saved_selection,
-                parameters: available_ability_data
-            }) = game.controllers.controllers.get(&id) else {return false};
-            
-            if 
-                !available_ability_data.validate_selection(game, &selection) ||
-                (!overwrite_gray_out && available_ability_data.grayed_out()) ||
-                !available_ability_data.allowed_players().contains(&actor) ||
-                (*saved_selection == selection && selection != ControllerSelection::Unit(UnitSelection))
-            {
-                return false;
-            }
-        }
-        
+        if !Self::validate_input(game, &id, &new_selection, overwrite_gray_out, actor){return false}
 
         let Some(controller) = game.controllers.controllers.get_mut(&id) else {return false};
 
@@ -162,7 +146,7 @@ impl Controllers{
 
 
         if !controller.parameters.dont_save() {
-            controller.selection = selection.clone();
+            controller.selection = new_selection;
             let new = Some(controller.clone());
             if old != new {
                 OnControllerChanged::new(id, old, new).invoke(game);
@@ -170,5 +154,19 @@ impl Controllers{
         }
 
         true
+    }
+
+    fn validate_input(game: &Game, id: &ControllerID, selection: &ControllerSelection, overwrite_gray_out: bool, actor: Option<PlayerReference>)->bool{
+        let Some(Controller {
+            selection: saved_selection,
+            parameters
+        }) = game.controllers.controllers.get(id) else {return false};
+        
+        // validate input using available selection
+
+        parameters.validate_selection(game, selection) &&   //parameters say its valid
+        (overwrite_gray_out || !parameters.grayed_out()) && //not grayed out
+        actor.is_none_or(|p|parameters.allowed_players().contains(&p)) &&   //actor is allowed
+        (*saved_selection != *selection || *selection == ControllerSelection::Unit(UnitSelection))  //Something is actually changing (i think this can be removed?)
     }
 }

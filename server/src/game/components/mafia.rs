@@ -94,8 +94,6 @@ impl Mafia{
             )
             .collect::<VecSet<_>>()
     }
-    pub fn on_phase_start(_game: &mut Game, _phase: PhaseType){
-    }
     pub fn on_midnight(game: &mut Game, _event: &OnMidnight, midnight_variables: &mut MidnightVariables, priority: OnMidnightPriority){
         if game.day_number() <= 1 {return}
         match priority {

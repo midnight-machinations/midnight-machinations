@@ -2,8 +2,10 @@ use serde::{Deserialize, Serialize};
 
 use crate::{
     game::{
-        chat::{ChatGroup, ChatMessageVariant}, components::player_component::PlayerComponent,
-        phase::{PhaseState, PhaseType}, player::PlayerReference, Game
+        chat::{ChatGroup, ChatMessageVariant},
+        components::player_component::PlayerComponent,
+        event::on_phase_start::OnPhaseStart, phase::PhaseType,
+        player::PlayerReference, Game
     },
     packet::ToClientPacket
 };
@@ -30,7 +32,7 @@ impl FastForwardComponent {
             )
         }
     }
-    pub fn on_phase_start(game: &mut Game, _phase: PhaseState){
+    pub fn on_phase_start(game: &mut Game, _event: &OnPhaseStart, _fold: &mut (), _priority: ()){
         Self::reset_votes(game);
         Self::attempt_skip(game);
     }

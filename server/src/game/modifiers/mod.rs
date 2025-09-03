@@ -18,7 +18,7 @@ pub mod hidden_verdict_votes;
 pub mod forfeit_vote;
 pub mod random_player_names;
 
-use crate::{game::{components::graves::grave_reference::GraveReference}, vec_map::VecMap};
+use crate::{game::{components::graves::grave_reference::GraveReference, event::on_phase_start::OnPhaseStart}, vec_map::VecMap};
 
 use serde::{Serialize, Deserialize};
 
@@ -34,7 +34,7 @@ pub trait ModifierStateImpl where Self: Clone + Sized + Default + Serialize + fo
     fn on_ability_input_received(self, _game: &mut Game, _actor_ref: PlayerReference, _input: ControllerInput) {}
     fn on_midnight(self, _game: &mut Game, _priority: OnMidnightPriority) {}
     fn before_phase_end(self, _game: &mut Game, _phase: super::phase::PhaseType) {}
-    fn on_phase_start(self, _game: &mut Game, _phase: super::phase::PhaseState) {}
+    fn on_phase_start(self, _game: &mut Game, _event: &OnPhaseStart, _fold: &mut (), _priority: ()) {}
     fn on_grave_added(self, _game: &mut Game, _event: GraveReference) {}
     fn on_game_start(self, _game: &mut Game) {}
     fn on_any_death(self, _game: &mut Game, _player: PlayerReference) {}
@@ -118,9 +118,9 @@ impl ModifierSettings{
             modifier.1.before_phase_end(game, phase);
         }
     }
-    pub fn on_phase_start(game: &mut Game, phase: super::phase::PhaseState){
+    pub fn on_phase_start(game: &mut Game, event: &OnPhaseStart, _fold: &mut (), _priority: ()){
         for modifier in game.modifier_settings().modifiers.clone(){
-            modifier.1.on_phase_start(game, phase.clone());
+            modifier.1.on_phase_start(game, event, _fold, _priority);
         }
     }
     pub fn on_any_death(game: &mut Game, player: crate::game::player::PlayerReference){
@@ -201,10 +201,10 @@ mod macros {
                         )*
                     }
                 }
-                fn on_phase_start(self, game: &mut Game, phase: super::phase::PhaseState) {
+                fn on_phase_start(self, game: &mut Game, event: &OnPhaseStart, _fold: &mut (), _priority: ()) {
                     match self {
                         $(
-                            ModifierState::$name(s) => s.on_phase_start(game, phase),
+                            ModifierState::$name(s) => s.on_phase_start(game, event, _fold, _priority),
                         )*
                     }
                 }

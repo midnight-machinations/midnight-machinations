@@ -1,6 +1,6 @@
 use std::collections::HashSet;
 
-use crate::game::{chat::ChatMessageVariant, event::on_midnight::{MidnightVariables, OnMidnight, OnMidnightPriority}, phase::PhaseType, player::PlayerReference, Game};
+use crate::game::{chat::ChatMessageVariant, event::{on_midnight::{MidnightVariables, OnMidnight, OnMidnightPriority}, on_phase_start::OnPhaseStart}, phase::PhaseType, player::PlayerReference, Game};
 
 use super::insider_group::InsiderGroupID;
 
@@ -10,8 +10,8 @@ pub struct Detained{
     players: HashSet<PlayerReference>,
 }
 impl Detained{
-    pub fn on_phase_start(game: &mut Game, phase: PhaseType){
-        if phase == PhaseType::Obituary {
+    pub fn on_phase_start(game: &mut Game, event: &OnPhaseStart, _fold: &mut (), _priority: ()){
+        if event.phase.phase() == PhaseType::Obituary {
             Detained::clear_detain(game);
         }
     }

@@ -1,6 +1,6 @@
 use crate::game::{
-    controllers::{ControllerInput, ControllerID}, components::graves::grave_reference::GraveReference, event::{
-        on_midnight::{MidnightVariables, OnMidnight, OnMidnightPriority}, on_validated_ability_input_received::OnValidatedControllerInputReceived, on_whisper::{OnWhisper, WhisperFold, WhisperPriority}}, role::RoleState, visit::Visit, Game
+    components::graves::grave_reference::GraveReference, controllers::{ControllerID, ControllerInput}, event::{
+        on_midnight::{MidnightVariables, OnMidnight, OnMidnightPriority}, on_phase_start::OnPhaseStart, on_validated_ability_input_received::OnValidatedControllerInputReceived, on_whisper::{OnWhisper, WhisperFold, WhisperPriority}}, role::RoleState, visit::Visit, Game
     };
 
 use super::PlayerReference;
@@ -59,7 +59,6 @@ impl PlayerReference {
     pub fn on_visit_wardblocked(&self, game: &mut Game, midnight_variables: &mut MidnightVariables, visit: Visit) {
         self.role_state(game).clone().on_visit_wardblocked(game, midnight_variables, *self, visit)
     }
-
     pub fn on_whisper(game: &mut Game, event: &OnWhisper, fold: &mut WhisperFold, priority: WhisperPriority) {
         for player in PlayerReference::all_players(game){
             player.role_state(game).clone().on_whisper(game, player, event, fold, priority);
@@ -73,5 +72,14 @@ impl PlayerReference {
     }
     pub fn one_player_on_validated_ability_input_received(&self, game: &mut Game, input_player: PlayerReference, input: ControllerInput) {
         self.role_state(game).clone().on_validated_ability_input_received(game, *self, input_player, input)
+    }
+
+    pub fn on_phase_start(game: &mut Game, event: &OnPhaseStart, _fold: &mut (), _priority: ()){
+        for player_ref in PlayerReference::all_players(game){
+            player_ref.one_on_phase_start(game, event, _fold, _priority);
+        }
+    }
+    pub fn one_on_phase_start(&self, game: &mut Game, event: &OnPhaseStart, _fold: &mut (), _priority: ()){
+        self.role_state(game).clone().on_phase_start(game, *self, event.phase.phase())
     }
 }

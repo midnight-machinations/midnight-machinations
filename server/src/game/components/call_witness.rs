@@ -2,8 +2,9 @@ use std::collections::HashSet;
 
 use crate::{
     game::{
-        controllers::{AvailablePlayerListSelection, ControllerID, ControllerParametersMap, PlayerListSelection}, event::on_validated_ability_input_received::OnValidatedControllerInputReceived, phase::PhaseState, player::PlayerReference, role::RoleState, Game
-    }, packet::ToClientPacket, vec_set::VecSet
+        chat::{ChatGroup, ChatMessageVariant}, components::silenced::Silenced, controllers::{AvailablePlayerListSelection, ControllerID, ControllerParametersMap, PlayerListSelection}, event::{on_phase_start::OnPhaseStart, on_validated_ability_input_received::OnValidatedControllerInputReceived}, phase::PhaseState, player::PlayerReference, role::RoleState, Game
+    },
+    packet::ToClientPacket, vec_set::VecSet
 };
 
 
@@ -24,7 +25,8 @@ impl CallWitness{
                 }else{false}
             )
             .collect();
-        if allowed_players.is_empty() {
+
+        if allowed_players.is_empty() && !Silenced::silenced(game, actor) {
             allowed_players.insert(actor);
         }
 
@@ -50,11 +52,35 @@ impl CallWitness{
             HashSet::new()
         }
     }
-    pub fn on_validated_ability_input_received(game: &mut Game, _event: &OnValidatedControllerInputReceived, _fold: &mut (), _priority: ()){
+    pub fn on_validated_ability_input_received(game: &mut Game, event: &OnValidatedControllerInputReceived, _fold: &mut (), _priority: ()){
+        let PhaseState::Testimony { player_on_trial, .. } = game.current_phase() else {return};
+        let ControllerID::CallWitness { player: player_controller_changed, .. } = event.input.id() else {return};
+
+        if *player_on_trial != player_controller_changed {return};
+
         for player in PlayerReference::all_players(game){
             player.send_packet(game, ToClientPacket::YourSendChatGroups { send_chat_groups: 
                 player.get_current_send_chat_groups(game).into_iter().collect()
             });
         }
+
+        Self::send_witness_called_message(game)
+    }
+    pub fn on_phase_start(game: &mut Game, _event: &OnPhaseStart, _fold: &mut (), _priority: ()){
+        Self::send_witness_called_message(game)
+    }
+
+    fn send_witness_called_message(game: &mut Game){
+        let PhaseState::Testimony { player_on_trial, .. } = game.current_phase() else {return};
+
+        let Some(PlayerListSelection(witnesses)) = ControllerID::CallWitness { player: *player_on_trial }
+            .get_player_list_selection(game)
+            .cloned()
+            else {return};
+
+        game.add_message_to_chat_group(ChatGroup::All, ChatMessageVariant::WitnessesCalled{
+            player_on_trial: *player_on_trial,
+            witnesses
+        });
     }
 }

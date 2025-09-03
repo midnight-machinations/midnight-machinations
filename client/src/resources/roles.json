@@ -662,7 +662,9 @@
         "canWriteDeathNote": false,
         "canBeConvertedTo": ["godfather"],
         "chatMessages":[
-            {"type":"silenced"}
+            {"type":"silenced"},
+            {"type":"witnessesCalled", "playerOnTrial":51, "witnesses":[1,2,3]},
+            {"type":"witnessesCalled", "playerOnTrial":51, "witnesses":[]}
         ]
     },
     "cerenovous": {
@@ -674,7 +676,9 @@
         "canWriteDeathNote": false,
         "canBeConvertedTo": ["godfather"],
         "chatMessages":[
-            {"type":"brained"}
+            {"type":"brained"},
+            {"type":"witnessesCalled", "playerOnTrial":51, "witnesses":[1,2,3]},
+            {"type":"witnessesCalled", "playerOnTrial":51, "witnesses":[]}
         ]
     },
     "informant": {
