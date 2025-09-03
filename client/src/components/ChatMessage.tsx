@@ -753,10 +753,6 @@ export function translateChatMessage(
                 translate("chatMessage.informantResult.visited", playerListToString(message.visited, playerNames)),
                 translate("chatMessage.informantResult.visitedBy", playerListToString(message.visitedBy, playerNames))
             );
-        case "scarecrowResult":
-            return translate("chatMessage.scarecrowResult",
-                playerListToString(message.players, playerNames)
-            );
         case "ambusherCaught":
             return translate("chatMessage.ambusherCaught",
                 encodeString(playerNames[message.ambusher])
@@ -1129,9 +1125,6 @@ export type ChatMessageVariant = {
     role: Role,
     visitedBy: PlayerIndex[],
     visited: PlayerIndex[]
-} | {
-    type: "scarecrowResult",
-    players: PlayerIndex[]
 } | {
     type: "ambusherCaught",
     ambusher: PlayerIndex

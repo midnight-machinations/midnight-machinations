@@ -36,6 +36,7 @@ impl RoleStateImpl for Warper {
             &vec_map![(first_visit, second_visit)], |_| true, true, 
         );
         
+        actor_ref.reveal_players_role(game, first_visit);
         actor_ref.push_night_message(
             midnight_variables, ChatMessageVariant::TargetHasRole { role: first_visit.role(game) }
         );

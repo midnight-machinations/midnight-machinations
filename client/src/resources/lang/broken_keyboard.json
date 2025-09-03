@@ -945,7 +945,6 @@
     "chatMessage.informantResult": "\\0 (\\1) \\2 \\3",
     "chatMessage.informantResult.visited": "Vstd: \\0.",
     "chatMessage.informantResult.visitedBy": "Ws vstd by: \\0.",
-    "chatMessage.scarecrowResult": "Y wrdblckd \\0.",
     "chatMessage.ambusherCaught": "Y cght n mbshr, t ws \\0.",
     "chatMessage.wildcardConvertFailed": "Y fld t cnvrt t th rl \\0. Th rl mght hv bn dsbld r tkn.",
     "chatMessage.kiraResult": "Kr rslt",

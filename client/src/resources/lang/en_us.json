@@ -1106,7 +1106,6 @@
     "chatMessage.informantResult": "\\0 (\\1) \\2 \\3",
     "chatMessage.informantResult.visited": "Visited: \\0.",
     "chatMessage.informantResult.visitedBy": "Was visited by: \\0.",
-    "chatMessage.scarecrowResult": "You wardblocked \\0.",
     "chatMessage.ambusherCaught": "You caught an ambusher, it was \\0.",
     "chatMessage.wildcardConvertFailed": "You failed to convert to the role \\0. The role might have been disabled or taken.",
     "chatMessage.kiraResult": "Kira result",
@@ -2036,10 +2035,10 @@
     "wiki.article.role.witch.extra":"* You are immune to getting roleblocked and possession\n* Your second target gets erased after you change your targets visit, so no other roles can interact with it except transporter\n    * A tracker will only see you visit your first target",
     
     "wiki.article.role.scarecrow.reminder": "Each night, select a player to ward them, everyone you wardblock is revealed to you.",
-    "wiki.article.role.scarecrow.guide": "- You win if town loses, when town loses you leave town\n- At night, select a player to ward them, stopping almost all abilities from working on them.\n    - The players you ward and wardblock are revealed to you\n- You are told who you wardblock in 2 chat messages per night",
-    "wiki.article.role.scarecrow.abilities":"* Visit a player to ward them\n    - Everyone other visitor to your target has their visits erased, and receives a chat message informing them they are wardblocked\n- The players you ward and wardblock are revealed to you\n- If there are no living townies, you win, and leave town at the start of the next phase",
+    "wiki.article.role.scarecrow.guide": "- You win if town loses, when town loses you leave town\n- At night, select a player to ward them, stopping almost all abilities from working on them.\n    - The players you ward are revealed to you",
+    "wiki.article.role.scarecrow.abilities":"* Visit a player to ward them\n    - Everyone other visitor to your target has their visits erased, and receives a chat message informing them they are wardblocked\n- The players you ward revealed to you\n- If there are no living townies, you win, and leave town at the start of the next phase",
     "wiki.article.role.scarecrow.attributes":"* Your target isn't told they are warded",
-    "wiki.article.role.scarecrow.extra":"* You can't select yourself\n* You are immune to roleblocks, wardblocks, and possession\n- There are 2 ward priorities, so you learn who you wardblocked on each priority with seperate chat messages\n- A Bouncer is wardblock immune so you can't ward them, so you rarely will have a bouncer revealed to you",
+    "wiki.article.role.scarecrow.extra":"* You can't select yourself\n* You are immune to roleblocks, wardblocks, and possession",
     
     "wiki.article.role.kidnapper.reminder": "Each day, choose a player to detain. At night, talk to your prisoner, and decide weather or not kill them, with a max of 1 attack use. You appear the same as a jailor to your prisoner.",
     "wiki.article.role.kidnapper.guide": "- Each day, choose a player to kidnap. At night, you interrogate them in text chat\n- You can kill your prisoner one time\n- You can talk to your prisoner during the night, and they are not told who you are.",

@@ -997,7 +997,7 @@
         "canBeConvertedTo": [],
         "chatMessages":[
             {"type": "wardblocked"},
-            {"type": "scarecrowResult", "players": [9,15,4]}
+            {"type": "targetHasRole", "role":"detective"}
         ]
     },
     "warper":{
