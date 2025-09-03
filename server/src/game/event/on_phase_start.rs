@@ -29,7 +29,7 @@ impl Event for OnPhaseStart{
         ModifierSettings::on_phase_start,
         FastForwardComponent::on_phase_start,
         Silenced::on_phase_start,   //silenced needs to go before call witness, I could do priority but erm
-        CallWitness::on_phase_start,
+        CallWitness::on_phase_start,    //must go after silenced
         Game::on_phase_start
     ]}
 

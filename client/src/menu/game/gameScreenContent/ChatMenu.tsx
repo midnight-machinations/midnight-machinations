@@ -47,11 +47,6 @@ export default function ChatMenu(): ReactElement {
         (k1, k2)=>controllerIdToLinkWithPlayer(k1)===controllerIdToLinkWithPlayer(k2)
     );
 
-    const myIndex = usePlayerState(
-        playerState => playerState.myIndex,
-        ["yourSendChatGroups"]
-    );
-
     return <div className="chat-menu chat-menu-colors">
         <ContentTab close={ContentMenu.ChatMenu} helpMenu={"standard/chat"}>{translate("menu.chat.title")}</ContentTab>
         {filter === undefined || filter === null || <div className="chat-filter-zone highlighted">
@@ -72,27 +67,20 @@ export default function ChatMenu(): ReactElement {
                 const sendChatController = controllers.get({type: "sendChat", player: id.player});
                 if(sendChatController===null){return null}
 
-                return <>
+                return <div key={JSON.stringify(id)}>
                     <div key={"header: "+JSON.stringify(id)} className="chat-menu-icons">
-                        {
-                            myIndex===id.player?
-                                <>
-                                    {!sendChatGroups.includes("all") && translate("noAll.icon")}
-                                    {sendChatGroups.map((group) => {
-                                        return translate("chatGroup."+group+".icon");
-                                    })}
-                                </>
-                                :null
-                        }
+                        {!sendChatGroups.includes("all") && translate("noAll.icon")}
+                        {sendChatGroups.map((group) => {
+                            return translate("chatGroup."+group+".icon");
+                        })}
                         <StyledText>{encodeString(playerNames[id.player])}</StyledText>
-
                     </div>
                     <ChatTextInput 
                         key={"input: "+JSON.stringify(id)}
                         disabled={sendChatController.parameters.grayedOut}
                         controllingPlayer={id.player}
                     />
-                </>
+                </div>
             })
         }
         
