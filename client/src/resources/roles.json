@@ -796,6 +796,18 @@
             {"type": "ambusherCaught", "ambusher": 17}
         ]
     },
+    "business": {
+        "mainRoleSet": "mafia",
+        "roleSets": ["mafia", "mafiaSupport"],
+        "armor": false,
+        "aura": null,
+        "maxCount": 1,
+        "canWriteDeathNote": false,
+        "canBeConvertedTo": ["godfather"],
+        "chatMessages":[
+            {"type": "playerQuit", "playerIndex": 7, "gameOver": false}
+        ]
+    },
     "mafiaSupportWildcard": {
         "mainRoleSet": "mafia",
         "roleSets": ["mafia"],

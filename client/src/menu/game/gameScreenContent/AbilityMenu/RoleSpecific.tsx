@@ -159,6 +159,13 @@ function roleSpecificSectionInner(
             >
                 <StyledText>{translate("role.cerenovous.roleDataText", roleState.charges)}</StyledText>
             </Counter>
+        case "business":
+            return <Counter
+                max={maxChargesCounter}
+                current={roleState.bribesRemaining}
+            >
+                <StyledText>{translate("role.business.roleDataText", roleState.bribesRemaining)}</StyledText>
+            </Counter>
         case "mortician":
             return <Counter
                 max={maxChargesCounter}

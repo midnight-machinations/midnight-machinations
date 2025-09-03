@@ -291,7 +291,7 @@ impl RoleSet{
                     Role::Blackmailer, Role::Cerenovous, Role::Informant, Role::Hypnotist, Role::Consort,
                     Role::Forger, Role::Framer, Role::Mortician, Role::Disguiser,
                     Role::Necromancer, Role::Reeducator,
-                    Role::Ambusher
+                    Role::Ambusher, Role::Business
                 ],
             RoleSet::Minions => 
                 vec_set![

@@ -151,6 +151,7 @@ macros::roles! {
 
     Goon : made_man,
     Consort : consort,
+    Business : business,
     
     Hypnotist : hypnotist,
     Blackmailer : blackmailer,

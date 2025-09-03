@@ -162,6 +162,9 @@
     "role/blackmailer/0": {
         "midnight": true
     },
+    "role/business/0": {
+        "midnight": true
+    },
     "role/cerenovous/0": {
         "midnight": true
     },

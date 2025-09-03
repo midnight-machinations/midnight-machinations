@@ -119,6 +119,9 @@ export type RoleState = {
  | {
     type: "consort"
 } | {
+    type: "business",
+    bribesRemaining: number
+} | {
     type: "blackmailer",
     previous: PlayerIndex | null
 } | {

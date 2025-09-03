@@ -410,6 +410,11 @@
     "role.consort.name:var.0": "Consorts",
     "controllerId.role.consort.0.name": "Roleblock",
     
+    "role.business.name": "Business",
+    "role.business.name:var.0": "Businesses",
+    "controllerId.role.business.0.name": "Bribe",
+    "role.business.roleDataText": "Bribes remaining: \\0",
+    
     "role.blackmailer.name": "Blackmailer",
     "role.blackmailer.name:var.0": "Blackmailers",
     "controllerId.role.blackmailer.0.name": "Silence",
@@ -1918,6 +1923,12 @@
     "wiki.article.role.consort.abilities":"* Visit a player to roleblock them",
     "wiki.article.role.consort.attributes":"* You can't be roleblocked\n* Your target is told when they are roleblocked, even if they are immune to being roleblocked",
     "wiki.article.role.consort.extra":"* When someone is roleblocked, their visits are wiped, so they don't visit anyone\n* You can't select other syndicate members",
+
+    "wiki.article.role.business.reminder": "Each night, select a player to bribe, preventing them from voting the next day.",
+    "wiki.article.role.business.guide": "- At night, select a player to bribe them\n- The bribed player cannot vote during nominations or trials the next day\n- You can only bribe X times (X = Total players ÷ 5 (round up))\n\n_For example_\n- A business bribes the mayor, so the mayor cannot vote during nominations or trials the next day",
+    "wiki.article.role.business.abilities":"* Visit a player to bribe them",
+    "wiki.article.role.business.attributes":"* Bribed players are told they were bribed\n* You can't be roleblocked",
+    "wiki.article.role.business.extra":"* Bribed players can still speak and be nominated, they just can't vote\n* You can't select other syndicate members",
 
     "wiki.article.role.blackmailer.reminder": "Each night, select a player to silence until the next night. All votes are hidden while you are alive.",
     "wiki.article.role.blackmailer.guide": "- At night, select a player to silence\n- The silenced player can't speak during the next day.\n- While a blackmailer is alive, nomination votes are hidden and verdict votes are hidden.\n- You can't choose to silence the player you silenced yesterday.\n- Silenced players call all witnesses at the start of testimony.",
