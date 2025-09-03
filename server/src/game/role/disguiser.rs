@@ -34,14 +34,12 @@ impl RoleStateImpl for Disguiser {
         
         self.last_role_selection = Self::disguised_role(&self, game, actor_ref);
 
-        appeared_visit_player.set_night_appeared_visits(midnight_variables,
-            Some(
-                Visits::into_iter(midnight_variables)
-                    .with_visitor(actor_ref)
-                    .with_tag(VisitTag::Role { role: Role::Framer, id: 1 })
-                    .map(|v|Visit::new_none(appeared_visit_player, v.target))
-                    .collect()
-            )
+        appeared_visit_player.set_night_appeared_visits(midnight_variables, true);
+        Visits::add_visits(midnight_variables, 
+            Visits::into_iter(midnight_variables)
+                .with_visitor(actor_ref)
+                .with_tag(VisitTag::Role { role: Role::Disguiser, id: 1 })
+                .map(|v|Visit::new_appeared(appeared_visit_player, v.target))
         );
 
         actor_ref.set_role_state(game, self);
@@ -92,6 +90,11 @@ impl RoleStateImpl for Disguiser {
                     ControllerID::role(actor_ref, Role::Disguiser, 0)
                         .get_player_list_selection(game)
                         .is_none_or(|selection| selection.0.is_empty())
+                )
+                .allow_players(
+                    ControllerID::role(actor_ref, Role::Disguiser, 0)
+                        .get_player_list_selection(game)
+                        .and_then(|p|p.0.first().copied())
                 )
                 .build_map(),
 

@@ -1,7 +1,7 @@
 use std::borrow::Borrow;
 
 use crate::game::{
-    event::on_midnight::MidnightVariables, game_conclusion::GameConclusion, player::PlayerReference, visit::{Visit, VisitTag}, Game
+    components::insider_group::InsiderGroupID, event::on_midnight::MidnightVariables, game_conclusion::GameConclusion, player::PlayerReference, visit::{Visit, VisitTag}, Game
 };
 
 #[derive(Default)]
@@ -16,7 +16,7 @@ impl Visits{
     pub fn add_visit(midnight_variables: &mut MidnightVariables, visits: Visit){
         midnight_variables.visits_mut().push(visits);
     }
-    fn add_visits(midnight_variables: &mut MidnightVariables, visits: Vec<Visit>){
+    pub fn add_visits(midnight_variables: &mut MidnightVariables, visits: impl IntoIterator<Item = Visit>){
         midnight_variables.visits_mut().extend(visits);
     }
 
@@ -24,39 +24,14 @@ impl Visits{
     pub fn retain(midnight_variables: &mut MidnightVariables, f: impl FnMut(&Visit) -> bool){
         midnight_variables.visits_mut().retain(f);
     }
-
-    //accessors
-    fn get_untagged_visits_from_visitor(midnight_variables: &MidnightVariables, visitor: PlayerReference) -> Vec<&Visit>{
-        Self::iter(midnight_variables)
-            .with_visitor(visitor)
-            .filter(|visit| matches!(visit.tag, VisitTag::Role{..}))
-            .collect()
-    }
-    fn get_untagged_visits_from_visitor_mut(midnight_variables: &mut MidnightVariables, visitor: PlayerReference) -> Vec<&mut Visit>{
-        midnight_variables.visits_mut().iter_mut()
-            .filter(|visit| visit.visitor == visitor)
-            .filter(|visit| matches!(visit.tag, VisitTag::Role{..}))
-            .collect()
-    }
 }
 
 impl PlayerReference{
-    pub fn untagged_night_visits<'a>(&self, midnight_variables: &'a MidnightVariables) -> Vec<&'a Visit>{
-        Visits::get_untagged_visits_from_visitor(midnight_variables, *self)
-    }
-    pub fn untagged_night_visits_mut<'a>(&self, midnight_variables: &'a mut MidnightVariables) -> Vec<&'a mut Visit>{
-        Visits::get_untagged_visits_from_visitor_mut(midnight_variables, *self)
-    }
     pub fn untagged_night_visits_cloned(&self, midnight_variables: &MidnightVariables) -> Vec<Visit>{
-        Visits::get_untagged_visits_from_visitor(midnight_variables, *self)
-            .into_iter()
-            .copied()
-            .collect()
-    }
-    /// Returns all vists where the player is the visitor
-    pub fn all_night_visits_cloned(&self, midnight_variables: &MidnightVariables) -> Vec<Visit>{
-        Visits::into_iter(midnight_variables)
+        Visits::iter(midnight_variables)
             .with_visitor(*self)
+            .filter(|visit| matches!(visit.tag, VisitTag::Role{..}))
+            .copied()
             .collect()
     }
     /// Returns all vists where the player is the target
@@ -69,6 +44,21 @@ impl PlayerReference{
     pub fn set_night_visits(&self, midnight_variables: &mut MidnightVariables, visits: Vec<Visit>){
         Visits::clear_visits_from_visitor(midnight_variables, *self);
         Visits::add_visits(midnight_variables, visits);
+    }
+
+
+    pub fn tracker_seen_players(self, midnight_variables: &MidnightVariables) -> impl Iterator<Item = PlayerReference> {
+        Visits::into_iter(midnight_variables)
+            .with_visitor(self)
+            .with_appeared(midnight_variables)
+            .map_target()
+    }
+    pub fn lookout_seen_players(self, midnight_variables: &MidnightVariables, lookout_visit: Visit) -> impl Iterator<Item = PlayerReference> {
+        Visits::into_iter(midnight_variables)
+            .with_target(self)
+            .with_appeared(midnight_variables)
+            .without_visit(lookout_visit)
+            .map_visitor()
     }
 }
 
@@ -101,14 +91,20 @@ pub trait NightVisitsIterator: Sized {
     fn with_target(self, player: PlayerReference) -> impl Iterator<Item = Self::Item>;
     fn without_visit(self, visit: Visit) -> impl Iterator<Item = Self::Item>;
     fn with_alive_visitor(self, game: &Game) -> impl Iterator<Item = Self::Item>;
+    fn with_insider_visitor(self, game: &Game, insider_group_id: InsiderGroupID) -> impl Iterator<Item = Self::Item>;
     fn with_loyalist_visitor(self, game: &Game, conclusion: GameConclusion) -> impl Iterator<Item = Self::Item>;
     fn without_loyalist_visitor(self, game: &Game, conclusion: GameConclusion) -> impl Iterator<Item = Self::Item>;
     fn with_investigatable(self) -> impl Iterator<Item = Self::Item>;
     fn with_direct(self) -> impl Iterator<Item = Self::Item>;
     fn with_tag(self, visit_tag: VisitTag) -> impl Iterator<Item = Self::Item>;
+
     fn map_visitor(self) -> impl Iterator<Item = PlayerReference>;
+    fn map_target(self) -> impl Iterator<Item = PlayerReference>;
+
     fn default_visit(self, game: &Game, actor: PlayerReference) -> Option<Self::Item>;
     fn default_target(self, game: &Game, actor: PlayerReference) -> Option<PlayerReference>;
+
+    fn with_appeared(self, midnight_variables: &MidnightVariables) -> impl Iterator<Item = Self::Item>;
 }
 impl<T> NightVisitsIterator for T 
 where 
@@ -127,6 +123,9 @@ where
     }
     fn with_alive_visitor(self, game: &Game) -> impl Iterator<Item = Self::Item>{
         self.filter(move |v|v.borrow().visitor.alive(game))
+    }
+    fn with_insider_visitor(self, game: &Game, insider_group_id: InsiderGroupID) -> impl Iterator<Item = Self::Item>{
+        self.filter(move |v|insider_group_id.contains_player(game, v.borrow().visitor))
     }
     fn with_loyalist_visitor(self, game: &Game, conclusion: GameConclusion) -> impl Iterator<Item = Self::Item>{
         self.filter(move |v|v.borrow().visitor.win_condition(game).is_loyalist_for(conclusion))
@@ -147,6 +146,9 @@ where
     fn map_visitor(self) -> impl Iterator<Item = PlayerReference>{
         self.map(|v|v.borrow().visitor)
     }
+    fn map_target(self) -> impl Iterator<Item = PlayerReference> {
+        self.map(|v|v.borrow().target)
+    }
 
     fn default_visit(self, game: &Game, actor: PlayerReference) -> Option<Self::Item>{
         self
@@ -161,4 +163,10 @@ where
             .map(|v|v.borrow().target)
     }
 
+    fn with_appeared(self, midnight_variables: &MidnightVariables) -> impl Iterator<Item = Self::Item> {
+        self
+            .filter(|v|
+                if v.borrow().visitor.night_appeared_visits(midnight_variables) {v.borrow().tag == VisitTag::Appeared} else {!v.borrow().investigate_immune}
+            )
+    }
 }

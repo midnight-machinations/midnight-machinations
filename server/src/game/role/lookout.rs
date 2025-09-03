@@ -22,24 +22,18 @@ impl RoleStateImpl for Lookout {
     type ClientRoleState = Lookout;
     fn on_midnight(self, game: &mut Game, midnight_variables: &mut MidnightVariables, actor_ref: PlayerReference, priority: OnMidnightPriority) {
         if priority != OnMidnightPriority::Investigative {return;}
-        if let Some(visit) = Visits::default_visit(game, midnight_variables, actor_ref) {
+        let Some(visit) = Visits::default_visit(game, midnight_variables, actor_ref) else {return};
             
-            let mut seen_players: Vec<PlayerReference> = visit.target.all_appeared_visitors(game, midnight_variables).into_iter().filter(|p|actor_ref!=*p).collect();
-            seen_players.shuffle(&mut rand::rng());
-
-            let message = ChatMessageVariant::LookoutResult { players:
-                PlayerReference::ref_vec_to_index(seen_players.as_slice())
-            };
-            
-            actor_ref.push_night_message(midnight_variables, message);
-        }
+        let mut players: Vec<PlayerReference> = visit.target.lookout_seen_players(midnight_variables, visit).collect();
+        players.shuffle(&mut rand::rng());
+        
+        actor_ref.push_night_message(midnight_variables, ChatMessageVariant::LookoutResult { players });
     }
     fn controller_parameters_map(self, game: &Game, actor_ref: PlayerReference) -> ControllerParametersMap {
         ControllerParametersMap::builder(game)
             .id(ControllerID::role(actor_ref, Role::Lookout, 0))
             .single_player_selection_typical(actor_ref, false, true)
             .night_typical(actor_ref)
-            .add_grayed_out_condition(false)
             .build_map()
     }
     fn convert_selection_to_visits(self, game: &Game, actor_ref: PlayerReference) -> Vec<Visit> {

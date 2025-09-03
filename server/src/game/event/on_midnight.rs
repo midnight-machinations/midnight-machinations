@@ -114,7 +114,7 @@ pub struct PlayerMidnightVariables {
 
     pub convert_role_to: Option<RoleState>,
 
-    pub appeared_visits: Option<Vec<Visit>>,
+    pub appeared_visits: bool,
     pub framed: bool,
 
     pub messages: Vec<ChatMessageVariant>,
@@ -154,7 +154,7 @@ impl PlayerMidnightVariables {
 
             convert_role_to: None,
 
-            appeared_visits: None,
+            appeared_visits: false,
             framed: false,
             messages: Vec::new(),
 
@@ -210,10 +210,10 @@ impl PlayerReference {
         midnight_variables.get_mut(self).convert_role_to = convert_role_to;
     }
 
-    pub fn night_appeared_visits(self, midnight_variables: &MidnightVariables) -> &Option<Vec<Visit>>{
-        &midnight_variables.get(self).appeared_visits
+    pub fn night_appeared_visits(self, midnight_variables: &MidnightVariables) -> bool{
+        midnight_variables.get(self).appeared_visits
     }
-    pub fn set_night_appeared_visits(self, midnight_variables: &mut MidnightVariables, appeared_visits: Option<Vec<Visit>>){
+    pub fn set_night_appeared_visits(self, midnight_variables: &mut MidnightVariables, appeared_visits: bool){
         midnight_variables.get_mut(self).appeared_visits = appeared_visits;
     }
     

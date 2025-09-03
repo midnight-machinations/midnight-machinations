@@ -1,5 +1,6 @@
 use serde::Serialize;
 
+use crate::game::components::night_visits::{NightVisitsIterator, Visits};
 use crate::game::controllers::{AvailableIntegerSelection, AvailableTwoPlayerOptionSelection, IntegerSelection, PlayerListSelection};
 use crate::game::attack_power::AttackPower;
 use crate::game::components::transport::{Transport, TransportPriority};
@@ -40,7 +41,12 @@ impl RoleStateImpl for Polymath {
             (OnMidnightPriority::Heal, PolymathAbilityType::Protect) => {
                 let actor_visits = actor_ref.untagged_night_visits_cloned(midnight_variables);
                 let Some(target) = actor_visits.first().map(|v|v.target) else {return};
-                if target.all_night_visits_cloned(midnight_variables).into_iter().any(|v|v.target == actor_ref&&!v.indirect) {
+                if Visits::into_iter(midnight_variables)
+                    .with_visitor(target)
+                    .with_target(actor_ref)
+                    .with_direct()
+                    .any(|_|true)
+                {
                     actor_ref.guard_player(game, midnight_variables, target);
                 }
             },

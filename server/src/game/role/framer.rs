@@ -30,14 +30,12 @@ impl RoleStateImpl for Framer {
         
         Tags::set_tagged(game, TagSetID::Framer(actor_ref), &vec_set![framed]);
 
-        framed.set_night_appeared_visits(midnight_variables,
-            Some(
-                Visits::into_iter(midnight_variables)
-                    .with_visitor(actor_ref)
-                    .with_tag(VisitTag::Role { role: Role::Framer, id: 1 })
-                    .map(|v|Visit::new_none(framed, v.target))
-                    .collect()
-            )
+        framed.set_night_appeared_visits(midnight_variables, true);
+        Visits::add_visits(midnight_variables, 
+            Visits::into_iter(midnight_variables)
+                .with_visitor(actor_ref)
+                .with_tag(VisitTag::Role { role: Role::Framer, id: 1 })
+                .map(|v|Visit::new_appeared(framed, v.target))
         );
     }
     fn controller_parameters_map(self, game: &Game, actor_ref: PlayerReference) -> ControllerParametersMap {

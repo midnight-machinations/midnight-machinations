@@ -27,10 +27,10 @@ impl RoleStateImpl for Informant {
         for visit in actor_visits{
             let target_ref = visit.target;
 
-            let mut visited_by: Vec<PlayerReference> =  visit.target.all_appeared_visitors(game, midnight_variables).into_iter().filter(|p|actor_ref!=*p).collect();
+            let mut visited_by: Vec<PlayerReference> = visit.target.lookout_seen_players(midnight_variables, visit).collect();
             visited_by.shuffle(&mut rand::rng());
 
-            let mut visited: Vec<PlayerReference> = target_ref.tracker_seen_visits(game, midnight_variables).iter().map(|v|v.target).collect();
+            let mut visited: Vec<PlayerReference> = target_ref.tracker_seen_players(midnight_variables).collect();
             visited.shuffle(&mut rand::rng());
 
             let message = ChatMessageVariant::InformantResult{

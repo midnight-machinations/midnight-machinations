@@ -6,7 +6,7 @@ use crate::game::components::night_visits::{NightVisitsIterator, Visits};
 use crate::game::event::on_midnight::{MidnightVariables, OnMidnightPriority};
 use crate::game::components::tags::{TagSetID, Tags};
 use crate::game::components::graves::grave::GraveKiller;
-use crate::game::player::{PlayerIndex, PlayerReference};
+use crate::game::player::PlayerReference;
 use crate::game::visit::Visit;
 use crate::game::phase::PhaseType;
 use crate::game::Game;
@@ -96,17 +96,12 @@ impl RoleStateImpl for Werewolf {
                     .into_iter()
                     .for_each(|player_ref|{
 
-                    let mut players: Vec<PlayerIndex> = player_ref
-                        .tracker_seen_visits(game, midnight_variables)
-                        .into_iter()
-                        .map(|p|p.target.index())
-                        .collect();
-                    
+                    let mut players: Vec<PlayerReference> = player_ref.tracker_seen_players(midnight_variables).collect();
                     players.shuffle(&mut rand::rng());
 
                     actor_ref.push_night_message(midnight_variables, 
                         ChatMessageVariant::WerewolfTrackingResult{
-                            tracked_player: player_ref.index(), 
+                            tracked_player: player_ref, 
                             players
                         }
                     );

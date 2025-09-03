@@ -307,25 +307,6 @@ impl PlayerReference{
             self.set_night_upgraded_defense(midnight_variables, Some(defense));
         }
     }
-    
-    
-    pub fn tracker_seen_visits(self, _game: &Game, midnight_variables: &MidnightVariables) -> Vec<Visit> {
-        if let Some(v) = self.night_appeared_visits(midnight_variables) {
-            v.clone()
-        } else {
-            Visits::into_iter(midnight_variables)
-                .with_visitor(self)
-                .with_investigatable()
-                .collect()
-        }
-    }
-    pub fn all_appeared_visitors(self, game: &Game, midnight_variables: &MidnightVariables) -> Vec<PlayerReference> {
-        PlayerReference::all_players(game).filter(|player_ref|{
-            player_ref.tracker_seen_visits(game, midnight_variables).iter().any(|other_visit| 
-                other_visit.target == self
-            )
-        }).collect()
-    }
 
     pub fn push_night_messages_to_player(&self, game: &mut Game, midnight_variables: &mut MidnightVariables){
         let mut messages = self.night_messages(midnight_variables).to_vec();

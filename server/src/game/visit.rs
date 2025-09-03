@@ -32,13 +32,26 @@ impl Visit {
     }
     pub fn new_none(visitor: PlayerReference, target: PlayerReference)->Self{
         Self {
-            visitor, target,
+            visitor,
+            target,
             tag: VisitTag::None,
             attack: false,
             wardblock_immune: false,
             transport_immune: false,
             investigate_immune: false,
             indirect: false
+        }
+    }
+    pub fn new_appeared(visitor: PlayerReference, target: PlayerReference)->Self{
+        Self {
+            visitor,
+            target,
+            tag: VisitTag::Appeared,
+            attack: false,
+            wardblock_immune: true,
+            transport_immune: false,
+            investigate_immune: true,
+            indirect: true
         }
     }
 }
@@ -48,5 +61,6 @@ pub enum VisitTag{
     None,
     Role{role: Role, id: u8},
     SyndicateGunItem,
-    SyndicateBackupAttack
+    SyndicateBackupAttack,
+    Appeared
 }

@@ -44,6 +44,7 @@ impl RoleStateImpl for Ambusher {
                     .without_visit(ambush_visit)
                     .with_target(ambush_visit.target)
                     .with_alive_visitor(game)
+                    .with_direct()
                     .with_loyalist_visitor(game, GameConclusion::Town)
                     .map_visitor()
                     .collect::<Box<[PlayerReference]>>()

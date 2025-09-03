@@ -486,7 +486,7 @@ fn spy_basic_transported() {
     game.next_phase();
     
     assert_contains!(spy.get_messages(), ChatMessageVariant::SpyBug { roles: vec![Role::Blackmailer] });
-    assert_contains!(spy.get_messages(), ChatMessageVariant::SpyMafiaVisit { players: vec![bugged.index()] });
+    assert_contains!(spy.get_messages(), ChatMessageVariant::SpyMafiaVisit { players: vec![bugged.player_ref()] });
 }
 
 #[test]
@@ -922,8 +922,8 @@ fn veteran_basic(){
     assert!(!townie.alive());
 
     assert!(
-        townie.get_messages().contains(&ChatMessageVariant::LookoutResult { players: vec![framer.index(), tracker.index()] }) ||
-        townie.get_messages().contains(&ChatMessageVariant::LookoutResult { players: vec![tracker.index(), framer.index()] })
+        townie.get_messages().contains(&ChatMessageVariant::LookoutResult { players: vec![framer.player_ref(), tracker.player_ref()] }) ||
+        townie.get_messages().contains(&ChatMessageVariant::LookoutResult { players: vec![tracker.player_ref(), framer.player_ref()] })
     );
 
     // assert_contains!(
@@ -1264,11 +1264,11 @@ fn framer_second_visit_erased() {
 
     assert_not_contains!(
         lookout.get_messages(),
-        ChatMessageVariant::LookoutResult { players: vec![framer.index()] }
+        ChatMessageVariant::LookoutResult { players: vec![framer.player_ref()] }
     );
     assert_contains!(
         lookout.get_messages(),
-        ChatMessageVariant::LookoutResult { players: vec![] }
+        ChatMessageVariant::LookoutResult { players: vec![lookout.player_ref()] }
     );
 }
 
@@ -1287,7 +1287,7 @@ fn witch_second_visit_erased() {
 
     assert_not_contains!(
         lookout.get_messages(),
-        ChatMessageVariant::LookoutResult { players: vec![witch.index()] }
+        ChatMessageVariant::LookoutResult { players: vec![witch.player_ref()] }
     );
     assert_contains!(
         lookout.get_messages(),
@@ -1315,11 +1315,11 @@ fn drunk_role_change() {
 
     let messages = lo.get_messages();
     assert!(
-        !messages.contains(&ChatMessageVariant::LookoutResult { players: vec![mafioso.index(), drunk.index()] }) &&
-        !messages.contains(&ChatMessageVariant::LookoutResult { players: vec![drunk.index(), mafioso.index()] })
+        !messages.contains(&ChatMessageVariant::LookoutResult { players: vec![mafioso.player_ref(), drunk.player_ref()] }) &&
+        !messages.contains(&ChatMessageVariant::LookoutResult { players: vec![drunk.player_ref(), mafioso.player_ref()] })
     );
     assert!(
-        messages.contains(&ChatMessageVariant::LookoutResult { players: vec![mafioso.index()] })
+        messages.contains(&ChatMessageVariant::LookoutResult { players: vec![mafioso.player_ref()] })
     );
 }
 

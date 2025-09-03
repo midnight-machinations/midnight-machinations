@@ -161,10 +161,10 @@ pub enum ChatMessageVariant {
     Wardblocked,
 
     DetectiveResult {suspicious: bool},
-    LookoutResult{players: Vec<PlayerIndex>},
-    TrackerResult{players: Vec<PlayerIndex>},
+    LookoutResult{players: Vec<PlayerReference>},
+    TrackerResult{players: Vec<PlayerReference>},
     SeerResult{enemies: bool},
-    SpyMafiaVisit{players: Vec<PlayerIndex>},
+    SpyMafiaVisit{players: Vec<PlayerReference>},
     SpyBug{roles: Vec<Role>},
     PsychicGood{player: PlayerReference},
     PsychicEvil{first: PlayerReference, second: PlayerReference},
@@ -212,7 +212,7 @@ pub enum ChatMessageVariant {
     TargetHasWinCondition { win_condition: WinCondition },
 
     #[serde(rename_all = "camelCase")]
-    WerewolfTrackingResult{tracked_player: PlayerIndex, players: Vec<PlayerIndex>},
+    WerewolfTrackingResult{tracked_player: PlayerReference, players: Vec<PlayerReference>},
 
     JesterWon,
     RevolutionaryWon,

@@ -1,6 +1,7 @@
 use rand::seq::IteratorRandom;
 use serde::Serialize;
 
+use crate::game::components::night_visits::{NightVisitsIterator, Visits};
 use crate::game::controllers::{AvailablePlayerListSelection, ControllerID};
 use crate::game::attack_power::AttackPower;
 use crate::game::chat::ChatMessageVariant;
@@ -46,11 +47,9 @@ impl RoleStateImpl for Reeducator {
 
                 let mut converting = false;
 
-                actor_ref.set_night_visits(
-                    midnight_variables, 
-                    actor_ref
-                        .all_night_visits_cloned(midnight_variables)
-                        .into_iter()
+                actor_ref.set_night_visits(midnight_variables, 
+                    Visits::into_iter(midnight_variables)
+                        .with_visitor(actor_ref)
                         .map(|mut v|{
                             if 
                                 !InsiderGroupID::in_same_group(game, actor_ref, v.target) &&
