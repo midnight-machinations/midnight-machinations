@@ -182,20 +182,9 @@ export default function GameScreen(): ReactElement {
     const mobile = useContext(MobileContext)!;
     const { maxMenus, menuOrder } = loadSettingsParsed();
 
-    const menusOpen: [ContentMenu, boolean | undefined][] = [
-        [ContentMenu.WikiMenu, mobile ? undefined : false ],
-        [ContentMenu.GraveyardMenu, maxMenus > 4 ],
-        [ContentMenu.PlayerListMenu, maxMenus > 1 ],
-        [ContentMenu.ChatMenu, true ],
-        [ContentMenu.WillMenu, maxMenus > 3 ],
-        [ContentMenu.RoleSpecificMenu, maxMenus > 2 ],
-    ];
-
-    menusOpen.sort((a, b) => menuOrder.indexOf(a[0]) - menuOrder.indexOf(b[0]))
-
     const menuController = useMenuController(
         maxMenus, 
-        Object.fromEntries(menusOpen),
+        Object.fromEntries(menuOrder),
         () => MENU_CONTROLLER_HOLDER.controller!,
         menuController => MENU_CONTROLLER_HOLDER.controller = menuController
     );
@@ -270,19 +259,23 @@ export function GameScreenMenus(): ReactElement {
     }
 
     return <PanelGroup direction="horizontal" className="content">
-        {menuController.menusOpen().map((menu, index, menusOpen) => {
+        {menuController.menusOpen().flatMap((menu, index, menusOpen) => {
             const MenuElement = MENU_ELEMENTS[menu];
-            return <>
-                <Panel
-                    className="panel"
-                    minSize={minSize}
-                    defaultSize={mobile===false?defaultSizes[menu]:undefined}
-                    key={menu}
-                >
-                    <MenuElement />
-                </Panel>
-                {!mobile && menusOpen.some((_, i) => i > index) && <PanelResizeHandle key={index+".handle"} className="panel-handle"/>}
-            </>
+
+            const out = [];
+            out.push(<Panel
+                className="panel"
+                minSize={minSize}
+                defaultSize={mobile===false?defaultSizes[menu]:undefined}
+                key={menu}
+            >
+                <MenuElement />
+            </Panel>);
+            if(!mobile && menusOpen.some((_, i) => i > index)){
+                out.push(<PanelResizeHandle key={index+".handle"} className="panel-handle"/>)
+            }
+            return out;
+
         })}
         {menuController.menusOpen().length === 0 && <Panel><div className="no-content">
             {translate("menu.gameScreen.noContent")}

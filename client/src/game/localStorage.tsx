@@ -6,6 +6,7 @@ import parseFromJson from "../components/gameModeSettings/gameMode/dataFixer";
 import { ContentMenu } from "../menu/game/GameScreen";
 import { ParseResult, Success } from "../components/gameModeSettings/gameMode/parse";
 import { UnsafeString } from "./gameState.d";
+import { ListMapData } from "../ListMap";
 
 
 export function saveReconnectData(roomCode: number, playerId: number) {
@@ -54,7 +55,7 @@ export type Settings = {
     defaultName: UnsafeString | null;
     language: Language;
     maxMenus: number;
-    menuOrder: ContentMenu[]
+    menuOrder: ListMapData<ContentMenu, boolean>
     roleSpecificMenus: Role[] // RoleSpecificMenuType=standalone for all listed roles, otherwise it should be playerlist
 };
 
@@ -71,6 +72,29 @@ export function loadSettingsParsed(): Settings {
     }
 }
 export function getDefaultSettings(): Readonly<Settings> {
+    const mobile = window.innerWidth < 600;
+
+    let menuOrder: undefined | ListMapData<ContentMenu, boolean> = undefined;
+    if(mobile) {
+        menuOrder = [
+            [ContentMenu.ChatMenu, true],
+            [ContentMenu.WikiMenu, false], 
+            [ContentMenu.GraveyardMenu, false], 
+            [ContentMenu.PlayerListMenu, false],
+            [ContentMenu.WillMenu, false], 
+            [ContentMenu.RoleSpecificMenu, false]
+        ]
+    }else{
+        menuOrder = [
+            [ContentMenu.WikiMenu, false], 
+            [ContentMenu.GraveyardMenu, false], 
+            [ContentMenu.PlayerListMenu, true], 
+            [ContentMenu.ChatMenu, true], 
+            [ContentMenu.WillMenu, false], 
+            [ContentMenu.RoleSpecificMenu, true]
+        ]
+    }
+
     return {
         format: "v6",
         volume: 0.5,
@@ -78,15 +102,8 @@ export function getDefaultSettings(): Readonly<Settings> {
         accessibilityFont: false,
         language: "en_us",
         defaultName: null,
-        maxMenus: window.innerWidth < 600 ? 1 : 3,
-        menuOrder: [
-            ContentMenu.WikiMenu, 
-            ContentMenu.GraveyardMenu, 
-            ContentMenu.PlayerListMenu, 
-            ContentMenu.ChatMenu, 
-            ContentMenu.WillMenu, 
-            ContentMenu.RoleSpecificMenu
-        ],
+        maxMenus: mobile ? 1 : 6,
+        menuOrder: menuOrder,
         roleSpecificMenus: []
     }
 }
