@@ -17,7 +17,7 @@ pub enum GameConclusion {
 
     NiceList,
     NaughtyList,
-
+    Extra,
     Draw
 }
 impl GameConclusion {
@@ -33,7 +33,7 @@ impl GameConclusion {
 
             GameConclusion::NiceList,
             GameConclusion::NaughtyList,
-
+            GameConclusion::Extra,
             GameConclusion::Draw
         ]
     }

@@ -16,6 +16,7 @@ pub enum ChatGroup {
     Interview,
     Puppeteer,
     Warden,
+    Extra,
 }
 impl ChatGroup{
     pub fn player_receive_from_chat_group(&self, game: &Game, player_ref: PlayerReference)->bool{
