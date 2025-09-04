@@ -98,7 +98,6 @@ pub trait RoleStateImpl: Clone + std::fmt::Debug + Default + GetClientRoleState<
     fn role_list_generation_criteria() -> Vec<GenerationCriterion> {
         vec![]
     }
-    fn has_innocent_aura() -> bool {false}
 }
 
 // Creates the Role enum
