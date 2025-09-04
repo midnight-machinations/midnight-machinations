@@ -98,6 +98,7 @@ pub trait RoleStateImpl: Clone + std::fmt::Debug + Default + GetClientRoleState<
     fn role_list_generation_criteria() -> Vec<GenerationCriterion> {
         vec![]
     }
+    fn has_innocent_aura() -> bool {false}
 }
 
 // Creates the Role enum
@@ -410,18 +411,5 @@ impl Role{
             | Role::Witch | Role::Doomsayer | Role::Scarecrow | Role::Warper | Role::Porter
             | Role::Necromancer 
         )
-    }
-    pub fn has_innocent_aura(&self, game: &Game)->bool{
-        match self {
-            Role::Godfather => true,
-            Role::Disguiser => true,
-            Role::Pyrolisk => {
-                game.day_number() == 1
-            },
-            _ => false,
-        }
-    }
-    pub fn has_suspicious_aura(&self, _game: &Game)->bool{
-        false
     }
 }
