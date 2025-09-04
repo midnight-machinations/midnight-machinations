@@ -22,7 +22,7 @@ export function parseSettings(json: NonNullable<any>): ParseResult<Settings> {
         return Failure("settingsNotObject", json);
     }
 
-    for(const key of ['format', 'volume', 'fontSize', 'accessibilityFont', 'defaultName', 'language', 'roleSpecificMenus']) {
+    for(const key of ['format', 'volume', 'fontSize', 'accessibilityFont', 'defaultName', 'language']) {
         if (!Object.keys(json).includes(key)) {
             return Failure(`${key as keyof Settings}KeyMissingFromSettings`, json);
         }
