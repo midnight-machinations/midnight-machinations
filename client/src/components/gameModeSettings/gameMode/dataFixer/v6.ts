@@ -1,10 +1,10 @@
 import { VersionConverter } from ".";
 import { GameMode, GameModeData, GameModeStorage, ShareableGameMode } from "..";
 import { PHASES, PhaseTimes } from "../../../../game/gameState.d";
+import { getDefaultSettings, Settings } from "../../../../game/localStorage";
 import { Failure, ParseResult, ParseSuccess, Success, isFailure } from "../parse";
 import { parseName } from "./initial";
 import { parseEnabledRoles } from "./v2";
-import { parseSettings } from "./v3";
 import { parseRoleList } from "./v4";
 import { parseModifierSettings } from "./v5";
 
@@ -16,6 +16,34 @@ const v6: VersionConverter = {
 }
 
 export default v6;
+
+export function parseSettings(json: NonNullable<any>): ParseResult<Settings> {
+    if (typeof json !== "object" || Array.isArray(json)) {
+        return Failure("settingsNotObject", json);
+    }
+
+    for(const key of ['format', 'volume', 'fontSize', 'accessibilityFont', 'defaultName', 'language', 'roleSpecificMenus']) {
+        if (!Object.keys(json).includes(key)) {
+            return Failure(`${key as keyof Settings}KeyMissingFromSettings`, json);
+        }
+    }
+
+    if (!Object.keys(json).includes("maxMenus")) {
+        json.maxMenus = getDefaultSettings().maxMenus
+    }
+
+    for(const key of ['WikiMenu', 'GraveyardMenu', "PlayerListMenu", "ChatMenu", "WillMenu", "RoleSpecificMenu"]) {
+        if(!Array.isArray(json.menuOrder[key])){
+            json.menuOrder[key] = [key, key==="ChatMenu"]
+        }
+    }
+    
+    if(Object.keys(json).includes("roleSpecificMenus")){
+        delete json.roleSpecificMenus;
+    }
+
+    return Success({ ...json, format: "v6" });
+}
 
 function parseGameModeStorage(json: NonNullable<any>): ParseResult<GameModeStorage> {
     if (typeof json !== "object" || Array.isArray(json)) {

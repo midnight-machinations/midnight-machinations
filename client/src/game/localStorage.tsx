@@ -1,7 +1,6 @@
 import DEFAULT_GAME_MODES from "../resources/defaultGameModes.json";
 import { CurrentFormat, GameModeStorage } from "../components/gameModeSettings/gameMode";
 import { Language } from "./lang";
-import { Role } from "./roleState.d";
 import parseFromJson from "../components/gameModeSettings/gameMode/dataFixer";
 import { ContentMenu } from "../menu/game/GameScreen";
 import { ParseResult, Success } from "../components/gameModeSettings/gameMode/parse";
@@ -56,7 +55,6 @@ export type Settings = {
     language: Language;
     maxMenus: number;
     menuOrder: ListMapData<ContentMenu, boolean>
-    roleSpecificMenus: Role[] // RoleSpecificMenuType=standalone for all listed roles, otherwise it should be playerlist
 };
 
 export type RoleSpecificMenuType = "playerList" | "standalone";
@@ -104,7 +102,6 @@ export function getDefaultSettings(): Readonly<Settings> {
         defaultName: null,
         maxMenus: mobile ? 1 : 6,
         menuOrder: menuOrder,
-        roleSpecificMenus: []
     }
 }
 export function loadSettings(): unknown {
