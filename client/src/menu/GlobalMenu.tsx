@@ -13,6 +13,8 @@ import SettingsMenu from './Settings';
 import { useLobbyOrGameState } from '../components/useHooks';
 import { Button } from '../components/Button';
 import HostMenu from './HostMenu';
+import { useAuth0 } from '@auth0/auth0-react';
+import Profile from './Profile';
 import { encodeString } from '../components/ChatMessage';
 
 export default function GlobalMenu(): ReactElement {
@@ -36,6 +38,7 @@ export default function GlobalMenu(): ReactElement {
     )!;
     const ref = useRef<HTMLDivElement>(null);
     const anchorController = useContext(AnchorControllerContext)!;
+    const { isAuthenticated, loginWithRedirect } = useAuth0();
 
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
@@ -86,6 +89,10 @@ export default function GlobalMenu(): ReactElement {
             <section>
                 { quitButtonBlacklist.includes(anchorController.contentType) ||
                     <button onClick={() => quitToMainMenu()}><Icon>not_interested</Icon> {translate("menu.globalMenu.quitToMenu")}</button>
+                }
+                {isAuthenticated 
+                    ? <button onClick={() => anchorController.setCoverCard(<Profile />)}><Icon>person</Icon>{translate("menu.profile.title")}</button>
+                    : <button onClick={() => loginWithRedirect()}><Icon>login</Icon>{translate("login")}</button>
                 }
                 <button onClick={() => {
                     anchorController.setCoverCard(<SettingsMenu />)
