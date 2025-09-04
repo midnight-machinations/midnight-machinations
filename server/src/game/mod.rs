@@ -22,6 +22,7 @@ pub mod role_outline_reference;
 pub mod controllers;
 pub mod room_state;
 pub mod new_game;
+pub mod ability;
 
 use std::collections::VecDeque;
 use std::time::Instant;

@@ -1,4 +1,4 @@
-use mafia_server::{game::{controllers::*, chat::ChatMessageVariant, game_conclusion::GameConclusion, phase::PhaseState, player::{PlayerIndex, PlayerReference}, role::{Role, RoleState}, verdict::Verdict, Game}, packet::ToServerPacket};
+use mafia_server::{game::{controllers::*, chat::ChatMessageVariant, game_conclusion::GameConclusion, phase::PhaseState, player::{PlayerIndex, PlayerReference}, role::{Role, RoleState}, verdict::Verdict, Game, ability::AbilityID}, packet::ToServerPacket};
 
 #[derive(Clone, Copy, Debug)]
 pub struct TestPlayer(PlayerReference, *mut Game);
@@ -38,27 +38,28 @@ impl TestPlayer {
         );
     }
 
+    pub fn send_controller_input(&self, controller_id: ControllerID, selection: impl Into<ControllerSelection>) {
+        self.send_ability_input(ControllerInput::new(controller_id, selection));
+    }
+
+    pub fn send_ability_controller_input(&self, ability: AbilityID, id: u8, selection: impl Into<ControllerSelection>) {
+        self.send_controller_input(ControllerID::ability(self.player_ref(), ability, id), selection);
+    }
+
+    pub fn send_role_controller_input(&self, id: RoleControllerID, selection: impl Into<ControllerSelection>) {
+        self.send_controller_input(ControllerID::role(self.player_ref(), self.role(), id), selection);
+    }
+
     pub fn send_ability_input_integer_typical(&self, int: i8) {
-        self.send_ability_input(ControllerInput::new(
-            ControllerID::role(self.player_ref(), self.role(), 0),
-            IntegerSelection(int),
-        ))
+        self.send_role_controller_input(0, IntegerSelection(int));
     }
 
     pub fn send_ability_input_role_typical(&self, role: Vec<Role>){
-        self.send_ability_input(ControllerInput::new(
-            ControllerID::role(self.player_ref(), self.role(), 0),
-            RoleListSelection(role),
-        ))
+        self.send_role_controller_input(0, RoleListSelection(role));
     }
 
     pub fn send_ability_input_unit_typical(&self)->bool{
-        self.send_ability_input(
-            ControllerInput::new(
-                ControllerID::role(self.player_ref(), self.role(), 0),
-                UnitSelection
-            )
-        );
+        self.send_role_controller_input(0, UnitSelection);
         true
     }
 
@@ -73,22 +74,17 @@ impl TestPlayer {
     }
 
     pub fn send_ability_input_player_list_typical(&self, selection: impl Into<Vec<TestPlayer>>)->bool{
-        self.send_ability_input(
-            ControllerInput::new(
-                ControllerID::role(self.player_ref(), self.role(), 0),
-                PlayerListSelection(selection.into().iter().map(TestPlayer::player_ref).collect())
-            )
-        );
+        self.send_role_controller_input(0, PlayerListSelection(selection.into().iter().map(TestPlayer::player_ref).collect()));
         true
     }
 
     pub fn send_ability_input_boolean_typical(&self, selection: bool)->bool{
-        self.send_ability_input(
-            ControllerInput::new(
-                ControllerID::role(self.player_ref(), self.role(), 0),
-                BooleanSelection(selection)
-            )
-        );
+        self.send_role_controller_input(0, BooleanSelection(selection));
+        true
+    }
+
+    pub fn send_vigilante_gun_input(&self, selection: impl Into<Vec<TestPlayer>>)->bool{
+        self.send_ability_controller_input(AbilityID::VigilanteGun, 0, PlayerListSelection(selection.into().iter().map(TestPlayer::player_ref).collect()));
         true
     }
 

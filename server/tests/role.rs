@@ -545,7 +545,7 @@ fn transporter_basic_vigilante_escort() {
         town2: Detective
     );
     trans.send_ability_input_two_player_typical(town1, town2);
-    vigi.send_ability_input_player_list_typical(town1);
+    vigi.send_vigilante_gun_input(town1);
     escort.send_ability_input_player_list_typical(town2);
 
     game.skip_to(Obituary, 3);
@@ -692,7 +692,7 @@ fn necromancer_basic(){
     
     mafioso.send_ability_input_player_list_typical(sher);
     game.skip_to(Night, 3);
-    vigilante.send_ability_input_player_list_typical(informant);
+    vigilante.send_vigilante_gun_input(informant);
     game.skip_to(Night, 4);
 
 
@@ -1200,7 +1200,7 @@ fn grave_contains_multiple_killers() {
     );
 
     assert!(mafioso.send_ability_input_player_list_typical(townie));
-    assert!(vigilante.send_ability_input_player_list_typical(townie));
+    assert!(vigilante.send_vigilante_gun_input(townie));
     game.next_phase();
     assert!(
         *unsafe{GraveReference::new_unchecked(0)}.deref(&game) ==
@@ -1685,9 +1685,9 @@ fn vigilante_one_bullet_with_four_players() {
         gf: Godfather
     );
 
-    assert!(vigi.send_ability_input_player_list_typical(gf));
+    assert!(vigi.send_vigilante_gun_input(gf));
     game.skip_to(Night, 3);
-    assert!(vigi.send_ability_input_player_list_typical(t1));
+    assert!(vigi.send_vigilante_gun_input(t1));
 
     game.next_phase();
 
@@ -2014,7 +2014,7 @@ fn vigilante_shoots_marionette(){
         IntegerSelection(1)
     ));
     assert!(puppeteer.send_ability_input_player_list_typical(townie));
-    assert!(vigilante.send_ability_input_player_list_typical(townie));
+    assert!(vigilante.send_vigilante_gun_input(townie));
 
     game.next_phase();
 

@@ -419,10 +419,27 @@ impl PlayerReference{
     */
 
     pub fn controller_parameters_map(&self, game: &Game) -> ControllerParametersMap {
-        self.role_state(game).clone().controller_parameters_map(game, *self)
+        let role_map = self.role_state(game).clone().controller_parameters_map(game, *self);
+        
+        let ability_maps: Vec<ControllerParametersMap> = self.abilities(game)
+            .values()
+            .map(|ability| ability.clone().controller_parameters_map(game, *self))
+            .collect();
+        
+        ControllerParametersMap::combine([role_map].into_iter().chain(ability_maps))
     }
     pub fn on_midnight_one_player(&self, game: &mut Game, midnight_variables: &mut MidnightVariables, priority: OnMidnightPriority) {
+        // Process role midnight actions
         self.role_state(game).clone().on_midnight(game, midnight_variables, *self, priority);
+        
+        // Process ability midnight actions
+        let ability_ids: Vec<_> = self.abilities(game).keys().copied().collect();
+        for ability_id in ability_ids {
+            if let Some(mut ability_state) = self.get_ability(game, ability_id).cloned() {
+                ability_state.on_midnight(game, midnight_variables, *self, priority);
+                self.set_ability_state(game, ability_id, ability_state);
+            }
+        }
 
         if self.is_disconnected(game) && self.alive(game) {
             midnight_variables.get_mut(*self).died = true;
@@ -451,7 +468,14 @@ impl PlayerReference{
         self.role_state(game).clone().get_current_receive_chat_groups(game, *self)
     }
     pub fn convert_selection_to_visits(&self, game: &Game) -> Vec<Visit> {
-        self.role_state(game).clone().convert_selection_to_visits(game, *self)
+        let mut visits = self.role_state(game).clone().convert_selection_to_visits(game, *self);
+        
+        // Add visits from abilities
+        for ability_state in self.abilities(game).values() {
+            visits.extend(ability_state.clone().convert_selection_to_visits(game, *self));
+        }
+        
+        visits
     }
 }
 

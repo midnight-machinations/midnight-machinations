@@ -1,7 +1,7 @@
 use serde::{Deserialize, Serialize};
 
 use crate::game::{
-    controllers::Controllers, modifiers::hidden_nomination_votes::HiddenNominationVotes, player::PlayerReference, role::Role, Game
+    controllers::Controllers, modifiers::hidden_nomination_votes::HiddenNominationVotes, player::PlayerReference, role::Role, Game, ability::AbilityID
 };
 
 use super::{
@@ -34,6 +34,12 @@ pub enum ControllerID{
         role: Role,
         id: RoleControllerID
     },
+    #[serde(rename_all = "camelCase")]
+    Ability{
+        player: PlayerReference,
+        ability: AbilityID,
+        id: u8
+    },
     ForfeitNominationVote{player: PlayerReference},
     PitchforkVote{player: PlayerReference},
     
@@ -54,6 +60,9 @@ pub enum ControllerID{
 impl ControllerID{
     pub fn role(player: PlayerReference, role: Role, id: RoleControllerID)->Self{
         Self::Role{player, role, id}
+    }
+    pub fn ability(player: PlayerReference, ability: AbilityID, id: u8)->Self{
+        Self::Ability{player, ability, id}
     }
     pub fn nominate(player: PlayerReference)->Self{
         Self::Nominate{player}

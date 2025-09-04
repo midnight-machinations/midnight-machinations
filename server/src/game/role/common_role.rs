@@ -7,7 +7,7 @@ use crate::game::{chat::ChatGroup, components::{call_witness::CallWitness, detai
 use super::{medium::Medium, reporter::Reporter, warden::Warden, InsiderGroupID, Role, RoleState};
 
 
-pub(super) fn standard_charges(game: &Game)->u8{
+pub(crate) fn standard_charges(game: &Game)->u8{
     game.num_players().div_ceil(5)
 }
 
@@ -18,7 +18,7 @@ pub(super) fn convert_controller_selection_to_visits(game: &Game, actor_ref: Pla
     convert_controller_selection_to_visits_visit_tag(game, actor_ref, controller_id, attack, VisitTag::Role { role: actor_ref.role(game), id: 0 })
 }
 
-pub(super) fn convert_controller_selection_to_visits_visit_tag(game: &Game, actor_ref: PlayerReference, controller_id: ControllerID, attack: bool, tag: VisitTag) -> Vec<Visit> {
+pub(crate) fn convert_controller_selection_to_visits_visit_tag(game: &Game, actor_ref: PlayerReference, controller_id: ControllerID, attack: bool, tag: VisitTag) -> Vec<Visit> {
     
     let Some(selection) = controller_id.get_selection(game) else {return Vec::new()};
 

@@ -1,5 +1,5 @@
 
-use crate::{game::{chat::{ChatMessage, ChatMessageVariant, ChatPlayerComponent}, components::player_component::PlayerComponent, controllers::{ControllerID, IntegerSelection}, event::on_conceal_role::OnConcealRole, modifiers::ModifierID, role::{Role, RoleState}, verdict::Verdict, Game}, packet::ToClientPacket, vec_set::VecSet};
+use crate::{game::{chat::{ChatMessage, ChatMessageVariant, ChatPlayerComponent}, components::player_component::PlayerComponent, controllers::{ControllerID, IntegerSelection}, event::on_conceal_role::OnConcealRole, modifiers::ModifierID, role::{Role, RoleState}, verdict::Verdict, Game, ability::{PlayerAbilities, AbilityID, AbilityStateEnum}}, packet::ToClientPacket, vec_set::VecSet};
 
 use super::PlayerReference;
 
@@ -123,6 +123,55 @@ impl PlayerReference{
             Some(IntegerSelection(0)) => Verdict::Innocent,
             Some(IntegerSelection(1)) => Verdict::Guilty,
             _ => Verdict::Abstain
+        }
+    }
+
+    /*
+    Abilities
+    */
+    pub fn abilities<'a>(&self, game: &'a Game) -> &'a PlayerAbilities {
+        &self.deref(game).abilities
+    }
+    
+    pub fn abilities_mut<'a>(&self, game: &'a mut Game) -> &'a mut PlayerAbilities {
+        &mut self.deref_mut(game).abilities
+    }
+    
+    pub fn has_ability(&self, game: &Game, ability_id: AbilityID) -> bool {
+        self.abilities(game).contains_key(&ability_id)
+    }
+    
+    pub fn get_ability<'a>(&self, game: &'a Game, ability_id: AbilityID) -> Option<&'a AbilityStateEnum> {
+        self.abilities(game).get(&ability_id)
+    }
+    
+    pub fn get_ability_mut<'a>(&self, game: &'a mut Game, ability_id: AbilityID) -> Option<&'a mut AbilityStateEnum> {
+        self.abilities_mut(game).get_mut(&ability_id)
+    }
+    
+    pub fn add_ability(&self, game: &mut Game, ability_id: AbilityID) {
+        let mut ability_state = ability_id.new_state(game);
+        ability_state.on_ability_added(game, *self);
+        self.abilities_mut(game).insert(ability_id, ability_state);
+    }
+    
+    pub fn remove_ability(&self, game: &mut Game, ability_id: AbilityID) {
+        if let Some(mut ability_state) = self.abilities_mut(game).remove(&ability_id) {
+            ability_state.on_ability_removed(game, *self);
+        }
+    }
+    
+    pub fn set_ability_state(&self, game: &mut Game, ability_id: AbilityID, new_state: AbilityStateEnum) {
+        self.abilities_mut(game).insert(ability_id, new_state);
+    }
+    
+    pub fn update_ability<F>(&self, game: &mut Game, ability_id: AbilityID, update_fn: F) 
+    where
+        F: FnOnce(AbilityStateEnum) -> AbilityStateEnum,
+    {
+        if let Some(ability_state) = self.abilities_mut(game).remove(&ability_id) {
+            let updated_state = update_fn(ability_state);
+            self.abilities_mut(game).insert(ability_id, updated_state);
         }
     }
 }

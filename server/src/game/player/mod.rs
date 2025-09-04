@@ -12,6 +12,7 @@ use crate::{
     vec_set::VecSet,
     client_connection::ClientConnection,
     game::role::{Role, RoleState},
+    game::ability::PlayerAbilities,
     websocket_connections::connection::ClientSender,
 };
 
@@ -25,6 +26,7 @@ pub struct Player {
 
     name: String,
     role_state: RoleState,
+    abilities: PlayerAbilities,
     alive: bool,
     notes: Vec<String>,
     crossed_out_outlines: Vec<u8>,
@@ -39,6 +41,7 @@ impl Player {
 
             name,
             role_state: role.default_state(),
+            abilities: PlayerAbilities::new(),
             alive: true,
             notes: vec![],
             crossed_out_outlines: vec![],
@@ -52,7 +55,7 @@ impl Player {
 pub mod test {
     use std::time::Duration;
 
-    use crate::{client_connection::ClientConnection, game::role::Role, vec_set::VecSet};
+    use crate::{client_connection::ClientConnection, game::role::Role, vec_set::VecSet, game::ability::PlayerAbilities};
 
     use super::Player;
 
@@ -63,6 +66,7 @@ pub mod test {
 
             name,
             role_state: role.default_state(),
+            abilities: PlayerAbilities::new(),
             alive: true,
             notes: vec![],
             crossed_out_outlines: vec![],

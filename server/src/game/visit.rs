@@ -1,4 +1,4 @@
-use super::{player::PlayerReference, role::Role};
+use super::{player::PlayerReference, role::Role, ability::AbilityID};
 
 #[derive(Copy, Clone, Debug, PartialEq, Eq)]
 pub struct Visit {
@@ -18,6 +18,18 @@ pub struct Visit {
     pub indirect: bool
 }
 impl Visit {
+    pub fn new_ability(visitor: PlayerReference, target: PlayerReference, attack: bool, ability: AbilityID, id: u8) -> Self {
+        Self {
+            visitor,
+            target,
+            tag: VisitTag::Ability{ability, id},
+            attack,
+            wardblock_immune: false,
+            transport_immune: false,
+            investigate_immune: false,
+            indirect: false,
+        }
+    }
     pub fn new_role(visitor: PlayerReference, target: PlayerReference, attack: bool, role: Role, id: u8) -> Self {
         Self {
             visitor,
@@ -60,6 +72,7 @@ impl Visit {
 pub enum VisitTag{
     None,
     Role{role: Role, id: u8},
+    Ability{ability: AbilityID, id: u8},
     SyndicateGunItem,
     SyndicateBackupAttack,
     Appeared
