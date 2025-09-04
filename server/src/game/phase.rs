@@ -2,7 +2,7 @@ use std::{ops::Div, time::Duration};
 
 use serde::{Serialize, Deserialize};
 
-use crate::game::modifiers::{hidden_nomination_votes::HiddenNominationVotes, hidden_verdict_votes::HiddenVerdictVotes, ModifierType, Modifiers};
+use crate::game::{components::graves::{grave::Grave, Graves}, modifiers::{hidden_nomination_votes::HiddenNominationVotes, hidden_verdict_votes::HiddenVerdictVotes, ModifierID}};
 
 use super::{
     chat::{ChatGroup, ChatMessageVariant},
@@ -10,7 +10,7 @@ use super::{
         before_phase_end::BeforePhaseEnd,
         on_midnight::{OnMidnight, MidnightVariables}, on_phase_start::OnPhaseStart, Event
     },
-    grave::Grave, player::PlayerReference, settings::PhaseTimeSettings, Game
+    player::PlayerReference, settings::PhaseTimeSettings, Game
 };
 
 
@@ -21,6 +21,7 @@ pub enum PhaseType {
     Obituary,
     Discussion,
     Nomination,
+    Adjournment,
     Testimony,
     Judgement,
     FinalWords,
@@ -40,6 +41,8 @@ pub enum PhaseState {
     Discussion,
     #[serde(rename_all = "camelCase")]
     Nomination { trials_left: u8, nomination_time_remaining: Option<Duration> },
+    #[serde(rename_all = "camelCase")]
+    Adjournment {trials_left: u8},
     #[serde(rename_all = "camelCase")]
     Testimony { trials_left: u8, player_on_trial: PlayerReference, nomination_time_remaining: Option<Duration> },
     #[serde(rename_all = "camelCase")]
@@ -110,7 +113,7 @@ impl PhaseStateMachine {
 
         if
             phase == PhaseType::Nomination &&
-            !Modifiers::is_enabled(game, ModifierType::UnscheduledNominations)
+            !game.modifier_settings().is_enabled(ModifierID::UnscheduledNominations)
         {
             time = time.map(|o|o.div(3));
         }
@@ -126,6 +129,7 @@ impl PhaseState {
             PhaseState::Obituary {..} => PhaseType::Obituary,
             PhaseState::Discussion => PhaseType::Discussion,
             PhaseState::Nomination {..} => PhaseType::Nomination,
+            PhaseState::Adjournment { .. } => PhaseType::Adjournment,
             PhaseState::Testimony {..} => PhaseType::Testimony,
             PhaseState::Judgement {..} => PhaseType::Judgement,
             PhaseState::FinalWords {..} => PhaseType::FinalWords,
@@ -159,7 +163,7 @@ impl PhaseState {
 
                 for player_ref in PlayerReference::all_players(game) {
                     if player_ref.night_died(&last_night) {
-                        game.add_grave(Grave::from_player_night(game, &last_night, player_ref));
+                        Graves::add_grave(game, Grave::from_player_night(game, &last_night, player_ref));
                     }
                 }
                 for player_ref in PlayerReference::all_players(game) {
@@ -198,14 +202,16 @@ impl PhaseState {
             | PhaseState::Judgement { .. } 
             | PhaseState::FinalWords { .. }
             | PhaseState::Dusk
-            | PhaseState::Recess => {}
+            | PhaseState::Recess 
+            | PhaseState::Adjournment { .. }
+            => {}
         }
         
     }
     
     /// Returns what phase should come next
     pub fn end(game: &mut Game) -> PhaseState {
-        let next = match *game.current_phase() {
+        match *game.current_phase() {
             PhaseState::Briefing => {
                 Self::Dusk
             },
@@ -219,27 +225,32 @@ impl PhaseState {
                 }
             },
             PhaseState::Nomination {trials_left, ..} => {
-
-
-                if !Modifiers::is_enabled(game, ModifierType::UnscheduledNominations){
-                    
-                    if let Some(player_on_trial) = game.count_nomination_and_start_trial(false){    
-                        Self::Testimony{
-                            trials_left: trials_left.saturating_sub(1), 
-                            player_on_trial, 
-                            nomination_time_remaining: PhaseStateMachine::get_phase_time_length(game, PhaseType::Nomination)
-                        }
-                    }else if trials_left > 1  {
-                        Self::Nomination {
-                            trials_left: trials_left.saturating_sub(1),
-                            nomination_time_remaining: PhaseStateMachine::get_phase_time_length(game, PhaseType::Nomination)
-                        }
-                    }else{
+                if game.modifier_settings().is_enabled(ModifierID::UnscheduledNominations){
+                    if trials_left == 0 {
                         Self::Dusk
+                    } else {
+                        Self::Adjournment { trials_left: 0 }
                     }
-
-                }else{
+                }else if let Some(player_on_trial) = game.count_nomination_and_start_trial(false){    
+                    Self::Testimony{
+                        trials_left: trials_left.saturating_sub(1), 
+                        player_on_trial, 
+                        nomination_time_remaining: PhaseStateMachine::get_phase_time_length(game, PhaseType::Nomination)
+                    }
+                } else if trials_left > 0 {
+                    Self::Adjournment {trials_left: trials_left.saturating_sub(1)}
+                } else {
+                    Self::Adjournment {trials_left}
+                }
+            },
+            PhaseState::Adjournment {trials_left} => {
+                if trials_left == 0 {
                     Self::Dusk
+                } else {
+                    Self::Nomination {
+                        trials_left,
+                        nomination_time_remaining: PhaseStateMachine::get_phase_time_length(game, PhaseType::Nomination)
+                    }
                 }
             },
             PhaseState::Testimony { trials_left, player_on_trial, nomination_time_remaining } => {
@@ -274,7 +285,7 @@ impl PhaseState {
                 }
                 
 
-                let hang = if Modifiers::is_enabled(game, ModifierType::TwoThirdsMajority) {
+                let hang = if game.modifier_settings().is_enabled(ModifierID::TwoThirdsMajority) {
                     innocent <= guilty.div(2)
                 } else {
                     innocent < guilty
@@ -300,15 +311,6 @@ impl PhaseState {
                 Self::Obituary { last_night: OnMidnight::new().invoke(game) }
             },
             PhaseState::Recess => Self::Recess
-        };
-        next
-    }
-    
-    pub fn is_day(&self) -> bool {
-        self.phase() != PhaseType::Night
-    }
-
-    pub fn is_night(&self) -> bool {
-        self.phase() == PhaseType::Night
+        }
     }
 }

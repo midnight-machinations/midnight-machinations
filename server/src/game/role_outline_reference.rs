@@ -34,8 +34,8 @@ impl RoleOutlineReference{
     pub fn deref_as_role_and_player_originally_generated(&self, game: &Game)->OriginallyGeneratedRoleAndPlayer{
         game.assignments
             .iter()
-            .find(|(_, (outline, _))| outline.index == self.index)
-            .map(|(player, (_, assignment))| (assignment.role(), *player))
+            .find(|(_, assignment)| assignment.role_outline_reference.index == self.index)
+            .map(|(player, assignment)| (assignment.role, *player))
             .expect("RoleOutlineReference does not correspond to any role in the game")
     }
 

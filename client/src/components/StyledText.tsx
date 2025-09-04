@@ -8,10 +8,12 @@ import "./styledText.css";
 import DUMMY_NAMES from "../resources/dummyNames.json";
 import { ARTICLES, WikiArticleLink, getArticleLangKey } from "./WikiArticleLink";
 import { MenuControllerContext } from "../menu/game/GameScreen";
-import { Player } from "../game/gameState.d";
+import { Player, UnsafeString } from "../game/gameState.d";
 import { AnchorControllerContext } from "../menu/Anchor";
 import { setWikiSearchPage } from "./Wiki";
-import { getRoleSetsFromRole } from "../game/roleListState.d";
+import { getRoleSetsFromRole, RoleList, translateRoleOutline } from "../game/roleListState.d";
+import { encodeString } from "./ChatMessage";
+import DUMMY_ROLE_LIST from "../resources/dummyRoleList.json";
 
 export type TokenData = {
     style?: string, 
@@ -42,6 +44,7 @@ export type StyledTextProps = {
     noLinks?: boolean,
     markdown?: boolean,
     playerKeywordData?: KeywordDataMap
+    roleListKeywordData?: KeywordDataMap
 };
 
 /**
@@ -54,6 +57,7 @@ export type StyledTextProps = {
  */
 export default function StyledText(props: Readonly<StyledTextProps>): ReactElement {
     const playerKeywordData = props.playerKeywordData ?? PLAYER_KEYWORD_DATA;
+    const roleListKeywordData = props.roleListKeywordData ?? ROLE_LIST_KEYWORD_DATA;
     const menuController = useContext(MenuControllerContext);
     const anchorController = useContext(AnchorControllerContext)!;
 
@@ -76,12 +80,21 @@ export default function StyledText(props: Readonly<StyledTextProps>): ReactEleme
         tokens[0].string = tokens[0].string.replace(/\n/g, '<br>');
     }
 
-    tokens = styleKeywords(tokens, playerKeywordData);
+    tokens = styleKeywords(tokens, {...playerKeywordData, ...roleListKeywordData});
 
-    const jsxString = tokens.map(token => {
+    const jsxString = mapTokensToHtml(tokens, props.noLinks ?? false);
+    
+    return <span
+        className={props.className}
+        dangerouslySetInnerHTML={{__html: jsxString}}>
+    </span>
+}
+
+function mapTokensToHtml(tokens: Token[], noLinks: boolean): string {
+    return tokens.map(token => {
         if (token.type === "raw") {
             return token.string;
-        } else if (token.link === undefined || props.noLinks) {
+        } else if (token.link === undefined || noLinks) {
             return ReactDOMServer.renderToStaticMarkup(
                 <span
                     className={token.style}
@@ -98,12 +111,7 @@ export default function StyledText(props: Readonly<StyledTextProps>): ReactEleme
                 />
             );
         }
-    }).join("");
-    
-    return <span
-        className={props.className}
-        dangerouslySetInnerHTML={{__html: jsxString}}>
-    </span>
+    }).join("")
 }
 
 const KEYWORD_DATA: KeywordDataMap = {};
@@ -185,22 +193,38 @@ export function computePlayerKeywordData(players: Player[]) {
     }
 
     for(const player of players) {
-        PLAYER_SENDER_KEYWORD_DATA[player.toString()] = [
+        PLAYER_SENDER_KEYWORD_DATA[encodeString(player.toString())] = [
             { style: "keyword-player-number", replacement: (player.index + 1).toString() },
             { replacement: " " },
-            { style: "keyword-player-sender", replacement: player.name }
+            { style: "keyword-player-sender", replacement: encodeString(player.name) }
         ];
         
-        PLAYER_KEYWORD_DATA[player.toString()] = [
+        PLAYER_KEYWORD_DATA[encodeString(player.toString())] = [
             { style: "keyword-player-number", replacement: (player.index + 1).toString() },
             { replacement: " " },
-            { style: "keyword-player", replacement: player.name }
+            { style: "keyword-player", replacement: encodeString(player.name) }
         ];
         
     }
 }
 
-export function computePlayerKeywordDataForLobby(playerNames: string[]) {
+export const ROLE_LIST_KEYWORD_DATA: KeywordDataMap = {};
+
+export function computeRoleListKeywordData(playerNames: UnsafeString[], roleList: RoleList) {
+    for (const key in ROLE_LIST_KEYWORD_DATA) {
+        delete ROLE_LIST_KEYWORD_DATA[key];
+    }
+
+    for(const [index, outline] of roleList.entries()) {
+        ROLE_LIST_KEYWORD_DATA[`${index + 1}: ` + translateRoleOutline(outline, playerNames)] = [
+            { style: "keyword-outline-number", replacement: (index + 1).toString() },
+            { replacement: " " },
+            { style: "keyword-outline", replacement: getStyledHtmlFromString(translateRoleOutline(outline, playerNames), PLAYER_KEYWORD_DATA, {}) },
+        ];
+    }
+}
+
+export function computePlayerKeywordDataForLobby(playerNames: UnsafeString[]) {
     for (const key in PLAYER_KEYWORD_DATA) {
         delete PLAYER_KEYWORD_DATA[key];
     }
@@ -209,16 +233,17 @@ export function computePlayerKeywordDataForLobby(playerNames: string[]) {
     }
 
     for(const name of playerNames) {
-        PLAYER_SENDER_KEYWORD_DATA[name] = [{ style: "keyword-player-sender", replacement: name }];
-        PLAYER_KEYWORD_DATA[name] = [{ style: "keyword-player", replacement: name }];
+        PLAYER_SENDER_KEYWORD_DATA[encodeString(name)] = [{ style: "keyword-player-sender", replacement: encodeString(name) }];
+        PLAYER_KEYWORD_DATA[encodeString(name)] = [{ style: "keyword-player", replacement: encodeString(name) }];
     }
 }
 
 export const DUMMY_NAMES_SENDER_KEYWORD_DATA: KeywordDataMap = {};
 export const DUMMY_NAMES_KEYWORD_DATA: KeywordDataMap = {};
-computeDummyNamesKeywordData();
+export const DUMMY_ROLE_LIST_KEYWORD_DATA: KeywordDataMap = {};
+computeDummyKeywordData();
 
-function computeDummyNamesKeywordData() {
+function computeDummyKeywordData() {
     for (const key in DUMMY_NAMES_KEYWORD_DATA) {
         delete DUMMY_NAMES_KEYWORD_DATA[key];
     }
@@ -235,6 +260,22 @@ function computeDummyNamesKeywordData() {
             { style: "keyword-player", replacement: name }
         ];
     }
+
+    for (const [index, outline] of (DUMMY_ROLE_LIST as RoleList).entries()) {
+        DUMMY_ROLE_LIST_KEYWORD_DATA[`${index + 1}: ` + translateRoleOutline(outline, DUMMY_NAMES)] = [
+            { style: "keyword-outline-number", replacement: (index + 1).toString() },
+            { replacement: " " },
+            { style: "keyword-outline", replacement: getStyledHtmlFromString(translateRoleOutline(outline, DUMMY_NAMES), DUMMY_NAMES_KEYWORD_DATA, {}) },
+        ];
+    }
+}
+
+function getStyledHtmlFromString(string: string, playerKeywordData: KeywordDataMap, roleListKeywordData: KeywordDataMap): string {
+    const tokens = [{ type: "raw" as const, string }];
+
+    const styledTokens = styleKeywords(tokens, { ...playerKeywordData, ...roleListKeywordData });
+
+    return mapTokensToHtml(styledTokens, false);
 }
 
 function styleKeywords(tokens: Token[], extraData?: KeywordDataMap): Token[] {

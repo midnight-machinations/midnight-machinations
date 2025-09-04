@@ -18,8 +18,11 @@ import { GameModeSelector } from "../../components/gameModeSettings/GameModeSele
 import LobbyChatMenu from "./LobbyChatMenu";
 import { useLobbyState } from "../../components/useHooks";
 import { Button } from "../../components/Button";
-import { EnabledModifiersSelector } from "../../components/gameModeSettings/EnabledModifiersSelector";
+import { ModifiersSelector } from "../../components/gameModeSettings/ModifiersSelector";
 import LobbyNamePane from "./LobbyNamePane";
+import { UnsafeString } from "../../game/gameState.d";
+import { encodeString } from "../../components/ChatMessage";
+import ListMap from "../../ListMap";
 
 export default function LobbyMenu(): ReactElement {
     const isSpectator = useLobbyState(
@@ -94,9 +97,9 @@ function LobbyMenuSettings(props: Readonly<{
         lobbyState => lobbyState.phaseTimes,
         ["phaseTimes"]
     )!;
-    const enabledModifiers = useLobbyState(
-        lobbyState => lobbyState.enabledModifiers,
-        ["enabledModifiers"]
+    const modifierSettings = useLobbyState(
+        lobbyState => lobbyState.modifierSettings.list,
+        ["modifierSettings"]
     )!;
 
     const mobile = useContext(MobileContext)!;
@@ -125,8 +128,8 @@ function LobbyMenuSettings(props: Readonly<{
     };
 
     const context = useMemo(() => {
-        return {roleList, enabledRoles, phaseTimes, enabledModifiers};
-    }, [enabledRoles, phaseTimes, roleList, enabledModifiers]);
+        return {roleList, enabledRoles, phaseTimes, modifierSettings};
+    }, [enabledRoles, phaseTimes, roleList, modifierSettings]);
 
     return <GameModeContext.Provider value={context}>
         {mobile && <h1>{translate("menu.lobby.settings")}</h1>}
@@ -136,12 +139,12 @@ function LobbyMenuSettings(props: Readonly<{
                 GAME_MANAGER.sendSetPhaseTimesPacket(gameMode.phaseTimes);
                 GAME_MANAGER.sendEnabledRolesPacket(gameMode.enabledRoles);
                 GAME_MANAGER.sendSetRoleListPacket(gameMode.roleList);
-                GAME_MANAGER.sendEnabledModifiersPacket(gameMode.enabledModifiers);
+                GAME_MANAGER.sendModifierSettingsPacket(new ListMap(gameMode.modifierSettings));
             }}
         />}
-        <EnabledModifiersSelector
+        <ModifiersSelector
             disabled={!props.isHost}
-            onChange={modifiers => GAME_MANAGER.sendEnabledModifiersPacket(modifiers)}
+            setModifiers={modifiers => GAME_MANAGER.sendModifierSettingsPacket(new ListMap(modifiers))}
         />
         <PhaseTimesSelector 
             disabled={!props.isHost}
@@ -169,7 +172,7 @@ function LobbyMenuHeader(props: Readonly<{
     advancedView: boolean,
     setAdvancedView: (advancedView: boolean) => void
 }>): JSX.Element {
-    const [lobbyName, setLobbyName] = useState<string>(GAME_MANAGER.state.stateType === "lobby" ? GAME_MANAGER.state.lobbyName : "Mafia Lobby");
+    const [lobbyName, setLobbyName] = useState<UnsafeString>(GAME_MANAGER.state.stateType === "lobby" ? GAME_MANAGER.state.lobbyName : "Mafia Lobby");
     const mobile = useContext(MobileContext)!;
     const { setContent: setAnchorContent } = useContext(AnchorControllerContext)!;
 
@@ -207,7 +210,7 @@ function LobbyMenuHeader(props: Readonly<{
         {props.isHost ? 
             <input 
                 type="text" 
-                value={lobbyName}
+                value={lobbyName as string}
                 onInput={e => {
                     setLobbyName((e.target as HTMLInputElement).value);
                 }}
@@ -225,7 +228,7 @@ function LobbyMenuHeader(props: Readonly<{
                     GAME_MANAGER.sendSetLobbyNamePacket(newLobbyName);
                 }}
             /> : 
-            <h3>{lobbyName}</h3>
+            <h3>{encodeString(lobbyName)}</h3>
         }
         
     </header>

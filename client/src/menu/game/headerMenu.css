@@ -84,9 +84,12 @@
     top: 0;
     right: 0;
 }
-.header-menu .fast-forward-button{
+.header-menu .fast-forward-button {
     position: absolute;
     left: .25rem;
     top: .25rem;
-    font-size: 1.5rem;
 }
+/* .header-menu .fast-forward-button-div > button:first-of-type {
+    margin: 0;
+    font-size: 1.5rem;
+} */

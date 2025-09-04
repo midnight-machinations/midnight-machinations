@@ -62,8 +62,8 @@
         "canWriteDeathNote": false,
         "canBeConvertedTo": [],
         "chatMessages":[
-            {"type":"sheriffResult","suspicious":true},
-            {"type":"sheriffResult","suspicious":false}
+            {"type":"detectiveResult","suspicious":true},
+            {"type":"detectiveResult","suspicious":false}
         ]
     },
     "lookout": {
@@ -128,16 +128,11 @@
         "canWriteDeathNote": false,
         "canBeConvertedTo": [],
         "chatMessages":[
-            {"type": "spyBug", "bug": "silenced"},
-            {"type": "spyBug", "bug": "roleblocked"},
-            {"type": "spyBug", "bug": "protected"},
-            {"type": "spyBug", "bug": "transported"},
-            {"type": "spyBug", "bug": "possessed"},
-            {"type": "spyBug", "bug": "wardblocked"},
+            {"type": "spyBug", "roles": []},
+            {"type": "spyBug", "roles": ["framer"]},
+            {"type": "spyBug", "roles": ["informant", "hypnotist"]},
             {"type": "spyMafiaVisit", "players": [16,17,18,16]},
-            {"type": "spyMafiaVisit", "players": []},
-            {"type": "cultConvertsNext"},
-            {"type": "cultKillsNext"}
+            {"type": "spyMafiaVisit", "players": []}
         ]
     },
     "auditor": {
@@ -149,10 +144,10 @@
         "canWriteDeathNote": false,
         "canBeConvertedTo": [],
         "chatMessages":[
-            {"type": "auditorResult", "outlineIndex": 0, "roleOutline":[{"roleSet": "any"}],"result": ["godfather","jester","apostle","escort"]},
-            {"type": "auditorResult", "outlineIndex": 1, "roleOutline":[{"role":"vigilante"},{"role":"marksman"}],"result": ["vigilante"]},
-            {"type": "auditorResult", "outlineIndex": 2, "roleOutline":[{"role":"arsonist"}],"result": ["arsonist"]},
-            {"type": "auditorResult", "outlineIndex": 3, "roleOutline":[{"roleSet":"townSupport"}],"result": ["escort","medium","coxswain"]}
+            {"type": "auditorResult", "outlineIndex": 15, "result": ["godfather","jester","apostle","escort"]},
+            {"type": "auditorResult", "outlineIndex": 10, "result": ["vigilante"]},
+            {"type": "auditorResult", "outlineIndex": 4, "result": ["arsonist"]},
+            {"type": "auditorResult", "outlineIndex": 11, "result": ["escort","medium","transporter"]}
         ]
     },
     "snoop": {
@@ -403,6 +398,7 @@
         "chatMessages":[
             {"type": "mediumExists"},
             {"type": "mediumHauntStarted", "medium":32, "player":10},
+            {"type": "mediumSeance", "medium":32, "player":10},
             {
                 "type": "normal", 
                 "messageSender": {
@@ -497,16 +493,6 @@
             {"type": "transported"}
         ]
     },
-    "coxswain":{
-        "mainRoleSet": "town",
-        "roleSets": ["town", "townCommon", "townSupport"],
-        "armor": false,
-        "aura": null,
-        "maxCount": 1,
-        "canWriteDeathNote": false,
-        "canBeConvertedTo": [],
-        "chatMessages":[]
-    },
     "retributionist": {
         "mainRoleSet": "town",
         "roleSets": ["town", "townCommon", "townSupport"],
@@ -517,7 +503,7 @@
         "canBeConvertedTo": [],
         "chatMessages":[
             {"type": "targetsMessage", "message": 
-                {"type": "sheriffResult","suspicious":true}
+                {"type": "detectiveResult","suspicious":true}
             },
             {"type": "youWerePossessed", "immune": false},
             {"type": "youWerePossessed", "immune": true},
@@ -676,7 +662,9 @@
         "canWriteDeathNote": false,
         "canBeConvertedTo": ["godfather"],
         "chatMessages":[
-            {"type":"silenced"}
+            {"type":"silenced"},
+            {"type":"witnessesCalled", "playerOnTrial":51, "witnesses":[1,2,3]},
+            {"type":"witnessesCalled", "playerOnTrial":51, "witnesses":[]}
         ]
     },
     "cerenovous": {
@@ -687,7 +675,11 @@
         "maxCount": 1,
         "canWriteDeathNote": false,
         "canBeConvertedTo": ["godfather"],
-        "chatMessages":[]
+        "chatMessages":[
+            {"type":"brained"},
+            {"type":"witnessesCalled", "playerOnTrial":51, "witnesses":[1,2,3]},
+            {"type":"witnessesCalled", "playerOnTrial":51, "witnesses":[]}
+        ]
     },
     "informant": {
         "mainRoleSet": "mafia",
@@ -728,7 +720,7 @@
         "canWriteDeathNote": false,
         "canBeConvertedTo": ["godfather"],
         "chatMessages":[
-            {"type": "sheriffResult","suspicious": true},
+            {"type": "detectiveResult","suspicious": true},
             {"type": "snoopResult", "townie": false},
             {"type": "seerResult", "enemies": true}
         ]
@@ -737,18 +729,11 @@
         "mainRoleSet": "mafia",
         "roleSets": ["mafia", "mafiaSupport"],
         "armor": false,
-        "aura": null,
+        "aura": "innocent",
         "maxCount": 1,
         "canWriteDeathNote": false,
         "canBeConvertedTo": ["godfather"],
-        "chatMessages":[
-            {
-                "type": "playerRoleAndAlibi",
-                "player":14,
-                "role":"hypnotist",
-                "will":"Philosopher\nN1: @1 and @2 are enemies"
-            }
-        ]
+        "chatMessages":[]
     },
     "reeducator": {
         "mainRoleSet": "mafia",
@@ -780,24 +765,6 @@
             }
         ]
     },
-    "mafiaWitch": {
-        "mainRoleSet": "mafia",
-        "roleSets": ["mafia", "mafiaSupport"],
-        "armor": false,
-        "aura": null,
-        "maxCount": 1,
-        "canWriteDeathNote": false,
-        "canBeConvertedTo": ["godfather"],
-        "chatMessages":[
-            {"type": "targetsMessage", "message": 
-                {"type": "sheriffResult","suspicious":true}
-            },
-            {"type": "targetHasRole", "role":"detective"},
-            {"type": "targetIsPossessionImmune"},
-            {"type": "youWerePossessed", "immune": false},
-            {"type": "youWerePossessed", "immune": true}
-        ]
-    },
     "necromancer": {
         "mainRoleSet": "mafia",
         "roleSets": ["mafia", "mafiaSupport"],
@@ -808,7 +775,7 @@
         "canBeConvertedTo": ["godfather"],
         "chatMessages":[
             {"type": "targetsMessage", "message": 
-                {"type": "sheriffResult","suspicious":true}
+                {"type": "detectiveResult","suspicious":true}
             },
             {"type": "targetIsPossessionImmune"},
             {"type": "youWerePossessed", "immune": false},
@@ -1012,7 +979,7 @@
         "canBeConvertedTo": [],
         "chatMessages":[
             {"type": "targetsMessage", "message": 
-                {"type": "sheriffResult","suspicious":true}
+                {"type": "detectiveResult","suspicious":true}
             },
             {"type": "targetHasRole", "role":"detective"},
             {"type": "targetIsPossessionImmune"},
@@ -1030,7 +997,7 @@
         "canBeConvertedTo": [],
         "chatMessages":[
             {"type": "wardblocked"},
-            {"type": "scarecrowResult", "players": [9,15,4]}
+            {"type": "targetHasRole", "role":"detective"}
         ]
     },
     "warper":{

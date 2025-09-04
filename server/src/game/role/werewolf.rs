@@ -2,12 +2,12 @@ use rand::seq::SliceRandom;
 use serde::Serialize;
 use crate::game::attack_power::{AttackPower, DefensePower};
 use crate::game::chat::ChatMessageVariant;
-use crate::game::components::night_visits::NightVisits;
+use crate::game::components::night_visits::{NightVisitsIterator, Visits};
 use crate::game::event::on_midnight::{MidnightVariables, OnMidnightPriority};
 use crate::game::components::tags::{TagSetID, Tags};
-use crate::game::grave::GraveKiller;
-use crate::game::player::{PlayerIndex, PlayerReference};
-use crate::game::visit::{Visit, VisitTag};
+use crate::game::components::graves::grave::GraveKiller;
+use crate::game::player::PlayerReference;
+use crate::game::visit::Visit;
 use crate::game::phase::PhaseType;
 use crate::game::Game;
 use super::{ControllerID, ControllerParametersMap, PlayerListSelection, GetClientRoleState, Role, RoleStateImpl};
@@ -31,57 +31,53 @@ impl RoleStateImpl for Werewolf {
     fn on_midnight(self, game: &mut Game, midnight_variables: &mut MidnightVariables, actor_ref: PlayerReference, priority: OnMidnightPriority) {
         match priority {
             OnMidnightPriority::Deception => {
-                let visits = actor_ref.untagged_night_visits_cloned(midnight_variables);
-                let Some(first_visit) = visits.first() else {return};
+                let Some(target) = Visits::default_target(game, midnight_variables, actor_ref) else {return};
 
-                let target_ref = first_visit.target;
-                let enraged = Tags::tagged(game, TagSetID::WerewolfTracked(actor_ref)).count().saturating_mul(ENRAGED_DENOMINATOR) >= PlayerReference::all_players(game)
-                    .filter(|p|p.alive(game)||*p==actor_ref)
-                    .count().saturating_mul(ENRAGED_NUMERATOR);
+                let enraged = 
+                    Tags::tagged(game, TagSetID::WerewolfTracked(actor_ref))
+                        .count()
+                        .saturating_mul(ENRAGED_DENOMINATOR) >= 
+                    PlayerReference::all_players(game)
+                        .filter(|p|p.alive(game)||*p==actor_ref)
+                        .count()
+                        .saturating_mul(ENRAGED_NUMERATOR);
 
-                if !enraged && target_ref.all_night_visits_cloned(midnight_variables).is_empty() {return}
-                    
-                NightVisits::all_visits_mut(midnight_variables)
-                    .filter(|visit| 
-                        visit.visitor == actor_ref && visit.target == target_ref && visit.tag == VisitTag::Role{role: Role::Werewolf, id: 0}
-                    ).for_each(|visit| {
-                        visit.attack = true;
-                    });
+                if enraged || !Visits::into_iter(midnight_variables)
+                    .with_visitor(target)
+                    .with_direct()
+                    .collect::<Box<[Visit]>>()
+                    .is_empty()
+                {
+                    Visits::iter_mut(midnight_variables)
+                        .default_visit(game, actor_ref)
+                        .into_iter()
+                        .for_each(|v|v.attack = true);
+                }
             }
             OnMidnightPriority::Kill => {
-                let visits = actor_ref.untagged_night_visits_cloned(midnight_variables);
-                let Some(first_visit) = visits.first() else {return};
-                let target_ref = first_visit.target;
+                let Some(my_visit) = Visits::default_visit(game, midnight_variables, actor_ref) else {return};
 
                 //If player is untracked, track them
-                if !Tags::has_tag(game, TagSetID::WerewolfTracked(actor_ref), target_ref) {
-                    self.track_player(game, actor_ref, target_ref);
+                if !Tags::has_tag(game, TagSetID::WerewolfTracked(actor_ref), my_visit.target) {
+                    self.track_player(game, actor_ref, my_visit.target);
                 } else {
                     //Dont attack or rampage first night
                     if game.day_number() <= 1 {return}
-                
+                        
                     //rampage target
-                    for other_player in NightVisits::all_visits(midnight_variables).into_iter()
-                        .filter(|visit|
-                            *first_visit != **visit &&
-                            visit.target == target_ref
-                        )
-                        .map(|v|v.visitor)
-                        .collect::<Vec<_>>()
-                    {
-                        other_player.try_night_kill_single_attacker(
-                            actor_ref,
-                            game,
-                            midnight_variables,
-                            GraveKiller::Role(Role::Werewolf),
-                            AttackPower::ArmorPiercing,
-                            true
-                        );
-                    }
+                    my_visit.target.rampage(
+                        game,
+                        midnight_variables,
+                        actor_ref,
+                        GraveKiller::Role(Role::Werewolf),
+                        AttackPower::ArmorPiercing,
+                        true,
+                        |v|*v != my_visit
+                    );
                     
-                    //If target visits, attack them
-                    if first_visit.attack {
-                        target_ref.try_night_kill_single_attacker(
+                    //If target visits or you are enraged, attack them
+                    if my_visit.attack {
+                        my_visit.target.try_night_kill_single_attacker(
                             actor_ref,
                             game,
                             midnight_variables,
@@ -100,12 +96,12 @@ impl RoleStateImpl for Werewolf {
                     .into_iter()
                     .for_each(|player_ref|{
 
-                    let mut players: Vec<PlayerIndex> = player_ref.tracker_seen_visits(game, midnight_variables).into_iter().map(|p|p.target.index()).collect();
+                    let mut players: Vec<PlayerReference> = player_ref.tracker_seen_players(midnight_variables).collect();
                     players.shuffle(&mut rand::rng());
 
                     actor_ref.push_night_message(midnight_variables, 
                         ChatMessageVariant::WerewolfTrackingResult{
-                            tracked_player: player_ref.index(), 
+                            tracked_player: player_ref, 
                             players
                         }
                     );
@@ -144,12 +140,12 @@ impl RoleStateImpl for Werewolf {
             PhaseType::Night => {
 
                 //Mark chosen player as tracked on phase start: night
-                if let Some(PlayerListSelection(target)) = ControllerID::role(actor_ref, Role::Werewolf, 1)
-                    .get_player_list_selection(game)
+                if 
+                    let Some(PlayerListSelection(target)) = ControllerID::role(actor_ref, Role::Werewolf, 1)
+                        .get_player_list_selection(game) &&
+                    let Some(target) = target.first()
                 {
-                    if let Some(target) = target.first() {
                         self.track_player(game, actor_ref, *target);
-                    };
                 };
 
                 for player in Tags::tagged(game, TagSetID::WerewolfTracked(actor_ref)).iter() {

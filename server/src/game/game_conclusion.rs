@@ -1,8 +1,10 @@
 use serde::{Deserialize, Serialize};
 
+use crate::{game::components::insider_group::InsiderGroupID, vec_set::VecSet};
+
 use super::{components::win_condition::WinCondition, player::PlayerReference, role::Role, role_list::RoleSet, Game};
 
-#[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq, Hash, PartialOrd, Ord)]
+#[derive(Clone, Copy, Debug, Serialize, Deserialize, PartialEq, Eq, Hash, PartialOrd, Ord)]
 #[serde(rename_all = "camelCase")]
 pub enum GameConclusion {
     Town,
@@ -35,43 +37,51 @@ impl GameConclusion {
             GameConclusion::Draw
         ]
     }
+    
     ///either return Some(EndGameCondition) or None (if the game is not over yet)
-    pub fn game_is_over(game: &Game)->Option<GameConclusion> {
+    pub fn game_is_over_game(game: &Game)->Option<GameConclusion> {
+        Self::game_is_over(
+            PlayerReference::all_players(game)
+                .filter_map(|player|
+                    if player.alive(game) {
+                        Some(GameOverCheckPlayer{
+                            role: player.role(game),
+                            insider_groups: InsiderGroupID::all_groups_with_player(game, player),
+                            win_condition: player.win_condition(game).clone()
+                        })
+                    }else{
+                        None
+                    }
+                )
+                .collect()
+        )
+    }
 
+    pub fn game_is_over(players: Vec<GameOverCheckPlayer>)->Option<GameConclusion>{
         //Special wildcard case
-        let living_roles = PlayerReference::all_players(game).filter_map(|player|{
-            if player.alive(game){
-                Some(player.role(game))
-            }else{
-                None
-            }
-        }).collect::<Vec<_>>();
-
-        if living_roles.iter().all(|role|matches!(role, Role::Wildcard|Role::TrueWildcard)) && living_roles.len() > 1 {
+        if
+            players.iter().all(|player|matches!(player.role, Role::Wildcard|Role::TrueWildcard)) && 
+            players.len() >= 2
+        {
             return None;
         }
         
         //if nobody is left to hold game hostage
-        if !PlayerReference::all_players(game).any(|player| player.alive(game) && player.keeps_game_running(game)){
+        if !players.iter().any(|player| player.keeps_game_running()){
             return Some(GameConclusion::Draw);
         }
 
         //find one end game condition that everyone agrees on
         GameConclusion::all().into_iter().find(|resolution| 
-            PlayerReference::all_players(game)
-                .filter(|p|p.alive(game))
-                .filter(|p|p.keeps_game_running(game))
-                .all(|p|
-                    match p.win_condition(game){
-                        WinCondition::GameConclusionReached{win_if_any} => win_if_any.contains(resolution),
-                        WinCondition::RoleStateWon => true,
-                    }
-                )
+            players
+                .iter()
+                .filter(|p|p.keeps_game_running())
+                .all(|p|p.win_condition.friends_with_conclusion(*resolution))
         )
     }
 
     pub fn get_premature_conclusion(game: &Game) -> GameConclusion {
-        GameConclusion::game_is_over(game).unwrap_or(GameConclusion::Draw)
+        GameConclusion::game_is_over_game(game).unwrap_or(GameConclusion::Draw)
     }
     
 
@@ -83,16 +93,27 @@ impl GameConclusion {
     pub fn keeps_game_running(role: Role)->bool{
         if
             RoleSet::Fiends.get_roles().contains(&role) ||
-            RoleSet::MafiaKilling.get_roles().contains(&role)  
+            RoleSet::MafiaKilling.get_roles().contains(&role) 
         {
             true
         }else{
-            matches!(role, Role::Apostle | Role::Zealot | Role::Krampus)
+            matches!(role, Role::Apostle | Role::Zealot | Role::Krampus | Role::Politician)
         }
     }
 }
 
-
-//Endgamecondition -> One single game ending condition, if only these roles are left, the game ends
-//Town, Mafia, Cult, Fiends, Politcian
-//Victory condition -> If this is the endgamecondition of the game, you win
+#[derive(PartialEq, Eq, Debug)]
+pub struct GameOverCheckPlayer{
+    pub role: Role,
+    pub insider_groups: VecSet<InsiderGroupID>,
+    pub win_condition: WinCondition,
+}
+impl GameOverCheckPlayer{
+    pub fn keeps_game_running(&self)->bool{
+        if self.insider_groups.contains(&InsiderGroupID::Mafia) {return true;}
+        if self.insider_groups.contains(&InsiderGroupID::Cult) {return true;}
+        if self.win_condition.is_loyalist_for(GameConclusion::Town) {return true;}
+        
+        GameConclusion::keeps_game_running(self.role)
+    }
+}

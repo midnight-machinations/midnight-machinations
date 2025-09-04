@@ -1,11 +1,16 @@
 #![allow(clippy::single_match, reason = "May add more cases for more priorities later")]
 
 use std::collections::HashSet;
+use crate::game::components::graves::grave_reference::GraveReference;
+use crate::game::role_list_generation::criteria::GenerationCriterion;
 use crate::vec_set::{vec_set, VecSet};
 
 use crate::game::player::PlayerReference;
 use crate::game::visit::Visit;
 use crate::game::Game;
+use crate::game::Settings;
+use crate::game::ModifierID;
+use crate::game::modifiers::ModifierState;
 use crate::game::chat::ChatGroup;
 use crate::game::phase::PhaseType;
 use crate::game::attack_power::DefensePower;
@@ -14,9 +19,12 @@ use serde::{Serialize, Deserialize};
 
 use super::components::win_condition::WinCondition;
 use super::{
-    ability_input::*, components::{insider_group::InsiderGroupID, night_visits::NightVisits},
-    event::{on_midnight::{MidnightVariables, OnMidnightPriority}, on_whisper::{OnWhisper, WhisperFold, WhisperPriority}},
-    grave::GraveReference, visit::VisitTag,
+    controllers::*, components::{insider_group::InsiderGroupID, night_visits::Visits},
+    event::{
+        on_midnight::{MidnightVariables, OnMidnightPriority},
+        on_whisper::{OnWhisper, WhisperFold, WhisperPriority}
+    },
+    visit::VisitTag,
 };
 
 pub trait GetClientRoleState<CRS> {
@@ -37,8 +45,8 @@ pub trait RoleStateImpl: Clone + std::fmt::Debug + Default + GetClientRoleState<
         ControllerParametersMap::default()
     }
     fn on_controller_selection_changed(self, _game: &mut Game, _actor_ref: PlayerReference, _id: ControllerID) {}
-    fn on_validated_ability_input_received(self, _game: &mut Game, _actor_ref: PlayerReference, _input_player: PlayerReference, _ability_input: AbilityInput) {}
-    fn on_ability_input_received(self, _game: &mut Game, _actor_ref: PlayerReference, _input_player: PlayerReference, _ability_input: AbilityInput) {}
+    fn on_validated_ability_input_received(self, _game: &mut Game, _actor_ref: PlayerReference, _input_player: PlayerReference, _ability_input: ControllerInput) {}
+    fn on_ability_input_received(self, _game: &mut Game, _actor_ref: PlayerReference, _input_player: PlayerReference, _ability_input: ControllerInput) {}
 
     fn convert_selection_to_visits(self, _game: &Game, _actor_ref: PlayerReference) -> Vec<Visit> {
         vec![]
@@ -74,18 +82,22 @@ pub trait RoleStateImpl: Clone + std::fmt::Debug + Default + GetClientRoleState<
     fn on_player_roleblocked(self, _game: &mut Game, midnight_variables: &mut MidnightVariables, actor_ref: PlayerReference, player: PlayerReference, _invisible: bool) {
         if player != actor_ref {return}
 
-        NightVisits::retain(midnight_variables, |v|
+        Visits::retain(midnight_variables, |v|
             !matches!(v.tag, VisitTag::Role{..}) || v.visitor != actor_ref
         );
     }
     fn on_visit_wardblocked(self, _game: &mut Game, midnight_variables: &mut MidnightVariables, actor_ref: PlayerReference, visit: Visit) {
         if actor_ref != visit.visitor {return};
 
-        NightVisits::retain(midnight_variables, |v|
+        Visits::retain(midnight_variables, |v|
             !matches!(v.tag, VisitTag::Role{..}) || v.visitor != actor_ref
         );
     }
     fn on_whisper(self, _game: &mut Game, _actor_ref: PlayerReference, _event: &OnWhisper, _fold: &mut WhisperFold, _priority: WhisperPriority) {}
+
+    fn role_list_generation_criteria() -> Vec<GenerationCriterion> {
+        vec![]
+    }
 }
 
 // Creates the Role enum
@@ -126,7 +138,6 @@ macros::roles! {
     Mayor : mayor,
     Transporter : transporter,
     Porter : porter,
-    Coxswain : coxswain,
     Polymath : polymath,
     Courtesan : courtesan,
 
@@ -145,7 +156,6 @@ macros::roles! {
     Blackmailer : blackmailer,
     Cerenovous : cerenovous,
     Informant: informant,
-    MafiaWitch : mafia_witch,
     Necromancer : necromancer,
     Mortician : mortician,
     Framer : framer,
@@ -219,14 +229,23 @@ mod macros {
                         $(Self::$name => RoleState::$name($file::$name::new_state(game))),*
                     }
                 }
-                pub fn maximum_count(&self) -> Option<u8> {
-                    match self {
-                        $(Self::$name => $file::MAXIMUM_COUNT),*
+                pub fn maximum_count(&self, settings: &Settings) -> Option<u8> {
+                    if let Some(ModifierState::CustomRoleLimits(custom_role_limits)) = settings.modifiers.get_modifier_inner(ModifierID::CustomRoleLimits) {
+                        custom_role_limits.limits.get(&self).copied()
+                    } else {
+                        match self {
+                            $(Self::$name => $file::MAXIMUM_COUNT),*
+                        }
                     }
                 }
                 pub fn defense(&self) -> DefensePower {
                     match self {
                         $(Self::$name => $file::DEFENSE),*
+                    }
+                }
+                pub fn role_list_generation_criteria(&self) -> Vec<GenerationCriterion> {
+                    match self {
+                        $(Self::$name => $file::$name::role_list_generation_criteria()),*
                     }
                 }
             }
@@ -275,12 +294,12 @@ mod macros {
                         $(Self::$name(role_struct) => role_struct.on_controller_selection_changed(game, actor_ref, id)),*
                     }
                 }
-                pub fn on_validated_ability_input_received(self, game: &mut Game, actor_ref: PlayerReference, input_player: PlayerReference, ability_input: AbilityInput){
+                pub fn on_validated_ability_input_received(self, game: &mut Game, actor_ref: PlayerReference, input_player: PlayerReference, ability_input: ControllerInput){
                     match self {
                         $(Self::$name(role_struct) => role_struct.on_validated_ability_input_received(game, actor_ref, input_player, ability_input)),*
                     }
                 }
-                pub fn on_ability_input_received(self, game: &mut Game, actor_ref: PlayerReference, input_player: PlayerReference, ability_input: AbilityInput){
+                pub fn on_ability_input_received(self, game: &mut Game, actor_ref: PlayerReference, input_player: PlayerReference, ability_input: ControllerInput){
                     match self {
                         $(Self::$name(role_struct) => role_struct.on_ability_input_received(game, actor_ref, input_player, ability_input)),*
                     }
@@ -386,10 +405,10 @@ impl Role{
     pub fn possession_immune(&self)->bool{
         matches!(self, 
             | Role::Bouncer
-            | Role::Veteran | Role::Coxswain
+            | Role::Veteran | Role::Medium
             | Role::Transporter | Role::Retributionist
             | Role::Witch | Role::Doomsayer | Role::Scarecrow | Role::Warper | Role::Porter
-            | Role::MafiaWitch | Role::Necromancer 
+            | Role::Necromancer 
         )
     }
     pub fn has_innocent_aura(&self, game: &Game)->bool{

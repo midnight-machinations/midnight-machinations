@@ -3,8 +3,8 @@ use serde::Serialize;
 
 use crate::game::attack_power::{AttackPower, DefensePower};
 use crate::game::chat::{ChatGroup, ChatMessageVariant};
+use crate::game::components::graves::grave::{Grave, GraveDeathCause, GraveInformation, GraveKiller};
 use crate::game::game_conclusion::GameConclusion;
-use crate::game::grave::{Grave, GraveDeathCause, GraveInformation, GraveKiller};
 use crate::game::phase::PhaseType;
 use crate::game::player::PlayerReference;
 
@@ -33,7 +33,7 @@ pub(super) const DEFENSE: DefensePower = DefensePower::None;
 
 impl RoleStateImpl for Deputy {
     type ClientRoleState = Deputy;
-    fn on_validated_ability_input_received(self, game: &mut Game, actor_ref: PlayerReference, input_player: PlayerReference, ability_input: super::AbilityInput) {
+    fn on_validated_ability_input_received(self, game: &mut Game, actor_ref: PlayerReference, input_player: PlayerReference, ability_input: super::ControllerInput) {
         
         if actor_ref != input_player {return;}
         let Some(PlayerListSelection(target_ref)) = ability_input.get_player_list_selection_if_id(
@@ -73,7 +73,7 @@ impl RoleStateImpl for Deputy {
                 actor_ref.ability_deactivated_from_death(game) ||
                 self.bullets_remaining == 0 || 
                 game.day_number() <= 1 || 
-                !(PhaseType::Discussion == game.current_phase().phase() || PhaseType::Nomination == game.current_phase().phase())
+                !matches!(game.current_phase().phase(), PhaseType::Discussion | PhaseType::Nomination | PhaseType::Adjournment | PhaseType::Dusk)
             )
             .dont_save()
             .allow_players([actor_ref])

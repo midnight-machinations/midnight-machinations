@@ -1,5 +1,6 @@
 
-import { Conclusion, InsiderGroup, PlayerIndex, translateWinCondition } from "./gameState.d";
+import { encodeString } from "../components/ChatMessage";
+import { Conclusion, InsiderGroup, PlayerIndex, translateWinCondition, UnsafeString } from "./gameState.d";
 import translate from "./lang";
 import { Role, roleJsonData } from "./roleState.d";
 
@@ -67,36 +68,42 @@ export type RoleOrRoleSet = ({
 
 
 
-export function translateRoleOutline(roleOutline: RoleOutline, playerNames?: string[]): string {
-    return roleOutline.map(outline => translateRoleOutlineOption(outline, playerNames)).join(" "+translate("union")+" ")
+export function translateRoleOutline(roleOutline: RoleOutline, playerNames: UnsafeString[]): string {
+    return roleOutline.map(outline => 
+        translateRoleOutlineOption(outline, playerNames)).join(" "+translate("union:var.0")+" "
+    )
 }
 
-export function translatePlayerPool(playerPool: PlayerIndex[], playerNames: string[]): string {
+export function translatePlayerPool(playerPool: PlayerIndex[], playerNames: UnsafeString[]): string {
     let out = '';
     if (playerPool.length === 0) {
         out += translate("nobody");
     }
     out += playerPool
-        .map(playerNumber => playerNames.at(playerNumber) ?? translate("player.unknown", playerNumber))
+        .map(playerNumber => encodeString(
+            playerNames.at(playerNumber) ?? translate("player.unknown", playerNumber)
+        ))
         .join(' ' + translate("union") + ' ')
+    
     return out;
 }
 
-export function translateRoleOutlineOption(roleOutlineOption: RoleOutlineOption, playerNames?: string[]): string {
+export function translateRoleOutlineOption(roleOutlineOption: RoleOutlineOption, playerNames: UnsafeString[]): string {
     let out = "";
-    if (roleOutlineOption.playerPool && playerNames !== undefined) {
+    if (roleOutlineOption.playerPool) {
         out += translatePlayerPool(roleOutlineOption.playerPool, playerNames) + ': ';
     }
     if (roleOutlineOption.insiderGroups) {
         if (roleOutlineOption.insiderGroups.length === 0) {
             out += translate("chatGroup.all.icon")
         }
-        for (const insiderGroup of roleOutlineOption.insiderGroups) {
-            out += translate(`chatGroup.${insiderGroup}.icon`) + ' '
-        }
+        out += roleOutlineOption.insiderGroups
+            .map(insiderGroup => translate(`chatGroup.${insiderGroup}.icon`))
+            .join(' ' + translate("union") + ' ');
+        out += ', '
     }
     if (roleOutlineOption.winIfAny) {
-        out += `${translateWinCondition({ type: "gameConclusionReached", winIfAny: roleOutlineOption.winIfAny })} `
+        out += `${translateWinCondition({ type: "gameConclusionReached", winIfAny: roleOutlineOption.winIfAny })}, `;
     }
     if ("roleSet" in roleOutlineOption) {
         out += translate(roleOutlineOption.roleSet)
@@ -162,10 +169,19 @@ function outlineOptionCompare(optionA: RoleOutlineOption, optionB: RoleOutlineOp
 }
 
 export function getAllRoles(): Role[] {
-    return Object.entries(roleJsonData())
-        .sort((a, b) => translate(`role.${a[0]}.name`).localeCompare(translate(`role.${b[0]}.name`)))
-        .sort((a, b) => ROLE_SETS.indexOf(a[1].mainRoleSet) - ROLE_SETS.indexOf(b[1].mainRoleSet))
-        .map((a) => a[0]) as Role[];
+    return (Object.keys(roleJsonData()) as Role[])
+        .sort(sortRolesCanonically);
+}
+
+export function sortRolesCanonically(a: Role, b: Role): number {
+    const roleJson = roleJsonData()
+    const roleSetA = ROLE_SETS.indexOf(roleJson[a].mainRoleSet)
+    const roleSetB = ROLE_SETS.indexOf(roleJson[b].mainRoleSet)
+    if (roleSetA !== roleSetB) {
+        return roleSetA - roleSetB
+    } else {
+        return translate(`role.${a}.name`).localeCompare(translate(`role.${b}.name`))
+    }
 }
 
 

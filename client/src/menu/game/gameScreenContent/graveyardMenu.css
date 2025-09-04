@@ -3,25 +3,22 @@
         width: 100%;
     }
 }
-.graveyard-menu .role-list-button{
+.role-list-button{
     text-align: left;
     text-wrap: wrap;
+    border: 0;
+    margin: 0;
+    padding: 0;
 }
-.graveyard-menu .graveyard-menu-enabledRoles{
-    display: flex;
-    flex-direction: column;
-    margin-bottom: 1rem;
-    user-select: none;
+.role-list-button:nth-last-child(even) {
+    background-color: var(--primary-color);
 }
-.graveyard-menu .graveyard-menu-enabledRoles > section{
-    flex: 0 0 1;
-}
-.graveyard-menu .graveyard-menu-enabledRoles > div{
-    display: block;
-}
-.graveyard-menu .graveyard-menu-enabledRoles > div > *{
-    width: min-content;
+.role-list-button:nth-last-child(odd) {
+    background-color: var(--secondary-color);
 }
 .graveyard-menu label {
-    display: block
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
 }

@@ -1,6 +1,6 @@
 use std::collections::HashSet;
 
-use crate::game::{chat::ChatMessageVariant, event::on_midnight::{MidnightVariables, OnMidnight, OnMidnightPriority}, phase::PhaseType, player::PlayerReference, Game};
+use crate::game::{chat::ChatMessageVariant, event::{on_midnight::{MidnightVariables, OnMidnight, OnMidnightPriority}, on_phase_start::OnPhaseStart}, phase::PhaseType, player::PlayerReference, Game};
 
 use super::insider_group::InsiderGroupID;
 
@@ -10,28 +10,24 @@ pub struct Detained{
     players: HashSet<PlayerReference>,
 }
 impl Detained{
-    pub fn on_phase_start(game: &mut Game, phase: PhaseType){
-        if phase == PhaseType::Obituary {
+    pub fn on_phase_start(game: &mut Game, event: &OnPhaseStart, _fold: &mut (), _priority: ()){
+        if event.phase.phase() == PhaseType::Obituary {
             Detained::clear_detain(game);
         }
     }
     pub fn on_midnight(game: &mut Game, _event: &OnMidnight, midnight_variables: &mut MidnightVariables, priority: OnMidnightPriority){
-        match priority {
-            OnMidnightPriority::Ward => {
-                for player in PlayerReference::all_players(game){
-                    if Self::is_detained(game, player){
-                        player.ward(game, midnight_variables, &[]);
-                    }
+        for player in PlayerReference::all_players(game){
+            if Self::is_detained(game, player){
+                player.ward_night_action(game, midnight_variables, priority);
+            }
+        }
+
+        if OnMidnightPriority::Roleblock == priority {
+            for player in PlayerReference::all_players(game){
+                if Self::is_detained(game, player){
+                    player.roleblock(game, midnight_variables, true);
                 }
             }
-            OnMidnightPriority::Roleblock => {
-                for player in PlayerReference::all_players(game){
-                    if Self::is_detained(game, player){
-                        player.roleblock(game, midnight_variables, true);
-                    }
-                }
-            }
-            _ => {}
         }
     }
 

@@ -1,16 +1,18 @@
-use crate::game::{grave::{GraveDeathCause, GraveInformation, GraveKiller, GraveReference}, role_list::RoleSet, Game};
+use serde::{Deserialize, Serialize};
 
-use super::{ModifierTrait, ModifierType};
+use crate::game::{components::graves::{grave::{GraveDeathCause, GraveInformation, GraveKiller}, grave_reference::GraveReference}, role_list::RoleSet, Game};
 
-#[derive(Clone, Default, PartialEq, Eq, Hash)]
+use super::{ModifierStateImpl, ModifierID};
+
+#[derive(Clone, Default, PartialEq, Eq, Hash, Serialize, Deserialize, Debug)]
 pub struct RoleSetGraveKillers;
 
-impl From<&RoleSetGraveKillers> for ModifierType{
+impl From<&RoleSetGraveKillers> for ModifierID{
     fn from(_: &RoleSetGraveKillers) -> Self {
-        ModifierType::RoleSetGraveKillers
+        ModifierID::RoleSetGraveKillers
     }
 }
-impl ModifierTrait for RoleSetGraveKillers{
+impl ModifierStateImpl for RoleSetGraveKillers{
     fn on_grave_added(self, game: &mut Game, grave: GraveReference) {
         match grave.deref(game).information.clone() {
             GraveInformation::Obscured => {},
@@ -44,7 +46,7 @@ impl ModifierTrait for RoleSetGraveKillers{
                     grave.deref_mut(game).information = GraveInformation::Normal{
                         role,
                         will,
-                        death_cause: crate::game::grave::GraveDeathCause::Killers(new_killers),
+                        death_cause: GraveDeathCause::Killers(new_killers),
                         death_notes
                     }
                 }

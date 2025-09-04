@@ -60,14 +60,14 @@
     "role/medium/0": {
         "midnight": false
     },
+    "role/medium/1": {
+        "midnight": false
+    },
     "role/transporter/0": {
         "midnight": true
     },
     "role/porter/0": {
         "midnight": true
-    },
-    "role/coxswain/0": {
-        "midnight": false
     },
     "role/retributionist/0": {
         "midnight": true
@@ -222,6 +222,9 @@
     "role/werewolf/0": {
         "midnight": true
     },
+    "role/werewolf/1": {
+        "midnight": false
+    },
     "role/puppeteer/0": {
         "midnight": true
     },
@@ -284,6 +287,13 @@
         "visible": false
     },
     "nominate": {
+        "midnight": false
+    },
+    "judge": {
+        "midnight": false,
+        "visible": false
+    },
+    "callWitness": {
         "midnight": false
     },
     "chat": {

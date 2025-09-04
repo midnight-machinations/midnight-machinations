@@ -4,19 +4,18 @@ use std::{ops::Deref, vec};
 
 pub(crate) use kit::{assert_contains, assert_not_contains};
 
-use mafia_server::game::{attack_power::DefensePower, components::syndicate_gun_item::SyndicateGunItem};
+use mafia_server::{game::{attack_power::DefensePower, components::{graves::{grave::{Grave, GraveDeathCause, GraveInformation, GraveKiller, GravePhase}, grave_reference::GraveReference}, syndicate_gun_item::SyndicateGunItem}, modifiers::ModifierSettings, role_list::{RoleList, RoleOutline, RoleOutlineOption, RoleOutlineOptionInsiderGroups, RoleOutlineOptionRoles, RoleOutlineOptionWinCondition}, settings::{PhaseTimeSettings, Settings}, test::mock_game}, vec_set};
 pub use mafia_server::game::{
-    ability_input::{ControllerID, IntegerSelection, PlayerListSelection, RoleListSelection},
+    controllers::{ControllerID, IntegerSelection, PlayerListSelection, RoleListSelection},
     game_conclusion::GameConclusion,
     role::engineer::Trap,
-    chat::{ChatMessageVariant, MessageSender, ChatGroup}, 
-    grave::*,
-    ability_input::{
+    chat::{ChatMessageVariant, MessageSender, ChatGroup},
+    controllers::{
         selection_type::{
             two_role_option_selection::TwoRoleOptionSelection,
             two_role_outline_option_selection::TwoRoleOutlineOptionSelection
         },
-        AbilityInput,
+        ControllerInput,
     }, 
     components::{cult::CultAbility, insider_group::InsiderGroupID},  
     role_list::RoleSet, 
@@ -34,7 +33,6 @@ pub use mafia_server::game::{
         detective::Detective,
         snoop::Snoop,
         lookout::Lookout,
-        spy::{Spy, SpyBug},
         tracker::Tracker,
         philosopher::Philosopher,
         psychic::Psychic,
@@ -70,7 +68,6 @@ pub use mafia_server::game::{
         hypnotist::Hypnotist,
         blackmailer::Blackmailer,
         informant::Informant,
-        mafia_witch::MafiaWitch,
         necromancer::Necromancer,
         mortician::Mortician,
         mafia_support_wildcard::MafiaSupportWildcard, 
@@ -123,7 +120,7 @@ fn detective_basic() {
     game.next_phase();
     assert_contains!(
         sher.get_messages_after_night(1),
-        ChatMessageVariant::SheriffResult { suspicious: true }
+        ChatMessageVariant::DetectiveResult { suspicious: true }
     );
 
     game.skip_to(Night, 2);
@@ -131,7 +128,7 @@ fn detective_basic() {
     game.next_phase();
     assert_contains!(
         sher.get_messages_after_night(2),
-        ChatMessageVariant::SheriffResult { suspicious: false }
+        ChatMessageVariant::DetectiveResult { suspicious: false }
     );
 }
 
@@ -149,7 +146,7 @@ fn detective_neutrals(){
     game.next_phase();
     assert_contains!(
         sher.get_messages_after_night(1),
-        ChatMessageVariant::SheriffResult { suspicious: true }
+        ChatMessageVariant::DetectiveResult { suspicious: true }
     );
     
     game.skip_to(Night, 2);
@@ -157,7 +154,7 @@ fn detective_neutrals(){
     game.next_phase();
     assert_contains!(
         sher.get_messages_after_night(2),
-        ChatMessageVariant::SheriffResult { suspicious: false }
+        ChatMessageVariant::DetectiveResult { suspicious: false }
     );
     
     game.skip_to(Night, 3);
@@ -165,7 +162,7 @@ fn detective_neutrals(){
     game.next_phase();
     assert_contains!(
         sher.get_messages_after_night(3),
-        ChatMessageVariant::SheriffResult { suspicious: true }
+        ChatMessageVariant::DetectiveResult { suspicious: true }
     );
 
 }
@@ -192,7 +189,7 @@ fn mortician_obscures_on_stand(){
 
     game.skip_to(Night, 2);
     
-    assert_eq!(game.graves[0].information, GraveInformation::Obscured);
+    assert_eq!(unsafe{GraveReference::new_unchecked(0)}.deref(&game).information, GraveInformation::Obscured);
     assert_contains!(mortician.get_messages(), ChatMessageVariant::PlayerRoleAndAlibi { player: townie.player_ref(), role: Role::Detective, will: "".to_string() });
 }
 
@@ -219,7 +216,7 @@ fn mortician_obscures_fail_after_death(){
     game.skip_to(Night, 2);
     gf.send_ability_input_player_list_typical(townie);
     game.next_phase();
-    assert!(matches!(game.graves[1].information, GraveInformation::Normal { role: Role::Detective, .. }));
+    assert!(matches!(unsafe{GraveReference::new_unchecked(1)}.deref(&game).information, GraveInformation::Normal { role: Role::Detective, .. }));
     assert_not_contains!(mortician.get_messages(), ChatMessageVariant::PlayerRoleAndAlibi { player: townie.player_ref(), role: Role::Detective, will: "".to_string() });
 }
 
@@ -231,7 +228,7 @@ fn detective_godfather() {
     );
     sher.send_ability_input_player_list_typical(mafia);
     game.next_phase();
-    assert_contains!(sher.get_messages(), ChatMessageVariant::SheriffResult { suspicious: false });
+    assert_contains!(sher.get_messages(), ChatMessageVariant::DetectiveResult { suspicious: false });
 }
 
 #[test]
@@ -487,14 +484,9 @@ fn spy_basic_transported() {
     witch.send_ability_input_two_player_typical(jester, esc);
 
     game.next_phase();
-
-    assert_contains!(spy.get_messages(), ChatMessageVariant::SpyBug { bug: SpyBug::Silenced });
-    assert_contains!(spy.get_messages(), ChatMessageVariant::SpyBug { bug: SpyBug::Roleblocked });
-    assert_contains!(spy.get_messages(), ChatMessageVariant::SpyBug { bug: SpyBug::Transported });
-    assert_contains!(spy.get_messages(), ChatMessageVariant::SpyBug { bug: SpyBug::Possessed });
-
     
-    assert_contains!(spy.get_messages(), ChatMessageVariant::SpyMafiaVisit { players: vec![bugged.index()] });
+    assert_contains!(spy.get_messages(), ChatMessageVariant::SpyBug { roles: vec![Role::Blackmailer] });
+    assert_contains!(spy.get_messages(), ChatMessageVariant::SpyMafiaVisit { players: vec![bugged.player_ref()] });
 }
 
 #[test]
@@ -545,6 +537,7 @@ fn doctor_basic() {
 #[test]
 fn transporter_basic_vigilante_escort() {
     kit::scenario!(game in Night 2 where
+        _godfather: Godfather,
         trans: Transporter,
         vigi: Vigilante,
         escort: Escort,
@@ -590,11 +583,11 @@ fn transporter_basic_seer_sheriff_framer() {
     );
     assert_contains!(
         town1.get_messages_after_night(1),
-        ChatMessageVariant::SheriffResult { suspicious: false }
+        ChatMessageVariant::DetectiveResult { suspicious: false }
     );
     assert_contains!(
         town2.get_messages_after_night(1),
-        ChatMessageVariant::SheriffResult { suspicious: true }
+        ChatMessageVariant::DetectiveResult { suspicious: true }
     );
 }
 
@@ -662,7 +655,7 @@ fn retributionist_basic(){
     assert_contains!(
         ret.get_messages_after_night(4),
         ChatMessageVariant::TargetsMessage{message: Box::new(
-            ChatMessageVariant::SheriffResult{ suspicious: true }
+            ChatMessageVariant::DetectiveResult{ suspicious: true }
         )}
     );
 
@@ -672,7 +665,7 @@ fn retributionist_basic(){
     assert_contains!(
         ret.get_messages_after_night(5),
         ChatMessageVariant::TargetsMessage{message: Box::new(
-            ChatMessageVariant::SheriffResult{ suspicious: true }
+            ChatMessageVariant::DetectiveResult{ suspicious: true }
         )}
     );
 
@@ -682,7 +675,7 @@ fn retributionist_basic(){
     assert_not_contains!(
         ret.get_messages_after_night(6),
         ChatMessageVariant::TargetsMessage{message: Box::new(
-            ChatMessageVariant::SheriffResult{ suspicious: true }
+            ChatMessageVariant::DetectiveResult{ suspicious: true }
         )}
     );
 }
@@ -727,7 +720,7 @@ fn witch_basic(){
     assert!(witch.send_ability_input_two_player_typical(sher, mafioso));
     game.next_phase();
     assert_contains!(witch.get_messages(), ChatMessageVariant::TargetsMessage{message: Box::new(
-        ChatMessageVariant::SheriffResult{ suspicious: true }
+        ChatMessageVariant::DetectiveResult{ suspicious: true }
     )});
     
     game.skip_to(Night, 2);
@@ -808,7 +801,7 @@ fn ambusher_basic(){
         protected_player: Jester,
         townie1: Detective,
         townie2: Detective,
-        blackmailer: Blackmailer
+        blackmailer: Informant
     );
 
     
@@ -837,7 +830,6 @@ fn ambusher_basic(){
     assert!(protected_player.alive());
     assert!(townie1.alive() || townie2.alive());
     assert!(!townie1.alive() || !townie2.alive());
-    // assert!(!blackmailer.alive());
     assert!(blackmailer.get_messages().contains(&ChatMessageVariant::YouSurvivedAttack)||!blackmailer.alive());
     assert!(townie1.alive() == townie1_status);
     assert!(townie2.alive() == townie2_status);
@@ -894,7 +886,7 @@ fn ambusher_attacks_self(){
     );
 
     ambusher.send_ability_input_player_list_typical(protected_player);
-    ambusher.send_ability_input(AbilityInput::new(
+    ambusher.send_ability_input(ControllerInput::new(
         ControllerID::syndicate_gun_item_shoot(),
         PlayerListSelection(vec![protected_player.player_ref()])
     ));
@@ -930,8 +922,8 @@ fn veteran_basic(){
     assert!(!townie.alive());
 
     assert!(
-        townie.get_messages().contains(&ChatMessageVariant::LookoutResult { players: vec![framer.index(), tracker.index()] }) ||
-        townie.get_messages().contains(&ChatMessageVariant::LookoutResult { players: vec![tracker.index(), framer.index()] })
+        townie.get_messages().contains(&ChatMessageVariant::LookoutResult { players: vec![framer.player_ref(), tracker.player_ref()] }) ||
+        townie.get_messages().contains(&ChatMessageVariant::LookoutResult { players: vec![tracker.player_ref(), framer.player_ref()] })
     );
 
     // assert_contains!(
@@ -985,6 +977,8 @@ fn rabble_rouser_turns_into_jester(){
 #[test]
 fn rabble_rouser_instantly_turns_into_jester(){
     kit::scenario!(_game where
+        _godfather: Godfather,
+        _serial_killer: SerialKiller,
         exe: Revolutionary
     );
     let RoleState::Jester(_) = exe.role_state() else {panic!()};
@@ -993,6 +987,7 @@ fn rabble_rouser_instantly_turns_into_jester(){
 #[test]
 fn can_type_in_jail() {
     kit::scenario!(game in Dusk 1 where
+        _godfather: Godfather,
         jailor: Jailor,
         detective: Detective
     );
@@ -1023,7 +1018,8 @@ fn can_type_in_jail() {
 fn mafioso_cant_kill_mafia() {
     kit::scenario!(game in Night 1 where
         mafioso: Mafioso,
-        mortician: Mortician
+        mortician: Mortician,
+        _detective: Detective
     );
 
     mafioso.send_ability_input_player_list_typical(mortician);
@@ -1042,11 +1038,11 @@ fn marksman_basic() {
     );
 
     assert!(dt.send_ability_input_player_list_typical(gf));
-    mk.send_ability_input(AbilityInput::new(
+    mk.send_ability_input(ControllerInput::new(
         ControllerID::role(mk.player_ref(), Role::Marksman, 0),
         PlayerListSelection(vec!(dt.player_ref()))
     ));
-    mk.send_ability_input(AbilityInput::new(
+    mk.send_ability_input(ControllerInput::new(
         ControllerID::role(mk.player_ref(), Role::Marksman, 1),
         PlayerListSelection(vec!(gf.player_ref()))
     ));
@@ -1207,7 +1203,7 @@ fn grave_contains_multiple_killers() {
     assert!(vigilante.send_ability_input_player_list_typical(townie));
     game.next_phase();
     assert!(
-        *game.graves.first().unwrap() ==
+        *unsafe{GraveReference::new_unchecked(0)}.deref(&game) ==
         Grave{ 
             player: townie.player_ref(),
             died_phase: GravePhase::Night,
@@ -1219,7 +1215,7 @@ fn grave_contains_multiple_killers() {
                 death_notes: vec![],
             }
         } ||
-        *game.graves.first().unwrap() ==
+        *unsafe{GraveReference::new_unchecked(0)}.deref(&game) ==
         Grave{ 
             player: townie.player_ref(),
             died_phase: GravePhase::Night,
@@ -1248,13 +1244,13 @@ fn drunk_suspicious_aura() {
 
     assert_contains!(
         detective.get_messages(),
-        ChatMessageVariant::SheriffResult { suspicious: true }
+        ChatMessageVariant::DetectiveResult { suspicious: true }
     );
 }
 
 #[test]
 fn framer_second_visit_erased() {
-    kit::scenario!(game in Night 2 where
+    kit::scenario!(game in Night 1 where
         framer: Framer,
         lookout: Lookout,
         v: Villager
@@ -1264,61 +1260,39 @@ fn framer_second_visit_erased() {
     framer.send_ability_input_player_list(v, 1);
     lookout.send_ability_input_player_list_typical(v);
 
+    game.skip_to(Obituary, 2);
+
     assert_not_contains!(
         lookout.get_messages(),
-        ChatMessageVariant::LookoutResult { players: vec![framer.index()] }
-    )
+        ChatMessageVariant::LookoutResult { players: vec![framer.player_ref()] }
+    );
+    assert_contains!(
+        lookout.get_messages(),
+        ChatMessageVariant::LookoutResult { players: vec![lookout.player_ref()] }
+    );
 }
 
 #[test]
 fn witch_second_visit_erased() {
-    kit::scenario!(game in Night 2 where
-        witch: MafiaWitch,
+    kit::scenario!(game in Night 1 where
+        witch: Witch,
         lookout: Lookout,
-        v: Villager
+        v: Mortician
     );
 
     witch.send_ability_input_two_player_typical(lookout, v);
     lookout.send_ability_input_player_list_typical(v);
 
+    game.skip_to(Obituary, 2);
+
     assert_not_contains!(
         lookout.get_messages(),
-        ChatMessageVariant::LookoutResult { players: vec![witch.index()] }
-    )
-}
-
-#[test]
-fn drunk_framer() {
-    kit::scenario!(game in Night 2 where
-        drunk: Drunk,
-        lookout: Lookout,
-        lookout2: Lookout,
-        mafioso: Mafioso,
-        townie: Doctor,
-        framer: Framer
+        ChatMessageVariant::LookoutResult { players: vec![witch.player_ref()] }
     );
-
-    assert!(mafioso.send_ability_input_player_list_typical(townie));
-    assert!(lookout.send_ability_input_player_list_typical(townie));
-    assert!(lookout2.send_ability_input_player_list_typical(mafioso));
-    framer.send_ability_input_player_list_typical(drunk);
-    framer.send_ability_input_player_list(mafioso, 1);
-
-    game.next_phase();
-
-    let messages2 = lookout2.get_messages();
-    if !(
-        messages2.contains(&ChatMessageVariant::LookoutResult { players: vec![drunk.index()] })
-    ){
-        panic!("{messages2:?}");
-    }
-
-    let messages = lookout.get_messages();
-    if !(
-        messages.contains(&ChatMessageVariant::LookoutResult { players: vec![mafioso.index()] })
-    ){
-        panic!("{messages:?}");
-    }
+    assert_contains!(
+        lookout.get_messages(),
+        ChatMessageVariant::LookoutResult { players: vec![] }
+    );
 }
 
 #[test]
@@ -1341,11 +1315,11 @@ fn drunk_role_change() {
 
     let messages = lo.get_messages();
     assert!(
-        !messages.contains(&ChatMessageVariant::LookoutResult { players: vec![mafioso.index(), drunk.index()] }) &&
-        !messages.contains(&ChatMessageVariant::LookoutResult { players: vec![drunk.index(), mafioso.index()] })
+        !messages.contains(&ChatMessageVariant::LookoutResult { players: vec![mafioso.player_ref(), drunk.player_ref()] }) &&
+        !messages.contains(&ChatMessageVariant::LookoutResult { players: vec![drunk.player_ref(), mafioso.player_ref()] })
     );
     assert!(
-        messages.contains(&ChatMessageVariant::LookoutResult { players: vec![mafioso.index()] })
+        messages.contains(&ChatMessageVariant::LookoutResult { players: vec![mafioso.player_ref()] })
     );
 }
 
@@ -1371,11 +1345,11 @@ fn godfather_backup_kills_esc() {
         esc: Escort
     );
 
-    godfather.send_ability_input(AbilityInput::new(
+    godfather.send_ability_input(ControllerInput::new(
         ControllerID::SyndicateChooseBackup,
         PlayerListSelection(vec![hypnotist.player_ref()])
     ));
-    hypnotist.send_ability_input(AbilityInput::new(
+    hypnotist.send_ability_input(ControllerInput::new(
         ControllerID::SyndicateBackupAttack,
         PlayerListSelection(vec![det.player_ref()])
     ));
@@ -1395,11 +1369,12 @@ fn snoop_basic() {
         gf: Godfather,
         det: Detective,
         snoop: Snoop,
-        v: Detective
+        v: Doctor
     );
 
     assert!(snoop.send_ability_input_player_list_typical(det));
-    assert!(det.send_ability_input_player_list_typical(snoop));
+    snoop.send_ability_input_role_typical(vec![Role::Detective]);
+
     game.next_phase();
     assert_contains!(
         snoop.get_messages_after_night(1),
@@ -1515,6 +1490,7 @@ fn polymath_snoop_basic() {
 #[test]
 fn polymath_armorsmith_marksman_basic() {
     kit::scenario!(game in Night 2 where
+        _godfather: Godfather,
         armor: Polymath,
         mark: Polymath,
         phil: Philosopher
@@ -1559,14 +1535,14 @@ fn godfather_backup_kills_jail() {
     );
 
     jail.send_ability_input_player_list_typical(godfather);
-    godfather.send_ability_input(AbilityInput::new(
+    godfather.send_ability_input(ControllerInput::new(
         ControllerID::syndicate_choose_backup(),
         PlayerListSelection(vec![hypnotist.player_ref()])
     ));
 
     game.next_phase();
     hypnotist.send_ability_input_player_list_typical(det);
-    hypnotist.send_ability_input(AbilityInput::new(
+    hypnotist.send_ability_input(ControllerInput::new(
         ControllerID::syndicate_backup_attack(),
         PlayerListSelection(vec![det.player_ref()])
     ));
@@ -1810,13 +1786,13 @@ fn godfather_backup_sets_off_engineer_trap() {
         esc: Escort
     );
 
-    gf.send_ability_input(AbilityInput::new(
+    gf.send_ability_input(ControllerInput::new(
         ControllerID::syndicate_choose_backup(),
         PlayerListSelection(vec![backup.player_ref()])
     ));
     gf.send_ability_input_player_list_typical(eng);
 
-    backup.send_ability_input(AbilityInput::new(
+    backup.send_ability_input(ControllerInput::new(
         ControllerID::syndicate_backup_attack(),
         PlayerListSelection(vec![esc.player_ref()])
     ));
@@ -1866,11 +1842,11 @@ fn godfather_wardblock_still_kills() {
 
     assert!(rev.send_ability_input_player_list_typical(townie_a));
     assert!(godfather.send_ability_input_player_list_typical(townie_a));
-    godfather.send_ability_input(AbilityInput::new(
+    godfather.send_ability_input(ControllerInput::new(
         ControllerID::syndicate_choose_backup(),
         PlayerListSelection(vec![jan.player_ref()])
     ));
-    jan.send_ability_input(AbilityInput::new(
+    jan.send_ability_input(ControllerInput::new(
         ControllerID::syndicate_backup_attack(),
         PlayerListSelection(vec![townie_b.player_ref()])
     ));
@@ -1908,7 +1884,7 @@ fn puppeteer_marionettes_philosopher(){
         townie2: Detective
     );
 
-    puppeteer.send_ability_input(AbilityInput::new(
+    puppeteer.send_ability_input(ControllerInput::new(
         ControllerID::role(puppeteer.player_ref(), Role::Puppeteer, 1),
         IntegerSelection(1)
     ));
@@ -1942,7 +1918,7 @@ fn puppeteer_marionettes_die(){
         townie3: Detective
     );
 
-    puppeteer.send_ability_input(AbilityInput::new(
+    puppeteer.send_ability_input(ControllerInput::new(
         ControllerID::role(puppeteer.player_ref(), Role::Puppeteer, 1),
         IntegerSelection(1)
     ));
@@ -1951,7 +1927,7 @@ fn puppeteer_marionettes_die(){
 
     game.skip_to(Night, 3);
 
-    puppeteer.send_ability_input(AbilityInput::new(
+    puppeteer.send_ability_input(ControllerInput::new(
         ControllerID::role(puppeteer.player_ref(), Role::Puppeteer, 1),
         IntegerSelection(0)
     ));
@@ -1974,7 +1950,7 @@ fn puppeteer_marionettes_win(){
         townie2: Detective
     );
 
-    puppeteer.send_ability_input(AbilityInput::new(
+    puppeteer.send_ability_input(ControllerInput::new(
         ControllerID::role(puppeteer.player_ref(), Role::Puppeteer, 1),
         IntegerSelection(1)
     ));
@@ -2010,7 +1986,7 @@ fn deputy_shoots_marionette(){
         townie: Detective
     );
 
-    puppeteer.send_ability_input(AbilityInput::new(
+    puppeteer.send_ability_input(ControllerInput::new(
         ControllerID::role(puppeteer.player_ref(), Role::Puppeteer, 1),
         IntegerSelection(1)
     ));
@@ -2033,7 +2009,7 @@ fn vigilante_shoots_marionette(){
         townie: Detective
     );
 
-    puppeteer.send_ability_input(AbilityInput::new(
+    puppeteer.send_ability_input(ControllerInput::new(
         ControllerID::role(puppeteer.player_ref(), Role::Puppeteer, 1),
         IntegerSelection(1)
     ));
@@ -2059,7 +2035,7 @@ fn arsonist_ignites_and_aura(){
     );
 
     assert!(townie.send_ability_input_player_list_typical(arso));
-    assert!(arso.send_ability_input_player_list_typical(arso));
+    assert!(arso.send_ability_input_boolean_typical(true));
     assert!(det.send_ability_input_player_list_typical(townie));
 
     game.next_phase();
@@ -2072,19 +2048,23 @@ fn arsonist_ignites_and_aura(){
 
     assert_contains!(
         det.get_messages_after_night(2), 
-        ChatMessageVariant::SheriffResult{ suspicious: true }
+        ChatMessageVariant::DetectiveResult{ suspicious: true }
     );
 
     game.skip_to(Night, 3);
     
-    assert!(arso.send_ability_input_player_list_typical(townie2));
+    assert!(arso.send_ability_input_boolean_typical(false));
+    arso.send_ability_input(ControllerInput::new(
+        ControllerID::role(arso.player_ref(), Role::Arsonist, 1),
+        PlayerListSelection(vec![townie2.player_ref()])
+    ));
     assert!(det.send_ability_input_player_list_typical(townie2));
 
     game.next_phase();
 
     assert_contains!(
         det.get_messages_after_night(3), 
-        ChatMessageVariant::SheriffResult{ suspicious: true }
+        ChatMessageVariant::DetectiveResult{ suspicious: true }
     );
 
     game.skip_to(Nomination, 4);
@@ -2108,7 +2088,7 @@ fn arsonist_ignites_and_aura(){
     
     assert_contains!(
         det.get_messages_after_night(4), 
-        ChatMessageVariant::SheriffResult{ suspicious: false }
+        ChatMessageVariant::DetectiveResult{ suspicious: false }
     );
 
     
@@ -2421,7 +2401,7 @@ fn yer() {
     /* Night 1 Kill Attempt Test */
     yer.send_ability_input_boolean_typical(true);
     yer.send_ability_input_player_list(detective, 1);
-    yer.send_ability_input(AbilityInput::new(
+    yer.send_ability_input(ControllerInput::new(
         ControllerID::Role { player: yer.player_ref(), role: Role::Yer, id: 2 }, 
         RoleListSelection(vec!(Role::TallyClerk)) 
     ));
@@ -2439,7 +2419,7 @@ fn yer() {
     /* Reg Attack Test */
     yer.send_ability_input_boolean_typical(false);
     yer.send_ability_input_player_list(detective, 1);
-    yer.send_ability_input(AbilityInput::new(
+    yer.send_ability_input(ControllerInput::new(
         ControllerID::Role { player: yer.player_ref(), role: Role::Yer, id: 2 }, 
         RoleListSelection(vec!(Role::Mafioso)) 
     ));
@@ -2478,7 +2458,7 @@ fn yer() {
     /* Conversion & Disguise Test */
     yer.send_ability_input_boolean_typical(true);
     yer.send_ability_input_player_list(convertee, 1);
-    yer.send_ability_input(AbilityInput::new(
+    yer.send_ability_input(ControllerInput::new(
         ControllerID::Role { player: yer.player_ref(), role: Role::Yer, id: 2 }, 
         RoleListSelection(vec!(Role::Zealot)) 
     ));
@@ -2515,7 +2495,7 @@ fn yer() {
     /* Idiot Proofing Test */
     convertee.send_ability_input_boolean_typical(true);
     convertee.send_ability_input_player_list(informant, 1);
-    convertee.send_ability_input(AbilityInput::new(
+    convertee.send_ability_input(ControllerInput::new(
         ControllerID::Role { player: yer.player_ref(), role: Role::Yer, id: 2 }, 
         RoleListSelection(vec!(Role::Zealot)) 
     ));
@@ -2616,7 +2596,7 @@ fn witch_leaves_by_winning_puppeteer(){
         min: Witch
     );
 
-    pup.send_ability_input(AbilityInput::new(
+    pup.send_ability_input(ControllerInput::new(
         ControllerID::role(pup.player_ref(), Role::Puppeteer, 1),
         IntegerSelection(1)
     ));
@@ -2702,14 +2682,14 @@ fn fiends_wildcard_defense_upgrade(){
         mafia: Godfather
     );
     
-    fiend.send_ability_input(AbilityInput::new(
+    fiend.send_ability_input(ControllerInput::new(
         ControllerID::role(fiend.player_ref(), Role::FiendsWildcard, 0),
         RoleListSelection(vec!(Role::Puppeteer))
     ));
 
     game.next_phase();
 
-    fiend.send_ability_input(AbilityInput::new(
+    fiend.send_ability_input(ControllerInput::new(
         ControllerID::role(fiend.player_ref(), Role::Puppeteer, 1),
         IntegerSelection(1)
     ));
@@ -2811,14 +2791,14 @@ fn santa_cannot_convert_naughty_player() {
     kit::scenario!(game in Night 1 where
         santa: SantaClaus,
         nice: Villager,
-        naughty: Villager
+        naughty: Mortician
     );
     santa.send_ability_input_player_list_typical(nice);
 
     game.skip_to(Night, 2);
 
     assert_contains!(
-        nice.player_ref().win_condition(&game).required_conclusions_for_win().unwrap(),
+        nice.player_ref().win_condition(&game).win_if_any_conclusions().unwrap(),
         GameConclusion::NiceList
     );
 
@@ -2830,7 +2810,7 @@ fn santa_cannot_convert_naughty_player() {
     game.skip_to(Night, 3);
 
     assert_contains!(
-        naughty.player_ref().win_condition(&game).required_conclusions_for_win().unwrap(),
+        naughty.player_ref().win_condition(&game).win_if_any_conclusions().unwrap(),
         GameConclusion::NaughtyList
     );
 
@@ -2839,12 +2819,12 @@ fn santa_cannot_convert_naughty_player() {
     game.skip_to(Obituary, 4);
 
     assert_contains!(
-        naughty.player_ref().win_condition(&game).required_conclusions_for_win().unwrap(),
+        naughty.player_ref().win_condition(&game).win_if_any_conclusions().unwrap(),
         GameConclusion::NaughtyList
     );
 
     assert_not_contains!(
-        naughty.player_ref().win_condition(&game).required_conclusions_for_win().unwrap(),
+        naughty.player_ref().win_condition(&game).win_if_any_conclusions().unwrap(),
         GameConclusion::NiceList
     );
 }
@@ -2932,7 +2912,7 @@ fn santa_always_gets_their_naughty_selection() {
             _potential2: Villager,
             _potential3: Villager,
             _potential4: Villager,
-            _potential5: Villager
+            _potential5: Mortician
         );
         santa.send_ability_input_player_list_typical(nice);
     
@@ -2943,7 +2923,7 @@ fn santa_always_gets_their_naughty_selection() {
         game.skip_to(Obituary, 3);
     
         assert_contains!(
-            naughty.player_ref().win_condition(&game).required_conclusions_for_win().unwrap(),
+            naughty.player_ref().win_condition(&game).win_if_any_conclusions().unwrap(),
             GameConclusion::NaughtyList
         );
     }
@@ -3045,4 +3025,49 @@ fn enraged_werewolf_kills() {
     bystander.send_ability_input_player_list_typical(target);
     game.next_phase();
     assert!(!bystander.alive());
+}
+
+#[test]
+fn recruiter_role_list_is_correct() {
+    let (game, _assignments) = mock_game(
+        Settings {
+            role_list: RoleList(vec![
+                RoleOutline {options: vec1::vec1![RoleOutlineOption {
+                    roles: RoleOutlineOptionRoles::Role { role: Role::Recruiter },
+                    win_condition: RoleOutlineOptionWinCondition::RoleDefault,
+                    insider_groups: RoleOutlineOptionInsiderGroups::RoleDefault,
+                    player_pool: vec_set![0]
+                }]},
+                RoleOutline {options: vec1::vec1![RoleOutlineOption {
+                    roles: RoleOutlineOptionRoles::Role { role: Role::Goon },
+                    win_condition: RoleOutlineOptionWinCondition::RoleDefault,
+                    insider_groups: RoleOutlineOptionInsiderGroups::RoleDefault,
+                    player_pool: vec_set![1]
+                }]},
+                RoleOutline {options: vec1::vec1![RoleOutlineOption {
+                    roles: RoleOutlineOptionRoles::Role { role: Role::Detective },
+                    win_condition: RoleOutlineOptionWinCondition::RoleDefault,
+                    insider_groups: RoleOutlineOptionInsiderGroups::RoleDefault,
+                    player_pool: vec_set![2]
+                }]},
+                RoleOutline {options: vec1::vec1![RoleOutlineOption {
+                    roles: RoleOutlineOptionRoles::Role { role: Role::Detective },
+                    win_condition: RoleOutlineOptionWinCondition::RoleDefault,
+                    insider_groups: RoleOutlineOptionInsiderGroups::RoleDefault,
+                    player_pool: vec_set![3]
+                }]}
+            ]),
+            phase_times: PhaseTimeSettings::default(),
+            enabled_roles: RoleSet::Any.get_roles(),
+            modifiers: ModifierSettings::default(),
+        },
+        4
+    ).unwrap();
+
+    let [recruiter, goon, detective1, detective2] = [0, 1, 2, 3].map(|i| unsafe { PlayerReference::new_unchecked(i) } );
+
+    assert!(recruiter.role(&game) == Role::Recruiter);
+    assert!(goon.role(&game) != Role::Goon);
+    assert!(detective1.role(&game) == Role::Detective);
+    assert!(detective2.role(&game) == Role::Detective);
 }

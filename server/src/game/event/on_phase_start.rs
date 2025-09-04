@@ -1,31 +1,37 @@
 use crate::game::{
-    ability_input::saved_controllers_map::SavedControllersMap, components::{
-        cult::Cult, detained::Detained, forfeit_vote::ForfeitNominationVote, mafia::Mafia, silenced::Silenced, verdicts_today::VerdictsToday
-    }, modifiers::Modifiers, phase::PhaseState, player::PlayerReference, Game
+    components::{
+        call_witness::CallWitness, cult::Cult, detained::Detained, fast_forward::FastForwardComponent, forfeit_vote::ForfeitNominationVote, silenced::Silenced, verdicts_today::VerdictsToday
+    },
+    controllers::Controllers, event::Event, modifiers::ModifierSettings, phase::PhaseState, player::PlayerReference, Game
 };
+
 
 #[must_use = "Event must be invoked"]
 pub struct OnPhaseStart{
-    phase: PhaseState
+    pub phase: PhaseState
 }
 impl OnPhaseStart{
     pub fn new(phase: PhaseState) -> Self{
         Self{ phase }
     }
-    pub fn invoke(self, game: &mut Game){
-        for player_ref in PlayerReference::all_players(game){
-            player_ref.on_phase_start(game, self.phase.phase());
-        }
-        
-        Silenced::on_phase_start(game, self.phase.phase());
-        ForfeitNominationVote::on_phase_start(game, self.phase.phase());
-        Detained::on_phase_start(game, self.phase.phase());
-        VerdictsToday::on_phase_start(game, self.phase.phase());
-        Mafia::on_phase_start(game, self.phase.phase());
-        Cult::on_phase_start(game, self.phase.phase());
-        SavedControllersMap::on_phase_start(game, self.phase.phase());
-        Modifiers::on_phase_start(game, self.phase.clone());
+}
+impl Event for OnPhaseStart{
+    type FoldValue = ();
+    type Priority = ();
 
-        game.on_phase_start(self.phase.phase());
-    }
+    fn listeners() -> Vec<super::EventListenerFunction<Self>> {vec![
+        PlayerReference::on_phase_start,
+        ForfeitNominationVote::on_phase_start,
+        Detained::on_phase_start,
+        VerdictsToday::on_phase_start,
+        Cult::on_phase_start,
+        Controllers::on_phase_start,
+        ModifierSettings::on_phase_start,
+        FastForwardComponent::on_phase_start,
+        Silenced::on_phase_start,   //silenced needs to go before call witness, I could do priority but erm
+        CallWitness::on_phase_start,    //must go after silenced
+        Game::on_phase_start
+    ]}
+
+    fn initial_fold_value(&self, _game: &Game) -> Self::FoldValue {}
 }

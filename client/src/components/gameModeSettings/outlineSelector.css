@@ -4,12 +4,23 @@
     width: 100%;
 }
 .role-picker-option {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-evenly;
+    display: block;
+    margin: .13rem;
+    background-color: var(--primary-color);
+    border: .13rem solid var(--primary-border-color);
+    border-radius: .5rem;
+    border-bottom-color: var(--primary-border-shadow-color);
+    border-right-color: var(--primary-border-shadow-color);
+    white-space: nowrap;
+    text-wrap: nowrap;
 }
-.role-outline-option-selector {
-    width: 100%;
+.role-picker-option > button {
+    display: inline-block;
+    margin: 0;
+    border: none;
+}
+.role-picker-option > div {
+    display: none;
 }
 .role-picker select {
     width: 100%;

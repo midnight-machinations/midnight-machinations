@@ -1,7 +1,6 @@
 #![allow(clippy::get_first, reason = "Often need to get first two visits manually.")]
 
 pub mod game_client;
-pub mod grave;
 pub mod phase;
 pub mod player;
 pub mod chat;
@@ -9,6 +8,7 @@ pub mod role;
 pub mod visit;
 pub mod verdict;
 pub mod role_list;
+pub mod role_list_generation;
 pub mod settings;
 pub mod game_conclusion;
 pub mod components;
@@ -19,24 +19,24 @@ pub mod game_listeners;
 pub mod attack_power;
 pub mod modifiers;
 pub mod role_outline_reference;
-pub mod ability_input;
+pub mod controllers;
 pub mod room_state;
 pub mod new_game;
 
 use std::collections::VecDeque;
 use std::time::Instant;
-use ability_input::saved_controllers_map::SavedControllersMap;
-use ability_input::ControllerID;
-use ability_input::PlayerListSelection;
+use crate::game::components::fast_forward::FastForwardComponent;
+use crate::game::controllers::Controllers;
+use crate::game::modifiers::ModifierID;
+use controllers::ControllerID;
+use controllers::PlayerListSelection;
 use components::confused::Confused;
 use components::drunk_aura::DrunkAura;
 use components::enfranchise::Enfranchise;
 use components::forfeit_vote::ForfeitNominationVote;
-use components::fragile_vest::FragileVests;
 use components::mafia::Mafia;
 use components::pitchfork::Pitchfork;
 use components::mafia_recruits::MafiaRecruits;
-use components::player_component::PlayerComponent;
 use components::poison::Poison;
 use components::detained::Detained;
 use components::insider_group::InsiderGroups;
@@ -45,17 +45,16 @@ use components::syndicate_gun_item::SyndicateGunItem;
 use components::synopsis::SynopsisTracker;
 use components::tags::Tags;
 use components::verdicts_today::VerdictsToday;
-use components::win_condition::WinCondition;
-use modifiers::ModifierType;
-use modifiers::Modifiers;
-use role_list::RoleAssignment;
-use role_outline_reference::RoleOutlineReference;
 use serde::Serialize;
-
 use crate::client_connection::ClientConnection;
+use crate::game::chat::ChatComponent;
+use crate::game::components::fragile_vest::FragileVestsComponent;
+use crate::game::components::graves::Graves;
+use crate::game::components::win_condition::WinConditionComponent;
 use crate::game::game_client::GameClient;
 use crate::game::game_client::GameClientLocation;
 use crate::game::modifiers::hidden_nomination_votes::HiddenNominationVotes;
+use crate::game::role_list_generation::OutlineAssignment;
 use crate::room::RoomClientID;
 use crate::room::name_validation;
 use crate::packet::HostDataPacketGameClient;
@@ -68,14 +67,11 @@ use player::PlayerReference;
 use player::Player;
 use phase::PhaseStateMachine;
 use settings::Settings;
-use grave::Grave;
 use self::components::{
     cult::Cult,
     puppeteer_marionette::PuppeteerMarionette
 };
 use self::game_conclusion::GameConclusion;
-use self::event::on_grave_added::OnGraveAdded;
-use self::grave::GraveReference;
 use self::phase::PhaseState;
 use self::spectator::{
     spectator_pointer::{
@@ -96,10 +92,9 @@ pub struct Game {
     pub spectator_chat_messages: Vec<ChatMessageVariant>,
 
     /// indexed by role outline reference
-    pub assignments: VecMap<PlayerReference, (RoleOutlineReference, RoleAssignment)>,
+    pub assignments: Assignments,
 
     pub players: Box<[Player]>,
-    pub graves: Vec<Grave>,
 
     phase_machine : PhaseStateMachine,
 
@@ -109,7 +104,8 @@ pub struct Game {
     
     
     //components with data
-    pub saved_controllers: SavedControllersMap,
+    pub graves: Graves,
+    pub controllers: Controllers,
     syndicate_gun_item: SyndicateGunItem,
     pub cult: Cult,
     pub mafia: Mafia,
@@ -118,7 +114,6 @@ pub struct Game {
     pub verdicts_today: VerdictsToday,
     pub pitchfork: Pitchfork,
     pub poison: Poison,
-    pub modifiers: Modifiers,
     pub insider_groups: InsiderGroups,
     pub detained: Detained,
     pub confused: Confused,
@@ -126,8 +121,10 @@ pub struct Game {
     pub synopsis_tracker: SynopsisTracker,
     pub tags: Tags,
     pub silenced: Silenced,
-    pub fragile_vests: PlayerComponent<FragileVests>,
-    pub win_condition: PlayerComponent<WinCondition>
+    pub fragile_vests: FragileVestsComponent,
+    pub win_condition: WinConditionComponent,
+    pub fast_forward: FastForwardComponent,
+    pub chat_messages: ChatComponent
 }
 
 #[derive(Serialize, Debug, Clone, Copy)]
@@ -149,7 +146,7 @@ pub enum GameOverReason {
     Draw
 }
 
-type Assignments = VecMap<PlayerReference, (RoleOutlineReference, RoleAssignment)>;
+type Assignments = VecMap<PlayerReference, OutlineAssignment>;
 
 impl Game {
     pub const DISCONNECT_TIMER_SECS: u16 = 60 * 2;
@@ -221,27 +218,23 @@ impl Game {
 
         let mut voted_player = None;
 
-        if let Some(maximum_votes) = voted_player_votes.values().max() {
-            if self.nomination_votes_is_enough(*maximum_votes){
-                let max_votes_players: VecSet<PlayerReference> = voted_player_votes.iter()
-                    .filter(|(_, votes)| **votes == *maximum_votes)
-                    .map(|(player, _)| *player)
-                    .collect();
+        if let Some(maximum_votes) = voted_player_votes.values().max() && self.nomination_votes_is_enough(*maximum_votes){
+            let max_votes_players: VecSet<PlayerReference> = voted_player_votes.iter()
+                .filter(|(_, votes)| **votes == *maximum_votes)
+                .map(|(player, _)| *player)
+                .collect();
 
-                if max_votes_players.count() == 1 {
-                    voted_player = max_votes_players.iter().next().copied();
-                }
+            if max_votes_players.count() == 1 {
+                voted_player = max_votes_players.iter().next().copied();
             }
         }
         
-        if start_trial_instantly {
-            if let Some(player_on_trial) = voted_player {
-                PhaseStateMachine::next_phase(self, Some(PhaseState::Testimony {
-                    trials_left: trials_left.saturating_sub(1), 
-                    player_on_trial, 
-                    nomination_time_remaining: self.phase_machine.get_time_remaining()
-                }));
-            }
+        if start_trial_instantly && let Some(player_on_trial) = voted_player {
+            PhaseStateMachine::next_phase(self, Some(PhaseState::Testimony {
+                trials_left: trials_left.saturating_sub(1), 
+                player_on_trial, 
+                nomination_time_remaining: self.phase_machine.get_time_remaining()
+            }));
         }
 
         voted_player
@@ -257,7 +250,7 @@ impl Game {
             .filter(|p| p.alive(self) && !ForfeitNominationVote::forfeited_vote(self, *p))
             .count() as u8;
 
-        if Modifiers::is_enabled(self, ModifierType::TwoThirdsMajority) {
+        if self.settings.modifiers.is_enabled(ModifierID::TwoThirdsMajority) {
             // equivalent to x - (x - (x + 1)/3)/2 to prevent overflow issues
             eligible_voters
             .saturating_sub(
@@ -274,9 +267,12 @@ impl Game {
         }
     }
 
+    pub fn modifier_settings(&self) -> &modifiers::ModifierSettings {
+        &self.settings.modifiers
+    }
 
     pub fn game_is_over(&self) -> bool {
-        GameConclusion::game_is_over(self).is_some()
+        GameConclusion::game_is_over_game(self).is_some()
     }
 
     pub fn current_phase(&self) -> &PhaseState {
@@ -285,16 +281,6 @@ impl Game {
 
     pub fn day_number(&self) -> u8 {
         self.phase_machine.day_number
-    }
-
-    pub fn add_grave(&mut self, grave: Grave) {
-        if let Ok(grave_index) = self.graves.len().try_into() {
-            self.graves.push(grave.clone());
-
-            if let Some(grave_ref) = GraveReference::new(self, grave_index) {
-                OnGraveAdded::new(grave_ref).invoke(self);
-            }
-        }
     }
 
     pub fn add_message_to_chat_group(&mut self, group: ChatGroup, variant: ChatMessageVariant){
@@ -315,8 +301,9 @@ impl Game {
         }
     }
     pub fn add_chat_message_to_spectators(&mut self, message: ChatMessageVariant){
+        let new_idx = self.spectator_chat_messages.len();
         for spectator in self.spectators.iter_mut(){
-            spectator.queued_chat_messages.push(message.clone());
+            spectator.queued_chat_messages.push_back((new_idx, message.clone()));
         }
         self.spectator_chat_messages.push(message);
     }
@@ -364,7 +351,7 @@ impl Game {
 
         if !self.clients.iter().any(|p| is_player_not_disconnected_host(self, p.1)) {
             let next_available_player_id = self.clients.iter()
-                .filter(|(&id, _)| skip.is_none_or(|s| s != id))
+                .filter(|(id, _)| skip.is_none_or(|s| s != **id))
                 .filter(|(_, c)| is_player_not_disconnected(self, c))
                 .map(|(&id, _)| id)
                 .next();

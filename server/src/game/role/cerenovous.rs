@@ -1,5 +1,5 @@
 use serde::Serialize;
-use crate::game::ability_input::AvailablePlayerListSelection;
+use crate::game::controllers::AvailablePlayerListSelection;
 use crate::game::chat::ChatMessageVariant;
 use crate::game::components::insider_group::InsiderGroupID;
 use crate::game::event::on_midnight::{MidnightVariables, OnMidnightPriority};
@@ -16,7 +16,7 @@ use super::{ControllerID, ControllerParametersMap, Role, RoleStateImpl};
 #[derive(Clone, Debug, Serialize, Default)]
 #[serde(rename_all = "camelCase")]
 pub struct Cerenovous{
-    pub currently_piloted: Option<PlayerReference>,
+    pub currently_brained: Option<PlayerReference>,
     previous: Option<PlayerReference>,
     charges: u8,
 }
@@ -41,7 +41,8 @@ impl RoleStateImpl for Cerenovous {
             if self.charges != 0 {
                 let target_ref = visit.target;
                 
-                self.currently_piloted = Some(target_ref);
+                target_ref.push_night_message(midnight_variables, ChatMessageVariant::Brained);
+                self.currently_brained = Some(target_ref);
                 self.previous = Some(target_ref);
                 self.charges = self.charges.saturating_sub(1);
             }else{
@@ -85,7 +86,7 @@ impl RoleStateImpl for Cerenovous {
         ].into_iter().collect()
     }
     fn on_phase_start(mut self, game: &mut Game, actor_ref: PlayerReference, phase: crate::game::phase::PhaseType) {
-        self.currently_piloted = None;
+        self.currently_brained = None;
         if phase == PhaseType::Night {
             actor_ref.set_role_state(game, self);
         }

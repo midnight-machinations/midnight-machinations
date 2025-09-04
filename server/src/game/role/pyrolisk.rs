@@ -2,8 +2,9 @@ use serde::Serialize;
 
 use crate::game::attack_power::{AttackPower, DefensePower};
 use crate::game::chat::ChatMessageVariant;
+use crate::game::components::graves::grave::{GraveInformation, GraveKiller};
+use crate::game::components::graves::grave_reference::GraveReference;
 use crate::game::event::on_midnight::{MidnightVariables, OnMidnightPriority};
-use crate::game::grave::{GraveInformation, GraveKiller, GraveReference};
 use crate::game::player::PlayerReference;
 
 use crate::game::visit::Visit;
@@ -35,8 +36,7 @@ impl RoleStateImpl for Pyrolisk {
 
                 let mut killed_at_least_once = false;
 
-                for other_player_ref in actor_ref.all_night_visitors_cloned(midnight_variables)
-                    .into_iter().filter(|other_player_ref|
+                for other_player_ref in actor_ref.all_direct_night_visitors_cloned(midnight_variables).filter(|other_player_ref|
                         other_player_ref.alive(game) &&
                         *other_player_ref != actor_ref
                     ).collect::<Vec<PlayerReference>>()

@@ -1,17 +1,18 @@
-import { PhaseType, PlayerIndex, Verdict, PhaseTimes, Tag, LobbyClientID, ChatGroup, PhaseState, LobbyClient, ModifierType, InsiderGroup, GameClient } from "./gameState.d"
-import { Grave } from "./graveState"
-import { ChatMessage } from "../components/ChatMessage"
+import { PhaseType, PlayerIndex, PhaseTimes, Tag, LobbyClientID, ChatGroup, PhaseState, LobbyClient, InsiderGroup, GameClient, UnsafeString, FastForwardSetting } from "./gameState.d"
+import { Grave, GraveIndex } from "./graveState"
+import { ChatMessage, ChatMessageIndex } from "../components/ChatMessage"
 import { RoleList, RoleOutline } from "./roleListState.d"
 import { Role, RoleState } from "./roleState.d"
 import { DoomsayerGuess } from "../menu/game/gameScreenContent/AbilityMenu/RoleSpecificMenus/LargeDoomsayerMenu"
-import { KiraGuess } from "../menu/game/gameScreenContent/AbilityMenu/AbilitySelectionTypes/KiraSelectionMenu"
-import { AbilityInput, ControllerID, SavedController } from "./abilityInput"
-import { ListMapData } from "../ListMap"
+import { KiraGuess } from "../menu/game/gameScreenContent/AbilityMenu/ControllerSelectionTypes/KiraSelectionMenu"
+import { ControllerInput, ControllerID, SavedController } from "./controllerInput"
+import ListMap, { ListMapData } from "../ListMap"
+import { ModifierID, ModifierState } from "./modifiers"
 
 export type LobbyPreviewData = {
-    name: string,
+    name: UnsafeString,
     inGame : boolean,
-    players: [LobbyClientID, string][]
+    players: [LobbyClientID, UnsafeString][]
 }
 
 export type ToClientPacket = {
@@ -47,7 +48,7 @@ export type ToClientPacket = {
     clients: ListMapData<LobbyClientID, LobbyClient>
 } | {
     type: "lobbyName",
-    name: string
+    name: UnsafeString
 } | {
     type: "yourPlayerIndex",
     playerIndex: PlayerIndex
@@ -74,7 +75,7 @@ export type ToClientPacket = {
     type: "backToLobby",
 } | {
     type: "gamePlayers",
-    players: string[]
+    players: UnsafeString[]
 } | {
     type: "roleList",
     roleList: RoleList,
@@ -93,8 +94,10 @@ export type ToClientPacket = {
     type: "enabledRoles",
     roles: Role[]
 } | {
-    type: "enabledModifiers",
-    modifiers: ModifierType[]
+    type: "modifierSettings",
+    modifierSettings: {
+        modifiers: ListMapData<ModifierID, ModifierState>,
+    }
 } |
 // Game
 {
@@ -120,6 +123,10 @@ export type ToClientPacket = {
     type: "yourAllowedControllers",
     save: ListMapData<ControllerID, SavedController>,
 } | {
+    type: "yourAllowedController",
+    id: ControllerID, 
+    controller: SavedController
+} | {
     type: "yourRoleLabels",
     roleLabels: ListMapData<PlayerIndex, Role> 
 } | {
@@ -127,31 +134,29 @@ export type ToClientPacket = {
     playerTags: ListMapData<PlayerIndex, Tag[]> 
 } | {
     type: "yourNotes",
-    notes: string[]
+    notes: UnsafeString[]
 } | {
     type: "yourCrossedOutOutlines",
     crossedOutOutlines: number[]
 } | {
     type: "yourDeathNote", 
-    deathNote: string | null
+    deathNote: UnsafeString | null
 } | {
     type: "yourRoleState",
     roleState: RoleState
 } | {
-    type: "yourJudgement",
-    verdict: Verdict
-} | {
     type: "yourVoteFastForwardPhase",
-    fastForward: boolean
+    fastForward: FastForwardSetting
 } | {
     type: "addChatMessages",
-    chatMessages: ChatMessage[]
+    chatMessages: [ChatMessageIndex, ChatMessage][]
 } | {
     type: "nightMessages",
     chatMessages: ChatMessage[]
 } | {
     type: "addGrave",
-    grave: Grave
+    grave: Grave,
+    graveRef: GraveIndex,
 } | {
     type: "gameOver",
     reason: string
@@ -222,14 +227,19 @@ export type ToServerPacket = {
     type: "setEnabledRoles", 
     roles: Role[], 
 } | {
-    type: "setEnabledModifiers",
-    modifiers: ModifierType[]
+    type: "setModifierSettings",
+    modifierSettings: {
+        modifiers: ListMapData<ModifierID, ModifierState>,
+    }
+} | {
+    type: "enableModifier",
+    modifier: ModifierID
+} | {
+    type: "disableModifier",
+    modifier: ModifierID
 } |
 // Game
 {
-    type: "judgement", 
-    verdict: Verdict
-} | {
     type: "saveNotes", 
     notes: string[]
 } | {
@@ -241,8 +251,8 @@ export type ToServerPacket = {
 } | {
     type: "leave",
 } | {
-    type: "abilityInput",
-    abilityInput: AbilityInput
+    type: "controllerInput",
+    controllerInput: ControllerInput
 } | {
     type: "setKiraGuess",
     guesses: [PlayerIndex, KiraGuess][]
@@ -265,7 +275,7 @@ export type ToServerPacket = {
     youWereWardblockedMessage: boolean
 } | {
     type: "voteFastForwardPhase",
-    fastForward: boolean
+    fastForward: FastForwardSetting
 } | {
     type: "hostForceBackToLobby"
 } | {

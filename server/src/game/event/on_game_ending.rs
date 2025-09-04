@@ -18,6 +18,6 @@ impl OnGameEnding{
             player_ref.on_game_ending(game);
         }
 
-        game.on_game_ending(self.conclusion.clone());
+        game.on_game_ending(self.conclusion);
     }
 }

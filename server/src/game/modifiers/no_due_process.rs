@@ -1,19 +1,21 @@
-use crate::game::{phase::{PhaseState, PhaseStateMachine}, Game};
+use serde::{Deserialize, Serialize};
 
-use super::{ModifierTrait, ModifierType};
+use crate::game::{event::on_phase_start::OnPhaseStart, phase::{PhaseState, PhaseStateMachine}, Game};
 
-#[derive(Clone, Default, PartialEq, Eq, Hash)]
+use super::{ModifierStateImpl, ModifierID};
+
+#[derive(Clone, Default, PartialEq, Eq, Hash, Serialize, Deserialize, Debug)]
 pub struct AutoGuilty;
 
-impl From<&AutoGuilty> for ModifierType{
+impl From<&AutoGuilty> for ModifierID{
     fn from(_: &AutoGuilty) -> Self {
-        ModifierType::AutoGuilty
+        ModifierID::AutoGuilty
     }
 }
 
-impl ModifierTrait for AutoGuilty{
-    fn on_phase_start(self, game: &mut Game, phase: PhaseState) {
-        match phase {
+impl ModifierStateImpl for AutoGuilty{
+    fn on_phase_start(self, game: &mut Game, event: &OnPhaseStart, _fold: &mut (), _priority: ()) {
+        match event.phase {
             PhaseState::Testimony { player_on_trial, .. }
             | PhaseState::Judgement { player_on_trial, .. } => {
                 PhaseStateMachine::next_phase(game, Some(PhaseState::FinalWords { player_on_trial }))

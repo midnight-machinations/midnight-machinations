@@ -1,10 +1,10 @@
 use serde::Serialize;
 
-use crate::game::ability_input::{AvailableIntegerSelection, AvailableStringSelection, RoleListSelection};
+use crate::game::controllers::{AvailableIntegerSelection, AvailableStringSelection, RoleListSelection};
 use crate::game::attack_power::{AttackPower, DefensePower};
 use crate::game::chat::ChatMessageVariant;
 use crate::game::event::on_midnight::{MidnightVariables, OnMidnightPriority};
-use crate::game::grave::GraveKiller;
+use crate::game::components::graves::grave::GraveKiller;
 use crate::game::phase::PhaseType;
 use crate::game::player::PlayerReference;
 
@@ -92,14 +92,12 @@ impl RoleStateImpl for Counterfeiter {
                 }
             },
             OnMidnightPriority::Investigative => {
-                if let Some(forged_ref) = self.forged_ref {
-                    if forged_ref.night_died(midnight_variables) {
-                        actor_ref.push_night_message(midnight_variables, ChatMessageVariant::PlayerRoleAndAlibi{
-                            player: forged_ref,
-                            role: forged_ref.role(game),
-                            will: forged_ref.alibi(game).to_string(),
-                        });
-                    }
+                if let Some(forged_ref) = self.forged_ref && forged_ref.night_died(midnight_variables) {
+                    actor_ref.push_night_message(midnight_variables, ChatMessageVariant::PlayerRoleAndAlibi{
+                        player: forged_ref,
+                        role: forged_ref.role(game),
+                        will: forged_ref.alibi(game).to_string(),
+                    });
                 }
             },
             _ => {}

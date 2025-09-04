@@ -1,13 +1,15 @@
 use rand::seq::SliceRandom;
 use serde::Serialize;
 
-use crate::game::ability_input::ControllerParametersMap;
+use crate::game::components::night_visits::{NightVisitsIterator, Visits};
+use crate::game::controllers::ControllerParametersMap;
 use crate::game::attack_power::AttackPower;
 use crate::game::chat::ChatMessageVariant;
+use crate::game::components::graves::grave::GraveKiller;
 use crate::game::event::on_midnight::{MidnightVariables, OnMidnightPriority};
 use crate::game::event::on_whisper::{OnWhisper, WhisperFold, WhisperPriority};
-use crate::game::{attack_power::DefensePower, grave::GraveKiller};
-use crate::game::player::{PlayerIndex, PlayerReference};
+use crate::game::attack_power::DefensePower;
+use crate::game::player::PlayerReference;
 
 use crate::game::visit::Visit;
 
@@ -46,12 +48,16 @@ impl RoleStateImpl for Ojo {
                 PlayerReference::all_players(game)
                     .for_each(|player_ref|{
 
-                    let mut players: Vec<PlayerIndex> = player_ref.all_night_visits_cloned(midnight_variables).into_iter().map(|p|p.target.index()).collect();
+                    let mut players: Vec<PlayerReference> = Visits::into_iter(midnight_variables)
+                        .with_visitor(player_ref)
+                        .with_investigatable()
+                        .map_target()
+                        .collect();
                     players.shuffle(&mut rand::rng());
 
                     actor_ref.push_night_message(midnight_variables, 
                         ChatMessageVariant::WerewolfTrackingResult{
-                            tracked_player: player_ref.index(), 
+                            tracked_player: player_ref, 
                             players
                         }
                     );

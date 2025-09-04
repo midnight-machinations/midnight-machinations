@@ -1,23 +1,19 @@
 mod player_accessors;
 mod player_reference;
 mod player_send_packet;
-mod player_reset;
+mod player_tick;
 mod player_helper_functions;
 mod player_event_listeners;
 
 pub use player_reference::PlayerIndex;
 pub use player_reference::PlayerReference;
 
-use crate::client_connection::ClientConnection;
-use crate::vec_set::VecSet;
 use crate::{
-    game::{
-        role::{Role, RoleState}, 
-        verdict::Verdict,
-    },
+    vec_set::VecSet,
+    client_connection::ClientConnection,
+    game::role::{Role, RoleState},
     websocket_connections::connection::ClientSender,
 };
-use super::chat::ChatMessage;
 
 pub struct PlayerInitializeParameters {
     pub connection: ClientConnection,
@@ -35,16 +31,6 @@ pub struct Player {
     death_note: Option<String>,
 
     role_labels: VecSet<PlayerReference>,
-
-    chat_messages: Vec<ChatMessage>,
-    queued_chat_messages: Vec<ChatMessage>, // Not yet sent to the client
-
-    fast_forward_vote: bool,
-
-    voting_variables: PlayerVotingVariables,
-}
-struct PlayerVotingVariables{
-    verdict:        Verdict,
 }
 impl Player {
     pub fn new(name: String, sender: ClientSender, role: Role) -> Self {
@@ -59,15 +45,6 @@ impl Player {
             death_note: None,
 
             role_labels: VecSet::new(),
-
-            chat_messages: Vec::new(),
-            queued_chat_messages: Vec::new(),
-            
-            fast_forward_vote: false,
-
-            voting_variables: PlayerVotingVariables{
-                verdict : Verdict::Abstain,
-            },
         }
     }
 }
@@ -75,9 +52,9 @@ impl Player {
 pub mod test {
     use std::time::Duration;
 
-    use crate::{client_connection::ClientConnection, game::{role::Role, verdict::Verdict}, vec_set::VecSet};
+    use crate::{client_connection::ClientConnection, game::role::Role, vec_set::VecSet};
 
-    use super::{Player, PlayerVotingVariables};
+    use super::Player;
 
     pub fn mock_player(name: String, role: Role) -> Player {
         Player {
@@ -92,15 +69,6 @@ pub mod test {
             death_note: None,
 
             role_labels: VecSet::new(),
-
-            chat_messages: Vec::new(),
-            queued_chat_messages: Vec::new(),
-
-            fast_forward_vote: false,
-
-            voting_variables: PlayerVotingVariables{
-                verdict : Verdict::Abstain,
-            },
         }
     }
 }

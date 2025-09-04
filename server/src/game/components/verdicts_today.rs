@@ -1,6 +1,6 @@
 use std::collections::HashSet;
 
-use crate::game::{phase::PhaseType, player::PlayerReference, verdict::Verdict, Game};
+use crate::game::{event::on_phase_start::OnPhaseStart, phase::PhaseType, player::PlayerReference, verdict::Verdict, Game};
 
 #[derive(Default, Clone)]
 pub struct VerdictsToday{
@@ -28,8 +28,8 @@ impl VerdictsToday{
     pub fn guilties(game: &Game)->&HashSet<PlayerReference>{
         &game.verdicts_today().guilties
     }
-    pub fn on_phase_start(game: &mut Game, phase: PhaseType){
-        if phase == PhaseType::Obituary {
+    pub fn on_phase_start(game: &mut Game, event: &OnPhaseStart, _fold: &mut (), _priority: ()){
+        if event.phase.phase() == PhaseType::Obituary {
             game.set_verdicts_today(VerdictsToday::new());
         }
     }

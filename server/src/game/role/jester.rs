@@ -2,9 +2,10 @@
 use rand::seq::IndexedRandom;
 use serde::Serialize;
 
-use crate::game::ability_input::AvailablePlayerListSelection;
+use crate::game::controllers::AvailablePlayerListSelection;
 use crate::game::attack_power::{AttackPower, DefensePower};
 use crate::game::chat::{ChatGroup, ChatMessageVariant};
+use crate::game::components::graves::grave::GraveKiller;
 use crate::game::event::on_midnight::{MidnightVariables, OnMidnightPriority};
 use crate::game::phase::{PhaseType, PhaseState};
 use crate::game::player::PlayerReference;
@@ -58,7 +59,7 @@ impl RoleStateImpl for Jester {
         
         
         target_ref.try_night_kill_single_attacker(actor_ref, game, midnight_variables,
-            crate::game::grave::GraveKiller::Role(super::Role::Jester), AttackPower::ProtectionPiercing, true
+            GraveKiller::Role(super::Role::Jester), AttackPower::ProtectionPiercing, true
         );
     }
     fn controller_parameters_map(self, game: &Game, actor_ref: PlayerReference) -> ControllerParametersMap {

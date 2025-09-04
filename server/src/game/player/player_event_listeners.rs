@@ -1,4 +1,7 @@
-use crate::game::{ability_input::{AbilityInput, ControllerID}, event::{on_midnight::{MidnightVariables, OnMidnight, OnMidnightPriority}, on_whisper::{OnWhisper, WhisperFold, WhisperPriority}}, grave::GraveReference, role::RoleState, visit::Visit, Game};
+use crate::game::{
+    components::graves::grave_reference::GraveReference, controllers::{ControllerID, ControllerInput}, event::{
+        on_midnight::{MidnightVariables, OnMidnight, OnMidnightPriority}, on_phase_start::OnPhaseStart, on_validated_ability_input_received::OnValidatedControllerInputReceived, on_whisper::{OnWhisper, WhisperFold, WhisperPriority}}, role::RoleState, visit::Visit, Game
+    };
 
 use super::PlayerReference;
 
@@ -26,10 +29,7 @@ impl PlayerReference {
     pub fn on_controller_selection_changed(&self, game: &mut Game, id: ControllerID){
         self.role_state(game).clone().on_controller_selection_changed(game, *self, id)
     }
-    pub fn on_validated_ability_input_received(&self, game: &mut Game, input_player: PlayerReference, input: AbilityInput) {
-        self.role_state(game).clone().on_validated_ability_input_received(game, *self, input_player, input)
-    }
-    pub fn on_ability_input_received(&self, game: &mut Game, input_player: PlayerReference, input: AbilityInput) {
+    pub fn on_ability_input_received(&self, game: &mut Game, input_player: PlayerReference, input: ControllerInput) {
         self.role_state(game).clone().on_ability_input_received(game, *self, input_player, input)
     }
     pub fn on_game_start(&self, game: &mut Game){
@@ -63,5 +63,23 @@ impl PlayerReference {
         for player in PlayerReference::all_players(game){
             player.role_state(game).clone().on_whisper(game, player, event, fold, priority);
         }
+    }
+
+    pub fn on_validated_ability_input_received(game: &mut Game, event: &OnValidatedControllerInputReceived, _fold: &mut (), _priority: ()) {
+        for player_ref in PlayerReference::all_players(game){
+            player_ref.one_player_on_validated_ability_input_received(game, event.actor_ref, event.input.clone())
+        }
+    }
+    pub fn one_player_on_validated_ability_input_received(&self, game: &mut Game, input_player: PlayerReference, input: ControllerInput) {
+        self.role_state(game).clone().on_validated_ability_input_received(game, *self, input_player, input)
+    }
+
+    pub fn on_phase_start(game: &mut Game, event: &OnPhaseStart, _fold: &mut (), _priority: ()){
+        for player_ref in PlayerReference::all_players(game){
+            player_ref.one_on_phase_start(game, event, _fold, _priority);
+        }
+    }
+    pub fn one_on_phase_start(&self, game: &mut Game, event: &OnPhaseStart, _fold: &mut (), _priority: ()){
+        self.role_state(game).clone().on_phase_start(game, *self, event.phase.phase())
     }
 }

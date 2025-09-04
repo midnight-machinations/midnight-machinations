@@ -9,11 +9,15 @@ import AudioController from "./AudioController";
 import CheckBox from "../components/CheckBox";
 import { DragAndDrop } from "../components/DragAndDrop";
 import { MENU_THEMES, MENU_TRANSLATION_KEYS } from "./game/GameScreen";
+import { UnsafeString } from "../game/gameState.d";
+import { encodeString } from "../components/ChatMessage";
+import { Button } from "../components/Button";
 
 export default function SettingsMenu(): ReactElement {
     const [volume, setVolume] = useState<number>(loadSettingsParsed().volume);
+    const [fontSizeText, setFontSizeText] = useState<number>(loadSettingsParsed().fontSize);
     const [fontSizeState, setFontSize] = useState<number>(loadSettingsParsed().fontSize);
-    const [defaultName, setDefaultName] = useState<string | null>(loadSettingsParsed().defaultName);
+    const [defaultName, setDefaultName] = useState<UnsafeString | null>(loadSettingsParsed().defaultName);
     const [accessibilityFontEnabled, setAccessibilityFontEnabled] = useState(loadSettingsParsed().accessibilityFont);
     const [menuOrder, setMenuOrder] = useState(loadSettingsParsed().menuOrder);
     const [maxMenus, setMaxMenus] = useState(loadSettingsParsed().maxMenus);
@@ -49,13 +53,21 @@ export default function SettingsMenu(): ReactElement {
                     <label>
                         {translate("menu.settings.fontSize")}
                         <input type="number" min="0.5" max="2" step="0.1"
-                            value={fontSizeState}
+                            value={fontSizeText}
                             onChange={(e)=>{
                                 if(e.target.value === "") return;
                                 const fontSize = parseFloat(e.target.value);
-                                if(fontSize < 0.5 || fontSize > 2) return;
-                                saveSettings({fontSize});
-                                setFontSize(fontSize);
+                                setFontSizeText(fontSize);
+                            }}
+                            onBlur={()=>{
+                                if(fontSizeText < 0.5 || fontSizeText > 2) {
+                                    setFontSize(1);
+                                    setFontSizeText(1);
+                                    saveSettings({fontSize: 1});
+                                }else{
+                                    setFontSize(fontSizeText);
+                                    saveSettings({fontSize: fontSizeText});
+                                }
                             }}
                         />
                     </label>
@@ -95,9 +107,15 @@ export default function SettingsMenu(): ReactElement {
                             onChange={(e)=>{
                                 if(e.target.value === "") return;
                                 const maxMenus = parseFloat(e.target.value);
-                                if(Math.floor(maxMenus) !== maxMenus || maxMenus < 1 || maxMenus > 6) return;
-                                saveSettings({maxMenus});
                                 setMaxMenus(maxMenus);
+                            }}
+                            onBlur={()=>{
+                                if(Math.floor(maxMenus) !== maxMenus || maxMenus < 1 || maxMenus > 6) {
+                                    setMaxMenus(6);  
+                                    saveSettings({maxMenus: 6});
+                                }else{
+                                    saveSettings({maxMenus});
+                                }
                             }}
                         />
                     </label>
@@ -106,9 +124,20 @@ export default function SettingsMenu(): ReactElement {
                         <div className="menu-list">
                             <DragAndDrop
                                 items={menuOrder}
-                                render={menu => <div className={"placard " + (MENU_THEMES[menu] ?? "")}>
-                                    {translate(MENU_TRANSLATION_KEYS[menu] + ".icon")}
-                                </div>}
+                                render={(menu, i) => 
+                                    <Button 
+                                        className={"placard " + (MENU_THEMES[menu[0]]??"")}
+                                        highlighted={menu[1] === true}
+                                        onClick={() => {
+                                            menuOrder[i][1] = !menuOrder[i][1];
+                                            let newItems = [...menuOrder];
+                                            saveSettings({menuOrder: [...newItems]})
+                                            setMenuOrder([...newItems])
+                                        }}
+                                    >
+                                        {translate(MENU_TRANSLATION_KEYS[menu[0]] + ".icon")}
+                                    </Button>
+                                }
                                 onDragEnd={newItems => {
                                     saveSettings({menuOrder: [...newItems]})
                                     setMenuOrder([...newItems])
@@ -120,7 +149,7 @@ export default function SettingsMenu(): ReactElement {
                 <section>
                     <h2>{translate("menu.settings.defaultName")}</h2>
                     <input type="text"
-                        value={defaultName===null?"":defaultName} 
+                        value={defaultName===null ? "" : encodeString(defaultName)} 
                         placeholder={translate("menu.lobby.field.namePlaceholder")}
                         onChange={(e) => {
                             const defaultName = e.target.value === "" ? null : e.target.value;
@@ -131,11 +160,11 @@ export default function SettingsMenu(): ReactElement {
                 </section>
                 <section>
                     <h2><StyledText className="keyword-evil">{translate("menu.settings.dangerZone")}</StyledText></h2>
-                    <button onClick={()=>{
+                    <Button onClick={()=>{
                         if(!window.confirm(translate("confirmDelete"))) return;
                         localStorage.clear();
                         anchorController.clearCoverCard();
-                    }}><Icon>delete_forever</Icon> {translate('menu.settings.eraseSaveData')}</button>
+                    }}><Icon>delete_forever</Icon> {translate('menu.settings.eraseSaveData')}</Button>
                 </section>
             </div>
         </main>

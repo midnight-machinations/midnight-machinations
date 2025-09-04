@@ -1,5 +1,6 @@
 use serde::Serialize;
 
+use crate::game::components::night_visits::Visits;
 use crate::game::event::on_midnight::{MidnightVariables, OnMidnightPriority};
 use crate::game::{attack_power::DefensePower, player::PlayerReference};
 
@@ -18,8 +19,7 @@ impl RoleStateImpl for Escort {
     type ClientRoleState = Escort;
     fn on_midnight(self, game: &mut Game, midnight_variables: &mut MidnightVariables, actor_ref: PlayerReference, priority: OnMidnightPriority) {
         if priority != OnMidnightPriority::Roleblock {return;}
-        let actor_visits = actor_ref.untagged_night_visits_cloned(midnight_variables);
-        if let Some(visit) = actor_visits.first(){
+        if let Some(visit) = Visits::default_visit(game, midnight_variables, actor_ref) {
             let target_ref = visit.target;
 
             target_ref.roleblock(game, midnight_variables, true);

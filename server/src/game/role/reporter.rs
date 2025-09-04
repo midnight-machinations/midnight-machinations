@@ -2,7 +2,7 @@ use std::collections::HashSet;
 
 use serde::Serialize;
 
-use crate::game::ability_input::{AvailableBooleanSelection, AvailableStringSelection};
+use crate::game::controllers::{AvailableBooleanSelection, AvailableStringSelection};
 use crate::game::attack_power::DefensePower;
 use crate::game::chat::{ChatGroup, ChatMessageVariant};
 use crate::game::components::insider_group::InsiderGroupID;
@@ -73,7 +73,7 @@ impl RoleStateImpl for Reporter {
     fn get_current_send_chat_groups(self,  game: &Game, actor_ref: PlayerReference) -> HashSet<ChatGroup> {
         crate::game::role::common_role::get_current_send_chat_groups(game, actor_ref, 
             if 
-                game.current_phase().is_night() &&
+                game.current_phase().phase() == PhaseType::Night &&
                 !actor_ref.ability_deactivated_from_death(game) &&
                 self.interviewed_target.map_or_else(||false, |p|p.alive(game))
             {
@@ -86,7 +86,7 @@ impl RoleStateImpl for Reporter {
     fn get_current_receive_chat_groups(self,  game: &Game, actor_ref: PlayerReference) -> HashSet<ChatGroup> {
         let mut out = crate::game::role::common_role::get_current_receive_chat_groups(game, actor_ref);
         if 
-            game.current_phase().is_night() &&
+            game.current_phase().phase() == PhaseType::Night &&
             !actor_ref.ability_deactivated_from_death(game) &&
             self.interviewed_target.map_or_else(||false, |p|p.alive(game))
         {

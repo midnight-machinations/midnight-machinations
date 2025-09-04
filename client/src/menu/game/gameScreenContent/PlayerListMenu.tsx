@@ -8,13 +8,13 @@ import { ContentMenu, ContentTab } from "../GameScreen";
 import StyledText from "../../../components/StyledText";
 import Icon from "../../../components/Icon";
 import { Button } from "../../../components/Button";
-import { useGameState, usePlayerNames, usePlayerState, useSpectator } from "../../../components/useHooks";
+import { useGameState, useLobbyOrGameState, usePlayerNames, usePlayerState, useSpectator } from "../../../components/useHooks";
 import PlayerNamePlate from "../../../components/PlayerNamePlate";
 import ChatMessage, { translateChatMessage } from "../../../components/ChatMessage";
 import GraveComponent, { translateGraveRole } from "../../../components/grave";
 import { ChatMessageSection, ChatTextInput } from "./ChatMenu";
 import ListMap from "../../../ListMap";
-import { controllerIdToLinkWithPlayer } from "../../../game/abilityInput";
+import { controllerIdToLinkWithPlayer } from "../../../game/controllerInput";
 
 export default function PlayerListMenu(): ReactElement {
     const players = useGameState(
@@ -37,19 +37,19 @@ export default function PlayerListMenu(): ReactElement {
                 .map(player => <div key={player.index} className="player-card-holder"><PlayerCard playerIndex={player.index}/></div>)
             }
 
-            {graves.length === 0 || 
+            {graves.entries().length === 0 || 
                 <>
                     <div className="dead-players-separator">
                         <StyledText>{translate("grave.icon")} {translate("graveyard")}</StyledText>
                     </div>
-                    {graves.map((grave, index) => <div key={grave.player} className="player-card-holder"><PlayerCard graveIndex={index} playerIndex={grave.player}/></div>)}
+                    {graves.entries().map(([index, grave]) => <div key={grave.player} className="player-card-holder"><PlayerCard graveIndex={index} playerIndex={grave.player}/></div>)}
                 </>
             }
 
             {players
                 .filter(
                     player => !player.alive && 
-                    graves.find(grave => grave.player === player.index) === undefined
+                    graves.values().find((grave) => grave.player === player.index) === undefined
                 ).length === 0 || 
                 <>
                     <div className="dead-players-separator">
@@ -74,8 +74,8 @@ function PlayerCard(props: Readonly<{
         ["yourPlayerIndex"],
         false
     )!;
-    const chatFilter = usePlayerState(
-        playerState => playerState.chatFilter,
+    const chatFilter = useGameState(
+        gameState => gameState.chatFilter,
         ["filterUpdate"],
     );
     const playerAlive = useGameState(
@@ -91,10 +91,14 @@ function PlayerCard(props: Readonly<{
         ["gamePlayers", "playerVotes"]
     )!;
     const playerNames = usePlayerNames();
+    const roleList = useLobbyOrGameState(
+        gameState => gameState.roleList,
+        ["roleList"]
+    )!;
 
 
     const controllers = new ListMap(
-        usePlayerState(playerState=>playerState.savedControllers, ["yourAllowedControllers"])??[],
+        usePlayerState(playerState=>playerState.savedControllers, ["yourAllowedControllers", "yourAllowedController"])??[],
         (k1, k2)=>controllerIdToLinkWithPlayer(k1)===controllerIdToLinkWithPlayer(k2)
     );
     const whisperAsPlayers = controllers.list
@@ -104,9 +108,9 @@ function PlayerCard(props: Readonly<{
 
     type NonAnonymousBlockMessage = {
         variant: {
-            type: "normal", 
+            type: "normal",
             messageSender: {
-                type: "player", 
+                type: "player",
                 player: PlayerIndex
             } | {
                 type: "livingToDead",
@@ -119,7 +123,7 @@ function PlayerCard(props: Readonly<{
     }
 
     const mostRecentBlockMessage: undefined | NonAnonymousBlockMessage = useGameState(
-        gameState => findLast(gameState.chatMessages, message =>
+        gameState => findLast(gameState.chatMessages.values(), (message) =>
                 message.chatGroup === "all" && 
                 message.variant.type === "normal" &&
                 message.variant.block &&
@@ -133,14 +137,14 @@ function PlayerCard(props: Readonly<{
     const [graveOpen, setGraveOpen] = React.useState(false);
     const [whisperChatOpen, setWhisperChatOpen] = React.useState(false);
     const whispersDisabled = useGameState(
-        gameState => gameState.enabledModifiers.includes("noWhispers"),
-        ["enabledModifiers"]
+        gameState => gameState.modifierSettings.keys().includes("noWhispers"),
+        ["modifierSettings"]
     )!;
 
     const grave = useGameState(
         gameState => {
             if(props.graveIndex === undefined) return undefined;
-            return gameState.graves[props.graveIndex]
+            return gameState.graves.get(props.graveIndex)
         },
         ["addGrave"]
     )!
@@ -156,7 +160,7 @@ function PlayerCard(props: Readonly<{
 
     const spectator = useSpectator();
 
-    return <><div 
+    return <><div
         className={`player-card`}
         key={props.playerIndex}
     >
@@ -166,7 +170,7 @@ function PlayerCard(props: Readonly<{
             <Button onClick={()=>setAlibiOpen(!alibiOpen)}>
                 <StyledText noLinks={true}>
                     {
-                        translateChatMessage(mostRecentBlockMessage.variant, playerNames)
+                        translateChatMessage(mostRecentBlockMessage.variant, playerNames, roleList)
                             .split("\n")[1]
                             .trim()
                             .substring(0,30)
@@ -204,7 +208,7 @@ function PlayerCard(props: Readonly<{
                 {whisperNotification===true && <div className="chat-notification highlighted">!</div>}
             </Button>
         }
-        {spectator || (() => {
+        {(() => {
             const filter = props.playerIndex;
             const isFilterSet = chatFilter?.type === "playerNameInMessage" && (chatFilter.player === filter);
             
@@ -243,7 +247,7 @@ function PlayerCard(props: Readonly<{
                 return <>
                     <ChatTextInput 
                         key={"input: "+JSON.stringify(id)}
-                        disabled={sendChatController.availableAbilityData.grayedOut}
+                        disabled={sendChatController.parameters.grayedOut}
                         whispering={props.playerIndex}
                         controllingPlayer={id.player}
                     />

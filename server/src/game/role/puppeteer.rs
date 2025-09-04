@@ -1,8 +1,10 @@
 use serde::Serialize;
 
-use crate::game::ability_input::{AvailableIntegerSelection, AvailablePlayerListSelection};
+use crate::game::components::night_visits::Visits;
+use crate::game::controllers::{AvailableIntegerSelection, AvailablePlayerListSelection};
 use crate::game::attack_power::AttackPower;
 use crate::game::components::detained::Detained;
+use crate::game::components::graves::grave::GraveKiller;
 use crate::game::event::on_midnight::{MidnightVariables, OnMidnightPriority};
 use crate::game::{
     attack_power::DefensePower,
@@ -42,8 +44,7 @@ impl RoleStateImpl for Puppeteer {
         if priority != OnMidnightPriority::Kill {return;}
         if game.day_number() <= 1 {return;}
 
-        let actor_visits = actor_ref.untagged_night_visits_cloned(midnight_variables);
-        if let Some(visit) = actor_visits.first(){
+        if let Some(visit) = Visits::default_visit(game, midnight_variables, actor_ref) {
             let target = visit.target;
             
             if 
@@ -63,7 +64,7 @@ impl RoleStateImpl for Puppeteer {
                     actor_ref,
                     game,
                     midnight_variables,
-                    crate::game::grave::GraveKiller::Role(Role::Puppeteer),
+                    GraveKiller::Role(Role::Puppeteer),
                     AttackPower::ArmorPiercing,
                     true
                 );

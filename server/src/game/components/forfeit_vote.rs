@@ -1,7 +1,6 @@
 use crate::{
     game::{
-        ability_input::*, modifiers::{ModifierType, Modifiers},
-        phase::PhaseType, player::PlayerReference, Game
+        controllers::*, event::on_phase_start::OnPhaseStart, modifiers::ModifierID, phase::PhaseType, player::PlayerReference, Game
     },
     vec_set::VecSet
 };
@@ -12,7 +11,7 @@ pub struct ForfeitNominationVote;
 impl ForfeitNominationVote{
     pub fn controller_parameters_map(game: &Game)->ControllerParametersMap {
         if
-            !Modifiers::is_enabled(game, ModifierType::ForfeitNominationVote)
+            !game.modifier_settings().is_enabled(ModifierID::ForfeitNominationVote)
         {
             return ControllerParametersMap::default();
         }
@@ -32,8 +31,8 @@ impl ForfeitNominationVote{
     }
 
     /// Must go before saved_controllers on phase start
-    pub fn on_phase_start(game: &mut Game, phase: PhaseType){
-        match phase {
+    pub fn on_phase_start(game: &mut Game, event: &OnPhaseStart, _fold: &mut (), _priority: ()){
+        match event.phase.phase() {
             PhaseType::Nomination => {
                 for player in PlayerReference::all_players(game){
                     if 

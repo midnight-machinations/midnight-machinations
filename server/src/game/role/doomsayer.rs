@@ -3,7 +3,7 @@ use serde::{Serialize, Deserialize};
 use crate::game::attack_power::{AttackPower, DefensePower};
 use crate::game::chat::ChatMessageVariant;
 use crate::game::event::on_midnight::{MidnightVariables, OnMidnightPriority};
-use crate::game::grave::GraveKiller;
+use crate::game::components::graves::grave::GraveKiller;
 use crate::game::phase::PhaseType;
 use crate::game::player::PlayerReference;
 
@@ -32,7 +32,7 @@ pub enum DoomsayerGuess{
     // No TI
     Doctor, Bodyguard, Cop, Bouncer, Engineer, Armorsmith, Steward,
     Vigilante, Veteran, Marksman, Deputy, Rabblerouser,
-    Escort, Medium, Retributionist, Reporter, Mayor, Porter, Transporter, Coxswain, Polymath, Courtesan
+    Escort, Medium, Retributionist, Reporter, Mayor, Porter, Transporter, Polymath, Courtesan
 }
 impl DoomsayerGuess{
     fn convert_to_guess(role: Role)->Option<DoomsayerGuess>{
@@ -66,7 +66,6 @@ impl DoomsayerGuess{
             Role::Mayor => Some(DoomsayerGuess::Mayor),
             Role::Porter => Some(DoomsayerGuess::Porter),
             Role::Transporter => Some(DoomsayerGuess::Transporter),
-            Role::Coxswain => Some(DoomsayerGuess::Coxswain),
             Role::Polymath => Some(DoomsayerGuess::Polymath),
 
             //Mafia
@@ -74,7 +73,7 @@ impl DoomsayerGuess{
             Role::Counterfeiter | Role::Recruiter | Role::Impostor | Role::MafiaKillingWildcard |
             Role::Goon |
             Role::Hypnotist | Role::Blackmailer | Role::Cerenovous | Role::Informant | 
-            Role::MafiaWitch | Role::Necromancer | Role::Consort |
+            Role::Necromancer | Role::Consort |
             Role::Mortician | Role::Framer | Role::Forger | 
             Role::Disguiser | Role::Reeducator |
             Role::Ambusher | Role::MafiaSupportWildcard => Some(DoomsayerGuess::NonTown),

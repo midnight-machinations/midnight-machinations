@@ -2,9 +2,9 @@ use std::time::Duration;
 
 use serde::{Serialize, Deserialize};
 
-use crate::vec_set::VecSet;
+use crate::{game::modifiers::{ModifierSettings}, vec_set::VecSet};
 
-use super::{modifiers::ModifierType, phase::PhaseType, role::Role, role_list::RoleList};
+use super::{phase::PhaseType, role::Role, role_list::RoleList};
 
 #[derive(Debug, Default, Clone, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
@@ -12,7 +12,7 @@ pub struct Settings{
     pub role_list: RoleList,
     pub phase_times: PhaseTimeSettings,
     pub enabled_roles: VecSet<Role>,
-    pub enabled_modifiers: VecSet<ModifierType>
+    pub modifiers: ModifierSettings,
 }
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
@@ -24,6 +24,7 @@ pub struct PhaseTimeSettings{
     pub testimony: u16,
     pub judgement: u16,
     pub final_words: u16,
+    pub adjournment: u16,
     pub dusk: u16,
     pub night: u16,
 }
@@ -39,7 +40,8 @@ impl PhaseTimeSettings {
             PhaseType::Night => Some(Duration::from_secs(self.night as u64)),
             PhaseType::Testimony => Some(Duration::from_secs(self.testimony as u64)),
             PhaseType::Nomination => Some(Duration::from_secs(self.nomination as u64)),
-            PhaseType::Recess => None
+            PhaseType::Adjournment => Some(Duration::from_secs(self.adjournment as u64)),
+            PhaseType::Recess => None,
         }
     }
     pub fn game_ends_instantly(&self)->bool{
@@ -53,6 +55,7 @@ impl Default for PhaseTimeSettings{
             obituary:20,
             discussion:100,
             nomination:100,
+            adjournment:60,
             testimony:30,
             judgement:30,
             final_words:10,

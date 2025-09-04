@@ -1,7 +1,10 @@
 use crate::{event_priority, game::{
-    attack_power::DefensePower, chat::ChatMessageVariant, components::{
-        detained::Detained, fragile_vest::FragileVests, guard::Guard, mafia::Mafia, mafia_recruits::MafiaRecruits, pitchfork::Pitchfork, player_component::PlayerComponent, poison::Poison, puppeteer_marionette::PuppeteerMarionette, syndicate_gun_item::SyndicateGunItem
-    }, grave::GraveKiller, modifiers::Modifiers, player::PlayerReference, role::{Role, RoleState}, visit::Visit, Game
+    attack_power::DefensePower, chat::ChatMessageVariant, 
+    components::{
+        detained::Detained, fragile_vest::FragileVests, graves::grave::GraveKiller, guard::Guard, mafia::Mafia, mafia_recruits::MafiaRecruits, pitchfork::Pitchfork, player_component::PlayerComponent, poison::Poison, puppeteer_marionette::PuppeteerMarionette, syndicate_gun_item::SyndicateGunItem
+    },
+    modifiers::ModifierSettings, player::PlayerReference,
+    role::{Role, RoleState}, visit::Visit, Game
 }};
 use super::Event;
 
@@ -12,12 +15,13 @@ event_priority!(OnMidnightPriority{
     InitializeNight,
 
     TopPriority,
-    Ward,
+    PreWard,
 
     Transporter,
     Warper,
 
     Possess,
+    Ward,
     Roleblock,
 
     Deception,  //set aura //set attack
@@ -31,8 +35,6 @@ event_priority!(OnMidnightPriority{
     Investigative,  //use aura
 
     DeleteMessages, //set messages
-
-    SpyBug, //use non stolen messages
 
     StealMessages,  //use messages + set messages (specficially set stolen messages)
 
@@ -53,7 +55,7 @@ impl Event for OnMidnight {
             PuppeteerMarionette::on_midnight,
             MafiaRecruits::on_midnight,
             Pitchfork::on_midnight,
-            Modifiers::on_midnight,
+            ModifierSettings::on_midnight,
             SyndicateGunItem::on_midnight,
             Mafia::on_midnight,
             
@@ -113,7 +115,7 @@ pub struct PlayerMidnightVariables {
 
     pub convert_role_to: Option<RoleState>,
 
-    pub appeared_visits: Option<Vec<Visit>>,
+    pub appeared_visits: bool,
     pub framed: bool,
 
     pub messages: Vec<ChatMessageVariant>,
@@ -153,7 +155,7 @@ impl PlayerMidnightVariables {
 
             convert_role_to: None,
 
-            appeared_visits: None,
+            appeared_visits: false,
             framed: false,
             messages: Vec::new(),
 
@@ -209,10 +211,10 @@ impl PlayerReference {
         midnight_variables.get_mut(self).convert_role_to = convert_role_to;
     }
 
-    pub fn night_appeared_visits(self, midnight_variables: &MidnightVariables) -> &Option<Vec<Visit>>{
-        &midnight_variables.get(self).appeared_visits
+    pub fn night_appeared_visits(self, midnight_variables: &MidnightVariables) -> bool{
+        midnight_variables.get(self).appeared_visits
     }
-    pub fn set_night_appeared_visits(self, midnight_variables: &mut MidnightVariables, appeared_visits: Option<Vec<Visit>>){
+    pub fn set_night_appeared_visits(self, midnight_variables: &mut MidnightVariables, appeared_visits: bool){
         midnight_variables.get_mut(self).appeared_visits = appeared_visits;
     }
     

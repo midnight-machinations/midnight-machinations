@@ -12,7 +12,7 @@ import { AnchorController } from "../menu/Anchor";
 import WikiCoverCard from "./WikiCoverCard";
 import { getAllRoles } from "../game/roleListState.d";
 import { useLobbyOrGameState } from "./useHooks";
-import { MODIFIERS, ModifierType } from "../game/gameState.d";
+import { MODIFIERS, ModifierID } from "../game/modifiers";
 import Masonry from "react-responsive-masonry";
 import CheckBox from "./CheckBox";
 
@@ -34,7 +34,7 @@ export function setWikiSearchPage(page: WikiArticleLink, anchorController: Ancho
 
 export default function Wiki(props: Readonly<{
     enabledRoles: Role[],
-    enabledModifiers: ModifierType[],
+    enabledModifiers: ModifierID[],
     initialWikiPage?: WikiArticleLink,
     onPageChange?: (page: WikiArticleLink | null) => void,
     static?: boolean
@@ -130,7 +130,7 @@ function WikiSearchBar(props: Readonly<{
 function WikiSearchResults(props: Readonly<{
     searchQuery: string,
     enabledRoles: Role[],
-    enabledModifiers: ModifierType[],
+    enabledModifiers: ModifierID[],
     onChooseArticle: (article: WikiArticleLink) => void,
     static: boolean
 }>): ReactElement {
@@ -140,9 +140,9 @@ function WikiSearchResults(props: Readonly<{
         getAllRoles()
     )!;
     const enabledModifiers = useLobbyOrGameState(
-        gameState => gameState.enabledModifiers,
-        ["enabledModifiers"],
-        MODIFIERS as any as ModifierType[]
+        gameState => gameState.modifierSettings.keys(),
+        ["modifierSettings"],
+        MODIFIERS as any as ModifierID[]
     )!;
 
     const [hideDisabled, setHideDisabled] = useState(true);
@@ -189,7 +189,7 @@ function WikiSearchResults(props: Readonly<{
 function WikiMainPage(props: Readonly<{
     articles: WikiArticleLink[],
     enabledRoles: Role[],
-    enabledModifiers: ModifierType[],
+    enabledModifiers: ModifierID[],
     hideDisabled: boolean,
     onChooseArticle: (article: WikiArticleLink) => void
 }>): ReactElement {
@@ -245,7 +245,7 @@ function WikiMainPage(props: Readonly<{
 }
 
 export const WIKI_CATEGORIES = [
-    "categories", "town", "mafia", "cult", "neutral", "minions", "fiends", "modifiers", "abilities", "strategies", "menus"
+    "categories", "town", "mafia", "cult", "neutral", "minions", "fiends", "modifiers", "abilities", "strategies", "menus", "phases", "trial"
 ] as const;
 export type WikiCategory = (typeof WIKI_CATEGORIES)[number]
 
@@ -254,7 +254,7 @@ type WikiPagePartitions = Record<WikiCategory | "uncategorized", WikiArticleLink
 export function partitionWikiPages(
     wikiPages: WikiArticleLink[],
     enabledRoles: Role[],
-    enabledModifiers: ModifierType[],
+    enabledModifiers: ModifierID[],
     sort?: boolean
 ): WikiPagePartitions {
     const partitions: WikiPagePartitions = Object.fromEntries([
@@ -265,22 +265,22 @@ export function partitionWikiPages(
     for (const wikiPage of wikiPages) {
         const articleType = wikiPage.split("/")[0];
 
-        let category: WikiCategory | "uncategorized" | null = null;
+        let categories: (WikiCategory | "uncategorized")[] = [];
 
         if (articleType === "role") {
             const role = wikiPage.split("/")[1] as Role;
-            category = getCategoryForRole(role);
+            categories.push(getCategoryForRole(role));
 
         } else if (articleType === "modifier") {
-            category = "modifiers"
+            categories.push("modifiers")
         } else if (articleType === "category") {
-            category = "categories"
+            categories.push("categories")
         }
 
         if (wikiPage === "standard/mafia") {
-            category = "mafia"
+            categories.push("mafia")
         } else if (wikiPage === "standard/cult") {
-            category = "cult"
+            categories.push("cult")
         }
         
         if ([
@@ -292,26 +292,42 @@ export function partitionWikiPages(
             "standard/forfeitNominationVote", "standard/aura", "standard/fastForward", "standard/appearedVisit", 
             "standard/defense", "standard/confused", "standard/trial",
         ].includes(wikiPage)) {
-            category = "abilities"
+            categories.push("abilities")
         }
         
         if ([
             "standard/claim", "standard/claimswap", "standard/vfr", "standard/passcode",
         ].includes(wikiPage)) {
-            category = "strategies"
+            categories.push("strategies")
         }
 
         if ([
             "standard/playerList", "standard/gameMode", "standard/outlineList", "standard/alibi", "standard/chat", "standard/controller"
         ].includes(wikiPage)) {
-            category = "menus"
+            categories.push("menus")
         }
 
-        if (category === null) {
-            category = "uncategorized"
+        if ([
+            "category/trial", "standard/briefing", "standard/night", "standard/obituary",
+            "standard/discussion", "standard/nomination", "standard/adjournment", "standard/testimony",
+            "standard/judgement", "standard/dusk", "standard/finalWords"
+        ].includes(wikiPage)) {
+            categories.push("phases")
         }
 
-        partitions[category].push(wikiPage)
+        if ([
+            "standard/nomination", "standard/adjournment", "standard/testimony", "standard/judgement", "standard/finalWords",
+        ].includes(wikiPage)) {
+            categories.push("trial")
+        }
+
+        if (categories.length === 0) {
+            categories.push("uncategorized")
+        }
+
+        for (const category of categories) {
+            partitions[category].push(wikiPage)
+        }
     }
 
     if (sort !== false) {
@@ -331,7 +347,7 @@ function getCategoryForRole(role: Role): WikiCategory {
 
 function getWikiPageSortFunction(
     enabledRole: Role[],
-    enabledModifiers: ModifierType[]
+    enabledModifiers: ModifierID[]
 ): (first: WikiArticleLink, second: WikiArticleLink) => number {
     return (first, second) => wikiPageSortFunction(first, second, enabledRole, enabledModifiers)
 }
@@ -340,7 +356,7 @@ function wikiPageSortFunction(
     first: WikiArticleLink,
     second: WikiArticleLink,
     enabledRoles: Role[],
-    enabledModifiers: ModifierType[]
+    enabledModifiers: ModifierID[]
 ): number {
     const isPageEnabled = (page: WikiArticleLink) => wikiPageIsEnabled(page, enabledRoles, enabledModifiers);
 

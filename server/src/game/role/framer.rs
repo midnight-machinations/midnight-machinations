@@ -1,6 +1,7 @@
 use serde::Serialize;
+use crate::game::components::night_visits::{NightVisitsIterator, Visits};
 use crate::game::components::tags::{TagSetID, Tags};
-use crate::game::ability_input::AvailablePlayerListSelection;
+use crate::game::controllers::AvailablePlayerListSelection;
 use crate::game::event::on_midnight::{MidnightVariables, OnMidnightPriority};
 use crate::game::{attack_power::DefensePower, player::PlayerReference};
 use crate::game::visit::{Visit, VisitTag};
@@ -18,50 +19,24 @@ pub(super) const DEFENSE: DefensePower = DefensePower::None;
 impl RoleStateImpl for Framer {
     type ClientRoleState = Framer;
     fn on_midnight(self, game: &mut Game, midnight_variables: &mut MidnightVariables, actor_ref: PlayerReference, priority: OnMidnightPriority) {
-        match priority {
-            OnMidnightPriority::Deception => {
-                let framer_visits = actor_ref.untagged_night_visits_cloned(midnight_variables);
+        if priority != OnMidnightPriority::Deception {return}
 
-                let Some(first_visit) = framer_visits.first() else {return};
-
-                first_visit.target.set_night_framed(midnight_variables, true);
-                for framed_target in Tags::tagged(game, TagSetID::Framer(actor_ref)){
-                    framed_target.set_night_framed(midnight_variables, true);
-                }
-
-                Tags::set_tagged(game, TagSetID::Framer(actor_ref), &vec_set![first_visit.target]);
-
-                let other_visits: Vec<Visit> = framer_visits
-                    .iter()
-                    .filter(|v|v.tag == VisitTag::Role { role: Role::Framer, id: 1 })
-                    .map(|v|Visit::new_role(
-                        first_visit.target,
-                        v.target,
-                        false,
-                        first_visit.target.role(game),
-                        0
-                    ))
-                    .collect();
-
-                if !other_visits.is_empty() {
-                    first_visit
-                        .target
-                        .set_night_appeared_visits(
-                            midnight_variables,
-                            Some(other_visits)
-                        );
-                }
-
-                actor_ref.set_night_visits(
-                    midnight_variables,
-                    actor_ref.all_night_visits_cloned(midnight_variables)
-                        .into_iter()
-                        .filter(|v|v.tag!=VisitTag::Role { role: Role::Framer, id: 1 })
-                        .collect::<Vec<_>>()
-                );
-            },
-            _ => {}
+        let Some(framed) = Visits::default_target(game, midnight_variables, actor_ref) else {return};
+        
+        framed.set_night_framed(midnight_variables, true);
+        for framed_tagged in Tags::tagged(game, TagSetID::Framer(actor_ref)){
+            framed_tagged.set_night_framed(midnight_variables, true);
         }
+        
+        Tags::set_tagged(game, TagSetID::Framer(actor_ref), &vec_set![framed]);
+
+        framed.set_night_appeared_visits(midnight_variables, true);
+        Visits::add_visits(midnight_variables, 
+            Visits::into_iter(midnight_variables)
+                .with_visitor(actor_ref)
+                .with_tag(VisitTag::Role { role: Role::Framer, id: 1 })
+                .map(|v|Visit::new_appeared(framed, v.target))
+        );
     }
     fn controller_parameters_map(self, game: &Game, actor_ref: PlayerReference) -> ControllerParametersMap {
         ControllerParametersMap::combine([
@@ -100,7 +75,7 @@ impl RoleStateImpl for Framer {
                 ControllerID::role(actor_ref, Role::Framer, 1),
                 false,
                 VisitTag::Role { role: Role::Framer, id: 1 }
-            )
+            ).into_iter().map(|mut v|{v.indirect=true; v.wardblock_immune=true; v.investigate_immune=true; v})
         ).collect()
     }
     fn default_revealed_groups(self) -> crate::vec_set::VecSet<crate::game::components::insider_group::InsiderGroupID> {

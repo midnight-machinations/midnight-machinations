@@ -1,12 +1,14 @@
-use super::{ModifierTrait, ModifierType};
+use serde::{Deserialize, Serialize};
 
-#[derive(Clone, Default, PartialEq, Eq, Hash)]
+use super::{ModifierStateImpl, ModifierID};
+
+#[derive(Clone, Default, PartialEq, Eq, Hash, Serialize, Deserialize, Debug)]
 pub struct NoNightChat;
 
-impl From<&NoNightChat> for ModifierType{
+impl From<&NoNightChat> for ModifierID{
     fn from(_: &NoNightChat) -> Self {
-        ModifierType::NoNightChat
+        ModifierID::NoNightChat
     }
 }
 
-impl ModifierTrait for NoNightChat {}
+impl ModifierStateImpl for NoNightChat {}

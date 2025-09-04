@@ -1,7 +1,9 @@
 import { VersionConverter } from ".";
-import { GameMode, GameModeData, GameModeStorage, ShareableGameMode } from "..";
+import { GameMode } from "..";
+import { PhaseTimes } from "../../../../game/gameState.d";
 import { getDefaultSettings, Settings } from "../../../../game/localStorage";
-import { RoleOutline, RoleOutlineOption } from "../../../../game/roleListState.d";
+import { ModifierID } from "../../../../game/modifiers";
+import { RoleList, RoleOutline, RoleOutlineOption } from "../../../../game/roleListState.d";
 import { Role } from "../../../../game/roleState.d";
 import { Failure, ParseResult, ParseSuccess, Success, isFailure } from "../parse";
 import { parseName, parsePhaseTimes, parseRole, parseRoleSet } from "./initial";
@@ -16,12 +18,27 @@ const v3: VersionConverter = {
 
 export default v3;
 
-type v4GameModeData = GameModeData
-type v4ShareableGameMode = ShareableGameMode
-type v4GameMode = GameMode
-type v4GameModeStorage = GameModeStorage
+type v4GameModeStorage = {
+    format: 'v4',
+    gameModes: v4GameMode[]
+};
 
-function parseSettings(json: NonNullable<any>): ParseResult<Settings> {
+type v4GameMode = {
+    name: string,
+    // A mapping from number-of-players to game mode data
+    data: Record<number, v4GameModeData>
+};
+
+type v4GameModeData = {
+    roleList: RoleList,
+    phaseTimes: Omit<PhaseTimes, 'adjournment'>,
+    enabledRoles: Role[],
+    enabledModifiers: ModifierID[]
+}
+
+type v4ShareableGameMode = v4GameModeData & { format: 'v4', name: string }
+
+export function parseSettings(json: NonNullable<any>): ParseResult<Settings> {
     if (typeof json !== "object" || Array.isArray(json)) {
         return Failure("settingsNotObject", json);
     }
@@ -38,15 +55,11 @@ function parseSettings(json: NonNullable<any>): ParseResult<Settings> {
             json.menuOrder = getDefaultSettings().menuOrder
         }
     }
-
-    if (json.format !== "v3") {
-        return Failure("settingsFormatNotV3", json);
-    }
     
     const roleSpecificMenus = parseRoleSpecificMenus(json.roleSpecificMenus);
     if (isFailure(roleSpecificMenus)) return roleSpecificMenus;
 
-    return Success(json);
+    return Success({ ...json, format: "v6" });
 }
 
 function parseRoleSpecificMenus(json: NonNullable<any>): ParseResult<Role[]> {
@@ -124,7 +137,7 @@ function parseGameModeDataRecord(json: NonNullable<any>): ParseResult<Record<num
         return Failure("gameModeDataRecordNotObject", json);
     }
     
-    const parsedEntries: Record<number, GameModeData> = {};
+    const parsedEntries: Record<number, v4GameModeData> = {};
     for (const [key, value] of Object.entries(json)) {
         let players;
         try {

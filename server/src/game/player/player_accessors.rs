@@ -1,11 +1,6 @@
-use crate::{
-    game::{
-        chat::{ChatMessage, ChatMessageVariant}, event::{
-            on_conceal_role::OnConcealRole, on_fast_forward::OnFastForward
-        }, modifiers::{ModifierType, Modifiers}, role::{Role, RoleState}, verdict::Verdict, Game
-    }, 
-    packet::ToClientPacket, vec_set::VecSet, 
-};
+
+use crate::{game::{chat::{ChatMessage, ChatMessageVariant, ChatPlayerComponent}, components::player_component::PlayerComponent, controllers::{ControllerID, IntegerSelection}, event::on_conceal_role::OnConcealRole, modifiers::ModifierID, role::{Role, RoleState}, verdict::Verdict, Game}, packet::ToClientPacket, vec_set::VecSet};
+
 use super::PlayerReference;
 
 
@@ -46,7 +41,7 @@ impl PlayerReference{
         }
         game.send_packet_to_all(ToClientPacket::PlayerAlive { alive: alive_players });
         game.count_nomination_and_start_trial(
-            Modifiers::is_enabled(game, ModifierType::UnscheduledNominations)
+            game.modifier_settings().is_enabled(ModifierID::UnscheduledNominations)
         );
     }
     
@@ -114,41 +109,21 @@ impl PlayerReference{
         }
     }
     pub fn add_chat_message(&self, game: &mut Game, message: ChatMessage) {
-        self.deref_mut(game).chat_messages.push(message.clone());
-        self.deref_mut(game).queued_chat_messages.push(message);
+        PlayerComponent::<ChatPlayerComponent>::add_chat_message(game, *self, message);
     }
     pub fn chat_messages<'a>(&self, game: &'a Game) -> &'a Vec<ChatMessage> {
-        &self.deref(game).chat_messages
-    }
-
-    pub fn set_fast_forward_vote(&self, game: &mut Game, fast_forward_vote: bool) {
-        self.deref_mut(game).fast_forward_vote = fast_forward_vote;
-
-        self.send_packet(game, ToClientPacket::YourVoteFastForwardPhase { fast_forward: fast_forward_vote });
-
-        if fast_forward_vote && !game.phase_machine.time_remaining.is_some_and(|d|d.is_zero()) && PlayerReference::all_players(game)
-            .filter(|p|p.alive(game)&&(p.could_reconnect(game)||p.is_connected(game)))
-            .all(|p| p.fast_forward_vote(game))
-        {
-            OnFastForward::invoke(game);
-        }
-    }
-    pub fn fast_forward_vote(&self, game: &Game) -> bool{
-        self.deref(game).fast_forward_vote
+        PlayerComponent::<ChatPlayerComponent>::chat_messages(game, *self)
     }
 
     /* 
     Voting
     */
     pub fn verdict(&self, game: &Game) -> Verdict{
-        self.deref(game).voting_variables.verdict
-    }
-    pub fn set_verdict(&self, game: &mut Game, mut verdict: Verdict){
-        if verdict == Verdict::Abstain && !Modifiers::is_enabled(game, ModifierType::Abstaining) {
-            verdict = Verdict::Innocent;
+        match (ControllerID::Judge{player: *self}.get_integer_selection(game)) {
+            Some(IntegerSelection(0)) => Verdict::Innocent,
+            Some(IntegerSelection(1)) => Verdict::Guilty,
+            _ => Verdict::Abstain
         }
-        self.send_packet(game, ToClientPacket::YourJudgement { verdict });
-        self.deref_mut(game).voting_variables.verdict = verdict;
     }
 }
 

@@ -1,15 +1,17 @@
 use serde::Serialize;
 
 use crate::game::attack_power::AttackPower;
+use crate::game::components::graves::grave::GraveKiller;
+use crate::game::components::night_visits::Visits;
 use crate::game::event::on_midnight::{MidnightVariables, OnMidnightPriority};
-use crate::game::{attack_power::DefensePower, grave::GraveKiller};
+use crate::game::attack_power::DefensePower;
 use crate::game::player::PlayerReference;
 
 use crate::game::visit::Visit;
 
 use crate::game::Game;
 use super::{Role, RoleStateImpl};
-use crate::game::ability_input::*;
+use crate::game::controllers::*;
 
 #[derive(Debug, Clone, Serialize, Default)]
 pub struct SerialKiller;
@@ -24,8 +26,7 @@ impl RoleStateImpl for SerialKiller {
         if game.day_number() == 1 {return}
 
 
-        let actor_visits = actor_ref.untagged_night_visits_cloned(midnight_variables);
-        if let Some(visit) = actor_visits.first(){
+        if let Some(visit) = Visits::default_visit(game, midnight_variables, actor_ref) {
 
             let target_ref = visit.target;
             

@@ -1,12 +1,10 @@
 use crate::{game::{
-    ability_input::*,
-    attack_power::AttackPower,
-    event::{on_add_insider::OnAddInsider, on_midnight::{MidnightVariables, OnMidnight, OnMidnightPriority},
-    on_remove_insider::OnRemoveInsider},
-    grave::GraveKiller, phase::PhaseType, player::PlayerReference, role_list::RoleSet, visit::{Visit, VisitTag}, Game
+    attack_power::AttackPower, components::{graves::grave::GraveKiller, night_visits::NightVisitsIterator}, controllers::*, event::{on_add_insider::OnAddInsider,
+    on_midnight::{MidnightVariables, OnMidnight, OnMidnightPriority},
+    on_remove_insider::OnRemoveInsider, on_validated_ability_input_received::OnValidatedControllerInputReceived}, phase::PhaseType, player::PlayerReference, role_list::RoleSet, visit::{Visit, VisitTag}, Game
 }, vec_set};
 
-use super::{detained::Detained, insider_group::InsiderGroupID, night_visits::NightVisits, tags::Tags};
+use super::{detained::Detained, insider_group::InsiderGroupID, night_visits::Visits, tags::Tags};
 
 #[derive(Default)]
 pub struct SyndicateGunItem {
@@ -15,12 +13,12 @@ pub struct SyndicateGunItem {
 
 impl SyndicateGunItem {
     pub fn on_visit_wardblocked(_game: &mut Game, midnight_variables: &mut MidnightVariables, visit: Visit){
-        NightVisits::retain(midnight_variables, |v|
+        Visits::retain(midnight_variables, |v|
             v.tag != VisitTag::SyndicateGunItem || v.visitor != visit.visitor
         );
     }
     pub fn on_player_roleblocked(_game: &mut Game, midnight_variables: &mut MidnightVariables, player: PlayerReference){
-        NightVisits::retain(midnight_variables, |v|
+        Visits::retain(midnight_variables, |v|
             v.tag != VisitTag::SyndicateGunItem || v.visitor != player
         );
     }
@@ -107,19 +105,25 @@ impl SyndicateGunItem {
                 let Some(PlayerListSelection(gun_target)) = ControllerID::syndicate_gun_item_shoot().get_player_list_selection(game) else {return};
                 let Some(gun_target) = gun_target.first() else {return};
 
-                NightVisits::add_visit(
-                    midnight_variables, 
-                    Visit::new(player_with_gun, *gun_target, true, VisitTag::SyndicateGunItem)
+                Visits::add_visit(
+                    midnight_variables,
+                    Visit {
+                        visitor: player_with_gun,
+                        target: *gun_target,
+                        tag: VisitTag::SyndicateGunItem,
+                        attack: true,
+                        wardblock_immune: false,
+                        transport_immune: false,
+                        investigate_immune: false,
+                        indirect: false
+                    } 
                 );
             }
             OnMidnightPriority::Kill => {
-                let targets: Vec<(PlayerReference, PlayerReference)> = NightVisits::all_visits(midnight_variables)
-                    .iter()
-                    .filter(|visit| visit.tag == VisitTag::SyndicateGunItem)
+                for (attacker, target) in Visits::into_iter(midnight_variables)
+                    .with_tag(VisitTag::SyndicateGunItem)
                     .map(|visit| (visit.visitor, visit.target))
-                    .collect();
-
-                for (attacker, target) in targets {
+                {
                     target.try_night_kill_single_attacker(
                         attacker,
                         game, midnight_variables,
@@ -132,22 +136,22 @@ impl SyndicateGunItem {
             _ => {}
         }
     }
-    pub fn on_validated_ability_input_received(game: &mut Game, actor_ref: PlayerReference, ability_input: AbilityInput) {
+    pub fn on_validated_ability_input_received(game: &mut Game, event: &OnValidatedControllerInputReceived, _fold: &mut (), _priority: ()) {
         if let Some(player_with_gun) = game.syndicate_gun_item.player_with_gun {
-            if actor_ref != player_with_gun {
+            if event.actor_ref != player_with_gun {
                 return;
             }
         }else{
             return;
         }
 
-        let Some(PlayerListSelection(target)) = ability_input
+        let Some(PlayerListSelection(target)) = event.input
             .get_player_list_selection_if_id(ControllerID::SyndicateGunItemGive)
         else {return};
         let Some(target) = target.first() else {return};
 
         if
-            actor_ref != *target &&
+            event.actor_ref != *target &&
             target.alive(game) &&
             InsiderGroupID::Mafia.contains_player(game, *target) 
         {

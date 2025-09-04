@@ -1,18 +1,8 @@
 use std::collections::HashSet;
 
-use crate::game::{
-    ability_input::*,
-    chat::ChatGroup,
-    components::{
-        detained::Detained,
-        puppeteer_marionette::PuppeteerMarionette, silenced::Silenced, win_condition::WinCondition
-    },
-    game_conclusion::GameConclusion,
-    modifiers::{ModifierType, Modifiers},
-    phase::{PhaseState, PhaseType}, player::PlayerReference,
-    role_list::RoleSet, visit::{Visit, VisitTag},
-    Game
-};
+
+
+use crate::game::{chat::ChatGroup, components::{call_witness::CallWitness, detained::Detained, puppeteer_marionette::PuppeteerMarionette, silenced::Silenced, win_condition::WinCondition}, controllers::{ControllerID, ControllerSelection}, game_conclusion::GameConclusion, modifiers::ModifierID, phase::{PhaseState, PhaseType}, player::PlayerReference, role_list::RoleSet, visit::{Visit, VisitTag}, Game};
 
 use super::{medium::Medium, reporter::Reporter, warden::Warden, InsiderGroupID, Role, RoleState};
 
@@ -33,28 +23,82 @@ pub(super) fn convert_controller_selection_to_visits_visit_tag(game: &Game, acto
     let Some(selection) = controller_id.get_selection(game) else {return Vec::new()};
 
     match selection {
-        AbilitySelection::Unit(_) => vec![Visit::new(actor_ref, actor_ref, attack, tag)],
-        AbilitySelection::TwoPlayerOption(selection) => {
+        ControllerSelection::Unit(_) => vec![
+            Visit{
+                visitor: actor_ref,
+                target: actor_ref,
+                tag,
+                attack,
+                wardblock_immune: false,
+                transport_immune: false,
+                investigate_immune: false,
+                indirect: false
+            }
+        ],
+        ControllerSelection::TwoPlayerOption(selection) => {
             if let Some((target_1, target_2)) = selection.0 {
-                vec![Visit::new(actor_ref, target_1, attack, tag), Visit::new(actor_ref, target_2, attack, tag)]
+                vec![
+                    Visit{
+                        visitor: actor_ref,
+                        target: target_1,
+                        tag,
+                        attack,
+                        wardblock_immune: false,
+                        transport_immune: false,
+                        investigate_immune: false,
+                        indirect: false
+                    },
+                    Visit{
+                        visitor: actor_ref,
+                        target: target_2,
+                        tag,
+                        attack,
+                        wardblock_immune: false,
+                        transport_immune: false,
+                        investigate_immune: false,
+                        indirect: false
+                    }
+                ]
             }else{
                 vec![]
             }
         },
-        AbilitySelection::PlayerList(selection) => {
+        ControllerSelection::PlayerList(selection) => {
             selection.0
                 .iter()
-                .map(|target_ref| Visit::new(actor_ref, *target_ref, attack, tag))
+                .map(|target_ref|
+                    Visit{
+                        visitor: actor_ref,
+                        target: *target_ref,
+                        tag,
+                        attack,
+                        wardblock_immune: false,
+                        transport_immune: false,
+                        investigate_immune: false,
+                        indirect: false
+                    }
+                )
                 .collect()
         }
-        AbilitySelection::RoleList(selection) => {
+        ControllerSelection::RoleList(selection) => {
             selection.0
                 .iter()
                 .flat_map(|role|
                     PlayerReference::all_players(game)
                         .filter_map(|player|
                             if player.role(game) == *role {
-                                Some(Visit::new(actor_ref, player, attack, tag))
+                                Some(
+                                    Visit{
+                                        visitor: actor_ref,
+                                        target: player,
+                                        tag,
+                                        attack,
+                                        wardblock_immune: false,
+                                        transport_immune: false,
+                                        investigate_immune: false,
+                                        indirect: false
+                                    }
+                                )
                             }else{
                                 None
                             }
@@ -62,27 +106,71 @@ pub(super) fn convert_controller_selection_to_visits_visit_tag(game: &Game, acto
                 )
                 .collect()
         }
-        AbilitySelection::TwoRoleOption(selection) => {
+        ControllerSelection::TwoRoleOption(selection) => {
             let mut out = Vec::new();
             for player in PlayerReference::all_players(game){
                 if Some(player.role(game)) == selection.0 {
-                    out.push(Visit::new(actor_ref, player, attack, tag));
+                    out.push(
+                        Visit{
+                            visitor: actor_ref,
+                            target: player,
+                            tag,
+                            attack,
+                            wardblock_immune: false,
+                            transport_immune: false,
+                            investigate_immune: false,
+                            indirect: false
+                        }
+                    );
                 }
                 if Some(player.role(game)) == selection.1 {
-                    out.push(Visit::new(actor_ref, player, attack, tag));
+                    out.push(
+                        Visit{
+                            visitor: actor_ref,
+                            target: player,
+                            tag,
+                            attack,
+                            wardblock_immune: false,
+                            transport_immune: false,
+                            investigate_immune: false,
+                            indirect: false
+                        }
+                    );
                 }
             }
             out
         }
-        AbilitySelection::TwoRoleOutlineOption(selection) => {
+        ControllerSelection::TwoRoleOutlineOption(selection) => {
             let mut out = vec![];
             if let Some(chosen_outline) = selection.0{
                 let (_, player) = chosen_outline.deref_as_role_and_player_originally_generated(game);
-                out.push(Visit::new(actor_ref, player, false, tag));
+                out.push(
+                    Visit{
+                        visitor: actor_ref,
+                        target: player,
+                        tag,
+                        attack,
+                        wardblock_immune: false,
+                        transport_immune: false,
+                        investigate_immune: false,
+                        indirect: false
+                    }
+                );
             }
             if let Some(chosen_outline) = selection.1{
                 let (_, player) = chosen_outline.deref_as_role_and_player_originally_generated(game);
-                out.push(Visit::new(actor_ref, player, false, tag));
+                out.push(
+                    Visit{
+                        visitor: actor_ref,
+                        target: player,
+                        tag,
+                        attack,
+                        wardblock_immune: false,
+                        transport_immune: false,
+                        investigate_immune: false,
+                        indirect: false
+                    }
+                );
             }
             out
         },
@@ -93,9 +181,21 @@ pub(super) fn convert_controller_selection_to_visits_visit_tag(game: &Game, acto
 pub(super) fn convert_controller_selection_to_visits_possession(game: &Game, actor_ref: PlayerReference, controller_id: ControllerID) -> Vec<Visit> {
     let Some(selection) = controller_id.get_selection(game) else {return Vec::new()};
 
-    if let AbilitySelection::TwoPlayerOption(selection) = selection {
+    if let ControllerSelection::TwoPlayerOption(selection) = selection {
         if let Some((target_1, target_2)) = selection.0 {
-            vec![Visit::new(actor_ref, target_1, false, VisitTag::Role { role: actor_ref.role(game), id: 0 }), Visit::new(actor_ref, target_2, false, VisitTag::Role { role: actor_ref.role(game), id: 1 })]
+            vec![
+                Visit::new_role(actor_ref, target_1, false, actor_ref.role(game), 0 ),
+                Visit{
+                    visitor: actor_ref,
+                    target: target_2,
+                    tag: VisitTag::Role { role: actor_ref.role(game), id: 1 },
+                    attack: false,
+                    wardblock_immune: true,
+                    transport_immune: true,
+                    investigate_immune: true,
+                    indirect: true
+                }
+            ]
         }else{
             vec![]
         }
@@ -114,7 +214,7 @@ pub(super) fn get_current_send_chat_groups(game: &Game, actor_ref: PlayerReferen
     }
     if 
         !actor_ref.alive(game) && 
-        !Modifiers::is_enabled(game, ModifierType::DeadCanChat)
+        !game.modifier_settings().is_enabled(ModifierID::DeadCanChat)
     {
         if PuppeteerMarionette::marionettes_and_puppeteer(game).contains(&actor_ref){
             return vec![ChatGroup::Dead, ChatGroup::Puppeteer].into_iter().collect();
@@ -145,7 +245,7 @@ pub(super) fn get_current_send_chat_groups(game: &Game, actor_ref: PlayerReferen
             if PlayerReference::all_players(game)
                 .any(|med|{
                     match med.role_state(game) {
-                        RoleState::Medium(Medium{ seanced_target: Some(seanced_target), .. }) => {
+                        RoleState::Medium(Medium{ haunted_target: Some(seanced_target), .. }) => {
                             actor_ref == *seanced_target
                         },
                         _ => false
@@ -157,18 +257,19 @@ pub(super) fn get_current_send_chat_groups(game: &Game, actor_ref: PlayerReferen
 
             out
         },
-        PhaseState::Discussion 
+        PhaseState::Discussion
+        | PhaseState::Adjournment { .. }
         | PhaseState::Nomination {..}
         | PhaseState::Judgement {..}
         | PhaseState::FinalWords {..}
         | PhaseState::Dusk 
         | PhaseState::Recess => vec![ChatGroup::All].into_iter().collect(),
-        &PhaseState::Testimony { player_on_trial, .. } => {
-            if player_on_trial == actor_ref {
-                vec![ChatGroup::All].into_iter().collect()
-            } else {
-                HashSet::new()
+        &PhaseState::Testimony { .. } => {
+            let mut out = HashSet::new();
+            if CallWitness::witness_called(game).contains(&actor_ref) {
+                out.insert(ChatGroup::All);
             }
+            out
         },
         PhaseState::Night => {
             let mut out = vec![];
@@ -176,7 +277,7 @@ pub(super) fn get_current_send_chat_groups(game: &Game, actor_ref: PlayerReferen
             if PlayerReference::all_players(game)
                 .any(|med|{
                     match med.role_state(game) {
-                        RoleState::Medium(Medium{ seanced_target: Some(seanced_target), .. }) => {
+                        RoleState::Medium(Medium{ haunted_target: Some(seanced_target), .. }) => {
                             actor_ref == *seanced_target
                         },
                         _ => false
@@ -298,7 +399,7 @@ pub(super) fn get_current_receive_chat_groups(game: &Game, actor_ref: PlayerRefe
         PlayerReference::all_players(game)
             .any(|med|{
                 match med.role_state(game) {
-                    RoleState::Medium(Medium{ seanced_target: Some(seanced_target), .. }) => {
+                    RoleState::Medium(Medium{ haunted_target: Some(seanced_target), .. }) => {
                         actor_ref == *seanced_target
                     },
                     _ => false

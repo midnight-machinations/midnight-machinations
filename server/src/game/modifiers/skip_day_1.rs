@@ -1,19 +1,24 @@
-use crate::game::{event::on_fast_forward::OnFastForward, phase::{PhaseState, PhaseType::*}, Game};
+use serde::{Deserialize, Serialize};
 
-use super::{ModifierTrait, ModifierType};
+use crate::game::{
+    components::fast_forward::FastForwardComponent, event::on_phase_start::OnPhaseStart,
+    phase::PhaseType::*, Game
+};
 
-#[derive(Clone, Default, PartialEq, Eq, Hash)]
+use super::{ModifierStateImpl, ModifierID};
+
+#[derive(Clone, Default, PartialEq, Eq, Hash, Serialize, Deserialize, Debug)]
 pub struct SkipDay1;
 
-impl From<&SkipDay1> for ModifierType{
+impl From<&SkipDay1> for ModifierID{
     fn from(_: &SkipDay1) -> Self {
-        ModifierType::SkipDay1
+        ModifierID::SkipDay1
     }
 }
 
-impl ModifierTrait for SkipDay1{
-    fn on_phase_start(self, game: &mut Game, phase: PhaseState) {
-        match (phase.phase(), game.day_number()) {
+impl ModifierStateImpl for SkipDay1{
+    fn on_phase_start(self, game: &mut Game, event: &OnPhaseStart, _fold: &mut (), _priority: ()) {
+        match (event.phase.phase(), game.day_number()) {
             (Dusk, 1) |
             (Night, 1) |
             (Obituary, 2) |
@@ -22,7 +27,7 @@ impl ModifierTrait for SkipDay1{
             (Testimony, 2) |
             (Judgement, 2) |
             (FinalWords, 2)
-                => OnFastForward::invoke(game),
+                => FastForwardComponent::skip(game),
             _ => ()
         }
     }

@@ -1,24 +1,20 @@
 use serde::Serialize;
 
+use crate::game::components::graves::grave::Grave;
+use crate::game::components::night_visits::Visits;
 use crate::game::event::on_midnight::{MidnightVariables, OnMidnightPriority};
-
 use crate::game::components::win_condition::WinCondition;
 use crate::game::{attack_power::DefensePower, chat::ChatMessageVariant};
-use crate::game::grave::Grave;
 use crate::game::phase::PhaseType;
 use crate::game::player::PlayerReference;
-
 use crate::game::visit::Visit;
 use crate::game::Game;
 use super::{ControllerID, ControllerParametersMap, Role, RoleStateImpl};
-use rand::prelude::SliceRandom;
 
 
 #[derive(Clone, Debug, Serialize, Default)]
 #[serde(rename_all = "camelCase")]
 pub struct Scarecrow;
-
-
 
 pub(super) const MAXIMUM_COUNT: Option<u8> = None;
 pub(super) const DEFENSE: DefensePower = DefensePower::None;
@@ -26,28 +22,18 @@ pub(super) const DEFENSE: DefensePower = DefensePower::None;
 impl RoleStateImpl for Scarecrow {
     type ClientRoleState = Scarecrow;
     fn on_midnight(self, game: &mut Game, midnight_variables: &mut MidnightVariables, actor_ref: PlayerReference, priority: OnMidnightPriority) {
-        if priority != OnMidnightPriority::Ward {return;}
-        
+        let Some(target) = Visits::default_target(game, midnight_variables, actor_ref) else {return};
 
-        let actor_visits = actor_ref.untagged_night_visits_cloned(midnight_variables);
-        let Some(visit) = actor_visits.first() else {return};
-
-        let target_ref = visit.target;
-
-        let mut blocked_players = target_ref.ward(game, midnight_variables, &[*visit]);
-        blocked_players.shuffle(&mut rand::rng());
-
-        let message = ChatMessageVariant::ScarecrowResult { players:
-            PlayerReference::ref_vec_to_index(blocked_players.as_slice())
-        };
-
-        for player_ref in blocked_players.iter(){
-            actor_ref.reveal_players_role(game, *player_ref);
+        if matches!(priority, OnMidnightPriority::PreWard | OnMidnightPriority::Ward) {
+            target.ward_night_action(game, midnight_variables, priority);
         }
-        actor_ref.reveal_players_role(game, target_ref);
         
-        actor_ref.push_night_message(midnight_variables, message);
-        
+        if matches!(priority, OnMidnightPriority::Ward) {
+            actor_ref.reveal_players_role(game, target);
+            actor_ref.push_night_message(
+                midnight_variables, ChatMessageVariant::TargetHasRole { role: target.role(game) }
+            );
+        };
     }
     fn controller_parameters_map(self, game: &Game, actor_ref: PlayerReference) -> ControllerParametersMap {
         ControllerParametersMap::builder(game)
@@ -63,7 +49,7 @@ impl RoleStateImpl for Scarecrow {
             actor_ref,
             ControllerID::role(actor_ref, Role::Scarecrow, 0),
             false
-        )
+        ).into_iter().map(|mut v|{v.wardblock_immune = true; v}).collect()
     }
     fn on_phase_start(self, game: &mut Game, actor_ref: PlayerReference, _phase: PhaseType){
         if

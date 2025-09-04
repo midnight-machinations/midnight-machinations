@@ -1,11 +1,13 @@
-use super::{ModifierTrait, ModifierType};
+use serde::{Deserialize, Serialize};
 
-#[derive(Clone, Default, PartialEq, Eq, Hash)]
+use super::{ModifierStateImpl, ModifierID};
+
+#[derive(Clone, Default, PartialEq, Eq, Hash, Serialize, Deserialize, Debug)]
 pub struct ForfeitNominationVote;
 
-impl From<&ForfeitNominationVote> for ModifierType{
+impl From<&ForfeitNominationVote> for ModifierID{
     fn from(_: &ForfeitNominationVote) -> Self {
-        ModifierType::ForfeitNominationVote
+        ModifierID::ForfeitNominationVote
     }
 }
-impl ModifierTrait for ForfeitNominationVote{}
+impl ModifierStateImpl for ForfeitNominationVote{}

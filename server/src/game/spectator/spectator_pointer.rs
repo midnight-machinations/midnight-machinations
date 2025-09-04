@@ -3,7 +3,7 @@ use std::time::Duration;
 use serde::Serialize;
 
 use crate::{
-    client_connection::ClientConnection, game::{chat::{ChatGroup, ChatMessage}, player::PlayerReference, Game, GameOverReason}, packet::ToClientPacket
+    client_connection::ClientConnection, game::{chat::{ChatGroup, ChatMessage}, components::graves::grave_reference::GraveReference, player::PlayerReference, Game, GameOverReason}, packet::ToClientPacket
 };
 
 use super::Spectator;
@@ -81,8 +81,8 @@ impl SpectatorPointer {
             },
             ToClientPacket::EnabledRoles { roles: game.settings.enabled_roles.clone().into_iter().collect() },
             ToClientPacket::RoleList {role_list: game.settings.role_list.clone()},
-            ToClientPacket::EnabledModifiers {
-                modifiers: game.settings.enabled_modifiers.clone().into_iter().collect()
+            ToClientPacket::ModifierSettings {
+                modifier_settings: game.modifier_settings().clone()
             },
             ToClientPacket::PlayerAlive{
                 alive: PlayerReference::all_players(game).map(|p|p.alive(game)).collect()
@@ -97,8 +97,8 @@ impl SpectatorPointer {
         }
 
         game.send_player_votes();
-        for grave in game.graves.iter(){
-            self.send_packet(game, ToClientPacket::AddGrave { grave: grave.clone() });
+        for grave in GraveReference::all_graves(game){
+            self.send_packet(game, ToClientPacket::AddGrave { grave: grave.deref(game).clone(), grave_ref: grave });
         }
 
         self.send_packets(game, vec![
@@ -123,8 +123,8 @@ impl SpectatorPointer {
             None=> return
         };
 
-        for msg in msgs {
-            s.queued_chat_messages.push(msg);
+        for (idx, msg) in msgs.into_iter().enumerate() {
+            s.queued_chat_messages.push_back((idx, msg));
         }
     }
 
@@ -143,16 +143,18 @@ impl SpectatorPointer {
 
         // Send in chunks
         for _ in 0..5 {
-            let msg_option = s.queued_chat_messages.first();
+            let msg_option = s.queued_chat_messages.front();
             if let Some(msg) = msg_option{
                 chat_messages_out.push(msg.clone());
-                s.queued_chat_messages.remove(0);
+                s.queued_chat_messages.pop_front();
             }else{ break; }
         }
         
         self.send_packet(game, ToClientPacket::AddChatMessages { chat_messages: chat_messages_out
                 .into_iter()
-                .map(|p|ChatMessage::new_non_private(p, ChatGroup::All))
+                .map(|(idx,msg)|
+                    (idx, ChatMessage::new_non_private(msg, ChatGroup::All)
+                ))
                 .collect() 
             }
         );

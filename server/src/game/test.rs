@@ -1,8 +1,8 @@
 
-    use crate::vec_map::VecMap;
+    use crate::{game::{chat::ChatComponent, components::{fast_forward::FastForwardComponent, graves::Graves}, role_list_generation::RoleListGenerator}, vec_map::VecMap};
 
     use super::{
-        ability_input::saved_controllers_map::SavedControllersMap, components::{
+        controllers::Controllers, components::{
             cult::Cult, fragile_vest::FragileVests, insider_group::InsiderGroups,
             mafia::Mafia, mafia_recruits::MafiaRecruits, pitchfork::Pitchfork, player_component::PlayerComponent,
             poison::Poison, puppeteer_marionette::PuppeteerMarionette, silenced::Silenced, syndicate_gun_item::SyndicateGunItem,
@@ -20,20 +20,21 @@
         }
 
         let settings = settings.clone();
-        let role_list = settings.role_list.clone();
-        
-        let random_outline_assignments = match role_list.create_random_role_assignments(&settings.enabled_roles){
+
+        let mut role_list_generator = RoleListGenerator::new(settings.clone());
+
+        let random_outline_assignments = match role_list_generator.generate_role_list() {
             Some(roles) => {roles},
             None => {return Err(RejectStartReason::RoleListCannotCreateRoles);}
         };
 
-        let assignments = Game::assign_players_to_assignments(random_outline_assignments);
+        let assignments = Game::create_assignments(random_outline_assignments);
 
         let mut players = Vec::new();
         for player in unsafe{PlayerReference::all_players_from_count(num_players)} {
             let new_player = mock_player(
                 format!("{}",player.index()),
-                match assignments.get(&player).map(|a|a.1.role()){
+                match assignments.get(&player).map(|a|a.role){
                     Some(role) => role,
                     None => return Err(RejectStartReason::RoleListTooSmall),
                 }
@@ -51,11 +52,11 @@
             spectators: Vec::new(),
             spectator_chat_messages: Vec::new(),
             players: players.into_boxed_slice(),
-            graves: Vec::new(),
             phase_machine: PhaseStateMachine::new(settings.phase_times.clone()),
             settings,
 
-            saved_controllers: SavedControllersMap::default(),
+            graves: Graves::default(),
+            controllers: Controllers::default(),
             syndicate_gun_item: SyndicateGunItem::default(),
             cult: Cult::default(),
             mafia: Mafia,
@@ -63,7 +64,6 @@
             mafia_recruits: MafiaRecruits::default(),
             verdicts_today: VerdictsToday::default(),
             poison: Poison::default(),
-            modifiers: Default::default(),
             insider_groups: unsafe{InsiderGroups::new(num_players, &assignments)},
             detained: Default::default(),
             confused: Default::default(),
@@ -72,7 +72,9 @@
             tags: Tags::default(),
             silenced: Silenced::default(),
             fragile_vests: unsafe{PlayerComponent::<FragileVests>::new(num_players)},
-            win_condition: unsafe{PlayerComponent::<WinCondition>::new(num_players, &assignments)}
+            win_condition: unsafe{PlayerComponent::<WinCondition>::new(num_players, &assignments)},
+            fast_forward: unsafe{FastForwardComponent::new(num_players)},
+            chat_messages: unsafe{ChatComponent::new(num_players)}
         };
 
 

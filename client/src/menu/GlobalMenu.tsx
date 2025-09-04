@@ -15,6 +15,7 @@ import { Button } from '../components/Button';
 import HostMenu from './HostMenu';
 import { useAuth0 } from '@auth0/auth0-react';
 import Profile from './Profile';
+import { encodeString } from '../components/ChatMessage';
 
 export default function GlobalMenu(): ReactElement {
     const lobbyName = useLobbyOrGameState(
@@ -73,7 +74,7 @@ export default function GlobalMenu(): ReactElement {
         <div className="chat-menu-colors global-menu slide-in" ref={ref}>
             {(stateType === "lobby" || stateType === "game") && 
                 <section className="standout">
-                    <h2>{lobbyName}</h2>
+                    <h2>{encodeString(lobbyName)}</h2>
                     <RoomLinkButton/>
                     {(stateType === "game" && host) && <>
                         <Button onClick={()=>GAME_MANAGER.sendBackToLobbyPacket()}>

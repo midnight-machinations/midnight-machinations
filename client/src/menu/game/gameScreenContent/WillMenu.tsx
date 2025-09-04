@@ -6,8 +6,8 @@ import { usePlayerState } from "../../../components/useHooks";
 import { getSingleRoleJsonData } from "../../../game/roleState.d";
 import { TextDropdownArea } from "../../../components/TextAreaDropdown";
 import ListMap from "../../../ListMap";
-import { controllerIdToLinkWithPlayer } from "../../../game/abilityInput";
-import { PlayerIndex } from "../../../game/gameState.d";
+import { controllerIdToLinkWithPlayer } from "../../../game/controllerInput";
+import { PlayerIndex, UnsafeString } from "../../../game/gameState.d";
 
 export function defaultAlibi(): string {
     return DEFAULT_ALIBI;
@@ -31,7 +31,7 @@ export default function WillMenu(): ReactElement {
 
     const savedAbilities = usePlayerState(
         playerState => playerState.savedControllers,
-        ["yourAllowedControllers"]
+        ["yourAllowedControllers", "yourAllowedController"]
     )!;
     const alibiSelection = new ListMap(savedAbilities, (k1, k2)=>controllerIdToLinkWithPlayer(k1)===controllerIdToLinkWithPlayer(k2)).get({type: "alibi", player: playerIndex});
     const alibi = (alibiSelection?.selection.type === "string")?alibiSelection.selection.selection:"";
@@ -55,12 +55,9 @@ export default function WillMenu(): ReactElement {
     }, [cantChat]);
 
 
-    const canPostAsPlayers: PlayerIndex[] | undefined = usePlayerState(
-        playerState=>playerState.savedControllers
-            .map(([id,_])=>id.type==="chat"?id.player:undefined)
-            .filter((p)=>p!==undefined?true:false) as PlayerIndex[],
-        ["yourAllowedControllers"]
-    );
+    const canPostAsPlayers: PlayerIndex[] = savedAbilities
+        .map(([id,_])=>id.type==="chat"?id.player:undefined)
+        .filter((p)=>p!==undefined?true:false) as PlayerIndex[];
     
     return <div className="will-menu will-menu-colors">
         <ContentTab
@@ -80,11 +77,11 @@ export default function WillMenu(): ReactElement {
                 }}
             />
             {(notes.length === 0 ? [""] : notes).map((note, i) => {
-                const title = note.split('\n')[0] || translate("menu.will.notes");
+                const title: UnsafeString = (note as string).split('\n')[0] || translate("menu.will.notes");
                 return <TextDropdownArea
                     canPostAs={canPostAsPlayers}
 
-                    key={title + i}
+                    key={title as string + i}
                     titleString={title}
                     savedText={note}
                     cantPost={cantPost}
@@ -92,21 +89,21 @@ export default function WillMenu(): ReactElement {
                         if(GAME_MANAGER.state.stateType === "game" && GAME_MANAGER.state.clientState.type === "player"){
                             const notes = [...GAME_MANAGER.state.clientState.notes];
                             notes.splice(i+1, 0, "");
-                            GAME_MANAGER.sendSaveNotesPacket(notes);
+                            GAME_MANAGER.sendSaveNotesPacket(notes as string[]);
                         }
                     }}
                     onSubtract={() => {
                         if(GAME_MANAGER.state.stateType === "game" && GAME_MANAGER.state.clientState.type === "player"){
                             const notes = [...GAME_MANAGER.state.clientState.notes];
                             notes.splice(i, 1);
-                            GAME_MANAGER.sendSaveNotesPacket(notes);
+                            GAME_MANAGER.sendSaveNotesPacket(notes as string[]);
                         }
                     }}
                     onSave={(text) => {
                         if(GAME_MANAGER.state.stateType === "game" && GAME_MANAGER.state.clientState.type === "player"){
                             const notes = [...GAME_MANAGER.state.clientState.notes];
                             notes[i] = text;
-                            GAME_MANAGER.sendSaveNotesPacket(notes);
+                            GAME_MANAGER.sendSaveNotesPacket(notes as string[]);
                         }
                     }}
                 />

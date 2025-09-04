@@ -10,9 +10,11 @@ import Select, { dropdownPlacementFunction, SelectOptionsSearch } from "../Selec
 import StyledText from "../StyledText";
 import { Button, RawButton } from "../Button";
 import { useLobbyOrGameState, useLobbyState } from "../useHooks";
-import { Conclusion, CONCLUSIONS, INSIDER_GROUPS, InsiderGroup, PlayerClientType, PlayerIndex, translateConclusion, translateWinCondition } from "../../game/gameState.d";
+import { Conclusion, CONCLUSIONS, INSIDER_GROUPS, InsiderGroup, LobbyClient, LobbyClientID, PlayerClientType, PlayerIndex, translateConclusion, translateWinCondition, UnsafeString } from "../../game/gameState.d";
 import Popover from "../Popover";
 import DUMMY_NAMES from "../../resources/dummyNames.json";
+import { encodeString } from "../ChatMessage";
+import ListMap from "../../ListMap";
 
 type RoleOutlineSelectorProps = {
     roleOutline: RoleOutline,
@@ -59,7 +61,7 @@ export default function RoleOutlineSelector(props: RoleOutlineSelectorProps): Re
                             props.onChange(options)
                         }}
                         numPlayers={props.numPlayers}
-                    />
+                    />:
                     <InsiderGroupSelectorLabel
                         disabled={props.disabled}
                         insiderGroups={option.insiderGroups}
@@ -74,7 +76,7 @@ export default function RoleOutlineSelector(props: RoleOutlineSelectorProps): Re
 
                             props.onChange(options)
                         }}
-                    />
+                    />,
                     <ConclusionsSelectorLabel
                         disabled={props.disabled}
                         conclusions={option.winIfAny}
@@ -89,7 +91,7 @@ export default function RoleOutlineSelector(props: RoleOutlineSelectorProps): Re
 
                             props.onChange(options)
                         }}
-                    />
+                    />,
                     <RoleOrRoleSetSelector
                         disabled={props.disabled}
                         roleOrRoleSet={roleOrRoleSet}
@@ -337,7 +339,7 @@ function InsiderGroupSelectorLabel(props: Readonly<{
             </StyledText>
         } else {
             return <StyledText noLinks={true}>
-                {props.insiderGroups.map(g => translate(`chatGroup.${g}.icon`)).join()}
+                {props.insiderGroups.map(g => translate(`chatGroup.${g}.icon`)).join(translate("union"))}
             </StyledText>
         }
     }, [props.insiderGroups])
@@ -365,14 +367,17 @@ function InsiderGroupSelectorLabel(props: Readonly<{
     </>
 }
 
-function useNamesForPlayerPool(numPlayers?: number): string[] {
+export function useNamesForPlayerPool(numPlayers?: number): UnsafeString[] {
     return useLobbyState(
-        state => 
-            state.players.list
-                .filter(([_id, client]) => client.clientType.type === "player")
-                .map(([_id, player]) => (player.clientType as PlayerClientType).name),
+        state => getNamesForPlayerPoolFromLobbyClients(state.players),
         ["lobbyClients"]
     )??DUMMY_NAMES.slice(0, numPlayers??0)
+}
+
+export function getNamesForPlayerPoolFromLobbyClients(players: ListMap<LobbyClientID, LobbyClient>): UnsafeString[] {
+    return players.list
+        .filter(([_id, client]) => client.clientType.type === "player")
+        .map(([_id, player]) => (player.clientType as PlayerClientType).name)
 }
 
 function PlayerPoolSelector(props: Readonly<{
@@ -404,7 +409,7 @@ function PlayerPoolSelector(props: Readonly<{
     const playersNotChosen = playerNames.map((_, index)=>index).filter(index => !playerPool.includes(index));
 
     const optionsSearch = new Map<number, [ReactElement, string]>(playerNames.map((name, index) => [
-        index, [<StyledText noLinks={true}>{name}</StyledText>, name]
+        index, [<StyledText noLinks={true}>{encodeString(name)}</StyledText>, encodeString(name)]
     ]));
 
     return <div className="conclusions-selector">

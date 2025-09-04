@@ -1,6 +1,7 @@
 use serde::Serialize;
 
-use crate::game::ability_input::AvailablePlayerListSelection;
+use crate::game::components::night_visits::Visits;
+use crate::game::controllers::AvailablePlayerListSelection;
 use crate::game::components::insider_group::InsiderGroupID;
 use crate::game::components::silenced::Silenced;
 use crate::game::event::on_midnight::{MidnightVariables, OnMidnightPriority};
@@ -27,8 +28,7 @@ impl RoleStateImpl for Blackmailer {
         if priority != OnMidnightPriority::Deception {return}
         
 
-        let actor_visits = actor_ref.untagged_night_visits_cloned(midnight_variables);
-        if let Some(visit) = actor_visits.first(){
+        if let Some(visit) = Visits::default_visit(game, midnight_variables, actor_ref) {
             let target_ref = visit.target;
     
             Silenced::silence_night(game, midnight_variables, target_ref);

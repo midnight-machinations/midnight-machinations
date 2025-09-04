@@ -27,6 +27,10 @@ impl <K> VecSet<K> where K: Eq {
         }
     }
 
+    pub fn shuffle<R: rand::Rng + ?Sized>(&mut self, rng: &mut R) {
+        self.vec.shuffle(rng);
+    }
+
     pub fn contains(&self, key: &K) -> bool {
         self.vec.get_kvp(key).is_some()
     }
@@ -59,7 +63,7 @@ impl <K> VecSet<K> where K: Eq {
         self.vec.keys()
     }
 
-    pub fn subtract(&self, other: &Self) -> Self where K: Clone {
+    pub fn sub(&self, other: &Self) -> Self where K: Clone {
         self.vec.keys().filter(|&k| !other.contains(k)).cloned().collect()
     }
     pub fn intersection(&self, other: &Self) -> Self where K: Clone {

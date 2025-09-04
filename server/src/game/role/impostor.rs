@@ -1,9 +1,10 @@
 use serde::Serialize;
 
-use crate::game::ability_input::*;
+use crate::game::controllers::*;
 use crate::game::attack_power::DefensePower;
+use crate::game::components::graves::grave::GraveInformation;
+use crate::game::components::graves::grave_reference::GraveReference;
 use crate::game::event::on_midnight::{MidnightVariables, OnMidnightPriority};
-use crate::game::grave::GraveInformation;
 use crate::game::player::PlayerReference;
 
 use crate::game::visit::Visit;
@@ -53,7 +54,7 @@ impl RoleStateImpl for Impostor {
                 .build_map()
         ])
     }
-    fn on_grave_added(self, game: &mut Game, actor_ref: PlayerReference, grave: crate::game::grave::GraveReference) {
+    fn on_grave_added(self, game: &mut Game, actor_ref: PlayerReference, grave: GraveReference) {
         let Some(RoleListSelection(roles)) = ControllerID::role(actor_ref, Role::Impostor, 1)
             .get_role_list_selection(game).cloned() else {return};
         let Some(role) = roles.first().copied() else {return};

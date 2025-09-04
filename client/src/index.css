@@ -139,7 +139,6 @@ s {
 *{
     user-select: none;
     
-    /* text-shadow: .0625rem .0625rem .13rem rgb(0, 0, 0); */
     text-align: center;
     box-sizing: border-box;
 
@@ -262,9 +261,7 @@ summary {
     text-align: left;
     padding-left: 0.5rem;
 }
-.highlighted {
-    border-color: yellow;
-}
+
 option {
     background-color: var(--background-color);
 }
@@ -613,4 +610,7 @@ code, .code {
         clip: rect(.44em, 4.50em, .56em, 0);
         animation: glitch-anim2 5s infinite linear alternate-reverse;
     }
+}
+.highlighted.highlighted {
+    border-color: yellow;
 }

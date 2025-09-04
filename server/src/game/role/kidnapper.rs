@@ -2,13 +2,13 @@ use std::collections::HashSet;
 
 use serde::Serialize;
 
-use crate::game::ability_input::{AvailableBooleanSelection, BooleanSelection};
+use crate::game::controllers::{AvailableBooleanSelection, BooleanSelection};
 use crate::game::attack_power::{AttackPower, DefensePower};
 use crate::game::chat::{ChatGroup, ChatMessageVariant};
 use crate::game::components::detained::Detained;
+use crate::game::components::graves::grave::{Grave, GraveKiller};
 use crate::game::components::win_condition::WinCondition;
 use crate::game::event::on_midnight::{MidnightVariables, OnMidnightPriority};
-use crate::game::grave::{Grave, GraveKiller};
 use crate::game::phase::PhaseType;
 use crate::game::player::PlayerReference;
 use crate::game::Game;
@@ -99,7 +99,7 @@ impl RoleStateImpl for Kidnapper {
     fn get_current_receive_chat_groups(self, game: &Game, actor_ref: PlayerReference) -> HashSet<ChatGroup> {
         let mut out = crate::game::role::common_role::get_current_receive_chat_groups(game, actor_ref);
         if 
-            game.current_phase().is_night() &&
+            game.current_phase().phase() == PhaseType::Night &&
             !actor_ref.ability_deactivated_from_death(game) &&
             PlayerReference::all_players(game).any(|p|Detained::is_detained(game, p))
         {

@@ -1,4 +1,4 @@
-import { useGameState, usePlayerState } from "../../../../components/useHooks";
+import { useGameState, usePlayerNames, usePlayerState } from "../../../../components/useHooks";
 import React, { ReactElement } from "react";
 import AuditorMenu from "./RoleSpecificMenus/AuditorMenu";
 import LargeDoomsayerMenu from "./RoleSpecificMenus/LargeDoomsayerMenu";
@@ -9,10 +9,10 @@ import SmallPuppeteerMenu from "./RoleSpecificMenus/SmallPuppeteerMenu";
 import StewardMenu from "./RoleSpecificMenus/StewardMenu";
 import RecruiterMenu from "./RoleSpecificMenus/RecruiterMenu";
 import { RoleState } from "../../../../game/roleState.d";
-import { PhaseState } from "../../../../game/gameState.d";
+import { PhaseState, UnsafeString } from "../../../../game/gameState.d";
 import DetailsSummary from "../../../../components/DetailsSummary";
 import HypnotistMenu from "./RoleSpecificMenus/HypnotistMenu";
-import ChatElement from "../../../../components/ChatMessage";
+import ChatElement, { encodeString } from "../../../../components/ChatMessage";
 
     
 
@@ -35,7 +35,9 @@ export default function RoleSpecificSection(): ReactElement{
         ["gamePlayers"]
     )!;
 
-    const inner = roleSpecificSectionInner(phaseState, dayNumber, roleState, numPlayers);
+    const playerNames = usePlayerNames();
+
+    const inner = roleSpecificSectionInner(phaseState, dayNumber, roleState, numPlayers, playerNames);
 
     return <>{inner===null ? null : 
         <DetailsSummary
@@ -54,7 +56,8 @@ function roleSpecificSectionInner(
     phaseState: PhaseState,
     dayNumber: number,
     roleState: RoleState,
-    numPlayers: number
+    numPlayers: number,
+    playerNames: UnsafeString[]
 ): ReactElement | null{
     let maxChargesCounter = abilityChargesCounter(numPlayers);
 
@@ -80,7 +83,12 @@ function roleSpecificSectionInner(
                 <StyledText>{translate("role.jailor.roleDataText.executionsRemaining", roleState.executionsRemaining)}</StyledText>
             </Counter>;
         case "medium": 
-            return <MediumRoleSpecificMenu roleState={roleState}/>;
+            return <Counter
+                max={maxChargesCounter}
+                current={roleState.hauntsRemaining}
+            >
+                <StyledText>{translate("role.medium.roleDataText.hauntsRemaining", roleState.hauntsRemaining)}</StyledText>
+            </Counter>
         case "doctor": {
             return <Counter
                 max={1}
@@ -160,6 +168,8 @@ function roleSpecificSectionInner(
             </Counter>
         case "steward":
             return <StewardMenu roleState={roleState}/>;
+        case "courtesan":
+            return <StyledText>{roleState.previous.map((p)=>encodeString(playerNames[p])).join()}</StyledText>;
         case "spiral": 
             return <SpiralMenu />;
         case "puppeteer":
@@ -230,39 +240,6 @@ function MarksmanRoleSpecificMenu(props: Readonly<{
     return <div className="role-information">
         <StyledText>{stateText}</StyledText>
     </div>
-}
-
-function MediumRoleSpecificMenu(props: Readonly<{
-    roleState: RoleState & { type: "medium" }
-}>): ReactElement {
-    const players = useGameState(
-        gameState => gameState.players,
-        ["gamePlayers"]
-    )!;
-
-    const counter = <Counter
-        max={3}
-        current={props.roleState.seancesRemaining}
-    >
-        <StyledText>{translate("role.medium.roleDataText.hauntsRemaining", props.roleState.seancesRemaining)}</StyledText>
-    </Counter>
-    if (props.roleState.seancedTarget === null) {
-        return <>
-            {counter}
-            <div className="role-information">
-                <StyledText>{translate("role.medium.roleDataText.nobody")}</StyledText>
-            </div>
-        </>
-    } else {
-        return <>
-            {counter}
-            <div className="role-information">
-                <StyledText>{translate("role.medium.roleDataText", 
-                    players[props.roleState.seancedTarget].toString(),
-                )}</StyledText>
-            </div>
-        </>;
-    }
 }
 
 function SpiralMenu(props: {}): ReactElement | null {

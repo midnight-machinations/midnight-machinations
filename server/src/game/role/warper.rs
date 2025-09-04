@@ -1,9 +1,9 @@
 use serde::Serialize;
 
-use crate::game::ability_input::AvailableTwoPlayerOptionSelection;
+use crate::game::controllers::AvailableTwoPlayerOptionSelection;
+use crate::game::components::graves::grave::Grave;
 use crate::game::components::transport::{Transport, TransportPriority};
 use crate::game::event::on_midnight::{MidnightVariables, OnMidnightPriority};
-use crate::game::grave::Grave;
 use crate::game::phase::PhaseType;
 
 use crate::game::components::win_condition::WinCondition;
@@ -36,6 +36,7 @@ impl RoleStateImpl for Warper {
             &vec_map![(first_visit, second_visit)], |_| true, true, 
         );
         
+        actor_ref.reveal_players_role(game, first_visit);
         actor_ref.push_night_message(
             midnight_variables, ChatMessageVariant::TargetHasRole { role: first_visit.role(game) }
         );

@@ -2,8 +2,8 @@ import { ReactElement, ReactNode, useEffect, useRef, useState } from "react";
 import { Role, roleJsonData } from "../game/roleState.d";
 import React from "react";
 import translate, { langText, translateChecked } from "../game/lang";
-import StyledText, { DUMMY_NAMES_KEYWORD_DATA, DUMMY_NAMES_SENDER_KEYWORD_DATA, StyledTextProps } from "./StyledText";
-import { ROLE_SETS, getAllRoles, getRolesFromRoleSet } from "../game/roleListState.d";
+import StyledText, { DUMMY_NAMES_KEYWORD_DATA, DUMMY_NAMES_SENDER_KEYWORD_DATA, DUMMY_ROLE_LIST_KEYWORD_DATA, StyledTextProps } from "./StyledText";
+import { ROLE_SETS, RoleList, getAllRoles, getRolesFromRoleSet } from "../game/roleListState.d";
 import ChatElement from "./ChatMessage";
 import DUMMY_NAMES from "../resources/dummyNames.json";
 import { ARTICLES, GeneratedArticle, getArticleTitle, WikiArticleLink, wikiPageIsEnabled } from "./WikiArticleLink";
@@ -12,11 +12,12 @@ import GAME_MANAGER, { replaceMentions } from "..";
 import { useLobbyOrGameState } from "./useHooks";
 import DetailsSummary from "./DetailsSummary";
 import { partitionWikiPages, WikiCategory } from "./Wiki";
-import { MODIFIERS, ModifierType } from "../game/gameState.d";
+import { MODIFIERS, ModifierID } from "../game/modifiers";
+import DUMMY_ROLE_LIST from "../resources/dummyRoleList.json";
 import Masonry from "react-responsive-masonry";
 
 function WikiStyledText(props: Omit<StyledTextProps, 'markdown' | 'playerKeywordData'>): ReactElement {
-    return <StyledText {...props} markdown={true} playerKeywordData={DUMMY_NAMES_KEYWORD_DATA} />
+    return <StyledText {...props} markdown={true} playerKeywordData={DUMMY_NAMES_KEYWORD_DATA} roleListKeywordData={DUMMY_ROLE_LIST_KEYWORD_DATA}/>
 }
 
 export default function WikiArticle(props: {
@@ -40,10 +41,13 @@ export default function WikiArticle(props: {
                         {"### "+roleData.roleSets.map((roleSet)=>{return translate(roleSet)}).join(" | ")+"\n"}
 
                         {"### "+translate("wiki.article.role.reminder")+"\n"}
-                        {replaceMentions(translateChecked("wiki.article.role."+role+".reminder") ?? translate("wiki.article.role.noReminder"), DUMMY_NAMES)+"\n"}
+                        {replaceMentions(translateChecked("wiki.article.role."+role+".reminder") ?? translate("wiki.article.role.noReminder"), DUMMY_NAMES, (DUMMY_ROLE_LIST as RoleList))+"\n"}
+
+                        {translateChecked("wiki.article.role."+role+".lore")!==null?("### "+translate("wiki.article.role.lore")+"\n"):""}
+                        {replaceMentions(translateChecked("wiki.article.role."+role+".lore") ?? "", DUMMY_NAMES, (DUMMY_ROLE_LIST as RoleList))+"\n"}
 
                         {"### "+translate("wiki.article.role.guide")+"\n"}
-                        {replaceMentions(translateChecked("wiki.article.role."+role+".guide") ?? translate("wiki.article.role.noGuide"), DUMMY_NAMES)+"\n"}
+                        {replaceMentions(translateChecked("wiki.article.role."+role+".guide") ?? translate("wiki.article.role.noGuide"), DUMMY_NAMES, (DUMMY_ROLE_LIST as RoleList))+"\n"}
                     </WikiStyledText>
                 </div>
                 <div>
@@ -78,6 +82,8 @@ export default function WikiArticle(props: {
                             playerNames={DUMMY_NAMES} 
                             playerKeywordData={DUMMY_NAMES_KEYWORD_DATA}
                             playerSenderKeywordData={DUMMY_NAMES_SENDER_KEYWORD_DATA}
+                            roleList={DUMMY_ROLE_LIST as RoleList}
+                            roleListKeywordData={DUMMY_ROLE_LIST_KEYWORD_DATA}
                         />
                     )}
                 </div>}
@@ -86,10 +92,10 @@ export default function WikiArticle(props: {
                         {"### "+translate("wiki.article.role.exampleAlibi")+"\n"}
                     </WikiStyledText>
                     {exampleAlibiDescription && <WikiStyledText>
-                        {replaceMentions(exampleAlibiDescription, DUMMY_NAMES)}
+                        {replaceMentions(exampleAlibiDescription, DUMMY_NAMES, (DUMMY_ROLE_LIST as RoleList)) as string}
                     </WikiStyledText>}
                     <blockquote>
-                        <WikiStyledText>{replaceMentions(exampleAlibi, DUMMY_NAMES)}</WikiStyledText>
+                        <WikiStyledText>{replaceMentions(exampleAlibi, DUMMY_NAMES, (DUMMY_ROLE_LIST as RoleList)) as string}</WikiStyledText>
                     </blockquote>
                 </div>}
                 <DetailsSummary 
@@ -120,7 +126,7 @@ export default function WikiArticle(props: {
             return <section className="wiki-article">
                 <WikiStyledText className="wiki-article-standard">
                     {"# "+translate(`wiki.article.${articleType}.${props.article.split("/")[1]}.title`)+"\n"}
-                    {replaceMentions(translate(`wiki.article.${articleType}.${props.article.split("/")[1]}.text`), DUMMY_NAMES)}
+                    {replaceMentions(translate(`wiki.article.${articleType}.${props.article.split("/")[1]}.text`), DUMMY_NAMES, (DUMMY_ROLE_LIST as RoleList)) as string}
                 </WikiStyledText>
             </section>
         }
@@ -144,15 +150,15 @@ function CategoryArticle(props: Readonly<{ category: WikiCategory }>): ReactElem
     )!;
 
     const enabledModifiers = useLobbyOrGameState(
-        state => state.enabledModifiers,
-        ["enabledModifiers"],
-        MODIFIERS as any as ModifierType[]
+        state => state.modifierSettings.keys(),
+        ["modifierSettings"],
+        MODIFIERS as any as ModifierID[]
     )!;
 
     return <section className="wiki-article">
         <WikiStyledText className="wiki-article-standard">
             {"# "+title+"\n"}
-            {description ? replaceMentions(description, DUMMY_NAMES) : ""}
+            {description ? replaceMentions(description, DUMMY_NAMES, (DUMMY_ROLE_LIST as RoleList)) as string : ""}
         </WikiStyledText>
         <PageCollection 
             title={title}
@@ -167,7 +173,7 @@ export function PageCollection(props: Readonly<{
     title: string,
     pages: WikiArticleLink[],
     enabledRoles: Role[],
-    enabledModifiers: ModifierType[],
+    enabledModifiers: ModifierID[],
     children?: ReactNode
 }>): ReactElement | null {
     if (props.pages.length === 0) {

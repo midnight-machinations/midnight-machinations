@@ -1,12 +1,12 @@
 use serde::Serialize;
 
-use crate::game::ability_input::AvailablePlayerListSelection;
+use crate::game::controllers::AvailablePlayerListSelection;
 use crate::game::attack_power::AttackPower;
 use crate::game::attack_power::DefensePower;
 use crate::game::event::on_midnight::MidnightVariables;
 use crate::game::event::on_midnight::OnMidnightPriority;
 use crate::game::game_conclusion::GameConclusion;
-use crate::game::grave::GraveKiller;
+use crate::game::components::graves::grave::GraveKiller;
 use crate::game::phase::PhaseType;
 use crate::game::player::PlayerReference;
 
@@ -47,7 +47,7 @@ impl RoleStateImpl for Marksman {
         let visiting_players: Vec<_> = actor_ref
             .untagged_night_visits_cloned(midnight_variables)
             .into_iter()
-            .flat_map(|p|p.target.all_night_visitors_cloned(midnight_variables))
+            .flat_map(|p|p.target.all_direct_night_visitors_cloned(midnight_variables))
             .collect();
 
         let Some(PlayerListSelection(marks)) = ControllerID::role(actor_ref, Role::Marksman, 0)

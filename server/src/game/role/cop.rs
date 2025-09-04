@@ -4,10 +4,11 @@ use serde::Serialize;
 
 use crate::game::attack_power::AttackPower;
 use crate::game::attack_power::DefensePower;
-use crate::game::components::night_visits::NightVisits;
+use crate::game::components::night_visits::Visits;
+use crate::game::components::night_visits::NightVisitsIterator;
 use crate::game::event::on_midnight::{MidnightVariables, OnMidnightPriority};
 use crate::game::game_conclusion::GameConclusion;
-use crate::game::grave::GraveKiller;
+use crate::game::components::graves::grave::GraveKiller;
 use crate::game::player::PlayerReference;
 
 use crate::game::visit::Visit;
@@ -33,44 +34,34 @@ impl RoleStateImpl for Cop {
 
         match priority {
             OnMidnightPriority::Heal => {
-                
-                let actor_visits = actor_ref.untagged_night_visits_cloned(midnight_variables);
-                let Some(visit) = actor_visits.first() else {return};
-                let target_ref = visit.target;
+                let Some(target_ref) = Visits::default_target(game, midnight_variables, actor_ref) else {return};
 
                 actor_ref.guard_player(game, midnight_variables, target_ref);
             }
             OnMidnightPriority::Kill => {
-                
-                let actor_visits = actor_ref.untagged_night_visits_cloned(midnight_variables);
-                let Some(ambush_visit) = actor_visits.first() else {return};
-                let target_ref = ambush_visit.target;
+                let Some(ambush_visit) = Visits::default_visit(game, midnight_variables, actor_ref) else {return};
 
-                let player_to_attacks_visit = 
-                if let Some(priority_visitor) = NightVisits::all_visits(midnight_variables).into_iter()
-                    .filter(|visit|
-                        ambush_visit != *visit &&
-                        visit.target == target_ref &&
-                        visit.visitor.alive(game) &&
-                        !visit.visitor.win_condition(game).is_loyalist_for(GameConclusion::Town)
-                    ).collect::<Vec<&Visit>>()
+                if let Some(player_to_attack) = Visits::into_iter(midnight_variables)
+                    .without_visit(ambush_visit)
+                    .with_target(ambush_visit.target)
+                    .with_alive_visitor(game)
+                    .without_loyalist_visitor(game, GameConclusion::Town)
+                    .with_direct()
+                    .map_visitor()
+                    .collect::<Box<[PlayerReference]>>()
                     .choose(&mut rand::rng())
                     .copied()
-                {
-                    Some(priority_visitor.visitor)
-                } else {
-                    NightVisits::all_visits(midnight_variables).into_iter()
-                        .filter(|visit|
-                            ambush_visit != *visit &&
-                            visit.target == target_ref &&
-                            visit.visitor.alive(game)
-                        ).collect::<Vec<&Visit>>()
+                    .or_else(||Visits::into_iter(midnight_variables)
+                        .without_visit(ambush_visit)
+                        .with_target(ambush_visit.target)
+                        .with_alive_visitor(game)
+                        .with_direct()
+                        .map_visitor()
+                        .collect::<Box<[PlayerReference]>>()
                         .choose(&mut rand::rng())
                         .copied()
-                        .map(|v|v.visitor)
-                };
-
-                if let Some(player_to_attack) = player_to_attacks_visit{
+                    )
+                {
                     player_to_attack.try_night_kill_single_attacker(
                         actor_ref,
                         game,

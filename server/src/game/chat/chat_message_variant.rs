@@ -1,11 +1,10 @@
 use serde::{Deserialize, Serialize};
 
 use crate::{game::{
-    ability_input::*, attack_power::DefensePower, components::{synopsis::Synopsis, tags::Tag,
-        win_condition::WinCondition}, grave::Grave, phase::PhaseState, player::{PlayerIndex, PlayerReference}, role::{
-            auditor::AuditorResult, engineer::TrapState, kira::KiraResult, krampus::KrampusAbility,
-            santa_claus::SantaListKind, spy::SpyBug, Role
-        }, role_list::RoleOutline, role_outline_reference::OutlineIndex, verdict::Verdict
+    controllers::*, attack_power::DefensePower, components::{graves::grave::Grave, synopsis::Synopsis, tags::Tag, win_condition::WinCondition}, phase::PhaseState, player::{PlayerIndex, PlayerReference}, role::{
+        auditor::AuditorResult, engineer::TrapState, kira::KiraResult, krampus::KrampusAbility,
+        santa_claus::SantaListKind, Role
+    }, role_outline_reference::OutlineIndex, verdict::Verdict
 }, vec_set::VecSet};
 
 
@@ -95,13 +94,18 @@ pub enum ChatMessageVariant {
         innocent: u8, 
         guilty: u8 
     },
+    #[serde(rename_all = "camelCase")]
+    WitnessesCalled {
+        player_on_trial: PlayerReference,
+        witnesses: Vec<PlayerReference> 
+    },
     
     /* Misc */
     #[serde(rename_all = "camelCase")]
     AbilityUsed{
         player: PlayerIndex,
         ability_id: ControllerID,
-        selection: AbilitySelection
+        selection: ControllerSelection
     },
 
     #[serde(rename_all = "camelCase")]
@@ -122,6 +126,7 @@ pub enum ChatMessageVariant {
     #[serde(rename_all = "camelCase")]
     JailedSomeone{player_index: PlayerIndex},
     MediumHauntStarted{medium: PlayerIndex, player: PlayerIndex},
+    MediumSeance{medium: PlayerIndex, player: PlayerIndex},
     MediumExists,
     #[serde(rename_all = "camelCase")]
     DeputyKilled{shot_index: PlayerIndex},
@@ -160,17 +165,17 @@ pub enum ChatMessageVariant {
     RoleBlocked,
     Wardblocked,
 
-    SheriffResult {suspicious: bool},
-    LookoutResult{players: Vec<PlayerIndex>},
-    TrackerResult{players: Vec<PlayerIndex>},
+    DetectiveResult {suspicious: bool},
+    LookoutResult{players: Vec<PlayerReference>},
+    TrackerResult{players: Vec<PlayerReference>},
     SeerResult{enemies: bool},
-    SpyMafiaVisit{players: Vec<PlayerIndex>},
-    SpyBug{bug: SpyBug},
+    SpyMafiaVisit{players: Vec<PlayerReference>},
+    SpyBug{roles: Vec<Role>},
     PsychicGood{player: PlayerReference},
     PsychicEvil{first: PlayerReference, second: PlayerReference},
     PsychicFailed,
     #[serde(rename_all = "camelCase")]
-    AuditorResult{outline_index: OutlineIndex, role_outline: RoleOutline, result: AuditorResult},
+    AuditorResult{outline_index: OutlineIndex, result: AuditorResult},
     SnoopResult{townie: bool},
     PolymathSnoopResult{inno: bool},
     GossipResult{enemies: bool},
@@ -187,6 +192,7 @@ pub enum ChatMessageVariant {
     Transported,
 
     Silenced,
+    Brained,
     #[serde(rename_all = "camelCase")]
     GodfatherBackup{backup: Option<PlayerIndex>},
     #[serde(rename_all = "camelCase")]
@@ -197,8 +203,6 @@ pub enum ChatMessageVariant {
     PlayerRoleAndAlibi { player: PlayerReference, role: Role, will: String },
     #[serde(rename_all = "camelCase")]
     InformantResult{player: PlayerReference, role: Role, visited_by: Vec<PlayerIndex>, visited: Vec<PlayerIndex>},
-    #[serde(rename_all = "camelCase")]
-    ScarecrowResult{players: Vec<PlayerIndex>},
     #[serde(rename_all = "camelCase")]
     AmbusherCaught{ambusher: PlayerReference},
 
@@ -211,7 +215,7 @@ pub enum ChatMessageVariant {
     TargetHasWinCondition { win_condition: WinCondition },
 
     #[serde(rename_all = "camelCase")]
-    WerewolfTrackingResult{tracked_player: PlayerIndex, players: Vec<PlayerIndex>},
+    WerewolfTrackingResult{tracked_player: PlayerReference, players: Vec<PlayerReference>},
 
     JesterWon,
     RevolutionaryWon,

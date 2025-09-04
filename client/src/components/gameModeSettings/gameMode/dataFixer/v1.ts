@@ -1,6 +1,7 @@
 import { VersionConverter } from ".";
 import { GameMode } from "..";
-import { ModifierType, PhaseTimes } from "../../../../game/gameState.d";
+import { PhaseTimes } from "../../../../game/gameState.d";
+import { ModifierID } from "../../../../game/modifiers";
 import { Role } from "../../../../game/roleState.d";
 import { Failure, ParseResult, ParseSuccess, Success, isFailure } from "../parse";
 import { parseName, parsePhaseTimes, parseRoleList, parseRole, InitialRoleOutline } from "./initial";
@@ -14,9 +15,9 @@ export default v1;
 
 type v2GameModeData = {
     roleList: InitialRoleOutline[],
-    phaseTimes: PhaseTimes,
+    phaseTimes: Omit<PhaseTimes, 'adjournment'>,
     enabledRoles: Role[],
-    enabledModifiers: ModifierType[]
+    enabledModifiers: ModifierID[]
 }
 type v2ShareableGameMode = v2GameModeData & { format: "v2", name: string }
 type v2GameMode = { name: string, data: Record<number, v2GameModeData> }

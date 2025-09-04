@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 
-use crate::{game::{chat::{ChatGroup, ChatMessageVariant}, event::{on_add_insider::OnAddInsider, on_remove_insider::OnRemoveInsider, Event}, player::PlayerReference, role_list::RoleAssignment, role_outline_reference::RoleOutlineReference, Game}, packet::ToClientPacket, vec_map::VecMap, vec_set::VecSet};
+use crate::{game::{chat::{ChatGroup, ChatMessageVariant}, event::{on_add_insider::OnAddInsider, on_remove_insider::OnRemoveInsider, Event}, player::PlayerReference, Assignments, Game}, packet::ToClientPacket, vec_set::VecSet};
 
 #[derive(Debug)]
 pub struct InsiderGroups{
@@ -21,17 +21,19 @@ impl InsiderGroups{
     /// # Safety
     /// player_count is correct
     /// assignments contains all players
-    pub unsafe fn new(player_count: u8, assignments: &VecMap<PlayerReference, (RoleOutlineReference, RoleAssignment)>)->Self{
-        let mut out = Self{
+    pub unsafe fn new(player_count: u8, assignments: &Assignments) -> Self {
+        let mut out = Self {
             mafia: InsiderGroup::default(),
             cult: InsiderGroup::default(),
             puppeteer: InsiderGroup::default()
         };
-        for player in PlayerReference::all_players_from_count(player_count){
+        for player in unsafe { PlayerReference::all_players_from_count(player_count) }{
             for group in assignments
                 .get(&player)
-                .expect("assignments is required to hold all players for safety").1
-                .insider_groups()
+                .expect("assignments is required to hold all players for safety")
+                .insider_groups
+                .iter()
+                .copied()
             {
                 out.get_group_mut(group).players.insert(player);
             }

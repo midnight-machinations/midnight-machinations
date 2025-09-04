@@ -1,16 +1,18 @@
 import ListMap from "../ListMap"
-import GameState, { LobbyClient, LobbyState, PhaseTimes, Player, LobbyClientID, PlayerGameState } from "./gameState.d"
+import GameState, { LobbyClient, LobbyState, PhaseTimes, Player, LobbyClientID, PlayerGameState, UnsafeString } from "./gameState.d"
+import { ModifierID, ModifierState } from "./modifiers"
 
 
 export function defaultPhaseTimes(): PhaseTimes {
     return {
         briefing: 45,
-        obituary: 60,
-        discussion: 120,
-        nomination: 120,
+        obituary: 20,
+        discussion: 100,
+        nomination: 100,
+        adjournment: 60,
         testimony: 30,
-        judgement: 60,
-        finalWords: 30,
+        judgement: 30,
+        finalWords: 10,
         dusk: 30,
         night: 60,
     }
@@ -27,10 +29,10 @@ export function createLobbyState(): LobbyState {
         roleList: [],
         phaseTimes: defaultPhaseTimes(),
         enabledRoles: [],
-        enabledModifiers: [],
+        modifierSettings: new ListMap<ModifierID, ModifierState>(),
 
         players: new ListMap<LobbyClientID, LobbyClient>(),
-        chatMessages: [],
+        chatMessages: new ListMap(),
     }
 }
 
@@ -44,20 +46,22 @@ export function createGameState(): GameState {
 
         myId: null,
 
-        chatMessages : [],
-        graves: [],
+        chatMessages : new ListMap(),
+        graves: new ListMap(),
         players: [],
         
         phaseState: {type:"briefing"},
         timeLeftMs: 0,
         dayNumber: 1,
 
-        fastForward: false,
+
+        chatFilter: null,
+        fastForward: {type:"none"},
         
         roleList: [],
         enabledRoles: [],
         phaseTimes: defaultPhaseTimes(),
-        enabledModifiers: [],
+        modifierSettings: new ListMap<ModifierID, ModifierState>(),
 
         ticking: true,
 
@@ -80,9 +84,7 @@ export function createPlayerGameState(): PlayerGameState {
 
         notes: [],
         crossedOutOutlines: [],
-        chatFilter: null,
         deathNote: "",
-        judgement: "abstain",
 
         fellowInsiders: [],
 
@@ -93,7 +95,7 @@ export function createPlayerGameState(): PlayerGameState {
     }
 }
 
-export function createPlayer(name: string, index: number): Player {
+export function createPlayer(name: UnsafeString, index: number): Player {
     return{
         name: name,
         index: index,

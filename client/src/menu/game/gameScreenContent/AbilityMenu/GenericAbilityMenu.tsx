@@ -3,9 +3,9 @@ import {
     TwoPlayerOptionSelection, 
     TwoRoleOptionSelection, 
     ControllerID,
-    AbilitySelection,
+    ControllerSelection,
     translateControllerID,
-    AvailableAbilitySelection,
+    AvailableControllerSelection,
     TwoRoleOutlineOptionSelection,
     RoleListSelection,
     SavedController,
@@ -16,28 +16,29 @@ import {
     PlayerListSelection,
     IntegerSelection,
     controllerIdToLink
-} from "../../../../game/abilityInput";
+} from "../../../../game/controllerInput";
 import React from "react";
 import { usePlayerState } from "../../../../components/useHooks";
 import { Button } from "../../../../components/Button";
-import TwoRoleOutlineOptionSelectionMenu from "./AbilitySelectionTypes/TwoRoleOutlineOptionSelectionMenu";
+import TwoRoleOutlineOptionSelectionMenu from "./ControllerSelectionTypes/TwoRoleOutlineOptionSelectionMenu";
 import GAME_MANAGER from "../../../..";
-import TwoRoleOptionSelectionMenu from "./AbilitySelectionTypes/TwoRoleOptionSelectionMenu";
-import TwoPlayerOptionSelectionMenu from "./AbilitySelectionTypes/TwoPlayerOptionSelectionMenu";
+import TwoRoleOptionSelectionMenu from "./ControllerSelectionTypes/TwoRoleOptionSelectionMenu";
+import TwoPlayerOptionSelectionMenu from "./ControllerSelectionTypes/TwoPlayerOptionSelectionMenu";
 import StyledText from "../../../../components/StyledText";
-import KiraSelectionMenu, { KiraSelection } from "./AbilitySelectionTypes/KiraSelectionMenu";
-import RoleListSelectionMenu from "./AbilitySelectionTypes/RoleListSelectionMenu";
+import KiraSelectionMenu, { KiraSelection } from "./ControllerSelectionTypes/KiraSelectionMenu";
+import RoleListSelectionMenu from "./ControllerSelectionTypes/RoleListSelectionMenu";
 import "./genericAbilityMenu.css";
 import DetailsSummary from "../../../../components/DetailsSummary";
 import translate from "../../../../game/lang";
-import StringSelectionMenu from "./AbilitySelectionTypes/StringSelectionMenu";
+import StringSelectionMenu from "./ControllerSelectionTypes/StringSelectionMenu";
 import ListMap from "../../../../ListMap";
 import { Role } from "../../../../game/roleState.d";
 import { PlayerIndex } from "../../../../game/gameState.d";
 import Icon from "../../../../components/Icon";
-import PlayerListSelectionMenu from "./AbilitySelectionTypes/PlayerListSelectionMenu";
-import IntegerSelectionMenu from "./AbilitySelectionTypes/IntegerSelectionMenu";
-import BooleanSelectionMenu from "./AbilitySelectionTypes/BooleanSelectionMenu";
+import PlayerListSelectionMenu from "./ControllerSelectionTypes/PlayerListSelectionMenu";
+import IntegerSelectionMenu from "./ControllerSelectionTypes/IntegerSelectionMenu";
+import BooleanSelectionMenu from "./ControllerSelectionTypes/BooleanSelectionMenu";
+import "./ControllerSelectionTypes/genericListController.css"
 
 type GroupName = `${PlayerIndex}/${Role}` | 
     "syndicateGunItem" | 
@@ -85,7 +86,7 @@ function translateGroupName(id: ControllerID): string {
         case "syndicateChooseBackup":
             return translate("backup");
         default:
-            return id.type;
+            return translateControllerID(id);
     }
 }
 
@@ -97,7 +98,7 @@ function showThisController(id: ControllerID): boolean {
 export default function GenericAbilityMenu(): ReactElement {
     const savedAbilities = usePlayerState(
         playerState => playerState.savedControllers,
-        ["yourAllowedControllers"]
+        ["yourAllowedControllers", "yourAllowedController"]
     )!;
 
     let controllerGroupsMap: ControllerGroupsMap = new ListMap();
@@ -143,7 +144,7 @@ function MultipleControllersMenu(props: Readonly<{
     controllers: ListMap<ControllerID, SavedController>
 }>): ReactElement {
 
-    const disabled = !props.controllers.values().some((controller)=>!controller.availableAbilityData.grayedOut)
+    const disabled = !props.controllers.values().some((controller)=>!controller.parameters.grayedOut)
     const nightIcon = !props.controllers.keys().some(
         (id)=>!singleAbilityJsonData(controllerIdToLink(id))?.midnight
     );
@@ -208,7 +209,7 @@ function SingleAbilityMenu(props: Readonly<{
         } */}
         <SwitchSingleAbilityMenuType
             id={props.abilityId}
-            available={props.saveData.availableAbilityData.available}
+            available={props.saveData.parameters.available}
             selected={props.saveData.selection}
         />
     </>
@@ -223,7 +224,7 @@ function SingleAbilityMenu(props: Readonly<{
                 </div>
             }
             defaultOpen={true}
-            disabled={props.saveData.availableAbilityData.grayedOut}
+            disabled={props.saveData.parameters.grayedOut}
         >
             {inner}
         </DetailsSummary>
@@ -233,7 +234,7 @@ function SingleAbilityMenu(props: Readonly<{
             <div className="generic-ability-menu generic-ability-menu-tab-no-summary">
                 <span>
                     {
-                        props.saveData.availableAbilityData.grayedOut === true ?
+                        props.saveData.parameters.grayedOut === true ?
                         <Icon>close</Icon>
                         : null
                     }
@@ -242,7 +243,7 @@ function SingleAbilityMenu(props: Readonly<{
                 {nightIcon?<span>{translate("night.icon")}</span>:null}
             </div>
             {
-                props.saveData.availableAbilityData.grayedOut === false ?
+                props.saveData.parameters.grayedOut === false ?
                 <>{inner}</>
                 : null
             }
@@ -254,18 +255,18 @@ function SingleAbilityMenu(props: Readonly<{
 
 function SwitchSingleAbilityMenuType(props: Readonly<{
     id: ControllerID,
-    available: AvailableAbilitySelection,
-    selected: AbilitySelection
+    available: AvailableControllerSelection,
+    selected: ControllerSelection
 }>): ReactElement {
 
     const {id, available} = props;
-    let selected: AbilitySelection = props.selected;
+    let selected: ControllerSelection = props.selected;
 
     switch(available.type) {
         case "unit":
             return <Button
                 onClick={()=>{
-                    GAME_MANAGER.sendAbilityInput({
+                    GAME_MANAGER.sendControllerInput({
                         id, 
                         selection: {type: "unit", selection: null}
                     });
@@ -285,7 +286,7 @@ function SwitchSingleAbilityMenuType(props: Readonly<{
                 id={id}
                 selection={bool}
                 onChoose={(x)=>{
-                    GAME_MANAGER.sendAbilityInput({
+                    GAME_MANAGER.sendControllerInput({
                         id, 
                         selection: {
                             type: "boolean",
@@ -310,7 +311,7 @@ function SwitchSingleAbilityMenuType(props: Readonly<{
                 selection={input}
                 availableSelection={available.selection}
                 onChoose={(selection) => {
-                    GAME_MANAGER.sendAbilityInput({
+                    GAME_MANAGER.sendControllerInput({
                         id, 
                         selection: {
                             type: "playerList",
@@ -335,7 +336,7 @@ function SwitchSingleAbilityMenuType(props: Readonly<{
                 selection={input}
                 availableSelection={available.selection}
                 onChoose={(selection) => {
-                    GAME_MANAGER.sendAbilityInput({
+                    GAME_MANAGER.sendControllerInput({
                         id, 
                         selection: {
                             type: "twoPlayerOption",
@@ -360,7 +361,7 @@ function SwitchSingleAbilityMenuType(props: Readonly<{
                 selection={input}
                 availableSelection={available.selection}
                 onChoose={(selection) => {
-                    GAME_MANAGER.sendAbilityInput({
+                    GAME_MANAGER.sendControllerInput({
                         id, 
                         selection: {
                             type: "roleList",
@@ -386,7 +387,7 @@ function SwitchSingleAbilityMenuType(props: Readonly<{
                 input={input}
                 availableSelection={available.selection}
                 onChoose={(selection) => {
-                    GAME_MANAGER.sendAbilityInput({
+                    GAME_MANAGER.sendControllerInput({
                         id,
                         selection: {
                             type: "twoRoleOption",
@@ -411,7 +412,7 @@ function SwitchSingleAbilityMenuType(props: Readonly<{
                 selection={input}
                 available={available.selection}
                 onChoose={(selection) => {
-                    GAME_MANAGER.sendAbilityInput({
+                    GAME_MANAGER.sendControllerInput({
                         id,
                         selection: {
                             type: "twoRoleOutlineOption",
@@ -436,7 +437,7 @@ function SwitchSingleAbilityMenuType(props: Readonly<{
                 id={id}
                 selection={input}
                 onChoose={(selection) => {
-                    GAME_MANAGER.sendAbilityInput({
+                    GAME_MANAGER.sendControllerInput({
                         id,
                         selection: {
                             type: "string",
@@ -462,7 +463,7 @@ function SwitchSingleAbilityMenuType(props: Readonly<{
                 selection={input}
                 available={available.selection}
                 onChoose={(selection: number) => {
-                    GAME_MANAGER.sendAbilityInput({
+                    GAME_MANAGER.sendControllerInput({
                         id,
                         selection: {
                             type: "integer",
@@ -487,7 +488,7 @@ function SwitchSingleAbilityMenuType(props: Readonly<{
                 selection={input}
                 available={available.selection}
                 onChange={(selection)=>{
-                    GAME_MANAGER.sendAbilityInput({
+                    GAME_MANAGER.sendControllerInput({
                         id,
                         selection: {
                             type: "kira",

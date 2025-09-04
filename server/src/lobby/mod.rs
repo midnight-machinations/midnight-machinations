@@ -11,6 +11,8 @@ pub struct Lobby {
     pub name: String,
     pub settings: Settings,
     pub clients: VecMap<RoomClientID, LobbyClient>,
+
+    pub chat_message_index: usize
 }
 
 impl Lobby {
@@ -21,13 +23,14 @@ impl Lobby {
             name: name_validation::DEFAULT_SERVER_NAME.to_string(),
             settings: Settings::default(),
             clients: VecMap::new(),
+            chat_message_index: 0,
         }
     }
 
     pub fn ensure_host_exists(&mut self, skip: Option<RoomClientID>) {
         if !self.clients.iter().any(|p|p.1.is_host()) {
             let next_available_player = self.clients.iter_mut()
-                .filter(|(&id, _)| skip.is_none_or(|s| s != id))
+                .filter(|(id, _)| skip.is_none_or(|s| s != **id))
                 .map(|(_, c)| c).next();
 
             if let Some(new_host) = next_available_player {
@@ -70,7 +73,7 @@ impl Lobby {
         send.send(ToClientPacket::PhaseTimes { phase_time_settings: self.settings.phase_times.clone() });
         send.send(ToClientPacket::RoleList { role_list: self.settings.role_list.clone() });
         send.send(ToClientPacket::EnabledRoles { roles: self.settings.enabled_roles.clone().into_iter().collect() });
-        send.send(ToClientPacket::EnabledModifiers { modifiers: self.settings.enabled_modifiers.clone().into_iter().collect() });
+        send.send(ToClientPacket::ModifierSettings { modifier_settings: self.settings.modifiers.clone() });
     }
 
     pub fn set_player_name(&mut self, room_client_id: RoomClientID, name: String) {
@@ -89,10 +92,11 @@ impl Lobby {
         
         let new_name: String = name_validation::sanitize_name(name, &other_player_names);
 
-        if let Some(player) = self.clients.get_mut(&room_client_id){
-            if let LobbyClientType::Player { name } = &mut player.client_type {
-                *name = new_name;
-            }
+        if 
+            let Some(player) = self.clients.get_mut(&room_client_id) &&
+            let LobbyClientType::Player { name } = &mut player.client_type
+        {
+            *name = new_name;
         }
 
         self.send_players();
@@ -121,7 +125,7 @@ impl Lobby {
     }
     
     pub fn new_from_game(name: String, settings: Settings, clients: VecMap<RoomClientID, LobbyClient>) -> Self {
-        let new = Self { name, settings, clients };
+        let new = Self { name, settings, clients, chat_message_index: 0 };
 
         for (id, client) in new.clients.iter() {
             client.send(ToClientPacket::YourId { player_id: *id });
@@ -164,7 +168,6 @@ impl RoomState for Lobby {
                 };
 
         self.clients.insert(room_client_id, new_player);
-        self.clients.shuffle(&mut rand::rng());
 
         self.ensure_host_exists(None);
 

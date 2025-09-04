@@ -1,12 +1,14 @@
 import { VersionConverter } from ".";
-import { GameMode, GameModeData, GameModeStorage, ShareableGameMode } from "..";
-import { Conclusion, CONCLUSIONS, INSIDER_GROUPS, InsiderGroup } from "../../../../game/gameState.d";
-import { getDefaultSettings, Settings } from "../../../../game/localStorage";
-import { RoleOutline, RoleOutlineOption, RoleSet } from "../../../../game/roleListState.d";
+import { GameMode } from "..";
+import { Conclusion, CONCLUSIONS, INSIDER_GROUPS, InsiderGroup, PhaseTimes } from "../../../../game/gameState.d";
+import { defaultModifierState, ModifierID, ModifierState } from "../../../../game/modifiers";
+import { RoleList, RoleOutline, RoleOutlineOption, RoleSet } from "../../../../game/roleListState.d";
 import { Role } from "../../../../game/roleState.d";
+import { ListMapData } from "../../../../ListMap";
 import { Failure, ParseResult, ParseSuccess, Success, isFailure } from "../parse";
 import { parseName, parsePhaseTimes, parseRole, parseRoleSet } from "./initial";
 import { parseEnabledModifiers, parseEnabledRoles } from "./v2";
+import { parseSettings } from "./v3";
 
 const v4: VersionConverter = {
     convertSettings: parseSettings,
@@ -17,55 +19,34 @@ const v4: VersionConverter = {
 
 export default v4;
 
-function parseSettings(json: NonNullable<any>): ParseResult<Settings> {
-    if (typeof json !== "object" || Array.isArray(json)) {
-        return Failure("settingsNotObject", json);
-    }
+type v5GameModeStorage = {
+    format: 'v5',
+    gameModes: v5GameMode[]
+};
 
-    for(const key of ['format', 'volume', 'fontSize', 'accessibilityFont', 'defaultName', 'language', 'roleSpecificMenus']) {
-        if (!Object.keys(json).includes(key)) {
-            return Failure(`${key as keyof Settings}KeyMissingFromSettings`, json);
-        }
-    }
+type v5GameMode = {
+    name: string,
+    // A mapping from number-of-players to game mode data
+    data: Record<number, v5GameModeData>
+};
 
-    for(const key of ['maxMenus', 'menuOrder']) {
-        if (!Object.keys(json).includes(key)) {
-            json.maxMenus = getDefaultSettings().maxMenus
-            json.menuOrder = getDefaultSettings().menuOrder
-        }
-    }
-
-    if (json.format !== "v4") {
-        return Failure("settingsFormatNotV4", json);
-    }
-    
-    const roleSpecificMenus = parseRoleSpecificMenus(json.roleSpecificMenus);
-    if (isFailure(roleSpecificMenus)) return roleSpecificMenus;
-
-    return Success(json);
+type v5GameModeData = {
+    roleList: RoleList,
+    phaseTimes: Omit<PhaseTimes, 'adjournment'>,
+    enabledRoles: Role[],
+    modifierSettings: ListMapData<ModifierID, ModifierState>
 }
 
-function parseRoleSpecificMenus(json: NonNullable<any>): ParseResult<Role[]> {
-    if (!Array.isArray(json)) {
-        return Failure("roleSpecificMenusNotArray", json);
-    }
+type v5ShareableGameMode = v5GameModeData & { format: 'v5', name: string }
 
-    const roleList = json.map(parseRole);
-    for (const role of roleList) {
-        if (isFailure(role)) return role;
-    }
-
-    return Success(roleList.map(success => (success as ParseSuccess<Role>).value));
-}
-
-function parseGameModeStorage(json: NonNullable<any>): ParseResult<GameModeStorage> {
+function parseGameModeStorage(json: NonNullable<any>): ParseResult<v5GameModeStorage> {
     if (typeof json !== "object" || Array.isArray(json)) {
         return Failure("gameModeStorageNotObject", json);
     }
 
     for (const key of ['format', 'gameModes']) {
         if (!Object.keys(json).includes(key)) {
-            return Failure(`${key as keyof GameModeStorage}KeyMissingFromGameModeStorage`, json)
+            return Failure(`${key as keyof v5GameModeStorage}KeyMissingFromGameModeStorage`, json)
         }
     }
 
@@ -75,15 +56,15 @@ function parseGameModeStorage(json: NonNullable<any>): ParseResult<GameModeStora
     }
 
     return Success({
-        format: "v4",
-        gameModes: gameModeList.map(gameMode => (gameMode as ParseSuccess<GameMode>).value)
+        format: "v5",
+        gameModes: gameModeList.map(gameMode => (gameMode as ParseSuccess<v5GameMode>).value)
     })
 }
 
-function parseGameMode(json: NonNullable<any>): ParseResult<GameMode> {
+function parseGameMode(json: NonNullable<any>): ParseResult<v5GameMode> {
     for (const key of ['name', 'data']) {
         if (!Object.keys(json).includes(key)) {
-            return Failure(`${key as keyof GameMode}KeyMissingFromGameMode`, json)
+            return Failure(`${key as keyof v5GameMode}KeyMissingFromGameMode`, json)
         }
     }
 
@@ -99,7 +80,7 @@ function parseGameMode(json: NonNullable<any>): ParseResult<GameMode> {
     })
 }
 
-function parseShareableGameModeData(json: NonNullable<any>): ParseResult<ShareableGameMode> {
+function parseShareableGameModeData(json: NonNullable<any>): ParseResult<v5ShareableGameMode> {
     const gameMode = parseGameModeData(json);
     if (isFailure(gameMode)) {
         return gameMode;
@@ -111,16 +92,16 @@ function parseShareableGameModeData(json: NonNullable<any>): ParseResult<Shareab
         const name = parseName(json.name);
         if (isFailure(name)) return name;
 
-        return Success({ format: "v4", name: name.value, ...gameMode.value });
+        return Success({ format: "v5", name: name.value, ...gameMode.value });
     }
 }
 
-function parseGameModeDataRecord(json: NonNullable<any>): ParseResult<Record<number, GameModeData>> {
+function parseGameModeDataRecord(json: NonNullable<any>): ParseResult<Record<number, v5GameModeData>> {
     if (typeof json !== "object" || Array.isArray(json)) {
         return Failure("gameModeDataRecordNotObject", json);
     }
-    
-    const parsedEntries: Record<number, GameModeData> = {};
+
+    const parsedEntries: Record<number, v5GameModeData> = {};
     for (const [key, value] of Object.entries(json)) {
         let players;
         try {
@@ -145,14 +126,14 @@ function parseGameModeDataRecord(json: NonNullable<any>): ParseResult<Record<num
     return Success(parsedEntries);
 }
 
-function parseGameModeData(json: NonNullable<any>): ParseResult<GameModeData> {
+function parseGameModeData(json: NonNullable<any>): ParseResult<v5GameModeData> {
     if (typeof json !== "object" || Array.isArray(json)) {
         return Failure("gameModeDataNotObject", json);
     }
 
     for (const key of ['roleList', 'phaseTimes', 'enabledRoles', 'enabledModifiers']) {
         if (!Object.keys(json).includes(key)) {
-            return Failure(`${key as keyof GameModeData}KeyMissingFromGameModeData`, json)
+            return Failure(`${key as keyof v5GameModeData}KeyMissingFromGameModeData`, json)
         }
     }
 
@@ -165,18 +146,18 @@ function parseGameModeData(json: NonNullable<any>): ParseResult<GameModeData> {
     const enabledRoles = parseEnabledRoles(json.enabledRoles);
     if (isFailure(enabledRoles)) return enabledRoles;
 
-    const enabledModifiers = parseEnabledModifiers(json.enabledModifiers);
-    if (isFailure(enabledModifiers)) return enabledModifiers;
+    const modifierSettings = parseModifierSettingsFromEnabledModifiers(json.enabledModifiers);
+    if (isFailure(modifierSettings)) return modifierSettings;
 
     return Success({
         roleList: roleList.value, 
         phaseTimes: phaseTimes.value, 
         enabledRoles: enabledRoles.value,
-        enabledModifiers: enabledModifiers.value
+        modifierSettings: modifierSettings.value
     });
 }
 
-function parseRoleList(json: NonNullable<any>): ParseResult<RoleOutline[]> {
+export function parseRoleList(json: NonNullable<any>): ParseResult<RoleOutline[]> {
     if (!Array.isArray(json)) {
         return Failure("roleListIsNotArray", json);
     }
@@ -305,4 +286,14 @@ function parseInsiderGroup(json: NonNullable<any>): ParseResult<InsiderGroup> {
     }
 
     return Success(json as InsiderGroup);
+}
+
+function parseModifierSettingsFromEnabledModifiers(json: NonNullable<any>): ParseResult<ListMapData<ModifierID, ModifierState>> {
+    const enabledModifiers = parseEnabledModifiers(json);
+    if (isFailure(enabledModifiers)) return enabledModifiers;
+
+    const modifierSettings: ListMapData<ModifierID, ModifierState> = enabledModifiers.value
+        .map(modifierId => [modifierId, defaultModifierState(modifierId)]);
+
+    return Success(modifierSettings);
 }

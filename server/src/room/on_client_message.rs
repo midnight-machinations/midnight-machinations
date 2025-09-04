@@ -5,7 +5,7 @@ use crate::{game::on_client_message::GameClientMessageResult, lobby::on_client_m
 use super::{RoomClientID, Room};
 
 pub const MESSAGE_PER_SECOND_LIMIT: u16 = 1;
-pub const MESSAGE_PER_SECOND_LIMIT_TIME: Duration = Duration::from_secs(10);
+pub const MESSAGE_PER_SECOND_LIMIT_TIME: Duration = Duration::from_secs(20);
 
 pub enum RoomClientMessageResult {
     LobbyAction(LobbyClientMessageResult),
@@ -17,7 +17,8 @@ impl Room {
     pub fn on_client_message(&mut self, send: &ClientSender, room_client_id: RoomClientID, incoming_packet: ToServerPacket) -> RoomClientMessageResult {
         //RATE LIMITER
         match incoming_packet {
-            ToServerPacket::Judgement { .. } |
+            ToServerPacket::SetName { .. } |
+            ToServerPacket::ControllerInput { .. } |
             ToServerPacket::SendLobbyMessage { .. } => {
                 let Some(last_message_times) = (match self {
                     Self::Game(game) => game.get_client_last_message_times(room_client_id),
