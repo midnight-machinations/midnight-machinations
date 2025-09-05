@@ -7,10 +7,11 @@
     "verdict.abstain": { "style": "keyword-abstain", "link": "modifier/abstaining"},
     "obscured": { "style": "keyword-hiddenRole","link": "standard/obscured"},
     "suspicious": { "style": "keyword-evil", "link": "standard/enemies"},
+    "snoopResult.cantTell": { "style": "keyword-evil", "link": "role/snoop"},
     "friends": { "style": "keyword-good", "link": "standard/friends"},
     "enemies": { "style": "keyword-evil", "link": "standard/enemies"},
     "vision": {"style": "keyword-info","link": "role/psychic"},
-    "good": {"style": "keyword-info", "link": "role/psychic"},
+    "good": {"style": "keyword-info"},
     "townCommon": { "style": "keyword-good","link": "generated/roleSet"},
     "townInvestigative": { "style": "keyword-good","link": "generated/roleSet"},
     "townProtective": { "style": "keyword-good","link": "generated/roleSet"},
@@ -29,8 +30,10 @@
     "defense.invincible": { "style": "keyword-info", "link": "standard/defense"},
     "dead": { "style": "keyword-evil", "link": "standard/dead"},
     "wiki.article.role.reminder": { "style": "keyword-info"},
+    "wiki.article.role.lore": { "style": "keyword-info"},
     "wiki.article.role.attributes": { "style": "keyword-info"},
     "wiki.article.role.extra": { "style": "keyword-info"},
+    "wiki.article.role.exampleAlibi": { "style": "keyword-info", "link": "standard/alibi"},
 
     "wiki.article.standard.mafia.title": { "style": "keyword-evil", "link": "standard/mafia" },
     "wiki.article.standard.cult.title": { "style": "keyword-cult", "link": "standard/cult" },
@@ -70,5 +73,33 @@
     "menu.will.notes": {"link":"standard/howToPlay", "style": "keyword-info"},
     "menu.will.deathNote": {"link":"standard/howToPlay", "style": "keyword-info"},
     
-    "language":{ "link": "generated/all_text"}
+    "language":{ "link": "generated/all_text"},
+
+    "conclusion.loyalist.town": { "style": "keyword-good", "link": "standard/loyalist"},
+    "conclusion.loyalist.mafia": { "style": "keyword-evil", "link": "standard/loyalist"},
+    "conclusion.loyalist.cult": { "style": "keyword-cult", "link": "standard/loyalist"},
+    "conclusion.loyalist.fiends": { "style": "keyword-fiends", "link": "standard/loyalist" },
+    "conclusion.loyalist.politician": { "style": "keyword-neutral", "link": "standard/loyalist"},
+    "conclusion.loyalist.draw": { "style": "keyword-info", "link": "standard/loyalist"},
+    "conclusion.loyalist.niceList": { "style": "keyword-christmas", "link": "standard/loyalist"},
+    "conclusion.loyalist.naughtyList": { "style": "keyword-christmas keyword-naughty", "link": "standard/loyalist"},
+
+    "insiderGroup.mafia.name": { "style": "keyword-evil", "link": "standard/insiderGroup" },
+    "insiderGroup.cult.name": { "style": "keyword-cult", "link": "standard/insiderGroup" },
+    "insiderGroup.puppeteer.name": { "style": "keyword-fiends", "link": "standard/insiderGroup" },
+
+    "wiki.article.standard.spiral.title": { "style": "keyword-fiends", "link": "standard/spiral" },
+    "wiki.article.standard.douse.title": { "style": "keyword-fiends", "link": "standard/douse" },
+    "wiki.article.standard.frame.title": { "style": "keyword-evil", "link": "standard/frame" },
+    "wiki.article.standard.syndicateGunItem.title": { "style": "keyword-evil", "link": "standard/syndicateGunItem" },
+    "wiki.article.standard.forged.title": { "style": "keyword-evil", "link": "standard/forged" },
+    "wiki.article.standard.sniff.title": { "style": "keyword-fiends", "link": "standard/sniff" },
+    "wiki.article.standard.hypnotize.title": { "style": "keyword-evil", "link": "standard/hypnotize" },
+    "wiki.article.standard.silenced.title": { "style": "keyword-evil", "link": "standard/silenced" },
+
+    "mark": { "style": "keyword-info" },
+    "camp": { "style": "keyword-info" },
+    "track": { "style": "keyword-info" },
+    "suicide": { "style": "keyword-info", "link": "standard/dead" },
+    "player": { "style": "keyword-info", "link": "standard/howToPlay" }
 }
