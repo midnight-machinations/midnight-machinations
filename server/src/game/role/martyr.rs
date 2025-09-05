@@ -13,7 +13,7 @@ use crate::game::role::BooleanSelection;
 use crate::game::visit::Visit;
 use crate::game::Game;
 
-use super::{ControllerID, ControllerParametersMap, Role, RoleState, RoleStateImpl};
+use super::{ControllerID, ControllerParametersMap, Role, RoleState, RoleStateTrait};
 
 #[derive(PartialEq, Eq, Clone, Debug, Serialize)]
 #[serde(rename_all = "camelCase")]
@@ -45,10 +45,10 @@ impl Default for Martyr {
 pub(super) const MAXIMUM_COUNT: Option<u8> = Some(1);
 pub(super) const DEFENSE: DefensePower = DefensePower::None;
 
-impl RoleStateImpl for Martyr {
+impl RoleStateTrait for Martyr {
     // More information is being sent than needed by the client.
     // This should be fixed later
-    type ClientRoleState = Martyr;
+    type ClientAbilityState = Martyr;
     fn new_state(game: &Game) -> Self {
         Self{
             state: MartyrState::StillPlaying { bullets: crate::game::role::common_role::standard_charges(game) }

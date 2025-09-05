@@ -9,7 +9,7 @@ use crate::game::phase::PhaseType;
 use crate::game::player::PlayerReference;
 use crate::game::visit::Visit;
 use crate::game::Game;
-use super::{ControllerID, ControllerParametersMap, Role, RoleStateImpl};
+use super::{ControllerID, ControllerParametersMap, Role, RoleStateTrait};
 
 
 #[derive(Clone, Debug, Serialize, Default)]
@@ -19,8 +19,8 @@ pub struct Scarecrow;
 pub(super) const MAXIMUM_COUNT: Option<u8> = None;
 pub(super) const DEFENSE: DefensePower = DefensePower::None;
 
-impl RoleStateImpl for Scarecrow {
-    type ClientRoleState = Scarecrow;
+impl RoleStateTrait for Scarecrow {
+    type ClientAbilityState = Scarecrow;
     fn on_midnight(self, game: &mut Game, midnight_variables: &mut MidnightVariables, actor_ref: PlayerReference, priority: OnMidnightPriority) {
         let Some(target) = Visits::default_target(game, midnight_variables, actor_ref) else {return};
 

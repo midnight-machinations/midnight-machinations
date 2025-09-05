@@ -14,7 +14,7 @@ use crate::game::verdict::Verdict;
 
 use crate::game::Game;
 use super::{
-    ControllerID, ControllerParametersMap, GetClientRoleState, Role, RoleStateImpl
+    ControllerID, ControllerParametersMap, GetClientAbilityState, Role, RoleStateTrait
 };
 
 #[derive(Clone, Debug, Default)]
@@ -30,8 +30,8 @@ pub struct ClientRoleState;
 pub(super) const MAXIMUM_COUNT: Option<u8> = None;
 pub(super) const DEFENSE: DefensePower = DefensePower::None;
 
-impl RoleStateImpl for Jester {
-    type ClientRoleState = ClientRoleState;
+impl RoleStateTrait for Jester {
+    type ClientAbilityState = ClientRoleState;
     fn on_midnight(self, game: &mut Game, midnight_variables: &mut MidnightVariables, actor_ref: PlayerReference, priority: OnMidnightPriority) {
         if priority != OnMidnightPriority::TopPriority {return;}
         if actor_ref.alive(game) {return;}
@@ -109,8 +109,8 @@ impl RoleStateImpl for Jester {
         }
     }
 }
-impl GetClientRoleState<ClientRoleState> for Jester {
-    fn get_client_role_state(self, _game: &Game, _actor_ref: PlayerReference) -> ClientRoleState {
+impl GetClientAbilityState<ClientRoleState> for Jester {
+    fn get_client_ability_state(self, _game: &Game, _actor_ref: PlayerReference) -> ClientRoleState {
         ClientRoleState
     }
 }

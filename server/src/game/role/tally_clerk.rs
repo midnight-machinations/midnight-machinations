@@ -10,7 +10,7 @@ use crate::game::player::PlayerReference;
 
 use crate::game::Game;
 
-use super::RoleStateImpl;
+use super::RoleStateTrait;
 
 
 pub(super) const MAXIMUM_COUNT: Option<u8> = None;
@@ -20,8 +20,8 @@ pub(super) const DEFENSE: DefensePower = DefensePower::None;
 pub struct TallyClerk;
 
 
-impl RoleStateImpl for TallyClerk {
-    type ClientRoleState = TallyClerk;
+impl RoleStateTrait for TallyClerk {
+    type ClientAbilityState = TallyClerk;
     fn on_midnight(self, game: &mut Game, midnight_variables: &mut MidnightVariables, actor_ref: PlayerReference, priority: OnMidnightPriority) {
         if actor_ref.night_blocked(midnight_variables) {return}
         if actor_ref.ability_deactivated_from_death(game) {return}

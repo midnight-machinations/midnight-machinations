@@ -14,8 +14,8 @@ use crate::game::visit::Visit;
 use crate::game::Game;
 use super::godfather::Godfather;
 use super::{
-    ControllerID, ControllerParametersMap, GetClientRoleState, IntegerSelection, Role,
-    RoleStateImpl
+    ControllerID, ControllerParametersMap, GetClientAbilityState, IntegerSelection, Role,
+    RoleStateTrait
 };
 
 
@@ -44,8 +44,8 @@ impl Default for Counterfeiter {
 pub(super) const MAXIMUM_COUNT: Option<u8> = Some(1);
 pub(super) const DEFENSE: DefensePower = DefensePower::None;
 
-impl RoleStateImpl for Counterfeiter {
-    type ClientRoleState = ClientRoleState;
+impl RoleStateTrait for Counterfeiter {
+    type ClientAbilityState = ClientRoleState;
     fn new_state(game: &Game) -> Self {
         Self{
             forges_remaining: crate::game::role::common_role::standard_charges(game),
@@ -164,8 +164,8 @@ impl RoleStateImpl for Counterfeiter {
         ].into_iter().collect()
     }
 }
-impl GetClientRoleState<ClientRoleState> for Counterfeiter {
-    fn get_client_role_state(self, _game: &Game, _actor_ref: PlayerReference) -> ClientRoleState {
+impl GetClientAbilityState<ClientRoleState> for Counterfeiter {
+    fn get_client_ability_state(self, _game: &Game, _actor_ref: PlayerReference) -> ClientRoleState {
         ClientRoleState{
             forges_remaining: self.forges_remaining
         }

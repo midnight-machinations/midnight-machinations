@@ -16,7 +16,7 @@ use crate::game::Game;
 use super::{
     ControllerID,
     ControllerParametersMap, Role,
-    RoleStateImpl
+    RoleStateTrait
 };
 
 
@@ -39,8 +39,8 @@ impl Default for Kidnapper {
 pub(super) const MAXIMUM_COUNT: Option<u8> = Some(1);
 pub(super) const DEFENSE: DefensePower = DefensePower::None;
 
-impl RoleStateImpl for Kidnapper {
-    type ClientRoleState = Kidnapper;
+impl RoleStateTrait for Kidnapper {
+    type ClientAbilityState = Kidnapper;
     fn on_midnight(mut self, game: &mut Game, midnight_variables: &mut MidnightVariables, actor_ref: PlayerReference, priority: OnMidnightPriority) {
 
 

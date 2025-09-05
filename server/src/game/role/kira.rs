@@ -10,7 +10,7 @@ use crate::game::player::PlayerReference;
 use crate::game::Game;
 use crate::vec_map::VecMap;
 use crate::game::controllers::*;
-use super::{Role, RoleStateImpl};
+use super::{Role, RoleStateTrait};
 
 #[derive(Clone, Debug, Serialize, Default)]
 pub struct Kira;
@@ -161,8 +161,8 @@ pub struct KiraControllerInput(Vec<(PlayerReference, KiraGuess)>);
 pub(super) const MAXIMUM_COUNT: Option<u8> = None;
 pub(super) const DEFENSE: DefensePower = DefensePower::Armored;
 
-impl RoleStateImpl for Kira {
-    type ClientRoleState = Kira;
+impl RoleStateTrait for Kira {
+    type ClientAbilityState = Kira;
     fn on_midnight(self, game: &mut Game, midnight_variables: &mut MidnightVariables, actor_ref: PlayerReference, priority: OnMidnightPriority) {
         if actor_ref.night_blocked(midnight_variables) {return;}
         if actor_ref.ability_deactivated_from_death(game) {return;}

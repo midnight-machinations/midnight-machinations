@@ -10,7 +10,7 @@ use crate::game::player::PlayerReference;
 use crate::game::role_list::RoleSet;
 use crate::game::visit::Visit;
 use crate::game::Game;
-use super::{ControllerID, ControllerParametersMap, Role, RoleStateImpl};
+use super::{ControllerID, ControllerParametersMap, Role, RoleStateTrait};
 
 
 #[derive(Clone, Debug, Default, Serialize)]
@@ -20,8 +20,8 @@ pub struct Zealot;
 pub(super) const MAXIMUM_COUNT: Option<u8> = Some(1);
 pub(super) const DEFENSE: DefensePower = DefensePower::None;
 
-impl RoleStateImpl for Zealot {
-    type ClientRoleState = Zealot;
+impl RoleStateTrait for Zealot {
+    type ClientAbilityState = Zealot;
     fn on_midnight(self, game: &mut Game, midnight_variables: &mut MidnightVariables, actor_ref: PlayerReference, priority: OnMidnightPriority) {
         if priority != OnMidnightPriority::Kill || Cult::next_ability(game) != CultAbility::Kill {return}
 

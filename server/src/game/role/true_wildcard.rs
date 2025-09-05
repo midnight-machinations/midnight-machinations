@@ -7,7 +7,7 @@ use crate::game::player::PlayerReference;
 use crate::game::role_list::role_enabled_and_not_taken;
 use crate::game::Game;
 
-use super::{ControllerID, ControllerParametersMap, Role, RoleStateImpl};
+use super::{ControllerID, ControllerParametersMap, Role, RoleStateTrait};
 
 #[derive(Clone, Debug, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
@@ -17,8 +17,8 @@ pub struct TrueWildcard;
 pub(super) const MAXIMUM_COUNT: Option<u8> = None;
 pub(super) const DEFENSE: DefensePower = DefensePower::None;
 
-impl RoleStateImpl for TrueWildcard {
-    type ClientRoleState = TrueWildcard;
+impl RoleStateTrait for TrueWildcard {
+    type ClientAbilityState = TrueWildcard;
     fn on_phase_start(self, game: &mut Game, actor_ref: PlayerReference, phase: PhaseType) {
         match phase {
             PhaseType::Night => {

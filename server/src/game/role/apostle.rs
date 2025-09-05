@@ -14,7 +14,7 @@ use crate::game::game_conclusion::GameConclusion;
 use crate::game::role_list::RoleSet;
 use crate::game::visit::Visit;
 use crate::game::Game;
-use super::{common_role, ControllerID, Role, RoleStateImpl};
+use super::{common_role, ControllerID, Role, RoleStateTrait};
 
 
 #[derive(Clone, Debug, Default, Serialize)]
@@ -24,8 +24,8 @@ pub struct Apostle;
 pub(super) const MAXIMUM_COUNT: Option<u8> = Some(1);
 pub(super) const DEFENSE: DefensePower = DefensePower::None;
 
-impl RoleStateImpl for Apostle {
-    type ClientRoleState = Apostle;
+impl RoleStateTrait for Apostle {
+    type ClientAbilityState = Apostle;
     fn on_midnight(self, game: &mut Game, midnight_variables: &mut MidnightVariables, actor_ref: PlayerReference, priority: OnMidnightPriority) {
 
         match (priority, Cult::next_ability(game)) {

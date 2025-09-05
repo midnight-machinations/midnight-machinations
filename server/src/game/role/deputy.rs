@@ -10,7 +10,7 @@ use crate::game::player::PlayerReference;
 
 
 use crate::game::Game;
-use super::{ControllerID, ControllerParametersMap, PlayerListSelection, Role, RoleStateImpl};
+use super::{ControllerID, ControllerParametersMap, PlayerListSelection, Role, RoleStateTrait};
 
 
 
@@ -31,8 +31,8 @@ impl Default for Deputy {
 pub(super) const MAXIMUM_COUNT: Option<u8> = Some(1);
 pub(super) const DEFENSE: DefensePower = DefensePower::None;
 
-impl RoleStateImpl for Deputy {
-    type ClientRoleState = Deputy;
+impl RoleStateTrait for Deputy {
+    type ClientAbilityState = Deputy;
     fn on_validated_ability_input_received(self, game: &mut Game, actor_ref: PlayerReference, input_player: PlayerReference, ability_input: super::ControllerInput) {
         
         if actor_ref != input_player {return;}

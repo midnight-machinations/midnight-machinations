@@ -14,7 +14,7 @@ use crate::game::player::PlayerReference;
 use crate::game::visit::Visit;
 
 use crate::game::Game;
-use super::{common_role, ControllerID, Role, RoleStateImpl};
+use super::{common_role, ControllerID, Role, RoleStateTrait};
 
 
 #[derive(Debug, Clone, Serialize, Default)]
@@ -24,8 +24,8 @@ pub struct Ojo;
 pub(super) const MAXIMUM_COUNT: Option<u8> = None;
 pub(super) const DEFENSE: DefensePower = DefensePower::Armored;
 
-impl RoleStateImpl for Ojo {
-    type ClientRoleState = Ojo;
+impl RoleStateTrait for Ojo {
+    type ClientAbilityState = Ojo;
     fn on_midnight(self, game: &mut Game, midnight_variables: &mut MidnightVariables, actor_ref: PlayerReference, priority: OnMidnightPriority) {
         match priority {
             OnMidnightPriority::Kill => {

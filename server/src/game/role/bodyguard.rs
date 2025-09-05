@@ -18,8 +18,8 @@ use crate::vec_map::vec_map;
 
 use super::{
     ControllerID, ControllerParametersMap,
-    GetClientRoleState, Role,
-    RoleStateImpl
+    GetClientAbilityState, Role,
+    RoleStateTrait
 };
 
 #[derive(Clone, Debug, Serialize)]
@@ -48,8 +48,8 @@ impl Default for Bodyguard {
 pub(super) const MAXIMUM_COUNT: Option<u8> = None;
 pub(super) const DEFENSE: DefensePower = DefensePower::None;
 
-impl RoleStateImpl for Bodyguard {
-    type ClientRoleState = ClientRoleState;
+impl RoleStateTrait for Bodyguard {
+    type ClientAbilityState = ClientRoleState;
     fn on_midnight(self, game: &mut Game, midnight_variables: &mut MidnightVariables, actor_ref: PlayerReference, priority: OnMidnightPriority) {
         if game.day_number() <= 1 {return};
         
@@ -117,8 +117,8 @@ impl RoleStateImpl for Bodyguard {
         });
     }
 }
-impl GetClientRoleState<ClientRoleState> for Bodyguard {
-    fn get_client_role_state(self, _game: &Game, _actor_ref: PlayerReference) -> ClientRoleState {
+impl GetClientAbilityState<ClientRoleState> for Bodyguard {
+    fn get_client_ability_state(self, _game: &Game, _actor_ref: PlayerReference) -> ClientRoleState {
         ClientRoleState {
             self_shields_remaining: self.self_shields_remaining
         }

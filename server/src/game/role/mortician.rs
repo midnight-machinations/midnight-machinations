@@ -18,7 +18,7 @@ use crate::game::Game;
 use super::ControllerID;
 use super::ControllerParametersMap;
 use super::Role;
-use super::{RoleState, RoleStateImpl};
+use super::{RoleState, RoleStateTrait};
 
 
 #[derive(Clone, Debug, Serialize)]
@@ -39,8 +39,8 @@ pub(super) const MAXIMUM_COUNT: Option<u8> = Some(1);
 pub(super) const DEFENSE: DefensePower = DefensePower::None;
 
 
-impl RoleStateImpl for Mortician {
-    type ClientRoleState = Mortician;
+impl RoleStateTrait for Mortician {
+    type ClientAbilityState = Mortician;
     fn new_state(game: &Game) -> Self {
         Self{
             cremations_remaining: crate::game::role::common_role::standard_charges(game)

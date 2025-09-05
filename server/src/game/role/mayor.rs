@@ -10,7 +10,7 @@ use crate::game::player::PlayerReference;
 
 
 use crate::game::Game;
-use super::{ControllerID, ControllerParametersMap, GetClientRoleState, Role, RoleStateImpl};
+use super::{ControllerID, ControllerParametersMap, GetClientAbilityState, Role, RoleStateTrait};
 
 #[derive(Clone, Debug, Default)]
 pub struct Mayor;
@@ -22,8 +22,8 @@ pub struct ClientRoleState;
 pub(super) const MAXIMUM_COUNT: Option<u8> = Some(1);
 pub(super) const DEFENSE: DefensePower = DefensePower::None;
 
-impl RoleStateImpl for Mayor {
-    type ClientRoleState = ClientRoleState;
+impl RoleStateTrait for Mayor {
+    type ClientAbilityState = ClientRoleState;
     fn on_validated_ability_input_received(self, game: &mut Game, actor_ref: PlayerReference, input_player: PlayerReference, ability_input: super::ControllerInput) {
         if actor_ref != input_player {return;}
         if ability_input.id() != ControllerID::role(actor_ref, Role::Mayor, 0) {
@@ -60,8 +60,8 @@ impl RoleStateImpl for Mayor {
         }
     }
 }
-impl GetClientRoleState<ClientRoleState> for Mayor {
-    fn get_client_role_state(self, _game: &Game, _actor_ref: PlayerReference) -> ClientRoleState {
+impl GetClientAbilityState<ClientRoleState> for Mayor {
+    fn get_client_ability_state(self, _game: &Game, _actor_ref: PlayerReference) -> ClientRoleState {
         ClientRoleState
     }
 }

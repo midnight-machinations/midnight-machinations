@@ -18,7 +18,7 @@ use crate::game::visit::{Visit, VisitTag};
 use crate::game::Game;
 use super::{
     common_role, ControllerParametersMap, Role, RoleListSelection, 
-    RoleStateImpl
+    RoleStateTrait
 };
 
 
@@ -38,8 +38,8 @@ impl Default for Reeducator{
 pub(super) const MAXIMUM_COUNT: Option<u8> = Some(1);
 pub(super) const DEFENSE: DefensePower = DefensePower::None;
 
-impl RoleStateImpl for Reeducator {
-    type ClientRoleState = Reeducator;
+impl RoleStateTrait for Reeducator {
+    type ClientAbilityState = Reeducator;
     fn on_midnight(mut self, game: &mut Game, midnight_variables: &mut MidnightVariables, actor_ref: PlayerReference, priority: OnMidnightPriority) {
         match priority {
             OnMidnightPriority::Roleblock => {

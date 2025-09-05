@@ -8,7 +8,7 @@ use crate::game::{attack_power::DefensePower, player::PlayerReference};
 use crate::game::visit::Visit;
 use crate::game::Game;
 use crate::vec_set;
-use super::{ControllerID, ControllerParametersMap, Role, RoleStateImpl};
+use super::{ControllerID, ControllerParametersMap, Role, RoleStateTrait};
 
 #[derive(Clone, Debug, Default, Serialize)]
 pub struct Courtesan{
@@ -18,8 +18,8 @@ pub struct Courtesan{
 pub(super) const MAXIMUM_COUNT: Option<u8> = None;
 pub(super) const DEFENSE: DefensePower = DefensePower::None;
 
-impl RoleStateImpl for Courtesan {
-    type ClientRoleState = Courtesan;
+impl RoleStateTrait for Courtesan {
+    type ClientAbilityState = Courtesan;
     fn on_midnight(mut self, game: &mut Game, midnight_variables: &mut MidnightVariables, actor_ref: PlayerReference, priority: OnMidnightPriority) {
         if priority != OnMidnightPriority::Roleblock {return;}
         let actor_visits = actor_ref.untagged_night_visits_cloned(midnight_variables);

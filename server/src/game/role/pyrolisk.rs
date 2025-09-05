@@ -11,7 +11,7 @@ use crate::game::visit::Visit;
 use crate::game::Game;
 use crate::vec_set::VecSet;
 
-use super::{ControllerID, ControllerParametersMap, GetClientRoleState, Role, RoleStateImpl};
+use super::{ControllerID, ControllerParametersMap, GetClientAbilityState, Role, RoleStateTrait};
 
 #[derive(Debug, Clone, Default)]
 pub struct Pyrolisk{
@@ -25,8 +25,8 @@ pub struct ClientRoleState;
 pub(super) const MAXIMUM_COUNT: Option<u8> = None;
 pub(super) const DEFENSE: DefensePower = DefensePower::Armored;
 
-impl RoleStateImpl for Pyrolisk {
-    type ClientRoleState = ClientRoleState;
+impl RoleStateTrait for Pyrolisk {
+    type ClientAbilityState = ClientRoleState;
     fn on_midnight(self, game: &mut Game, midnight_variables: &mut MidnightVariables, actor_ref: PlayerReference, priority: OnMidnightPriority) {
         if game.day_number() <= 1 {return;}
 
@@ -97,8 +97,8 @@ impl RoleStateImpl for Pyrolisk {
         actor_ref.set_role_state(game, Pyrolisk{tagged_for_obscure: VecSet::new()});
     }
 }
-impl GetClientRoleState<ClientRoleState> for Pyrolisk {
-    fn get_client_role_state(self, _game: &Game, _actor_ref: PlayerReference) -> ClientRoleState {
+impl GetClientAbilityState<ClientRoleState> for Pyrolisk {
+    fn get_client_ability_state(self, _game: &Game, _actor_ref: PlayerReference) -> ClientRoleState {
         ClientRoleState
     }
 }

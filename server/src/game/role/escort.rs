@@ -7,7 +7,7 @@ use crate::game::{attack_power::DefensePower, player::PlayerReference};
 
 use crate::game::visit::Visit;
 use crate::game::Game;
-use super::{ControllerID, ControllerParametersMap, Role, RoleStateImpl};
+use super::{ControllerID, ControllerParametersMap, Role, RoleStateTrait};
 
 #[derive(Clone, Debug, Default, Serialize)]
 pub struct Escort;
@@ -15,8 +15,8 @@ pub struct Escort;
 pub(super) const MAXIMUM_COUNT: Option<u8> = None;
 pub(super) const DEFENSE: DefensePower = DefensePower::None;
 
-impl RoleStateImpl for Escort {
-    type ClientRoleState = Escort;
+impl RoleStateTrait for Escort {
+    type ClientAbilityState = Escort;
     fn on_midnight(self, game: &mut Game, midnight_variables: &mut MidnightVariables, actor_ref: PlayerReference, priority: OnMidnightPriority) {
         if priority != OnMidnightPriority::Roleblock {return;}
         if let Some(visit) = Visits::default_visit(game, midnight_variables, actor_ref) {

@@ -10,7 +10,7 @@ use crate::game::player::PlayerReference;
 use crate::game::visit::Visit;
 use crate::game::phase::PhaseType;
 use crate::game::Game;
-use super::{ControllerID, ControllerParametersMap, PlayerListSelection, GetClientRoleState, Role, RoleStateImpl};
+use super::{ControllerID, ControllerParametersMap, PlayerListSelection, GetClientAbilityState, Role, RoleStateTrait};
 
 
 #[derive(Clone, Debug, Default)]
@@ -26,8 +26,8 @@ pub(super) const DEFENSE: DefensePower = DefensePower::Armored;
 const ENRAGED_NUMERATOR: usize = 2;
 const ENRAGED_DENOMINATOR: usize = 3;
 
-impl RoleStateImpl for Werewolf {
-    type ClientRoleState = ClientRoleState;
+impl RoleStateTrait for Werewolf {
+    type ClientAbilityState = ClientRoleState;
     fn on_midnight(self, game: &mut Game, midnight_variables: &mut MidnightVariables, actor_ref: PlayerReference, priority: OnMidnightPriority) {
         match priority {
             OnMidnightPriority::Deception => {
@@ -170,8 +170,8 @@ impl Werewolf{
         Tags::add_tag(game, TagSetID::WerewolfTracked(actor), target);
     }
 }
-impl GetClientRoleState<ClientRoleState> for Werewolf {
-    fn get_client_role_state(self, _game: &Game, _actor_ref: PlayerReference) -> ClientRoleState {
+impl GetClientAbilityState<ClientRoleState> for Werewolf {
+    fn get_client_ability_state(self, _game: &Game, _actor_ref: PlayerReference) -> ClientRoleState {
         ClientRoleState
     }
 }

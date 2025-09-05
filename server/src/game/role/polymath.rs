@@ -14,7 +14,7 @@ use crate::game::Game;
 use crate::vec_map;
 
 use super::detective::Detective;
-use super::{ControllerID, ControllerParametersMap, Role, RoleStateImpl};
+use super::{ControllerID, ControllerParametersMap, Role, RoleStateTrait};
 
 
 pub(super) const MAXIMUM_COUNT: Option<u8> = None;
@@ -23,8 +23,8 @@ pub(super) const DEFENSE: DefensePower = DefensePower::None;
 #[derive(Clone, Debug, Serialize, Default)]
 pub struct Polymath;
 
-impl RoleStateImpl for Polymath {
-    type ClientRoleState = Polymath;
+impl RoleStateTrait for Polymath {
+    type ClientAbilityState = Polymath;
     fn on_midnight(self, game: &mut Game, midnight_variables: &mut MidnightVariables, actor_ref: PlayerReference, priority: OnMidnightPriority) {
         let selection = Self::ability_type_selection(game, actor_ref);
         match (priority, selection) {

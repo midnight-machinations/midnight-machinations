@@ -17,7 +17,7 @@ use crate::game::Game;
 use super::godfather::Godfather;
 use super::{
     ControllerID,
-    ControllerParametersMap, IntegerSelection, Role, RoleStateImpl
+    ControllerParametersMap, IntegerSelection, Role, RoleStateTrait
 };
 
 #[derive(Debug, Clone, Serialize)]
@@ -39,8 +39,8 @@ impl Default for Recruiter {
 pub(super) const MAXIMUM_COUNT: Option<u8> = Some(1);
 pub(super) const DEFENSE: DefensePower = DefensePower::None;
 
-impl RoleStateImpl for Recruiter {
-    type ClientRoleState = Recruiter;
+impl RoleStateTrait for Recruiter {
+    type ClientAbilityState = Recruiter;
     fn new_state(game: &Game) -> Self {
         Self{
             recruits_remaining: crate::game::role::common_role::standard_charges(game),

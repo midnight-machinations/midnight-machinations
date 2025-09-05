@@ -11,7 +11,7 @@ use crate::game::player::PlayerReference;
 use crate::game::visit::Visit;
 use crate::game::Game;
 use crate::vec_set::VecSet;
-use super::{ControllerID, ControllerParametersMap, Role, RoleStateImpl};
+use super::{ControllerID, ControllerParametersMap, Role, RoleStateTrait};
 
 #[derive(Clone, Debug, Default, Serialize)]
 #[serde(rename_all = "camelCase")]
@@ -30,8 +30,8 @@ pub enum SantaListKind{
 pub(super) const MAXIMUM_COUNT: Option<u8> = Some(1);
 pub(super) const DEFENSE: DefensePower = DefensePower::None;
 
-impl RoleStateImpl for SantaClaus {
-    type ClientRoleState = SantaClaus;
+impl RoleStateTrait for SantaClaus {
+    type ClientAbilityState = SantaClaus;
     fn on_midnight(self, game: &mut Game, midnight_variables: &mut MidnightVariables, actor_ref: PlayerReference, priority: OnMidnightPriority) {
         if priority != OnMidnightPriority::Convert { return }
 

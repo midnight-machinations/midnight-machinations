@@ -1,4 +1,4 @@
-use crate::{client_connection::ClientConnection, game::{chat::ChatComponent, components::{confused::Confused, cult::Cult, detained::Detained, drunk_aura::DrunkAura, fast_forward::FastForwardComponent, fragile_vest::FragileVestsComponent, graves::Graves, insider_group::{InsiderGroupID, InsiderGroups}, mafia::Mafia, mafia_recruits::MafiaRecruits, pitchfork::Pitchfork, poison::Poison, puppeteer_marionette::PuppeteerMarionette, silenced::Silenced, syndicate_gun_item::SyndicateGunItem, synopsis::SynopsisTracker, tags::Tags, verdicts_today::VerdictsToday, win_condition::WinConditionComponent}, controllers::Controllers, event::on_game_start::OnGameStart, game_client::GameClient, modifiers::ModifierID, phase::PhaseStateMachine, player::{Player, PlayerInitializeParameters, PlayerReference}, role_list_generation::{OutlineListAssignment, RoleListGenerator}, settings::Settings, spectator::{spectator_pointer::SpectatorPointer, Spectator, SpectatorInitializeParameters}, Assignments, Game, RejectStartReason}, packet::ToClientPacket, room::{name_validation::generate_random_name, RoomClientID}, vec_map::VecMap};
+use crate::{client_connection::ClientConnection, game::{abilities_component::Abilities, chat::ChatComponent, components::{confused::Confused, cult::Cult, detained::Detained, drunk_aura::DrunkAura, fast_forward::FastForwardComponent, fragile_vest::FragileVestsComponent, graves::Graves, insider_group::{InsiderGroupID, InsiderGroups}, mafia::Mafia, mafia_recruits::MafiaRecruits, pitchfork::Pitchfork, poison::Poison, puppeteer_marionette::PuppeteerMarionette, role::RoleComponent, silenced::Silenced, syndicate_gun_item::SyndicateGunItem, synopsis::SynopsisTracker, tags::Tags, verdicts_today::VerdictsToday, win_condition::WinConditionComponent}, controllers::Controllers, event::on_game_start::OnGameStart, game_client::GameClient, modifiers::ModifierID, phase::PhaseStateMachine, player::{Player, PlayerInitializeParameters, PlayerReference}, role_list_generation::{OutlineListAssignment, RoleListGenerator}, settings::Settings, spectator::{spectator_pointer::SpectatorPointer, Spectator, SpectatorInitializeParameters}, Assignments, Game, RejectStartReason}, packet::ToClientPacket, room::{name_validation::generate_random_name, RoomClientID}, vec_map::VecMap};
 
 use super::event::before_initial_role_creation::BeforeInitialRoleCreation;
 
@@ -37,21 +37,18 @@ impl Game{
                 }
             };
 
-            let assignments = Self::create_assignments(outline_list_assignment);            
+            let assignments = Self::create_assignments(outline_list_assignment);        
+            if assignments.len() != players.len() {
+                return Err(RejectStartReason::RoleListTooSmall)
+            }    
 
 
             // Create list of players
             let mut new_players = Vec::new();
             let mut new_players_names = Vec::new();
-            for (player_index, player) in players.iter().enumerate() {
-                let Ok(player_index) = player_index.try_into() else {return Err(RejectStartReason::TooManyClients)};
-                let player_ref = unsafe{PlayerReference::new_unchecked(player_index)};
-
+            for player in players.iter() {
                 let ClientConnection::Connected(ref sender) = player.connection else {
                     return Err(RejectStartReason::PlayerDisconnected)
-                };
-                let Some(assignment) = assignments.get(&player_ref) else {
-                    return Err(RejectStartReason::RoleListTooSmall)
                 };
                 
                 let name = if settings.modifiers.is_enabled(ModifierID::RandomPlayerNames) {
@@ -68,8 +65,7 @@ impl Game{
 
                 let new_player = Player::new(
                     name,
-                    sender.clone(),
-                    assignment.role
+                    sender.clone()
                 );
                 
                 new_players.push(new_player);
@@ -92,6 +88,7 @@ impl Game{
                 settings,
 
                 controllers: Controllers::default(),
+                abilities: Abilities::new(&assignments),
                 syndicate_gun_item: SyndicateGunItem::default(),
                 cult: Cult::default(),
                 mafia: Mafia,
@@ -110,6 +107,7 @@ impl Game{
                 silenced: Silenced::default(),
                 fragile_vests: unsafe{FragileVestsComponent::new(num_players)},
                 win_condition: unsafe{WinConditionComponent::new(num_players, &assignments)},
+                role: unsafe{RoleComponent::new(num_players, &assignments)},
                 fast_forward: unsafe{FastForwardComponent::new(num_players)},
                 chat_messages: unsafe{ChatComponent::new(num_players)}
             };

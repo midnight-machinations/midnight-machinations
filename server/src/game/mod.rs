@@ -22,10 +22,14 @@ pub mod role_outline_reference;
 pub mod controllers;
 pub mod room_state;
 pub mod new_game;
+pub mod abilities_component;
+pub mod abilities;
 
 use std::collections::VecDeque;
 use std::time::Instant;
+use crate::game::abilities_component::Abilities;
 use crate::game::components::fast_forward::FastForwardComponent;
+use crate::game::components::role::RoleComponent;
 use crate::game::controllers::Controllers;
 use crate::game::modifiers::ModifierID;
 use controllers::ControllerID;
@@ -106,6 +110,7 @@ pub struct Game {
     //components with data
     pub graves: Graves,
     pub controllers: Controllers,
+    pub abilities: Abilities,
     syndicate_gun_item: SyndicateGunItem,
     pub cult: Cult,
     pub mafia: Mafia,
@@ -123,6 +128,7 @@ pub struct Game {
     pub silenced: Silenced,
     pub fragile_vests: FragileVestsComponent,
     pub win_condition: WinConditionComponent,
+    pub role: RoleComponent,
     pub fast_forward: FastForwardComponent,
     pub chat_messages: ChatComponent
 }

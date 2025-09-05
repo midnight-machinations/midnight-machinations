@@ -9,7 +9,7 @@ use crate::game::player::PlayerReference;
 use crate::game::visit::Visit;
 use crate::game::Game;
 
-use super::{ControllerID, ControllerParametersMap, Role, RoleStateImpl};
+use super::{ControllerID, ControllerParametersMap, Role, RoleStateTrait};
 
 #[derive(Clone, Serialize, Debug, Default)]
 pub struct Tracker;
@@ -18,8 +18,8 @@ pub struct Tracker;
 pub(super) const MAXIMUM_COUNT: Option<u8> = None;
 pub(super) const DEFENSE: DefensePower = DefensePower::None;
 
-impl RoleStateImpl for Tracker {
-    type ClientRoleState = Tracker;
+impl RoleStateTrait for Tracker {
+    type ClientAbilityState = Tracker;
     fn on_midnight(self, game: &mut Game, midnight_variables: &mut MidnightVariables, actor_ref: PlayerReference, priority: OnMidnightPriority) {
         if priority != OnMidnightPriority::Investigative {return;}
 

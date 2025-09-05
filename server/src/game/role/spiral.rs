@@ -8,7 +8,7 @@ use crate::game::components::graves::grave::GraveKiller;
 use crate::game::player::PlayerReference;
 use crate::game::visit::Visit;
 use crate::game::Game;
-use super::{ControllerID, GetClientRoleState, Role, RoleStateImpl};
+use super::{ControllerID, GetClientAbilityState, Role, RoleStateTrait};
 
 #[derive(Debug, Clone, Default)]
 pub struct Spiral;
@@ -20,8 +20,8 @@ pub struct ClientRoleState;
 pub(super) const MAXIMUM_COUNT: Option<u8> = None;
 pub(super) const DEFENSE: DefensePower = DefensePower::Armored;
 
-impl RoleStateImpl for Spiral {
-    type ClientRoleState = ClientRoleState;
+impl RoleStateTrait for Spiral {
+    type ClientAbilityState = ClientRoleState;
     fn on_midnight(self, game: &mut Game, midnight_variables: &mut MidnightVariables, actor_ref: PlayerReference, priority: OnMidnightPriority) {
         if priority != OnMidnightPriority::Poison { return };
         
@@ -104,8 +104,8 @@ impl Spiral {
     }
 }
 
-impl GetClientRoleState<ClientRoleState> for Spiral {
-    fn get_client_role_state(self, _game: &Game, _actor_ref: PlayerReference) -> ClientRoleState {
+impl GetClientAbilityState<ClientRoleState> for Spiral {
+    fn get_client_ability_state(self, _game: &Game, _actor_ref: PlayerReference) -> ClientRoleState {
         ClientRoleState
     }
 }

@@ -16,7 +16,7 @@ use crate::game::visit::Visit;
 use crate::game::Game;
 use super::{
     ControllerID, ControllerParametersMap,
-    Role, RoleStateImpl
+    Role, RoleStateTrait
 };
 
 
@@ -27,8 +27,8 @@ pub struct Cop;
 pub(super) const MAXIMUM_COUNT: Option<u8> = None;
 pub(super) const DEFENSE: DefensePower = DefensePower::None;
 
-impl RoleStateImpl for Cop {
-    type ClientRoleState = Self;
+impl RoleStateTrait for Cop {
+    type ClientAbilityState = Self;
     fn on_midnight(self, game: &mut Game, midnight_variables: &mut MidnightVariables, actor_ref: PlayerReference, priority: OnMidnightPriority) {
         if game.day_number() <= 1 {return}
 
