@@ -10,19 +10,19 @@ use crate::{
     packet::ToClientPacket
 };
 
-
+#[derive(Clone)]
 pub struct RoleAbility(pub PlayerReference, pub RoleState);
 impl AbilityTrait for RoleAbility {}
 
 impl From<RoleAbility> for Ability where RoleAbility: AbilityTrait {
     fn from(role_struct: RoleAbility) -> Self {
-        Ability::Role(role_struct)
+        Ability::RoleAbility(role_struct)
     }
 }
 
 impl PlayerReference{
     pub fn role_state<'a>(&self, game: &'a Game) -> &'a RoleState {
-        let Ability::Role(RoleAbility(_, role_state)) = AbilityID::Role { player: *self }
+        let Ability::RoleAbility(RoleAbility(_, role_state)) = AbilityID::Role { player: *self }
             .get(game)
             .expect("every player must have a role ability");
         
@@ -35,7 +35,7 @@ impl PlayerReference{
         RoleComponent::set_role(*self, game, new_role);
 
         AbilityID::Role { player: *self }
-            .set(game, Some(Ability::Role(RoleAbility(*self, new_role_data.clone()))));
+            .set(game, Some(Ability::RoleAbility(RoleAbility(*self, new_role_data.clone()))));
 
         self.send_packet(game, ToClientPacket::YourRoleState {
             role_state: new_role_data.get_client_ability_state(game, *self)

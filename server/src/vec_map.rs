@@ -1,3 +1,5 @@
+use std::ops::{Deref, DerefMut};
+
 use rand::{seq::SliceRandom, Rng};
 use serde::{Deserialize, Serialize};
 
@@ -179,7 +181,17 @@ impl<'de, K, V> Deserialize<'de> for VecMap<K, V> where K: Eq, K: Deserialize<'d
     }
 }
 
-
+impl<K: Eq, V> Deref for VecMap<K, V> {
+    type Target = Vec<(K,V)>;
+    fn deref(&self) -> &Self::Target {
+        &self.vec
+    }
+}
+impl<K: Eq, V> DerefMut for VecMap<K, V> {
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        &mut self.vec
+    }
+}
 
 
 

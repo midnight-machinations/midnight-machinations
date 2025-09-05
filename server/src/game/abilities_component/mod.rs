@@ -1,6 +1,7 @@
 pub mod ability_id;
 pub mod ability;
 pub mod ability_trait;
+pub mod event_listeners;
 
 use crate::{
     game::{
@@ -21,13 +22,15 @@ impl Abilities{
         };
         for (player, o) in assignments.iter(){
             let id = AbilityID::Role { player: *player };
-            out.abilities.insert(id.clone(), Ability::Role(RoleAbility(*player, o.role.default_state())));
+            out.abilities.insert(id.clone(), Ability::RoleAbility(RoleAbility(*player, o.role.default_state())));
+            out.abilities.sort_by_key(|(k, _)|k.clone());
         }
         out
     }
     pub fn set_ability(game: &mut Game, id: &AbilityID, new: Option<impl Into<Ability>>){
         if let Some(new) = new{
             game.abilities.abilities.insert(id.clone(), new.into());
+            game.abilities.abilities.sort_by_key(|(k, _)|k.clone());
         }else{
             game.abilities.abilities.remove(id);
         }

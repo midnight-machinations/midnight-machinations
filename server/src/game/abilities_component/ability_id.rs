@@ -3,7 +3,7 @@ use crate::game::{
 };
 
 
-#[derive(Clone, PartialEq, Eq)]
+#[derive(Clone, PartialEq, Eq, PartialOrd, Ord)]
 pub enum AbilityID{
     Role{player: PlayerReference},
 }

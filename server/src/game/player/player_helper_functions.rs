@@ -421,8 +421,8 @@ impl PlayerReference{
     pub fn controller_parameters_map(&self, game: &Game) -> ControllerParametersMap {
         self.role_state(game).clone().controller_parameters_map(game, *self)
     }
-    pub fn on_midnight_one_player(&self, game: &mut Game, midnight_variables: &mut MidnightVariables, priority: OnMidnightPriority) {
-        self.role_state(game).clone().on_midnight(game, midnight_variables, *self, priority);
+    pub fn on_midnight_one_player(&self, game: &mut Game, midnight_variables: &mut MidnightVariables, _priority: OnMidnightPriority) {
+        // self.role_state(game).clone().on_midnight(game, midnight_variables, *self, priority);
 
         if self.is_disconnected(game) && self.alive(game) {
             midnight_variables.get_mut(*self).died = true;
