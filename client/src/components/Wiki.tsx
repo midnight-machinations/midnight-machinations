@@ -290,7 +290,7 @@ export function partitionWikiPages(
             "standard/guard", "standard/fragileVest", "standard/rampage", "standard/report", "standard/roleblock", "standard/silenced",
             "standard/spiral", "standard/syndicateGunItem", "standard/transport", "standard/ward",
             "standard/forfeitNominationVote", "standard/aura", "standard/fastForward", "standard/appearedVisit", 
-            "standard/defense", "standard/confused", "standard/trial", "standard/enfranchise", "standard/sniff"
+            "standard/defense", "standard/confused", "standard/trial", "standard/enfranchise", "standard/sniff",
         ].includes(wikiPage)) {
             categories.push("abilities")
         }
