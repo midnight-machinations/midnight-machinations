@@ -292,10 +292,9 @@ impl PlayerReference{
         OnAnyDeath::new(*self).invoke(game)
     }
     pub fn initial_role_creation(&self, game: &mut Game){
-        let new_role_data = self.role(game).new_state(game);
-        self.set_role_state(game, new_role_data.clone());
+        let role = self.role_state(game).role();
         self.on_role_creation(game);    //this function can change role state
-        if new_role_data.role() == self.role(game) {
+        if role == self.role(game) {
             self.add_private_chat_message(game, ChatMessageVariant::RoleAssignment{role: self.role(game)});
         }
         self.set_win_condition(game, self.win_condition(game).clone());
@@ -420,15 +419,10 @@ impl PlayerReference{
 
     
     pub fn on_midnight_one_player(&self, game: &mut Game, midnight_variables: &mut MidnightVariables, _priority: OnMidnightPriority) {
-        // self.role_state(game).clone().on_midnight(game, midnight_variables, *self, priority);
-
         if self.is_disconnected(game) && self.alive(game) {
             midnight_variables.get_mut(*self).died = true;
             midnight_variables.get_mut(*self).grave_killers = vec![GraveKiller::Quit]
         }
-    }
-    pub fn on_conceal_role(&self, game: &mut Game, player: PlayerReference, concealed_player: PlayerReference) {
-        self.role_state(game).clone().on_conceal_role(game, *self, player, concealed_player)
     }
     pub fn on_role_creation(&self, game: &mut Game) {
         self.role_state(game).clone().on_role_creation(game, *self)

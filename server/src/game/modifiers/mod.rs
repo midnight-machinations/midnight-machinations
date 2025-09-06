@@ -38,7 +38,6 @@ pub trait ModifierStateImpl where Self: Clone + Sized + Default + Serialize + fo
     fn on_grave_added(self, _game: &mut Game, _event: GraveReference) {}
     fn on_game_start(self, _game: &mut Game) {}
     fn on_any_death(self, _game: &mut Game, _player: PlayerReference) {}
-    fn before_initial_role_creation(self, _game: &mut Game) {}
     fn on_whisper(self, _game: &mut Game, _event: &OnWhisper, _fold: &mut WhisperFold, _priority: WhisperPriority) {}
 }
 
@@ -126,11 +125,6 @@ impl ModifierSettings{
     pub fn on_any_death(game: &mut Game, player: crate::game::player::PlayerReference){
         for modifier in game.modifier_settings().modifiers.clone(){
             modifier.1.on_any_death(game, player);
-        }
-    }
-    pub fn before_initial_role_creation(game: &mut Game){
-        for modifier in game.modifier_settings().modifiers.clone(){
-            modifier.1.before_initial_role_creation(game);
         }
     }
     pub fn on_whisper(game: &mut Game, event: &OnWhisper, fold: &mut WhisperFold, priority: WhisperPriority) {
@@ -226,13 +220,6 @@ mod macros {
                     match self {
                         $(
                             ModifierState::$name(s) => s.on_any_death(game, player),
-                        )*
-                    }
-                }
-                fn before_initial_role_creation(self, game: &mut Game) {
-                    match self {
-                        $(
-                            ModifierState::$name(s) => s.before_initial_role_creation(game),
                         )*
                     }
                 }

@@ -171,6 +171,7 @@ impl Game{
 
         BeforeInitialRoleCreation::invoke(&mut game);
         
+        Abilities::set_default_abilties(&mut game);
         //on role creation needs to be called after all players roles are known
         //trigger role event listeners
         for player_ref in PlayerReference::all_players(&game){

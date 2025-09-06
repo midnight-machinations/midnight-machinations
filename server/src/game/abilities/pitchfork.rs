@@ -1,6 +1,15 @@
-use crate::{game::{abilities_component::{ability::Ability, ability_id::AbilityID, ability_trait::AbilityTrait}, attack_power::AttackPower, components::{graves::grave::GraveKiller, pitchfork_item::PitchforkItemComponent}, controllers::{AvailablePlayerListSelection, ControllerID, ControllerParametersMap, PlayerListSelection}, event::{before_phase_end::BeforePhaseEnd, on_midnight::{MidnightVariables, OnMidnight, OnMidnightPriority}}, game_conclusion::GameConclusion, phase::PhaseType, player::PlayerReference, role::Role, role_list::RoleSet, Game}, vec_map::VecMap};
+use crate::{
+    game::{
+        abilities_component::{ability::Ability, ability_id::AbilityID, ability_trait::AbilityTrait},
+        attack_power::AttackPower, components::{graves::grave::GraveKiller, pitchfork_item::PitchforkItemComponent},
+        controllers::{AvailablePlayerListSelection, ControllerID, ControllerParametersMap, PlayerListSelection},
+        event::{before_phase_end::BeforePhaseEnd, on_midnight::{MidnightVariables, OnMidnight, OnMidnightPriority}},
+        game_conclusion::GameConclusion, phase::PhaseType, player::PlayerReference, role::{common_role, Role}, role_list::RoleSet, Game
+    },
+    vec_map::VecMap
+};
 
-#[derive(Clone)]
+#[derive(Clone, Default)]
 pub struct PitchforkAbility{
     charges: u8,
     angry_mobbed_player: Option<PlayerReference>,
@@ -12,6 +21,10 @@ impl From<PitchforkAbility> for Ability where PitchforkAbility: AbilityTrait {
     }
 }
 impl PitchforkAbility{
+    pub fn new_state(game: &Game)->Self{
+        Self { charges: common_role::standard_charges(game), angry_mobbed_player: None }
+    }
+
     pub fn on_midnight(mut self, game: &mut Game, _event: &OnMidnight, midnight_variables: &mut MidnightVariables, priority: OnMidnightPriority){
         if priority != OnMidnightPriority::Kill {return;}
         if game.day_number() <= 1 {return;}
@@ -59,7 +72,7 @@ impl PitchforkAbility{
                     })
                     .add_grayed_out_condition(
                         game.day_number() == 1 ||
-                        !player.alive(game) ||
+                        player.ability_deactivated_from_death(game) ||
                         !player.win_condition(game).is_loyalist_for(GameConclusion::Town)
                     )
                     .reset_on_phase_start(PhaseType::Obituary)

@@ -5,7 +5,7 @@ pub mod event_listeners;
 
 use crate::{
     game::{
-        abilities::role_abilities::RoleAbility, abilities_component::{
+        abilities::{pitchfork::PitchforkAbility, role_abilities::RoleAbility}, abilities_component::{
             ability::Ability, ability_id::AbilityID
         }, Assignments, Game
     },
@@ -20,19 +20,33 @@ impl Abilities{
         let mut out = Self{
             abilities: VecMap::new(),
         };
+        out.abilities.insert(AbilityID::Pitchfork, Ability::Pitchfork(PitchforkAbility::default()));
         for (player, o) in assignments.iter(){
             let id = AbilityID::Role { player: *player };
             out.abilities.insert(id.clone(), Ability::RoleAbility(RoleAbility(*player, o.role.default_state())));
-            out.abilities.sort_by_key(|(k, _)|k.clone());
+            out.abilities.sort();
         }
         out
+    }
+    pub fn set_default_abilties(game: &mut Game){
+        for (id, _) in game.abilities.abilities.clone() {
+            Abilities::set_ability(game, &id, Some(id.new_state(game)));
+        }
     }
     pub fn set_ability(game: &mut Game, id: &AbilityID, new: Option<impl Into<Ability>>){
         if let Some(new) = new{
             game.abilities.abilities.insert(id.clone(), new.into());
-            game.abilities.abilities.sort_by_key(|(k, _)|k.clone());
+            game.abilities.abilities.sort();
         }else{
             game.abilities.abilities.remove(id);
+        }
+    }
+}
+impl AbilityID{
+    fn new_state(&self, game: &Game)->Ability{
+        match self {
+            AbilityID::Role { player } => {RoleAbility(*player, player.role(game).new_state(game)).into()},
+            AbilityID::Pitchfork => {PitchforkAbility::new_state(game).into()},
         }
     }
 }

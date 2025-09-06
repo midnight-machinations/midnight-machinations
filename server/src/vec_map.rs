@@ -1,5 +1,3 @@
-use std::ops::{Deref, DerefMut};
-
 use rand::{seq::SliceRandom, Rng};
 use serde::{Deserialize, Serialize};
 
@@ -140,6 +138,11 @@ impl<K, V> VecMap<K, V> where K: Eq {
     pub fn shuffle<R: Rng + ?Sized>(&mut self, rng: &mut R){
         self.vec.shuffle(rng);
     }
+    pub fn sort(&mut self)
+        where K: Ord + Clone
+    {
+        self.vec.sort_by_key(|(k, _)|k.clone());
+    }
 }
 
 impl<K, V> PartialEq for VecMap<K, V> where K: Eq, V: Eq {
@@ -178,18 +181,6 @@ impl<'de, K, V> Deserialize<'de> for VecMap<K, V> where K: Eq, K: Deserialize<'d
     fn deserialize<D>(deserializer: D) -> Result<Self, D::Error> where D: serde::Deserializer<'de> {
         let vec = Vec::deserialize(deserializer)?;
         Ok(VecMap { vec })
-    }
-}
-
-impl<K: Eq, V> Deref for VecMap<K, V> {
-    type Target = Vec<(K,V)>;
-    fn deref(&self) -> &Self::Target {
-        &self.vec
-    }
-}
-impl<K: Eq, V> DerefMut for VecMap<K, V> {
-    fn deref_mut(&mut self) -> &mut Self::Target {
-        &mut self.vec
     }
 }
 

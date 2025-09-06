@@ -3,7 +3,7 @@ use crate::{
     game::{
         chat::{ChatMessage, ChatMessageVariant, ChatPlayerComponent},
         components::player_component::PlayerComponent, controllers::{ControllerID, IntegerSelection},
-        event::on_conceal_role::OnConcealRole, modifiers::ModifierID, verdict::Verdict, Game
+        event::{on_conceal_role::OnConcealRole, Event as _}, modifiers::ModifierID, verdict::Verdict, Game
     },
     packet::ToClientPacket,
     vec_set::VecSet

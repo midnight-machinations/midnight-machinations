@@ -7,7 +7,7 @@ use crate::game::{chat::ChatGroup, components::{call_witness::CallWitness, detai
 use super::{medium::Medium, reporter::Reporter, warden::Warden, InsiderGroupID, Role, RoleState};
 
 
-pub(super) fn standard_charges(game: &Game)->u8{
+pub fn standard_charges(game: &Game)->u8{
     game.num_players().div_ceil(5)
 }
 

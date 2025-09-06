@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 
-use crate::{game::{chat::{ChatGroup, ChatMessageVariant}, event::{on_add_insider::OnAddInsider, on_remove_insider::OnRemoveInsider, Event}, player::PlayerReference, Assignments, Game}, packet::ToClientPacket, vec_set::VecSet};
+use crate::{game::{chat::{ChatGroup, ChatMessageVariant}, event::{on_add_insider::OnAddInsider, on_conceal_role::OnConcealRole, on_remove_insider::OnRemoveInsider, Event}, player::PlayerReference, Assignments, Game}, packet::ToClientPacket, vec_set::VecSet};
 
 #[derive(Debug)]
 pub struct InsiderGroups{
@@ -43,7 +43,8 @@ impl InsiderGroups{
 
 
     
-    pub fn on_conceal_role(game: &mut Game, player: PlayerReference, concealed_player: PlayerReference){
+    pub fn on_conceal_role(game: &mut Game, event: &OnConcealRole, _fold: &mut (), _priority: ()){
+        let &OnConcealRole{player, concealed_player} = event;
         InsiderGroupID::Mafia.on_conceal_role(game, player, concealed_player);
         InsiderGroupID::Cult.on_conceal_role(game, player, concealed_player);
         InsiderGroupID::Puppeteer.on_conceal_role(game, player, concealed_player);
