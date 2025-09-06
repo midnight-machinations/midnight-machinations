@@ -1,10 +1,10 @@
 
-    use crate::{game::{abilities_component::Abilities, chat::ChatComponent, components::{fast_forward::FastForwardComponent, graves::Graves, role::RoleComponent}, role_list_generation::RoleListGenerator}, vec_map::VecMap};
+    use crate::{game::{abilities_component::Abilities, chat::ChatComponent, components::{fast_forward::FastForwardComponent, graves::Graves, pitchfork_item::PitchforkItemComponent, role::RoleComponent}, role_list_generation::RoleListGenerator}, vec_map::VecMap};
 
     use super::{
         controllers::Controllers, components::{
             cult::Cult, fragile_vest::FragileVests, insider_group::InsiderGroups,
-            mafia::Mafia, mafia_recruits::MafiaRecruits, pitchfork::Pitchfork, player_component::PlayerComponent,
+            mafia::Mafia, mafia_recruits::MafiaRecruits, player_component::PlayerComponent,
             poison::Poison, puppeteer_marionette::PuppeteerMarionette, silenced::Silenced, syndicate_gun_item::SyndicateGunItem,
             synopsis::SynopsisTracker, tags::Tags, verdicts_today::VerdictsToday, win_condition::WinCondition
         }, event::{before_initial_role_creation::BeforeInitialRoleCreation, on_game_start::OnGameStart},
@@ -41,7 +41,7 @@
         let mut game = Game{
             clients: VecMap::new(),
             room_name: "Test".to_string(),
-            pitchfork: Pitchfork::new(num_players),
+            // pitchfork: Pitchfork::new(num_players),
             
             assignments: assignments.clone(),
             ticking: true,
@@ -69,6 +69,7 @@
             tags: Tags::default(),
             silenced: Silenced::default(),
             role: unsafe{RoleComponent::new(num_players, &assignments)},
+            pitchfork_item: unsafe{PitchforkItemComponent::new(num_players)},
             fragile_vests: unsafe{PlayerComponent::<FragileVests>::new(num_players)},
             win_condition: unsafe{PlayerComponent::<WinCondition>::new(num_players, &assignments)},
             fast_forward: unsafe{FastForwardComponent::new(num_players)},

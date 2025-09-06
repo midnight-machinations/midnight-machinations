@@ -2,7 +2,7 @@ use serde::Serialize;
 
 use crate::game::{
     attack_power::DefensePower,
-    components::pitchfork::Pitchfork,
+    components::pitchfork_item::PitchforkItemComponent,
     player::PlayerReference, 
     Game
 };
@@ -20,11 +20,11 @@ pub struct Rabblerouser;
 impl RoleStateTrait for Rabblerouser {
     type ClientAbilityState = Rabblerouser;
     fn on_role_creation(self, game: &mut Game, actor_ref: PlayerReference) {
-        Pitchfork::add_pitchfork(game, actor_ref);
+        PitchforkItemComponent::give_pitchfork(game, actor_ref);
     }
     fn before_role_switch(self, game: &mut Game, actor_ref: PlayerReference, player: PlayerReference, _old: RoleState, _new: RoleState) {
         if player == actor_ref {
-            Pitchfork::remove_pitchfork(game, actor_ref);
+            PitchforkItemComponent::remove_pitchfork(game, actor_ref);
         }
     }
 }

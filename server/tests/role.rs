@@ -1810,12 +1810,12 @@ fn godfather_backup_sets_off_engineer_trap() {
 #[test]
 fn warden_dismantles_trap() {
     kit::scenario!(game in Dusk 2 where
-        evil: Warden,
+        warden: Warden,
         eng: Engineer,
         esc: Escort
     );
 
-    evil.send_ability_input_player_list_typical(esc);
+    warden.send_ability_input_player_list_typical(esc);
     eng.send_ability_input_player_list_typical(esc);
 
     game.skip_to(Obituary, 3);
@@ -1825,7 +1825,7 @@ fn warden_dismantles_trap() {
         RoleState::Engineer(Engineer { trap: Trap::Dismantled })
     ));
     assert!(esc.alive());
-    assert!(evil.alive());
+    assert!(warden.alive());
     assert!(eng.alive());
 }
 

@@ -24,7 +24,8 @@ impl PlayerReference{
     pub fn role_state<'a>(&self, game: &'a Game) -> &'a RoleState {
         let Ability::RoleAbility(RoleAbility(_, role_state)) = AbilityID::Role { player: *self }
             .get(game)
-            .expect("every player must have a role ability");
+            .expect("every player must have a role ability")
+            else { unreachable!() };
         
         role_state
     }

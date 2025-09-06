@@ -91,6 +91,7 @@ impl RoleStateTrait for Warden {
         ])
     }
     fn on_phase_start(mut self, game: &mut Game, actor_ref: PlayerReference, phase: PhaseType){
+        println!("{:?}", self);
         match phase {
             PhaseType::Night => {
                 let Some(PlayerListSelection(players_in_prison)) = ControllerID::role(actor_ref, Role::Warden, 0)
@@ -145,8 +146,10 @@ impl Warden {
             }
         }
         if players_who_chose_die.is_empty(){
+            println!("sus forced {:?}", self.players_in_prison.clone());
             self.players_in_prison.clone().into_iter().collect()
         }else{
+            println!("sus chose {:?}", players_who_chose_die);
             players_who_chose_die
         }
     }

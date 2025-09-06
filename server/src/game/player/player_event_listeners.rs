@@ -1,7 +1,7 @@
 use crate::game::{
     components::graves::grave_reference::GraveReference, controllers::{ControllerID, ControllerInput},
     event::{
-        on_midnight::{MidnightVariables, OnMidnight, OnMidnightPriority}, on_phase_start::OnPhaseStart,
+        on_midnight::{MidnightVariables, OnMidnight, OnMidnightPriority},
     },
     role::RoleState, visit::Visit, Game
 };
@@ -61,14 +61,5 @@ impl PlayerReference {
     }
     pub fn on_visit_wardblocked(&self, game: &mut Game, midnight_variables: &mut MidnightVariables, visit: Visit) {
         self.role_state(game).clone().on_visit_wardblocked(game, midnight_variables, *self, visit)
-    }
-
-    pub fn on_phase_start(game: &mut Game, event: &OnPhaseStart, _fold: &mut (), _priority: ()){
-        for player_ref in PlayerReference::all_players(game){
-            player_ref.one_on_phase_start(game, event, _fold, _priority);
-        }
-    }
-    pub fn one_on_phase_start(&self, game: &mut Game, event: &OnPhaseStart, _fold: &mut (), _priority: ()){
-        self.role_state(game).clone().on_phase_start(game, *self, event.phase.phase())
     }
 }

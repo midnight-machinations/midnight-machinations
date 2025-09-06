@@ -18,7 +18,7 @@ pub mod hidden_verdict_votes;
 pub mod forfeit_vote;
 pub mod random_player_names;
 
-use crate::{game::{components::graves::grave_reference::GraveReference, event::on_phase_start::OnPhaseStart}, vec_map::VecMap};
+use crate::{game::{components::graves::grave_reference::GraveReference, event::{before_phase_end::BeforePhaseEnd, on_phase_start::OnPhaseStart}}, vec_map::VecMap};
 
 use serde::{Serialize, Deserialize};
 
@@ -113,9 +113,9 @@ impl ModifierSettings{
             modifier.1.on_game_start(game);
         }
     }
-    pub fn before_phase_end(game: &mut Game, phase: super::phase::PhaseType){
+    pub fn before_phase_end(game: &mut Game, event: &BeforePhaseEnd, _fold: &mut (), _priority: ()){
         for modifier in game.modifier_settings().modifiers.clone(){
-            modifier.1.before_phase_end(game, phase);
+            modifier.1.before_phase_end(game, event.phase);
         }
     }
     pub fn on_phase_start(game: &mut Game, event: &OnPhaseStart, _fold: &mut (), _priority: ()){

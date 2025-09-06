@@ -1,4 +1,25 @@
-use crate::{client_connection::ClientConnection, game::{abilities_component::Abilities, chat::ChatComponent, components::{confused::Confused, cult::Cult, detained::Detained, drunk_aura::DrunkAura, fast_forward::FastForwardComponent, fragile_vest::FragileVestsComponent, graves::Graves, insider_group::{InsiderGroupID, InsiderGroups}, mafia::Mafia, mafia_recruits::MafiaRecruits, pitchfork::Pitchfork, poison::Poison, puppeteer_marionette::PuppeteerMarionette, role::RoleComponent, silenced::Silenced, syndicate_gun_item::SyndicateGunItem, synopsis::SynopsisTracker, tags::Tags, verdicts_today::VerdictsToday, win_condition::WinConditionComponent}, controllers::Controllers, event::on_game_start::OnGameStart, game_client::GameClient, modifiers::ModifierID, phase::PhaseStateMachine, player::{Player, PlayerInitializeParameters, PlayerReference}, role_list_generation::{OutlineListAssignment, RoleListGenerator}, settings::Settings, spectator::{spectator_pointer::SpectatorPointer, Spectator, SpectatorInitializeParameters}, Assignments, Game, RejectStartReason}, packet::ToClientPacket, room::{name_validation::generate_random_name, RoomClientID}, vec_map::VecMap};
+use crate::{
+    client_connection::ClientConnection,
+    game::{
+        abilities_component::Abilities, chat::ChatComponent,
+        components::{
+            confused::Confused, cult::Cult, detained::Detained, drunk_aura::DrunkAura,
+            fast_forward::FastForwardComponent, fragile_vest::FragileVestsComponent, graves::Graves,
+            insider_group::{InsiderGroupID, InsiderGroups}, mafia::Mafia, mafia_recruits::MafiaRecruits,
+            pitchfork_item::PitchforkItemComponent, poison::Poison, puppeteer_marionette::PuppeteerMarionette,
+            role::RoleComponent, silenced::Silenced, syndicate_gun_item::SyndicateGunItem, synopsis::SynopsisTracker,
+            tags::Tags, verdicts_today::VerdictsToday, win_condition::WinConditionComponent
+        },
+        controllers::Controllers,
+        event::on_game_start::OnGameStart, game_client::GameClient, modifiers::ModifierID, phase::PhaseStateMachine,
+        player::{Player, PlayerInitializeParameters, PlayerReference},
+        role_list_generation::{OutlineListAssignment, RoleListGenerator}, settings::Settings,
+        spectator::{spectator_pointer::SpectatorPointer, Spectator, SpectatorInitializeParameters}, Assignments,
+        Game, RejectStartReason
+    },
+    packet::ToClientPacket, room::{name_validation::generate_random_name, RoomClientID},
+    vec_map::VecMap
+};
 
 use super::event::before_initial_role_creation::BeforeInitialRoleCreation;
 
@@ -77,7 +98,7 @@ impl Game{
             let mut game = Self{
                 room_name: room_name.clone(),
                 clients: clients.clone(),
-                pitchfork: Pitchfork::new(num_players),
+                // pitchfork: Pitchfork::new(num_players),
 
                 assignments: assignments.clone(),
                 ticking: true,
@@ -96,7 +117,7 @@ impl Game{
                 mafia_recruits: MafiaRecruits::default(),
                 verdicts_today: VerdictsToday::default(),
                 poison: Poison::default(),
-                
+                pitchfork_item: unsafe{PitchforkItemComponent::new(num_players)},
                 graves: Graves::default(),
                 insider_groups: unsafe{InsiderGroups::new(num_players, &assignments)},
                 detained: Detained::default(),

@@ -31,3 +31,4 @@ pub mod call_witness;
 pub mod fast_forward;
 pub mod role;
 pub mod player_component;
+pub mod pitchfork_item;

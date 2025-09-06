@@ -5,7 +5,7 @@ use crate::{
     game::{
         attack_power::{AttackPower, DefensePower}, chat::{ChatGroup, ChatMessage, ChatMessageVariant}, components::{
             fragile_vest::FragileVests, graves::{grave::{Grave, GraveKiller}, Graves}, insider_group::InsiderGroupID, night_visits::{NightVisitsIterator, Visits}, player_component::PlayerComponent, win_condition::WinCondition
-        }, controllers::{BooleanSelection, Controller, ControllerID, ControllerParametersMap, ControllerSelection, Controllers, PlayerListSelection, TwoPlayerOptionSelection}, event::{
+        }, controllers::{BooleanSelection, Controller, ControllerID, ControllerSelection, Controllers, PlayerListSelection, TwoPlayerOptionSelection}, event::{
             before_role_switch::BeforeRoleSwitch, on_any_death::OnAnyDeath,
             on_midnight::{MidnightVariables, OnMidnightPriority},
             on_player_roleblocked::OnPlayerRoleblocked, on_role_switch::OnRoleSwitch,
@@ -418,9 +418,7 @@ impl PlayerReference{
         Role functions
     */
 
-    pub fn controller_parameters_map(&self, game: &Game) -> ControllerParametersMap {
-        self.role_state(game).clone().controller_parameters_map(game, *self)
-    }
+    
     pub fn on_midnight_one_player(&self, game: &mut Game, midnight_variables: &mut MidnightVariables, _priority: OnMidnightPriority) {
         // self.role_state(game).clone().on_midnight(game, midnight_variables, *self, priority);
 

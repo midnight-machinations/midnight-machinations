@@ -1,7 +1,8 @@
-use crate::game::abilities::role_abilities::RoleAbility;
+use crate::game::abilities::{pitchfork::PitchforkAbility, role_abilities::RoleAbility};
 
 #[derive(Clone)]
 pub enum Ability{
     RoleAbility(RoleAbility),
+    Pitchfork(PitchforkAbility),
 }
 
