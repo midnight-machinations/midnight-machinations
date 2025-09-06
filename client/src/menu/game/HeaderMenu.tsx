@@ -203,6 +203,13 @@ export function MenuButtons(props: Readonly<{ chatMenuNotification: boolean }>):
 
     return <div className="menu-buttons">
         {menuController.menus().map(menu => {
+            if(
+                GAME_MANAGER.state.stateType === "game" &&
+                GAME_MANAGER.state.clientState.type === "spectator" &&
+                (menu === ContentMenu.WillMenu || menu === ContentMenu.RoleSpecificMenu)
+            ){
+                return null;
+            }
             return <Button key={menu} className={MENU_THEMES[menu] ?? ""}
                 highlighted={menuController.menusOpen().includes(menu)} 
                 onClick={()=>menuController.closeOrOpenMenu(menu)}
