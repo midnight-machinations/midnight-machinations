@@ -411,17 +411,4 @@ impl Role{
             | Role::Necromancer 
         )
     }
-    pub fn has_innocent_aura(&self, game: &Game)->bool{
-        match self {
-            Role::Godfather => true,
-            Role::Disguiser => true,
-            Role::Pyrolisk => {
-                game.day_number() == 1
-            },
-            _ => false,
-        }
-    }
-    pub fn has_suspicious_aura(&self, _game: &Game)->bool{
-        false
-    }
 }
