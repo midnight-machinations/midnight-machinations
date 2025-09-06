@@ -15,7 +15,7 @@ use crate::game::player::PlayerReference;
 use crate::game::Game;
 use super::{
     ControllerID, ControllerParametersMap,
-    PlayerListSelection, Role, RoleStateImpl
+    PlayerListSelection, Role, RoleStateTrait
 };
 
 #[derive(Clone, Debug, Serialize, Default)]
@@ -28,8 +28,8 @@ pub struct Reporter {
 pub(super) const MAXIMUM_COUNT: Option<u8> = Some(1);
 pub(super) const DEFENSE: DefensePower = DefensePower::None;
 
-impl RoleStateImpl for Reporter {
-    type ClientRoleState = Reporter;
+impl RoleStateTrait for Reporter {
+    type ClientAbilityState = Reporter;
     fn on_midnight(self, game: &mut Game, midnight_variables: &mut MidnightVariables, actor_ref: PlayerReference, priority: OnMidnightPriority) {
         if 
             priority == OnMidnightPriority::Investigative &&

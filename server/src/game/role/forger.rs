@@ -10,8 +10,8 @@ use crate::game::player::PlayerReference;
 use crate::game::visit::Visit;
 
 use crate::game::Game;
-use super::{ControllerID, ControllerParametersMap, GetClientRoleState, Role};
-use super::{RoleState, RoleStateImpl};
+use super::{ControllerID, ControllerParametersMap, GetClientAbilityState, Role};
+use super::{RoleState, RoleStateTrait};
 
 
 #[derive(Clone, Debug, Serialize)]
@@ -40,8 +40,8 @@ impl Default for Forger {
 pub(super) const MAXIMUM_COUNT: Option<u8> = Some(1);
 pub(super) const DEFENSE: DefensePower = DefensePower::None;
 
-impl RoleStateImpl for Forger {
-    type ClientRoleState = ClientRoleState;
+impl RoleStateTrait for Forger {
+    type ClientAbilityState = ClientRoleState;
     fn new_state(game: &Game) -> Self {
         Self{
             forges_remaining: crate::game::role::common_role::standard_charges(game),
@@ -145,8 +145,8 @@ impl RoleStateImpl for Forger {
         ].into_iter().collect()
     }
 }
-impl GetClientRoleState<ClientRoleState> for Forger {
-    fn get_client_role_state(self, _game: &Game, _actor_ref: PlayerReference) -> ClientRoleState {
+impl GetClientAbilityState<ClientRoleState> for Forger {
+    fn get_client_ability_state(self, _game: &Game, _actor_ref: PlayerReference) -> ClientRoleState {
         ClientRoleState {
             forges_remaining: self.forges_remaining,
         }

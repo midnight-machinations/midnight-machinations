@@ -1,10 +1,10 @@
 
-    use crate::{game::{chat::ChatComponent, components::{fast_forward::FastForwardComponent, graves::Graves}, role_list_generation::RoleListGenerator}, vec_map::VecMap};
+    use crate::{game::{abilities_component::Abilities, chat::ChatComponent, components::{fast_forward::FastForwardComponent, graves::Graves, pitchfork_item::PitchforkItemComponent, role::RoleComponent}, role_list_generation::RoleListGenerator}, vec_map::VecMap};
 
     use super::{
         controllers::Controllers, components::{
             cult::Cult, fragile_vest::FragileVests, insider_group::InsiderGroups,
-            mafia::Mafia, mafia_recruits::MafiaRecruits, pitchfork::Pitchfork, player_component::PlayerComponent,
+            mafia::Mafia, mafia_recruits::MafiaRecruits, player_component::PlayerComponent,
             poison::Poison, puppeteer_marionette::PuppeteerMarionette, silenced::Silenced, syndicate_gun_item::SyndicateGunItem,
             synopsis::SynopsisTracker, tags::Tags, verdicts_today::VerdictsToday, win_condition::WinCondition
         }, event::{before_initial_role_creation::BeforeInitialRoleCreation, on_game_start::OnGameStart},
@@ -33,11 +33,7 @@
         let mut players = Vec::new();
         for player in unsafe{PlayerReference::all_players_from_count(num_players)} {
             let new_player = mock_player(
-                format!("{}",player.index()),
-                match assignments.get(&player).map(|a|a.role){
-                    Some(role) => role,
-                    None => return Err(RejectStartReason::RoleListTooSmall),
-                }
+                format!("{}",player.index())
             );
             players.push(new_player);
         }
@@ -45,7 +41,7 @@
         let mut game = Game{
             clients: VecMap::new(),
             room_name: "Test".to_string(),
-            pitchfork: Pitchfork::new(num_players),
+            // pitchfork: Pitchfork::new(num_players),
             
             assignments: assignments.clone(),
             ticking: true,
@@ -55,6 +51,7 @@
             phase_machine: PhaseStateMachine::new(settings.phase_times.clone()),
             settings,
 
+            abilities: Abilities::new(&assignments),
             graves: Graves::default(),
             controllers: Controllers::default(),
             syndicate_gun_item: SyndicateGunItem::default(),
@@ -71,6 +68,8 @@
             synopsis_tracker: SynopsisTracker::new(num_players),
             tags: Tags::default(),
             silenced: Silenced::default(),
+            role: unsafe{RoleComponent::new(num_players, &assignments)},
+            pitchfork_item: unsafe{PitchforkItemComponent::new(num_players)},
             fragile_vests: unsafe{PlayerComponent::<FragileVests>::new(num_players)},
             win_condition: unsafe{PlayerComponent::<WinCondition>::new(num_players, &assignments)},
             fast_forward: unsafe{FastForwardComponent::new(num_players)},

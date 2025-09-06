@@ -9,7 +9,7 @@ use crate::game::event::on_midnight::{MidnightVariables, OnMidnightPriority};
 use crate::game::{attack_power::DefensePower, player::PlayerReference};
 use crate::game::visit::{Visit, VisitTag};
 use crate::game::Game;
-use super::{InsiderGroupID, Role, RoleStateImpl};
+use super::{InsiderGroupID, Role, RoleStateTrait};
 
 
 #[derive(Clone, Debug, Serialize)]
@@ -25,8 +25,8 @@ impl Default for Disguiser {
 pub(super) const MAXIMUM_COUNT: Option<u8> = Some(1);
 pub(super) const DEFENSE: DefensePower = DefensePower::None;
 
-impl RoleStateImpl for Disguiser {
-    type ClientRoleState = Disguiser;
+impl RoleStateTrait for Disguiser {
+    type ClientAbilityState = Disguiser;
     fn on_midnight(mut self, game: &mut Game, midnight_variables: &mut MidnightVariables, actor_ref: PlayerReference, priority: OnMidnightPriority) {
         if priority != OnMidnightPriority::Deception {return}
 

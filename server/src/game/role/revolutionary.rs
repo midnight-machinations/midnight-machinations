@@ -12,7 +12,7 @@ use crate::game::role::RoleState;
 use crate::game::role_list::RoleSet;
 use crate::game::Game;
 use super::jester::Jester;
-use super::{GetClientRoleState, Role, RoleStateImpl};
+use super::{GetClientAbilityState, Role, RoleStateTrait};
 
 
 #[derive(Clone, Debug, Default)]
@@ -47,8 +47,8 @@ impl Default for RevolutionaryTarget {
 pub(super) const MAXIMUM_COUNT: Option<u8> = None;
 pub(super) const DEFENSE: DefensePower = DefensePower::Armored;
 
-impl RoleStateImpl for Revolutionary {
-    type ClientRoleState = ClientRoleState;
+impl RoleStateTrait for Revolutionary {
+    type ClientAbilityState = ClientRoleState;
     fn on_phase_start(self, game: &mut Game, actor_ref: PlayerReference, _phase: PhaseType){
 
         if self.target == RevolutionaryTarget::Won || !actor_ref.alive(game){
@@ -103,8 +103,8 @@ impl RoleStateImpl for Revolutionary {
         Tags::remove_viewer(game, TagSetID::RevolutionaryTarget(actor_ref), actor_ref);
     }
 }
-impl GetClientRoleState<ClientRoleState> for Revolutionary {
-    fn get_client_role_state(self, _game: &Game, _actor_ref: PlayerReference) -> ClientRoleState {
+impl GetClientAbilityState<ClientRoleState> for Revolutionary {
+    fn get_client_ability_state(self, _game: &Game, _actor_ref: PlayerReference) -> ClientRoleState {
         ClientRoleState
     }
 }

@@ -10,7 +10,7 @@ use crate::game::Game;
 
 use super::{
     common_role, ControllerID,
-    ControllerParametersMap, GetClientRoleState, Role, RoleStateImpl
+    ControllerParametersMap, GetClientAbilityState, Role, RoleStateTrait
 };
 
 
@@ -26,8 +26,8 @@ pub struct Necromancer {
 #[derive(Clone, Debug, Serialize)]
 pub struct ClientRoleState;
 
-impl RoleStateImpl for Necromancer {
-    type ClientRoleState = ClientRoleState;
+impl RoleStateTrait for Necromancer {
+    type ClientAbilityState = ClientRoleState;
     fn on_midnight(self, game: &mut Game, midnight_variables: &mut MidnightVariables, actor_ref: PlayerReference, priority: OnMidnightPriority) {
         if let Some(currently_used_player) = actor_ref.possess_night_action(game, midnight_variables, priority, self.currently_used_player){
             let mut used_bodies = self.used_bodies;
@@ -76,8 +76,8 @@ impl RoleStateImpl for Necromancer {
    }
    fn on_player_roleblocked(self, _game: &mut Game, _midnight_variables: &mut MidnightVariables, _actor_ref: PlayerReference, _player: PlayerReference, _invisible: bool) {}
 }
-impl GetClientRoleState<ClientRoleState> for Necromancer {
-    fn get_client_role_state(self, _game: &Game, _actor_ref: PlayerReference) -> ClientRoleState {
+impl GetClientAbilityState<ClientRoleState> for Necromancer {
+    fn get_client_ability_state(self, _game: &Game, _actor_ref: PlayerReference) -> ClientRoleState {
         ClientRoleState
     }
 }

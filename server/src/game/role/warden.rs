@@ -9,7 +9,7 @@ use crate::game::phase::PhaseType;
 use crate::game::attack_power::DefensePower;
 use crate::game::player::PlayerReference;
 use crate::game::Game;
-use super::{common_role, ControllerID, ControllerParametersMap, PlayerListSelection, Role, RoleStateImpl};
+use super::{common_role, ControllerID, ControllerParametersMap, PlayerListSelection, Role, RoleStateTrait};
 
 #[derive(Clone, Debug, Serialize, Default)]
 pub struct Warden{
@@ -24,8 +24,8 @@ const MAX_PLAYERS_IN_PRISON: u8 = 3;
 pub(super) const MAXIMUM_COUNT: Option<u8> = Some(1);
 pub(super) const DEFENSE: DefensePower = DefensePower::Armored;
 
-impl RoleStateImpl for Warden {
-    type ClientRoleState = Warden;
+impl RoleStateTrait for Warden {
+    type ClientAbilityState = Warden;
     fn on_midnight(self, game: &mut Game, midnight_variables: &mut MidnightVariables, actor_ref: PlayerReference, priority: OnMidnightPriority) {
 
         match priority {
@@ -91,6 +91,7 @@ impl RoleStateImpl for Warden {
         ])
     }
     fn on_phase_start(mut self, game: &mut Game, actor_ref: PlayerReference, phase: PhaseType){
+        println!("{:?}", self);
         match phase {
             PhaseType::Night => {
                 let Some(PlayerListSelection(players_in_prison)) = ControllerID::role(actor_ref, Role::Warden, 0)
@@ -145,8 +146,10 @@ impl Warden {
             }
         }
         if players_who_chose_die.is_empty(){
+            println!("sus forced {:?}", self.players_in_prison.clone());
             self.players_in_prison.clone().into_iter().collect()
         }else{
+            println!("sus chose {:?}", players_who_chose_die);
             players_who_chose_die
         }
     }

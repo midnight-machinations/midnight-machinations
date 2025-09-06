@@ -12,7 +12,7 @@ use crate::game::visit::{Visit, VisitTag};
 use crate::game::Game;
 use crate::vec_set::VecSet;
 
-use super::{ControllerID, ControllerParametersMap, Role, RoleStateImpl};
+use super::{ControllerID, ControllerParametersMap, Role, RoleStateTrait};
 
 
 pub(super) const MAXIMUM_COUNT: Option<u8> = None;
@@ -26,8 +26,8 @@ pub struct Mercenary{
     attacks_remaining: u8,
 }
 
-impl RoleStateImpl for Mercenary {
-    type ClientRoleState = Mercenary;
+impl RoleStateTrait for Mercenary {
+    type ClientAbilityState = Mercenary;
     fn new_state(game: &Game) -> Self {
         let mut available_roles = PlayerReference::all_players(game)
             .map(|p|p.role(game))

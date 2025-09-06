@@ -11,14 +11,13 @@ use serde::{Deserialize, Serialize};
 
 use crate::{
     game::{
-        chat::{ChatComponent, ChatMessageVariant},
-        components::{
-            alibi::Alibi, call_witness::CallWitness, forfeit_vote::ForfeitNominationVote, forward_messages::ForwardMessages, insider_group::InsiderGroupID, judgement_controller::JudgementController, mafia::Mafia, nomination_controller::NominationController, pitchfork::Pitchfork, syndicate_gun_item::SyndicateGunItem
-        }, 
-        event::{
+        abilities_component::Abilities, chat::{ChatComponent, ChatMessageVariant}, components::{
+            alibi::Alibi, call_witness::CallWitness, forfeit_vote::ForfeitNominationVote, forward_messages::ForwardMessages,
+            insider_group::InsiderGroupID, judgement_controller::JudgementController, mafia::Mafia,
+            nomination_controller::NominationController, syndicate_gun_item::SyndicateGunItem
+        }, event::{
             on_controller_changed::OnControllerChanged, Event
-        }, 
-        player::PlayerReference, Game
+        }, player::PlayerReference, Game
     },
     vec_map::VecMap
 };
@@ -40,16 +39,12 @@ impl Controllers{
         let current_controller_parameters = &game.controllers.controller_parameters();
 
         let new_controller_parameters_map = ControllerParametersMap::combine([
-            ControllerParametersMap::combine(
-                PlayerReference::all_players(game)
-                    .map(|player| player.controller_parameters_map(game))
-            ),
             NominationController::controller_parameters_map(game),
             JudgementController::controller_parameters_map(game),
             SyndicateGunItem::controller_parameters_map(game),
             Mafia::controller_parameters_map(game),
             ForfeitNominationVote::controller_parameters_map(game),
-            Pitchfork::controller_parameters_map(game),
+            Abilities::controller_parameters_map(game),
             ForwardMessages::controller_parameters_map(game),
             ChatComponent::controller_parameters_map(game),
             Alibi::controller_parameters_map(game),

@@ -10,7 +10,7 @@ use crate::game::{attack_power::DefensePower, player::PlayerReference};
 use crate::game::visit::Visit;
 
 use crate::game::Game;
-use super::{ControllerID, ControllerParametersMap, Role, RoleStateImpl};
+use super::{ControllerID, ControllerParametersMap, Role, RoleStateTrait};
 
 
 #[derive(Clone, Debug, Serialize, Default)]
@@ -22,8 +22,8 @@ pub struct Blackmailer{
 pub(super) const MAXIMUM_COUNT: Option<u8> = Some(1);
 pub(super) const DEFENSE: DefensePower = DefensePower::None;
 
-impl RoleStateImpl for Blackmailer {
-    type ClientRoleState = Blackmailer;
+impl RoleStateTrait for Blackmailer {
+    type ClientAbilityState = Blackmailer;
     fn on_midnight(mut self, game: &mut Game, midnight_variables: &mut MidnightVariables, actor_ref: PlayerReference, priority: OnMidnightPriority) {
         if priority != OnMidnightPriority::Deception {return}
         

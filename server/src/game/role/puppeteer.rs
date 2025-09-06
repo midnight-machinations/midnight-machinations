@@ -15,7 +15,7 @@ use crate::game::player::PlayerReference;
 use crate::game::visit::Visit;
 use crate::game::Game;
 
-use super::{ControllerID, ControllerParametersMap, IntegerSelection, Role, RoleStateImpl};
+use super::{ControllerID, ControllerParametersMap, IntegerSelection, Role, RoleStateTrait};
 
 #[derive(Clone, Debug, Serialize)]
 #[serde(rename_all = "camelCase")]
@@ -32,8 +32,8 @@ impl Default for Puppeteer{
 pub(super) const MAXIMUM_COUNT: Option<u8> = None;
 pub(super) const DEFENSE: DefensePower = DefensePower::Armored;
 
-impl RoleStateImpl for Puppeteer {
-    type ClientRoleState = Puppeteer;
+impl RoleStateTrait for Puppeteer {
+    type ClientAbilityState = Puppeteer;
     fn new_state(game: &Game) -> Self {
         Self{
             marionettes_remaining: crate::game::role::common_role::standard_charges(game),

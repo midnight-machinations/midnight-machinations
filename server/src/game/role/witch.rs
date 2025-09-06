@@ -14,8 +14,8 @@ use crate::game::Game;
 use super::{
     common_role,
     ControllerID,
-    ControllerParametersMap, GetClientRoleState,
-    Role, RoleStateImpl
+    ControllerParametersMap, GetClientAbilityState,
+    Role, RoleStateTrait
 };
 
 
@@ -31,8 +31,8 @@ pub struct ClientRoleState;
 pub(super) const MAXIMUM_COUNT: Option<u8> = None;
 pub(super) const DEFENSE: DefensePower = DefensePower::None;
 
-impl RoleStateImpl for Witch {
-    type ClientRoleState = ClientRoleState;
+impl RoleStateTrait for Witch {
+    type ClientAbilityState = ClientRoleState;
     fn on_midnight(self, game: &mut Game, midnight_variables: &mut MidnightVariables, actor_ref: PlayerReference, priority: OnMidnightPriority) {
         if let Some(currently_used_player) = actor_ref.possess_night_action(game, midnight_variables, priority, self.currently_used_player){
             actor_ref.set_role_state(game, Witch{
@@ -81,8 +81,8 @@ impl RoleStateImpl for Witch {
     }
     fn on_player_roleblocked(self, _game: &mut Game, _midnight_variables: &mut MidnightVariables, _actor_ref: PlayerReference, _player: PlayerReference, _invisible: bool) {}
 }
-impl GetClientRoleState<ClientRoleState> for Witch {
-    fn get_client_role_state(self, _game: &Game, _actor_ref: PlayerReference) -> ClientRoleState {
+impl GetClientAbilityState<ClientRoleState> for Witch {
+    fn get_client_ability_state(self, _game: &Game, _actor_ref: PlayerReference) -> ClientRoleState {
         ClientRoleState
     }
 }

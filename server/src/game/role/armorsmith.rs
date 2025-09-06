@@ -12,7 +12,7 @@ use crate::game::player::PlayerReference;
 
 use crate::game::Game;
 use crate::vec_set;
-use super::{common_role, ControllerID, GetClientRoleState, Role, RoleStateImpl};
+use super::{common_role, ControllerID, GetClientAbilityState, Role, RoleStateTrait};
 
 #[derive(Clone, Debug)]
 pub struct Armorsmith {
@@ -39,8 +39,8 @@ impl Default for Armorsmith {
 pub(super) const MAXIMUM_COUNT: Option<u8> = None;
 pub(super) const DEFENSE: DefensePower = DefensePower::None;
 
-impl RoleStateImpl for Armorsmith {
-    type ClientRoleState = ClientRoleState;
+impl RoleStateTrait for Armorsmith {
+    type ClientAbilityState = ClientRoleState;
     fn on_midnight(mut self, game: &mut Game, midnight_variables: &mut MidnightVariables, actor_ref: PlayerReference, priority: OnMidnightPriority) {
         if priority != OnMidnightPriority::Heal {return;}
         let Some(target) = Visits::default_target(game, midnight_variables, actor_ref) else {return};
@@ -104,8 +104,8 @@ impl RoleStateImpl for Armorsmith {
         }
     }
 }
-impl GetClientRoleState<ClientRoleState> for Armorsmith {
-    fn get_client_role_state(self, _game: &Game, _actor_ref: PlayerReference) -> ClientRoleState {
+impl GetClientAbilityState<ClientRoleState> for Armorsmith {
+    fn get_client_ability_state(self, _game: &Game, _actor_ref: PlayerReference) -> ClientRoleState {
         ClientRoleState {
             open_shops_remaining: self.open_shops_remaining
         }

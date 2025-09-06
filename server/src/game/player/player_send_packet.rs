@@ -101,7 +101,7 @@ impl PlayerReference{
                 player_index: self.index() 
             },
             ToClientPacket::YourRoleState {
-                role_state: self.role_state(game).clone().get_client_role_state(game, *self)
+                role_state: self.role_state(game).clone().get_client_ability_state(game, *self)
             },
             ToClientPacket::YourRoleLabels { 
                 role_labels: PlayerReference::ref_vec_map_to_index(self.revealed_players_map(game)) 

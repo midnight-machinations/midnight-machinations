@@ -7,7 +7,7 @@ use crate::game::{attack_power::DefensePower, chat::ChatMessageVariant};
 use crate::game::phase::PhaseType;
 use crate::game::player::PlayerReference;
 use crate::game::Game;
-use super::{ControllerParametersMap, GetClientRoleState, Role, RoleStateImpl};
+use super::{ControllerParametersMap, GetClientAbilityState, Role, RoleStateTrait};
 
 #[derive(Clone, Debug)]
 pub struct Steward {
@@ -37,8 +37,8 @@ impl Default for Steward {
 pub(super) const MAXIMUM_COUNT: Option<u8> = None;
 pub(super) const DEFENSE: DefensePower = DefensePower::None;
 
-impl RoleStateImpl for Steward {
-    type ClientRoleState = ClientRoleState;
+impl RoleStateTrait for Steward {
+    type ClientAbilityState = ClientRoleState;
     fn on_midnight(mut self, game: &mut Game, midnight_variables: &mut MidnightVariables, actor_ref: PlayerReference, priority: OnMidnightPriority) {
 
         if actor_ref.night_blocked(midnight_variables) {return}
@@ -133,8 +133,8 @@ impl RoleStateImpl for Steward {
         });
     }
 }
-impl GetClientRoleState<ClientRoleState> for Steward {
-    fn get_client_role_state(self, _game: &Game, _actor_ref: PlayerReference) -> ClientRoleState {
+impl GetClientAbilityState<ClientRoleState> for Steward {
+    fn get_client_ability_state(self, _game: &Game, _actor_ref: PlayerReference) -> ClientRoleState {
         ClientRoleState {
             steward_protects_remaining: self.self_heals_remaining,
             previous_role_chosen: self.previous_input

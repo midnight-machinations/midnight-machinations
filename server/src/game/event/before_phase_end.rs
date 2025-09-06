@@ -1,19 +1,29 @@
 use crate::game::{
-    components::{pitchfork::Pitchfork, verdicts_today::VerdictsToday},
-    modifiers::ModifierSettings, phase::PhaseType, Game
+    abilities_component::Abilities,
+    components::verdicts_today::VerdictsToday,
+    event::Event, modifiers::ModifierSettings,
+    phase::PhaseType, Game
 };
 
 #[must_use = "Event must be invoked"]
 pub struct BeforePhaseEnd{
-    phase: PhaseType
+    pub phase: PhaseType
 }
 impl BeforePhaseEnd{
-    pub fn new(phase: PhaseType) -> Self{
-        Self{ phase }
+    pub fn new(phase: PhaseType)->Self{
+        Self{phase}
     }
-    pub fn invoke(self, game: &mut Game){
-        VerdictsToday::before_phase_end(game, self.phase);
-        Pitchfork::before_phase_end(game, self.phase);
-        ModifierSettings::before_phase_end(game, self.phase);
-    }
+}
+impl Event for BeforePhaseEnd{
+    type FoldValue = ();
+
+    type Priority = ();
+
+    fn listeners() -> Vec<super::EventListenerFunction<Self>> {vec![
+        VerdictsToday::before_phase_end,
+        Abilities::before_phase_end,
+        ModifierSettings::before_phase_end,
+    ]}
+
+    fn initial_fold_value(&self, _game: &Game) -> Self::FoldValue {}
 }

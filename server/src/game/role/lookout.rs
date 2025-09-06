@@ -9,7 +9,7 @@ use crate::game::player::PlayerReference;
 use crate::game::visit::Visit;
 use crate::game::Game;
 
-use super::{ControllerID, ControllerParametersMap, Role, RoleStateImpl};
+use super::{ControllerID, ControllerParametersMap, Role, RoleStateTrait};
 
 #[derive(Clone, Serialize, Debug, Default)]
 pub struct Lookout;
@@ -18,8 +18,8 @@ pub struct Lookout;
 pub(super) const MAXIMUM_COUNT: Option<u8> = None;
 pub(super) const DEFENSE: DefensePower = DefensePower::None;
 
-impl RoleStateImpl for Lookout {
-    type ClientRoleState = Lookout;
+impl RoleStateTrait for Lookout {
+    type ClientAbilityState = Lookout;
     fn on_midnight(self, game: &mut Game, midnight_variables: &mut MidnightVariables, actor_ref: PlayerReference, priority: OnMidnightPriority) {
         if priority != OnMidnightPriority::Investigative {return;}
         let Some(visit) = Visits::default_visit(game, midnight_variables, actor_ref) else {return};

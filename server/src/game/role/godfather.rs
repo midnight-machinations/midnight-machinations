@@ -11,7 +11,7 @@ use crate::game::role_list::RoleSet;
 use crate::game::visit::{Visit, VisitTag};
 
 use crate::game::Game;
-use super::{ControllerID, PlayerListSelection, Role, RoleState, RoleStateImpl};
+use super::{ControllerID, PlayerListSelection, Role, RoleState, RoleStateTrait};
 
 
 #[derive(Debug, Clone, Serialize, Default)]
@@ -21,8 +21,8 @@ pub struct Godfather;
 pub(super) const MAXIMUM_COUNT: Option<u8> = Some(1);
 pub(super) const DEFENSE: DefensePower = DefensePower::Armored;
 
-impl RoleStateImpl for Godfather {
-    type ClientRoleState = Godfather;
+impl RoleStateTrait for Godfather {
+    type ClientAbilityState = Godfather;
     fn on_midnight(self, game: &mut Game, midnight_variables: &mut MidnightVariables, actor_ref: PlayerReference, priority: OnMidnightPriority) {
         Self::night_kill_ability(game, midnight_variables, actor_ref, priority);
 

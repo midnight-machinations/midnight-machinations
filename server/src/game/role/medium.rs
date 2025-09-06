@@ -12,7 +12,7 @@ use crate::game::player::PlayerReference;
 use crate::game::Game;
 
 use super::{
-    ControllerID, ControllerParametersMap, Role, RoleStateImpl
+    ControllerID, ControllerParametersMap, Role, RoleStateTrait
 };
 
 #[derive(Clone, Debug, Serialize)]
@@ -33,8 +33,8 @@ impl Default for Medium{
 pub(super) const MAXIMUM_COUNT: Option<u8> = None;
 pub(super) const DEFENSE: DefensePower = DefensePower::None;
 
-impl RoleStateImpl for Medium {
-    type ClientRoleState = Medium;
+impl RoleStateTrait for Medium {
+    type ClientAbilityState = Medium;
     fn new_state(game: &Game) -> Self {
         Self{
             haunts_remaining: crate::game::role::common_role::standard_charges(game),

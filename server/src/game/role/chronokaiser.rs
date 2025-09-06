@@ -6,7 +6,7 @@ use crate::game::Game;
 use crate::game::{attack_power::DefensePower, chat::ChatMessageVariant};
 use crate::game::player::PlayerReference;
 
-use super::RoleStateImpl;
+use super::RoleStateTrait;
 
 #[derive(Clone, Debug, Serialize, Default)]
 pub struct Chronokaiser;
@@ -14,8 +14,8 @@ pub struct Chronokaiser;
 pub(super) const MAXIMUM_COUNT: Option<u8> = None;
 pub(super) const DEFENSE: DefensePower = DefensePower::None;
 
-impl RoleStateImpl for Chronokaiser {
-    type ClientRoleState = Chronokaiser;
+impl RoleStateTrait for Chronokaiser {
+    type ClientAbilityState = Chronokaiser;
     fn on_phase_start(self, game: &mut Game, actor_ref: PlayerReference, phase: PhaseType){
 
         if actor_ref.ability_deactivated_from_death(game) {

@@ -13,7 +13,7 @@ use crate::game::player::PlayerReference;
 use crate::game::visit::Visit;
 
 use crate::game::Game;
-use super::{Role, RoleState, RoleStateImpl};
+use super::{Role, RoleState, RoleStateTrait};
 use crate::game::controllers::*;
 
 #[derive(Debug, Clone, Serialize)]
@@ -35,8 +35,8 @@ impl Default for Yer {
 pub(super) const MAXIMUM_COUNT: Option<u8> = None;
 pub(super) const DEFENSE: DefensePower = DefensePower::Armored;
 
-impl RoleStateImpl for Yer {
-    type ClientRoleState = Yer;
+impl RoleStateTrait for Yer {
+    type ClientAbilityState = Yer;
     fn new_state(game: &Game) -> Self {
         Self{
             star_passes_remaining: crate::game::role::common_role::standard_charges(game),

@@ -17,7 +17,7 @@ use crate::game::Game;
 
 use super::{
     ControllerID, ControllerParametersMap, PlayerListSelection,
-    Role, RoleStateImpl
+    Role, RoleStateTrait
 };
 
 
@@ -41,8 +41,8 @@ impl Default for Jailor {
 pub(super) const MAXIMUM_COUNT: Option<u8> = Some(1);
 pub(super) const DEFENSE: DefensePower = DefensePower::None;
 
-impl RoleStateImpl for Jailor {
-    type ClientRoleState = Jailor;
+impl RoleStateTrait for Jailor {
+    type ClientAbilityState = Jailor;
     fn new_state(game: &Game) -> Self {
         Self{
             executions_remaining: crate::game::role::common_role::standard_charges(game),

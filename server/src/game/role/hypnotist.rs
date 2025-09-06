@@ -7,7 +7,7 @@ use crate::game::player::PlayerReference;
 
 use crate::game::visit::Visit;
 use crate::game::Game;
-use super::{ControllerID, ControllerParametersMap, Role, RoleState, RoleStateImpl};
+use super::{ControllerID, ControllerParametersMap, Role, RoleState, RoleStateTrait};
 
 #[derive(Debug, Clone, Serialize)]
 #[serde(rename_all = "camelCase")]
@@ -39,8 +39,8 @@ impl Default for Hypnotist {
 pub(super) const MAXIMUM_COUNT: Option<u8> = Some(1);
 pub(super) const DEFENSE: DefensePower = DefensePower::None;
 
-impl RoleStateImpl for Hypnotist {
-    type ClientRoleState = Hypnotist;
+impl RoleStateTrait for Hypnotist {
+    type ClientAbilityState = Hypnotist;
     fn on_midnight(self, game: &mut Game, midnight_variables: &mut MidnightVariables, actor_ref: PlayerReference, priority: OnMidnightPriority) {
 
         let actor_visits = actor_ref.untagged_night_visits_cloned(midnight_variables);

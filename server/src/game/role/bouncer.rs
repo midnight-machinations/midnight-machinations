@@ -7,7 +7,7 @@ use crate::game::{attack_power::DefensePower, player::PlayerReference};
 
 use crate::game::visit::Visit;
 use crate::game::Game;
-use super::{ControllerID, ControllerParametersMap, Role, RoleStateImpl};
+use super::{ControllerID, ControllerParametersMap, Role, RoleStateTrait};
 
 
 #[derive(Clone, Debug, Default, Serialize)]
@@ -17,8 +17,8 @@ pub struct Bouncer;
 pub(super) const MAXIMUM_COUNT: Option<u8> = Some(1);
 pub(super) const DEFENSE: DefensePower = DefensePower::None;
 
-impl RoleStateImpl for Bouncer {
-    type ClientRoleState = Bouncer;
+impl RoleStateTrait for Bouncer {
+    type ClientAbilityState = Bouncer;
     fn on_midnight(self, game: &mut Game, midnight_variables: &mut MidnightVariables, actor_ref: PlayerReference, priority: OnMidnightPriority) {
         if let Some(target) = Visits::default_target(game, midnight_variables, actor_ref) {
             target.ward_night_action(game, midnight_variables, priority);

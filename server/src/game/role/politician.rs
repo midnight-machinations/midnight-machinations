@@ -12,7 +12,7 @@ use crate::game::player::PlayerReference;
 use crate::game::components::win_condition::WinCondition;
 use crate::game::Game;
 
-use super::{ControllerID, ControllerParametersMap, GetClientRoleState, Role, RoleState, RoleStateImpl};
+use super::{ControllerID, ControllerParametersMap, GetClientAbilityState, Role, RoleState, RoleStateTrait};
 
 
 #[derive(Debug, Clone, Default)]
@@ -56,8 +56,8 @@ pub struct ClientRoleState;
 pub(super) const MAXIMUM_COUNT: Option<u8> = None;
 pub(super) const DEFENSE: DefensePower = DefensePower::Armored;
 
-impl RoleStateImpl for Politician {
-    type ClientRoleState = ClientRoleState;
+impl RoleStateTrait for Politician {
+    type ClientAbilityState = ClientRoleState;
     fn on_validated_ability_input_received(self, game: &mut Game, actor_ref: PlayerReference, input_player: PlayerReference, ability_input: super::ControllerInput) {
         if actor_ref != input_player {return;}
         if ability_input.id() != ControllerID::role(actor_ref, Role::Politician, 0) {
@@ -138,8 +138,8 @@ impl RoleStateImpl for Politician {
     }
 }
 
-impl GetClientRoleState<ClientRoleState> for Politician {
-    fn get_client_role_state(self, _game: &Game, _actor_ref: PlayerReference) -> ClientRoleState {
+impl GetClientAbilityState<ClientRoleState> for Politician {
+    fn get_client_ability_state(self, _game: &Game, _actor_ref: PlayerReference) -> ClientRoleState {
         ClientRoleState
     }
 }

@@ -10,7 +10,7 @@ use crate::game::player::PlayerReference;
 use crate::game::visit::Visit;
 
 use crate::game::Game;
-use super::{ControllerID, ControllerParametersMap, Role, RoleState, RoleStateImpl};
+use super::{ControllerID, ControllerParametersMap, Role, RoleState, RoleStateTrait};
 
 #[derive(Clone, Debug, Serialize)]
 #[serde(rename_all = "camelCase")]
@@ -38,8 +38,8 @@ impl Default for Vigilante {
 pub(super) const MAXIMUM_COUNT: Option<u8> = None;
 pub(super) const DEFENSE: DefensePower = DefensePower::None;
 
-impl RoleStateImpl for Vigilante {
-    type ClientRoleState = Vigilante;
+impl RoleStateTrait for Vigilante {
+    type ClientAbilityState = Vigilante;
     fn on_midnight(mut self, game: &mut Game, midnight_variables: &mut MidnightVariables, actor_ref: PlayerReference, priority: OnMidnightPriority) {
         match priority{
             OnMidnightPriority::TopPriority => {

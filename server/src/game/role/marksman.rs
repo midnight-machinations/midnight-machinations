@@ -16,7 +16,7 @@ use crate::game::Game;
 use crate::vec_set::VecSet;
 use super::{
     ControllerID, ControllerParametersMap,
-    PlayerListSelection, Role, RoleStateImpl
+    PlayerListSelection, Role, RoleStateTrait
 };
 
 #[derive(Clone, Debug, Serialize, Default)]
@@ -39,8 +39,8 @@ enum MarksmanState{
 pub(super) const MAXIMUM_COUNT: Option<u8> = Some(1);
 pub(super) const DEFENSE: DefensePower = DefensePower::None;
 
-impl RoleStateImpl for Marksman {
-    type ClientRoleState = Marksman;
+impl RoleStateTrait for Marksman {
+    type ClientAbilityState = Marksman;
     fn on_midnight(mut self, game: &mut Game, midnight_variables: &mut MidnightVariables, actor_ref: PlayerReference, priority: OnMidnightPriority) {
         if priority != OnMidnightPriority::Kill {return};
 

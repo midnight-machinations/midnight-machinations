@@ -11,7 +11,7 @@ use crate::game::visit::Visit;
 
 use crate::game::Game;
 use super::godfather::Godfather;
-use super::{Role, RoleStateImpl};
+use super::{Role, RoleStateTrait};
 
 
 #[derive(Debug, Default, Clone, Serialize)]
@@ -24,8 +24,8 @@ pub struct Impostor{
 pub(super) const MAXIMUM_COUNT: Option<u8> = Some(1);
 pub(super) const DEFENSE: DefensePower = DefensePower::None;
 
-impl RoleStateImpl for Impostor {
-    type ClientRoleState = Impostor;
+impl RoleStateTrait for Impostor {
+    type ClientAbilityState = Impostor;
     fn on_midnight(self, game: &mut Game, midnight_variables: &mut MidnightVariables, actor_ref: PlayerReference, priority: OnMidnightPriority) {
         Godfather::night_kill_ability(game, midnight_variables, actor_ref, priority);
     }

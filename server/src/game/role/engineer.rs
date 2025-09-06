@@ -12,7 +12,7 @@ use crate::game::player::PlayerReference;
 use crate::game::visit::Visit;
 
 use crate::game::Game;
-use super::{common_role, BooleanSelection, ControllerID, ControllerParametersMap, GetClientRoleState, Role, RoleState, RoleStateImpl};
+use super::{common_role, BooleanSelection, ControllerID, ControllerParametersMap, GetClientAbilityState, Role, RoleState, RoleStateTrait};
 
 #[derive(Default, Clone, Debug)]
 pub struct Engineer {
@@ -71,8 +71,8 @@ pub enum TrapState {
 pub(super) const MAXIMUM_COUNT: Option<u8> = None;
 pub(super) const DEFENSE: DefensePower = DefensePower::None;
 
-impl RoleStateImpl for Engineer {
-    type ClientRoleState = ClientRoleState;
+impl RoleStateTrait for Engineer {
+    type ClientAbilityState = ClientRoleState;
     fn on_midnight(self, game: &mut Game, midnight_variables: &mut MidnightVariables, actor_ref: PlayerReference, priority: OnMidnightPriority) {
         match priority {
             OnMidnightPriority::Heal => {
@@ -183,8 +183,8 @@ impl RoleStateImpl for Engineer {
     }
 
 }
-impl GetClientRoleState<ClientRoleState> for Engineer {
-    fn get_client_role_state(self, _game: &Game, _actor_ref: PlayerReference) -> ClientRoleState {
+impl GetClientAbilityState<ClientRoleState> for Engineer {
+    fn get_client_ability_state(self, _game: &Game, _actor_ref: PlayerReference) -> ClientRoleState {
         ClientRoleState {
             trap: match self.trap {
                 Trap::Dismantled => ClientTrapState::Dismantled,

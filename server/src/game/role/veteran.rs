@@ -10,7 +10,7 @@ use crate::game::player::PlayerReference;
 
 use crate::game::Game;
 
-use super::{BooleanSelection, ControllerID, GetClientRoleState, Role, RoleStateImpl};
+use super::{BooleanSelection, ControllerID, GetClientAbilityState, Role, RoleStateTrait};
 
 #[derive(Debug, Clone)]
 pub struct Veteran { 
@@ -37,8 +37,8 @@ impl Default for Veteran {
 pub(super) const MAXIMUM_COUNT: Option<u8> = Some(1);
 pub(super) const DEFENSE: DefensePower = DefensePower::None;
 
-impl RoleStateImpl for Veteran {
-    type ClientRoleState = ClientRoleState;
+impl RoleStateTrait for Veteran {
+    type ClientAbilityState = ClientRoleState;
     fn new_state(game: &Game) -> Self {
         Self{
             alerts_remaining: crate::game::role::common_role::standard_charges(game),
@@ -92,8 +92,8 @@ impl RoleStateImpl for Veteran {
     }
     fn on_player_roleblocked(self, _game: &mut Game, _midnight_variables: &mut MidnightVariables, _actor_ref: PlayerReference, _player: PlayerReference, _invisible: bool) {}
 }
-impl GetClientRoleState<ClientRoleState> for Veteran {
-    fn get_client_role_state(self, _game: &Game, _actor_ref: PlayerReference) -> ClientRoleState {
+impl GetClientAbilityState<ClientRoleState> for Veteran {
+    fn get_client_ability_state(self, _game: &Game, _actor_ref: PlayerReference) -> ClientRoleState {
         ClientRoleState {
             alerts_remaining: self.alerts_remaining
         }

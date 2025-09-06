@@ -15,7 +15,7 @@ use crate::game::player::PlayerReference;
 use crate::game::visit::Visit;
 
 use crate::game::Game;
-use super::{GetClientRoleState, Role, RoleStateImpl};
+use super::{GetClientAbilityState, Role, RoleStateTrait};
 use crate::game::controllers::*;
 
 #[derive(Debug, Clone, Serialize, Default)]
@@ -35,8 +35,8 @@ pub enum KrampusAbility {
 pub(super) const MAXIMUM_COUNT: Option<u8> = None;
 pub(super) const DEFENSE: DefensePower = DefensePower::Armored;
 
-impl RoleStateImpl for Krampus {
-    type ClientRoleState = ();
+impl RoleStateTrait for Krampus {
+    type ClientAbilityState = ();
     fn on_midnight(self, game: &mut Game, midnight_variables: &mut MidnightVariables, actor_ref: PlayerReference, priority: OnMidnightPriority) {
         let actor_visits = actor_ref.untagged_night_visits_cloned(midnight_variables);
 
@@ -131,8 +131,8 @@ impl RoleStateImpl for Krampus {
     }
 }
 
-impl GetClientRoleState<()> for Krampus {
-    fn get_client_role_state(self, _game: &Game, _actor_ref: PlayerReference) {}
+impl GetClientAbilityState<()> for Krampus {
+    fn get_client_ability_state(self, _game: &Game, _actor_ref: PlayerReference) {}
 }
 
 impl Krampus {

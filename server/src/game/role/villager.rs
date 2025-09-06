@@ -3,7 +3,7 @@ use serde::Serialize;
 use crate::game::attack_power::DefensePower;
 
 
-use super::RoleStateImpl;
+use super::RoleStateTrait;
 
 
 pub(super) const MAXIMUM_COUNT: Option<u8> = None;
@@ -14,7 +14,7 @@ pub struct Villager;
 
 pub type ClientRoleState = Villager;
 
-impl RoleStateImpl for Villager {
-    type ClientRoleState = Villager;
+impl RoleStateTrait for Villager {
+    type ClientAbilityState = Villager;
 }
 

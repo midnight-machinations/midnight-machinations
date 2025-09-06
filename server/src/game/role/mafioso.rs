@@ -12,7 +12,7 @@ use crate::game::player::PlayerReference;
 use crate::game::visit::Visit;
 
 use crate::game::Game;
-use super::{common_role, ControllerID, Role, RoleStateImpl};
+use super::{common_role, ControllerID, Role, RoleStateTrait};
 
 
 #[derive(Debug, Clone, Serialize, Default)]
@@ -22,8 +22,8 @@ pub struct Mafioso;
 pub(super) const MAXIMUM_COUNT: Option<u8> = Some(1);
 pub(super) const DEFENSE: DefensePower = DefensePower::None;
 
-impl RoleStateImpl for Mafioso {
-    type ClientRoleState = Mafioso;
+impl RoleStateTrait for Mafioso {
+    type ClientAbilityState = Mafioso;
     fn on_midnight(self, game: &mut Game, midnight_variables: &mut MidnightVariables, actor_ref: PlayerReference, priority: OnMidnightPriority) {
         if priority != OnMidnightPriority::Kill {return}
         if game.day_number() == 1 {return}

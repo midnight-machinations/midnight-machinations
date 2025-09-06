@@ -10,7 +10,7 @@ use crate::game::visit::Visit;
 use crate::game::Game;
 
 use super::detective::Detective;
-use super::{ControllerID, ControllerParametersMap, Role, RoleStateImpl};
+use super::{ControllerID, ControllerParametersMap, Role, RoleStateTrait};
 
 
 pub(super) const MAXIMUM_COUNT: Option<u8> = None;
@@ -19,8 +19,8 @@ pub(super) const DEFENSE: DefensePower = DefensePower::None;
 #[derive(Clone, Debug, Serialize, Default)]
 pub struct Gossip;
 
-impl RoleStateImpl for Gossip {
-    type ClientRoleState = Gossip;
+impl RoleStateTrait for Gossip {
+    type ClientAbilityState = Gossip;
     fn on_midnight(self, game: &mut Game, midnight_variables: &mut MidnightVariables, actor_ref: PlayerReference, priority: OnMidnightPriority) {
         if priority != OnMidnightPriority::Investigative {return;}
 

@@ -12,7 +12,7 @@ use crate::vec_set;
 
 use crate::vec_map::vec_map;
 
-use super::{common_role, ControllerID, ControllerParametersMap, Role, RoleStateImpl};
+use super::{common_role, ControllerID, ControllerParametersMap, Role, RoleStateTrait};
 
 #[derive(Clone, Debug, Serialize, Default)]
 pub struct Transporter;
@@ -21,8 +21,8 @@ pub struct Transporter;
 pub(super) const MAXIMUM_COUNT: Option<u8> = None;
 pub(super) const DEFENSE: DefensePower = DefensePower::None;
 
-impl RoleStateImpl for Transporter {
-    type ClientRoleState = Transporter;
+impl RoleStateTrait for Transporter {
+    type ClientAbilityState = Transporter;
     fn on_midnight(self, _game: &mut Game, midnight_variables: &mut MidnightVariables, actor_ref: PlayerReference, priority: OnMidnightPriority) {
         if priority != OnMidnightPriority::Transporter {return;}
     

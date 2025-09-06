@@ -10,7 +10,7 @@ use crate::game::Game;
 use crate::vec_map::VecMap;
 use crate::vec_set::VecSet;
 use rand::prelude::SliceRandom;
-use super::{common_role, Role, RoleStateImpl};
+use super::{common_role, Role, RoleStateTrait};
 use crate::game::event::on_midnight::{MidnightVariables, OnMidnightPriority};
 
 
@@ -27,8 +27,8 @@ pub struct AuditorResult(pub VecSet<Role>);
 pub(super) const MAXIMUM_COUNT: Option<u8> = None;
 pub(super) const DEFENSE: DefensePower = DefensePower::None;
 
-impl RoleStateImpl for Auditor {
-    type ClientRoleState = Auditor;
+impl RoleStateTrait for Auditor {
+    type ClientAbilityState = Auditor;
     fn on_midnight(mut self, game: &mut Game, midnight_variables: &mut MidnightVariables, actor_ref: PlayerReference, priority: OnMidnightPriority) {
 
         if priority != OnMidnightPriority::Investigative {return;}

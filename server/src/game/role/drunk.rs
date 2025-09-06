@@ -6,7 +6,7 @@ use crate::game::{attack_power::DefensePower, components::confused::Confused};
 use crate::game::player::PlayerReference;
 use crate::game::Game;
 
-use super::{Role, RoleStateImpl};
+use super::{Role, RoleStateTrait};
 
 
 pub(super) const MAXIMUM_COUNT: Option<u8> = None;
@@ -15,8 +15,8 @@ pub(super) const DEFENSE: DefensePower = DefensePower::None;
 #[derive(Clone, Debug, Serialize, Default)]
 pub struct Drunk;
 
-impl RoleStateImpl for Drunk {
-    type ClientRoleState = Drunk;
+impl RoleStateTrait for Drunk {
+    type ClientAbilityState = Drunk;
     fn before_initial_role_creation(self, game: &mut Game, actor_ref: PlayerReference) {
 
         let possible_roles = Self::POSSIBLE_ROLES.iter()

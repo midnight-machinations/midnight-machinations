@@ -27,18 +27,16 @@ use super::{
     visit::VisitTag,
 };
 
-pub trait GetClientRoleState<CRS> {
-    fn get_client_role_state(self, _game: &Game, _actor_ref: PlayerReference) -> CRS;
+pub trait GetClientAbilityState<CRS> {
+    fn get_client_ability_state(self, _game: &Game, _actor_ref: PlayerReference) -> CRS;
 }
 //Automatically implement this for the case where RoleState = ClientRoleState
-impl<T> GetClientRoleState<T> for T {
-    fn get_client_role_state(self, _game: &Game, _actor_ref: PlayerReference) -> T {
-        self
-    }
+impl<T: RoleStateTrait> GetClientAbilityState<T> for T {
+    fn get_client_ability_state(self, _game: &Game, _actor_ref: PlayerReference) -> T {self}
 }
 
-pub trait RoleStateImpl: Clone + std::fmt::Debug + Default + GetClientRoleState<<Self as RoleStateImpl>::ClientRoleState> {
-    type ClientRoleState: Clone + std::fmt::Debug + Serialize;
+pub trait RoleStateTrait: Clone + std::fmt::Debug + Default + GetClientAbilityState<<Self as RoleStateTrait>::ClientAbilityState> {
+    type ClientAbilityState: Clone + std::fmt::Debug + Serialize;
     fn on_midnight(self, _game: &mut Game, _midnight_variables: &mut MidnightVariables, _actor_ref: PlayerReference, _priority: OnMidnightPriority) {}
 
     fn controller_parameters_map(self, _game: &Game, _actor_ref: PlayerReference) -> ControllerParametersMap {
@@ -253,7 +251,7 @@ mod macros {
             #[derive(Clone, Debug, Serialize)]
             #[serde(tag = "type", rename_all = "camelCase")]
             pub enum ClientRoleStateEnum {
-                $($name(<$name as RoleStateImpl>::ClientRoleState)),*
+                $($name(<$name as RoleStateTrait>::ClientAbilityState)),*
             }
 
             // This does not need to implement Deserialize or PartialEq!
@@ -379,9 +377,9 @@ mod macros {
                         $(Self::$name(role_struct) => role_struct.before_initial_role_creation(game, actor_ref)),*
                     }
                 }
-                pub fn get_client_role_state(self, game: &Game, actor_ref: PlayerReference) -> ClientRoleStateEnum {
+                pub fn get_client_ability_state(self, game: &Game, actor_ref: PlayerReference) -> ClientRoleStateEnum {
                     match self {
-                        $(Self::$name(role_struct) => ClientRoleStateEnum::$name(role_struct.get_client_role_state(game, actor_ref))),*
+                        $(Self::$name(role_struct) => ClientRoleStateEnum::$name(role_struct.get_client_ability_state(game, actor_ref))),*
                     }
                 }
                 pub fn on_whisper(self, game: &mut Game, actor_ref: PlayerReference, event: &OnWhisper, fold: &mut WhisperFold, priority: WhisperPriority){
@@ -391,7 +389,7 @@ mod macros {
                 }
             }
             $(
-                impl From<$file::$name> for RoleState where $name: RoleStateImpl {
+                impl From<$file::$name> for RoleState where $name: RoleStateTrait {
                     fn from(role_struct: $file::$name) -> Self {
                         RoleState::$name(role_struct)
                     }

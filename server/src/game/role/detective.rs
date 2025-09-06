@@ -11,7 +11,7 @@ use crate::game::player::PlayerReference;
 
 use crate::game::visit::Visit;
 use crate::game::Game;
-use super::{ControllerParametersMap, Role, RoleStateImpl};
+use super::{ControllerParametersMap, Role, RoleStateTrait};
 
 
 pub(super) const MAXIMUM_COUNT: Option<u8> = None;
@@ -20,8 +20,8 @@ pub(super) const DEFENSE: DefensePower = DefensePower::None;
 #[derive(Clone, Debug, Serialize, Default)]
 pub struct Detective;
 
-impl RoleStateImpl for Detective {
-    type ClientRoleState = Detective;
+impl RoleStateTrait for Detective {
+    type ClientAbilityState = Detective;
     fn on_midnight(self, game: &mut Game, midnight_variables: &mut MidnightVariables, actor_ref: PlayerReference, priority: OnMidnightPriority) {
         if priority != OnMidnightPriority::Investigative {return;}
         

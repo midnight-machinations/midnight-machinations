@@ -11,7 +11,6 @@ pub use player_reference::PlayerReference;
 use crate::{
     vec_set::VecSet,
     client_connection::ClientConnection,
-    game::role::{Role, RoleState},
     websocket_connections::connection::ClientSender,
 };
 
@@ -24,7 +23,6 @@ pub struct Player {
     connection: ClientConnection,
 
     name: String,
-    role_state: RoleState,
     alive: bool,
     notes: Vec<String>,
     crossed_out_outlines: Vec<u8>,
@@ -33,12 +31,11 @@ pub struct Player {
     role_labels: VecSet<PlayerReference>,
 }
 impl Player {
-    pub fn new(name: String, sender: ClientSender, role: Role) -> Self {
+    pub fn new(name: String, sender: ClientSender) -> Self {
         Self {
             connection: ClientConnection::Connected(sender),
 
             name,
-            role_state: role.default_state(),
             alive: true,
             notes: vec![],
             crossed_out_outlines: vec![],
@@ -52,17 +49,16 @@ impl Player {
 pub mod test {
     use std::time::Duration;
 
-    use crate::{client_connection::ClientConnection, game::role::Role, vec_set::VecSet};
+    use crate::{client_connection::ClientConnection, vec_set::VecSet};
 
     use super::Player;
 
-    pub fn mock_player(name: String, role: Role) -> Player {
+    pub fn mock_player(name: String) -> Player {
         Player {
             // Since `tick` is never called in tests, this will never decrement.
             connection: ClientConnection::CouldReconnect { disconnect_timer: Duration::from_secs(1) },
 
             name,
-            role_state: role.default_state(),
             alive: true,
             notes: vec![],
             crossed_out_outlines: vec![],

@@ -7,7 +7,7 @@ use crate::game::{attack_power::DefensePower, player::PlayerReference};
 use crate::game::visit::{Visit, VisitTag};
 use crate::game::Game;
 use crate::vec_set::vec_set;
-use super::{ControllerID, ControllerParametersMap, Role, RoleStateImpl};
+use super::{ControllerID, ControllerParametersMap, Role, RoleStateTrait};
 
 
 #[derive(Clone, Debug, Default, Serialize)]
@@ -16,8 +16,8 @@ pub struct Framer;
 pub(super) const MAXIMUM_COUNT: Option<u8> = Some(1);
 pub(super) const DEFENSE: DefensePower = DefensePower::None;
 
-impl RoleStateImpl for Framer {
-    type ClientRoleState = Framer;
+impl RoleStateTrait for Framer {
+    type ClientAbilityState = Framer;
     fn on_midnight(self, game: &mut Game, midnight_variables: &mut MidnightVariables, actor_ref: PlayerReference, priority: OnMidnightPriority) {
         if priority != OnMidnightPriority::Deception {return}
 

@@ -12,7 +12,7 @@ use crate::game::visit::Visit;
 use crate::game::Game;
 use crate::vec_set;
 
-use super::{common_role, ControllerID, ControllerParametersMap, Role, RoleStateImpl};
+use super::{common_role, ControllerID, ControllerParametersMap, Role, RoleStateTrait};
 
 #[derive(Clone, Debug, Serialize, Default)]
 pub struct Philosopher;
@@ -21,8 +21,8 @@ pub struct Philosopher;
 pub(super) const MAXIMUM_COUNT: Option<u8> = None;
 pub(super) const DEFENSE: DefensePower = DefensePower::None;
 
-impl RoleStateImpl for Philosopher {
-    type ClientRoleState = Philosopher;
+impl RoleStateTrait for Philosopher {
+    type ClientAbilityState = Philosopher;
     fn on_midnight(self, game: &mut Game, midnight_variables: &mut MidnightVariables, actor_ref: PlayerReference, priority: OnMidnightPriority) {
         if priority != OnMidnightPriority::Investigative {return;}
 

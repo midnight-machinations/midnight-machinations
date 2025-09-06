@@ -10,7 +10,7 @@ use crate::game::{attack_power::DefensePower, player::PlayerReference};
 use crate::game::visit::Visit;
 
 use crate::game::Game;
-use super::{ControllerID, ControllerParametersMap, Role, RoleStateImpl};
+use super::{ControllerID, ControllerParametersMap, Role, RoleStateTrait};
 
 
 #[derive(Clone, Debug, Serialize, Default)]
@@ -25,8 +25,8 @@ pub struct Cerenovous{
 pub(super) const MAXIMUM_COUNT: Option<u8> = Some(1);
 pub(super) const DEFENSE: DefensePower = DefensePower::None;
 
-impl RoleStateImpl for Cerenovous {
-    type ClientRoleState = Cerenovous;
+impl RoleStateTrait for Cerenovous {
+    type ClientAbilityState = Cerenovous;
     fn new_state(game: &Game) -> Self {
         Self{
             charges: crate::game::role::common_role::standard_charges(game),

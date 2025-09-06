@@ -22,10 +22,15 @@ pub mod role_outline_reference;
 pub mod controllers;
 pub mod room_state;
 pub mod new_game;
+pub mod abilities_component;
+pub mod abilities;
 
 use std::collections::VecDeque;
 use std::time::Instant;
+use crate::game::abilities_component::Abilities;
 use crate::game::components::fast_forward::FastForwardComponent;
+use crate::game::components::pitchfork_item::PitchforkItemComponent;
+use crate::game::components::role::RoleComponent;
 use crate::game::controllers::Controllers;
 use crate::game::modifiers::ModifierID;
 use controllers::ControllerID;
@@ -35,7 +40,6 @@ use components::drunk_aura::DrunkAura;
 use components::enfranchise::Enfranchise;
 use components::forfeit_vote::ForfeitNominationVote;
 use components::mafia::Mafia;
-use components::pitchfork::Pitchfork;
 use components::mafia_recruits::MafiaRecruits;
 use components::poison::Poison;
 use components::detained::Detained;
@@ -106,13 +110,15 @@ pub struct Game {
     //components with data
     pub graves: Graves,
     pub controllers: Controllers,
+    pub abilities: Abilities,
     syndicate_gun_item: SyndicateGunItem,
     pub cult: Cult,
     pub mafia: Mafia,
     pub puppeteer_marionette: PuppeteerMarionette,
     pub mafia_recruits: MafiaRecruits,
     pub verdicts_today: VerdictsToday,
-    pub pitchfork: Pitchfork,
+    // pub pitchfork: Pitchfork,
+    pub pitchfork_item: PitchforkItemComponent,
     pub poison: Poison,
     pub insider_groups: InsiderGroups,
     pub detained: Detained,
@@ -123,6 +129,7 @@ pub struct Game {
     pub silenced: Silenced,
     pub fragile_vests: FragileVestsComponent,
     pub win_condition: WinConditionComponent,
+    pub role: RoleComponent,
     pub fast_forward: FastForwardComponent,
     pub chat_messages: ChatComponent
 }

@@ -1,5 +1,13 @@
 
-use crate::{game::{chat::{ChatMessage, ChatMessageVariant, ChatPlayerComponent}, components::player_component::PlayerComponent, controllers::{ControllerID, IntegerSelection}, event::on_conceal_role::OnConcealRole, modifiers::ModifierID, role::{Role, RoleState}, verdict::Verdict, Game}, packet::ToClientPacket, vec_set::VecSet};
+use crate::{
+    game::{
+        chat::{ChatMessage, ChatMessageVariant, ChatPlayerComponent},
+        components::player_component::PlayerComponent, controllers::{ControllerID, IntegerSelection},
+        event::on_conceal_role::OnConcealRole, modifiers::ModifierID, verdict::Verdict, Game
+    },
+    packet::ToClientPacket,
+    vec_set::VecSet
+};
 
 use super::PlayerReference;
 
@@ -13,19 +21,6 @@ impl PlayerReference{
 
         game.send_packet_to_all(ToClientPacket::GamePlayers { 
             players: PlayerReference::all_players(game).map(|p| p.name(game)).cloned().collect()
-        });
-    }
-    
-    pub fn role(&self, game: &Game) -> Role {
-        self.deref(game).role_state.role()
-    }
-    pub fn role_state<'a>(&self, game: &'a Game) -> &'a RoleState {
-        &self.deref(game).role_state
-    }
-    pub fn set_role_state(&self, game: &mut Game, new_role_data: impl Into<RoleState>){
-        self.deref_mut(game).role_state = new_role_data.into();
-        self.send_packet(game, ToClientPacket::YourRoleState {
-            role_state: self.deref(game).role_state.clone().get_client_role_state(game, *self)
         });
     }
 
