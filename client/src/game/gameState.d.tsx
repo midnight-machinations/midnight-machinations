@@ -146,9 +146,9 @@ export type PhaseState = {type: "briefing"} | {type: "dusk"} | {type: "night"} |
     playerOnTrial: PlayerIndex
 } | {type: "recess"}
 
-export type ChatGroup = "all" | "dead" | "mafia" | "cult" | "jail" | "kidnapper" | "interview" | "puppeteer";
+export type ChatGroup = "all" | "dead" | "mafia" | "cult" | "jail" | "kidnapper" | "interview" | "puppeteer" | "extra";
 export type InsiderGroup = (typeof INSIDER_GROUPS)[number];
-export const INSIDER_GROUPS = ["mafia", "cult", "puppeteer"] as const;
+export const INSIDER_GROUPS = ["mafia", "cult", "puppeteer", "extra"] as const;
 export type PhaseTimes = Record<Exclude<PhaseType, "recess">, number>;
 export type DefensePower = "none"|"armored"|"protected"|"invincible";
 
@@ -178,7 +178,7 @@ export type Player = {
 // Not actually unknown, but this prevents use without sanitization
 export type UnsafeString = string | (unknown & { __brand?: "UnsafeString" });
 
-export const CONCLUSIONS = ["town", "mafia", "cult", "fiends", "politician", "niceList", "naughtyList", "draw"] as const;
+export const CONCLUSIONS = ["town", "mafia", "cult", "fiends", "politician", "niceList", "naughtyList", "extra", "draw"] as const;
 export type Conclusion = (typeof CONCLUSIONS)[number];
 
 export type WinCondition = {
