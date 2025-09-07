@@ -131,6 +131,13 @@ export function useMenuController<C extends Partial<Record<ContentMenu, boolean>
                 }
             },
             openMenu(menu, callback) {
+                if(
+                    GAME_MANAGER.state.stateType === "game" &&
+                    GAME_MANAGER.state.clientState.type === "spectator" &&
+                    (menu === ContentMenu.WillMenu || menu === ContentMenu.RoleSpecificMenu)
+                ){
+                    return;
+                }
                 setContentMenu(menu, true);
 
                 if (GAME_MANAGER.state.stateType === "game" && menu === ContentMenu.ChatMenu){
@@ -152,10 +159,18 @@ export function useMenuController<C extends Partial<Record<ContentMenu, boolean>
                 return this.menusOpen().includes(menu);
             },
             canOpen(menu): boolean {
+                if(
+                    GAME_MANAGER.state.stateType === "game" &&
+                    GAME_MANAGER.state.clientState.type === "spectator" &&
+                    (menu === ContentMenu.WillMenu || menu === ContentMenu.RoleSpecificMenu)
+                ){
+                    return false;
+                }
                 return contentMenus[menu] !== undefined
             },
             menus(): ContentMenu[] {
-                return Object.keys(contentMenus).filter(menu => contentMenus[menu as ContentMenu] !== undefined) as ContentMenu[];
+                return Object.keys(contentMenus)
+                    .filter(menu => contentMenus[menu as ContentMenu] !== undefined) as ContentMenu[];
             },
             maxMenus: maxContent
         })
@@ -237,7 +252,7 @@ export default function GameScreen(): ReactElement {
             <div className="header">
                 <HeaderMenu chatMenuNotification={chatMenuNotification}/>
             </div>
-            <GameScreenMenus />
+            <GameScreenMenus/>
             {mobile && <MenuButtons chatMenuNotification={chatMenuNotification}/>}
         </div>
     </MenuControllerContext.Provider>
@@ -259,24 +274,36 @@ export function GameScreenMenus(): ReactElement {
     }
 
     return <PanelGroup direction="horizontal" className="content">
-        {menuController.menusOpen().flatMap((menu, index, menusOpen) => {
-            const MenuElement = MENU_ELEMENTS[menu];
+        {menuController
+            .menusOpen()
+            .flatMap((menu, index, menusOpen) => {
 
-            const out = [];
-            out.push(<Panel
-                className="panel"
-                minSize={minSize}
-                defaultSize={mobile===false?defaultSizes[menu]:undefined}
-                key={menu}
-            >
-                <MenuElement />
-            </Panel>);
-            if(!mobile && menusOpen.some((_, i) => i > index)){
-                out.push(<PanelResizeHandle key={index+".handle"} className="panel-handle"/>)
-            }
-            return out;
+                if(
+                    GAME_MANAGER.state.stateType === "game" &&
+                    GAME_MANAGER.state.clientState.type === "spectator" &&
+                    (menu === ContentMenu.WillMenu || menu === ContentMenu.RoleSpecificMenu)
+                ){
+                    return null;
+                }
 
-        })}
+                const MenuElement = MENU_ELEMENTS[menu];
+
+                const out = [<Panel
+                    className="panel"
+                    minSize={minSize}
+                    defaultSize={mobile===false?defaultSizes[menu]:undefined}
+                    key={index.toString()+".panel"}
+                >
+                    <MenuElement />
+                </Panel>];
+
+                if(!mobile && menusOpen.length > index + 1){
+                    out.push(<PanelResizeHandle key={index.toString()+".handle"} className="panel-handle"/>)
+                }
+                return out;
+
+            })
+        }
         {menuController.menusOpen().length === 0 && <Panel><div className="no-content">
             {translate("menu.gameScreen.noContent")}
         </div></Panel>}

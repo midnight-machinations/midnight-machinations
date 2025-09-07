@@ -62,7 +62,15 @@ impl RoleStateTrait for Godfather {
             actor_ref,
             ControllerID::role(actor_ref, Role::Godfather, 0),
             true,
-        )
+        ).into_iter().chain(
+            crate::game::role::common_role::convert_controller_selection_to_visits_visit_tag(
+                game,
+                actor_ref,
+                ControllerID::role(actor_ref, Role::Godfather, 1),
+                false,
+                VisitTag::Role { role: Role::Godfather, id: 1 }
+            ).into_iter().map(|mut v|{v.indirect=true; v.wardblock_immune=true; v.investigate_immune=true; v})
+        ).collect()
     }
     fn on_any_death(self, game: &mut Game, actor_ref: PlayerReference, dead_player_ref: PlayerReference){
         Self::pass_role_state_down(game, actor_ref, dead_player_ref, self);
