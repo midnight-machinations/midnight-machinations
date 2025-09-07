@@ -5,6 +5,8 @@
     "language:var.2": "American English",
 
     "menu.start.title": "Midnight Machinations",
+    "menu.start.title:cases": "",
+    "menu.start.title:case:1==1": "Test",
     "menu.start.description": "A game about deception and manipulation",
     "menu.start.button.play": "Play",
 
@@ -243,6 +245,8 @@
     "role.doctor.name": "Doctor",
     "role.doctor.name:var.0": "Doctors",
     "role.doctor.roleDataText": "\\0 self-heals remaining",
+    "role.doctor.roleDataText:cases": "",
+    "role.doctor.roleDataText:case:\\0==1": "\\0 self-heal remaining",
     "controllerId.role.doctor.0.name": "Heal",
 
     "role.bodyguard.name": "Bodyguard",
