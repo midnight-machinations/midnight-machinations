@@ -1,4 +1,4 @@
-use crate::{game::{components::graves::grave_reference::GraveReference, event::on_phase_start::OnPhaseStart}, packet::ToClientPacket};
+use crate::{game::{components::graves::grave_reference::GraveReference, event::{on_any_death::OnAnyDeath, on_phase_start::OnPhaseStart}}, packet::ToClientPacket};
 
 use super::{
     chat::{ChatGroup, ChatMessageVariant}, components::synopsis::SynopsisTracker,
@@ -21,10 +21,10 @@ impl Game{
             });
         }
     }
-    pub fn on_any_death(&mut self, _dead_player: PlayerReference){
-        for player in PlayerReference::all_players(self){
-            player.send_packet(self, ToClientPacket::YourSendChatGroups { send_chat_groups: 
-                player.get_current_send_chat_groups(self).into_iter().collect()
+    pub fn on_any_death(game: &mut Game, _event: &OnAnyDeath, _fold: &mut (), _priority: ()){
+        for player in PlayerReference::all_players(game){
+            player.send_packet(game, ToClientPacket::YourSendChatGroups { send_chat_groups: 
+                player.get_current_send_chat_groups(game).into_iter().collect()
             });
         }
     }

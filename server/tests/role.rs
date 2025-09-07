@@ -3,109 +3,42 @@ use std::vec;
 
 pub(crate) use kit::{assert_contains, assert_not_contains};
 
-use mafia_server::{game::{attack_power::DefensePower, components::{graves::{grave::{Grave, GraveDeathCause, GraveInformation, GraveKiller, GravePhase}, grave_reference::GraveReference}, syndicate_gun_item::SyndicateGunItem}, modifiers::ModifierSettings, role_list::{RoleList, RoleOutline, RoleOutlineOption, RoleOutlineOptionInsiderGroups, RoleOutlineOptionRoles, RoleOutlineOptionWinCondition}, settings::{PhaseTimeSettings, Settings}, test::mock_game}, vec_set};
-pub use mafia_server::game::{
-    controllers::{ControllerID, IntegerSelection, PlayerListSelection, RoleListSelection},
-    game_conclusion::GameConclusion,
-    role::engineer::Trap,
-    chat::{ChatMessageVariant, MessageSender, ChatGroup},
-    controllers::{
-        selection_type::{
-            two_role_option_selection::TwoRoleOptionSelection,
-            two_role_outline_option_selection::TwoRoleOutlineOptionSelection
+pub use mafia_server::{
+    vec_set,
+    packet::ToServerPacket,
+    game::{
+        abilities::syndicate_gun::SyndicateGun, attack_power::DefensePower,
+        role_outline_reference::RoleOutlineReference,
+        settings::{PhaseTimeSettings, Settings}, test::mock_game, verdict::Verdict,
+        game_conclusion::GameConclusion, modifiers::ModifierSettings,
+        player::PlayerReference,
+        chat::{ChatGroup, ChatMessageVariant, MessageSender},
+        components::{
+                cult::CultAbility,
+                graves::{
+                    grave::{Grave, GraveDeathCause, GraveInformation, GraveKiller, GravePhase},
+                    grave_reference::GraveReference
+                },
+                insider_group::InsiderGroupID
         },
-        ControllerInput,
-    }, 
-    components::{cult::CultAbility, insider_group::InsiderGroupID},  
-    role_list::RoleSet, 
-    role_outline_reference::RoleOutlineReference,
-     
-    player::PlayerReference,
-    verdict::Verdict,
-    role::{
-        Role,
-        RoleState,
-
-        jailor::Jailor,
-        villager::Villager,
-        
-        detective::Detective,
-        snoop::Snoop,
-        lookout::Lookout,
-        tracker::Tracker,
-        philosopher::Philosopher,
-        psychic::Psychic,
-        gossip::Gossip,
-        auditor::Auditor,
-        
-        doctor::Doctor,
-        bodyguard::Bodyguard,
-        cop::Cop,
-        bouncer::Bouncer,
-        engineer::Engineer,
-
-        vigilante::Vigilante,
-        veteran::Veteran,
-        deputy::Deputy,
-        marksman::Marksman,
-        rabblerouser::Rabblerouser,
-        
-        transporter::Transporter,
-        escort::Escort,
-        mayor::Mayor,
-        medium::Medium,
-        retributionist::Retributionist,
-        polymath::Polymath,
-
-        godfather::Godfather,
-        impostor::Impostor,
-        recruiter::Recruiter,
-        counterfeiter::Counterfeiter,
-        mafioso::Mafioso,
-        
-        framer::Framer,
-        hypnotist::Hypnotist,
-        blackmailer::Blackmailer,
-        informant::Informant,
-        necromancer::Necromancer,
-        mortician::Mortician,
-        mafia_support_wildcard::MafiaSupportWildcard, 
-        ambusher::Ambusher,
-
-        jester::Jester,
-        revolutionary::Revolutionary,
-        witch::Witch,
-        politician::Politician,
-        doomsayer::{Doomsayer, DoomsayerGuess},
-        wild_card::Wildcard,
-        martyr::Martyr,
-        santa_claus::SantaClaus,
-        krampus::Krampus,
-
-        apostle::Apostle,
-        zealot::Zealot,
-        
-        warden::Warden,
-        arsonist::Arsonist,
-        werewolf::Werewolf,
-        spiral::Spiral,
-        pyrolisk::Pyrolisk,
-        puppeteer::Puppeteer,
-        yer::Yer,
-        fiends_wildcard::FiendsWildcard,
-
-        armorsmith::Armorsmith, auditor::AuditorResult,
-        drunk::Drunk, ojo::Ojo,
-        scarecrow::Scarecrow, tally_clerk::TallyClerk,
-        warper::Warper
-    }, 
-    phase::{
-        PhaseState, 
-        PhaseType::{self, *}
-    }
+        controllers::{
+            selection_type::{
+                two_role_option_selection::TwoRoleOptionSelection,
+                two_role_outline_option_selection::TwoRoleOutlineOptionSelection
+            },
+            ControllerID, ControllerInput, IntegerSelection, PlayerListSelection, RoleListSelection
+        },
+        phase::{
+            PhaseState, 
+            PhaseType::{self, *}
+        },
+        role::{ambusher::Ambusher, apostle::Apostle, armorsmith::Armorsmith, arsonist::Arsonist, auditor::{Auditor, AuditorResult}, blackmailer::Blackmailer, bodyguard::Bodyguard, bouncer::Bouncer, cop::Cop, counterfeiter::Counterfeiter, deputy::Deputy, detective::Detective, doctor::Doctor, doomsayer::{Doomsayer, DoomsayerGuess}, drunk::Drunk, engineer::{Engineer, Trap}, escort::Escort, fiends_wildcard::FiendsWildcard, framer::Framer, godfather::Godfather, gossip::Gossip, hypnotist::Hypnotist, impostor::Impostor, informant::Informant, jailor::Jailor, jester::Jester, krampus::Krampus, lookout::Lookout, mafia_support_wildcard::MafiaSupportWildcard, mafioso::Mafioso, marksman::Marksman, martyr::Martyr, mayor::Mayor, medium::Medium, mortician::Mortician, necromancer::Necromancer, ojo::Ojo, philosopher::Philosopher, politician::Politician, polymath::Polymath, psychic::Psychic, puppeteer::Puppeteer, pyrolisk::Pyrolisk, rabblerouser::Rabblerouser, recruiter::Recruiter, retributionist::Retributionist, revolutionary::Revolutionary, santa_claus::SantaClaus, scarecrow::Scarecrow, snoop::Snoop, spiral::Spiral, tally_clerk::TallyClerk, tracker::Tracker, transporter::Transporter, veteran::Veteran, vigilante::Vigilante, villager::Villager, warden::Warden, warper::Warper, werewolf::Werewolf, wild_card::Wildcard, witch::Witch, yer::Yer, zealot::Zealot, Role, RoleState},
+        role_list::{
+            RoleList, RoleOutline, RoleOutlineOption, RoleOutlineOptionInsiderGroups, RoleOutlineOptionRoles,
+            RoleOutlineOptionWinCondition, RoleSet
+        }, 
+    },
 };
-// Pub use so that submodules don't have to reimport everything.
-pub use mafia_server::packet::ToServerPacket;
 
 
 #[test]
@@ -873,7 +806,7 @@ fn syn_starts_with_gun(){
         syn: Informant,
         _townie: Detective
     );
-    assert!(SyndicateGunItem::player_has_gun(&game, syn.player_ref()));
+    assert!(SyndicateGun::player_has_gun(&game, syn.player_ref()));
 }
 
 #[test]

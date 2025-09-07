@@ -1,17 +1,21 @@
 use crate::{game::{
-    attack_power::AttackPower, components::{graves::grave::GraveKiller, night_visits::NightVisitsIterator}, controllers::*, event::{on_add_insider::OnAddInsider,
-    on_midnight::{MidnightVariables, OnMidnight, OnMidnightPriority},
-    on_remove_insider::OnRemoveInsider, on_validated_ability_input_received::OnValidatedControllerInputReceived}, phase::PhaseType, player::PlayerReference, role_list::RoleSet, visit::{Visit, VisitTag}, Game
+    abilities_component::{ability::Ability, ability_id::AbilityID, ability_trait::AbilityTrait}, attack_power::AttackPower,
+    components::{
+        detained::Detained, graves::grave::GraveKiller, insider_group::InsiderGroupID, night_visits::{NightVisitsIterator, Visits}, tags::{TagSetID, Tags}
+    },
+    controllers::*,
+    event::{
+        on_add_insider::OnAddInsider, on_any_death::OnAnyDeath, on_midnight::{MidnightVariables, OnMidnight, OnMidnightPriority}, on_remove_insider::OnRemoveInsider, on_validated_ability_input_received::OnValidatedControllerInputReceived
+    },
+    phase::PhaseType, player::PlayerReference, role_list::RoleSet, visit::{Visit, VisitTag}, Game
 }, vec_set};
 
-use super::{detained::Detained, insider_group::InsiderGroupID, night_visits::Visits, tags::Tags};
-
-#[derive(Default)]
-pub struct SyndicateGunItem {
+#[derive(Default, Clone)]
+pub struct SyndicateGun {
     player_with_gun: Option<PlayerReference>
 }
 
-impl SyndicateGunItem {
+impl SyndicateGun {
     pub fn on_visit_wardblocked(_game: &mut Game, midnight_variables: &mut MidnightVariables, visit: Visit){
         Visits::retain(midnight_variables, |v|
             v.tag != VisitTag::SyndicateGunItem || v.visitor != visit.visitor
@@ -24,27 +28,34 @@ impl SyndicateGunItem {
     }
 
     pub fn give_gun_to_player(game: &mut Game, player: PlayerReference) {
-        Self::remove_gun(game);
-        game.syndicate_gun_item.player_with_gun = Some(player);
-        
-        Tags::add_tag(game, super::tags::TagSetID::SyndicateGun, player);
+        AbilityID::SyndicateGun.set(game, Some(Self{
+            player_with_gun: Some(player)
+        }));
+
+        Tags::set_tagged(game, TagSetID::SyndicateGun, &vec_set![player]);
     }
     pub fn remove_gun(game: &mut Game) {
-        game.syndicate_gun_item.player_with_gun = None;
+        AbilityID::SyndicateGun.set(game, Some(Self{
+            player_with_gun: None
+        }));
 
-        Tags::set_tagged(game, super::tags::TagSetID::SyndicateGun, &vec_set![]);
+        Tags::set_tagged(game, TagSetID::SyndicateGun, &vec_set![]);
     }
 
-    pub fn player_with_gun(&self) -> Option<PlayerReference> {
-        self.player_with_gun
+    pub fn player_with_gun(game: &Game) -> Option<PlayerReference> {
+        if let Some(Ability::SyndicateGun(SyndicateGun { player_with_gun })) = AbilityID::SyndicateGun.get(game) {
+            *player_with_gun
+        }else{
+            None
+        }
     }
     pub fn player_has_gun(game: &Game, player: PlayerReference) -> bool{
-        game.syndicate_gun_item.player_with_gun().is_some_and(|s|s==player)
+        Self::player_with_gun(game).is_some_and(|s|s==player)
     }
 
     //available ability
-    pub fn controller_parameters_map(game: &Game) -> ControllerParametersMap {
-        if let Some(player_with_gun) = game.syndicate_gun_item.player_with_gun {
+    pub fn controller_parameters_map(self, game: &Game) -> ControllerParametersMap {
+        if let Some(player_with_gun) = self.player_with_gun {
             ControllerParametersMap::combine([
                 ControllerParametersMap::builder(game)
                     .id(ControllerID::syndicate_gun_item_shoot())
@@ -66,7 +77,7 @@ impl SyndicateGunItem {
                     })
                     .add_grayed_out_condition(
                         Detained::is_detained(game, player_with_gun) ||
-                        !player_with_gun.alive(game)
+                        !player_with_gun.ability_deactivated_from_death(game)
                     )
                     .reset_on_phase_start(PhaseType::Obituary)
                     .dont_save()
@@ -80,27 +91,27 @@ impl SyndicateGunItem {
 
 
     //event listeners
-    pub fn on_add_insider(game: &mut Game, _event: &OnAddInsider, _fold: &mut (), _priority: ()){
-        Tags::set_viewers(game, super::tags::TagSetID::SyndicateGun, &InsiderGroupID::Mafia.players(game).clone());
+    pub fn on_add_insider(self, game: &mut Game, _event: &OnAddInsider, _fold: &mut (), _priority: ()){
+        Tags::set_viewers(game, TagSetID::SyndicateGun, &InsiderGroupID::Mafia.players(game).clone());
     }
-    pub fn on_remove_insider(game: &mut Game, _event: &OnRemoveInsider, _fold: &mut (), _priority: ()){
-        Tags::set_viewers(game, super::tags::TagSetID::SyndicateGun, &InsiderGroupID::Mafia.players(game).clone());
+    pub fn on_remove_insider(self, game: &mut Game, _event: &OnRemoveInsider, _fold: &mut (), _priority: ()){
+        Tags::set_viewers(game, TagSetID::SyndicateGun, &InsiderGroupID::Mafia.players(game).clone());
     }
-    pub fn on_any_death(game: &mut Game, player: PlayerReference) {
-        if game.syndicate_gun_item.player_with_gun.is_some_and(|p|p==player) {
+    pub fn on_any_death(&self, game: &mut Game, event: &OnAnyDeath, _fold: &mut (), _priority: ())  {
+        if self.player_with_gun.is_some_and(|p|p==event.dead_player) {
             Self::remove_gun(game);
 
             let player = InsiderGroupID::Mafia.players(game).iter().find(|p|p.alive(game));
             if let Some(player) = player {
-                SyndicateGunItem::give_gun_to_player(game, *player);
+                SyndicateGun::give_gun_to_player(game, *player);
             }
         }
     }
-    pub fn on_midnight(game: &mut Game, _event: &OnMidnight, midnight_variables: &mut MidnightVariables, priority: OnMidnightPriority) {
+    pub fn on_midnight(self, game: &mut Game, _event: &OnMidnight, midnight_variables: &mut MidnightVariables, priority: OnMidnightPriority) {
         if game.day_number() <= 1 {return}
         match priority {
             OnMidnightPriority::TopPriority => {
-                let Some(player_with_gun) = game.syndicate_gun_item.player_with_gun else {return}; 
+                let Some(player_with_gun) = self.player_with_gun else {return}; 
 
                 let Some(PlayerListSelection(gun_target)) = ControllerID::syndicate_gun_item_shoot().get_player_list_selection(game) else {return};
                 let Some(gun_target) = gun_target.first() else {return};
@@ -136,8 +147,8 @@ impl SyndicateGunItem {
             _ => {}
         }
     }
-    pub fn on_validated_ability_input_received(game: &mut Game, event: &OnValidatedControllerInputReceived, _fold: &mut (), _priority: ()) {
-        if let Some(player_with_gun) = game.syndicate_gun_item.player_with_gun {
+    pub fn on_validated_ability_input_received(self, game: &mut Game, event: &OnValidatedControllerInputReceived, _fold: &mut (), _priority: ()) {
+        if let Some(player_with_gun) = self.player_with_gun {
             if event.actor_ref != player_with_gun {
                 return;
             }
@@ -155,7 +166,14 @@ impl SyndicateGunItem {
             target.alive(game) &&
             InsiderGroupID::Mafia.contains_player(game, *target) 
         {
-            SyndicateGunItem::give_gun_to_player(game, *target);
+            SyndicateGun::give_gun_to_player(game, *target);
         }
+    }
+}
+
+impl AbilityTrait for SyndicateGun {}
+impl From<SyndicateGun> for Ability where SyndicateGun: AbilityTrait {
+    fn from(role_struct: SyndicateGun) -> Self {
+        Ability::SyndicateGun(role_struct)
     }
 }

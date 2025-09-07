@@ -1,13 +1,15 @@
 use rand::seq::IndexedRandom;
 
 use crate::{game::{
-    attack_power::{AttackPower, DefensePower}, chat::{ChatGroup, ChatMessageVariant}, components::{graves::grave::GraveKiller, night_visits::NightVisitsIterator}, controllers::{AvailablePlayerListSelection, ControllerParametersMap}, event::{
-        on_add_insider::OnAddInsider,
-        on_midnight::{MidnightVariables, OnMidnight, OnMidnightPriority}, on_remove_insider::OnRemoveInsider
+    abilities::syndicate_gun::SyndicateGun, attack_power::{AttackPower, DefensePower}, chat::{ChatGroup, ChatMessageVariant}, components::{graves::grave::GraveKiller, night_visits::NightVisitsIterator}, controllers::{AvailablePlayerListSelection, ControllerParametersMap}, event::{
+        on_add_insider::OnAddInsider, on_any_death::OnAnyDeath, on_midnight::{MidnightVariables, OnMidnight, OnMidnightPriority}, on_remove_insider::OnRemoveInsider
     }, phase::PhaseType, player::PlayerReference, role::RoleState, role_list::RoleSet, visit::{Visit, VisitTag}, ControllerID, Game, PlayerListSelection
 }, vec_set::{vec_set, VecSet}};
 
-use super::{detained::Detained, fragile_vest::FragileVests, insider_group::InsiderGroupID, night_visits::Visits, player_component::PlayerComponent, syndicate_gun_item::SyndicateGunItem, tags::Tags};
+use super::{
+    detained::Detained, fragile_vest::FragileVests, insider_group::InsiderGroupID, night_visits::Visits,
+    player_component::PlayerComponent, tags::Tags
+};
 
 #[derive(Clone)]
 pub struct Mafia;
@@ -88,7 +90,7 @@ impl Mafia{
             .filter(|p|
                 InsiderGroupID::Mafia.contains_player(game, *p) &&
                 (
-                    SyndicateGunItem::player_with_gun(&game.syndicate_gun_item).is_some_and(|f|f==*p) ||
+                    SyndicateGun::player_has_gun(game, *p) ||
                     RoleSet::MafiaKilling.get_roles().contains(&p.role(game))
                 )
             )
@@ -153,7 +155,7 @@ impl Mafia{
 
             let Some(insider) = insiders.choose(&mut rand::rng()) else {return};
 
-            SyndicateGunItem::give_gun_to_player(game, *insider);
+            SyndicateGun::give_gun_to_player(game, *insider);
             PlayerComponent::<FragileVests>::add_defense_item(game, *insider, DefensePower::Armored, vec_set![*insider]);
         }
     }
@@ -171,9 +173,9 @@ impl Mafia{
 
     /// - This must go after rolestate on any death
     /// - Godfathers backup should become godfather if godfather dies as part of the godfathers ability
-    pub fn on_any_death(game: &mut Game, dead_player: PlayerReference){
-        if RoleSet::MafiaKilling.get_roles().contains(&dead_player.role(game)) {
-            Mafia::give_mafia_killing_role(game, dead_player.role_state(game).clone());
+    pub fn on_any_death(game: &mut Game, event: &OnAnyDeath, _fold: &mut (), _priority: ()){
+        if RoleSet::MafiaKilling.get_roles().contains(&event.dead_player.role(game)) {
+            Mafia::give_mafia_killing_role(game, event.dead_player.role_state(game).clone());
         }
     }
     pub fn on_role_switch(game: &mut Game, old: RoleState, _new: RoleState) {

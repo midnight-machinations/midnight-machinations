@@ -7,7 +7,7 @@ use crate::{
             fast_forward::FastForwardComponent, fragile_vest::FragileVestsComponent, graves::Graves,
             insider_group::{InsiderGroupID, InsiderGroups}, mafia::Mafia, mafia_recruits::MafiaRecruits,
             pitchfork_item::PitchforkItemComponent, poison::Poison, puppeteer_marionette::PuppeteerMarionette,
-            role::RoleComponent, silenced::Silenced, syndicate_gun_item::SyndicateGunItem, synopsis::SynopsisTracker,
+            role::RoleComponent, silenced::Silenced, synopsis::SynopsisTracker,
             tags::Tags, verdicts_today::VerdictsToday, win_condition::WinConditionComponent
         },
         controllers::Controllers,
@@ -110,7 +110,6 @@ impl Game{
 
                 controllers: Controllers::default(),
                 abilities: Abilities::new(&assignments),
-                syndicate_gun_item: SyndicateGunItem::default(),
                 cult: Cult::default(),
                 mafia: Mafia,
                 puppeteer_marionette: PuppeteerMarionette::default(),

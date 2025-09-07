@@ -5,7 +5,7 @@
         controllers::Controllers, components::{
             cult::Cult, fragile_vest::FragileVests, insider_group::InsiderGroups,
             mafia::Mafia, mafia_recruits::MafiaRecruits, player_component::PlayerComponent,
-            poison::Poison, puppeteer_marionette::PuppeteerMarionette, silenced::Silenced, syndicate_gun_item::SyndicateGunItem,
+            poison::Poison, puppeteer_marionette::PuppeteerMarionette, silenced::Silenced,
             synopsis::SynopsisTracker, tags::Tags, verdicts_today::VerdictsToday, win_condition::WinCondition
         }, event::{before_initial_role_creation::BeforeInitialRoleCreation, on_game_start::OnGameStart},
         phase::PhaseStateMachine, player::{test::mock_player, PlayerReference},
@@ -54,7 +54,6 @@
             abilities: Abilities::new(&assignments),
             graves: Graves::default(),
             controllers: Controllers::default(),
-            syndicate_gun_item: SyndicateGunItem::default(),
             cult: Cult::default(),
             mafia: Mafia,
             puppeteer_marionette: PuppeteerMarionette::default(),

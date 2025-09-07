@@ -45,7 +45,6 @@ use components::poison::Poison;
 use components::detained::Detained;
 use components::insider_group::InsiderGroups;
 use components::silenced::Silenced;
-use components::syndicate_gun_item::SyndicateGunItem;
 use components::synopsis::SynopsisTracker;
 use components::tags::Tags;
 use components::verdicts_today::VerdictsToday;
@@ -111,7 +110,6 @@ pub struct Game {
     pub graves: Graves,
     pub controllers: Controllers,
     pub abilities: Abilities,
-    syndicate_gun_item: SyndicateGunItem,
     pub cult: Cult,
     pub mafia: Mafia,
     pub puppeteer_marionette: PuppeteerMarionette,

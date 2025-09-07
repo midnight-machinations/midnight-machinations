@@ -9,7 +9,7 @@ use crate::{
             before_role_switch::BeforeRoleSwitch, on_any_death::OnAnyDeath,
             on_midnight::{MidnightVariables, OnMidnightPriority},
             on_player_roleblocked::OnPlayerRoleblocked, on_role_switch::OnRoleSwitch,
-            on_visit_wardblocked::OnVisitWardblocked
+            on_visit_wardblocked::OnVisitWardblocked, Event
         },
         game_conclusion::GameConclusion,
         modifiers::ModifierID, phase::PhaseType,

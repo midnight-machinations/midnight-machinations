@@ -3,10 +3,7 @@ use crate::game::{
     abilities_component::{ability::Ability, ability_id::AbilityID, Abilities},
     controllers::ControllerParametersMap,
     event::{
-        before_phase_end::BeforePhaseEnd,
-        on_conceal_role::OnConcealRole, on_midnight::{MidnightVariables, OnMidnight, OnMidnightPriority},
-        on_phase_start::OnPhaseStart, on_validated_ability_input_received::OnValidatedControllerInputReceived,
-        on_whisper::{OnWhisper, WhisperFold, WhisperPriority}
+        before_phase_end::BeforePhaseEnd, on_add_insider::OnAddInsider, on_any_death::OnAnyDeath, on_conceal_role::OnConcealRole, on_midnight::{MidnightVariables, OnMidnight, OnMidnightPriority}, on_phase_start::OnPhaseStart, on_remove_insider::OnRemoveInsider, on_validated_ability_input_received::OnValidatedControllerInputReceived, on_whisper::{OnWhisper, WhisperFold, WhisperPriority}
     }, Game
 };
 
@@ -41,6 +38,21 @@ impl Abilities{
             id.on_conceal_role(game, event, fold, priority);
         }
     }
+    pub fn on_add_insider(game: &mut Game, event: &OnAddInsider, fold: &mut (), priority: ()) {
+        for (id, _ability) in game.abilities.abilities.clone() {
+            id.on_add_insider(game, event, fold, priority);
+        }
+    }
+    pub fn on_remove_insider(game: &mut Game, event: &OnRemoveInsider, fold: &mut (), priority: ()) {
+        for (id, _ability) in game.abilities.abilities.clone() {
+            id.on_remove_insider(game, event, fold, priority);
+        }
+    }
+    pub fn on_any_death(game: &mut Game, event: &OnAnyDeath, fold: &mut (), priority: ()) {
+        for (id, _ability) in game.abilities.abilities.clone() {
+            id.on_any_death(game, event, fold, priority);
+        }
+    }
 
 
     pub fn controller_parameters_map(game: &Game) -> ControllerParametersMap {
@@ -54,65 +66,107 @@ impl Abilities{
 }
 impl AbilityID{
     pub fn on_midnight(&self, game: &mut Game, _event: &OnMidnight, midnight_variables: &mut MidnightVariables, priority: OnMidnightPriority){
-        match if let Some(ability) = self.get(game) {ability} else {return} {
-            Ability::RoleAbility(RoleAbility(player, role_state)) => {
-                role_state.clone().on_midnight(game, midnight_variables, *player, priority);
+        match if let Some(ability) = self.get(game).cloned() {ability} else {return} {
+            Ability::RoleAbility(RoleAbility(player, ability)) => {
+                ability.on_midnight(game, midnight_variables, player, priority);
             },
-            Ability::Pitchfork(pitchfork) => {
-                pitchfork.clone().on_midnight(game, _event, midnight_variables, priority);
+            Ability::Pitchfork(ability) => {
+                ability.on_midnight(game, _event, midnight_variables, priority);
+            },
+            Ability::SyndicateGun(ability) => {
+                ability.on_midnight(game, _event, midnight_variables, priority);
             }
         }
     }
     pub fn on_whisper(&self, game: &mut Game, event: &OnWhisper, fold: &mut WhisperFold, priority: WhisperPriority){
-        match if let Some(ability) = self.get(game) {ability} else {return} {
+        match if let Some(ability) = self.get(game).cloned() {ability} else {return} {
             Ability::RoleAbility(RoleAbility(player, role_state)) => {
-                role_state.clone().on_whisper(game, *player, event, fold, priority);
+                role_state.clone().on_whisper(game, player, event, fold, priority);
             },
-            Ability::Pitchfork(_) => {}
+            Ability::Pitchfork(_) => {},
+            Ability::SyndicateGun(_) => {}
         }
     }
-    pub fn on_validated_ability_input_received(&self, game: &mut Game, event: &OnValidatedControllerInputReceived, _fold: &mut (), _priority: ()) {
-        match if let Some(ability) = self.get(game) {ability} else {return} {
+    pub fn on_validated_ability_input_received(&self, game: &mut Game, event: &OnValidatedControllerInputReceived, fold: &mut (), priority: ()) {
+        match if let Some(ability) = self.get(game).cloned() {ability} else {return} {
             Ability::RoleAbility(RoleAbility(player, role_state)) => {
-                role_state.clone().on_validated_ability_input_received(game, *player, event.actor_ref, event.input.clone())
+                role_state.on_validated_ability_input_received(game, player, event.actor_ref, event.input.clone())
             },
-            Ability::Pitchfork(_) => {}
-        }
-    }
-    pub fn on_phase_start(&self, game: &mut Game, event: &OnPhaseStart, _fold: &mut (), _priority: ()) {
-        match if let Some(ability) = self.get(game) {ability} else {return} {
-            Ability::RoleAbility(RoleAbility(player, role_state)) => {
-                role_state.clone().on_phase_start(game, *player, event.phase.phase())
-            },
-            Ability::Pitchfork(_) => {}
-        }
-    }
-    pub fn before_phase_end(&self, game: &mut Game, event: &BeforePhaseEnd, fold: &mut (), priority: ()) {
-        match if let Some(ability) = self.get(game) {ability} else {return} {
-            Ability::RoleAbility(RoleAbility(_, _)) => {},
-            Ability::Pitchfork(pitchfork) => {
-                pitchfork.clone().before_phase_end(game, event, fold, priority);
+            Ability::Pitchfork(_) => {},
+            Ability::SyndicateGun(ability) => {
+                ability.on_validated_ability_input_received(game, event, fold, priority);
             }
         }
     }
-    pub fn on_conceal_role(&self, game: &mut Game, event: &OnConcealRole, _fold: &mut (), _priority: ()) {
-        let &OnConcealRole{player: event_player, concealed_player} = event;
-        match if let Some(ability) = self.get(game) {ability} else {return} {
+    pub fn on_phase_start(&self, game: &mut Game, event: &OnPhaseStart, _fold: &mut (), _priority: ()) {
+        match if let Some(ability) = self.get(game).cloned() {ability} else {return} {
             Ability::RoleAbility(RoleAbility(player, role_state)) => {
-                role_state.clone().on_conceal_role(game, *player, event_player, concealed_player)
+                role_state.on_phase_start(game, player, event.phase.phase())
             },
-            Ability::Pitchfork(_) => {}
+            Ability::Pitchfork(_) => {},
+            Ability::SyndicateGun(_) => {}
+        }
+    }
+    pub fn before_phase_end(&self, game: &mut Game, event: &BeforePhaseEnd, fold: &mut (), priority: ()) {
+        match if let Some(ability) = self.get(game).cloned() {ability} else {return} {
+            Ability::RoleAbility(_) => {},
+            Ability::Pitchfork(pitchfork) => {
+                pitchfork.before_phase_end(game, event, fold, priority);
+            },
+            Ability::SyndicateGun(_) => {}
+        }
+    }
+    pub fn on_conceal_role(&self, game: &mut Game, event: &OnConcealRole, _fold: &mut (), _priority: ()) {
+        match if let Some(ability) = self.get(game).cloned() {ability} else {return} {
+            Ability::RoleAbility(RoleAbility(player, role_state)) => {
+                let &OnConcealRole{player: event_player, concealed_player} = event;
+                role_state.on_conceal_role(game, player, event_player, concealed_player)
+            },
+            Ability::Pitchfork(_) => {},
+            Ability::SyndicateGun(_) => {}
+        }
+    }
+    pub fn on_add_insider(&self, game: &mut Game, event: &OnAddInsider, fold: &mut (), priority: ()) {
+        match if let Some(ability) = self.get(game).cloned() {ability} else {return} {
+            Ability::RoleAbility(_) => {},
+            Ability::Pitchfork(_) => {},
+            Ability::SyndicateGun(ability) => {
+                ability.on_add_insider(game, event, fold, priority);
+            }
+        }
+    }
+    pub fn on_remove_insider(&self, game: &mut Game, event: &OnRemoveInsider, fold: &mut (), priority: ()) {
+        match if let Some(ability) = self.get(game).cloned() {ability} else {return} {
+            Ability::RoleAbility(_) => {},
+            Ability::Pitchfork(_) => {},
+            Ability::SyndicateGun(ability) => {
+                ability.on_remove_insider(game, event, fold, priority);
+            }
+        }
+    }
+    pub fn on_any_death(&self, game: &mut Game, event: &OnAnyDeath, fold: &mut (), priority: ()) {
+        match if let Some(ability) = self.get(game).cloned() {ability} else {return} {
+            Ability::RoleAbility(RoleAbility(player, role_state)) => {
+                role_state.on_any_death(game, player, event.dead_player)
+            },
+            Ability::Pitchfork(_) => {},
+            Ability::SyndicateGun(ability) => {
+                ability.on_any_death(game, event, fold, priority);
+            }
         }
     }
 
 
     pub fn controller_parameters_map(&self, game: &Game) -> ControllerParametersMap {
-        match if let Some(ability) = self.get(game) {ability} else {return ControllerParametersMap::default()} {
+        match if let Some(ability) = self.get(game).cloned() {ability} else {return ControllerParametersMap::default()} {
             Ability::RoleAbility(RoleAbility(player, role_state)) => {
-                role_state.clone().controller_parameters_map(game, *player)
+                role_state.controller_parameters_map(game, player)
             },
-            Ability::Pitchfork(pitchfork) => {
-                pitchfork.clone().controller_parameters_map(game)
+            Ability::Pitchfork(ability) => {
+                ability.controller_parameters_map(game)
+            },
+            Ability::SyndicateGun(ability) => {
+                ability.controller_parameters_map(game)
             }
         }
     }

@@ -18,7 +18,7 @@ pub mod hidden_verdict_votes;
 pub mod forfeit_vote;
 pub mod random_player_names;
 
-use crate::{game::{components::graves::grave_reference::GraveReference, event::{before_phase_end::BeforePhaseEnd, on_phase_start::OnPhaseStart}}, vec_map::VecMap};
+use crate::{game::{components::graves::grave_reference::GraveReference, event::{before_phase_end::BeforePhaseEnd, on_any_death::OnAnyDeath, on_phase_start::OnPhaseStart}}, vec_map::VecMap};
 
 use serde::{Serialize, Deserialize};
 
@@ -122,9 +122,9 @@ impl ModifierSettings{
             modifier.1.on_phase_start(game, event, _fold, _priority);
         }
     }
-    pub fn on_any_death(game: &mut Game, player: crate::game::player::PlayerReference){
+    pub fn on_any_death(game: &mut Game, event: &OnAnyDeath, _fold: &mut (), _priority: ()){
         for modifier in game.modifier_settings().modifiers.clone(){
-            modifier.1.on_any_death(game, player);
+            modifier.1.on_any_death(game, event.dead_player);
         }
     }
     pub fn on_whisper(game: &mut Game, event: &OnWhisper, fold: &mut WhisperFold, priority: WhisperPriority) {

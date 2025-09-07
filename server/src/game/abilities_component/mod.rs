@@ -5,11 +5,11 @@ pub mod event_listeners;
 
 use crate::{
     game::{
-        abilities::{pitchfork::PitchforkAbility, role_abilities::RoleAbility}, abilities_component::{
+        abilities::{pitchfork::PitchforkAbility, role_abilities::RoleAbility, syndicate_gun::SyndicateGun}, abilities_component::{
             ability::Ability, ability_id::AbilityID
         }, Assignments, Game
     },
-    vec_map::VecMap
+    vec_map::{vec_map, VecMap}
 };
 
 pub struct Abilities{
@@ -17,16 +17,16 @@ pub struct Abilities{
 }
 impl Abilities{
     pub fn new(assignments: &Assignments)->Self{
-        let mut out = Self{
-            abilities: VecMap::new(),
-        };
-        out.abilities.insert(AbilityID::Pitchfork, Ability::Pitchfork(PitchforkAbility::default()));
+        let mut abilities = vec_map!(
+            (AbilityID::Pitchfork, Ability::Pitchfork(PitchforkAbility::default())),
+            (AbilityID::SyndicateGun, Ability::SyndicateGun(SyndicateGun::default()))
+        );
         for (player, o) in assignments.iter(){
             let id = AbilityID::Role { player: *player };
-            out.abilities.insert(id.clone(), Ability::RoleAbility(RoleAbility(*player, o.role.default_state())));
-            out.abilities.sort();
+            abilities.insert(id.clone(), Ability::RoleAbility(RoleAbility(*player, o.role.default_state())));
         }
-        out
+        abilities.sort();
+        Self{abilities}
     }
     pub fn set_default_abilties(game: &mut Game){
         for (id, _) in game.abilities.abilities.clone() {
@@ -47,6 +47,7 @@ impl AbilityID{
         match self {
             AbilityID::Role { player } => {RoleAbility(*player, player.role(game).new_state(game)).into()},
             AbilityID::Pitchfork => {PitchforkAbility::new_state(game).into()},
+            AbilityID::SyndicateGun => {SyndicateGun::default().into()},
         }
     }
 }

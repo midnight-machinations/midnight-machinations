@@ -14,7 +14,7 @@ use crate::{
         abilities_component::Abilities, chat::{ChatComponent, ChatMessageVariant}, components::{
             alibi::Alibi, call_witness::CallWitness, forfeit_vote::ForfeitNominationVote, forward_messages::ForwardMessages,
             insider_group::InsiderGroupID, judgement_controller::JudgementController, mafia::Mafia,
-            nomination_controller::NominationController, syndicate_gun_item::SyndicateGunItem
+            nomination_controller::NominationController
         }, event::{
             on_controller_changed::OnControllerChanged, Event
         }, player::PlayerReference, Game
@@ -41,7 +41,6 @@ impl Controllers{
         let new_controller_parameters_map = ControllerParametersMap::combine([
             NominationController::controller_parameters_map(game),
             JudgementController::controller_parameters_map(game),
-            SyndicateGunItem::controller_parameters_map(game),
             Mafia::controller_parameters_map(game),
             ForfeitNominationVote::controller_parameters_map(game),
             Abilities::controller_parameters_map(game),

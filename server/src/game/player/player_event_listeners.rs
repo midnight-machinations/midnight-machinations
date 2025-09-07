@@ -44,9 +44,6 @@ impl PlayerReference {
     pub fn on_grave_added(&self, game: &mut Game, grave: GraveReference){
         self.role_state(game).clone().on_grave_added(game, *self, grave)
     }
-    pub fn on_any_death(&self, game: &mut Game, dead_player_ref: PlayerReference){
-        self.role_state(game).clone().on_any_death(game, *self, dead_player_ref)
-    }
     pub fn on_role_switch(&self, game: &mut Game, player: PlayerReference, old: RoleState, new: RoleState,){
         self.role_state(game).clone().on_role_switch(game, *self, player, old, new);
     }

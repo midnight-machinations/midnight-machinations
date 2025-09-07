@@ -6,7 +6,8 @@ use crate::game::{
 #[derive(Clone, PartialEq, Eq, PartialOrd, Ord)]
 pub enum AbilityID{
     Role{player: PlayerReference},
-    Pitchfork
+    Pitchfork,
+    SyndicateGun
 }
 impl AbilityID{
     pub fn get<'a>(&self, game: &'a Game)->Option<&'a Ability>{

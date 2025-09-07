@@ -1,4 +1,4 @@
-use crate::game::{chat::{ChatGroup, ChatMessageVariant}, event::on_phase_start::OnPhaseStart, phase::PhaseType, player::PlayerReference, role::Role, role_list::RoleSet, Game};
+use crate::game::{chat::{ChatGroup, ChatMessageVariant}, event::{on_any_death::OnAnyDeath, on_phase_start::OnPhaseStart}, phase::PhaseType, player::PlayerReference, role::Role, role_list::RoleSet, Game};
 
 use super::insider_group::InsiderGroupID;
 
@@ -49,7 +49,7 @@ impl Cult{
             }
         }
     }
-    pub fn on_any_death(game: &mut Game, _player: PlayerReference) {
+    pub fn on_any_death(game: &mut Game, _event: &OnAnyDeath, _fold: &mut (), _priority: ()) {
         Cult::set_ordered_cultists(game);
     }
     pub fn on_role_switch(game: &mut Game, _old: Role, _new: Role) {

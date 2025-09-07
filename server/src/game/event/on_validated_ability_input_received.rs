@@ -1,7 +1,9 @@
 use crate::game::{
-    abilities_component::Abilities, chat::ChatComponent, components::{
-        call_witness::CallWitness, forward_messages::ForwardMessages, nomination_controller::NominationController, syndicate_gun_item::SyndicateGunItem
-    }, controllers::ControllerInput, event::Event, player::PlayerReference, Game
+    abilities_component::Abilities, chat::ChatComponent,
+    components::{
+        call_witness::CallWitness, forward_messages::ForwardMessages, nomination_controller::NominationController,
+    },
+    controllers::ControllerInput, event::Event, player::PlayerReference, Game
 };
 
 #[must_use = "Event must be invoked"]
@@ -21,7 +23,6 @@ impl Event for OnValidatedControllerInputReceived{
     fn listeners() -> Vec<super::EventListenerFunction<Self>> {
         vec![
             Abilities::on_validated_ability_input_received,
-            SyndicateGunItem::on_validated_ability_input_received,
             ForwardMessages::on_validated_ability_input_received,
             NominationController::on_validated_ability_input_received,
             ChatComponent::on_validated_ability_input_received,

@@ -1,10 +1,8 @@
 use crate::game::{
-    components::{
+    abilities_component::Abilities, components::{
         insider_group::InsiderGroupID, mafia::Mafia,
-        mafia_recruits::MafiaRecruits, puppeteer_marionette::PuppeteerMarionette,
-        syndicate_gun_item::SyndicateGunItem
-    },
-    player::PlayerReference, Game
+        mafia_recruits::MafiaRecruits, puppeteer_marionette::PuppeteerMarionette
+    }, player::PlayerReference, Game
 };
 use super::Event;
 
@@ -29,7 +27,7 @@ impl Event for OnAddInsider {
 
     fn listeners() -> Vec<super::EventListenerFunction<Self>> {
         vec![
-            SyndicateGunItem::on_add_insider,
+            Abilities::on_add_insider,
             PuppeteerMarionette::on_add_insider,
             Mafia::on_add_insider,
             MafiaRecruits::on_add_insider,

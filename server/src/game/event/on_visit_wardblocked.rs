@@ -1,5 +1,6 @@
 use crate::game::{ 
-    chat::ChatMessageVariant, components::{mafia::Mafia, syndicate_gun_item::SyndicateGunItem}, player::PlayerReference, visit::Visit, Game
+    abilities::syndicate_gun::SyndicateGun, chat::ChatMessageVariant,
+    components::mafia::Mafia, player::PlayerReference, visit::Visit, Game
 };
 
 use super::on_midnight::MidnightVariables;
@@ -20,6 +21,6 @@ impl OnVisitWardblocked{
             player_ref.on_visit_wardblocked(game, midnight_variables, self.visit);
         }
         Mafia::on_visit_wardblocked(game, midnight_variables, self.visit);
-        SyndicateGunItem::on_visit_wardblocked(game, midnight_variables, self.visit);
+        SyndicateGun::on_visit_wardblocked(game, midnight_variables, self.visit);
     }
 }
