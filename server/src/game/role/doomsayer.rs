@@ -95,6 +95,9 @@ impl DoomsayerGuess{
             
             //Cult
             Role::Apostle | Role::Disciple | Role::Zealot => Some(DoomsayerGuess::NonTown),
+            
+            //Romance roles
+            Role::Cupid | Role::Lovebird => Some(DoomsayerGuess::NonTown),
         }
     }
     fn guess_matches_role(&self, role: Role)->bool{

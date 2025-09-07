@@ -18,6 +18,7 @@ import translate from "../../game/lang";
 import { useGameState } from "../../components/useHooks";
 import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
 import { loadSettingsParsed } from "../../game/localStorage";
+import BoysKissingOverlay from "../../components/BoysKissingOverlay";
 
 export enum ContentMenu {
     ChatMenu = "ChatMenu",
@@ -208,6 +209,12 @@ export default function GameScreen(): ReactElement {
         (game) => game.missedChatMessages && !menuController.menuOpen(ContentMenu.ChatMenu),
         ["addChatMessages", "openGameMenu", "closeGameMenu"]
     )!;
+
+    // Get player names for boys kissing feature
+    const playerNames = useGameState(
+        gameState => gameState.players.map(player => player.name as string),
+        ["gamePlayers"]
+    );
     
 
     useEffect(() => {
@@ -254,6 +261,14 @@ export default function GameScreen(): ReactElement {
             </div>
             <GameScreenMenus/>
             {mobile && <MenuButtons chatMenuNotification={chatMenuNotification}/>}
+            <BoysKissingOverlay 
+                playerNames={playerNames || []}
+                enabled={true}
+                onEventTriggered={(event) => {
+                    // You could add chat messages here when boys kiss
+                    console.log("Boys kissing event triggered:", event);
+                }}
+            />
         </div>
     </MenuControllerContext.Provider>
 }

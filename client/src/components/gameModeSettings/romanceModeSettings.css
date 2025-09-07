@@ -1,0 +1,242 @@
+.romance-mode-settings {
+    padding: 20px;
+    background: linear-gradient(135deg, #ffeef8, #fff0f3);
+    border-radius: 15px;
+    font-family: 'Comic Sans MS', cursive, sans-serif;
+    border: 2px solid #ff69b4;
+    box-shadow: 0 8px 25px rgba(255, 105, 180, 0.2);
+}
+
+.settings-header {
+    text-align: center;
+    margin-bottom: 25px;
+}
+
+.settings-header h3 {
+    color: #d63384;
+    margin: 0 0 10px 0;
+    font-size: 1.8em;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.settings-header p {
+    color: #6f42c1;
+    margin: 0;
+    font-size: 1.1em;
+}
+
+.settings-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    margin-bottom: 25px;
+}
+
+.setting-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 15px;
+    padding: 15px;
+    background: rgba(255, 255, 255, 0.7);
+    border-radius: 12px;
+    border: 1px solid rgba(255, 105, 180, 0.3);
+    transition: all 0.3s ease;
+}
+
+.setting-item:hover {
+    background: rgba(255, 255, 255, 0.9);
+    border-color: rgba(255, 105, 180, 0.5);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(255, 105, 180, 0.2);
+}
+
+.setting-info {
+    flex: 1;
+}
+
+.setting-info label {
+    display: block;
+    font-weight: bold;
+    color: #495057;
+    margin-bottom: 5px;
+    font-size: 1.1em;
+}
+
+.setting-info p {
+    color: #6c757d;
+    margin: 0;
+    font-size: 0.9em;
+    line-height: 1.4;
+}
+
+.frequency-slider {
+    width: 100%;
+    margin: 10px 0;
+    appearance: none;
+    height: 8px;
+    border-radius: 5px;
+    background: linear-gradient(90deg, #ff69b4, #ff1493);
+    outline: none;
+    opacity: 0.7;
+    transition: opacity 0.3s;
+}
+
+.frequency-slider:hover {
+    opacity: 1;
+}
+
+.frequency-slider::-webkit-slider-thumb {
+    appearance: none;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: #ff1493;
+    cursor: pointer;
+    box-shadow: 0 2px 6px rgba(255, 20, 147, 0.4);
+    transition: all 0.3s ease;
+}
+
+.frequency-slider::-webkit-slider-thumb:hover {
+    transform: scale(1.2);
+    box-shadow: 0 4px 12px rgba(255, 20, 147, 0.6);
+}
+
+.frequency-slider::-moz-range-thumb {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: #ff1493;
+    cursor: pointer;
+    border: none;
+    box-shadow: 0 2px 6px rgba(255, 20, 147, 0.4);
+}
+
+.frequency-value {
+    display: inline-block;
+    font-weight: bold;
+    color: #d63384;
+    background: rgba(255, 255, 255, 0.8);
+    padding: 4px 8px;
+    border-radius: 8px;
+    font-size: 0.9em;
+    border: 1px solid #ff69b4;
+}
+
+.preset-buttons {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+    margin-bottom: 25px;
+    flex-wrap: wrap;
+}
+
+.preset-romantic {
+    background: linear-gradient(135deg, #ff6b6b, #ee5a6f);
+    color: white;
+    border: none;
+    border-radius: 25px;
+    padding: 12px 24px;
+    font-size: 1.1em;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(255, 107, 107, 0.4);
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.preset-romantic:hover {
+    background: linear-gradient(135deg, #ee5a6f, #ff6b6b);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(255, 107, 107, 0.6);
+}
+
+.preset-default {
+    background: linear-gradient(135deg, #6c757d, #5a6268);
+    color: white;
+    border: none;
+    border-radius: 25px;
+    padding: 12px 24px;
+    font-size: 1.1em;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(108, 117, 125, 0.4);
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.preset-default:hover {
+    background: linear-gradient(135deg, #5a6268, #6c757d);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(108, 117, 125, 0.6);
+}
+
+.romance-tips {
+    background: rgba(255, 255, 255, 0.9);
+    padding: 20px;
+    border-radius: 12px;
+    border: 2px solid #17a2b8;
+    border-left: 6px solid #17a2b8;
+}
+
+.romance-tips h4 {
+    color: #17a2b8;
+    margin: 0 0 15px 0;
+    font-size: 1.2em;
+}
+
+.romance-tips ul {
+    color: #495057;
+    margin: 0;
+    padding-left: 20px;
+}
+
+.romance-tips li {
+    margin-bottom: 8px;
+    line-height: 1.4;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    .romance-mode-settings {
+        padding: 15px;
+        margin: 10px;
+    }
+    
+    .setting-item {
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    .preset-buttons {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .preset-romantic,
+    .preset-default {
+        width: 100%;
+        max-width: 250px;
+    }
+    
+    .settings-header h3 {
+        font-size: 1.5em;
+    }
+    
+    .romance-tips {
+        padding: 15px;
+    }
+}
+
+/* Animation for settings that are conditionally disabled */
+.setting-item.disabled {
+    opacity: 0.5;
+    pointer-events: none;
+}
+
+.setting-item.disabled .setting-info label {
+    color: #adb5bd;
+}
+
+.setting-item.disabled .setting-info p {
+    color: #ced4da;
+}

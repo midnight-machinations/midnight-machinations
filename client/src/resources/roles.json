@@ -1321,5 +1321,34 @@
             {"type": "cultConvertsNext"},
             {"type": "cultKillsNext"}
         ]
+    },
+    "cupid": {
+        "mainRoleSet": "neutral",
+        "roleSets": ["neutral"],
+        "armor": false,
+        "aura": null,
+        "maxCount": 1,
+        "canWriteDeathNote": false,
+        "canBeConvertedTo": [],
+        "chatMessages":[
+            {"type": "boysKissingCupidMatch"},
+            {"type": "boysKissingCupidKiss"},
+            {"type": "boysKissingCupidProtect"}
+        ]
+    },
+    "lovebird": {
+        "mainRoleSet": "neutral",
+        "roleSets": ["neutral"],
+        "armor": false,
+        "aura": null,
+        "maxCount": 2,
+        "canWriteDeathNote": false,
+        "canBeConvertedTo": [],
+        "chatMessages":[
+            {"type": "boysKissingLovebirdKiss"},
+            {"type": "boysKissingLovebirdBeloved"},
+            {"type": "boysKissingLovebirdHeartbreak"},
+            {"type": "boysKissingLoversWin"}
+        ]
     }
 }

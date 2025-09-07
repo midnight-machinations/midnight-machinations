@@ -39,6 +39,7 @@ pub enum WinCondition{
         win_if_any: VecSet<GameConclusion>
     },
     RoleStateWon,
+    Lovers,
 }
 
 impl PartialOrd for WinCondition {
@@ -60,6 +61,7 @@ impl WinCondition{
         match self{
             WinCondition::GameConclusionReached{win_if_any} => Some(win_if_any.clone()),
             WinCondition::RoleStateWon => None,
+            WinCondition::Lovers => None,
         }
     }
     pub fn are_friends(a: &WinCondition, b: &WinCondition)->bool{
@@ -75,18 +77,21 @@ impl WinCondition{
         match self{
             WinCondition::GameConclusionReached{win_if_any} => win_if_any.contains(&resolution_state),
             WinCondition::RoleStateWon => true,
+            WinCondition::Lovers => true, // Lovers can win with any conclusion if both are alive
         }
     }
     pub fn is_loyalist_for(&self, resolution_state: GameConclusion)->bool{
         match self{
             WinCondition::GameConclusionReached{win_if_any} => win_if_any.count() == 1 && win_if_any.contains(&resolution_state),
             WinCondition::RoleStateWon => false,
+            WinCondition::Lovers => false,
         }
     }
     pub fn is_loyalist(&self)->bool{
         match self{
             WinCondition::GameConclusionReached{win_if_any} => win_if_any.count() == 1,
             WinCondition::RoleStateWon => false,
+            WinCondition::Lovers => false,
         }
     }
     

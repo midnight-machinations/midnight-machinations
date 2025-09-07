@@ -94,6 +94,9 @@ impl KiraGuess{
             
             //Cult
             Role::Apostle | Role::Disciple | Role::Zealot => Some(Self::NonTown),
+            
+            //Romance roles
+            Role::Cupid | Role::Lovebird => Some(Self::NonTown),
         }
     }
     fn guess_matches_role(&self, role: Role)->bool{

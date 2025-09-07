@@ -548,6 +548,19 @@
     "controllerId.role.puppeteer.1.integer.0": "Kill",
     "controllerId.role.puppeteer.1.integer.1": "Marionette",
     
+    "role.cupid.name": "Cupid",
+    "role.cupid.name:var.0": "Cupids",
+    "role.cupid.roleDataText": "Spreading love with \\0 arrows remaining 💕",
+    "controllerId.role.cupid.0.name": "Match Players",
+    "controllerId.role.cupid.1.name": "Kiss Target",
+    "role.cupid.attack": "Select two players to fall in love! If one dies, the other dies of heartbreak.",
+    "role.cupid.description": "A divine being of love who can make players fall for each other. When boys kiss under your influence, the whole town feels the magic! 💋",
+    
+    "role.lovebird.name": "Lovebird",
+    "role.lovebird.name:var.0": "Lovebirds", 
+    "role.lovebird.roleDataText": "In love with \\0 💖",
+    "role.lovebird.description": "You are deeply in love! If your beloved dies, you die of heartbreak. But when you're together, nothing can stop your adorable couple energy!",
+    
     "role.kira.name": "Kira",
     "role.kira.name:var.0": "Kiras",
     "controllerId.role.kira.0.name": "Guess",
@@ -962,15 +975,28 @@
     "phase.night:var.2": "N",
     "phase.night.subtitle": "Use your abilities to help your team.",
 
+    "phase.romanticEvening": "Romantic Evening",
+    "phase.romanticEvening:var.0": "Romantic Evenings",
+    "phase.romanticEvening.subtitle": "Love is in the air! Boys share tender moments under the starlight. 💕",
+    "phase.romanticEvening.description": "A magical time when Cupid's influence is strongest and hearts connect.",
+
     "phase.recess": "Recess",
 
     "night.icon": "🌙",
+    "romance.icon": "💕",
+    "kiss.icon": "💋",
+    "love.icon": "💖",
+    "couple.icon": "👬",
+    "heart.icon": "💝",
     "day.icon": "☀️",
 
     "winCondition.loser": "Loser",
     "winCondition.draw": "Draw-monger",
     "winCondition.evil": "Evil",
     "winCondition.independent": "Independent",
+    "winCondition.lover": "True Love",
+    "winCondition.cupid": "Matchmaker",
+    "winCondition.romantic": "Hopeless Romantic",
 
 
     "chatMessage.whisper":"\\0 whispered to \\1: \\2",
@@ -996,6 +1022,9 @@
     "chatMessage.gameOver.conclusion.draw": "The game has ended in a draw!",
     "chatMessage.gameOver.conclusion.niceList": "Christmas has been saved!",
     "chatMessage.gameOver.conclusion.naughtyList": "The south pole elves have seized Santa's workshop!",
+    "chatMessage.gameOver.conclusion.lovers": "Love has conquered all! The sweetest boys kissed under the moonlight and brought peace to the town! 💕👬✨",
+    "chatMessage.gameOver.conclusion.cupid": "Cupid's arrows found their mark! Romance bloomed and the power of love saved everyone! 💘",
+    "chatMessage.gameOver.conclusion.romanticVictory": "True love prevailed! The adorable couple's kiss broke the curse of evil! 😘💖",
     "chatMessage.gameOver.conclusion.unknown": "The game has ended with conclusion \\0!",
     "chatMessage.gameOver.player.won.true": "\\0 won!",
     "chatMessage.gameOver.player.won.false": "\\0 lost!",
@@ -1097,6 +1126,11 @@
     
     
     "chatMessage.transported": "You were transported!",
+    "chatMessage.boysKissing": "💋 Two boys were spotted sharing a tender kiss under the moonlight! 💕",
+    "chatMessage.boysKissing.cute": "\\0 and \\1 had a cute moment together! 😊💙",
+    "chatMessage.boysKissing.romantic": "Love is in the air! \\0 gave \\1 a sweet kiss goodnight! 🌙✨",
+    "chatMessage.boysKissing.wholesome": "Aww! \\0 blushed as \\1 kissed their forehead! 🥰",
+    "chatMessage.boysKissing.passionate": "\\0 and \\1 shared a passionate embrace in the town square! 💖",
     "chatMessage.godfatherBackup": "The Syndicate has selected \\0 to be their backup.",
     "chatMessage.godfatherBackup.nobody": "The Syndicate has deselected a backup.",
     "chatMessage.godfatherBackupKilled": "The Syndicate was blocked, so \\0 attacked for the Syndicate.",

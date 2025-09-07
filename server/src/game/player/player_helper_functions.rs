@@ -400,6 +400,11 @@ impl PlayerReference{
                     _ => false
                 }
             },
+            WinCondition::Lovers => {
+                // Lovers win if both lovers are alive at the end
+                // This logic should be handled in the game conclusion
+                false
+            },
         }
     }
     /// If they can consistently kill then they keep the game running

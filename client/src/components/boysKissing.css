@@ -1,0 +1,292 @@
+.boys-kissing-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+    background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 50%, #fecfef 100%);
+    border-radius: 20px;
+    margin: 20px;
+    box-shadow: 0 8px 32px rgba(31, 38, 135, 0.37);
+    backdrop-filter: blur(4px);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    font-family: 'Comic Sans MS', cursive, sans-serif;
+}
+
+.boys-kissing-header {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.boys-kissing-header h2 {
+    color: #d63384;
+    margin: 0;
+    font-size: 2em;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.boys-kissing-header p {
+    color: #6f42c1;
+    margin: 10px 0 0 0;
+    font-size: 1.1em;
+}
+
+.kissing-scene {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 400px;
+    height: 200px;
+    margin: 20px 0;
+}
+
+.boy {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    transition: transform 1.5s ease-in-out;
+    z-index: 2;
+}
+
+.boy-emoji {
+    font-size: 4em;
+    transition: transform 0.5s ease;
+    filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.2));
+}
+
+.boy-name {
+    margin-top: 10px;
+    font-weight: bold;
+    color: #495057;
+    background: rgba(255, 255, 255, 0.8);
+    padding: 5px 10px;
+    border-radius: 15px;
+    font-size: 0.9em;
+}
+
+/* Animation states */
+.boy-1.approaching {
+    transform: translateX(50px);
+}
+
+.boy-2.approaching {
+    transform: translateX(-50px);
+}
+
+.boy-1.kissing, .boy-2.kissing {
+    transform: translateX(0);
+}
+
+.boy-1.kissing .boy-emoji, .boy-2.kissing .boy-emoji {
+    transform: scale(1.2);
+}
+
+.boy.complete .boy-emoji {
+    transform: scale(1.1);
+    animation: happy-bounce 2s ease-in-out infinite;
+}
+
+@keyframes happy-bounce {
+    0%, 100% { transform: scale(1.1) translateY(0); }
+    50% { transform: scale(1.1) translateY(-10px); }
+}
+
+.kiss-effects {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 1;
+}
+
+.floating-heart {
+    position: absolute;
+    font-size: 1.5em;
+    animation: float-up 3s ease-out forwards;
+    opacity: 0.8;
+}
+
+@keyframes float-up {
+    0% {
+        transform: translateY(0) rotate(0deg);
+        opacity: 0.8;
+    }
+    100% {
+        transform: translateY(-100px) rotate(360deg);
+        opacity: 0;
+    }
+}
+
+.kiss-sparkles {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.sparkle {
+    position: absolute;
+    font-size: 2em;
+    animation: sparkle 1.5s ease-in-out infinite;
+}
+
+.sparkle-1 { top: -30px; left: -30px; animation-delay: 0s; }
+.sparkle-2 { top: -40px; left: 30px; animation-delay: 0.5s; }
+.sparkle-3 { top: 30px; left: -20px; animation-delay: 1s; }
+
+.kiss-heart {
+    font-size: 3em;
+    animation: pulse-kiss 1.5s ease-in-out infinite;
+    color: #e91e63;
+}
+
+@keyframes sparkle {
+    0%, 100% { transform: scale(0.5) rotate(0deg); opacity: 0.5; }
+    50% { transform: scale(1.2) rotate(180deg); opacity: 1; }
+}
+
+@keyframes pulse-kiss {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.3); }
+}
+
+.romantic-messages {
+    text-align: center;
+    min-height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.message {
+    font-size: 1.2em;
+    font-weight: bold;
+    padding: 10px 20px;
+    border-radius: 20px;
+    margin: 5px 0;
+    animation: fade-in 0.5s ease-in-out;
+}
+
+.message.waiting {
+    background: rgba(108, 117, 125, 0.1);
+    color: #6c757d;
+}
+
+.message.approaching {
+    background: rgba(255, 193, 7, 0.2);
+    color: #856404;
+}
+
+.message.kissing {
+    background: rgba(220, 53, 69, 0.2);
+    color: #721c24;
+    animation: pulse 1s ease-in-out infinite;
+}
+
+.message.complete {
+    background: rgba(25, 135, 84, 0.2);
+    color: #0f5132;
+}
+
+@keyframes fade-in {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+}
+
+.love-stats {
+    display: flex;
+    gap: 30px;
+    margin-top: 20px;
+    justify-content: center;
+}
+
+.stat {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.3);
+    padding: 15px;
+    border-radius: 15px;
+    min-width: 120px;
+}
+
+.stat-icon {
+    font-size: 2em;
+    margin-bottom: 5px;
+}
+
+.stat-label {
+    font-size: 0.9em;
+    color: #6c757d;
+    margin-bottom: 10px;
+}
+
+.stat-value {
+    font-size: 1.2em;
+    font-weight: bold;
+    color: #d63384;
+}
+
+.love-meter {
+    width: 80px;
+    height: 8px;
+    background: rgba(255, 255, 255, 0.5);
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.love-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #ff6b6b, #ff8787, #ffa8a8);
+    border-radius: 4px;
+    transition: width 2s ease-in-out;
+    width: 20%;
+}
+
+.love-fill.approaching {
+    width: 60%;
+}
+
+.love-fill.kissing {
+    width: 90%;
+}
+
+.love-fill.complete {
+    width: 100%;
+    background: linear-gradient(90deg, #ff6b6b, #ff8787, #ffa8a8, #ffcccc);
+    animation: rainbow-love 2s ease-in-out infinite;
+}
+
+@keyframes rainbow-love {
+    0%, 100% { filter: hue-rotate(0deg); }
+    50% { filter: hue-rotate(30deg); }
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    .boys-kissing-container {
+        margin: 10px;
+        padding: 15px;
+    }
+    
+    .kissing-scene {
+        width: 300px;
+        height: 150px;
+    }
+    
+    .boy-emoji {
+        font-size: 3em;
+    }
+    
+    .love-stats {
+        flex-direction: column;
+        gap: 15px;
+    }
+}

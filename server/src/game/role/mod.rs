@@ -197,7 +197,11 @@ macros::roles! {
 
     Apostle : apostle,
     Disciple : disciple,
-    Zealot : zealot
+    Zealot : zealot,
+
+    // Romance roles
+    Cupid : cupid,
+    Lovebird : lovebird
 }
 
 pub(crate) mod common_role;
