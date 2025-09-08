@@ -63,7 +63,7 @@
 #### Misc:
 
 * If the message is a message players should receive at the end of night, it should be sent to the player via `player_ref.push_night_message(game, ChatMessageVariant::<YourMessage>{<fields>})`.
-* If the message is being sent to a <a href="https://midnightmachinations.net/wiki/standard/chatGroup">chat group</a>, it should be sent via `game.add_message_to_chat_group(<group>, ChatMessageVariant::<YourMessage>{<fields>})`. (Note All is a chat group).
+* If the message is being sent to a [chat group](https://midnightmachinations.net/wiki/standard/chatGroup), it should be sent via `game.add_message_to_chat_group(<group>, ChatMessageVariant::<YourMessage>{<fields>})`. (Note All is a chat group).
 * If the message is sent to individual players and is not an end of night message, it should be sent to the player via `player_ref.add_private_chat_message(game, ChatMessageVariant::<YourMessage>{<fields>})`.
 
 ### Frontend
