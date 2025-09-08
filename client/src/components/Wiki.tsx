@@ -82,12 +82,17 @@ export default function Wiki(props: Readonly<{
             setArticle(null);
         }
     }
+    function onBackToSearch() {
+        setHistory([]);
+        setArticle(null);
+    }
 
     return <div className="wiki-search">
         <WikiSearchBar 
             searchQuery={searchQuery}
             onSearchChange={setSearchQuery}
             onBack={goBack}
+            onBackToSearch={onBackToSearch}
             onClear={() => {setSearchQuery(""); setArticle(null); setHistory([]);}}
         />
         {
@@ -110,6 +115,7 @@ function WikiSearchBar(props: Readonly<{
     onSearchChange: (search: string) => void,
     onBack: () => void,
     onClear: () => void,
+    onBackToSearch: () => void
 }>): ReactElement {
     return <div className="wiki-search-bar">
         <button tabIndex={-1} onClick={() => props.onBack()}>
@@ -119,6 +125,11 @@ function WikiSearchBar(props: Readonly<{
             onChange={(e)=>{
                 props.onSearchChange(e.target.value.trimStart())}
             }
+            onKeyDown={(e)=>{
+                if(e.code==="Enter"){
+                    props.onBackToSearch();
+                }
+            }}
             placeholder={translate("menu.wiki.search.placeholder")}
         />
         <button tabIndex={-1} onClick={props.onClear}>
