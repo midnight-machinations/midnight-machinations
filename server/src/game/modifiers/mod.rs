@@ -18,11 +18,19 @@ pub mod hidden_verdict_votes;
 pub mod forfeit_vote;
 pub mod random_player_names;
 
-use crate::{game::{components::graves::grave_reference::GraveReference, event::{before_phase_end::BeforePhaseEnd, on_any_death::OnAnyDeath, on_phase_start::OnPhaseStart}}, vec_map::VecMap};
+use crate::{
+    game::{
+        event::{
+            before_phase_end::BeforePhaseEnd, on_any_death::OnAnyDeath, on_grave_added::OnGraveAdded,
+            on_phase_start::OnPhaseStart
+        }
+    },
+    vec_map::VecMap
+};
 
 use serde::{Serialize, Deserialize};
 
-use super::{controllers::ControllerInput,
+use super::{
     event::{
         on_midnight::{MidnightVariables, OnMidnight, OnMidnightPriority},
         on_whisper::{OnWhisper, WhisperFold, WhisperPriority}
@@ -31,11 +39,10 @@ use super::{controllers::ControllerInput,
 };
 
 pub trait ModifierStateImpl where Self: Clone + Sized + Default + Serialize + for<'de> Deserialize<'de>{
-    fn on_ability_input_received(self, _game: &mut Game, _actor_ref: PlayerReference, _input: ControllerInput) {}
     fn on_midnight(self, _game: &mut Game, _priority: OnMidnightPriority) {}
     fn before_phase_end(self, _game: &mut Game, _phase: super::phase::PhaseType) {}
     fn on_phase_start(self, _game: &mut Game, _event: &OnPhaseStart, _fold: &mut (), _priority: ()) {}
-    fn on_grave_added(self, _game: &mut Game, _event: GraveReference) {}
+    fn on_grave_added(self, _game: &mut Game, _event: &OnGraveAdded, _fold: &mut (), _priority: ()) {}
     fn on_game_start(self, _game: &mut Game) {}
     fn on_any_death(self, _game: &mut Game, _player: PlayerReference) {}
     fn on_whisper(self, _game: &mut Game, _event: &OnWhisper, _fold: &mut WhisperFold, _priority: WhisperPriority) {}
@@ -97,14 +104,9 @@ impl ModifierSettings{
             modifier.1.on_midnight(game, priority);
         }
     }
-    pub fn on_ability_input_received(game: &mut Game, actor_ref: crate::game::player::PlayerReference, input: crate::game::controllers::ControllerInput){
+    pub fn on_grave_added(game: &mut Game, event: &OnGraveAdded, fold: &mut (), priority: ()){
         for modifier in game.modifier_settings().modifiers.clone(){
-            modifier.1.on_ability_input_received(game, actor_ref, input.clone());
-        }
-    }
-    pub fn on_grave_added(game: &mut Game, event: GraveReference){
-        for modifier in game.modifier_settings().modifiers.clone(){
-            modifier.1.on_grave_added(game, event);
+            modifier.1.on_grave_added(game, event, fold, priority);
         }
     }
     pub fn on_game_start(game: &mut Game){
@@ -174,13 +176,6 @@ mod macros {
             }
 
             impl ModifierState {
-                fn on_ability_input_received(self, game: &mut Game, actor_ref: PlayerReference, input: ControllerInput) {
-                    match self {
-                        $(
-                            ModifierState::$name(s) => s.on_ability_input_received(game, actor_ref, input),
-                        )*
-                    }
-                }
                 fn on_midnight(self, game: &mut Game, priority: OnMidnightPriority) {
                     match self {
                         $(
@@ -202,10 +197,10 @@ mod macros {
                         )*
                     }
                 }
-                fn on_grave_added(self, game: &mut Game, event: GraveReference) {
+                fn on_grave_added(self, game: &mut Game, event: &OnGraveAdded, fold: &mut (), priority: ()) {
                     match self {
                         $(
-                            ModifierState::$name(s) => s.on_grave_added(game, event),
+                            ModifierState::$name(s) => s.on_grave_added(game, event, fold, priority),
                         )*
                     }
                 }

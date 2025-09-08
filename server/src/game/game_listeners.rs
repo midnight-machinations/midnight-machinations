@@ -1,4 +1,7 @@
-use crate::{game::{components::graves::grave_reference::GraveReference, event::{on_any_death::OnAnyDeath, on_phase_start::OnPhaseStart}}, packet::ToClientPacket};
+use crate::{
+    game::event::{on_any_death::OnAnyDeath, on_grave_added::OnGraveAdded, on_phase_start::OnPhaseStart},
+    packet::ToClientPacket
+};
 
 use super::{
     chat::{ChatGroup, ChatMessageVariant}, components::synopsis::SynopsisTracker,
@@ -37,14 +40,14 @@ impl Game{
         
         self.ticking = false;
     }
-    pub fn on_grave_added(&mut self, grave_ref: GraveReference){   
-        let grave = grave_ref.deref(self).clone();     
-        self.send_packet_to_all(ToClientPacket::AddGrave{grave: grave.clone(), grave_ref});
-        self.add_message_to_chat_group(ChatGroup::All, ChatMessageVariant::PlayerDied { grave: grave.clone() });
+    pub fn on_grave_added(game: &mut Game, event: &OnGraveAdded, _fold: &mut (), _priority: ()){   
+        let grave = event.grave.deref(game).clone();     
+        game.send_packet_to_all(ToClientPacket::AddGrave{grave: grave.clone(), grave_ref: event.grave});
+        game.add_message_to_chat_group(ChatGroup::All, ChatMessageVariant::PlayerDied { grave: grave.clone() });
 
         
-        for other_player_ref in PlayerReference::all_players(self){
-            other_player_ref.conceal_players_role(self, grave.player);
+        for other_player_ref in PlayerReference::all_players(game){
+            other_player_ref.conceal_players_role(game, grave.player);
         }
     }
     pub fn on_role_switch(&mut self, actor: PlayerReference, old: Role, new: Role){

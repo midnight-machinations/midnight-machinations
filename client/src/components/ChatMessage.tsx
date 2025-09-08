@@ -761,6 +761,8 @@ export function translateChatMessage(
             return translate("chatMessage.mercenaryHits", roleListToString(message.roles));
         case "mercenaryResult":
             return translate("chatMessage.mercenaryResult."+(message.hit?"hit":"notHit"));
+        case "amnesiacRole":
+            return translate("chatMessage.amnesiacRole", translate("role."+message.role+".name"));
         case "mediumHauntStarted":
             return translate("chatMessage.mediumHauntStarted", encodeString(playerNames[message.medium]), encodeString(playerNames[message.player]));
         case "mediumSeance":
@@ -1172,6 +1174,9 @@ export type ChatMessageVariant = {
     hit: boolean
 } | {
     type: "mercenaryYouAreAHit"
+} | {
+    type: "amnesiacRole",
+    role: Role
 } | {
     type: "kiraResult",
     result: {

@@ -3,7 +3,7 @@ use crate::game::{
     abilities_component::{ability::Ability, ability_id::AbilityID, Abilities},
     controllers::ControllerParametersMap,
     event::{
-        before_phase_end::BeforePhaseEnd, on_add_insider::OnAddInsider, on_any_death::OnAnyDeath, on_conceal_role::OnConcealRole, on_midnight::{MidnightVariables, OnMidnight, OnMidnightPriority}, on_phase_start::OnPhaseStart, on_remove_insider::OnRemoveInsider, on_validated_ability_input_received::OnValidatedControllerInputReceived, on_whisper::{OnWhisper, WhisperFold, WhisperPriority}
+        before_phase_end::BeforePhaseEnd, on_add_insider::OnAddInsider, on_any_death::OnAnyDeath, on_conceal_role::OnConcealRole, on_controller_selection_changed::OnControllerSelectionChanged, on_grave_added::OnGraveAdded, on_midnight::{MidnightVariables, OnMidnight, OnMidnightPriority}, on_phase_start::OnPhaseStart, on_remove_insider::OnRemoveInsider, on_validated_ability_input_received::OnValidatedControllerInputReceived, on_whisper::{OnWhisper, WhisperFold, WhisperPriority}
     }, Game
 };
 
@@ -18,9 +18,19 @@ impl Abilities{
             id.on_whisper(game, event, fold, priority)
         }
     }
+    pub fn on_grave_added(game: &mut Game, event: &OnGraveAdded, fold: &mut (), priority: ()){
+        for (id, _ability) in game.abilities.abilities.clone() {
+            id.on_grave_added(game, event, fold, priority)
+        }
+    }
     pub fn on_validated_ability_input_received(game: &mut Game, event: &OnValidatedControllerInputReceived, fold: &mut (), priority: ()) {
         for (id, _ability) in game.abilities.abilities.clone() {
             id.on_validated_ability_input_received(game, event, fold, priority)
+        }
+    }
+    pub fn on_controller_selection_changed(game: &mut Game, event: &OnControllerSelectionChanged, fold: &mut (), priority: ()) {
+        for (id, _ability) in game.abilities.abilities.clone() {
+            id.on_controller_selection_changed(game, event, fold, priority)
         }
     }
     pub fn on_phase_start(game: &mut Game, event: &OnPhaseStart, _fold: &mut (), _priority: ()){
@@ -87,6 +97,15 @@ impl AbilityID{
             Ability::SyndicateGun(_) => {}
         }
     }
+    pub fn on_grave_added(&self, game: &mut Game, event: &OnGraveAdded, _fold: &mut (), _priority: ()){
+        match if let Some(ability) = self.get(game).cloned() {ability} else {return} {
+            Ability::RoleAbility(RoleAbility(player, role_state)) => {
+                role_state.on_grave_added(game, player, event.grave);
+            },
+            Ability::Pitchfork(_) => {},
+            Ability::SyndicateGun(_) => {}
+        }
+    }
     pub fn on_validated_ability_input_received(&self, game: &mut Game, event: &OnValidatedControllerInputReceived, fold: &mut (), priority: ()) {
         match if let Some(ability) = self.get(game).cloned() {ability} else {return} {
             Ability::RoleAbility(RoleAbility(player, role_state)) => {
@@ -96,6 +115,15 @@ impl AbilityID{
             Ability::SyndicateGun(ability) => {
                 ability.on_validated_ability_input_received(game, event, fold, priority);
             }
+        }
+    }
+    pub fn on_controller_selection_changed(&self, game: &mut Game, event: &OnControllerSelectionChanged, _fold: &mut (), _priority: ()){
+        match if let Some(ability) = self.get(game).cloned() {ability} else {return} {
+            Ability::RoleAbility(RoleAbility(player, role_state)) => {
+                role_state.on_controller_selection_changed(game, player, event.id.clone())
+            },
+            Ability::Pitchfork(_) => {},
+            Ability::SyndicateGun(_) => {}
         }
     }
     pub fn on_phase_start(&self, game: &mut Game, event: &OnPhaseStart, _fold: &mut (), _priority: ()) {

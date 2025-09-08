@@ -1,20 +1,14 @@
 use crate::game::{
-    components::mafia::Mafia, controllers::ControllerID, event::on_controller_changed::OnControllerChanged, player::PlayerReference, Game
+    abilities_component::Abilities, components::mafia::Mafia, controllers::ControllerID, event::{on_controller_changed::OnControllerChanged, Event}, Game
 };
 
 #[must_use = "Event must be invoked"]
 pub struct OnControllerSelectionChanged{
-    id: ControllerID,
+    pub id: ControllerID,
 }
 impl OnControllerSelectionChanged{
     pub fn new(id: ControllerID) -> Self{
         Self{id}
-    }
-    pub fn invoke(self, game: &mut Game){
-        Mafia::on_controller_selection_changed(game, self.id.clone());
-        for player in PlayerReference::all_players(game){
-            player.on_controller_selection_changed(game, self.id.clone());
-        }
     }
     pub(super) fn on_controller_changed(game: &mut Game, event: &OnControllerChanged, _fold: &mut (), _priority: ()){
         if
@@ -24,4 +18,15 @@ impl OnControllerSelectionChanged{
             Self::new(event.id.clone()).invoke(game);
         }
     }
+}
+impl Event for OnControllerSelectionChanged{
+    type FoldValue = ();
+    type Priority = ();
+
+    fn listeners() -> Vec<super::EventListenerFunction<Self>> {vec![
+        Mafia::on_controller_selection_changed,
+        Abilities::on_controller_selection_changed
+    ]}
+
+    fn initial_fold_value(&self, _game: &Game) -> Self::FoldValue {}
 }

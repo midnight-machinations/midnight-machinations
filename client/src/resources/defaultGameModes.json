@@ -1767,6 +1767,7 @@
           },
           "enabledRoles": [
             "armorsmith",
+            "amnesiac",
             "auditor",
             "bouncer",
             "cop",
@@ -1894,6 +1895,7 @@
           },
           "enabledRoles": [
             "armorsmith",
+            "amnesiac",
             "auditor",
             "bouncer",
             "cop",
@@ -2028,6 +2030,7 @@
           },
           "enabledRoles": [
             "armorsmith",
+            "amnesiac",
             "auditor",
             "bouncer",
             "cop",
@@ -2172,6 +2175,7 @@
           },
           "enabledRoles": [
             "armorsmith",
+            "amnesiac",
             "auditor",
             "bouncer",
             "cop",
@@ -2323,6 +2327,7 @@
           },
           "enabledRoles": [
             "armorsmith",
+            "amnesiac",
             "auditor",
             "bouncer",
             "cop",

@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 
-use crate::game::{controllers::{ControllerSelection, ControllerID}, event::on_ability_input_received::OnControllerInputReceived, player::PlayerReference, Game};
+use crate::game::{controllers::{ControllerID, ControllerSelection}, event::{on_controller_input_received::OnControllerInputReceived, Event}, player::PlayerReference, Game};
 
 #[derive(Clone, Serialize, Deserialize, Debug, PartialEq, Eq)]
 pub struct ControllerInput{

@@ -1,23 +1,28 @@
 use crate::game::{
-    components::graves::grave_reference::GraveReference, modifiers::ModifierSettings, player::PlayerReference, Game
+    abilities_component::Abilities, components::graves::grave_reference::GraveReference,
+    event::Event, modifiers::ModifierSettings, Game
 };
 
 
 #[must_use = "Event must be invoked"]
 pub struct OnGraveAdded{
-    grave: GraveReference,
+    pub grave: GraveReference,
 }
 impl OnGraveAdded{
     pub fn new(grave: GraveReference) -> Self{
         Self{grave}
     }
-    pub fn invoke(self, game: &mut Game){
-        for player in PlayerReference::all_players(game){
-            player.on_grave_added(game, self.grave)
-        }
+}
+impl Event for OnGraveAdded{
+    type FoldValue = ();
 
-        ModifierSettings::on_grave_added(game, self.grave);
+    type Priority = ();
 
-        game.on_grave_added(self.grave);
-    }
+    fn listeners() -> Vec<super::EventListenerFunction<Self>> {vec![
+        Abilities::on_grave_added,
+        ModifierSettings::on_grave_added,
+        Game::on_grave_added
+    ]}
+
+    fn initial_fold_value(&self, _game: &Game) -> Self::FoldValue {}
 }

@@ -1,5 +1,4 @@
 use crate::game::{
-    components::graves::grave_reference::GraveReference, controllers::{ControllerID, ControllerInput},
     event::{
         on_midnight::{MidnightVariables, OnMidnight, OnMidnightPriority},
     },
@@ -28,21 +27,11 @@ impl PlayerReference {
     }
 
 
-
-    pub fn on_controller_selection_changed(&self, game: &mut Game, id: ControllerID){
-        self.role_state(game).clone().on_controller_selection_changed(game, *self, id)
-    }
-    pub fn on_ability_input_received(&self, game: &mut Game, input_player: PlayerReference, input: ControllerInput) {
-        self.role_state(game).clone().on_ability_input_received(game, *self, input_player, input)
-    }
     pub fn on_game_start(&self, game: &mut Game){
         self.role_state(game).clone().on_game_start(game, *self)
     }
     pub fn on_game_ending(&self, game: &mut Game){
         self.role_state(game).clone().on_game_ending(game, *self)
-    }
-    pub fn on_grave_added(&self, game: &mut Game, grave: GraveReference){
-        self.role_state(game).clone().on_grave_added(game, *self, grave)
     }
     pub fn on_role_switch(&self, game: &mut Game, player: PlayerReference, old: RoleState, new: RoleState,){
         self.role_state(game).clone().on_role_switch(game, *self, player, old, new);

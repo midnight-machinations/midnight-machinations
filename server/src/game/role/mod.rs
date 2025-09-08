@@ -44,7 +44,6 @@ pub trait RoleStateTrait: Clone + std::fmt::Debug + Default + GetClientAbilitySt
     }
     fn on_controller_selection_changed(self, _game: &mut Game, _actor_ref: PlayerReference, _id: ControllerID) {}
     fn on_validated_ability_input_received(self, _game: &mut Game, _actor_ref: PlayerReference, _input_player: PlayerReference, _ability_input: ControllerInput) {}
-    fn on_ability_input_received(self, _game: &mut Game, _actor_ref: PlayerReference, _input_player: PlayerReference, _ability_input: ControllerInput) {}
 
     fn convert_selection_to_visits(self, _game: &Game, _actor_ref: PlayerReference) -> Vec<Visit> {
         vec![]
@@ -174,12 +173,13 @@ macros::roles! {
     Martyr : martyr,
     SantaClaus : santa_claus,
     Krampus : krampus,
+    Chronokaiser : chronokaiser,
 
     Witch : witch,
     Scarecrow : scarecrow,
     Warper : warper,
     Kidnapper : kidnapper,
-    Chronokaiser : chronokaiser,
+    Amnesiac : amnesiac,
 
     Arsonist : arsonist,
     Werewolf : werewolf,
@@ -295,11 +295,6 @@ mod macros {
                 pub fn on_validated_ability_input_received(self, game: &mut Game, actor_ref: PlayerReference, input_player: PlayerReference, ability_input: ControllerInput){
                     match self {
                         $(Self::$name(role_struct) => role_struct.on_validated_ability_input_received(game, actor_ref, input_player, ability_input)),*
-                    }
-                }
-                pub fn on_ability_input_received(self, game: &mut Game, actor_ref: PlayerReference, input_player: PlayerReference, ability_input: ControllerInput){
-                    match self {
-                        $(Self::$name(role_struct) => role_struct.on_ability_input_received(game, actor_ref, input_player, ability_input)),*
                     }
                 }
                 pub fn convert_selection_to_visits(self, game: &Game, actor_ref: PlayerReference) -> Vec<Visit>{

@@ -2,41 +2,36 @@ use crate::{
     game::{
         controllers::{ControllerID, ControllerInput, Controllers}, 
         event::{
-            on_controller_changed::OnControllerChanged, on_phase_start::OnPhaseStart,
-            on_validated_ability_input_received::OnValidatedControllerInputReceived, Event
+            on_controller_changed::OnControllerChanged, on_controller_input_received::OnControllerInputReceived,
+            on_phase_start::OnPhaseStart, on_validated_ability_input_received::OnValidatedControllerInputReceived,
+            Event
         }, 
-        player::PlayerReference, Game
+        Game
     }, 
     packet::ToClientPacket, vec_set::VecSet
 };
 
 impl Controllers{
-    /// returns false if any of these
-    /// - selection is invalid
-    /// - the controllerId doesnt exist
-    /// - the controller is grayed out
-    /// - actor is not allowed for this controller
-    /// - the incoming selection is the same as the current selection
-    pub fn on_ability_input_received(
+    pub fn on_controller_input_received(
         game: &mut Game,
-        actor: PlayerReference,
-        ability_input: ControllerInput
-    )->bool{
+        event: &OnControllerInputReceived,
+        _fold: &mut (),
+        _priority: ()
+    ){
         let ControllerInput{
             id, selection: incoming_selection
-        } = ability_input.clone();
+        } = event.input.clone();
+        let actor = event.actor_ref;
 
         if !Self::set_selection_in_controller(game, Some(actor), id.clone(), incoming_selection.clone(), false) {
-            return false;
+            return
         }
 
         if id.should_send_selection_chat_message(game) {
             Self::send_selection_message(game, actor, id, incoming_selection);
         }
 
-        OnValidatedControllerInputReceived::new(actor, ability_input).invoke(game);
-
-        true
+        OnValidatedControllerInputReceived::new(actor, event.input.clone()).invoke(game);
     }
 
     pub fn on_phase_start(game: &mut Game, event: &OnPhaseStart, _fold: &mut (), _priority: ()){

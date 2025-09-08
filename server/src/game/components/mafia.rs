@@ -2,7 +2,7 @@ use rand::seq::IndexedRandom;
 
 use crate::{game::{
     abilities::syndicate_gun::SyndicateGun, attack_power::{AttackPower, DefensePower}, chat::{ChatGroup, ChatMessageVariant}, components::{graves::grave::GraveKiller, night_visits::NightVisitsIterator}, controllers::{AvailablePlayerListSelection, ControllerParametersMap}, event::{
-        on_add_insider::OnAddInsider, on_any_death::OnAnyDeath, on_midnight::{MidnightVariables, OnMidnight, OnMidnightPriority}, on_remove_insider::OnRemoveInsider
+        on_add_insider::OnAddInsider, on_any_death::OnAnyDeath, on_controller_selection_changed::OnControllerSelectionChanged, on_midnight::{MidnightVariables, OnMidnight, OnMidnightPriority}, on_remove_insider::OnRemoveInsider
     }, phase::PhaseType, player::PlayerReference, role::RoleState, role_list::RoleSet, visit::{Visit, VisitTag}, ControllerID, Game, PlayerListSelection
 }, vec_set::{vec_set, VecSet}};
 
@@ -160,10 +160,10 @@ impl Mafia{
         }
     }
 
-    pub fn on_controller_selection_changed(game: &mut Game, controller_id: ControllerID){
-        if controller_id != ControllerID::syndicate_choose_backup() {return};
+    pub fn on_controller_selection_changed(game: &mut Game, event: &OnControllerSelectionChanged, _fold: &mut (), _priority: ()){
+        if event.id != ControllerID::syndicate_choose_backup() {return};
 
-        let backup = controller_id.get_player_list_selection(game)
+        let backup = event.id.get_player_list_selection(game)
             .and_then(|b|b.0.first().copied());
 
         if let Some(backup) = backup{

@@ -1045,6 +1045,18 @@
             {"type": "someoneSurvivedYourAttack"}
         ]
     },
+    "amnesiac":{
+        "mainRoleSet": "minions",
+        "roleSets": ["minions"],
+        "armor": false,
+        "aura": null,
+        "maxCount": null,
+        "canWriteDeathNote": false,
+        "canBeConvertedTo": [],
+        "chatMessages":[
+            {"type": "amnesiacRole", "role": "detective"}
+        ]
+    },
     "arsonist": {
         "mainRoleSet": "fiends",
         "roleSets": ["fiends"],

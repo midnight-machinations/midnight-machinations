@@ -1,4 +1,4 @@
-use crate::game::{components::graves::{grave::Grave, grave_reference::GraveReference}, event::on_grave_added::OnGraveAdded, Game};
+use crate::game::{components::graves::{grave::Grave, grave_reference::GraveReference}, event::{on_grave_added::OnGraveAdded, Event as _}, Game};
 
 pub mod grave;
 pub mod grave_reference;
