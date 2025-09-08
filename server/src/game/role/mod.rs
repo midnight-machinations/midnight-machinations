@@ -179,7 +179,7 @@ macros::roles! {
     Scarecrow : scarecrow,
     Warper : warper,
     Kidnapper : kidnapper,
-    Amnesiac : amnesiac,
+    Pawn : pawn,
 
     Arsonist : arsonist,
     Werewolf : werewolf,

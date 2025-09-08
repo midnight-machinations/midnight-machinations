@@ -506,8 +506,8 @@
     "controllerId.role.kidnapper.0.name": "Kidnap",
     "controllerId.role.kidnapper.1.name": "Kill Prisoner",
 
-    "role.amnesiac.name": "Amnesiac",
-    "role.amnesiac.name:var.0": "Amnesiacs",
+    "role.pawn.name": "Pawn",
+    "role.pawn.name:var.0": "Pawns",
 
     "role.politician.name": "Politician",
     "role.politician.name:var.0": "Politicians",
@@ -1129,7 +1129,7 @@
     "chatMessage.mercenaryResult.hit": "Your target is a hit.",
     "chatMessage.mercenaryResult.notHit": "Your target is not a hit.",
     "chatMessage.mercenaryYouAreAHit": "You are on a Mercenaries hit list.",
-    "chatMessage.amnesiacRole": "There is an Amnesiac with the role \\0.",
+    "chatMessage.pawnRole": "There is an Pawn with the role \\0.",
     "chatMessage.martyrFailed": "The martyr lives, and we endure for another day.",
     "chatMessage.martyrWon": "The messiah has been killed! May we all enter the kingdom of heaven.",
 
@@ -2066,11 +2066,11 @@
     "wiki.article.role.warper.attributes":"",
     "wiki.article.role.warper.extra": "- You can't effect the visits of Transporters, Porters, or other Warpers\n - Warper priority is after transporter, but the same as porter\n- You are immune to roleblocks and possession",
 
-    "wiki.article.role.amnesiac.reminder": "Nobody can ever have this role. Instead, if this role generates, there is a player with a town investigative role who is evil, but is not told that they are evil.",
-    "wiki.article.role.amnesiac.guide": "- You are never told you are the amnesiac, instead you are given a random town investigative role.\n - When you become the amnesiac, all enemies with the town except yourself are told what your role is, but not who you are.",
-    "wiki.article.role.amnesiac.abilities": "",
-    "wiki.article.role.amnesiac.attributes": "",
-    "wiki.article.role.amnesiac.extra": "",
+    "wiki.article.role.pawn.reminder": "Nobody can ever have this role. Instead, if this role generates, there is a player with a town investigative role who is evil, but is not told that they are evil.",
+    "wiki.article.role.pawn.guide": "- You are never told you are the pawn, instead you are given a random town investigative role.\n - When you become the pawn, all enemies with the town except yourself are told what your role is, but not who you are.",
+    "wiki.article.role.pawn.abilities": "",
+    "wiki.article.role.pawn.attributes": "",
+    "wiki.article.role.pawn.extra": "",
     
     "wiki.article.role.politician.reminder": "If town is about to win, you win instead, and kill all non-politicians.",
     "wiki.article.role.politician.guide":"* If the town would win, instead the game skips to nomination, if you survive until the next dusk after that dusk, you win (killing all other players)\n* During the day, enfranchise to gain 3x voting power\n    - Everyone is told you enfranchised\n    - From now on, you can't whisper or be whispered to",

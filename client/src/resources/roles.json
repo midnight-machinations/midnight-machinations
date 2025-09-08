@@ -1045,7 +1045,7 @@
             {"type": "someoneSurvivedYourAttack"}
         ]
     },
-    "amnesiac":{
+    "pawn":{
         "mainRoleSet": "minions",
         "roleSets": ["minions"],
         "armor": false,
@@ -1054,7 +1054,7 @@
         "canWriteDeathNote": false,
         "canBeConvertedTo": [],
         "chatMessages":[
-            {"type": "amnesiacRole", "role": "detective"}
+            {"type": "pawnRole", "role": "detective"}
         ]
     },
     "arsonist": {

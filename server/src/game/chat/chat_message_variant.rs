@@ -225,7 +225,7 @@ pub enum ChatMessageVariant {
     MercenaryYouAreAHit,
     MercenaryResult{hit: bool},
     MercenaryHits{roles: VecSet<Role>},
-    AmnesiacRole{role: Role},
+    PawnRole{role: Role},
     KiraResult{result: KiraResult},
     MartyrRevealed { martyr: PlayerIndex },
     MartyrWon,

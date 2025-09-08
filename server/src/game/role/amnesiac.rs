@@ -15,10 +15,10 @@ pub(super) const MAXIMUM_COUNT: Option<u8> = Some(1);
 pub(super) const DEFENSE: DefensePower = DefensePower::None;
 
 #[derive(Clone, Debug, Serialize, Default)]
-pub struct Amnesiac;
+pub struct Pawn;
 
-impl RoleStateTrait for Amnesiac {
-    type ClientAbilityState = Amnesiac;
+impl RoleStateTrait for Pawn {
+    type ClientAbilityState = Pawn;
     fn before_initial_role_creation(self, game: &mut Game, actor_ref: PlayerReference) {
 
         let possible_roles = RoleSet::TownInvestigative
@@ -42,7 +42,7 @@ impl RoleStateTrait for Amnesiac {
                     !player.win_condition(game).friends_with_conclusion(GameConclusion::Town) &&
                     player != actor_ref
                 {
-                    player.add_private_chat_message(game, ChatMessageVariant::AmnesiacRole{role: *random_town_role});
+                    player.add_private_chat_message(game, ChatMessageVariant::PawnRole{role: *random_town_role});
                 }
             }
         }
