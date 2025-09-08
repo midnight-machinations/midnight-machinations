@@ -132,21 +132,19 @@ impl Game{
                 chat_messages: unsafe{ChatComponent::new(num_players)}
             };
 
-            // Just distribute insider groups, this is for game over checking (Keeps game running syndicate gun)
             for player in PlayerReference::all_players(&game){
                 let Some(assignment) = assignments.get(&player) else {
                     return Err(RejectStartReason::RoleListTooSmall)
                 };
-                
-                let insider_groups = assignment.insider_groups.clone();
 
-                for group in insider_groups {
-                    unsafe {
-                        group.add_player_to_revealed_group_unchecked(&mut game, player);
-                    }
+                for group in assignment.insider_groups.clone() {
+                    unsafe {group.add_player_to_revealed_group_unchecked(&mut game, player);}
                 }
-            }
 
+                let win_con = player.win_condition(&game).clone();
+                player.set_win_condition(&mut game, win_con);
+                InsiderGroups::send_player_insider_groups_packet(&game, player);
+            }
 
             if !game.game_is_over() {
                 break game;
@@ -160,19 +158,12 @@ impl Game{
         
         game.send_packet_to_all(ToClientPacket::StartGame);
 
-        //set wincons
-        for player in PlayerReference::all_players(&game){
-            // We already set this earlier, now we just need to call the on_convert event. Hope this doesn't end the game!
-            let win_condition = player.win_condition(&game).clone();
-            player.set_win_condition(&mut game, win_condition);
-            InsiderGroups::send_player_insider_groups_packet(&game, player);
-        }
-
+        //This only is for drunk and amnesaic
         BeforeInitialRoleCreation::invoke(&mut game);
         
         Abilities::set_default_abilties(&mut game);
-        //on role creation needs to be called after all players roles are known
-        //trigger role event listeners
+
+        //initial role creation calls "on role created". It acts as if your role was just switched but doesnt call on role switch
         for player_ref in PlayerReference::all_players(&game){
             player_ref.initial_role_creation(&mut game);
         }
