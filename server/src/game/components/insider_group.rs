@@ -1,3 +1,4 @@
+use std::collections::HashMap;
 use serde::{Deserialize, Serialize};
 
 use crate::{game::{chat::{ChatGroup, ChatMessageVariant}, event::{on_add_insider::OnAddInsider, on_conceal_role::OnConcealRole, on_remove_insider::OnRemoveInsider, Event}, player::PlayerReference, Assignments, Game}, packet::ToClientPacket, vec_set::VecSet};
@@ -6,7 +7,8 @@ use crate::{game::{chat::{ChatGroup, ChatMessageVariant}, event::{on_add_insider
 pub struct InsiderGroups{
     mafia: InsiderGroup,
     cult: InsiderGroup,
-    puppeteer: InsiderGroup
+    puppeteer: InsiderGroup,
+    generic: HashMap<u8, InsiderGroup>
 }
 impl InsiderGroups{
 
@@ -15,6 +17,7 @@ impl InsiderGroups{
             mafia: InsiderGroup::default(),
             cult: InsiderGroup::default(),
             puppeteer: InsiderGroup::default(),
+            generic: HashMap::new(),
         }
     }
 
@@ -25,7 +28,8 @@ impl InsiderGroups{
         let mut out = Self {
             mafia: InsiderGroup::default(),
             cult: InsiderGroup::default(),
-            puppeteer: InsiderGroup::default()
+            puppeteer: InsiderGroup::default(),
+            generic: HashMap::new()
         };
         for player in unsafe { PlayerReference::all_players_from_count(player_count) }{
             for group in assignments
@@ -35,7 +39,13 @@ impl InsiderGroups{
                 .iter()
                 .copied()
             {
-                out.get_group_mut(group).players.insert(player);
+                if let Some(existing_group) = out.get_group_mut(group) {
+                    existing_group.players.insert(player);
+                    continue;
+                } else if let InsiderGroupID::Generic { key } = group {
+                    out.generic.insert(key, InsiderGroup { players: vec![player].into_iter().collect() });
+                    continue;
+                }
             }
         }
         out
@@ -60,7 +70,7 @@ impl InsiderGroups{
     }
     pub fn send_player_insider_groups_packet(game: &Game, player: PlayerReference){
         let mut groups = VecSet::new();
-        for group in InsiderGroupID::all(){
+        for group in InsiderGroupID::all(game){
             if group.contains_player(game, player){
                 groups.insert(group);
             }
@@ -68,27 +78,35 @@ impl InsiderGroups{
         player.send_packet(game, ToClientPacket::YourInsiderGroups{insider_groups: groups});
     }
 
-    fn get_group(&self, id: InsiderGroupID)->&InsiderGroup{
+    fn get_group(&self, id: InsiderGroupID)->Option<&InsiderGroup>{
         match id {
-            InsiderGroupID::Mafia => &self.mafia,
-            InsiderGroupID::Cult => &self.cult,
-            InsiderGroupID::Puppeteer => &self.puppeteer,
+            InsiderGroupID::Mafia => Some(&self.mafia),
+            InsiderGroupID::Cult => Some(&self.cult),
+            InsiderGroupID::Puppeteer => Some(&self.puppeteer),
+            InsiderGroupID::Generic { key } => self.generic.get(&key)
         }
     }
-    fn get_group_mut(&mut self, id: InsiderGroupID)->&mut InsiderGroup{
+    fn get_group_mut(&mut self, id: InsiderGroupID)->Option<&mut InsiderGroup>{
         match id {
-            InsiderGroupID::Mafia => &mut self.mafia,
-            InsiderGroupID::Cult => &mut self.cult,
-            InsiderGroupID::Puppeteer => &mut self.puppeteer,
+            InsiderGroupID::Mafia => Some(&mut self.mafia),
+            InsiderGroupID::Cult => Some(&mut self.cult),
+            InsiderGroupID::Puppeteer => Some(&mut self.puppeteer),
+            InsiderGroupID::Generic { key } => self.generic.get_mut(&key),
         }
+    }
+
+    pub fn get_generic_group_keys(&self) -> impl Iterator<Item = u8> + '_ {
+        self.generic.keys().copied()
     }
 }
 #[derive(Clone, Copy, PartialEq, Eq, Hash, Debug, Serialize, Deserialize)]
-#[serde(rename_all = "camelCase")]
+#[serde(tag = "type", rename_all = "camelCase")]
 pub enum InsiderGroupID{
     Mafia,
     Cult,
-    Puppeteer
+    Puppeteer,
+    #[serde(rename_all = "camelCase")]
+    Generic { key: u8 }
 }
 #[derive(Default, Debug)]
 pub struct InsiderGroup{
@@ -97,39 +115,45 @@ pub struct InsiderGroup{
 
 impl InsiderGroupID{
     //const
-    pub fn all()->VecSet<InsiderGroupID>{
+    pub fn all_static()->VecSet<InsiderGroupID>{
         vec![
             InsiderGroupID::Mafia,
             InsiderGroupID::Cult,
             InsiderGroupID::Puppeteer
         ].into_iter().collect()
     }
+    
+    pub fn all(game: &Game)->VecSet<InsiderGroupID>{
+        let mut result = Self::all_static();
+        for key in game.insider_groups.get_generic_group_keys() {
+            result.insert(InsiderGroupID::Generic { key });
+        }
+        result
+    }
     pub const fn get_insider_chat_group(&self)->ChatGroup{
         match self{
             InsiderGroupID::Mafia=>ChatGroup::Mafia,
             InsiderGroupID::Cult=>ChatGroup::Cult,
-            InsiderGroupID::Puppeteer=>ChatGroup::Puppeteer
+            InsiderGroupID::Puppeteer=>ChatGroup::Puppeteer,
+            InsiderGroupID::Generic { key }=>ChatGroup::Generic { key: *key }
         }
     }
-    pub fn get_insider_group_from_chat_group(chat: &ChatGroup)->Option<InsiderGroupID>{
-        for inside in Self::all() {
+    pub fn get_insider_group_from_chat_group(game: &Game, chat: &ChatGroup)->Option<InsiderGroupID>{
+        for inside in Self::all(game) {
             if inside.get_insider_chat_group() == *chat {
                 return Some(inside)
             }
         }
         None
     }
-    fn deref<'a>(&self, game: &'a Game)->&'a InsiderGroup{
+    fn deref<'a>(&self, game: &'a Game)->Option<&'a InsiderGroup>{
         game.insider_groups.get_group(*self)
     }
-    fn deref_mut<'a>(&self, game: &'a mut Game)->&'a mut InsiderGroup{
+    fn deref_mut<'a>(&self, game: &'a mut Game)->Option<&'a mut InsiderGroup>{
         game.insider_groups.get_group_mut(*self)
     }
-    pub fn players<'a>(&self, game: &'a Game)->&'a VecSet<PlayerReference>{
-        &self.deref(game).players
-    }
-    pub fn players_mut<'a>(&self, game: &'a mut Game)->&'a mut VecSet<PlayerReference>{
-        &mut self.deref_mut(game).players
+    pub fn players(&self, game: &Game)->VecSet<PlayerReference>{
+        self.deref(game).map(|group| group.players.clone()).unwrap_or_default()
     }
     
     pub fn reveal_group_players(&self, game: &mut Game){
@@ -145,30 +169,63 @@ impl InsiderGroupID{
     /// # Safety
     /// This function will not alert the other players of the addition of this new player
     pub unsafe fn add_player_to_revealed_group_unchecked(&self, game: &mut Game, player: PlayerReference){
-        self.players_mut(game).insert(player);
+        if let Some(group) = self.deref_mut(game) {
+            group.players.insert(player);
+        } else if let InsiderGroupID::Generic { key } = self {
+            game.insider_groups.generic.insert(*key, InsiderGroup {
+                players: vec![player].into_iter().collect()
+            });
+        }
         OnAddInsider::new(player, *self).invoke(game);
     }
     pub fn add_player_to_revealed_group(&self, game: &mut Game, player: PlayerReference){
-        if self.players_mut(game).insert(player).is_none() {
+        let should_reveal = {
+            if let Some(group) = self.deref_mut(game) {
+                group.players.insert(player).is_none()
+            } else if let InsiderGroupID::Generic { key } = self {
+                game.insider_groups.generic.insert(*key, InsiderGroup {
+                    players: vec![player].into_iter().collect()
+                });
+                true
+            } else {
+                false
+            }
+        };
+
+        if should_reveal {
             self.reveal_group_players(game);
         }
         OnAddInsider::new(player, *self).invoke(game);
         InsiderGroups::send_player_insider_groups_packet(game, player);
     }
     pub fn remove_player_from_insider_group(&self, game: &mut Game, player: PlayerReference){
-        if self.players_mut(game).remove(&player).is_some() {
+        let should_reveal = {
+            if let Some(group) = self.deref_mut(game) {
+                group.players.remove(&player).is_some()
+            } else {
+                false // They must have not been in it, so no need to reveal
+            }
+        };
+
+        if should_reveal {
             self.reveal_group_players(game);
         }
         OnRemoveInsider::new(player, *self).invoke(game);
         InsiderGroups::send_player_insider_groups_packet(game, player);
     }
-    pub fn set_player_insider_groups(set: VecSet<InsiderGroupID>, game: &mut Game, player: PlayerReference){
-        for group in InsiderGroupID::all(){
+    pub fn set_player_insider_groups(mut set: VecSet<InsiderGroupID>, game: &mut Game, player: PlayerReference){
+        for group in InsiderGroupID::all(game){
             if set.contains(&group){
                 group.add_player_to_revealed_group(game, player);
+                set.remove(&group);
             }else{
                 group.remove_player_from_insider_group(game, player);
             }
+        }
+
+        // Get leftover generic groups
+        for group in set {
+            group.add_player_to_revealed_group(game, player);
         }
     }
 
@@ -182,17 +239,17 @@ impl InsiderGroupID{
 
     // Queries
     pub fn in_any_group(game: &Game, player: PlayerReference)->bool{
-        InsiderGroupID::all().into_iter().any(|g|g.contains_player(game, player))
+        InsiderGroupID::all(game).into_iter().any(|g|g.contains_player(game, player))
     }
     pub fn contains_player(&self, game: &Game, player: PlayerReference)->bool{
-        let players: &VecSet<PlayerReference> = self.players(game);
+        let players: VecSet<PlayerReference> = self.players(game);
         players.contains(&player)
     }
     pub fn in_same_group(game: &Game, a: PlayerReference, b: PlayerReference)->bool{
-        InsiderGroupID::all().iter().any(|group| group.contains_player(game, b) && group.contains_player(game, a))
+        InsiderGroupID::all(game).iter().any(|group| group.contains_player(game, b) && group.contains_player(game, a))
     }
     pub fn all_groups_with_player(game: &Game, player_ref: PlayerReference)->VecSet<InsiderGroupID>{
-        InsiderGroupID::all()
+        InsiderGroupID::all(game)
             .into_iter()
             .filter(|group| 
                 group.contains_player(game, player_ref)
@@ -211,7 +268,7 @@ impl InsiderGroupID{
     ){
         let mut message_sent = false;
         for chat_group in player.get_current_send_chat_groups(game){
-            if Self::get_insider_group_from_chat_group(&chat_group).is_none() {continue};
+            if Self::get_insider_group_from_chat_group(game, &chat_group).is_none() {continue};
             game.add_message_to_chat_group(chat_group, message.clone());
             message_sent = true;
         }

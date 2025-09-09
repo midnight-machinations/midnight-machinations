@@ -733,6 +733,8 @@
     "chatGroup.puppeteer.icon": "🧵",
     "chatGroup.puppeteer.name": "Puppeteer",
     "chatGroup.warden.icon": "🕹️",
+    "chatGroup.generic.name": "Generic \\0",
+    "chatGroup.generic.icon": "⭐\\0",
 
     "messageSender.livingToDead.icon": "🔮",
 
@@ -974,6 +976,7 @@
     "winCondition.draw": "Draw-monger",
     "winCondition.evil": "Evil",
     "winCondition.independent": "Independent",
+    "winCondition.generic": "Generic \\0",
 
 
     "chatMessage.whisper":"\\0 whispered to \\1: \\2",

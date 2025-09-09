@@ -3,7 +3,7 @@ import React, { ReactElement } from "react";
 import GAME_MANAGER, { find, replaceMentions } from "..";
 import StyledText, { KeywordDataMap, PLAYER_SENDER_KEYWORD_DATA } from "./StyledText";
 import "./chatMessage.css"
-import { ChatGroup, Conclusion, DefensePower, InsiderGroup, PhaseState, PlayerIndex, Tag, translateConclusion, translateWinCondition, UnsafeString, Verdict, WinCondition } from "../game/gameState.d";
+import { ChatGroup, Conclusion, DefensePower, InsiderGroup, insiderGroupFromChatGroup, PhaseState, PlayerIndex, Tag, translateConclusion, translateInsiderGroupIcon, translateWinCondition, UnsafeString, Verdict, WinCondition } from "../game/gameState.d";
 import { Role, RoleState } from "../game/roleState.d";
 import { Grave } from "../game/graveState";
 import GraveComponent from "./grave";
@@ -70,8 +70,11 @@ const ChatElement = React.memo((
 
     let chatGroupIcon = null;
     if(message.chatGroup !== null){
-        if(message.chatGroup !== "all"){
-            chatGroupIcon = translateChecked("chatGroup."+message.chatGroup+".icon");
+        const insiderGroup = insiderGroupFromChatGroup(message.chatGroup);
+        if (insiderGroup !== null) {
+            chatGroupIcon = translateInsiderGroupIcon(insiderGroup);
+        } else if(message.chatGroup.type !== "all"){
+            chatGroupIcon = translateChecked("chatGroup."+message.chatGroup.type+".icon");
         }else{
             chatGroupIcon = "";
         }
@@ -301,7 +304,7 @@ function NormalChatMessage(props: Readonly<{
 
     if(props.message.variant.messageSender.type !== "player" && props.message.variant.messageSender.type !== "livingToDead"){
         style += " discreet";
-    } else if (props.message.chatGroup === "dead") {
+    } else if (props.message.chatGroup?.type === "dead") {
         style += " dead player";
     } else {
         style += " player"
@@ -803,7 +806,7 @@ export function translateChatMessage(
                         + ` (${synopsis.outlineAssignment + 1}: ${translateRoleOutline(roleList[synopsis.outlineAssignment], playerNames)}`
                         + `: ${synopsis.crumbs.map(crumb => 
                             translate("chatMessage.gameOver.player.crumb",
-                                crumb.insiderGroups.map(group => translate("chatGroup."+group+".icon")).join("|") || translate("chatGroup.all.icon"),
+                                crumb.insiderGroups.map(group => translateInsiderGroupIcon(group)).join("|") || translate("chatGroup.all.icon"),
                                 translateWinCondition(crumb.winCondition), 
                                 translate(`role.${crumb.role}.name`)
                             )

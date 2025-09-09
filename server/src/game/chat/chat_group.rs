@@ -3,7 +3,7 @@ use serde::{Deserialize, Serialize};
 use crate::game::{player::PlayerReference, Game};
 
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq, PartialOrd, Ord, Hash)]
-#[serde(rename_all = "camelCase")]
+#[serde(tag = "type", rename_all = "camelCase")]
 pub enum ChatGroup {
     All,
     Dead,
@@ -16,6 +16,8 @@ pub enum ChatGroup {
     Interview,
     Puppeteer,
     Warden,
+    #[serde(rename_all = "camelCase")]
+    Generic { key: u8 },
 }
 impl ChatGroup{
     pub fn player_receive_from_chat_group(&self, game: &Game, player_ref: PlayerReference)->bool{

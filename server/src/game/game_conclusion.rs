@@ -5,7 +5,7 @@ use crate::{game::components::insider_group::InsiderGroupID, vec_set::VecSet};
 use super::{components::win_condition::WinCondition, player::PlayerReference, role::Role, role_list::RoleSet, Game};
 
 #[derive(Clone, Copy, Debug, Serialize, Deserialize, PartialEq, Eq, Hash, PartialOrd, Ord)]
-#[serde(rename_all = "camelCase")]
+#[serde(tag = "type", rename_all = "camelCase")]
 pub enum GameConclusion {
     Town,
     Mafia,
@@ -18,10 +18,13 @@ pub enum GameConclusion {
     NiceList,
     NaughtyList,
 
+    #[serde(rename_all = "camelCase")]
+    Generic { key: u8 },
+
     Draw
 }
 impl GameConclusion {
-    pub fn all()->Vec<GameConclusion>{
+    pub fn all_static()->Vec<GameConclusion>{
         vec![
             GameConclusion::Town,
             GameConclusion::Mafia,
@@ -71,8 +74,12 @@ impl GameConclusion {
             return Some(GameConclusion::Draw);
         }
 
+        let all_present_conclusions = players.iter()
+            .flat_map(|p|p.win_condition.win_if_any_conclusions().unwrap_or_default())
+            .collect::<VecSet<_>>();
+
         //find one end game condition that everyone agrees on
-        GameConclusion::all().into_iter().find(|resolution| 
+        all_present_conclusions.into_iter().find(|resolution| 
             players
                 .iter()
                 .filter(|p|p.keeps_game_running())

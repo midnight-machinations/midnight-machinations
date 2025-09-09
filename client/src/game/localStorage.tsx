@@ -94,7 +94,7 @@ export function getDefaultSettings(): Readonly<Settings> {
     }
 
     return {
-        format: "v6",
+        format: "v7",
         volume: 0.5,
         fontSize: 1,
         accessibilityFont: false,

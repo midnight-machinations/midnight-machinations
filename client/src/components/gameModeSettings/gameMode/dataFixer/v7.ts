@@ -1,22 +1,21 @@
 import { VersionConverter } from ".";
 import { GameMode, GameModeData, GameModeStorage, ShareableGameMode } from "..";
-import { Conclusion, InsiderGroup, PHASES, PhaseTimes } from "../../../../game/gameState.d";
-import { RoleList, RoleOutlineOption } from "../../../../game/roleListState.d";
+import { PHASES, PhaseTimes } from "../../../../game/gameState.d";
 import { getDefaultSettings, Settings } from "../../../../game/localStorage";
 import { Failure, ParseResult, ParseSuccess, Success, isFailure } from "../parse";
 import { parseName } from "./initial";
 import { parseEnabledRoles } from "./v2";
-import { parseRoleList } from "./v4";
+// v7 expects already converted data, so no need to parse roleList - just validate
 import { parseModifierSettings } from "./v5";
 
-const v6: VersionConverter = {
+const v7: VersionConverter = {
     convertSettings: parseSettings,
 
     convertShareableGameMode: parseShareableGameModeData,
     convertGameModeStorage: parseGameModeStorage
 }
 
-export default v6;
+export default v7;
 
 export function parseSettings(json: NonNullable<any>): ParseResult<Settings> {
     if (typeof json !== "object" || Array.isArray(json)) {
@@ -43,7 +42,7 @@ export function parseSettings(json: NonNullable<any>): ParseResult<Settings> {
         delete json.roleSpecificMenus;
     }
 
-    return Success({ ...json, format: "v6" });
+    return Success({ ...json, format: "v7" });
 }
 
 function parseGameModeStorage(json: NonNullable<any>): ParseResult<GameModeStorage> {
@@ -144,11 +143,8 @@ function parseGameModeData(json: NonNullable<any>): ParseResult<GameModeData> {
         }
     }
 
-    const roleList = parseRoleList(json.roleList);
-    if (isFailure(roleList)) return roleList;
-    
-    const convertedRoleList = convertV6RoleListToV7(roleList.value);
-    if (isFailure(convertedRoleList)) return convertedRoleList;
+    // v7 expects roleList to already be in correct format from v6 conversion
+    const roleList = json.roleList;
 
     const phaseTimes = parsePhaseTimes(json.phaseTimes);
     if (isFailure(phaseTimes)) return phaseTimes;
@@ -160,7 +156,7 @@ function parseGameModeData(json: NonNullable<any>): ParseResult<GameModeData> {
     if (isFailure(modifierSettings)) return modifierSettings;
 
     return Success({
-        roleList: convertedRoleList.value, 
+        roleList: roleList, 
         phaseTimes: phaseTimes.value, 
         enabledRoles: enabledRoles.value,
         modifierSettings: modifierSettings.value
@@ -191,63 +187,4 @@ export function parsePhaseTimes(json: NonNullable<any>): ParseResult<PhaseTimes>
     )
 
     return phaseTimes as ParseResult<PhaseTimes>;
-}
-
-// Convert v6 types (with strings) to v7 types (with tagged objects)
-function convertV6RoleListToV7(v6RoleList: any[]): ParseResult<RoleList> {
-    try {
-        const convertedRoleList: RoleList = v6RoleList.map((v6Outline: any) => 
-            v6Outline.map((v6Option: any) => {
-                const convertedOption: RoleOutlineOption = {} as any;
-                
-                // Copy role or roleSet
-                if ('role' in v6Option) {
-                    (convertedOption as any).role = v6Option.role;
-                } else if ('roleSet' in v6Option) {
-                    (convertedOption as any).roleSet = v6Option.roleSet;
-                }
-                
-                // Convert string arrays to tagged objects
-                if (v6Option.winIfAny) {
-                    convertedOption.winIfAny = v6Option.winIfAny.map((conclusion: string) => {
-                        if (conclusion === "town" || conclusion === "mafia" || conclusion === "cult" || conclusion === "draw") {
-                            return { type: conclusion };
-                        } else {
-                            // Parse generic format like "generic-0"
-                            const match = conclusion.match(/^generic-(\d+)$/);
-                            if (match) {
-                                return { type: "generic", key: parseInt(match[1]) };
-                            }
-                            return { type: conclusion }; // fallback
-                        }
-                    }) as Conclusion[];
-                }
-                
-                if (v6Option.insiderGroups) {
-                    convertedOption.insiderGroups = v6Option.insiderGroups.map((group: string) => {
-                        if (group === "mafia") {
-                            return { type: "mafia" };
-                        } else {
-                            // Parse generic format like "generic-0"
-                            const match = group.match(/^generic-(\d+)$/);
-                            if (match) {
-                                return { type: "generic", key: parseInt(match[1]) };
-                            }
-                            return { type: group }; // fallback
-                        }
-                    }) as InsiderGroup[];
-                }
-                
-                if (v6Option.playerPool) {
-                    convertedOption.playerPool = v6Option.playerPool;
-                }
-                
-                return convertedOption;
-            })
-        );
-        
-        return Success(convertedRoleList);
-    } catch (error) {
-        return Failure("failedToConvertV6RoleListToV7", error);
-    }
 }

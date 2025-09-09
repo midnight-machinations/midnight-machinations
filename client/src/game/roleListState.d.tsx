@@ -1,6 +1,6 @@
 
 import { encodeString } from "../components/ChatMessage";
-import { Conclusion, InsiderGroup, PlayerIndex, translateWinCondition, UnsafeString } from "./gameState.d";
+import { Conclusion, InsiderGroup, PlayerIndex, translateInsiderGroupIcon, translateWinCondition, UnsafeString } from "./gameState.d";
 import translate from "./lang";
 import { Role, roleJsonData } from "./roleState.d";
 
@@ -98,7 +98,7 @@ export function translateRoleOutlineOption(roleOutlineOption: RoleOutlineOption,
             out += translate("chatGroup.all.icon")
         }
         out += roleOutlineOption.insiderGroups
-            .map(insiderGroup => translate(`chatGroup.${insiderGroup}.icon`))
+            .map(insiderGroup => translateInsiderGroupIcon(insiderGroup))
             .join(' ' + translate("union") + ' ');
         out += ', '
     }

@@ -7,6 +7,7 @@
 - When you ask a clarifying question, allow me to respond before continuing.
 - Check for errors whenever you finish making code edits. If there are any, continue to iterate until you've resolved them.
 - Don't assume the contents of other files. Check exports manually if you need to use something from another file.
+- When debugging build errors, especially with data fixer code, use `npx tsc --noEmit --pretty` to get precise file names and line numbers instead of assuming which file has the error.
 
 ## Adding New Roles
 
