@@ -1,6 +1,6 @@
 import { Grave, GraveIndex } from "./graveState";
 import { ChatMessage, ChatMessageIndex } from "../components/ChatMessage";
-import { Role, RoleState } from "./roleState.d";
+import { Role, RoleState, Template } from "./roleState.d";
 import { RoleList } from "./roleListState.d";
 import { LobbyPreviewData } from "./packet";
 import { ChatFilter } from "../menu/game/gameScreenContent/ChatMenu";
@@ -151,6 +151,7 @@ export type InsiderGroup = (typeof INSIDER_GROUPS)[number];
 export const INSIDER_GROUPS = ["mafia", "cult", "puppeteer"] as const;
 export type PhaseTimes = Record<Exclude<PhaseType, "recess">, number>;
 export type DefensePower = "none"|"armored"|"protected"|"invincible";
+export type EnabledTemplates = Template[];
 
 export type Tag = 
     "syndicateGun" |

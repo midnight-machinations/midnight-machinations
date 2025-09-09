@@ -4,7 +4,7 @@ use crate::{
         attack_power::AttackPower, components::{graves::grave::GraveKiller, pitchfork_item::PitchforkItemComponent},
         controllers::{AvailablePlayerListSelection, ControllerID, ControllerParametersMap, PlayerListSelection},
         event::{before_phase_end::BeforePhaseEnd, on_midnight::{MidnightVariables, OnMidnight, OnMidnightPriority}},
-        game_conclusion::GameConclusion, phase::PhaseType, player::PlayerReference, role::{common_role, Role}, role_list::RoleSet, Game
+        game_conclusion::GameConclusion, phase::PhaseType, player::PlayerReference, role::{common_role, Role}, role_list::TemplateSet, Game
     },
     vec_map::VecMap
 };
@@ -35,7 +35,7 @@ impl PitchforkAbility{
             target.try_night_kill(
                 &pitchfork_players, 
                 game, midnight_variables,
-                GraveKiller::RoleSet(RoleSet::Town), 
+                GraveKiller::RoleSet(TemplateSet::Town), 
                 AttackPower::ProtectionPiercing, 
                 false
             );
@@ -55,7 +55,7 @@ impl PitchforkAbility{
     }
 
     pub fn controller_parameters_map(self, game: &Game)->ControllerParametersMap{
-        if !game.settings.enabled_roles.contains(&Role::Rabblerouser) {
+        if !game.settings.enabled_templates.contains(&Role::Rabblerouser) {
             return ControllerParametersMap::default();
         }
 

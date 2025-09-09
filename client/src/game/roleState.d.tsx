@@ -7,6 +7,16 @@ import { Doomsayer } from "../menu/game/gameScreenContent/AbilityMenu/RoleSpecif
 import { TwoRoleOptionSelection } from "./controllerInput";
 import { Hypnotist } from "../menu/game/gameScreenContent/AbilityMenu/RoleSpecificMenus/HypnotistMenu";
 
+
+export type Template = {
+    type: "role",
+    role: Role
+} | {
+    type: "pawn"
+} | {
+    type: "drunk"
+}
+
 export type RoleState = {
     type: "jailor",
     executionsRemaining: number,

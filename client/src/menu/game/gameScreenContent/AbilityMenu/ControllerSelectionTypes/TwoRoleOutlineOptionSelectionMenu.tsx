@@ -9,8 +9,8 @@ import { useGameState, usePlayerNames } from "../../../../../components/useHooks
 import { Button } from "../../../../../components/Button"
 import { AvailableTwoRoleOutlineOptionSelection, TwoRoleOutlineOptionSelection } from "../../../../../game/controllerInput"
 import { UnsafeString } from "../../../../../game/gameState.d"
+import { AuditorResult } from "../RoleSpecificMenus/AuditorMenu"
 
-export type AuditorResult = Role[];
 type AuditorButtons = ({
     type:"notUsed",
     chosen: boolean

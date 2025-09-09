@@ -325,7 +325,7 @@ impl PlayerReference{
         self.set_win_condition(game, self.role_state(game).clone().default_win_condition());
         
         InsiderGroupID::set_player_insider_groups(
-            self.role_state(game).clone().default_revealed_groups(), 
+            self.role_state(game).clone().default_insider_groups(), 
             game, *self
         );
         

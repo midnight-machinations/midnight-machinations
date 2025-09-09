@@ -234,9 +234,8 @@ impl Lobby {
                 self.send_to_all(ToClientPacket::RoleList { role_list });
             }
             ToServerPacket::SetEnabledRoles { roles } => {
-                self.settings.enabled_roles = roles.into_iter().collect();
-                let roles = self.settings.enabled_roles.clone().into_iter().collect();
-                self.send_to_all(ToClientPacket::EnabledRoles { roles });
+                self.settings.enabled_templates = roles;
+                self.send_to_all(ToClientPacket::EnabledRoles { roles: self.settings.enabled_templates.clone() });
             }
             ToServerPacket::SetModifierSettings { modifier_settings } => {
                 self.settings.modifiers = modifier_settings.clone();

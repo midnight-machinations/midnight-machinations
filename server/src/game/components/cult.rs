@@ -1,4 +1,4 @@
-use crate::game::{chat::{ChatGroup, ChatMessageVariant}, event::{on_any_death::OnAnyDeath, on_phase_start::OnPhaseStart}, phase::PhaseType, player::PlayerReference, role::Role, role_list::RoleSet, Game};
+use crate::game::{chat::{ChatGroup, ChatMessageVariant}, event::{on_any_death::OnAnyDeath, on_phase_start::OnPhaseStart}, phase::PhaseType, player::PlayerReference, role::Role, role_list::TemplateSet, Game};
 
 use super::insider_group::InsiderGroupID;
 
@@ -87,7 +87,7 @@ impl Cult{
         // Remove dead & converted
         cult.ordered_cultists.retain(|&p|
             p.alive(game) &&
-            RoleSet::Cult.get_roles().contains(&p.role(game)) &&
+            TemplateSet::Cult.values().contains(&p.role(game)) &&
             InsiderGroupID::Cult.contains_player(game, p)
         );
 
@@ -95,7 +95,7 @@ impl Cult{
         for player in InsiderGroupID::Cult.players(game).iter() {
             if 
                 player.alive(game) && 
-                RoleSet::Cult.get_roles().contains(&player.role(game)) && 
+                TemplateSet::Cult.values().contains(&player.role(game)) && 
                 !cult.ordered_cultists.contains(player) 
             {
                 cult.ordered_cultists.push(*player);

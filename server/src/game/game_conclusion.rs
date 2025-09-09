@@ -2,7 +2,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::{game::components::insider_group::InsiderGroupID, vec_set::VecSet};
 
-use super::{components::win_condition::WinCondition, player::PlayerReference, role::Role, role_list::RoleSet, Game};
+use super::{components::win_condition::WinCondition, player::PlayerReference, role::Role, role_list::TemplateSet, Game};
 
 #[derive(Clone, Copy, Debug, Serialize, Deserialize, PartialEq, Eq, Hash, PartialOrd, Ord)]
 #[serde(rename_all = "camelCase")]
@@ -92,8 +92,8 @@ impl GameConclusion {
     /// For simplicity, i will just say only fiends, MK, apostle and zealot keep the game running
     pub fn keeps_game_running(role: Role)->bool{
         if
-            RoleSet::Fiends.get_roles().contains(&role) ||
-            RoleSet::MafiaKilling.get_roles().contains(&role) 
+            TemplateSet::Fiends.contains(&role) ||
+            TemplateSet::MafiaKilling.contains(&role) 
         {
             true
         }else{

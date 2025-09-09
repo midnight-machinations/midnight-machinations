@@ -7,7 +7,7 @@ use crate::game::components::graves::grave::GraveKiller;
 use crate::game::player::PlayerReference;
 
 
-use crate::game::role_list::RoleSet;
+use crate::game::role_list::TemplateSet;
 use crate::game::visit::Visit;
 use crate::game::Game;
 use super::{ControllerID, ControllerParametersMap, Role, RoleStateTrait};
@@ -31,7 +31,7 @@ impl RoleStateTrait for Zealot {
         let target_ref = visit.target;
         
         if target_ref.try_night_kill_single_attacker(
-            actor_ref, game, midnight_variables, GraveKiller::RoleSet(RoleSet::Cult), AttackPower::Basic, false
+            actor_ref, game, midnight_variables, GraveKiller::RoleSet(TemplateSet::Cult), AttackPower::Basic, false
         ) {
             Cult::set_ability_used_last_night(game, Some(CultAbility::Kill));
         }
@@ -52,7 +52,7 @@ impl RoleStateTrait for Zealot {
             true
         )
     }
-     fn default_revealed_groups(self) -> crate::vec_set::VecSet<crate::game::components::insider_group::InsiderGroupID> {
+     fn default_insider_groups(self) -> crate::vec_set::VecSet<crate::game::components::insider_group::InsiderGroupID> {
         vec![
             crate::game::components::insider_group::InsiderGroupID::Cult
         ].into_iter().collect()

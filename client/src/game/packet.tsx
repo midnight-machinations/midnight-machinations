@@ -1,4 +1,4 @@
-import { PhaseType, PlayerIndex, PhaseTimes, Tag, LobbyClientID, ChatGroup, PhaseState, LobbyClient, InsiderGroup, GameClient, UnsafeString, FastForwardSetting } from "./gameState.d"
+import { PhaseType, PlayerIndex, PhaseTimes, Tag, LobbyClientID, ChatGroup, PhaseState, LobbyClient, InsiderGroup, GameClient, UnsafeString, FastForwardSetting, EnabledTemplates } from "./gameState.d"
 import { Grave, GraveIndex } from "./graveState"
 import { ChatMessage, ChatMessageIndex } from "../components/ChatMessage"
 import { RoleList, RoleOutline } from "./roleListState.d"
@@ -92,7 +92,7 @@ export type ToClientPacket = {
     phaseTimeSettings: PhaseTimes
 } | {
     type: "enabledRoles",
-    roles: Role[]
+    roles: EnabledTemplates
 } | {
     type: "modifierSettings",
     modifierSettings: {
@@ -225,7 +225,7 @@ export type ToServerPacket = {
     phaseTimeSettings: PhaseTimes
 } | {
     type: "setEnabledRoles", 
-    roles: Role[], 
+    roles: EnabledTemplates, 
 } | {
     type: "setModifierSettings",
     modifierSettings: {

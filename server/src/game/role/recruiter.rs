@@ -7,7 +7,7 @@ use crate::game::components::mafia_recruits::MafiaRecruits;
 use crate::game::event::on_midnight::{MidnightVariables, OnMidnightPriority};
 use crate::game::components::graves::grave::GraveKiller;
 use crate::game::player::PlayerReference;
-use crate::game::role_list::RoleSet;
+use crate::game::role_list::TemplateSet;
 use crate::game::role_list_generation::criteria::{GenerationCriterion, GenerationCriterionResult};
 use crate::game::role_list_generation::PartialOutlineListAssignmentNode;
 use crate::game::settings::Settings;
@@ -105,7 +105,7 @@ impl RoleStateTrait for Recruiter {
     fn on_any_death(self, game: &mut Game, actor_ref: PlayerReference, dead_player_ref: PlayerReference){
         Godfather::pass_role_state_down(game, actor_ref, dead_player_ref, self);
     }
-    fn default_revealed_groups(self) -> crate::vec_set::VecSet<crate::game::components::insider_group::InsiderGroupID> {
+    fn default_insider_groups(self) -> crate::vec_set::VecSet<crate::game::components::insider_group::InsiderGroupID> {
         vec![
             crate::game::components::insider_group::InsiderGroupID::Mafia
         ].into_iter().collect()
@@ -126,7 +126,7 @@ impl Recruiter {
                 actor_ref,
                 game,
                 midnight_variables,
-                GraveKiller::RoleSet(RoleSet::Mafia),
+                GraveKiller::RoleSet(TemplateSet::Mafia),
                 AttackPower::Basic,
                 false
             )
@@ -145,9 +145,9 @@ impl Recruiter {
 
 pub const ENSURE_ONE_FEWER_SYNDICATE_PER_RECRUITER: GenerationCriterion = GenerationCriterion {
     evaluate: |node: &PartialOutlineListAssignmentNode, settings: &Settings| {
-        let enabled_roles = &settings.enabled_roles;
-        let syndicate_roles = RoleSet::Mafia.get_roles().intersection(enabled_roles);
-        let town_common_roles = RoleSet::TownCommon.get_roles().intersection(enabled_roles);
+        let enabled_roles = &settings.enabled_templates;
+        let syndicate_roles = enabled_roles.intersect_set(TemplateSet::Mafia);
+        let town_common_templates = enabled_roles.intersect_set(TemplateSet::TownCommon);
 
         // There are currently no role sets which have mafia roles and town roles at the same time,
         // but if there were, this check says "uhh sure let's just say this is fine".
@@ -157,7 +157,7 @@ pub const ENSURE_ONE_FEWER_SYNDICATE_PER_RECRUITER: GenerationCriterion = Genera
                 assignment.outline_option
                     .as_ref()
                     .is_some_and(|o| {
-                        let outline_roles = o.roles.get_roles().intersection(enabled_roles);
+                        let outline_roles = enabled_roles.intersection(o.templates.values());
 
                         !outline_roles.intersection(&syndicate_roles).is_empty() &&
                         !outline_roles.sub(&syndicate_roles).is_empty()
@@ -170,7 +170,7 @@ pub const ENSURE_ONE_FEWER_SYNDICATE_PER_RECRUITER: GenerationCriterion = Genera
         // Which assignments are supposed to generate syndicate?
         let expected_syndicate_members = node.assignments.iter()
             .filter(|assignment| assignment.outline_option.as_ref().is_some_and(|o| {
-                let outline_roles = o.roles.get_roles().intersection(enabled_roles);
+                let outline_roles = enabled_roles.intersection(o.templates.values());
 
                 !outline_roles.is_empty() && outline_roles.is_subset(&syndicate_roles)
             }))
@@ -178,11 +178,11 @@ pub const ENSURE_ONE_FEWER_SYNDICATE_PER_RECRUITER: GenerationCriterion = Genera
 
         // Which assignments are actually populated with syndicate roles?
         let actual_syndicate_members = node.assignments.iter()
-            .filter(|assignment| assignment.role.is_some_and(|role| syndicate_roles.contains(&role)))
+            .filter(|assignment| assignment.template.is_some_and(|role| syndicate_roles.contains(&role)))
             .count();
 
         let number_of_recruiters = node.assignments.iter()
-            .filter(|assignment| assignment.role == Some(Role::Recruiter))
+            .filter(|assignment| assignment.template == Some(Role::Recruiter.into()))
             .count();
 
         // For each recruiter, we should have one fewer syndicate member.
@@ -195,14 +195,14 @@ pub const ENSURE_ONE_FEWER_SYNDICATE_PER_RECRUITER: GenerationCriterion = Genera
             // Take a random syndicate member and replace it with a random town role.
             for (syndicate_idx, _) in node.assignments.iter()
                 .enumerate()
-                .filter(|(_, assignment)| assignment.role.is_some_and(|role| RoleSet::Mafia.get_roles().contains(&role)))
-                .filter(|(_, assignment)| assignment.role != Some(Role::Recruiter))
+                .filter(|(_, assignment)| assignment.template.is_some_and(|role| TemplateSet::Mafia.contains(role)))
+                .filter(|(_, assignment)| assignment.template != Some(Role::Recruiter.into()))
             {
-                for role in town_common_roles.iter() {
+                for role in town_common_templates.iter() {
                     let mut new_node = node.clone();
-                    new_node.assignments[syndicate_idx].role = Some(*role);
-                    new_node.assignments[syndicate_idx].win_condition = Some(role.default_state().default_win_condition());
-                    new_node.assignments[syndicate_idx].insider_groups = Some(role.default_state().default_revealed_groups());
+                    new_node.assignments[syndicate_idx].template = Some(*role);
+                    new_node.assignments[syndicate_idx].win_condition = Some(role.default_win_condition());
+                    new_node.assignments[syndicate_idx].insider_groups = Some(role.default_insider_groups());
                     new_neighbors.push(new_node);
                 }
             }

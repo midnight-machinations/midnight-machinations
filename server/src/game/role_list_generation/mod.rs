@@ -2,9 +2,18 @@ use std::collections::VecDeque;
 
 use rand::seq::SliceRandom;
 
-use crate::{game::{components::{insider_group::InsiderGroupID, win_condition::WinCondition}, player::PlayerReference, role::Role, role_list::RoleOutlineOption, role_list_generation::criteria::{GenerationCriterion, GenerationCriterionResult}, role_outline_reference::RoleOutlineReference, settings::Settings}, vec_set::VecSet};
+use crate::{
+    game::{
+        components::{insider_group::InsiderGroupID, win_condition::WinCondition},
+        player::PlayerReference, role_list::OutlineOption,
+        role_list_generation::{criteria::{GenerationCriterion, GenerationCriterionResult},
+        template::Template}, role_outline_reference::RoleOutlineReference, settings::Settings
+    },
+    vec_set::VecSet
+};
 
 pub mod criteria;
+pub mod template;
 
 pub struct RoleListGenerator {
     settings: Settings,
@@ -53,7 +62,7 @@ impl RoleListGenerator {
         self.nodes.push(PartialOutlineListAssignmentNode {
             assignments: vec![PartialOutlineAssignment {
                 outline_option: None,
-                role: None,
+                template: None,
                 insider_groups: None,
                 win_condition: None,
                 player: None
@@ -118,7 +127,7 @@ impl RoleListGenerator {
             .chain(
                 // Add criteria from the roles in the node.
                 node.assignments.iter()
-                    .filter_map(|assignment| assignment.role)
+                    .filter_map(|assignment| assignment.template)
                     .flat_map(|role| role.role_list_generation_criteria())
             )
             .find_map(|criterion| {
@@ -154,7 +163,7 @@ impl RoleListGenerator {
             #[expect(clippy::indexing_slicing, clippy::cast_possible_truncation, reason = "Indices are guaranteed to be in-bounds")]
             assignments.push(OutlineAssignment {
                 role_outline_reference: unsafe { RoleOutlineReference::new_unchecked(self.new_to_original_role_outline_indices_map[index] as u8) },
-                role: assignment.role.unwrap(),
+                template: assignment.template.unwrap(),
                 insider_groups: assignment.insider_groups.clone().unwrap(),
                 win_condition: assignment.win_condition.clone().unwrap(),
                 player: assignment.player.unwrap(),
@@ -171,8 +180,8 @@ pub struct PartialOutlineListAssignmentNode {
 
 #[derive(Clone, Debug)]
 pub struct PartialOutlineAssignment {
-    pub outline_option: Option<RoleOutlineOption>,
-    pub role: Option<Role>,
+    pub outline_option: Option<OutlineOption>,
+    pub template: Option<Template>,
     pub insider_groups: Option<VecSet<InsiderGroupID>>,
     pub win_condition: Option<WinCondition>,
     pub player: Option<PlayerReference>
@@ -186,7 +195,7 @@ pub struct OutlineListAssignment {
 #[derive(Clone, Debug)]
 pub struct OutlineAssignment {
     pub role_outline_reference: RoleOutlineReference,
-    pub role: Role,
+    pub template: Template,
     pub insider_groups: VecSet<InsiderGroupID>,
     pub win_condition: WinCondition,
     pub player: PlayerReference

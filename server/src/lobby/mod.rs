@@ -5,7 +5,7 @@ use std::{collections::VecDeque, time::{Duration, Instant}};
 
 use lobby_client::{LobbyClient, LobbyClientType, Ready};
 
-use crate::{client_connection::ClientConnection, game::{role_list::RoleOutline, settings::Settings}, packet::{RoomPreviewData, RejectJoinReason, ToClientPacket}, room::{name_validation, JoinRoomClientResult, RemoveRoomClientResult, RoomClientID, RoomState, RoomTickResult}, vec_map::VecMap, websocket_connections::connection::ClientSender};
+use crate::{client_connection::ClientConnection, game::{role_list::Outline, settings::Settings}, packet::{RoomPreviewData, RejectJoinReason, ToClientPacket}, room::{name_validation, JoinRoomClientResult, RemoveRoomClientResult, RoomClientID, RoomState, RoomTickResult}, vec_map::VecMap, websocket_connections::connection::ClientSender};
 
 pub struct Lobby {
     pub name: String,
@@ -72,7 +72,7 @@ impl Lobby {
         send.send(ToClientPacket::RoomName { name: self.name.clone() });
         send.send(ToClientPacket::PhaseTimes { phase_time_settings: self.settings.phase_times.clone() });
         send.send(ToClientPacket::RoleList { role_list: self.settings.role_list.clone() });
-        send.send(ToClientPacket::EnabledRoles { roles: self.settings.enabled_roles.clone().into_iter().collect() });
+        send.send(ToClientPacket::EnabledRoles { roles: self.settings.enabled_templates.clone().into_iter().collect() });
         send.send(ToClientPacket::ModifierSettings { modifier_settings: self.settings.modifiers.clone() });
     }
 
@@ -107,7 +107,7 @@ impl Lobby {
             .filter(|p| matches!(p.1.client_type, LobbyClientType::Player{..}))
             .count();
 
-        self.settings.role_list.0.resize(length, RoleOutline::default());
+        self.settings.role_list.0.resize(length, Outline::default());
     }
     
     pub fn send_to_all(&self, packet: ToClientPacket) {

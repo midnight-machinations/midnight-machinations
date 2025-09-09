@@ -21,8 +21,6 @@ use crate::{
     vec_map::VecMap
 };
 
-use super::event::before_initial_role_creation::BeforeInitialRoleCreation;
-
 impl Game{
     /// `players` must have length 255 or lower.
     pub fn new(
@@ -157,9 +155,6 @@ impl Game{
         }
         
         game.send_packet_to_all(ToClientPacket::StartGame);
-
-        //This only is for drunk and amnesaic
-        BeforeInitialRoleCreation::invoke(&mut game);
         
         Abilities::set_default_abilties(&mut game);
 

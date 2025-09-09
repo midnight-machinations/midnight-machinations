@@ -2,7 +2,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::game::{
     components::graves::grave::{GraveDeathCause, GraveInformation, GraveKiller},
-    event::on_grave_added::OnGraveAdded, role_list::RoleSet, Game
+    event::on_grave_added::OnGraveAdded, role_list::TemplateSet, Game
 };
 
 use super::{ModifierStateImpl, ModifierID};
@@ -28,13 +28,13 @@ impl ModifierStateImpl for RoleSetGraveKillers{
                         new_killers.push(
                             if let GraveKiller::Role(killer_role) = killer {
                                 let killer_role_set = [
-                                    RoleSet::Town,
-                                    RoleSet::Mafia,
-                                    RoleSet::Cult,
-                                    RoleSet::Fiends,
-                                    RoleSet::Minions,
-                                    RoleSet::Neutral,
-                                ].iter().find(|set| set.get_roles().contains(&killer_role));
+                                    TemplateSet::Town,
+                                    TemplateSet::Mafia,
+                                    TemplateSet::Cult,
+                                    TemplateSet::Fiends,
+                                    TemplateSet::Minions,
+                                    TemplateSet::Neutral,
+                                ].iter().find(|set| set.contains(&killer_role));
     
                                 if let Some(role_set) = killer_role_set {
                                     GraveKiller::RoleSet(role_set.clone())

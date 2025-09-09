@@ -2,9 +2,9 @@ use std::collections::HashSet;
 
 
 
-use crate::game::{chat::ChatGroup, components::{call_witness::CallWitness, detained::Detained, puppeteer_marionette::PuppeteerMarionette, silenced::Silenced, win_condition::WinCondition}, controllers::{ControllerID, ControllerSelection}, game_conclusion::GameConclusion, modifiers::ModifierID, phase::{PhaseState, PhaseType}, player::PlayerReference, role_list::RoleSet, visit::{Visit, VisitTag}, Game};
+use crate::game::{chat::ChatGroup, components::{call_witness::CallWitness, detained::Detained, puppeteer_marionette::PuppeteerMarionette, silenced::Silenced, win_condition::WinCondition}, controllers::{ControllerID, ControllerSelection}, game_conclusion::GameConclusion, modifiers::ModifierID, phase::{PhaseState, PhaseType}, player::PlayerReference, role_list::TemplateSet, role_list_generation::template::Template, visit::{Visit, VisitTag}, Game};
 
-use super::{medium::Medium, reporter::Reporter, warden::Warden, InsiderGroupID, Role, RoleState};
+use super::{medium::Medium, reporter::Reporter, warden::Warden, InsiderGroupID, RoleState};
 
 
 pub fn standard_charges(game: &Game)->u8{
@@ -439,20 +439,22 @@ pub(super) fn get_current_receive_chat_groups(game: &Game, actor_ref: PlayerRefe
 }
 
 ///Only works for roles that win based on end game condition
-pub(super) fn default_win_condition(role: Role) -> WinCondition {
-    if RoleSet::Mafia.get_roles().contains(&role) {
+pub(super) fn default_win_condition(role: impl Into<Template>) -> WinCondition {
+    let template = role.into();
+
+    if TemplateSet::Mafia.contains(template) {
         WinCondition::GameConclusionReached{win_if_any: vec![GameConclusion::Mafia].into_iter().collect()}
 
-    }else if RoleSet::Cult.get_roles().contains(&role) {
+    }else if TemplateSet::Cult.contains(template) {
         WinCondition::GameConclusionReached{win_if_any: vec![GameConclusion::Cult].into_iter().collect()}
 
-    }else if RoleSet::Town.get_roles().contains(&role) {
+    }else if TemplateSet::Town.contains(template) {
         WinCondition::GameConclusionReached{win_if_any: vec![GameConclusion::Town].into_iter().collect()}
 
-    }else if RoleSet::Fiends.get_roles().contains(&role) {
+    }else if TemplateSet::Fiends.contains(template) {
         WinCondition::GameConclusionReached{win_if_any: vec![GameConclusion::Fiends].into_iter().collect()}
 
-    }else if RoleSet::Minions.get_roles().contains(&role) {
+    }else if TemplateSet::Minions.contains(template) {
         WinCondition::GameConclusionReached{win_if_any: GameConclusion::all().into_iter().filter(|end_game_condition|
             !matches!(end_game_condition, 
                 GameConclusion::Town | GameConclusion::Draw |

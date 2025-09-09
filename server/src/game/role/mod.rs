@@ -58,14 +58,7 @@ pub trait RoleStateTrait: Clone + std::fmt::Debug + Default + GetClientAbilitySt
     fn new_state(_game: &Game) -> Self {
         Self::default()
     }
-    fn default_revealed_groups(self) -> VecSet<InsiderGroupID> {
-        VecSet::new()
-    }
-    fn default_win_condition(self) -> WinCondition where RoleState: From<Self>{
-        let role_state: RoleState = self.into();
-        crate::game::role::common_role::default_win_condition(role_state.role())
-    }
-
+    
     fn on_phase_start(self, _game: &mut Game, _actor_ref: PlayerReference, _phase: PhaseType) {}
     fn on_role_creation(self, _game: &mut Game, _actor_ref: PlayerReference) {}
     fn on_role_switch(self, _game: &mut Game, _actor_ref: PlayerReference, _player: PlayerReference, _new: RoleState, _old: RoleState) {}
@@ -74,7 +67,6 @@ pub trait RoleStateTrait: Clone + std::fmt::Debug + Default + GetClientAbilitySt
     fn on_grave_added(self, _game: &mut Game, _actor_ref: PlayerReference, _grave: GraveReference) {}
     fn on_game_ending(self, _game: &mut Game, _actor_ref: PlayerReference) {}
     fn on_game_start(self, _game: &mut Game, _actor_ref: PlayerReference) {}
-    fn before_initial_role_creation(self, _game: &mut Game, _actor_ref: PlayerReference) {}
     fn on_conceal_role(self, _game: &mut Game, _actor_ref: PlayerReference, _player: PlayerReference, _concealed_player: PlayerReference) {}
     fn on_player_roleblocked(self, _game: &mut Game, midnight_variables: &mut MidnightVariables, actor_ref: PlayerReference, player: PlayerReference, _invisible: bool) {
         if player != actor_ref {return}
@@ -85,15 +77,20 @@ pub trait RoleStateTrait: Clone + std::fmt::Debug + Default + GetClientAbilitySt
     }
     fn on_visit_wardblocked(self, _game: &mut Game, midnight_variables: &mut MidnightVariables, actor_ref: PlayerReference, visit: Visit) {
         if actor_ref != visit.visitor {return};
-
+        
         Visits::retain(midnight_variables, |v|
             !matches!(v.tag, VisitTag::Role{..}) || v.visitor != actor_ref
         );
     }
     fn on_whisper(self, _game: &mut Game, _actor_ref: PlayerReference, _event: &OnWhisper, _fold: &mut WhisperFold, _priority: WhisperPriority) {}
-
-    fn role_list_generation_criteria() -> Vec<GenerationCriterion> {
-        vec![]
+    
+    fn role_list_generation_criteria() -> Vec<GenerationCriterion> {vec![]}
+    fn default_insider_groups(self) -> VecSet<InsiderGroupID> {
+        VecSet::new()
+    }
+    fn default_win_condition(self) -> WinCondition where RoleState: From<Self>{
+        let role_state: RoleState = self.into();
+        crate::game::role::common_role::default_win_condition(role_state.role())
     }
 }
 
@@ -101,7 +98,6 @@ pub trait RoleStateTrait: Clone + std::fmt::Debug + Default + GetClientAbilitySt
 macros::roles! {
     Jailor : jailor,
     Villager : villager,
-    Drunk : drunk,
 
     Detective : detective,
     Lookout : lookout,
@@ -179,7 +175,6 @@ macros::roles! {
     Scarecrow : scarecrow,
     Warper : warper,
     Kidnapper : kidnapper,
-    Pawn : pawn,
 
     Arsonist : arsonist,
     Werewolf : werewolf,
@@ -312,9 +307,9 @@ mod macros {
                         $(Self::$name(role_struct) => role_struct.get_current_receive_chat_groups(game, actor_ref)),*
                     }
                 }
-                pub fn default_revealed_groups(self) -> VecSet<InsiderGroupID>{
+                pub fn default_insider_groups(self) -> VecSet<InsiderGroupID>{
                     match self {
-                        $(Self::$name(role_struct) => role_struct.default_revealed_groups()),*
+                        $(Self::$name(role_struct) => role_struct.default_insider_groups()),*
                     }
                 }
                 pub fn default_win_condition(self) -> WinCondition{
@@ -365,11 +360,6 @@ mod macros {
                 pub fn on_game_ending(self, game: &mut Game, actor_ref: PlayerReference){
                     match self {
                         $(Self::$name(role_struct) => role_struct.on_game_ending(game, actor_ref)),*
-                    }
-                }
-                pub fn before_initial_role_creation(self, game: &mut Game, actor_ref: PlayerReference){
-                    match self {
-                        $(Self::$name(role_struct) => role_struct.before_initial_role_creation(game, actor_ref)),*
                     }
                 }
                 pub fn get_client_ability_state(self, game: &Game, actor_ref: PlayerReference) -> ClientRoleStateEnum {

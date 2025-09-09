@@ -7,7 +7,7 @@ use crate::{game::{
     event::{
         on_add_insider::OnAddInsider, on_any_death::OnAnyDeath, on_midnight::{MidnightVariables, OnMidnight, OnMidnightPriority}, on_remove_insider::OnRemoveInsider, on_validated_ability_input_received::OnValidatedControllerInputReceived
     },
-    phase::PhaseType, player::PlayerReference, role_list::RoleSet, visit::{Visit, VisitTag}, Game
+    phase::PhaseType, player::PlayerReference, role_list::TemplateSet, visit::{Visit, VisitTag}, Game
 }, vec_set};
 
 #[derive(Default, Clone)]
@@ -138,7 +138,7 @@ impl SyndicateGun {
                     target.try_night_kill_single_attacker(
                         attacker,
                         game, midnight_variables,
-                        GraveKiller::RoleSet(RoleSet::Mafia),
+                        GraveKiller::RoleSet(TemplateSet::Mafia),
                         AttackPower::Basic,
                         false
                     );

@@ -69,7 +69,7 @@ impl RoleStateTrait for Necromancer {
             actor_ref.set_role_state(game, Necromancer { currently_used_player: None, ..self });
         }
     }
-    fn default_revealed_groups(self) -> crate::vec_set::VecSet<crate::game::components::insider_group::InsiderGroupID> {
+    fn default_insider_groups(self) -> crate::vec_set::VecSet<crate::game::components::insider_group::InsiderGroupID> {
        vec![
            crate::game::components::insider_group::InsiderGroupID::Mafia
        ].into_iter().collect()

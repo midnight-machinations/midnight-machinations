@@ -109,7 +109,7 @@ impl<'a, I: BuilderIDState> ControllerParametersBuilder<'a, NoControllerSelectio
         self, game: &Game, filter: impl FnMut(&Role) -> bool
     ) -> ControllerParametersBuilder<'a, AvailableRoleListSelection, I> {
         self.available_selection(AvailableRoleListSelection{
-            available_roles: game.settings.enabled_roles.clone().into_iter().filter(filter).collect(),
+            available_roles: game.settings.enabled_templates.get_roles().into_iter().filter(filter).collect(),
             can_choose_duplicates: false,
             max_roles: Some(1)
         })

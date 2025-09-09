@@ -3,7 +3,7 @@ use rand::seq::IndexedRandom;
 use crate::{game::{
     abilities::syndicate_gun::SyndicateGun, attack_power::{AttackPower, DefensePower}, chat::{ChatGroup, ChatMessageVariant}, components::{graves::grave::GraveKiller, night_visits::NightVisitsIterator}, controllers::{AvailablePlayerListSelection, ControllerParametersMap}, event::{
         on_add_insider::OnAddInsider, on_any_death::OnAnyDeath, on_controller_selection_changed::OnControllerSelectionChanged, on_midnight::{MidnightVariables, OnMidnight, OnMidnightPriority}, on_remove_insider::OnRemoveInsider
-    }, phase::PhaseType, player::PlayerReference, role::RoleState, role_list::RoleSet, visit::{Visit, VisitTag}, ControllerID, Game, PlayerListSelection
+    }, phase::PhaseType, player::PlayerReference, role::RoleState, role_list::TemplateSet, visit::{Visit, VisitTag}, ControllerID, Game, PlayerListSelection
 }, vec_set::{vec_set, VecSet}};
 
 use super::{
@@ -91,7 +91,7 @@ impl Mafia{
                 InsiderGroupID::Mafia.contains_player(game, *p) &&
                 (
                     SyndicateGun::player_has_gun(game, *p) ||
-                    RoleSet::MafiaKilling.get_roles().contains(&p.role(game))
+                    TemplateSet::MafiaKilling.values().contains(&p.role(game))
                 )
             )
             .collect::<VecSet<_>>()
@@ -128,7 +128,7 @@ impl Mafia{
                     .with_tag(VisitTag::SyndicateBackupAttack)
                 {
                     backup_visit.target.try_night_kill_single_attacker(
-                        backup_visit.visitor, game, midnight_variables, GraveKiller::RoleSet(RoleSet::Mafia),
+                        backup_visit.visitor, game, midnight_variables, GraveKiller::RoleSet(TemplateSet::Mafia),
                         AttackPower::Basic, false
                     );
                     game.add_message_to_chat_group(ChatGroup::Mafia, 
@@ -144,7 +144,7 @@ impl Mafia{
         let killing_role_exists = PlayerReference::all_players(game).any(
             |p|
                 InsiderGroupID::Mafia.contains_player(game, p) &&
-                RoleSet::MafiaKilling.get_roles().contains(&p.role(game))
+                TemplateSet::MafiaKilling.values().contains(&p.role(game))
         );
 
         if !killing_role_exists{
@@ -174,12 +174,12 @@ impl Mafia{
     /// - This must go after rolestate on any death
     /// - Godfathers backup should become godfather if godfather dies as part of the godfathers ability
     pub fn on_any_death(game: &mut Game, event: &OnAnyDeath, _fold: &mut (), _priority: ()){
-        if RoleSet::MafiaKilling.get_roles().contains(&event.dead_player.role(game)) {
+        if TemplateSet::MafiaKilling.values().contains(&event.dead_player.role(game)) {
             Mafia::give_mafia_killing_role(game, event.dead_player.role_state(game).clone());
         }
     }
     pub fn on_role_switch(game: &mut Game, old: RoleState, _new: RoleState) {
-        if RoleSet::MafiaKilling.get_roles().contains(&old.role()) {
+        if TemplateSet::MafiaKilling.values().contains(&old.role()) {
             Mafia::give_mafia_killing_role(game, old);
         }
     }
@@ -204,7 +204,7 @@ impl Mafia{
 
         //if they already have a mafia killing then return
         if living_players_to_convert.iter().any(|p|
-            RoleSet::MafiaKilling.get_roles().contains(&p.role(game))
+            TemplateSet::MafiaKilling.values().contains(&p.role(game))
         ) {return;}
         
         //choose random mafia to be mafia killing

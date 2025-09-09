@@ -1,6 +1,8 @@
 use serde::{Deserialize, Serialize};
 
-use super::{role_list::RoleOutline, Game};
+use crate::game::{player::PlayerReference, role_list_generation::template::Template};
+
+use super::{role_list::Outline, Game};
 
 
 pub type OutlineIndex = u8;
@@ -9,7 +11,7 @@ pub struct RoleOutlineReference{
     index: OutlineIndex
 }
 
-pub type OriginallyGeneratedRoleAndPlayer = (super::role::Role, super::player::PlayerReference);
+pub type AssignedTemplateAndPlayer = (Template, PlayerReference);
 
 impl RoleOutlineReference{
     pub fn new(game: &Game, index: OutlineIndex) -> Option<RoleOutlineReference>{
@@ -26,16 +28,16 @@ impl RoleOutlineReference{
         self.index
     }
 
-    pub fn deref<'a>(&self, game: &'a Game)->&'a RoleOutline{
+    pub fn deref<'a>(&self, game: &'a Game)->&'a Outline{
         unsafe {
             game.settings.role_list.0.get_unchecked(self.index as usize)
         }
     }
-    pub fn deref_as_role_and_player_originally_generated(&self, game: &Game)->OriginallyGeneratedRoleAndPlayer{
+    pub fn deref_as_role_and_player_originally_generated(&self, game: &Game)->AssignedTemplateAndPlayer{
         game.assignments
             .iter()
             .find(|(_, assignment)| assignment.role_outline_reference.index == self.index)
-            .map(|(player, assignment)| (assignment.role, *player))
+            .map(|(player, assignment)| (assignment.template, *player))
             .expect("RoleOutlineReference does not correspond to any role in the game")
     }
 

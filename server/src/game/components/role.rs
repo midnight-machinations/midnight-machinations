@@ -11,7 +11,7 @@ impl RoleComponent{
         unsafe {
             PlayerComponent::<Role>::new_component_box(
                 num_players,
-                |player| assignments.get(&player).expect("Already checked this was fine").role
+                |player| assignments.get(&player).expect("Already checked this was fine").template
             )
         }
     }

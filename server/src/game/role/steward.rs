@@ -2,6 +2,7 @@ use serde::Serialize;
 use crate::game::controllers::{AvailableRoleListSelection, ControllerID, RoleListSelection};
 use crate::game::event::on_midnight::{MidnightVariables, OnMidnightPriority};
 use crate::game::role::common_role;
+use crate::game::settings::EnabledTemplates;
 use crate::game::visit::Visit;
 use crate::game::{attack_power::DefensePower, chat::ChatMessageVariant};
 use crate::game::phase::PhaseType;
@@ -101,9 +102,10 @@ impl RoleStateTrait for Steward {
         ControllerParametersMap::builder(game)
             .id(ControllerID::role(actor_ref, Role::Steward, 0))
             .available_selection(AvailableRoleListSelection{
-                available_roles: game.settings.enabled_roles.clone()
+                available_roles: EnabledTemplates::from_game(game)
+                    .get_roles()
                     .into_iter()
-                    .filter(|role|self.self_heals_remaining > 0 || role != &Role::Steward)
+                    .filter(|role|self.self_heals_remaining > 0 || &Role::Steward != role)
                     .filter(|role|!self.previous_input.0.contains(role))
                     .collect(),
                 can_choose_duplicates: false,

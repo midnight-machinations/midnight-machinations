@@ -22,17 +22,17 @@ pub const FILL_ALL_ROLES: GenerationCriterion = GenerationCriterion {
         if let Some((i, _)) = node.assignments
             .iter()
             .enumerate()
-            .find(|(_, assignment)| assignment.role.is_none())
+            .find(|(_, assignment)| assignment.template.is_none())
         {
             GenerationCriterionResult::Unmet(
-                settings.role_list.0[i].get_all_roles()
+                settings.role_list.0[i].get_all_templates()
                     .iter()
                     .filter(|role| {
-                        settings.enabled_roles.contains(role)
+                        settings.enabled_templates.enabled(**role)
                     })
                     .map(|role| {
                         let mut new_node = node.clone();
-                        new_node.assignments[i].role = Some(*role);
+                        new_node.assignments[i].template = Some(*role);
                         new_node
                     })
                     .collect()
@@ -48,7 +48,7 @@ pub const REJECT_EXCEEDED_ROLE_LIMITS: GenerationCriterion = GenerationCriterion
         let mut role_appearances = HashMap::new();
 
         for assignment in node.assignments.iter() {
-            if let Some(role) = assignment.role {
+            if let Some(role) = assignment.template {
                 *role_appearances.entry(role).or_insert(0) += 1;
             }
         }
@@ -66,11 +66,11 @@ pub const REJECT_EXCEEDED_ROLE_LIMITS: GenerationCriterion = GenerationCriterion
 
             for role in exceeded_roles {
                 for assignment in node.assignments.iter() {
-                    if assignment.role == Some(role) {
+                    if assignment.template == Some(role) {
                         let mut new_node = node.clone();
                         new_node.assignments.iter_mut()
-                            .filter(|a| a.role == Some(role))
-                            .for_each(|a| a.role = None);
+                            .filter(|a| a.template == Some(role))
+                            .for_each(|a| a.template = None);
                         neighbors_to_add.push(new_node);
                     }
                 }
@@ -92,7 +92,7 @@ pub const FILL_ALL_OUTLINE_OPTIONS: GenerationCriterion = GenerationCriterion {
         {
             GenerationCriterionResult::Unmet(
                 settings.role_list.0[i].options.iter()
-                    .filter(|&o| assignment.role.is_some_and(|r| o.roles.get_roles().contains(&r)))
+                    .filter(|&o| assignment.template.is_some_and(|r| o.templates.values().contains(&r)))
                     .cloned()
                     .map(|outline_option| {
                         let mut new_node = node.clone();
@@ -142,7 +142,7 @@ pub const FILL_ALL_PLAYERS: GenerationCriterion = GenerationCriterion {
 };
 
 fn possible_win_conditions_for_assignment(assignment: &PartialOutlineAssignment) -> Vec<WinCondition> {
-    let Some(role) = assignment.role else {
+    let Some(role) = assignment.template else {
         return vec![];
     };
     let Some(outline_option) = assignment.outline_option.clone() else {
@@ -153,7 +153,7 @@ fn possible_win_conditions_for_assignment(assignment: &PartialOutlineAssignment)
             vec![WinCondition::GameConclusionReached { win_if_any }]
         },
         RoleOutlineOptionWinCondition::RoleDefault => {
-            vec![role.default_state().default_win_condition()]
+            vec![role.default_win_condition()]
         }
     }
 }
@@ -182,7 +182,7 @@ pub const FILL_ALL_WIN_CONDITIONS: GenerationCriterion = GenerationCriterion {
 };
 
 pub fn possible_insider_group_combinations_for_assignment(assignment: &PartialOutlineAssignment) -> Vec<VecSet<InsiderGroupID>> {
-    let Some(role) = assignment.role else {
+    let Some(role) = assignment.template else {
         return vec![];
     };
     let Some(outline_option) = assignment.outline_option.clone() else {
@@ -193,7 +193,7 @@ pub fn possible_insider_group_combinations_for_assignment(assignment: &PartialOu
             vec![insider_groups.clone()]
         },
         RoleOutlineOptionInsiderGroups::RoleDefault => {
-            vec![role.default_state().default_revealed_groups()]
+            vec![role.default_insider_groups()]
         }
     }
 }
@@ -228,7 +228,7 @@ pub const GAME_DOESNT_END_INSTANTLY: GenerationCriterion = GenerationCriterion {
             if
                 let Some(win_condition) = &a.win_condition &&
                 let Some(insider_groups) = &a.insider_groups &&
-                let Some(role) = a.role
+                let Some(role) = a.template
             {
                 Some(GameOverCheckPlayer{
                     role, win_condition: win_condition.clone(), insider_groups: insider_groups.clone()

@@ -8,7 +8,7 @@ use crate::game::components::graves::grave::GraveKiller;
 use crate::game::phase::PhaseType;
 use crate::game::player::PlayerReference;
 
-use crate::game::role_list::RoleSet;
+use crate::game::role_list::TemplateSet;
 use crate::game::visit::Visit;
 
 use crate::game::Game;
@@ -87,7 +87,7 @@ impl RoleStateTrait for Counterfeiter {
                     let target_ref = visit.target;
             
                     target_ref.try_night_kill_single_attacker(
-                        actor_ref, game, midnight_variables, GraveKiller::RoleSet(RoleSet::Mafia), AttackPower::Basic, false
+                        actor_ref, game, midnight_variables, GraveKiller::RoleSet(TemplateSet::Mafia), AttackPower::Basic, false
                     );
                 }
             },
@@ -158,7 +158,7 @@ impl RoleStateTrait for Counterfeiter {
     fn on_any_death(self, game: &mut Game, actor_ref: PlayerReference, dead_player_ref: PlayerReference){
         Godfather::pass_role_state_down(game, actor_ref, dead_player_ref, self);
     }
-     fn default_revealed_groups(self) -> crate::vec_set::VecSet<crate::game::components::insider_group::InsiderGroupID> {
+     fn default_insider_groups(self) -> crate::vec_set::VecSet<crate::game::components::insider_group::InsiderGroupID> {
         vec![
             crate::game::components::insider_group::InsiderGroupID::Mafia
         ].into_iter().collect()
