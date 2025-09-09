@@ -150,6 +150,14 @@ export type ChatGroup = {type: "all"} | {type: "dead"} | {type: "mafia"} | {type
 export type InsiderGroup = {type: (typeof BASE_INSIDER_GROUPS)[number]} | {type: "generic", key: number};
 export const BASE_INSIDER_GROUPS = ["mafia", "cult", "puppeteer"] as const;
 
+export function insiderGroupFromChatGroup(group: ChatGroup): InsiderGroup | null {
+    if (BASE_INSIDER_GROUPS.includes(group.type as any) || group.type === "generic") {
+        return group as InsiderGroup;
+    }else {
+        return null;
+    }
+}
+
 function translateInsiderGroupMeta(group: InsiderGroup, meta: string): string {
     if (group.type === "generic") {
         return translate(`chatGroup.generic.${meta}`, group.key + 1);

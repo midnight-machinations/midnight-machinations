@@ -3,7 +3,7 @@ import React, { ReactElement } from "react";
 import GAME_MANAGER, { find, replaceMentions } from "..";
 import StyledText, { KeywordDataMap, PLAYER_SENDER_KEYWORD_DATA } from "./StyledText";
 import "./chatMessage.css"
-import { ChatGroup, Conclusion, DefensePower, InsiderGroup, PhaseState, PlayerIndex, Tag, translateConclusion, translateInsiderGroup, translateInsiderGroupIcon, translateWinCondition, UnsafeString, Verdict, WinCondition } from "../game/gameState.d";
+import { BASE_INSIDER_GROUPS, ChatGroup, Conclusion, DefensePower, InsiderGroup, insiderGroupFromChatGroup, PhaseState, PlayerIndex, Tag, translateConclusion, translateInsiderGroup, translateInsiderGroupIcon, translateWinCondition, UnsafeString, Verdict, WinCondition } from "../game/gameState.d";
 import { Role, RoleState } from "../game/roleState.d";
 import { Grave } from "../game/graveState";
 import GraveComponent from "./grave";
@@ -70,7 +70,10 @@ const ChatElement = React.memo((
 
     let chatGroupIcon = null;
     if(message.chatGroup !== null){
-        if(message.chatGroup.type !== "all"){
+        const insiderGroup = insiderGroupFromChatGroup(message.chatGroup);
+        if (insiderGroup !== null) {
+            chatGroupIcon = translateInsiderGroupIcon(insiderGroup);
+        } else if(message.chatGroup.type !== "all"){
             chatGroupIcon = translateChecked("chatGroup."+message.chatGroup.type+".icon");
         }else{
             chatGroupIcon = "";
