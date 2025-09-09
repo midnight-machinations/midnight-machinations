@@ -193,7 +193,7 @@ export function parsePhaseTimes(json: NonNullable<any>): ParseResult<PhaseTimes>
     return phaseTimes as ParseResult<PhaseTimes>;
 }
 
-// Convert v5 types (with strings) to v7 types (with tagged objects)
+// Convert v6 types (with strings) to v7 types (with tagged objects)
 function convertV6RoleListToV7(v6RoleList: any[]): ParseResult<RoleList> {
     try {
         const convertedRoleList: RoleList = v6RoleList.map((v6Outline: any) => 
