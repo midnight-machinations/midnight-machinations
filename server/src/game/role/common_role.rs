@@ -231,14 +231,8 @@ pub(super) fn get_current_send_chat_groups(game: &Game, actor_ref: PlayerReferen
             let mut out = HashSet::new();
 
             //evil chat groups
-            if InsiderGroupID::Puppeteer.contains_player(game, actor_ref) {
-                out.insert(ChatGroup::Puppeteer);
-            }
-            if InsiderGroupID::Cult.contains_player(game, actor_ref) {
-                out.insert(ChatGroup::Cult);
-            }
-            if InsiderGroupID::Mafia.contains_player(game, actor_ref) {
-                out.insert(ChatGroup::Mafia);
+            for group in InsiderGroupID::all_groups_with_player(game, actor_ref) {
+                out.insert(group.get_insider_chat_group());
             }
 
             //medium
@@ -333,21 +327,10 @@ pub(super) fn get_current_send_chat_groups(game: &Game, actor_ref: PlayerReferen
             ) {
                 vec![ChatGroup::Kidnapped]
             }else{
-                if InsiderGroupID::Puppeteer.contains_player(game, actor_ref){
-                    night_chat_groups.push(ChatGroup::Puppeteer);
+                for group in InsiderGroupID::all_groups_with_player(game, actor_ref) {
+                    night_chat_groups.push(group.get_insider_chat_group());
                 }
-                if InsiderGroupID::Mafia.contains_player(game, actor_ref){
-                    night_chat_groups.push(ChatGroup::Mafia);
-                }
-                if InsiderGroupID::Cult.contains_player(game, actor_ref){
-                    night_chat_groups.push(ChatGroup::Cult);
-                }
-                // Check all generic groups
-                for key in game.insider_groups.get_generic_group_keys() {
-                    if (InsiderGroupID::Generic { key }).contains_player(game, actor_ref){
-                        night_chat_groups.push(ChatGroup::Generic { key });
-                    }
-                }
+
                 night_chat_groups
             };
 
@@ -366,23 +349,9 @@ pub(super) fn get_current_receive_chat_groups(game: &Game, actor_ref: PlayerRefe
         out.push(ChatGroup::Dead);
     }
 
-    if InsiderGroupID::Mafia.contains_player(game, actor_ref) {
-        out.push(ChatGroup::Mafia);
+    for group in InsiderGroupID::all_groups_with_player(game, actor_ref) {
+        out.push(group.get_insider_chat_group());
     }
-    if InsiderGroupID::Cult.contains_player(game, actor_ref) {
-        out.push(ChatGroup::Cult);
-    }
-    if InsiderGroupID::Puppeteer.contains_player(game, actor_ref){
-        out.push(ChatGroup::Puppeteer);
-    }
-    
-    // Check all generic groups
-    for key in game.insider_groups.get_generic_group_keys() {
-        if (InsiderGroupID::Generic { key }).contains_player(game, actor_ref){
-            out.push(ChatGroup::Generic { key });
-        }
-    }
-
 
     if Detained::is_detained(game, actor_ref) {
         if PlayerReference::all_players(game).any(|detainer|
@@ -466,7 +435,8 @@ pub(super) fn default_win_condition(role: Role) -> WinCondition {
         WinCondition::GameConclusionReached{win_if_any: vec![GameConclusion::Fiends].into_iter().collect()}
 
     }else if RoleSet::Minions.get_roles().contains(&role) {
-        WinCondition::GameConclusionReached{win_if_any: GameConclusion::all().into_iter().filter(|end_game_condition|
+        // Minions aren't added to generic groups, so this check is sufficient.
+        WinCondition::GameConclusionReached{win_if_any: GameConclusion::all_static().into_iter().filter(|end_game_condition|
             !matches!(end_game_condition, 
                 GameConclusion::Town | GameConclusion::Draw |
                 GameConclusion::NiceList | GameConclusion::NaughtyList

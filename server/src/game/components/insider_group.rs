@@ -171,16 +171,10 @@ impl InsiderGroupID{
     pub unsafe fn add_player_to_revealed_group_unchecked(&self, game: &mut Game, player: PlayerReference){
         if let Some(group) = self.deref_mut(game) {
             group.players.insert(player);
-        } else {
-            game.insider_groups.generic.insert(
-                match self {
-                    InsiderGroupID::Generic { key } => *key,
-                    _ => unreachable!("Only generic groups can be None"),
-                },
-                InsiderGroup {
-                    players: vec![player].into_iter().collect()
-                }
-            );
+        } else if let InsiderGroupID::Generic { key } = self {
+            game.insider_groups.generic.insert(*key, InsiderGroup {
+                players: vec![player].into_iter().collect()
+            });
         }
         OnAddInsider::new(player, *self).invoke(game);
     }
@@ -188,14 +182,13 @@ impl InsiderGroupID{
         let should_reveal = {
             if let Some(group) = self.deref_mut(game) {
                 group.players.insert(player).is_none()
-            } else {
-                if let InsiderGroupID::Generic { key } = self {
-                    game.insider_groups.generic.insert(*key, InsiderGroup {
-                        players: vec![player].into_iter().collect()
-                    });
-                }
-
+            } else if let InsiderGroupID::Generic { key } = self {
+                game.insider_groups.generic.insert(*key, InsiderGroup {
+                    players: vec![player].into_iter().collect()
+                });
                 true
+            } else {
+                false
             }
         };
 
@@ -220,13 +213,19 @@ impl InsiderGroupID{
         OnRemoveInsider::new(player, *self).invoke(game);
         InsiderGroups::send_player_insider_groups_packet(game, player);
     }
-    pub fn set_player_insider_groups(set: VecSet<InsiderGroupID>, game: &mut Game, player: PlayerReference){
+    pub fn set_player_insider_groups(mut set: VecSet<InsiderGroupID>, game: &mut Game, player: PlayerReference){
         for group in InsiderGroupID::all(game){
             if set.contains(&group){
                 group.add_player_to_revealed_group(game, player);
+                set.remove(&group);
             }else{
                 group.remove_player_from_insider_group(game, player);
             }
+        }
+
+        // Get leftover generic groups
+        for group in set {
+            group.add_player_to_revealed_group(game, player);
         }
     }
 

@@ -113,7 +113,9 @@ export default function Select<K extends { toString(): string}>(props: Readonly<
                 }
             }
         }
-        console.error(`Value not found in options ${props.value}`);
+        if (value === undefined) {
+            console.error(`Value not found in options ${props.value}`);
+        }
     }
 
     return <>
