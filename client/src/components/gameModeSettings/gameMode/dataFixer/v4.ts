@@ -1,6 +1,6 @@
 import { VersionConverter } from ".";
 import { GameMode } from "..";
-import { Conclusion, CONCLUSIONS, INSIDER_GROUPS, InsiderGroup, PhaseTimes } from "../../../../game/gameState.d";
+import { Conclusion, BASE_CONCLUSIONS, BASE_INSIDER_GROUPS, InsiderGroup, PhaseTimes } from "../../../../game/gameState.d";
 import { defaultModifierState, ModifierID, ModifierState } from "../../../../game/modifiers";
 import { RoleList, RoleOutline, RoleOutlineOption, RoleSet } from "../../../../game/roleListState.d";
 import { Role } from "../../../../game/roleState.d";
@@ -31,10 +31,23 @@ type v5GameMode = {
 };
 
 type v5GameModeData = {
-    roleList: RoleList,
+    roleList: v5RoleList,
     phaseTimes: Omit<PhaseTimes, 'adjournment'>,
     enabledRoles: Role[],
     modifierSettings: ListMapData<ModifierID, ModifierState>
+}
+
+type v5RoleList = v5RoleOutline[]
+
+type v5RoleOutline = v5RoleOutlineOption[]
+
+type v5RoleOutlineOption = ({
+    roleSet: RoleSet
+} | {
+    role: Role
+}) & {
+    winIfAny?: string[],
+    insiderGroups?: string[]
 }
 
 type v5ShareableGameMode = v5GameModeData & { format: 'v5', name: string }
@@ -157,7 +170,7 @@ function parseGameModeData(json: NonNullable<any>): ParseResult<v5GameModeData> 
     });
 }
 
-export function parseRoleList(json: NonNullable<any>): ParseResult<RoleOutline[]> {
+export function parseRoleList(json: NonNullable<any>): ParseResult<v5RoleList> {
     if (!Array.isArray(json)) {
         return Failure("roleListIsNotArray", json);
     }
@@ -172,17 +185,17 @@ export function parseRoleList(json: NonNullable<any>): ParseResult<RoleOutline[]
         if (isFailure(outline)) return outline;
     }
 
-    return Success(roleList.map(success => (success as ParseSuccess<RoleOutline>).value));
+    return Success(roleList.map(success => (success as ParseSuccess<v5RoleOutline>).value));
 }
 
-function parseRoleOutline(json: NonNullable<any>): ParseResult<RoleOutline> {
+function parseRoleOutline(json: NonNullable<any>): ParseResult<v5RoleOutline> {
     const options = parseRoleOutlineOptionList(json);
     if (isFailure(options)) return options;
 
     return Success(options.value);
 }
 
-function parseRoleOutlineOptionList(json: NonNullable<any>): ParseResult<RoleOutlineOption[]> {
+function parseRoleOutlineOptionList(json: NonNullable<any>): ParseResult<v5RoleOutlineOption[]> {
     if (!Array.isArray(json)) {
         return Failure("roleOutlineOptionListIsNotArray", json);
     }
@@ -192,14 +205,14 @@ function parseRoleOutlineOptionList(json: NonNullable<any>): ParseResult<RoleOut
         if (isFailure(option)) return option;
     }
 
-    return Success(outlineOptionList.map(success => (success as ParseSuccess<RoleOutlineOption>).value) as RoleOutlineOption[]);
+    return Success(outlineOptionList.map(success => (success as ParseSuccess<v5RoleOutlineOption>).value) as v5RoleOutlineOption[]);
 }
 
-function parseRoleOutlineOption(json: NonNullable<any>): ParseResult<RoleOutlineOption> {
+function parseRoleOutlineOption(json: NonNullable<any>): ParseResult<v5RoleOutlineOption> {
 
     let out: {
-        insiderGroups?: InsiderGroup[],
-        winIfAny?: Conclusion[],
+        insiderGroups?: string[],
+        winIfAny?: string[],
         role?: Role,
         roleSet?: RoleSet
     } = {}
@@ -233,11 +246,11 @@ function parseRoleOutlineOption(json: NonNullable<any>): ParseResult<RoleOutline
         return Failure("roleOutlineOptionNeitherRoleNorRoleSet", json);
     }
 
-    return Success(out as RoleOutlineOption);
+    return Success(out as v5RoleOutlineOption);
 }
 
 
-function parseRoleOutlineOptionWinIfAny(json: NonNullable<any>): ParseResult<Conclusion[]> {
+function parseRoleOutlineOptionWinIfAny(json: NonNullable<any>): ParseResult<string[]> {
     if (!Array.isArray(json)) {
         return Failure("winIfAnyNotArray", json);
     }
@@ -247,23 +260,23 @@ function parseRoleOutlineOptionWinIfAny(json: NonNullable<any>): ParseResult<Con
         if (isFailure(conclusion)) return conclusion;
     }
 
-    return Success(conclusions.map(success => (success as ParseSuccess<Conclusion>).value));
+    return Success(conclusions.map(success => (success as ParseSuccess<string>).value));
 }
 
-function parseConclusion(json: NonNullable<any>): ParseResult<Conclusion> {
+function parseConclusion(json: NonNullable<any>): ParseResult<string> {
     if (typeof json !== "string") {
         return Failure("conclusionNotString", json);
     }
 
-    if (!CONCLUSIONS.includes(json as Conclusion)) {
+    if (!BASE_CONCLUSIONS.includes(json as (typeof BASE_CONCLUSIONS)[number])) {
         return Failure("conclusionInvalid", json);
     }
 
-    return Success(json as Conclusion);
+    return Success(json as string);
 }
 
 
-function parseRoleOutlineOptionInsiderGroups(json: NonNullable<any>): ParseResult<InsiderGroup[]> {
+function parseRoleOutlineOptionInsiderGroups(json: NonNullable<any>): ParseResult<string[]> {
     if (!Array.isArray(json)) {
         return Failure("insiderGroupsNotArray", json);
     }
@@ -273,19 +286,19 @@ function parseRoleOutlineOptionInsiderGroups(json: NonNullable<any>): ParseResul
         if (isFailure(group)) return group;
     }
 
-    return Success(insiderGroups.map(success => (success as ParseSuccess<InsiderGroup>).value));
+    return Success(insiderGroups.map(success => (success as ParseSuccess<string>).value));
 }
 
-function parseInsiderGroup(json: NonNullable<any>): ParseResult<InsiderGroup> {
+function parseInsiderGroup(json: NonNullable<any>): ParseResult<string> {
     if (typeof json !== "string") {
         return Failure("insiderGroupNotString", json);
     }
 
-    if (!INSIDER_GROUPS.includes(json as InsiderGroup)) {
+    if (!BASE_INSIDER_GROUPS.includes(json as (typeof BASE_INSIDER_GROUPS)[number])) {
         return Failure("insiderGroupInvalid", json);
     }
 
-    return Success(json as InsiderGroup);
+    return Success(json as string);
 }
 
 function parseModifierSettingsFromEnabledModifiers(json: NonNullable<any>): ParseResult<ListMapData<ModifierID, ModifierState>> {

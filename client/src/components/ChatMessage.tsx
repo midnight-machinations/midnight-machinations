@@ -70,8 +70,8 @@ const ChatElement = React.memo((
 
     let chatGroupIcon = null;
     if(message.chatGroup !== null){
-        if(message.chatGroup !== "all"){
-            chatGroupIcon = translateChecked("chatGroup."+message.chatGroup+".icon");
+        if(message.chatGroup.type !== "all"){
+            chatGroupIcon = translateChecked("chatGroup."+message.chatGroup.type+".icon");
         }else{
             chatGroupIcon = "";
         }
@@ -301,7 +301,7 @@ function NormalChatMessage(props: Readonly<{
 
     if(props.message.variant.messageSender.type !== "player" && props.message.variant.messageSender.type !== "livingToDead"){
         style += " discreet";
-    } else if (props.message.chatGroup === "dead") {
+    } else if (props.message.chatGroup?.type === "dead") {
         style += " dead player";
     } else {
         style += " player"
@@ -803,7 +803,7 @@ export function translateChatMessage(
                         + ` (${synopsis.outlineAssignment + 1}: ${translateRoleOutline(roleList[synopsis.outlineAssignment], playerNames)}`
                         + `: ${synopsis.crumbs.map(crumb => 
                             translate("chatMessage.gameOver.player.crumb",
-                                crumb.insiderGroups.map(group => translate("chatGroup."+group+".icon")).join("|") || translate("chatGroup.all.icon"),
+                                crumb.insiderGroups.map(group => translate("chatGroup."+group.type+".icon")).join("|") || translate("chatGroup.all.icon"),
                                 translateWinCondition(crumb.winCondition), 
                                 translate(`role.${crumb.role}.name`)
                             )

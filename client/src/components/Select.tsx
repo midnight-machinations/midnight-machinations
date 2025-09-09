@@ -12,7 +12,8 @@ export default function Select<K extends { toString(): string}>(props: Readonly<
     value: K,
     disabled?: boolean,
     className?: string,
-    onChange?: (value: K)=>void
+    onChange?: (value: K)=>void,
+    equateBy?: (a: K, b: K) => boolean,
 } & ({
     optionsSearch: SelectOptionsSearch<K>,
 } | {
@@ -103,8 +104,15 @@ export default function Select<K extends { toString(): string}>(props: Readonly<
 
     const ref = useRef<HTMLButtonElement>(null);
 
-    const value = optionsSearch.get(props.value);
+    let value = optionsSearch.get(props.value);
     if(value === undefined) {
+        if (props.equateBy !== undefined) {
+            for (let [key, val] of optionsSearch.entries()) {
+                if (props.equateBy(props.value, key)) {
+                    value = val;
+                }
+            }
+        }
         console.error(`Value not found in options ${props.value}`);
     }
 

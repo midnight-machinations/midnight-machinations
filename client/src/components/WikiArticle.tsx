@@ -76,7 +76,7 @@ export default function WikiArticle(props: {
                             message={
                                 {
                                     variant: msgvariant,
-                                    chatGroup: "all",
+                                    chatGroup: {type: "all"},
                                 }
                             } 
                             playerNames={DUMMY_NAMES} 

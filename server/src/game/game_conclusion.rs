@@ -5,7 +5,7 @@ use crate::{game::components::insider_group::InsiderGroupID, vec_set::VecSet};
 use super::{components::win_condition::WinCondition, player::PlayerReference, role::Role, role_list::RoleSet, Game};
 
 #[derive(Clone, Copy, Debug, Serialize, Deserialize, PartialEq, Eq, Hash, PartialOrd, Ord)]
-#[serde(rename_all = "camelCase")]
+#[serde(tag = "type", rename_all = "camelCase")]
 pub enum GameConclusion {
     Town,
     Mafia,
@@ -17,6 +17,9 @@ pub enum GameConclusion {
 
     NiceList,
     NaughtyList,
+
+    #[serde(rename_all = "camelCase")]
+    Generic { key: u8 },
 
     Draw
 }

@@ -342,6 +342,12 @@ pub(super) fn get_current_send_chat_groups(game: &Game, actor_ref: PlayerReferen
                 if InsiderGroupID::Cult.contains_player(game, actor_ref){
                     night_chat_groups.push(ChatGroup::Cult);
                 }
+                // Check all generic groups
+                for key in game.insider_groups.get_generic_group_keys() {
+                    if (InsiderGroupID::Generic { key }).contains_player(game, actor_ref){
+                        night_chat_groups.push(ChatGroup::Generic { key });
+                    }
+                }
                 night_chat_groups
             };
 
@@ -368,6 +374,13 @@ pub(super) fn get_current_receive_chat_groups(game: &Game, actor_ref: PlayerRefe
     }
     if InsiderGroupID::Puppeteer.contains_player(game, actor_ref){
         out.push(ChatGroup::Puppeteer);
+    }
+    
+    // Check all generic groups
+    for key in game.insider_groups.get_generic_group_keys() {
+        if (InsiderGroupID::Generic { key }).contains_player(game, actor_ref){
+            out.push(ChatGroup::Generic { key });
+        }
     }
 
 

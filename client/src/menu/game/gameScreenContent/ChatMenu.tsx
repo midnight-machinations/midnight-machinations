@@ -69,9 +69,9 @@ export default function ChatMenu(): ReactElement {
 
                 return <div key={JSON.stringify(id)}>
                     <div key={"header: "+JSON.stringify(id)} className="chat-menu-icons">
-                        {!sendChatGroups.includes("all") && translate("noAll.icon")}
+                        {!sendChatGroups.some(group => group.type === "all") && translate("noAll.icon")}
                         {sendChatGroups.map((group) => {
-                            return translate("chatGroup."+group+".icon");
+                            return translate("chatGroup."+group.type+".icon");
                         })}
                         <StyledText>{encodeString(playerNames[id.player])}</StyledText>
                     </div>

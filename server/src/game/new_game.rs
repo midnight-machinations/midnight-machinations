@@ -176,7 +176,7 @@ impl Game{
         }
 
         //reveal groups
-        for group in InsiderGroupID::all() {
+        for group in InsiderGroupID::all(&game) {
             group.reveal_group_players(&mut game);
         }
 

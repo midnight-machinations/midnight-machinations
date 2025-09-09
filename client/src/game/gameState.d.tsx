@@ -146,9 +146,25 @@ export type PhaseState = {type: "briefing"} | {type: "dusk"} | {type: "night"} |
     playerOnTrial: PlayerIndex
 } | {type: "recess"}
 
-export type ChatGroup = "all" | "dead" | "mafia" | "cult" | "jail" | "kidnapper" | "interview" | "puppeteer";
-export type InsiderGroup = (typeof INSIDER_GROUPS)[number];
-export const INSIDER_GROUPS = ["mafia", "cult", "puppeteer"] as const;
+export type ChatGroup = {type: "all"} | {type: "dead"} | {type: "mafia"} | {type: "cult"} | {type: "jail"} | {type: "kidnapped"} | {type: "interview"} | {type: "puppeteer"} | {type: "warden"} | {type: "generic", key: number};
+export type InsiderGroup = {type: (typeof BASE_INSIDER_GROUPS)[number]} | {type: "generic", key: number};
+export const BASE_INSIDER_GROUPS = ["mafia", "cult", "puppeteer"] as const;
+
+function translateInsiderGroupMeta(group: InsiderGroup, meta: string): string {
+    if (group.type === "generic") {
+        return translate(`chatGroup.generic.${meta}`, group.key + 1);
+    }
+    return translate(`chatGroup.${group.type}.${meta}`);
+}
+
+export function translateInsiderGroup(group: InsiderGroup): string {
+    return translateInsiderGroupMeta(group, "name");
+}
+
+export function translateInsiderGroupIcon(group: InsiderGroup): string {
+    return translateInsiderGroupMeta(group, "icon");
+}
+
 export type PhaseTimes = Record<Exclude<PhaseType, "recess">, number>;
 export type DefensePower = "none"|"armored"|"protected"|"invincible";
 
@@ -178,8 +194,8 @@ export type Player = {
 // Not actually unknown, but this prevents use without sanitization
 export type UnsafeString = string | (unknown & { __brand?: "UnsafeString" });
 
-export const CONCLUSIONS = ["town", "mafia", "cult", "fiends", "politician", "niceList", "naughtyList", "draw"] as const;
-export type Conclusion = (typeof CONCLUSIONS)[number];
+export const BASE_CONCLUSIONS = ["town", "mafia", "cult", "fiends", "politician", "niceList", "naughtyList", "draw"] as const;
+export type Conclusion = {type: (typeof BASE_CONCLUSIONS)[number]} | {type: "generic", key: number};
 
 export type WinCondition = {
     type: "gameConclusionReached"
@@ -189,13 +205,15 @@ export type WinCondition = {
 }
 
 export function translateConclusion(conclusion: Conclusion): string {
-    switch (conclusion) {
+    switch (conclusion.type) {
+        case "generic":
+            return translate("winCondition.generic", conclusion.key + 1);
         case "politician":
             return translate("role.politician.name")
         case "draw":
             return translate("winCondition.draw")
         default:
-            return translate(conclusion)
+            return translate(conclusion.type)
     }
 }
 
@@ -206,7 +224,7 @@ export function translateWinCondition(winCondition: WinCondition): string {
         } else if (winCondition.winIfAny.length === 1) {
             return translateConclusion(winCondition.winIfAny[0])
         } else if (winCondition.winIfAny.length === 4 && 
-            (["mafia", "fiends", "cult", "politician"] as const).every(team => winCondition.winIfAny.includes(team))
+            ([{type: "mafia"}, {type: "fiends"}, {type: "cult"}, {type: "politician"}] as const).every(team => winCondition.winIfAny.some(conclusion => conclusion.type === team.type))
         ) {
             return translate(`winCondition.evil`)
         } else {

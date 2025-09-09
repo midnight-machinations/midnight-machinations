@@ -204,7 +204,7 @@ function SingleAbilityMenu(props: Readonly<{
                     abilityId: props.abilityId,
                     selection: props.saveData.selection
                 },
-                chatGroup: "all"
+                chatGroup: {type: "all"}
             }}/>
         } */}
         <SwitchSingleAbilityMenuType

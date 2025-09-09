@@ -1,3 +1,4 @@
+use std::collections::HashMap;
 use serde::{Deserialize, Serialize};
 
 use crate::{game::{chat::{ChatGroup, ChatMessageVariant}, event::{on_add_insider::OnAddInsider, on_conceal_role::OnConcealRole, on_remove_insider::OnRemoveInsider, Event}, player::PlayerReference, Assignments, Game}, packet::ToClientPacket, vec_set::VecSet};
@@ -6,7 +7,8 @@ use crate::{game::{chat::{ChatGroup, ChatMessageVariant}, event::{on_add_insider
 pub struct InsiderGroups{
     mafia: InsiderGroup,
     cult: InsiderGroup,
-    puppeteer: InsiderGroup
+    puppeteer: InsiderGroup,
+    generic: HashMap<u8, InsiderGroup>
 }
 impl InsiderGroups{
 
@@ -15,6 +17,7 @@ impl InsiderGroups{
             mafia: InsiderGroup::default(),
             cult: InsiderGroup::default(),
             puppeteer: InsiderGroup::default(),
+            generic: HashMap::new(),
         }
     }
 
@@ -25,7 +28,8 @@ impl InsiderGroups{
         let mut out = Self {
             mafia: InsiderGroup::default(),
             cult: InsiderGroup::default(),
-            puppeteer: InsiderGroup::default()
+            puppeteer: InsiderGroup::default(),
+            generic: HashMap::new()
         };
         for player in unsafe { PlayerReference::all_players_from_count(player_count) }{
             for group in assignments
@@ -60,7 +64,7 @@ impl InsiderGroups{
     }
     pub fn send_player_insider_groups_packet(game: &Game, player: PlayerReference){
         let mut groups = VecSet::new();
-        for group in InsiderGroupID::all(){
+        for group in InsiderGroupID::all(game){
             if group.contains_player(game, player){
                 groups.insert(group);
             }
@@ -73,6 +77,11 @@ impl InsiderGroups{
             InsiderGroupID::Mafia => &self.mafia,
             InsiderGroupID::Cult => &self.cult,
             InsiderGroupID::Puppeteer => &self.puppeteer,
+            InsiderGroupID::Generic { key } => {
+                use std::sync::LazyLock;
+                static EMPTY_GROUP: LazyLock<InsiderGroup> = LazyLock::new(InsiderGroup::default);
+                self.generic.get(&key).unwrap_or(&EMPTY_GROUP)
+            }
         }
     }
     fn get_group_mut(&mut self, id: InsiderGroupID)->&mut InsiderGroup{
@@ -80,15 +89,24 @@ impl InsiderGroups{
             InsiderGroupID::Mafia => &mut self.mafia,
             InsiderGroupID::Cult => &mut self.cult,
             InsiderGroupID::Puppeteer => &mut self.puppeteer,
+            InsiderGroupID::Generic { key } => {
+                self.generic.entry(key).or_default()
+            }
         }
+    }
+
+    pub fn get_generic_group_keys(&self) -> impl Iterator<Item = u8> + '_ {
+        self.generic.keys().copied()
     }
 }
 #[derive(Clone, Copy, PartialEq, Eq, Hash, Debug, Serialize, Deserialize)]
-#[serde(rename_all = "camelCase")]
+#[serde(tag = "type", rename_all = "camelCase")]
 pub enum InsiderGroupID{
     Mafia,
     Cult,
-    Puppeteer
+    Puppeteer,
+    #[serde(rename_all = "camelCase")]
+    Generic { key: u8 }
 }
 #[derive(Default, Debug)]
 pub struct InsiderGroup{
@@ -97,22 +115,31 @@ pub struct InsiderGroup{
 
 impl InsiderGroupID{
     //const
-    pub fn all()->VecSet<InsiderGroupID>{
+    pub fn all_static()->VecSet<InsiderGroupID>{
         vec![
             InsiderGroupID::Mafia,
             InsiderGroupID::Cult,
             InsiderGroupID::Puppeteer
         ].into_iter().collect()
     }
+    
+    pub fn all(game: &Game)->VecSet<InsiderGroupID>{
+        let mut result = Self::all_static();
+        for key in game.insider_groups.get_generic_group_keys() {
+            result.insert(InsiderGroupID::Generic { key });
+        }
+        result
+    }
     pub const fn get_insider_chat_group(&self)->ChatGroup{
         match self{
             InsiderGroupID::Mafia=>ChatGroup::Mafia,
             InsiderGroupID::Cult=>ChatGroup::Cult,
-            InsiderGroupID::Puppeteer=>ChatGroup::Puppeteer
+            InsiderGroupID::Puppeteer=>ChatGroup::Puppeteer,
+            InsiderGroupID::Generic { key }=>ChatGroup::Generic { key: *key }
         }
     }
-    pub fn get_insider_group_from_chat_group(chat: &ChatGroup)->Option<InsiderGroupID>{
-        for inside in Self::all() {
+    pub fn get_insider_group_from_chat_group(game: &Game, chat: &ChatGroup)->Option<InsiderGroupID>{
+        for inside in Self::all(game) {
             if inside.get_insider_chat_group() == *chat {
                 return Some(inside)
             }
@@ -163,7 +190,7 @@ impl InsiderGroupID{
         InsiderGroups::send_player_insider_groups_packet(game, player);
     }
     pub fn set_player_insider_groups(set: VecSet<InsiderGroupID>, game: &mut Game, player: PlayerReference){
-        for group in InsiderGroupID::all(){
+        for group in InsiderGroupID::all(game){
             if set.contains(&group){
                 group.add_player_to_revealed_group(game, player);
             }else{
@@ -182,17 +209,17 @@ impl InsiderGroupID{
 
     // Queries
     pub fn in_any_group(game: &Game, player: PlayerReference)->bool{
-        InsiderGroupID::all().into_iter().any(|g|g.contains_player(game, player))
+        InsiderGroupID::all(game).into_iter().any(|g|g.contains_player(game, player))
     }
     pub fn contains_player(&self, game: &Game, player: PlayerReference)->bool{
         let players: &VecSet<PlayerReference> = self.players(game);
         players.contains(&player)
     }
     pub fn in_same_group(game: &Game, a: PlayerReference, b: PlayerReference)->bool{
-        InsiderGroupID::all().iter().any(|group| group.contains_player(game, b) && group.contains_player(game, a))
+        InsiderGroupID::all(game).iter().any(|group| group.contains_player(game, b) && group.contains_player(game, a))
     }
     pub fn all_groups_with_player(game: &Game, player_ref: PlayerReference)->VecSet<InsiderGroupID>{
-        InsiderGroupID::all()
+        InsiderGroupID::all(game)
             .into_iter()
             .filter(|group| 
                 group.contains_player(game, player_ref)
@@ -211,7 +238,7 @@ impl InsiderGroupID{
     ){
         let mut message_sent = false;
         for chat_group in player.get_current_send_chat_groups(game){
-            if Self::get_insider_group_from_chat_group(&chat_group).is_none() {continue};
+            if Self::get_insider_group_from_chat_group(game, &chat_group).is_none() {continue};
             game.add_message_to_chat_group(chat_group, message.clone());
             message_sent = true;
         }

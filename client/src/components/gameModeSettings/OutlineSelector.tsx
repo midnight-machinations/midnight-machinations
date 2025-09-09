@@ -10,7 +10,7 @@ import Select, { dropdownPlacementFunction, SelectOptionsSearch } from "../Selec
 import StyledText from "../StyledText";
 import { Button, RawButton } from "../Button";
 import { useLobbyOrGameState, useLobbyState } from "../useHooks";
-import { Conclusion, CONCLUSIONS, INSIDER_GROUPS, InsiderGroup, LobbyClient, LobbyClientID, PlayerClientType, PlayerIndex, translateConclusion, translateWinCondition, UnsafeString } from "../../game/gameState.d";
+import { Conclusion, BASE_CONCLUSIONS, BASE_INSIDER_GROUPS, InsiderGroup, LobbyClient, LobbyClientID, PlayerClientType, PlayerIndex, translateConclusion, translateInsiderGroup, translateWinCondition, UnsafeString, translateInsiderGroupIcon } from "../../game/gameState.d";
 import Popover from "../Popover";
 import DUMMY_NAMES from "../../resources/dummyNames.json";
 import { encodeString } from "../ChatMessage";
@@ -152,10 +152,12 @@ function ConclusionsSelector(props: Readonly<{
     conclusions?: Conclusion[],
     onChange: (newSet?: Conclusion[]) => void,
 }>): ReactElement {
+    const { roleList } = useContext(GameModeContext);
+    
     if (props.conclusions === undefined) {
         return <div className="conclusions-selector">
             <Button
-                onClick={() => props.onChange(["town"])}
+                onClick={() => props.onChange([{type: "town"}])}
             >
                 {translate("setNotDefault")}
             </Button>
@@ -163,14 +165,54 @@ function ConclusionsSelector(props: Readonly<{
     }
 
     const conclusions = props.conclusions;
-    const conclusionsNotChosen = CONCLUSIONS.filter(conc => !conclusions.includes(conc));
+    
+    const getGenericConclusionOptions = (): (Conclusion & { type: "generic" })[] => {
+        // Sentinel value, which sucks, but -1 + 1 = 0 which is the correct behavior anyway.
+        let highestUsedGenericGroup = -1;
+        for (const outline of roleList) {
+            for (const option of outline) {
+                if (option.winIfAny) {
+                    for (const conclusion of option.winIfAny) {
+                        if (conclusion.type === "generic" && conclusion.key > highestUsedGenericGroup) {
+                            highestUsedGenericGroup = conclusion.key
+                        }
+                    }
+                }
+            }
+        }
 
-    const optionsSearch = new Map<Conclusion, [ReactElement, string]>(CONCLUSIONS.map(conclusion => [
-        conclusion, [
-            <StyledText noLinks={true}>{translateConclusion(conclusion)}</StyledText>, 
-            translateConclusion(conclusion)
-        ]
-    ]));
+        const highestGenericSelection = Math.min(highestUsedGenericGroup + 1, 255);
+
+        return Array(highestGenericSelection + 1).fill(0).map((_, index) => ({ type: "generic", key: index }));
+    };
+
+    const optionsSearch = new Map<Conclusion, [ReactElement, string]>();
+    
+    // Add all base conclusions that aren't already selected
+    for (const conclusionName of BASE_CONCLUSIONS) {
+        const conclusion = {type: conclusionName};
+        const displayName = translateConclusion(conclusion);
+        optionsSearch.set(conclusion, [
+            <StyledText noLinks={true}>{displayName}</StyledText>, 
+            displayName
+        ]);
+    }
+    
+    // Add currently selected conclusions (including generic ones) so they can be displayed in dropdowns
+    for (const genericConclusion of getGenericConclusionOptions()) {
+        const displayName = translateConclusion(genericConclusion);
+        optionsSearch.set(genericConclusion, [
+            <StyledText noLinks={true}>{displayName}</StyledText>, 
+            displayName
+        ]);
+    }
+
+    // Build available options for the add button (non-selected base types + next generic)
+    const baseConclusionsNotChosen = BASE_CONCLUSIONS
+        .filter(concName => !conclusions.some(conclusion => conclusion.type === concName));
+    const genericConclusionsNotChosen = getGenericConclusionOptions()
+        .filter(conc => !conclusions.some(selected => selected.type === conc.type && selected.key === conc.key));
+    const availableOptions: Conclusion[] = [...baseConclusionsNotChosen.map(name => ({type: name})), ...genericConclusionsNotChosen];
 
     return <div className="conclusions-selector">
         <div className="role-picker">
@@ -187,6 +229,7 @@ function ConclusionsSelector(props: Readonly<{
                                 props.onChange(options);
                             }}
                             optionsSearch={optionsSearch}
+                            equateBy={(a, b) => a.type === b.type && !((a.type === "generic" && b.type === "generic") && a.key !== b.key)}
                         />
                         <Button
                             disabled={props.disabled}
@@ -199,9 +242,9 @@ function ConclusionsSelector(props: Readonly<{
                     </div>
                 )
             })}
-            {conclusionsNotChosen.length !== 0 && <Button
+            {availableOptions.length !== 0 && <Button
                 disabled={props.disabled}
-                onClick={() => props.onChange([...conclusions, conclusionsNotChosen[0]])}
+                onClick={() => props.onChange([...conclusions, availableOptions[0]])}
             ><Icon size="tiny">add</Icon></Button>}
         </div>
         <Button
@@ -260,10 +303,12 @@ function InsiderGroupSelector(props: Readonly<{
     insiderGroups?: InsiderGroup[],
     onChange: (newSet?: InsiderGroup[]) => void,
 }>): ReactElement {
+    const { roleList } = useContext(GameModeContext);
+    
     if (props.insiderGroups === undefined) {
         return <div className="conclusions-selector">
             <Button
-                onClick={() => props.onChange(["mafia"])}
+                onClick={() => props.onChange([{type: "mafia"}])}
             >
                 {translate("setNotDefault")}
             </Button>
@@ -271,14 +316,54 @@ function InsiderGroupSelector(props: Readonly<{
     }
 
     const insiderGroups = props.insiderGroups;
-    const insiderGroupsNotChosen = INSIDER_GROUPS.filter(conc => !insiderGroups.includes(conc));
+    
+    const getGenericInsiderGroupOptions = (): (InsiderGroup & { type: "generic" })[] => {
+        // Sentinel value, which sucks, but -1 + 1 = 0 which is the correct behavior anyway.
+        let highestUsedGenericGroup = -1;
+        for (const outline of roleList) {
+            for (const option of outline) {
+                if (option.insiderGroups) {
+                    for (const group of option.insiderGroups) {
+                        if (group.type === "generic" && group.key > highestUsedGenericGroup) {
+                            highestUsedGenericGroup = group.key
+                        }
+                    }
+                }
+            }
+        }
 
-    const optionsSearch = new Map<InsiderGroup, [ReactElement, string]>(INSIDER_GROUPS.map(insiderGroup => [
-        insiderGroup, [
-            <StyledText noLinks={true}>{translate(`chatGroup.${insiderGroup}.name`)}</StyledText>,
-            translate(`chatGroup.${insiderGroup}.name`)
-        ]
-    ]));
+        const highestGenericSelection = Math.min(highestUsedGenericGroup + 1, 255);
+
+        return Array(highestGenericSelection + 1).fill(0).map((_, index) => ({ type: "generic", key: index }));
+    };
+
+    const optionsSearch = new Map<InsiderGroup, [ReactElement, string]>();
+    
+    // Add all base insider groups
+    for (const insiderGroupName of BASE_INSIDER_GROUPS) {
+        const insiderGroup = {type: insiderGroupName};
+        const displayName = translateInsiderGroup(insiderGroup);
+        optionsSearch.set(insiderGroup, [
+            <StyledText noLinks={true}>{displayName}</StyledText>,
+            displayName
+        ]);
+    }
+    
+    // Add all generic insider group options
+    for (const genericGroup of getGenericInsiderGroupOptions()) {
+        const displayName = translateInsiderGroup(genericGroup);
+        optionsSearch.set(genericGroup, [
+            <StyledText noLinks={true}>{displayName}</StyledText>,
+            displayName
+        ]);
+    }
+
+    // Build available options for the add button (non-selected base types + non-selected generic)
+    const baseInsiderGroupsNotChosen = BASE_INSIDER_GROUPS
+        .filter(groupName => !insiderGroups.some(group => group.type === groupName));
+    const genericInsiderGroupsNotChosen = getGenericInsiderGroupOptions()
+        .filter(group => !insiderGroups.some(selected => selected.type === group.type && selected.key === group.key));
+    const availableOptions: InsiderGroup[] = [...baseInsiderGroupsNotChosen.map(name => ({type: name})), ...genericInsiderGroupsNotChosen];
 
     return <div className="conclusions-selector">
         <div className="role-picker">
@@ -295,6 +380,7 @@ function InsiderGroupSelector(props: Readonly<{
                                 props.onChange(options);
                             }}
                             optionsSearch={optionsSearch}
+                            equateBy={(a, b) => a.type === b.type && !((a.type === "generic" && b.type === "generic") && a.key !== b.key)}
                         />
                         <Button
                             disabled={props.disabled}
@@ -307,9 +393,9 @@ function InsiderGroupSelector(props: Readonly<{
                     </div>
                 )
             })}
-            {insiderGroupsNotChosen.length !== 0 && <button
+            {availableOptions.length !== 0 && <button
                 disabled={props.disabled}
-                onClick={() => props.onChange([...insiderGroups, insiderGroupsNotChosen[0]])}
+                onClick={() => props.onChange([...insiderGroups, availableOptions[0]])}
             ><Icon size="tiny">add</Icon></button>}
         </div>
         <Button
@@ -339,7 +425,7 @@ function InsiderGroupSelectorLabel(props: Readonly<{
             </StyledText>
         } else {
             return <StyledText noLinks={true}>
-                {props.insiderGroups.map(g => translate(`chatGroup.${g}.icon`)).join(translate("union"))}
+                {props.insiderGroups.map(g => translateInsiderGroupIcon(g)).join(translate("union"))}
             </StyledText>
         }
     }, [props.insiderGroups])
