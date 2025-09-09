@@ -314,96 +314,49 @@ code, .code {
 }
 
 .chat-menu-colors {
-
-    --fade-color: #161b34;
-
-    --primary-color: #1c244e;
-    --secondary-color: #232754;
-    --text-color: #ffffff;
-
-    --primary-border-color: #3c4675;
-    --primary-border-shadow-color: #111836;
-
-    --hover-color: #232c57;
-    --focus-outline-color: #929ccc;
-
-
-    --background-color: #151a41;
-    --background-border-color: #2b3162;
-    --background-border-shadow-color: #0e1024;
-
-    --primary-color: #1c244e;
-    --secondary-color: #232754;
+    --background-color: oklch(0.2386 0.0735 273.95);
 }
 
 .player-list-menu-colors {
     --background-color: #182c28;
-    --fade-color: #0b1511;
-    --primary-color: #1a3531;
-    --secondary-color: #1f3a35;
-    --text-color: #ffffff;
-    --primary-border-color: #2e5952;
-    --primary-border-shadow-color: #142523;
-    --background-border-color: #2c4d46;
-    --background-border-shadow-color: #121f1c;
-    --hover-color: #1f403b;
-    --focus-outline-color: #84a997;
 }
 
 .will-menu-colors {
     --background-color: #251737;
-    --fade-color: #100b15;
-    --primary-color: #2c1c40;
-    --secondary-color: #332142;
-    --text-color: #ffffff;
-    --primary-border-color: #4c3558;
-    --primary-border-shadow-color: #250d2b;
-    --background-border-color: #352d56;
-    --background-border-shadow-color: #110d18;
-    --hover-color: #38254e;
-    --focus-outline-color: #9c84a9;
 }
 
 .role-specific-colors {
     --background-color: #331c26;
-    --fade-color: #150b12;
-    --primary-color: #422031;
-    --secondary-color: #422137;
-    --text-color: #ffffff;
-    --primary-border-color: #5a3246;
-    --primary-border-shadow-color: #25141d;
-    --background-border-color: #50303e;
-    --background-border-shadow-color: #25131c;
-    --hover-color: #4c2337;
-    --focus-outline-color: #a9849c;
 }
 
 .graveyard-menu-colors {
     --background-color: #2c2b3b;
-    --fade-color: #1d1b29;
-    --primary-color: #323142;
-    --secondary-color: #373647;
-    --text-color: #ffffff;
-    --primary-border-color: #49485b;
-    --primary-border-shadow-color: #202027;
-    --background-border-color: #3d3c4d;
-    --background-border-shadow-color: #19181f;
-    --hover-color: #3c3b4d;
-    --focus-outline-color: #9896ae;
 }
 
 .wiki-menu-colors {
     --background-color: #2C2124;
-    --fade-color: #0F0D15;
-    --primary-color: #3A2A31;
-    --secondary-color: #3A2A31;
+}
+
+.chat-menu-colors, .player-list-menu-colors, .will-menu-colors, .role-specific-colors, .graveyard-menu-colors, .wiki-menu-colors {
+    --primary-color: oklch(from var(--background-color) calc(l + 0.0397) calc(c + 0.0039) calc(h - 1.62));
+    --primary-border-color: oklch(from var(--primary-color) calc(l + .12) c h);
+    --primary-border-shadow-color: oklch(from var(--primary-color) calc(l - .08) c h);
+
+    --hover-color: oklch(from var(--background-color) calc(l + 0.0707) calc(c + 0.0043) calc(h - 1.73));
+
+    --secondary-color: oklch(from var(--primary-color) calc(l + 0.0172) calc(c + 0.0032) calc(h + 4.13));
+
+    --background-border-color: oklch(from var(--background-color) calc(l + .12) c h);
+    --background-border-shadow-color: oklch(from var(--background-color) calc(l - .08) c h);
+
+    --focus-outline-color: oklch(from var(--background-border-color) calc(l + 0.3437) calc(c - 0.0022) calc(h + 1.33));
+
+    --fade-color: color-mix(in oklch,
+        oklch(from var(--background-color) calc(l - 0.0072) calc(c - 0.0247) calc(h - 0.48)),
+        #161b34 20% /* Chat menu fade color */
+    );
+
     --text-color: #ffffff;
-    --primary-border-color: #533C44;
-    --primary-border-shadow-color: #261C26;
-    --background-border-color: #493942;
-    --background-border-shadow-color: #201924;
-    --hover-color: #442F35;
-    --focus-outline-color: #A18E99;
 }
 
 
