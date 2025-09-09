@@ -1,6 +1,7 @@
 use std::iter::once;
 use serde::{Deserialize, Serialize};
 use crate::game::components::confused::Confused;
+use crate::game::role_list_generation::template::Template;
 use crate::game::role_outline_reference::RoleOutlineReference;
 use crate::game::controllers::*;
 use crate::game::{attack_power::DefensePower, chat::ChatMessageVariant};
@@ -9,7 +10,6 @@ use crate::game::visit::Visit;
 use crate::game::Game;
 use crate::vec_map::VecMap;
 use crate::vec_set::VecSet;
-use rand::prelude::SliceRandom;
 use super::{common_role, Role, RoleStateTrait};
 use crate::game::event::on_midnight::{MidnightVariables, OnMidnightPriority};
 
@@ -22,7 +22,7 @@ pub struct Auditor{
 
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq, PartialOrd, Ord)]
 #[serde(rename_all = "camelCase")]
-pub struct AuditorResult(pub VecSet<Role>);
+pub struct AuditorResult(pub VecSet<Template>);
 
 pub(super) const MAXIMUM_COUNT: Option<u8> = None;
 pub(super) const DEFENSE: DefensePower = DefensePower::None;
@@ -64,7 +64,7 @@ impl RoleStateTrait for Auditor {
             .available_selection(AvailableTwoRoleOutlineOptionSelection(
                 RoleOutlineReference::all_outlines(game)
                     .filter(|o|!self.previously_given_results.contains(o))
-                    .filter(|o|o.deref(game).get_all_roles().len() > 1)
+                    .filter(|o|o.deref(game).get_all_templates().len() > 1)
                     .map(Some)
                     .chain(once(None))
                     .collect()
@@ -92,24 +92,24 @@ impl Auditor{
     pub fn get_result(game: &Game, chosen_outline: RoleOutlineReference, confused: bool) -> AuditorResult {
         let outline = chosen_outline.deref(game);
 
-        let mut all_possible_fake_roles = outline
-            .get_all_roles()
+        let mut possible_fake_templates = outline
+            .get_all_templates()
             .into_iter()
-            .filter(|x|game.settings.enabled_roles.contains(x))
-            .collect::<Vec<Role>>();
-        all_possible_fake_roles.shuffle(&mut rand::rng());
+            .filter(|x|game.settings.enabled_templates.enabled(*x))
+            .collect::<VecSet<Template>>();
+        possible_fake_templates.shuffle(&mut rand::rng());
 
         let role = chosen_outline.deref_as_role_and_player_originally_generated(game).0;
         let mut out = VecSet::new();
 
         // this check says dont put the real role in if either your confused OR if a recruiter messed with the role
         // We dont want an auditor seeing that a recruiter is in the game
-        if !confused && all_possible_fake_roles.contains(&role) {
+        if !confused && possible_fake_templates.contains(&role) {
             out.insert(role);
         }
 
-        for role in all_possible_fake_roles.iter(){
-            if out.count() >= Auditor::MAX_RESULT_COUNT || out.count() >= all_possible_fake_roles.len().saturating_sub(1) {break}
+        for role in possible_fake_templates.iter(){
+            if out.count() >= Auditor::MAX_RESULT_COUNT || out.count() >= possible_fake_templates.count().saturating_sub(1) {break}
             out.insert(*role);
         }
         out.shuffle(&mut rand::rng());

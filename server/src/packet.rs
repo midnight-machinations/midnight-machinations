@@ -21,7 +21,7 @@ use std::collections::HashMap;
 use serde::{Deserialize, Serialize};
 use vec1::Vec1;
 
-use crate::{client_connection::ClientConnection, game::{chat::{ChatGroup, ChatMessage, ChatMessageIndex}, components::{fast_forward::FastForwardSetting, graves::{grave::Grave, grave_reference::GraveReference}, insider_group::InsiderGroupID, tags::Tag}, controllers::{Controller, ControllerID, ControllerInput}, game_client::GameClientLocation, modifiers::ModifierSettings, phase::{PhaseState, PhaseType}, player::{PlayerIndex, PlayerReference}, role::{doomsayer::DoomsayerGuess, ClientRoleStateEnum, Role}, role_list::{RoleList, RoleOutline}, settings::PhaseTimeSettings, GameOverReason, RejectStartReason}, lobby::lobby_client::LobbyClient, room::RoomClientID, vec_map::VecMap, vec_set::VecSet, websocket_listener::RoomCode};
+use crate::{client_connection::ClientConnection, game::{chat::{ChatGroup, ChatMessage, ChatMessageIndex}, components::{fast_forward::FastForwardSetting, graves::{grave::Grave, grave_reference::GraveReference}, insider_group::InsiderGroupID, tags::Tag}, controllers::{Controller, ControllerID, ControllerInput}, game_client::GameClientLocation, modifiers::ModifierSettings, phase::{PhaseState, PhaseType}, player::{PlayerIndex, PlayerReference}, role::{doomsayer::DoomsayerGuess, ClientRoleStateEnum, Role}, role_list::{Outline, OutlineList}, settings::{EnabledTemplates, PhaseTimeSettings}, GameOverReason, RejectStartReason}, lobby::lobby_client::LobbyClient, room::RoomClientID, vec_map::VecMap, vec_set::VecSet, websocket_listener::RoomCode};
 
 
 #[derive(Serialize, Debug, Clone)]
@@ -80,15 +80,15 @@ pub enum ToClientPacket{
 
     // Settings
     #[serde(rename_all = "camelCase")]
-    RoleList{role_list: RoleList},
+    RoleList{role_list: OutlineList},
     #[serde(rename_all = "camelCase")]
-    RoleOutline{index: u8, role_outline: RoleOutline},
+    RoleOutline{index: u8, role_outline: Outline},
     #[serde(rename_all = "camelCase")]
     PhaseTime{phase: PhaseType, time: u16},
     #[serde(rename_all = "camelCase")]
     PhaseTimes{phase_time_settings: PhaseTimeSettings},
     #[serde(rename_all = "camelCase")]
-    EnabledRoles{roles: Vec<Role>},
+    EnabledRoles{roles: EnabledTemplates},
     #[serde(rename_all = "camelCase")]
     ModifierSettings{modifier_settings: ModifierSettings},
 
@@ -190,9 +190,9 @@ pub enum ToServerPacket{
 
     // Settings
     #[serde(rename_all = "camelCase")]
-    SetRoleList{role_list: RoleList},
+    SetRoleList{role_list: OutlineList},
     #[serde(rename_all = "camelCase")]
-    SetRoleOutline{index: u8, role_outline: RoleOutline},
+    SetRoleOutline{index: u8, role_outline: Outline},
     #[serde(rename_all = "camelCase")]
     SimplifyRoleList,
     #[serde(rename_all = "camelCase")]
@@ -200,7 +200,7 @@ pub enum ToServerPacket{
     #[serde(rename_all = "camelCase")]
     SetPhaseTimes{phase_time_settings: PhaseTimeSettings},
     #[serde(rename_all = "camelCase")]
-    SetEnabledRoles{roles: Vec<Role>},
+    SetEnabledRoles{roles: EnabledTemplates},
     #[serde(rename_all = "camelCase")]
     SetModifierSettings{modifier_settings: ModifierSettings},
 

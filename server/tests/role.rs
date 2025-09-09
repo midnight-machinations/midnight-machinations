@@ -34,8 +34,8 @@ pub use mafia_server::{
         },
         role::{ambusher::Ambusher, apostle::Apostle, armorsmith::Armorsmith, arsonist::Arsonist, auditor::{Auditor, AuditorResult}, blackmailer::Blackmailer, bodyguard::Bodyguard, bouncer::Bouncer, cop::Cop, counterfeiter::Counterfeiter, deputy::Deputy, detective::Detective, doctor::Doctor, doomsayer::{Doomsayer, DoomsayerGuess}, drunk::Drunk, engineer::{Engineer, Trap}, escort::Escort, fiends_wildcard::FiendsWildcard, framer::Framer, godfather::Godfather, gossip::Gossip, hypnotist::Hypnotist, impostor::Impostor, informant::Informant, jailor::Jailor, jester::Jester, krampus::Krampus, lookout::Lookout, mafia_support_wildcard::MafiaSupportWildcard, mafioso::Mafioso, marksman::Marksman, martyr::Martyr, mayor::Mayor, medium::Medium, mortician::Mortician, necromancer::Necromancer, ojo::Ojo, philosopher::Philosopher, politician::Politician, polymath::Polymath, psychic::Psychic, puppeteer::Puppeteer, pyrolisk::Pyrolisk, rabblerouser::Rabblerouser, recruiter::Recruiter, retributionist::Retributionist, revolutionary::Revolutionary, santa_claus::SantaClaus, scarecrow::Scarecrow, snoop::Snoop, spiral::Spiral, tally_clerk::TallyClerk, tracker::Tracker, transporter::Transporter, veteran::Veteran, vigilante::Vigilante, villager::Villager, warden::Warden, warper::Warper, werewolf::Werewolf, wild_card::Wildcard, witch::Witch, yer::Yer, zealot::Zealot, Role, RoleState},
         role_list::{
-            RoleList, RoleOutline, RoleOutlineOption, RoleOutlineOptionInsiderGroups, RoleOutlineOptionRoles,
-            RoleOutlineOptionWinCondition, RoleSet
+            OutlineList, Outline, OutlineOption, RoleOutlineOptionInsiderGroups, OutlineOptionTemplates,
+            RoleOutlineOptionWinCondition, TemplateSet
         }, 
     },
 };
@@ -1142,7 +1142,7 @@ fn grave_contains_multiple_killers() {
             day_number: 2,
             information: GraveInformation::Normal{
                 role: Role::Detective,
-                death_cause: GraveDeathCause::Killers(vec![GraveKiller::RoleSet(RoleSet::Mafia), GraveKiller::Role(Role::Vigilante)]),
+                death_cause: GraveDeathCause::Killers(vec![GraveKiller::RoleSet(TemplateSet::Mafia), GraveKiller::Role(Role::Vigilante)]),
                 will: "".to_string(),
                 death_notes: vec![],
             }
@@ -1154,7 +1154,7 @@ fn grave_contains_multiple_killers() {
             day_number: 2,
             information: GraveInformation::Normal{
                 role: Role::Detective,
-                death_cause: GraveDeathCause::Killers(vec![GraveKiller::Role(Role::Vigilante), GraveKiller::RoleSet(RoleSet::Mafia)]),
+                death_cause: GraveDeathCause::Killers(vec![GraveKiller::Role(Role::Vigilante), GraveKiller::RoleSet(TemplateSet::Mafia)]),
                 will: "".to_string(),
                 death_notes: vec![],
             }
@@ -2963,34 +2963,34 @@ fn enraged_werewolf_kills() {
 fn recruiter_role_list_is_correct() {
     let (game, _assignments) = mock_game(
         Settings {
-            role_list: RoleList(vec![
-                RoleOutline {options: vec1::vec1![RoleOutlineOption {
-                    roles: RoleOutlineOptionRoles::Role { role: Role::Recruiter },
+            role_list: OutlineList(vec![
+                Outline {options: vec1::vec1![OutlineOption {
+                    templates: OutlineOptionTemplates::Template { template: Role::Recruiter },
                     win_condition: RoleOutlineOptionWinCondition::RoleDefault,
                     insider_groups: RoleOutlineOptionInsiderGroups::RoleDefault,
                     player_pool: vec_set![0]
                 }]},
-                RoleOutline {options: vec1::vec1![RoleOutlineOption {
-                    roles: RoleOutlineOptionRoles::Role { role: Role::Goon },
+                Outline {options: vec1::vec1![OutlineOption {
+                    templates: OutlineOptionTemplates::Template { template: Role::Goon },
                     win_condition: RoleOutlineOptionWinCondition::RoleDefault,
                     insider_groups: RoleOutlineOptionInsiderGroups::RoleDefault,
                     player_pool: vec_set![1]
                 }]},
-                RoleOutline {options: vec1::vec1![RoleOutlineOption {
-                    roles: RoleOutlineOptionRoles::Role { role: Role::Detective },
+                Outline {options: vec1::vec1![OutlineOption {
+                    templates: OutlineOptionTemplates::Template { template: Role::Detective },
                     win_condition: RoleOutlineOptionWinCondition::RoleDefault,
                     insider_groups: RoleOutlineOptionInsiderGroups::RoleDefault,
                     player_pool: vec_set![2]
                 }]},
-                RoleOutline {options: vec1::vec1![RoleOutlineOption {
-                    roles: RoleOutlineOptionRoles::Role { role: Role::Detective },
+                Outline {options: vec1::vec1![OutlineOption {
+                    templates: OutlineOptionTemplates::Template { template: Role::Detective },
                     win_condition: RoleOutlineOptionWinCondition::RoleDefault,
                     insider_groups: RoleOutlineOptionInsiderGroups::RoleDefault,
                     player_pool: vec_set![3]
                 }]}
             ]),
             phase_times: PhaseTimeSettings::default(),
-            enabled_roles: RoleSet::Any.get_roles(),
+            enabled_templates: TemplateSet::Any.values(),
             modifiers: ModifierSettings::default(),
         },
         4

@@ -9,7 +9,7 @@ use crate::game::components::tags::{TagSetID, Tags};
 use crate::game::phase::{PhaseState, PhaseType};
 use crate::game::player::PlayerReference;
 use crate::game::role::RoleState;
-use crate::game::role_list::RoleSet;
+use crate::game::role_list::TemplateSet;
 use crate::game::Game;
 use super::jester::Jester;
 use super::{GetClientAbilityState, Role, RoleStateTrait};
@@ -73,7 +73,7 @@ impl RoleStateTrait for Revolutionary {
 
         if let Some(target) = PlayerReference::all_players(game)
             .filter(|p|
-                RoleSet::Town.get_roles().contains(&p.role(game)) &&
+                TemplateSet::Town.values().contains(&p.role(game)) &&
                 
                 p.role(game) != Role::Jailor &&
 

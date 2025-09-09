@@ -3,7 +3,7 @@ use serde::Serialize;
 use crate::game::controllers::AvailableTwoPlayerOptionSelection;
 use crate::game::components::graves::grave_reference::GraveReference;
 use crate::game::event::on_midnight::{MidnightVariables, OnMidnightPriority};
-use crate::game::role_list::RoleSet;
+use crate::game::role_list::TemplateSet;
 use crate::game::{attack_power::DefensePower, phase::PhaseType};
 use crate::game::player::PlayerReference;
 
@@ -51,7 +51,7 @@ impl RoleStateTrait for Retributionist {
                         GraveReference::all_graves(game).any(|grave|
                             grave.deref(game).player == *target && 
                             if let Some(role) = grave.deref(game).role(){
-                                RoleSet::Town.get_roles().contains(&role)
+                                TemplateSet::Town.values().contains(&role)
                             }else{false}
                         ))
                     .filter(|target|

@@ -63,7 +63,7 @@ impl PlayerReference{
             ToClientPacket::GamePlayers{ 
                 players: PlayerReference::all_players(game).map(|p|p.name(game).clone()).collect()
             },
-            ToClientPacket::EnabledRoles { roles: game.settings.enabled_roles.clone().into_iter().collect() },
+            ToClientPacket::EnabledRoles { roles: game.settings.enabled_templates.clone() },
             ToClientPacket::RoleList {role_list: game.settings.role_list.clone()},
             ToClientPacket::ModifierSettings {
                 modifier_settings: game.modifier_settings().clone()

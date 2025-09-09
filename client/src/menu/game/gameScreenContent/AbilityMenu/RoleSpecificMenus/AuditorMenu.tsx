@@ -1,13 +1,13 @@
 import { ReactElement } from "react"
 import React from "react"
-import { Role, RoleState } from "../../../../../game/roleState.d"
+import { Role, RoleState, Template } from "../../../../../game/roleState.d"
 import TwoRoleOutlineOptionSelectionMenu from "../ControllerSelectionTypes/TwoRoleOutlineOptionSelectionMenu"
 import GAME_MANAGER from "../../../../.."
 import { controllerIdToLinkWithPlayer, TwoRoleOutlineOptionSelection } from "../../../../../game/controllerInput"
 import { usePlayerState } from "../../../../../components/useHooks"
 import ListMap from "../../../../../ListMap"
 
-export type AuditorResult = Role[];
+export type AuditorResult = Template[];
 
 export default function AuditorMenu(props: Readonly<{
     roleState: RoleState & {type: "auditor"}

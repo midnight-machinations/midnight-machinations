@@ -4,66 +4,66 @@ use vec1::{
     Vec1
 };
 
-use crate::{game::{player::PlayerIndex, settings::Settings}, vec_set::{vec_set, VecSet}};
+use crate::{game::{player::PlayerIndex, role_list_generation::template::Template, settings::Settings}, vec_set::{vec_set, VecSet}};
 
 use super::{components::{insider_group::InsiderGroupID}, game_conclusion::GameConclusion, role::Role};
 
 #[derive(Default, Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
-pub struct RoleList(pub Vec<RoleOutline>);
-impl RoleList {
+pub struct OutlineList(pub Vec<Outline>);
+impl OutlineList {
     pub fn simplify(&mut self){
         for entry in self.0.iter_mut(){
             entry.simplify();
         }
     }
     pub fn sort(&mut self){
-        self.0.sort_by_key(|r| r.get_all_roles().len());
+        self.0.sort_by_key(|r| r.get_all_templates().len());
     }
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord)]
-pub struct RoleOutline {
-    pub options: Vec1<RoleOutlineOption>
+pub struct Outline {
+    pub options: Vec1<OutlineOption>
 }
-impl Serialize for RoleOutline {
+impl Serialize for Outline {
     fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
     where
         S: serde::Serializer {
         self.options.serialize(serializer)
     }
 }
-impl<'de> Deserialize<'de> for RoleOutline {
+impl<'de> Deserialize<'de> for Outline {
     fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
     where
         D: serde::Deserializer<'de> {
         Ok(Self {
-            options: Vec1::<RoleOutlineOption>::deserialize(deserializer)?
+            options: Vec1::<OutlineOption>::deserialize(deserializer)?
         })
     }
 }
 
-impl Default for RoleOutline {
+impl Default for Outline {
     fn default() -> Self {
-        Self {options: vec1![RoleOutlineOption{
+        Self {options: vec1![OutlineOption{
             win_condition: Default::default(),
             insider_groups: Default::default(),
-            roles: RoleOutlineOptionRoles::RoleSet { role_set: RoleSet::Any },
+            templates: OutlineOptionTemplates::TemplateSet { set: TemplateSet::Any },
             player_pool: Default::default(),
         }]}
     }
 }
-impl RoleOutline{
-    pub fn new_exact(role: Role)->RoleOutline{
-        RoleOutline{options: vec1![RoleOutlineOption{
+impl Outline{
+    pub fn new_exact(template: Template)->Outline{
+        Outline{options: vec1![OutlineOption{
             win_condition: Default::default(),
             insider_groups: Default::default(),
-            roles: RoleOutlineOptionRoles::Role{role},
+            templates: OutlineOptionTemplates::Template{template},
             player_pool: Default::default(),
         }]}
     }
-    pub fn get_all_roles(&self) -> Vec<Role>{
+    pub fn get_all_templates(&self) -> Vec<Template>{
         self.options.iter()
-            .flat_map(|outline_opt|outline_opt.roles.get_roles().into_iter())
+            .flat_map(|outline_opt|outline_opt.templates.values().into_iter())
             .collect()
     }
     pub fn simplify(&mut self){
@@ -73,7 +73,7 @@ impl RoleOutline{
 
         for option_a in self.options.iter(){
             for option_b in self.options.iter(){
-                if option_a.roles.is_subset(&option_b.roles) && option_a != option_b {
+                if option_a.templates.is_subset(&option_b.templates) && option_a != option_b {
                     new_options.retain(|r| r != option_a);
                 }
             }
@@ -84,7 +84,7 @@ impl RoleOutline{
 
         new_options.sort();
 
-        *self = RoleOutline{options: new_options};
+        *self = Outline{options: new_options};
     }
 }
 
@@ -119,9 +119,9 @@ impl RoleOutlineOptionInsiderGroups {
 
 #[derive(Default, Debug, Clone, PartialEq, Eq, Serialize, PartialOrd, Ord)]
 #[serde(rename_all = "camelCase")]
-pub struct RoleOutlineOption {
+pub struct OutlineOption {
     #[serde(flatten)]
-    pub roles: RoleOutlineOptionRoles,
+    pub templates: OutlineOptionTemplates,
     #[serde(flatten, skip_serializing_if = "RoleOutlineOptionWinCondition::is_default")]
     pub win_condition: RoleOutlineOptionWinCondition,
     #[serde(flatten, skip_serializing_if = "RoleOutlineOptionInsiderGroups::is_default")]
@@ -131,12 +131,12 @@ pub struct RoleOutlineOption {
 }
 
 /// Watch this!
-impl<'de> Deserialize<'de> for RoleOutlineOption {
+impl<'de> Deserialize<'de> for OutlineOption {
     fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
     where
         D: serde::Deserializer<'de> {
 
-        let mut option = RoleOutlineOption::default();
+        let mut option = OutlineOption::default();
         
         let json = serde_json::Value::deserialize(deserializer)?;
 
@@ -154,10 +154,10 @@ impl<'de> Deserialize<'de> for RoleOutlineOption {
             }
             if let Some(value) = map.get("roleSet") {
                 if let Ok(string_role_set) = serde_json::to_string(value) && let Ok(role_set) = serde_json::from_str(string_role_set.as_str()) {
-                    option.roles = RoleOutlineOptionRoles::RoleSet { role_set }
+                    option.templates = OutlineOptionTemplates::TemplateSet { set: role_set }
                 }
             } else if let Some(value) = map.get("role") && let Ok(string_role) = serde_json::to_string(value) && let Ok(role) = serde_json::from_str(string_role.as_str()) {
-                option.roles = RoleOutlineOptionRoles::Role { role }
+                option.templates = OutlineOptionTemplates::Template { template: role }
             }
         }
 
@@ -168,46 +168,46 @@ impl<'de> Deserialize<'de> for RoleOutlineOption {
 
 #[derive(Debug, Clone, Hash, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(untagged, rename_all = "camelCase")]
-pub enum RoleOutlineOptionRoles {
+pub enum OutlineOptionTemplates {
     #[serde(rename_all = "camelCase")]
-    RoleSet{role_set: RoleSet},
+    TemplateSet{set: TemplateSet},
     #[serde(rename_all = "camelCase")]
-    Role{role: Role},
+    Template{template: Template},
 }
-impl Default for RoleOutlineOptionRoles {
+impl Default for OutlineOptionTemplates {
     fn default() -> Self {
-        Self::RoleSet { role_set: RoleSet::Any }
+        Self::TemplateSet { set: TemplateSet::Any }
     }
 }
-impl RoleOutlineOptionRoles{
-    pub fn get_roles(&self) -> VecSet<Role> {
+impl OutlineOptionTemplates{
+    pub fn values(&self) -> VecSet<Template> {
         match self {
-            RoleOutlineOptionRoles::RoleSet { role_set } => {
-                role_set.get_roles()
+            OutlineOptionTemplates::TemplateSet { set } => {
+                set.values()
             }
-            RoleOutlineOptionRoles::Role { role } => 
-                vec_set![*role]
+            OutlineOptionTemplates::Template { template } => 
+                vec_set![*template]
         }
     }
-    pub fn is_subset(&self, other: &RoleOutlineOptionRoles) -> bool {
-        self.get_roles().iter().all(|r|other.get_roles().contains(r))
+    pub fn is_subset(&self, other: &OutlineOptionTemplates) -> bool {
+        self.values().iter().all(|r|other.values().contains(r))
     }
 }
-impl PartialOrd for RoleOutlineOptionRoles {
+impl PartialOrd for OutlineOptionTemplates {
     fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
         Some(self.cmp(other))
     }
 }
-impl Ord for RoleOutlineOptionRoles {
+impl Ord for OutlineOptionTemplates {
     fn cmp(&self, other: &Self) -> std::cmp::Ordering {
-        other.get_roles().count().cmp(&self.get_roles().count())
+        other.values().count().cmp(&self.values().count())
     }
 }
 
 
 #[derive(Clone, Debug, PartialEq, Eq, Hash, Serialize, Deserialize, PartialOrd, Ord)]
 #[serde(rename_all = "camelCase")]
-pub enum RoleSet {
+pub enum TemplateSet {
     Any,
 
     Town,
@@ -227,100 +227,104 @@ pub enum RoleSet {
     Neutral,
     Minions
 }
-impl RoleSet{
-    pub fn get_roles(&self) -> VecSet<Role> {
+impl TemplateSet{
+    pub fn values(&self) -> VecSet<Template> {
         match self {
-            RoleSet::Any => Role::values(),
-            RoleSet::Town => 
+            TemplateSet::Any => Template::values(),
+            TemplateSet::Town => 
                 vec![
-                    Role::Jailor, Role::Villager, Role::Drunk
+                    Role::Jailor.into(), Role::Villager.into(), Template::Drunk
                 ].into_iter().chain(
-                    RoleSet::TownCommon.get_roles()
+                    TemplateSet::TownCommon.values()
                 ).collect(),
-            RoleSet::TownCommon => {
-                RoleSet::TownInvestigative.get_roles().into_iter()
+            TemplateSet::TownCommon => {
+                TemplateSet::TownInvestigative.values().into_iter()
                 .chain(
-                    RoleSet::TownProtective.get_roles()
+                    TemplateSet::TownProtective.values()
                 ).chain(
-                    RoleSet::TownKilling.get_roles()
+                    TemplateSet::TownKilling.values()
                 ).chain(
-                    RoleSet::TownSupport.get_roles()
+                    TemplateSet::TownSupport.values()
                 ).collect()
             },
-            RoleSet::TownInvestigative => 
+            TemplateSet::TownInvestigative => 
                 vec_set![
                     Role::Detective, Role::Philosopher, Role::Gossip, 
                     Role::Psychic, Role::Auditor, Role::Spy, 
                     Role::Lookout, Role::Tracker, Role::Snoop,
                     Role::TallyClerk
-                ],
-            RoleSet::TownProtective => 
+                ].into_iter().map(|r|r.into()).collect(),
+            TemplateSet::TownProtective => 
                 vec_set![
                     Role::Bodyguard, Role::Cop, Role::Doctor,
                     Role::Bouncer, Role::Engineer, Role::Armorsmith,
                     Role::Steward
-                ],
-            RoleSet::TownKilling => 
+                ].into_iter().map(|r|r.into()).collect(),
+            TemplateSet::TownKilling => 
                 vec_set![
                     Role::Vigilante, Role::Veteran, Role::Deputy, Role::Marksman, Role::Rabblerouser
-                ],
-            RoleSet::TownSupport => 
+                ].into_iter().map(|r|r.into()).collect(),
+            TemplateSet::TownSupport => 
                 vec_set![
                     Role::Medium, Role::Retributionist,
                     Role::Transporter, Role::Porter,
                     Role::Mayor, Role::Reporter,
                     Role::Courtesan, Role::Escort,
                     Role::Polymath
-                ],
-            RoleSet::Mafia =>
+                ].into_iter().map(|r|r.into()).collect(),
+            TemplateSet::Mafia =>
                 vec_set![
-                    Role::Goon, Role::MafiaSupportWildcard, Role::MafiaKillingWildcard
+                    Role::Goon.into(), Role::MafiaSupportWildcard.into(), Role::MafiaKillingWildcard.into()
                 ].into_iter().chain(
-                    RoleSet::MafiaKilling.get_roles()
+                    TemplateSet::MafiaKilling.values()
                 ).chain(
-                    RoleSet::MafiaSupport.get_roles()
+                    TemplateSet::MafiaSupport.values()
                 ).collect(),
-            RoleSet::MafiaKilling => 
+            TemplateSet::MafiaKilling => 
                 vec_set![
                     Role::Godfather, Role::Counterfeiter,
                     Role::Impostor, Role::Recruiter,
                     Role::Mafioso
-                ],
-            RoleSet::MafiaSupport => 
+                ].into_iter().map(|r|r.into()).collect(),
+            TemplateSet::MafiaSupport => 
                 vec_set![
                     Role::Blackmailer, Role::Cerenovous, Role::Informant, Role::Hypnotist, Role::Consort,
                     Role::Forger, Role::Framer, Role::Mortician, Role::Disguiser,
                     Role::Necromancer, Role::Reeducator,
                     Role::Ambusher
-                ],
-            RoleSet::Minions => 
+                ].into_iter().map(|r|r.into()).collect(),
+            TemplateSet::Minions => 
                 vec_set![
-                    Role::Witch, Role::Scarecrow, Role::Warper, Role::Kidnapper, Role::Pawn
+                    Role::Witch.into(), Role::Scarecrow.into(), Role::Warper.into(), Role::Kidnapper.into(), Template::Pawn
                 ],
-            RoleSet::Neutral =>
+            TemplateSet::Neutral =>
                 vec_set![
                     Role::Jester, Role::Revolutionary, Role::Politician, Role::Doomsayer, Role::Mercenary,
                     Role::Martyr, Role::Chronokaiser, Role::SantaClaus, Role::Krampus
-                ],
-            RoleSet::Fiends =>
+                ].into_iter().map(|r|r.into()).collect(),
+            TemplateSet::Fiends =>
                 vec_set![
                     Role::Arsonist, Role::Werewolf, Role::Ojo,
                     Role::Puppeteer, Role::Pyrolisk, Role::Kira,
                     Role::SerialKiller, Role::FiendsWildcard,
                     Role::Spiral, Role::Warden, Role::Yer
-                ],
-            RoleSet::Cult =>
+                ].into_iter().map(|r|r.into()).collect(),
+            TemplateSet::Cult =>
                 vec_set![
                     Role::Apostle, Role::Disciple, Role::Zealot
-                ],
+                ].into_iter().map(|r|r.into()).collect(),
         }
+    }
+    
+    pub fn contains(&self, template: impl Into<Template>)->bool{
+        self.values().contains(&template.into())
     }
 }
 
 
 
 pub fn role_enabled_and_not_taken(role: Role, settings: &Settings, taken_roles: &[Role]) -> bool {
-    if !settings.enabled_roles.contains(&role) {
+    if !settings.enabled_templates.enabled(&role) {
         return false;
     }
 

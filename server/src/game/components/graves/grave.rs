@@ -2,7 +2,7 @@ use std::vec;
 use rand::rng;
 use rand::seq::SliceRandom;
 use serde::{Serialize, Deserialize};
-use crate::game::{event::on_midnight::MidnightVariables, phase::PhaseType, player::PlayerReference, role::Role, role_list::RoleSet, Game};
+use crate::game::{event::on_midnight::MidnightVariables, phase::PhaseType, player::PlayerReference, role::Role, role_list::TemplateSet, Game};
 
 
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq, PartialOrd, Ord)]
@@ -42,7 +42,7 @@ pub enum GraveDeathCause {
 #[serde(rename_all = "camelCase")]
 #[serde(tag = "type", content = "value")]
 pub enum GraveKiller {
-    RoleSet(RoleSet),
+    RoleSet(TemplateSet),
     Role(Role),
     Suicide,
     Quit,

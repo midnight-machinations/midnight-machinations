@@ -2,18 +2,53 @@ use std::time::Duration;
 
 use serde::{Serialize, Deserialize};
 
-use crate::{game::modifiers::{ModifierSettings}, vec_set::VecSet};
+use crate::{game::{modifiers::ModifierSettings, role::Role, role_list::TemplateSet, role_list_generation::template::Template, Game}, vec_set::VecSet};
 
-use super::{phase::PhaseType, role::Role, role_list::RoleList};
+use super::{phase::PhaseType, role_list::OutlineList};
 
 #[derive(Debug, Default, Clone, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct Settings{
-    pub role_list: RoleList,
+    pub role_list: OutlineList,
     pub phase_times: PhaseTimeSettings,
-    pub enabled_roles: VecSet<Role>,
+    pub enabled_templates: EnabledTemplates,
     pub modifiers: ModifierSettings,
 }
+
+
+#[derive(Debug, Default, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct EnabledTemplates(VecSet<Template>);
+impl EnabledTemplates{
+    pub fn new(enabled_templates: VecSet<Template>)->Self{
+        Self(enabled_templates)
+    }
+    pub fn from_game(game: &Game)->&Self{
+        &game.settings.enabled_templates
+    }
+    pub fn get_roles(&self)->VecSet<Role>{
+        self.0.iter().filter_map(|t|t.get_role()).collect()
+    }
+    pub fn enabled(&self, template: impl Into<Template>)->bool{
+        self.0.contains(&template.into())
+    }
+    pub fn intersect_set(&self, other: TemplateSet)->VecSet<Template>{
+        self.intersection(other.values())
+    }
+    pub fn intersection(&self, other: VecSet<Template>)->VecSet<Template>{
+        self.0.intersection(&other)
+    }
+}
+impl IntoIterator for EnabledTemplates{
+    type Item = Template;
+
+    type IntoIter = std::iter::Map<std::vec::IntoIter<(Template, ())>, fn((Template, ())) -> Template>;
+
+    fn into_iter(self) -> Self::IntoIter {
+        self.0.into_iter()
+    }
+}
+
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct PhaseTimeSettings{

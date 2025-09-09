@@ -5,7 +5,7 @@ use crate::game::controllers::ControllerParametersMap;
 use crate::game::attack_power::AttackPower;
 use crate::game::components::graves::grave::GraveKiller;
 use crate::game::event::on_midnight::{MidnightVariables, OnMidnightPriority};
-use crate::game::role_list::RoleSet;
+use crate::game::role_list::TemplateSet;
 use crate::game::attack_power::DefensePower;
 use crate::game::player::PlayerReference;
 
@@ -30,7 +30,7 @@ impl RoleStateTrait for Mafioso {
         if let Some(visit) = Visits::default_visit(game, midnight_variables, actor_ref) {
             let target_ref = visit.target;
     
-            target_ref.try_night_kill_single_attacker(actor_ref, game, midnight_variables, GraveKiller::RoleSet(RoleSet::Mafia), AttackPower::Basic, false);
+            target_ref.try_night_kill_single_attacker(actor_ref, game, midnight_variables, GraveKiller::RoleSet(TemplateSet::Mafia), AttackPower::Basic, false);
         }
     }
     fn controller_parameters_map(self, game: &Game, actor_ref: PlayerReference) -> super::ControllerParametersMap {
@@ -49,7 +49,7 @@ impl RoleStateTrait for Mafioso {
             true
         )
     }
-     fn default_revealed_groups(self) -> crate::vec_set::VecSet<crate::game::components::insider_group::InsiderGroupID> {
+     fn default_insider_groups(self) -> crate::vec_set::VecSet<crate::game::components::insider_group::InsiderGroupID> {
         vec![
             crate::game::components::insider_group::InsiderGroupID::Mafia
         ].into_iter().collect()

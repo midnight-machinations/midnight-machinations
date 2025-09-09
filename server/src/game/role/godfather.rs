@@ -7,7 +7,7 @@ use crate::game::event::on_midnight::{MidnightVariables, OnMidnightPriority};
 use crate::game::components::graves::grave::GraveKiller;
 use crate::game::player::PlayerReference;
 
-use crate::game::role_list::RoleSet;
+use crate::game::role_list::TemplateSet;
 use crate::game::visit::{Visit, VisitTag};
 
 use crate::game::Game;
@@ -75,7 +75,7 @@ impl RoleStateTrait for Godfather {
     fn on_any_death(self, game: &mut Game, actor_ref: PlayerReference, dead_player_ref: PlayerReference){
         Self::pass_role_state_down(game, actor_ref, dead_player_ref, self);
     }
-     fn default_revealed_groups(self) -> crate::vec_set::VecSet<crate::game::components::insider_group::InsiderGroupID> {
+     fn default_insider_groups(self) -> crate::vec_set::VecSet<crate::game::components::insider_group::InsiderGroupID> {
         vec![
             crate::game::components::insider_group::InsiderGroupID::Mafia
         ].into_iter().collect()
@@ -92,7 +92,7 @@ impl Godfather{
                 let actor_visits = actor_ref.untagged_night_visits_cloned(midnight_variables);
                 let Some(visit) = actor_visits.first() else {return};
                 visit.target.clone().try_night_kill_single_attacker(
-                    actor_ref, game, midnight_variables, GraveKiller::RoleSet(RoleSet::Mafia),
+                    actor_ref, game, midnight_variables, GraveKiller::RoleSet(TemplateSet::Mafia),
                     AttackPower::Basic, false
                 );
             },

@@ -23,7 +23,7 @@ impl Abilities{
         );
         for (player, o) in assignments.iter(){
             let id = AbilityID::Role { player: *player };
-            abilities.insert(id.clone(), Ability::RoleAbility(RoleAbility(*player, o.role.default_state())));
+            abilities.insert(id.clone(), Ability::RoleAbility(RoleAbility(*player, o.template.default_state())));
         }
         abilities.sort();
         Self{abilities}

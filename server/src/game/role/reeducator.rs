@@ -7,7 +7,7 @@ use crate::game::attack_power::AttackPower;
 use crate::game::chat::ChatMessageVariant;
 use crate::game::components::insider_group::InsiderGroupID;
 use crate::game::event::on_midnight::{MidnightVariables, OnMidnightPriority};
-use crate::game::role_list::RoleSet;
+use crate::game::role_list::TemplateSet;
 use crate::game::components::graves::grave::GraveKiller;
 
 use crate::game::components::win_condition::WinCondition;
@@ -96,7 +96,7 @@ impl RoleStateTrait for Reeducator {
                             actor_ref,
                             game,
                             midnight_variables,
-                            GraveKiller::RoleSet(RoleSet::Mafia),
+                            GraveKiller::RoleSet(TemplateSet::Mafia),
                             AttackPower::ProtectionPiercing,
                             false,
                         );
@@ -141,7 +141,7 @@ impl RoleStateTrait for Reeducator {
             ControllerParametersMap::builder(game)
                 .id(ControllerID::role(actor_ref, Role::Reeducator, 1))
                 .single_role_selection_typical(game, |role|
-                    RoleSet::MafiaSupport.get_roles().contains(role) &&
+                    TemplateSet::MafiaSupport.values().contains(role) &&
                     *role != Role::Reeducator
                 )
                 .default_selection(RoleListSelection(vec![Reeducator::default_role(game)]))
@@ -161,7 +161,7 @@ impl RoleStateTrait for Reeducator {
             false
         )
     }
-    fn default_revealed_groups(self) -> crate::vec_set::VecSet<crate::game::components::insider_group::InsiderGroupID> {
+    fn default_insider_groups(self) -> crate::vec_set::VecSet<crate::game::components::insider_group::InsiderGroupID> {
         vec![
             crate::game::components::insider_group::InsiderGroupID::Mafia
         ].into_iter().collect()
@@ -171,8 +171,8 @@ impl RoleStateTrait for Reeducator {
 
 impl Reeducator {
     pub fn default_role(game: &Game) -> Role {
-        RoleSet::MafiaSupport.get_roles().into_iter()
-            .filter(|p|game.settings.enabled_roles.contains(p))
+        TemplateSet::MafiaSupport.values().into_iter()
+            .filter(|p|game.settings.enabled_templates.contains(p))
             .filter(|p|*p!=Role::Reeducator)
             .choose(&mut rand::rng()).unwrap_or(Role::Reeducator)
     }

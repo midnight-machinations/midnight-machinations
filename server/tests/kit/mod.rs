@@ -83,8 +83,8 @@ pub mod _init {
     use mafia_server::{game::{
         role::Role,
         role_list::{
-            RoleList, RoleOutline, RoleOutlineOption, RoleOutlineOptionInsiderGroups,
-            RoleOutlineOptionRoles, RoleOutlineOptionWinCondition
+            OutlineList, Outline, OutlineOption, RoleOutlineOptionInsiderGroups,
+            OutlineOptionTemplates, RoleOutlineOptionWinCondition
         }
     }, vec_set::VecSet};
     use vec1::vec1;
@@ -94,9 +94,9 @@ pub mod _init {
     pub fn create_basic_scenario(roles: Vec<Role>) -> TestScenario {
         let mut role_list = Vec::new();
         for (i, role) in roles.iter().enumerate() {
-            role_list.push(RoleOutline { options: 
-                vec1![RoleOutlineOption {
-                    roles: RoleOutlineOptionRoles::Role { role: *role },
+            role_list.push(Outline { options: 
+                vec1![OutlineOption {
+                    templates: OutlineOptionTemplates::Template { template: *role },
                     insider_groups: RoleOutlineOptionInsiderGroups::RoleDefault,
                     win_condition: RoleOutlineOptionWinCondition::RoleDefault,
                     player_pool: VecSet::from_iter(vec![i as u8]),
@@ -105,8 +105,8 @@ pub mod _init {
         }
     
         let (game, mut assignments) = match mock_game(Settings {
-            role_list: RoleList(role_list),
-            enabled_roles: Role::values().into_iter().collect(),
+            role_list: OutlineList(role_list),
+            enabled_templates: Role::values().into_iter().collect(),
             ..Default::default()
         }, roles.len() as u8){
             Ok(game) => game,
@@ -121,7 +121,7 @@ pub mod _init {
                 .expect("test scenario assert");
             let found_player = *assignments
                 .iter()
-                .find(|(_,r)|r.role == *role)
+                .find(|(_,r)|r.template == *role)
                 .map(|(p,_)|p)
                 .expect("test scenario assert");
 
