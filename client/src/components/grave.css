@@ -2,13 +2,13 @@
 .grave {
     white-space: normal;
     background-color: var(--primary-color);
-    margin: .25rem;
-    padding: .25rem;
-    border-radius: .5rem;
-    border: .13rem solid var(--primary-border-color);
+    margin: var(--small-space);
+    padding: var(--small-space);
+    border-radius: var(--medium-space);
+    border: var(--extra-small-space) solid var(--primary-border-color);
 }
 .grave .note-area {
     background-color: var(--secondary-color);
-    margin-bottom: 0.5rem;
+    margin-bottom: var(--medium-space);
     text-align: left;
 }

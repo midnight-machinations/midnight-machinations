@@ -6,7 +6,7 @@
 }
 .chat-message-div-small-button {
     font-size: 1rem;
-    padding: 0.1rem;
+    padding: 0.var(--large-space);
     border-radius: 0.2rem;
 }
 .chat-message-div > details {
@@ -20,18 +20,18 @@
 }
 .chat-message.block {
     background-color: var(--primary-color);
-    border: .13rem solid var(--primary-border-color);
-    border-radius: .5rem;
-    padding: .25rem;
+    border: var(--extra-small-space) solid var(--primary-border-color);
+    border-radius: var(--medium-space);
+    padding: var(--small-space);
 }
 .chat-message {
     width: 100%;
     text-align: left;
-    margin: .1rem;
+    margin: var(--extra-small-space);
     margin-left: 0;
     margin-right: 0;
     overflow-wrap: anywhere;
-    tab-size: 1rem;
+    tab-size: var(--large-space);
 }
 .chat-message > p {
     color: inherit;
@@ -43,13 +43,13 @@
     text-align: left;
 }
 .chat-message ul, .chat-message ol {
-    padding-left: 1rem;
+    padding-left: var(--large-space);
     list-style-position: inside;
 }
 /* Chat message variants */
 .chat-message.player {
-    text-indent: -1rem;
-    padding-left: 1rem;
+    text-indent: -var(--large-space);
+    padding-left: var(--large-space);
 }
 .chat-message.mention {
     /* Since it's so blurred, this shadow acts as a highlight overlay. */
@@ -57,7 +57,7 @@
 }
 .chat-message.dead {
     background-color: black;
-    border-radius: .5rem;
+    border-radius: var(--medium-space);
     color: grey;
 }
 .chat-message.phase-change {
@@ -82,12 +82,12 @@
     color: yellow;
 }
 .chat-message.will {
-    border-top: .13rem solid var(--primary-border-color);
-    border-bottom: .13rem solid var(--primary-border-color);
+    border-top: var(--extra-small-space) solid var(--primary-border-color);
+    border-bottom: var(--extra-small-space) solid var(--primary-border-color);
 }
 .chat-message.deathNote {
-    border-top: .13rem solid var(--primary-border-color);
-    border-bottom: .13rem solid var(--primary-border-color);
+    border-top: var(--extra-small-space) solid var(--primary-border-color);
+    border-bottom: var(--extra-small-space) solid var(--primary-border-color);
     background-color: #ff000022;
 }
 .chat-message.trial {
@@ -113,8 +113,8 @@
     width: 100%;
     align-items: left;
     flex-direction: row;
-    padding-left: 0.5rem;
-    padding-right: 0.5rem;
+    padding-left: var(--medium-space);
+    padding-right: var(--medium-space);
     border-radius: 0.4rem;
     border-width: .07rem;
     border-style: solid;

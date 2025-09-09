@@ -2,10 +2,10 @@
     display: flex;
     flex-direction: row;
     background-color: var(--primary-color);
-    border: .13rem solid var(--primary-border-color);
-    border-radius: .25rem;
-    padding: .25rem;
-    margin: .13rem;
+    border: var(--extra-small-space) solid var(--primary-border-color);
+    border-radius: var(--small-space);
+    padding: var(--small-space);
+    margin: var(--extra-small-space);
     align-items: center;
     justify-content: space-between;
 }

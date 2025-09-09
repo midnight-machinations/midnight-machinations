@@ -1,3 +1,3 @@
 .night-message-popup > div{
-    padding: 1rem;
+    padding: var(--large-space);
 }

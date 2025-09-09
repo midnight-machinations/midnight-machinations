@@ -7,7 +7,7 @@
 }
 .keyword-player-number {
 	border-radius: 1em;
-    border: solid .13rem;
+    border: solid var(--extra-small-space);
     border-bottom-color: darkgray;
     border-right-color: darkgray;
     background-color: var(--primary-color);
@@ -20,7 +20,7 @@
 }
 .keyword-outline-number {
 	border-radius: 0.5em;
-    border: solid .13rem;
+    border: solid var(--extra-small-space);
     border-bottom-color: darkgray;
     border-right-color: darkgray;
     background-color: var(--primary-color);

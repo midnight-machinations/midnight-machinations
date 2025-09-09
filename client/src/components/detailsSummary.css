@@ -5,24 +5,22 @@
     align-items: center;
 
     background-color: var(--primary-color);
-    border-radius: .5rem;
-    padding: .13rem;
+    border-radius: var(--medium-space);
+    padding: var(--extra-small-space);
 }
 .details-summary-summary-container.open {
     border-bottom-left-radius: 0;
     border-bottom-right-radius: 0;
-    border-bottom: .13rem solid var(--primary-border-shadow-color);
+    border-bottom: var(--extra-small-space) solid var(--primary-border-shadow-color);
 }
 .details-summary-container{
     display: flex;
     flex-direction: column;
-    margin: .13rem;
+    margin: var(--extra-small-space);
     padding: 0;
     background-color: var(--secondary-color);
-    border: .13rem solid var(--primary-border-color);
+    border: var(--extra-small-space) solid var(--primary-border-color);
     border-bottom-color: var(--primary-border-shadow-color);
     border-right-color: var(--primary-border-shadow-color);
-    border-radius: 0.5rem;
-    /* justify-content: left;
-    align-items: center; */
+    border-radius: var(--medium-space);
 }

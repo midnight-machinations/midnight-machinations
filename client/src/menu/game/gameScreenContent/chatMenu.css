@@ -11,12 +11,12 @@
 .chat-filter-zone {
     display: flex;
     flex-direction: row;
-    gap: .25rem;
+    gap: var(--small-space);
     align-items: center;
     justify-content: center;
     background-color: var(--secondary-color);
-    padding: 0 .25rem;
-    border-radius: .13rem;
+    padding: 0 var(--small-space);
+    border-radius: var(--extra-small-space);
     border-style: solid;
 }
 .chat-message-section {
@@ -35,24 +35,24 @@
     flex-direction: row;
     justify-content: left;
     align-items: center;
-    padding: 0 .5rem;
-    border-top: .13rem solid var(--primary-border-color);
+    padding: 0 var(--medium-space);
+    border-top: var(--extra-small-space) solid var(--primary-border-color);
     background-color: var(--secondary-color);
 }
 .chat-whisper-notification {
     display: flex;
     flex-direction: row;
     align-items: center;
-    padding: 0 .25rem;
-    gap: .25rem;
+    padding: 0 var(--small-space);
+    gap: var(--small-space);
     text-align: left;
-    border-top: .13rem solid var(--primary-border-color);
+    border-top: var(--extra-small-space) solid var(--primary-border-color);
     background-color: var(--secondary-color);
 }
 .chat-send-section {
     display: flex;
     flex-direction: row;
-    border-top: .13rem solid var(--primary-border-color);
+    border-top: var(--extra-small-space) solid var(--primary-border-color);
     background-color: var(--background-color);
     align-items: stretch;
     height: max-content;

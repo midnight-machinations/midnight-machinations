@@ -21,16 +21,16 @@
     height: fit-content;
     width: 20%;
     min-width: 15rem;
-    box-shadow: 0 0 .5rem #0007;
+    box-shadow: 0 var(--medium-space) #0007;
     
     border-radius: 0.4rem;
     border-style: solid;
-    padding: .5rem;
+    padding: var(--medium-space);
     background-color: var(--secondary-color);
     border-color: var(--primary-border-color);
     border-bottom-color: var(--primary-border-shadow-color);
     border-right-color: var(--primary-border-shadow-color);
-    border-width: .13rem;
+    border-width: var(--extra-small-space);
     color: white;
 }
 
@@ -70,8 +70,8 @@
 .anchor .global-menu-button {
     z-index: 101;
     position: fixed;
-    right: .25rem;
-    top: .25rem;
+    right: var(--small-space);
+    top: var(--small-space);
     height: fit-content;
     width: fit-content;
     font-size: 1.5rem;
@@ -82,12 +82,12 @@
     display: flex;
     position: relative;
     background-color: var(--background-color);
-    border: 0.13rem solid var(--background-border-color);
-    border-radius: 1rem;
+    border: var(--extra-small-space) solid var(--background-border-color);
+    border-radius: var(--large-space);
     border-right-color: var(--background-border-shadow-color);
     border-bottom-color: var(--background-border-shadow-color);
     overflow-y: hidden;
-    box-shadow: 0 0 .5rem #0007;
+    box-shadow: 0 var(--medium-space) #0007;
 
     max-width: 90vw;
     max-height: 90vh;
@@ -95,7 +95,7 @@
 
 .anchor-cover-card-content {
     display: flex;
-    padding: 1rem;
+    padding: var(--large-space);
     width: 100%;
     height: 100%;
 }
@@ -103,9 +103,9 @@
 .anchor-cover-card .close-button {
     position: absolute;
     padding: 0;
-    top: 0.5rem;
-    right: 0.5rem;
-    border-radius: .5rem;
+    top: var(--medium-space);
+    right: var(--medium-space);
+    border-radius: var(--medium-space);
 }
 
 .anchor-cover-card-background-cover {

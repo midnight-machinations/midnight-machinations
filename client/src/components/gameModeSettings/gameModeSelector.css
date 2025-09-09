@@ -3,10 +3,10 @@
     max-height: 50vh;
     overflow-y: auto;
     display: flex;
-    gap: .25rem;
+    gap: var(--small-space);
     flex-direction: row;
     flex-wrap: wrap;
-    margin-top: 0.25rem;
+    margin-top: var(--small-space);
 }
 .save-menu {
     display: flex;
@@ -19,14 +19,14 @@
 }
 .saved-game-modes .game-mode-label {
     display: flex;
-    border: .13rem solid var(--primary-border-color);
+    border: var(--extra-small-space) solid var(--primary-border-color);
     background-color: var(--secondary-color);
-    border-radius: 0.5rem;
+    border-radius: var(--medium-space);
     align-items: center;
     justify-content: space-between;
 }
 .saved-game-modes .game-mode-label > span {
-    margin: 0 .25rem;
+    margin: 0 var(--small-space);
 }
 .saved-game-modes .game-mode-label span.game-mode-name {
     flex-grow: 1;
@@ -49,9 +49,9 @@
 .saved-game-modes .game-mode-label .game-mode-folder .game-mode-folder-content {
     display: flex;
     flex-direction: column;
-    padding: .13rem;
-    gap: .13rem;
+    padding: var(--extra-small-space);
+    gap: var(--extra-small-space);
 }
 .saved-game-modes .game-mode-label .game-mode-label-buttons > button {
-    margin: .1rem;
+    margin: var(--extra-small-space);
 }

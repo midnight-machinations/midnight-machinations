@@ -6,10 +6,10 @@
 
 .lobby-menu-chat {
     background-color: var(--primary-color);
-    border: .13rem solid var(--background-border-color);
+    border: var(--extra-small-space) solid var(--background-border-color);
     border-top-color: var(--background-border-shadow-color);
     border-left-color: var(--background-border-shadow-color);
-    border-radius: .5rem;
+    border-radius: var(--medium-space);
     border-bottom-left-radius: 0;
     border-bottom-right-radius: 0;
     border-bottom: none;

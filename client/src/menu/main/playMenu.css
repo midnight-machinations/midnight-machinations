@@ -11,12 +11,12 @@
     flex-direction: column;
 
     background-color: var(--background-color);
-    border: solid .13rem var(--background-border-color);
+    border: solid var(--extra-small-space) var(--background-border-color);
     border-bottom-color: var(--background-border-shadow-color);
     border-right-color: var(--background-border-shadow-color);
-    border-radius: 1rem;
-    padding: 1rem;
-    gap: 1rem;
+    border-radius: var(--large-space);
+    padding: var(--large-space);
+    gap: var(--large-space);
     
     width: 100%;
     max-width: 100rem;
@@ -35,14 +35,14 @@
     flex-direction: row;
     flex-wrap: wrap;
     justify-content: flex-end;
-    gap: 1rem;
+    gap: var(--large-space);
 }
 
 .play-menu-browser > footer > div {
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
-    gap: 0.5rem;
+    gap: var(--medium-space);
     align-items: baseline;
 }
 .play-menu-browser > footer > div > label {
@@ -54,16 +54,16 @@
 }
 
 .play-menu-browser > header button {
-    padding: 0.25rem;
+    padding: var(--small-space);
 }
 
 .play-menu-browser > .play-menu-center {
     flex-grow: 1;
 
-    border: solid .13rem var(--background-border-color);
+    border: solid var(--extra-small-space) var(--background-border-color);
     border-top-color: var(--background-border-shadow-color);
     border-left-color: var(--background-border-shadow-color);
-    border-radius: 0.5rem;
+    border-radius: var(--medium-space);
 
     overflow: hidden;
 }
@@ -115,14 +115,14 @@
 
 .play-menu-browser table th, .play-menu-browser table td {
     display: flex;
-    padding: 0.25rem 0.5rem;
+    padding: var(--small-space) var(--medium-space);
     text-align: center;
     justify-content: center;
     align-items: center;
     white-space: nowrap;
     flex-shrink: 0;
     min-width: 0;
-    border-right: .13rem solid var(--primary-border-color);
+    border-right: var(--extra-small-space) solid var(--primary-border-color);
 }
 
 .play-menu-browser table th:first-of-type, .play-menu-browser table td:first-of-type {

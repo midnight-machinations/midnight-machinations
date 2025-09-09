@@ -17,16 +17,16 @@
 
 
 .player-list-menu .dead-players-separator {
-    border-top: .13rem solid var(--primary-border-color);
-    border-bottom: .13rem solid var(--primary-border-shadow-color);
-    border-left: .13rem solid transparent;
-    border-right: .13rem solid transparent;
+    border-top: var(--extra-small-space) solid var(--primary-border-color);
+    border-bottom: var(--extra-small-space) solid var(--primary-border-shadow-color);
+    border-left: var(--extra-small-space) solid transparent;
+    border-right: var(--extra-small-space) solid transparent;
     background-color: var(--secondary-color);
     margin: 2rem 0 0;
 }
 
 .player-list-menu .player.highlighted {
-    outline: .13rem solid yellow;
+    outline: var(--extra-small-space) solid yellow;
 }
 .player-list-menu .player .voted-popup {
     position: relative;
@@ -37,8 +37,8 @@
 }
 .player-list-menu .phase-specific{
     background-color: var(--primary-color);
-    border-top: .13rem solid var(--primary-border-color);
-    padding: .13rem .25rem;
+    border-top: var(--extra-small-space) solid var(--primary-border-color);
+    padding: var(--extra-small-space) var(--small-space);
 }
 
 
@@ -47,7 +47,7 @@
     flex-direction: row;
     align-items: center;
 
-    padding: 0 .13rem;
+    padding: 0 var(--extra-small-space);
     position: relative;
 }
 .player-card > button{
@@ -58,8 +58,8 @@
 }
 
 .player-list-menu .player-list-chat-section{
-    border-top: var(--primary-border-color) solid .13rem;
-    border-bottom: var(--primary-border-color) solid .13rem;
+    border-top: var(--primary-border-color) solid var(--extra-small-space);
+    border-bottom: var(--primary-border-color) solid var(--extra-small-space);
 }
 .player-list-menu .player-list-chat-message-section{
     height: 10rem;
@@ -79,7 +79,7 @@
     background-color: var(--primary-color);
     position: absolute;
     padding: 0;
-    border-width: .13rem;
+    border-width: var(--extra-small-space);
     border-style: solid;
     border-radius: 50%;
     top: 0;

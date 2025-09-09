@@ -11,10 +11,10 @@
     min-width: max-content;
     overflow: hidden;
 
-    padding: .13rem .13rem;
+    padding: var(--extra-small-space) var(--extra-small-space);
     background-color: var(--secondary-color);
-    border-radius: .25rem;
-    border: .13rem solid var(--primary-border-color);
+    border-radius: var(--small-space);
+    border: var(--extra-small-space) solid var(--primary-border-color);
 }
 .custom-select-options-popover > div > .button {
     width: 100%;
@@ -22,7 +22,7 @@
 .custom-select-options {
     overflow-y: scroll;
 
-    max-height: 15rem;
+    max-height: 25rem;
 }
 .custom-select-options > div{
     display: flex;

@@ -2,29 +2,26 @@
     display: flex;
     flex-direction: row;
     background-color: var(--primary-color);
-    border: .13rem solid var(--primary-border-color);
-    border-radius: .25rem;
+    border: var(--extra-small-space) solid var(--primary-border-color);
+    border-radius: var(--small-space);
     justify-content: space-between;
     align-items: center;
-
-    /* margin: 0;
-    padding: 0 .25rem; */
 }
 
 .counter-count {
     display: flex;
     flex-direction: row;
     align-items: center;
-    margin: 0 .25rem;
-    gap: .25rem;
+    margin: 0 var(--small-space);
+    gap: var(--small-space);
 }
 
 .counter-count .counter-circle {
     width: 1em;
     height: 1em;
-    border-radius: 0.5em;
+    border-radius: var(--medium-space);
     background-color: var(--focus-outline-color);
-    border: .13rem solid var(--primary-border-color);
+    border: var(--extra-small-space) solid var(--primary-border-color);
     border-bottom-color: var(--primary-border-shadow-color);
     border-right-color: var(--primary-border-shadow-color);
 }

@@ -1,7 +1,7 @@
 .game-modes-editor {
     display: flex;
     flex-direction: column;
-    gap: .5rem;
+    gap:var(--medium-space);
     width: 100%;
 }
 
@@ -11,7 +11,7 @@
     justify-content: space-between;
     align-items: baseline;
     flex-wrap: wrap;
-    gap: 0.5rem;
+    gap: var(--medium-space);
 }
 
 .game-modes-editor input {
@@ -22,7 +22,7 @@
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
-    gap: 1rem;
+    gap: var(--large-space);
     overflow-y: scroll;
     scrollbar-width: none;
 }
@@ -32,6 +32,6 @@
     flex-direction: column;
     flex-basis: 47%;
     flex-grow: 1;
-    gap: .5rem;
+    gap:var(--medium-space);
     max-width: 100%;
 }

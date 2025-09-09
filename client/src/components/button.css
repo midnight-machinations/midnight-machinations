@@ -3,14 +3,9 @@
     z-index: 99999999;
     transform: translateX(-50%);
 
-    padding: .13rem .25rem;
-    margin-top: .25rem;
+    padding: var(--extra-small-space) var(--small-space);
+    margin-top: var(--small-space);
     background-color: var(--secondary-color);
-    border-radius: .25rem;
-    border: .13rem solid var(--primary-border-color);
-}
-
-button {
-    /* margin: 0;
-    padding: .13rem .13rem; */
+    border-radius: var(--small-space);
+    border: var(--extra-small-space) solid var(--primary-border-color);
 }

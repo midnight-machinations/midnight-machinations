@@ -71,10 +71,10 @@
     flex-wrap: wrap;
     align-items: center;
     justify-content: center;
-    gap: 0.25rem 1rem;
-    padding: 0.25rem;
+    gap: var(--small-space) var(--large-space);
+    padding: var(--small-space);
     background-color: var(--primary-color);
-    border-top: var(--primary-border-color) solid .13rem;
+    border-top: var(--primary-border-color) solid var(--extra-small-space);
 }
 
 @media only screen and (max-width: 1000px) {

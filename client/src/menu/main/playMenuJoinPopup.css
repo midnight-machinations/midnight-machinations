@@ -6,7 +6,7 @@
 }
 
 .play-menu-join-popup .rejoinColumn {
-    margin-top: 1rem;
+    margin-top: var(--large-space);
 }
 
 .rejoinColumn {

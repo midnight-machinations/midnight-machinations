@@ -21,7 +21,7 @@
     margin: .75%;
     overflow-y: auto;
     flex: 1 1;
-    padding-bottom: 1rem;
+    padding-bottom: var(--large-space);
 }
 .wiki-search .masonry-item {
     width: 100%;
@@ -29,38 +29,38 @@
 .wiki-message-section {
     display: flex;
     flex-direction: column;
-    margin-top: .1rem;
-    margin-bottom: .6rem;
+    margin-top: var(--extra-small-space);
+    margin-bottom: var(--medium-space);
 }
 .wiki-article {
     text-align: left;
     height: 100%;
     width: 100%;
     overflow-y: auto;
-    padding-bottom: 1rem;
+    padding-bottom: var(--large-space);
 }
 /* Markdown */
 .wiki-article > div {
-    margin: .25rem;
-    margin-bottom: 1rem;
-    margin-top: 1rem;
+    margin: var(--small-space);
+    margin-bottom: var(--large-space);
+    margin-top: var(--large-space);
 }
 .wiki-article * {
     text-align: left;
 }
 .wiki-article .details-summary-container {
     padding: 0.12rem;
-    margin: .25rem 0;
-    border: .13rem solid var(--primary-border-color);
-    border-radius: 0.5rem;
+    margin: var(--small-space) 0;
+    border: var(--extra-small-space) solid var(--primary-border-color);
+    border-radius: var(--medium-space);
     text-align: center;
 }
 .wiki-article blockquote {
     width: 100%;
     background-color: var(--primary-color);
-    padding-top: 0.1rem;
-    padding-bottom: 0.01rem;
-    margin-bottom: 0.5rem;
+    padding-top: 0.var(--large-space);
+    padding-bottom: 0.0var(--large-space);
+    margin-bottom: var(--medium-space);
     text-align: left;
 }
 .wiki-article blockquote > * {
@@ -71,28 +71,28 @@
 .wiki-article h1 {
     text-align: center;
     font-size: 150%;
-    margin-bottom: 0.25rem;
+    margin-bottom: var(--small-space);
 }
 .wiki-article h2 {
     text-align: center;
     font-size: 125%;
-    margin-bottom: 0.25rem;
+    margin-bottom: var(--small-space);
 }
 .wiki-article h3 {
     text-align: center;
-    margin-bottom: 0.5rem;
+    margin-bottom: var(--medium-space);
 }
 .wiki-article p {
-    margin-bottom: 0.5rem;
+    margin-bottom: var(--medium-space);
 }
 .wiki-article ul, .wiki-article ol {
     padding-left: 1.5rem;
-    margin-bottom: 0.5rem;
+    margin-bottom: var(--medium-space);
 }
 .wiki-search-divider {
-    margin: 0.5rem;
+    margin: var(--medium-space);
     padding: 0.3rem;
-    border-radius: 1rem;
+    border-radius: var(--large-space);
     background-color: var(--secondary-color);
 }
 .wiki-article-standard {

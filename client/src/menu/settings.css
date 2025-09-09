@@ -1,7 +1,7 @@
 .settings-menu-card {
     display: flex;
     flex-direction: column;
-    gap: .5rem;
+    gap:var(--medium-space);
     width: 100%;
 }
 
@@ -11,7 +11,7 @@
     justify-content: space-between;
     align-items: baseline;
     flex-wrap: wrap;
-    gap: 0.5rem;
+    gap: var(--medium-space);
 }
 
 .settings-menu-card input {
@@ -22,7 +22,7 @@
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
-    gap: 1rem;
+    gap: var(--large-space);
     overflow-y: scroll;
     scrollbar-width: none;
     align-items: flex-start;
@@ -33,23 +33,23 @@
     flex-direction: column;
     flex-basis: 30%;
     flex-grow: 1;
-    gap: .5rem;
+    gap:var(--medium-space);
     max-width: 100%;
-    padding: 1rem;
+    padding: var(--large-space);
     background-color: var(--background-color);
-    border: .13rem solid var(--primary-border-color);
+    border: var(--extra-small-space) solid var(--primary-border-color);
     border-bottom-color: var(--primary-border-shadow-color);
     border-right-color: var(--primary-border-shadow-color);
-    border-radius: 1rem;
+    border-radius: var(--large-space);
 }
 .settings-menu > div > section {
     display: flex;
     flex-direction: column;
-    border: solid .13rem var(--primary-border-color);
+    border: solid var(--extra-small-space) var(--primary-border-color);
     border-top-color: var(--primary-border-shadow-color);
     border-left-color: var(--primary-border-shadow-color);
-    border-radius: 0.5rem;
-    padding: 0.5rem;
+    border-radius: var(--medium-space);
+    padding: var(--medium-space);
     background-color: var(--secondary-color);
     align-items: center;
 }

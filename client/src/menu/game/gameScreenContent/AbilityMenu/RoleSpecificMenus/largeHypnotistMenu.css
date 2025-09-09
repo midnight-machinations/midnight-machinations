@@ -11,17 +11,6 @@
     background-color: var(--primary-color);
 }
 .large-hypnotist-menu > div:first-child {
-    margin-bottom: 1rem;
-    margin-top: 1rem;
+    margin-bottom: var(--large-space);
+    margin-top: var(--large-space);
 }
-/* .large-hypnotist-menu label {
-    display: inline-block;
-    height: 100%;
-    padding: .2rem;
-    border-radius: .2rem;
-    background-color: var(--primary-color);
-    border: .13rem solid var(--primary-border-color);
-    cursor: pointer;
-    margin-right: .24rem;
-    margin-left: .24rem;
-} */

@@ -4,5 +4,5 @@
     width: 100%;
     justify-content: space-between;
     align-items: center;
-    border-bottom: .13rem solid var(--primary-border-color);
+    border-bottom: var(--extra-small-space) solid var(--primary-border-color);
 }
