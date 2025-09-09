@@ -3,7 +3,7 @@ import translate from "../../../game/lang";
 import GAME_MANAGER from "../../../index";
 import "../gameScreen.css";
 import "./chatMenu.css"
-import { BASE_INSIDER_GROUPS, InsiderGroup, insiderGroupFromChatGroup, PlayerClientType, PlayerIndex, translateInsiderGroupIcon, UnsafeString } from "../../../game/gameState.d";
+import { insiderGroupFromChatGroup, PlayerClientType, PlayerIndex, translateInsiderGroupIcon, UnsafeString } from "../../../game/gameState.d";
 import ChatElement, { ChatMessage, encodeString, translateChatMessage } from "../../../components/ChatMessage";
 import { ContentMenu, ContentTab } from "../GameScreen";
 import { HistoryPoller, HistoryQueue } from "../../../history";

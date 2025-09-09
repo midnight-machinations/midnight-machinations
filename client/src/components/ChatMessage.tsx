@@ -3,7 +3,7 @@ import React, { ReactElement } from "react";
 import GAME_MANAGER, { find, replaceMentions } from "..";
 import StyledText, { KeywordDataMap, PLAYER_SENDER_KEYWORD_DATA } from "./StyledText";
 import "./chatMessage.css"
-import { BASE_INSIDER_GROUPS, ChatGroup, Conclusion, DefensePower, InsiderGroup, insiderGroupFromChatGroup, PhaseState, PlayerIndex, Tag, translateConclusion, translateInsiderGroup, translateInsiderGroupIcon, translateWinCondition, UnsafeString, Verdict, WinCondition } from "../game/gameState.d";
+import { ChatGroup, Conclusion, DefensePower, InsiderGroup, insiderGroupFromChatGroup, PhaseState, PlayerIndex, Tag, translateConclusion, translateInsiderGroupIcon, translateWinCondition, UnsafeString, Verdict, WinCondition } from "../game/gameState.d";
 import { Role, RoleState } from "../game/roleState.d";
 import { Grave } from "../game/graveState";
 import GraveComponent from "./grave";

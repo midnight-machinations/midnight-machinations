@@ -1,8 +1,8 @@
 import { VersionConverter } from ".";
 import { GameMode } from "..";
-import { Conclusion, BASE_CONCLUSIONS, BASE_INSIDER_GROUPS, InsiderGroup, PhaseTimes } from "../../../../game/gameState.d";
+import { BASE_CONCLUSIONS, BASE_INSIDER_GROUPS, PhaseTimes } from "../../../../game/gameState.d";
 import { defaultModifierState, ModifierID, ModifierState } from "../../../../game/modifiers";
-import { RoleList, RoleOutline, RoleOutlineOption, RoleSet } from "../../../../game/roleListState.d";
+import { RoleSet } from "../../../../game/roleListState.d";
 import { Role } from "../../../../game/roleState.d";
 import { ListMapData } from "../../../../ListMap";
 import { Failure, ParseResult, ParseSuccess, Success, isFailure } from "../parse";

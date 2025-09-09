@@ -1,9 +1,8 @@
 import { VersionConverter } from ".";
-import { GameMode, GameModeData, GameModeStorage, ShareableGameMode } from "..";
 import { defaultPhaseTimes } from "../../../../game/gameState";
 import { PHASES, PhaseTimes } from "../../../../game/gameState.d";
 import { Role } from "../../../../game/roleState.d";
-import { RoleList, RoleSet } from "../../../../game/roleListState.d";
+import { RoleSet } from "../../../../game/roleListState.d";
 import { ModifierID, ModifierState } from "../../../../game/modifiers";
 import { ListMapData } from "../../../../ListMap";
 import { Failure, ParseResult, ParseSuccess, Success, isFailure } from "../parse";
