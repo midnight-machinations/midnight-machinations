@@ -101,9 +101,9 @@ impl SyndicateGun {
         if self.player_with_gun.is_some_and(|p|p==event.dead_player) {
             Self::remove_gun(game);
 
-            let player = InsiderGroupID::Mafia.players(game).iter().find(|p|p.alive(game));
+            let player = InsiderGroupID::Mafia.players(game).into_iter().find(|p|p.alive(game));
             if let Some(player) = player {
-                SyndicateGun::give_gun_to_player(game, *player);
+                SyndicateGun::give_gun_to_player(game, player);
             }
         }
     }
