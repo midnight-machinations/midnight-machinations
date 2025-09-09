@@ -22,7 +22,7 @@ impl From<RoleAbility> for Ability where RoleAbility: AbilityTrait {
 
 impl PlayerReference{
     pub fn role_state<'a>(&self, game: &'a Game) -> &'a RoleState {
-        let Ability::RoleAbility(RoleAbility(_, role_state)) = AbilityID::Role { player: *self }
+        let Ability::RoleAbility(RoleAbility(_, role_state)) = AbilityID::Role { role: self.role(game), player: *self }
             .get(game)
             .expect("every player must have a role ability")
             else { unreachable!() };
@@ -33,9 +33,12 @@ impl PlayerReference{
         let new_role_data = new_role_data.into();
         let new_role = new_role_data.role();
 
+        AbilityID::Role { role: self.role(game), player: *self }
+            .set(game, Option::<Ability>::None);
+
         RoleComponent::set_role(*self, game, new_role);
 
-        AbilityID::Role { player: *self }
+        AbilityID::Role { role: new_role, player: *self }
             .set(game, Some(Ability::RoleAbility(RoleAbility(*self, new_role_data.clone()))));
 
         self.send_packet(game, ToClientPacket::YourRoleState {

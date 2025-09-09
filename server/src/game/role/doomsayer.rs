@@ -1,7 +1,9 @@
 use serde::{Serialize, Deserialize};
 
+use crate::game::abilities_component::ability_id::AbilityID;
 use crate::game::attack_power::{AttackPower, DefensePower};
 use crate::game::chat::ChatMessageVariant;
+use crate::game::event::on_ability_creation::{OnAbilityCreation, OnAbilityCreationFold, OnAbilityCreationPriority};
 use crate::game::event::on_midnight::{MidnightVariables, OnMidnightPriority};
 use crate::game::components::graves::grave::GraveKiller;
 use crate::game::phase::PhaseType;
@@ -150,8 +152,12 @@ impl RoleStateTrait for Doomsayer {
     fn on_phase_start(self, game: &mut Game, actor_ref: PlayerReference, _phase: PhaseType) {
         Doomsayer::check_and_convert_to_jester(game, self, actor_ref);
     }
-    fn on_role_creation(self, game: &mut Game, actor_ref: PlayerReference) {
-        Doomsayer::check_and_convert_to_jester(game, self, actor_ref);
+    fn on_ability_creation(self, game: &mut Game, actor_ref: PlayerReference, event: &OnAbilityCreation, fold: &mut OnAbilityCreationFold, priority: OnAbilityCreationPriority) {
+        if priority != OnAbilityCreationPriority::CancelOrEdit{return}
+        if let AbilityID::Role{role, player} = event.id && role == Role::Doomsayer && player == actor_ref
+        {
+            fold.cancelled = Doomsayer::check_and_convert_to_jester(game, self, actor_ref);
+        }
     }
     fn on_any_death(self, game: &mut Game, actor_ref: PlayerReference, _dead_player_ref: PlayerReference){
         Doomsayer::check_and_convert_to_jester(game, self, actor_ref);
@@ -165,7 +171,7 @@ impl GetClientAbilityState<ClientRoleState> for Doomsayer {
     }
 }
 impl Doomsayer{
-    pub fn check_and_convert_to_jester(game: &mut Game, doomsayer: Doomsayer, actor_ref: PlayerReference){
+    pub fn check_and_convert_to_jester(game: &mut Game, doomsayer: Doomsayer, actor_ref: PlayerReference)->bool{
         if
             !doomsayer.won && actor_ref.alive(game) &&
             PlayerReference::all_players(game).filter(|player|
@@ -173,6 +179,9 @@ impl Doomsayer{
             ).count() < 3
         {
             actor_ref.set_role_and_win_condition_and_revealed_group(game, RoleState::Jester(Jester::default()));
+            true
+        }else{
+            false
         }
     }
     pub fn won(&self) -> bool {

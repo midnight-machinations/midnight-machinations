@@ -1,8 +1,10 @@
 use serde::Serialize;
 
+use crate::game::abilities_component::ability_id::AbilityID;
 use crate::game::controllers::{AvailableIntegerSelection, IntegerSelection};
 use crate::game::chat::ChatMessageVariant;
 use crate::game::components::graves::grave::{Grave, GraveKiller};
+use crate::game::event::on_ability_creation::{OnAbilityCreation, OnAbilityCreationFold, OnAbilityCreationPriority};
 use crate::game::event::on_midnight::{MidnightVariables, OnMidnightPriority};
 use crate::game::attack_power::{AttackPower, DefensePower};
 use rand::seq::SliceRandom;
@@ -108,15 +110,18 @@ impl RoleStateTrait for Mercenary {
             VisitTag::Role{role: Role::Mercenary, id: controller_id}
         )
     }
-    fn on_role_creation(self, game: &mut Game, actor_ref: PlayerReference) {
-        for player in PlayerReference::all_players(game){
-            if !self.roles.contains(&player.role(game)) {continue};
-            player.add_private_chat_message(game, ChatMessageVariant::MercenaryYouAreAHit);
+    fn on_ability_creation(self, game: &mut Game, actor_ref: PlayerReference, event: &OnAbilityCreation, fold: &mut OnAbilityCreationFold, priority: OnAbilityCreationPriority) {
+        if priority != OnAbilityCreationPriority::SideEffect || fold.cancelled {return;}
+        if let AbilityID::Role{role, player} = event.id && player == actor_ref && role == Role::Mercenary {
+            for player in PlayerReference::all_players(game){
+                if !self.roles.contains(&player.role(game)) {continue};
+                player.add_private_chat_message(game, ChatMessageVariant::MercenaryYouAreAHit);
+            }
+            actor_ref.add_private_chat_message(
+                game,
+                ChatMessageVariant::MercenaryHits{roles: self.roles}
+            );
         }
-        actor_ref.add_private_chat_message(
-            game,
-            ChatMessageVariant::MercenaryHits{roles: self.roles}
-        );
     }
     fn on_any_death(self, game: &mut Game, actor_ref: PlayerReference, _dead_player_ref: PlayerReference) {
         self.check_win(game, actor_ref);

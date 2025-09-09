@@ -1,6 +1,7 @@
 use serde::Serialize;
 
 use crate::game::controllers::AvailableBooleanSelection;
+use crate::game::event::on_ability_creation::{OnAbilityCreation, OnAbilityCreationFold, OnAbilityCreationPriority};
 use crate::game::event::on_midnight::{MidnightVariables, OnMidnightPriority};
 use crate::game::attack_power::AttackPower;
 use crate::game::components::tags::{TagSetID, Tags};
@@ -84,7 +85,8 @@ impl RoleStateTrait for Arsonist {
             false
         )
     }
-    fn on_role_creation(self, game: &mut Game, actor_ref: PlayerReference){
+    fn on_ability_creation(self, game: &mut Game, actor_ref: PlayerReference, _event: &OnAbilityCreation, _fold: &mut OnAbilityCreationFold, priority: OnAbilityCreationPriority){
+        if priority != OnAbilityCreationPriority::SideEffect{return}
         Tags::remove_tag(game, TagSetID::ArsonistDoused, actor_ref);
         Tags::add_viewer(game, TagSetID::ArsonistDoused, actor_ref);
     }

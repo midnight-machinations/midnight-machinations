@@ -1,11 +1,11 @@
 use crate::game::{
-    abilities_component::{ability::Ability, Abilities}, player::PlayerReference, Game
+    abilities_component::{ability::Ability, Abilities}, player::PlayerReference, role::Role, Game
 };
 
 
 #[derive(Clone, PartialEq, Eq, PartialOrd, Ord)]
 pub enum AbilityID{
-    Role{player: PlayerReference},
+    Role{role: Role, player: PlayerReference},
     Pitchfork,
     SyndicateGun
 }

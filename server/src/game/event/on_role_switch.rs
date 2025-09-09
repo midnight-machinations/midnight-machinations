@@ -1,5 +1,5 @@
 use crate::game::{
-    components::{cult::Cult, drunk_aura::DrunkAura, mafia::Mafia, synopsis::SynopsisTracker},
+    components::{cult::Cult, mafia::Mafia, synopsis::SynopsisTracker},
     player::PlayerReference, 
     role::RoleState, 
     Game

@@ -1,10 +1,12 @@
 use serde::Serialize;
 
+use crate::game::abilities_component::ability_id::AbilityID;
 use crate::game::controllers::AvailableBooleanSelection;
 use crate::game::attack_power::{AttackPower, DefensePower};
 use crate::game::chat::{ChatGroup, ChatMessageVariant};
 use crate::game::components::graves::grave::{Grave, GraveDeathCause, GraveInformation, GraveKiller};
 use crate::game::components::graves::grave_reference::GraveReference;
+use crate::game::event::on_ability_creation::{OnAbilityCreation, OnAbilityCreationFold, OnAbilityCreationPriority};
 use crate::game::event::on_midnight::{MidnightVariables, OnMidnightPriority};
 use crate::game::phase::PhaseType;
 use crate::game::player::PlayerReference;
@@ -101,10 +103,13 @@ impl RoleStateTrait for Martyr {
             actor_ref.die_and_add_grave(game, Grave::from_player_leave_town(game, actor_ref));
         }
     }
-    fn on_role_creation(self,  game: &mut Game, actor_ref: PlayerReference) {
-        game.add_message_to_chat_group(ChatGroup::All, ChatMessageVariant::MartyrRevealed { martyr: actor_ref.index() });
-        for player in PlayerReference::all_players(game){
-            player.reveal_players_role(game, actor_ref);
+    fn on_ability_creation(self, game: &mut Game, actor_ref: PlayerReference, event: &OnAbilityCreation, fold: &mut OnAbilityCreationFold, priority: OnAbilityCreationPriority) {
+        if priority != OnAbilityCreationPriority::SideEffect || fold.cancelled {return;}
+        if let AbilityID::Role{role, player} = event.id && player == actor_ref && role == Role::Martyr {
+            game.add_message_to_chat_group(ChatGroup::All, ChatMessageVariant::MartyrRevealed { martyr: actor_ref.index() });
+            for player in PlayerReference::all_players(game){
+                player.reveal_players_role(game, actor_ref);
+            }
         }
     }
     fn on_any_death(self, game: &mut Game, actor_ref: PlayerReference, dead_player_ref: PlayerReference) {

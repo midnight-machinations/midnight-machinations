@@ -3,7 +3,7 @@ use crate::{
     game::{
         abilities_component::Abilities, chat::ChatComponent,
         components::{
-            confused::Confused, cult::Cult, detained::Detained, drunk_aura::DrunkAura,
+            confused::Confused, cult::Cult, detained::Detained,
             fast_forward::FastForwardComponent, fragile_vest::FragileVestsComponent, graves::Graves,
             insider_group::{InsiderGroupID, InsiderGroups}, mafia::Mafia, mafia_recruits::MafiaRecruits,
             pitchfork_item::PitchforkItemComponent, poison::Poison, puppeteer_marionette::PuppeteerMarionette,
@@ -121,7 +121,6 @@ impl Game{
                 insider_groups: unsafe{InsiderGroups::new(num_players, &assignments)},
                 detained: Detained::default(),
                 confused: Confused::default(),
-                drunk_aura: DrunkAura::default(),
                 synopsis_tracker: SynopsisTracker::new(num_players),
                 tags: Tags::default(),
                 silenced: Silenced::default(),

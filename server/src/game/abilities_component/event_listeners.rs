@@ -3,7 +3,7 @@ use crate::game::{
     abilities_component::{ability::Ability, ability_id::AbilityID, Abilities},
     controllers::ControllerParametersMap,
     event::{
-        before_phase_end::BeforePhaseEnd, on_add_insider::OnAddInsider, on_any_death::OnAnyDeath, on_conceal_role::OnConcealRole, on_controller_selection_changed::OnControllerSelectionChanged, on_grave_added::OnGraveAdded, on_midnight::{MidnightVariables, OnMidnight, OnMidnightPriority}, on_phase_start::OnPhaseStart, on_remove_insider::OnRemoveInsider, on_validated_ability_input_received::OnValidatedControllerInputReceived, on_whisper::{OnWhisper, WhisperFold, WhisperPriority}
+        before_phase_end::BeforePhaseEnd, on_ability_creation::{OnAbilityCreation, OnAbilityCreationFold, OnAbilityCreationPriority}, on_add_insider::OnAddInsider, on_any_death::OnAnyDeath, on_conceal_role::OnConcealRole, on_controller_selection_changed::OnControllerSelectionChanged, on_grave_added::OnGraveAdded, on_midnight::{MidnightVariables, OnMidnight, OnMidnightPriority}, on_phase_start::OnPhaseStart, on_remove_insider::OnRemoveInsider, on_validated_ability_input_received::OnValidatedControllerInputReceived, on_whisper::{OnWhisper, WhisperFold, WhisperPriority}
     }, Game
 };
 
@@ -61,6 +61,15 @@ impl Abilities{
     pub fn on_any_death(game: &mut Game, event: &OnAnyDeath, fold: &mut (), priority: ()) {
         for (id, _ability) in game.abilities.abilities.clone() {
             id.on_any_death(game, event, fold, priority);
+        }
+    }
+    pub fn on_ability_creation(game: &mut Game, event: &OnAbilityCreation, fold: &mut OnAbilityCreationFold, priority: OnAbilityCreationPriority) {
+        for (id, _ability) in game.abilities.abilities.clone() {
+            id.on_ability_creation(game, event, fold, priority);
+        }
+
+        if priority == OnAbilityCreationPriority::SetAbility && !fold.cancelled{
+            game.abilities.abilities.insert(event.id.clone(), fold.ability.clone());
         }
     }
 
@@ -181,6 +190,15 @@ impl AbilityID{
             Ability::SyndicateGun(ability) => {
                 ability.on_any_death(game, event, fold, priority);
             }
+        }
+    }
+    pub fn on_ability_creation(&self, game: &mut Game, event: &OnAbilityCreation, fold: &mut OnAbilityCreationFold, priority: OnAbilityCreationPriority) {
+        match if let Some(ability) = self.get(game).cloned() {ability} else {return} {
+            Ability::RoleAbility(RoleAbility(player, role_state)) => {
+                role_state.on_ability_creation(game, player, event, fold, priority)
+            },
+            Ability::Pitchfork(_) => {},
+            Ability::SyndicateGun(_) => {}
         }
     }
 

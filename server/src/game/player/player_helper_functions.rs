@@ -424,9 +424,6 @@ impl PlayerReference{
             midnight_variables.get_mut(*self).grave_killers = vec![GraveKiller::Quit]
         }
     }
-    pub fn on_role_creation(&self, game: &mut Game) {
-        self.role_state(game).clone().on_role_creation(game, *self)
-    }
     pub fn get_current_send_chat_groups(&self, game: &Game) -> HashSet<ChatGroup> {
         if game.modifier_settings().is_enabled(ModifierID::NoChat)
             || (

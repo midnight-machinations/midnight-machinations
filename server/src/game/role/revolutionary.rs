@@ -2,10 +2,14 @@
 use rand::seq::IndexedRandom;
 use serde::Serialize;
 
+use crate::game::abilities::role_abilities::RoleAbility;
+use crate::game::abilities_component::ability::Ability;
+use crate::game::abilities_component::ability_id::AbilityID;
 use crate::game::attack_power::DefensePower;
 use crate::game::chat::{ChatGroup, ChatMessageVariant};
 use crate::game::components::graves::grave::Grave;
 use crate::game::components::tags::{TagSetID, Tags};
+use crate::game::event::on_ability_creation::{OnAbilityCreation, OnAbilityCreationFold, OnAbilityCreationPriority};
 use crate::game::phase::{PhaseState, PhaseType};
 use crate::game::player::PlayerReference;
 use crate::game::role::RoleState;
@@ -66,32 +70,45 @@ impl RoleStateTrait for Revolutionary {
             _=>{}
         }
     }
-    fn on_role_creation(self, game: &mut Game, actor_ref: PlayerReference){
-        Tags::add_viewer(game, TagSetID::RevolutionaryTarget(actor_ref), actor_ref);
+    fn on_ability_creation(self, game: &mut Game, actor_ref: PlayerReference, event: &OnAbilityCreation, fold: &mut OnAbilityCreationFold, priority: OnAbilityCreationPriority){
+        
+        if let AbilityID::Role{role, player} = event.id && player == actor_ref && role == Role::Revolutionary {
+            match priority {
+                OnAbilityCreationPriority::CancelOrEdit => {
+                    if let Some(target) = PlayerReference::all_players(game)
+                        .filter(|p|
+                            RoleSet::Town
+                                .get_roles()
+                                .contains(&p.role(game)) &&
+                                !Self::CANT_CHOOSE_ROLES.contains(&p.role(game))
+                        ).collect::<Vec<PlayerReference>>()
+                        .choose(&mut rand::rng())
+                    {
+                        fold.ability = Ability::RoleAbility(
+                            RoleAbility(
+                                actor_ref,
+                                RoleState::Revolutionary(
+                                    Revolutionary{target: RevolutionaryTarget::Target(*target)}
+                                )
+                            )
+                        );
+                    }else{
+                        fold.cancelled = true;
+                        actor_ref.set_role_and_win_condition_and_revealed_group(game, RoleState::Jester(Jester::default()))
+                    };
+                },
+                OnAbilityCreationPriority::SideEffect => {
+                    if let RevolutionaryTarget::Target(target) = self.target {
+                        Tags::add_viewer(game, TagSetID::RevolutionaryTarget(actor_ref), actor_ref);
+                        Tags::add_tag(game, TagSetID::RevolutionaryTarget(actor_ref), target);
+                        actor_ref.reveal_players_role(game, target);
+                    }
+                },
+                _ => {}
+            }
+        }
 
-
-
-        if let Some(target) = PlayerReference::all_players(game)
-            .filter(|p|
-                RoleSet::Town.get_roles().contains(&p.role(game)) &&
-                
-                p.role(game) != Role::Jailor &&
-
-                p.role(game) != Role::Deputy &&
-                p.role(game) != Role::Veteran &&
-
-                p.role(game) != Role::Transporter &&
-                p.role(game) != Role::Mayor &&
-                p.role(game) != Role::Reporter
-            ).collect::<Vec<PlayerReference>>()
-            .choose(&mut rand::rng())
-        {
-            Tags::add_tag(game, TagSetID::RevolutionaryTarget(actor_ref), *target);
-            actor_ref.set_role_state(game, RoleState::Revolutionary(Revolutionary{target: RevolutionaryTarget::Target(*target)}));
-            actor_ref.reveal_players_role(game, *target);
-        }else{
-            actor_ref.set_role_and_win_condition_and_revealed_group(game, RoleState::Jester(Jester::default()))
-        };
+        
     }
     fn on_any_death(self, game: &mut Game, actor_ref: PlayerReference, dead_player_ref: PlayerReference){
         if Some(dead_player_ref) == self.target.get_target() && self.target != RevolutionaryTarget::Won {
@@ -113,4 +130,11 @@ impl Revolutionary {
     pub fn won(&self)->bool{
         self.target == RevolutionaryTarget::Won
     }
+    const CANT_CHOOSE_ROLES: [Role; 5] = [
+        Role::Jailor,
+        Role::Deputy,    
+        Role::Transporter,
+        Role::Mayor,
+        Role::Reporter,
+    ];
 }

@@ -1,4 +1,7 @@
-use crate::game::{components::drunk_aura::DrunkAura, event::on_midnight::MidnightVariables, player::PlayerReference, role::{arsonist::Arsonist, Role}, Game};
+use crate::game::{
+    abilities_component::ability_id::AbilityID, event::on_midnight::MidnightVariables,
+    player::PlayerReference, role::{arsonist::Arsonist, Role}, Game
+};
 
 pub struct Aura;
 impl Aura{
@@ -14,7 +17,7 @@ impl Aura{
     }
     pub fn suspicious(game: &Game, midnight_variables: &MidnightVariables, player: PlayerReference) -> bool {
         player.night_framed(midnight_variables) ||
-        DrunkAura::has_drunk_aura(game, player) ||
+        AbilityID::Role { role: Role::Drunk, player }.get(game).is_some() ||
         Arsonist::has_suspicious_aura_douse(game, player)
     }
 }

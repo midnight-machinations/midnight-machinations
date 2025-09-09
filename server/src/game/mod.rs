@@ -36,7 +36,6 @@ use crate::game::modifiers::ModifierID;
 use controllers::ControllerID;
 use controllers::PlayerListSelection;
 use components::confused::Confused;
-use components::drunk_aura::DrunkAura;
 use components::enfranchise::Enfranchise;
 use components::forfeit_vote::ForfeitNominationVote;
 use components::mafia::Mafia;
@@ -115,13 +114,11 @@ pub struct Game {
     pub puppeteer_marionette: PuppeteerMarionette,
     pub mafia_recruits: MafiaRecruits,
     pub verdicts_today: VerdictsToday,
-    // pub pitchfork: Pitchfork,
     pub pitchfork_item: PitchforkItemComponent,
     pub poison: Poison,
     pub insider_groups: InsiderGroups,
     pub detained: Detained,
     pub confused: Confused,
-    pub drunk_aura: DrunkAura,
     pub synopsis_tracker: SynopsisTracker,
     pub tags: Tags,
     pub silenced: Silenced,

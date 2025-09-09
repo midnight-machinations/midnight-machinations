@@ -2,6 +2,7 @@
 
 use std::collections::HashSet;
 use crate::game::components::graves::grave_reference::GraveReference;
+use crate::game::event::on_ability_creation::{OnAbilityCreation, OnAbilityCreationFold, OnAbilityCreationPriority};
 use crate::game::role_list_generation::criteria::GenerationCriterion;
 use crate::vec_set::{vec_set, VecSet};
 
@@ -67,7 +68,7 @@ pub trait RoleStateTrait: Clone + std::fmt::Debug + Default + GetClientAbilitySt
     }
 
     fn on_phase_start(self, _game: &mut Game, _actor_ref: PlayerReference, _phase: PhaseType) {}
-    fn on_role_creation(self, _game: &mut Game, _actor_ref: PlayerReference) {}
+    fn on_ability_creation(self, _game: &mut Game, _actor_ref: PlayerReference, _event: &OnAbilityCreation, _fold: &mut OnAbilityCreationFold, _priority: OnAbilityCreationPriority) {}
     fn on_role_switch(self, _game: &mut Game, _actor_ref: PlayerReference, _player: PlayerReference, _new: RoleState, _old: RoleState) {}
     fn before_role_switch(self, _game: &mut Game, _actor_ref: PlayerReference, _player: PlayerReference, _new: RoleState, _old: RoleState) {}
     fn on_any_death(self, _game: &mut Game, _actor_ref: PlayerReference, _dead_player_ref: PlayerReference) {}
@@ -332,9 +333,9 @@ mod macros {
                         $(Self::$name(role_struct) => role_struct.on_conceal_role(game, actor_ref, player, concealed_player)),*
                     }
                 }
-                pub fn on_role_creation(self, game: &mut Game, actor_ref: PlayerReference){
+                pub fn on_ability_creation(self, game: &mut Game, actor_ref: PlayerReference, event: &OnAbilityCreation, fold: &mut OnAbilityCreationFold, priority: OnAbilityCreationPriority){
                     match self {
-                        $(Self::$name(role_struct) => role_struct.on_role_creation(game, actor_ref)),*
+                        $(Self::$name(role_struct) => role_struct.on_ability_creation(game, actor_ref, event, fold, priority)),*
                     }
                 }
                 pub fn on_role_switch(self, game: &mut Game, actor_ref: PlayerReference, player: PlayerReference, old: RoleState, new: RoleState){

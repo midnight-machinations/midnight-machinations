@@ -1,7 +1,8 @@
 use rand::seq::IndexedRandom;
 use serde::Serialize;
 
-use crate::game::components::drunk_aura::DrunkAura;
+use crate::game::abilities_component::ability_id::AbilityID;
+use crate::game::event::on_ability_creation::OnAbilityCreationPriority;
 use crate::game::role_list::role_enabled_and_not_taken;
 use crate::game::{attack_power::DefensePower, components::confused::Confused};
 use crate::game::player::PlayerReference;
@@ -35,8 +36,15 @@ impl RoleStateTrait for Drunk {
             actor_ref.set_role_state(game, random_town_role.new_state(game));
         }
 
-        Confused::add_player(game, actor_ref);
-        DrunkAura::add_player(game, actor_ref);
+    }
+    fn on_role_switch(game: &mut Game, player: PlayerReference) {
+        Confused::remove_player(game, player);
+    }
+    fn on_ability_creation(self, game: &mut Game, actor_ref: PlayerReference, event: &crate::game::event::on_ability_creation::OnAbilityCreation, fold: &mut crate::game::event::on_ability_creation::OnAbilityCreationFold, priority: crate::game::event::on_ability_creation::OnAbilityCreationPriority) {
+        if priority != OnAbilityCreationPriority::SideEffect || fold.cancelled {return;}
+        if let AbilityID::Role { role, player } = event.id && role == Role::Drunk && player == actor_ref {
+            Confused::add_player(game, actor_ref);
+        }
     }
 }
 impl Drunk{

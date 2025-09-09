@@ -63,7 +63,6 @@
             insider_groups: unsafe{InsiderGroups::new(num_players, &assignments)},
             detained: Default::default(),
             confused: Default::default(),
-            drunk_aura: Default::default(),
             synopsis_tracker: SynopsisTracker::new(num_players),
             tags: Tags::default(),
             silenced: Silenced::default(),
