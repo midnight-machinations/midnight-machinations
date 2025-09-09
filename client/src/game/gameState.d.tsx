@@ -224,7 +224,7 @@ export function translateWinCondition(winCondition: WinCondition): string {
         } else if (winCondition.winIfAny.length === 1) {
             return translateConclusion(winCondition.winIfAny[0])
         } else if (winCondition.winIfAny.length === 4 && 
-            ([{type: "mafia"}, {type: "fiends"}, {type: "cult"}, {type: "politician"}] as const).every(team => winCondition.winIfAny.some(conclusion => conclusion.type === team.type))
+            (["mafia", "fiends", "cult", "politician"] as const).every(team => winCondition.winIfAny.some(conclusion => conclusion.type === team))
         ) {
             return translate(`winCondition.evil`)
         } else {
