@@ -18,7 +18,7 @@ impl RoleStateTrait for MafiaSupportWildcard {
     type ClientAbilityState = MafiaSupportWildcard;
     fn on_phase_start(self, game: &mut Game, actor_ref: PlayerReference, phase: PhaseType) {
         match phase {
-            PhaseType::Night => {
+            PhaseType::Dusk => {
                 if actor_ref.ability_deactivated_from_death(game) {return;}
                 Wildcard::become_role(game, actor_ref, Role::MafiaSupportWildcard);
             },

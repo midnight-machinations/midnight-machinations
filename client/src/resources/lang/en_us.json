@@ -1898,9 +1898,9 @@
     "wiki.article.role.serialKiller.attributes":"- You have an armor-piercing attack",
     "wiki.article.role.serialKiller.extra":"",
     
-    "wiki.article.role.mafiaKillingWildcard.reminder": "Choose a syndicate killing role to become that role when night starts.",
-    "wiki.article.role.mafiaKillingWildcard.guide": "* Choose a syndicate killing role to become that role\n    * You become that role when night starts\n* You likely can't become a role if someone already has that role (You can't become a role that has exceeded its role limit)",
-    "wiki.article.role.mafiaKillingWildcard.abilities":"* Become a role you choose at the start of night",
+    "wiki.article.role.mafiaKillingWildcard.reminder": "Choose a syndicate killing role to become that role when dusk starts.",
+    "wiki.article.role.mafiaKillingWildcard.guide": "* Choose a syndicate killing role to become that role\n    * You become that role when dusk starts\n* You likely can't become a role if someone already has that role (You can't become a role that has exceeded its role limit)",
+    "wiki.article.role.mafiaKillingWildcard.abilities":"* Become a role you choose at the start of dusk",
     "wiki.article.role.mafiaKillingWildcard.attributes":"* You can not become a role that iuides disabled\n* You can not become a role that is taken by too many players",
     "wiki.article.role.mafiaKillingWildcard.extra":"* If you choose a role that was disabled you stay as the Syndicate Killing Wildcard\n* You can choose Syndicate Killing Wildcard to stay as Syndicate Killing Wildcard\n* You can't become a role that is at its role limit, for example, you can't become a godfather even if there is already one in the game, even if that godfather is dead",
 
@@ -1983,8 +1983,8 @@
     "wiki.article.role.ambusher.attributes":"- The ambushers attack has an attack power of basic\n- You can attack yourself if you somehow visit yourself with another ability (for exmaple: syndicate gun)\n - If another player visits your target twice, they could potentially get the message saying they caught an ambusher twice, or get attacked and get the message once.",
     "wiki.article.role.ambusher.extra":"- You can't select yourself or other syndicate members\n - You don't visit the player you attack",
 
-    "wiki.article.role.mafiaSupportWildcard.guide": "* Choose a syndicate support role to become that role\n    * You become that role when night starts\n* You likely can't become a role if someone already has that role (You can't become a role that has exceeded its role limit)",
-    "wiki.article.role.mafiaSupportWildcard.abilities":"* Become a role you choose at the start of night",
+    "wiki.article.role.mafiaSupportWildcard.guide": "* Choose a syndicate support role to become that role\n    * You become that role when dusk starts\n* You likely can't become a role if someone already has that role (You can't become a role that has exceeded its role limit)",
+    "wiki.article.role.mafiaSupportWildcard.abilities":"* Become a role you choose at the start of dusk",
     "wiki.article.role.mafiaSupportWildcard.attributes":"* You can not become a role that is disabled\n* You can not become a role that is taken by too many players",
     "wiki.article.role.mafiaSupportWildcard.extra":"* If you choose a role that was disabled you stay as the Syndicate Support Wildcard\n* You can choose Syndicate Wildcard to stay as Syndicate Wildcard\n* You can't become a role that is at its role limit, for example, you can't become a witch even if there is already one in the game, even if that witch is dead",
 
@@ -2032,13 +2032,13 @@
     "wiki.article.role.drunk.attributes": "",
     "wiki.article.role.drunk.extra": "",
 
-    "wiki.article.role.wildcard.guide": "* Choose a role to become that role\n    * You become that role when night starts\n* You can't become a role that is disabled or taken by too many players",
-    "wiki.article.role.wildcard.abilities":"* Become a role you choose at the start of night",
+    "wiki.article.role.wildcard.guide": "* Choose a role to become that role\n    * You become that role when dusk starts\n* You can't become a role that is disabled or taken by too many players",
+    "wiki.article.role.wildcard.abilities":"* Become a role you choose at the start of dusk",
     "wiki.article.role.wildcard.attributes":"* You can not become a role that is disabled\n* You can not become a role that is taken by too many players",
     "wiki.article.role.wildcard.extra":"* If you choose a role that was disabled you stay as the Wildcard\n* You can choose wildcard to stay as wildcard\n* You can't become a role that is at its role limit, if there is a veteran in the game, you can't become one, even if the veteran is dead",
     
-    "wiki.article.role.trueWildcard.guide": "* Choose a role to become that role\n    * You become that role when night starts\n* You can't become a role that is disabled, but you can become a role that is taken, so there can be 2 veterans",
-    "wiki.article.role.trueWildcard.abilities":"* Become a role you choose at the start of night",
+    "wiki.article.role.trueWildcard.guide": "* Choose a role to become that role\n    * You become that role when dusk starts\n* You can't become a role that is disabled, but you can become a role that is taken, so there can be 2 veterans",
+    "wiki.article.role.trueWildcard.abilities":"* Become a role you choose at the start of dusk",
     "wiki.article.role.trueWildcard.attributes":"* You can not become a role that is disabled\n* You can become a role that is taken by too many players",
     "wiki.article.role.trueWildcard.extra":"* If you choose a role that was disabled you stay as the True Wildcard\n* You can choose true wildcard to stay as true wildcard\n* You can become a role that is at its role limit, if there is a veteran in the game, you still can become one",
 
@@ -2134,9 +2134,9 @@
     "wiki.article.role.yer.attributes":"",
     "wiki.article.role.yer.extra":"- You visit the player you choose\n- You can't attack or convert night 1",
 
-    "wiki.article.role.fiendsWildcard.reminder": "Choose a fiends role to become at start of night.",
-    "wiki.article.role.fiendsWildcard.guide": "* Choose a fiends role to become that role\n    * You become that role when night starts\n* You can't become a role that has exceeded its role limit",
-    "wiki.article.role.fiendsWildcard.abilities":"* Become a role you choose at the start of night",
+    "wiki.article.role.fiendsWildcard.reminder": "Choose a fiends role to become at start of dusk.",
+    "wiki.article.role.fiendsWildcard.guide": "* Choose a fiends role to become that role\n    * You become that role when dusk starts\n* You can't become a role that has exceeded its role limit",
+    "wiki.article.role.fiendsWildcard.abilities":"* Become a role you choose at the start of dusk",
     "wiki.article.role.fiendsWildcard.attributes":"* You can not become a role that is disabled\n* You can not become a role that is taken by too many players",
     "wiki.article.role.fiendsWildcard.extra":"* If you choose a role that was disabled you stay as the Fiends Wildcard\n* You can choose Fiends Wildcard to stay as Fiends Wildcard\n* You can't become a role that is at its role limit",
 

@@ -2639,17 +2639,17 @@ fn godfather_dies_to_veteran_after_possessed(){
 
 #[test]
 fn fiends_wildcard_defense_upgrade(){
-    kit::scenario!(game in Dusk 2 where
+    kit::scenario!(game in Discussion 2 where
         fiend: FiendsWildcard,
         mafia: Godfather
     );
-    
+
     fiend.send_ability_input(ControllerInput::new(
         ControllerID::role(fiend.player_ref(), Role::FiendsWildcard, 0),
         RoleListSelection(vec!(Role::Puppeteer))
     ));
 
-    game.next_phase();
+    game.skip_to(Dusk, 2);
 
     fiend.send_ability_input(ControllerInput::new(
         ControllerID::role(fiend.player_ref(), Role::Puppeteer, 1),
@@ -2665,7 +2665,7 @@ fn fiends_wildcard_defense_upgrade(){
     assert!(fiend.alive());
     assert!(mafia.alive());
 
-    assert!(game.game_is_over());
+    assert!(!game.game_is_over());
 }
 
 #[test]
