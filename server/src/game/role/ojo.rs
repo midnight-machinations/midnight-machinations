@@ -11,6 +11,7 @@ use crate::game::event::on_whisper::{OnWhisper, WhisperFold, WhisperPriority};
 use crate::game::attack_power::DefensePower;
 use crate::game::player::PlayerReference;
 
+use crate::game::role::informant::Informant;
 use crate::game::visit::Visit;
 
 use crate::game::Game;
@@ -92,12 +93,6 @@ impl RoleStateTrait for Ojo {
         actor_ref.reveal_players_role(game, concealed_player);
     }
     fn on_whisper(self, game: &mut Game, actor_ref: PlayerReference, event: &OnWhisper, fold: &mut WhisperFold, priority: WhisperPriority) {
-        if priority == WhisperPriority::Send && !fold.cancelled && event.receiver != actor_ref && event.sender != actor_ref {
-            actor_ref.add_private_chat_message(game, ChatMessageVariant::Whisper {
-                from_player_index: event.sender,
-                to_player_index: event.receiver,
-                text: event.message.clone()
-            });
-        }
+        Informant::read_whispers(game, actor_ref, event, fold, priority);
     }
 }

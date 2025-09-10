@@ -3,6 +3,7 @@ use std::vec;
 
 pub(crate) use kit::{assert_contains, assert_not_contains};
 
+use mafia_server::game::controllers::{StringSelection, UnitSelection};
 pub use mafia_server::{
     vec_set,
     packet::ToServerPacket,
@@ -98,6 +99,35 @@ fn detective_neutrals(){
     );
 
 }
+
+#[test]
+fn informant_read_whisper(){
+    kit::scenario!(game in Dusk 1 where
+        whisperer: Mortician,
+        whisperee: Detective,
+        reader: Informant
+    );
+
+    whisperer.send_ability_input(ControllerInput::new(
+        ControllerID::Whisper { player: whisperer.player_ref() },
+        StringSelection("Hi".to_owned())
+    ));
+    whisperer.send_ability_input(ControllerInput::new(
+        ControllerID::WhisperToPlayer { player: whisperer.player_ref() },
+        PlayerListSelection::one(Some(whisperee.player_ref()))
+    ));
+    whisperer.send_ability_input(ControllerInput::new(
+        ControllerID::SendWhisper { player: whisperer.player_ref() },
+        UnitSelection
+    ));
+    assert_contains!(reader.get_messages(), ChatMessageVariant::Whisper {
+        from_player_index: whisperer.player_ref(),
+        to_player_index: whisperee.player_ref(),
+        text: "Hi".to_owned()
+    });
+}
+
+
 
 #[test]
 fn mortician_obscures_on_stand(){

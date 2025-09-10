@@ -65,6 +65,15 @@ impl RoleStateTrait for Informant {
         ].into_iter().collect()
     }
     fn on_whisper(self, game: &mut Game, actor_ref: PlayerReference, event: &OnWhisper, fold: &mut WhisperFold, priority: WhisperPriority) {
+        Informant::read_whispers(game, actor_ref, event, fold, priority);
+    }
+}
+
+impl Informant {
+    pub fn new() -> Self {
+        Self{}
+    }
+    pub fn read_whispers(game: &mut Game, actor_ref: PlayerReference, event: &OnWhisper, fold: &mut WhisperFold, priority: WhisperPriority) {
         if priority == WhisperPriority::Send && !fold.cancelled && event.receiver != actor_ref && event.sender != actor_ref {
             actor_ref.add_private_chat_message(game, ChatMessageVariant::Whisper {
                 from_player_index: event.sender,
@@ -72,11 +81,5 @@ impl RoleStateTrait for Informant {
                 text: event.message.clone()
             });
         }
-    }
-}
-
-impl Informant {
-    pub fn new() -> Self {
-        Self{}
     }
 }

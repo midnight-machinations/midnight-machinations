@@ -5,6 +5,7 @@ use crate::game::components::insider_group::InsiderGroupID;
 use crate::game::event::on_midnight::{MidnightVariables, OnMidnightPriority};
 use crate::game::event::on_whisper::{OnWhisper, WhisperFold, WhisperPriority};
 use crate::game::phase::PhaseType;
+use crate::game::role::informant::Informant;
 use crate::game::{attack_power::DefensePower, player::PlayerReference};
 
 use crate::game::visit::Visit;
@@ -92,12 +93,6 @@ impl RoleStateTrait for Cerenovous {
         }
     }
     fn on_whisper(self, game: &mut Game, actor_ref: PlayerReference, event: &OnWhisper, fold: &mut WhisperFold, priority: WhisperPriority) {
-        if priority == WhisperPriority::Send && !fold.cancelled && event.receiver != actor_ref && event.sender != actor_ref {
-            actor_ref.add_private_chat_message(game, ChatMessageVariant::Whisper {
-                from_player_index: event.sender,
-                to_player_index: event.receiver,
-                text: event.message.clone()
-            });
-        }
+        Informant::read_whispers(game, actor_ref, event, fold, priority);
     }
 }
