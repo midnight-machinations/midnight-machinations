@@ -344,7 +344,7 @@
         "canWriteDeathNote": false,
         "canBeConvertedTo": [],
         "chatMessages":[
-            {"type": "deputyKilled", "shotIndex": 11},
+            {"type": "deputyKilled", "shot": 11},
             {"type": "deputyShotYou"},
             {"type": "someoneSurvivedYourAttack"},
             {"type": "youAttackedSomeone"}

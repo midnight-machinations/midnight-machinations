@@ -40,6 +40,9 @@ impl ChatComponent{
     pub fn chat_messages(game: &Game, player: PlayerReference) -> &Vec<ChatMessage> {
         &game.chat_messages.get(player).messages
     }
+    pub fn get_message(game: &Game, player: PlayerReference, message: ChatMessageIndex)->Option<&ChatMessage>{
+        Self::chat_messages(game, player).get(message)
+    }
     pub fn not_sent_messages(game: &Game, player: PlayerReference) -> &VecDeque<(ChatMessageIndex, ChatMessage)> {
         &game.chat_messages.get(player).not_sent_messages
     }

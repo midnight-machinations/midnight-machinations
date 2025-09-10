@@ -46,7 +46,7 @@ impl ChatComponent{
                     Some(MessageSender::Jailor)
                 },
                 ChatGroup::Dead if sender_player.alive(game) => {
-                    Some(MessageSender::LivingToDead{ player: sender_player.index() })
+                    Some(MessageSender::LivingToDead{ player: sender_player })
                 },
                 ChatGroup::Interview if sender_player.role(game) == Role::Reporter => {
                     Some(MessageSender::Reporter)
@@ -54,7 +54,7 @@ impl ChatComponent{
                 _ => {None}
             };
 
-            let message_sender = message_sender.unwrap_or(MessageSender::Player { player: sender_player.index() });
+            let message_sender = message_sender.unwrap_or(MessageSender::Player { player: sender_player });
 
 
             game.add_message_to_chat_group(

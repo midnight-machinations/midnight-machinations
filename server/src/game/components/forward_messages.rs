@@ -1,4 +1,4 @@
-use crate::game::{controllers::{ControllerSelection, AvailableChatMessageSelection, ControllerID, ControllerParametersMap}, chat::ChatMessageVariant, event::on_validated_ability_input_received::OnValidatedControllerInputReceived, phase::PhaseState, player::PlayerReference, Game};
+use crate::game::{chat::{ChatComponent, ChatMessageVariant}, controllers::{AvailableChatMessageSelection, ControllerID, ControllerParametersMap, ControllerSelection}, event::on_validated_ability_input_received::OnValidatedControllerInputReceived, phase::PhaseState, player::PlayerReference, Game};
 
 use super::insider_group::InsiderGroupID;
 
@@ -12,12 +12,12 @@ impl ForwardMessages{
         ) = event.input.id_and_selection() else {return};
         if event.actor_ref != player {return}
         let Some(message) = selection.0 else {return};
-        let message = Box::new(message.variant().clone());
+        let Some(message) = ChatComponent::get_message(game, player, message).cloned() else {return};
 
         InsiderGroupID::send_message_in_available_insider_chat_or_private(
             game,
             event.actor_ref,
-            ChatMessageVariant::PlayerForwardedMessage{message, forwarder: event.actor_ref},
+            ChatMessageVariant::PlayerForwardedMessage{message: Box::new(message.variant), forwarder: event.actor_ref},
             false,
         )
     }

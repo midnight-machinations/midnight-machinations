@@ -1,25 +1,25 @@
-use serde::{Deserialize, Serialize};
+use serde::Serialize;
 
 use crate::{game::{
-    controllers::*, attack_power::DefensePower, components::{graves::grave::Grave, synopsis::Synopsis, tags::Tag, win_condition::WinCondition}, phase::PhaseState, player::{PlayerIndex, PlayerReference}, role::{
+    controllers::*, attack_power::DefensePower, components::{graves::grave::Grave, synopsis::Synopsis, tags::Tag, win_condition::WinCondition}, phase::PhaseState, player::PlayerReference, role::{
         auditor::AuditorResult, engineer::TrapState, kira::KiraResult, krampus::KrampusAbility,
         santa_claus::SantaListKind, Role
     }, role_outline_reference::OutlineIndex, verdict::Verdict
 }, vec_set::VecSet};
 
 
-#[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(Clone, Debug, Serialize, PartialEq, Eq, PartialOrd, Ord)]
 #[serde(rename_all = "camelCase")]
 #[serde(tag = "type")]
 pub enum MessageSender {
-    Player{player: PlayerIndex},
+    Player{player: PlayerReference},
     Jailor,
     Reporter,
-    LivingToDead{player: PlayerIndex},
+    LivingToDead{player: PlayerReference},
 }
 
 // Determines message color
-#[derive(PartialOrd, Ord, Clone, Debug, Serialize, PartialEq, Eq, Deserialize)]
+#[derive(PartialOrd, Ord, Clone, Debug, Serialize, PartialEq, Eq)]
 #[serde(rename_all = "camelCase")]
 #[serde(tag = "type")]
 pub enum ChatMessageVariant {
@@ -37,27 +37,27 @@ pub enum ChatMessageVariant {
 
     #[serde(rename_all = "camelCase")]
     Whisper{
-        from_player_index: PlayerIndex, 
-        to_player_index: PlayerIndex, 
+        from_player_index: PlayerReference, 
+        to_player_index: PlayerReference, 
         text: String
     },
 
     BroadcastWhisper {
-        whisperer: PlayerIndex, 
-        whisperee: PlayerIndex 
+        whisperer: PlayerReference, 
+        whisperee: PlayerReference 
     },
 
     RoleAssignment{role: Role},
     PlayerDied{grave: Grave},
-    PlayersRoleRevealed{player: PlayerIndex, role: Role},
-    PlayersRoleConcealed{player: PlayerIndex},
+    PlayersRoleRevealed{player: PlayerReference, role: Role},
+    PlayersRoleConcealed{player: PlayerReference},
     TagAdded{player: PlayerReference, tag: Tag},
     TagRemoved{player: PlayerReference, tag: Tag},
     
     #[serde(rename_all = "camelCase")]
     GameOver { synopsis: Synopsis },
     #[serde(rename_all = "camelCase")]
-    PlayerQuit{player_index: PlayerIndex, game_over: bool},
+    PlayerQuit{player_index: PlayerReference, game_over: bool},
 
 
     
@@ -75,22 +75,22 @@ pub enum ChatMessageVariant {
 
     #[serde(rename_all = "camelCase")]
     Voted {
-        voter: PlayerIndex, 
-        votee: Option<PlayerIndex> 
+        voter: PlayerReference, 
+        votee: Option<PlayerReference> 
     },
     #[serde(rename_all = "camelCase")]
     PlayerNominated{
-        player_index: PlayerIndex,
-        players_voted: Vec<PlayerIndex>
+        player_index: PlayerReference,
+        players_voted: Vec<PlayerReference>
     },
     #[serde(rename_all = "camelCase")]
     JudgementVerdict{
-        voter_player_index: PlayerIndex, 
+        voter_player_index: PlayerReference, 
         verdict: Verdict
     },
     #[serde(rename_all = "camelCase")]
     TrialVerdict {
-        player_on_trial: PlayerIndex, 
+        player_on_trial: PlayerReference, 
         innocent: u8, 
         guilty: u8 
     },
@@ -103,7 +103,7 @@ pub enum ChatMessageVariant {
     /* Misc */
     #[serde(rename_all = "camelCase")]
     AbilityUsed{
-        player: PlayerIndex,
+        player: PlayerReference,
         ability_id: ControllerID,
         selection: ControllerSelection
     },
@@ -113,31 +113,31 @@ pub enum ChatMessageVariant {
 
     /* Role-specific */
     #[serde(rename_all = "camelCase")]
-    MayorRevealed{player_index: PlayerIndex},
+    MayorRevealed{player_index: PlayerReference},
     InvalidWhisper,
     #[serde(rename_all = "camelCase")]
     PoliticianCountdownStarted,
     #[serde(rename_all = "camelCase")]
     ReporterReport{report: String},
     #[serde(rename_all = "camelCase")]
-    PlayerIsBeingInterviewed{player_index: PlayerIndex},
+    PlayerIsBeingInterviewed{player_index: PlayerReference},
     #[serde(rename_all = "camelCase")]
-    JailedTarget{player_index: PlayerIndex},
+    JailedTarget{player_index: PlayerReference},
     #[serde(rename_all = "camelCase")]
-    JailedSomeone{player_index: PlayerIndex},
-    MediumHauntStarted{medium: PlayerIndex, player: PlayerIndex},
-    MediumSeance{medium: PlayerIndex, player: PlayerIndex},
+    JailedSomeone{player_index: PlayerReference},
+    MediumHauntStarted{medium: PlayerReference, player: PlayerReference},
+    MediumSeance{medium: PlayerReference, player: PlayerReference},
     MediumExists,
     #[serde(rename_all = "camelCase")]
-    DeputyKilled{shot_index: PlayerIndex},
+    DeputyKilled{shot: PlayerReference},
     #[serde(rename_all = "camelCase")]
     DeputyShotYou,
     #[serde(rename_all = "camelCase")]
     WardenPlayersImprisoned{players: Vec<PlayerReference>},
     WerewolfTracked,
 
-    PuppeteerPlayerIsNowMarionette{player: PlayerIndex},
-    RecruiterPlayerIsNowRecruit{player: PlayerIndex},
+    PuppeteerPlayerIsNowMarionette{player: PlayerReference},
+    RecruiterPlayerIsNowRecruit{player: PlayerReference},
 
     YourConvertFailed,
     CultConvertsNext,
@@ -194,15 +194,15 @@ pub enum ChatMessageVariant {
     Silenced,
     Brained,
     #[serde(rename_all = "camelCase")]
-    GodfatherBackup{backup: Option<PlayerIndex>},
+    GodfatherBackup{backup: Option<PlayerReference>},
     #[serde(rename_all = "camelCase")]
-    GodfatherBackupKilled{backup: PlayerIndex},
+    GodfatherBackupKilled{backup: PlayerReference},
     
 
     #[serde(rename_all = "camelCase")]
     PlayerRoleAndAlibi { player: PlayerReference, role: Role, will: String },
     #[serde(rename_all = "camelCase")]
-    InformantResult{player: PlayerReference, role: Role, visited_by: Vec<PlayerIndex>, visited: Vec<PlayerIndex>},
+    InformantResult{player: PlayerReference, role: Role, visited_by: Vec<PlayerReference>, visited: Vec<PlayerReference>},
     #[serde(rename_all = "camelCase")]
     AmbusherCaught{ambusher: PlayerReference},
 
@@ -227,7 +227,7 @@ pub enum ChatMessageVariant {
     MercenaryHits{roles: VecSet<Role>},
     PawnRole{role: Role},
     KiraResult{result: KiraResult},
-    MartyrRevealed { martyr: PlayerIndex },
+    MartyrRevealed { martyr: PlayerReference },
     MartyrWon,
     MartyrFailed,
     WildcardConvertFailed{ role: Role },

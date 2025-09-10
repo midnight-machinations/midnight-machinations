@@ -103,7 +103,7 @@ impl RoleStateTrait for Martyr {
     }
     fn on_ability_creation(self, game: &mut Game, actor_ref: PlayerReference, event: &OnAbilityCreation, fold: &mut OnAbilityCreationFold, priority: OnAbilityCreationPriority) {
         if priority != OnAbilityCreationPriority::SideEffect || !event.id.is_players_role(actor_ref, Role::Martyr) || fold.cancelled {return}
-        game.add_message_to_chat_group(ChatGroup::All, ChatMessageVariant::MartyrRevealed { martyr: actor_ref.index() });
+        game.add_message_to_chat_group(ChatGroup::All, ChatMessageVariant::MartyrRevealed { martyr: actor_ref });
         for player in PlayerReference::all_players(game){
             player.reveal_players_role(game, actor_ref);
         }

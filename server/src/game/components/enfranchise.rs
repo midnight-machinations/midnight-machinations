@@ -7,7 +7,7 @@ use super::tags::Tags;
 pub struct Enfranchise;
 impl Enfranchise{
     pub fn enfranchise(game: &mut Game, player: PlayerReference){
-        game.add_message_to_chat_group(ChatGroup::All, ChatMessageVariant::MayorRevealed { player_index: player.index() });
+        game.add_message_to_chat_group(ChatGroup::All, ChatMessageVariant::MayorRevealed { player_index: player });
 
         Tags::add_tag(game, super::tags::TagSetID::Enfranchised, player);
 

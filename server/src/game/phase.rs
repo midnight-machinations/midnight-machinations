@@ -187,11 +187,10 @@ impl PhaseState {
                 if !HiddenNominationVotes::nomination_votes_are_hidden(game) {
                     game.add_message_to_chat_group(ChatGroup::All, 
                         ChatMessageVariant::PlayerNominated {
-                            player_index: player_on_trial.index(),
+                            player_index: player_on_trial,
                             players_voted: PlayerReference::all_players(game)
-                            .filter(|player_ref| player_ref.chosen_vote(game) == Some(player_on_trial))
-                            .map(|player_ref| player_ref.index())
-                            .collect()
+                                .filter(|player_ref| player_ref.chosen_vote(game) == Some(player_on_trial))
+                                .collect()
                         }
                     );
                 }
@@ -270,7 +269,7 @@ impl PhaseState {
                             })
                             .map(|player_ref|
                                 ChatMessageVariant::JudgementVerdict{
-                                    voter_player_index: player_ref.index(),
+                                    voter_player_index: player_ref,
                                     verdict: player_ref.verdict(game)
                                 }
                             )
@@ -279,7 +278,7 @@ impl PhaseState {
 
 
                     game.add_message_to_chat_group(ChatGroup::All, ChatMessageVariant::TrialVerdict{ 
-                        player_on_trial: player_on_trial.index(), 
+                        player_on_trial, 
                         innocent, guilty 
                     });
                 }

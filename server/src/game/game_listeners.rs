@@ -76,8 +76,8 @@ impl Game{
             WhisperPriority::Broadcast => {
                 if !fold.hide_broadcast {
                     self.add_message_to_chat_group(ChatGroup::All, ChatMessageVariant::BroadcastWhisper {
-                        whisperer: event.sender.into(),
-                        whisperee: event.receiver.into()
+                        whisperer: event.sender,
+                        whisperee: event.receiver
                     });
                 }
             },
@@ -86,8 +86,8 @@ impl Game{
                     event.sender.add_private_chat_message(self, ChatMessageVariant::InvalidWhisper);
                 } else {
                     let message = ChatMessageVariant::Whisper { 
-                        from_player_index: event.sender.into(), 
-                        to_player_index: event.receiver.into(), 
+                        from_player_index: event.sender, 
+                        to_player_index: event.receiver, 
                         text: event.message.clone()
                     };
 

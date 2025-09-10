@@ -28,7 +28,7 @@ impl PlayerReference{
         if self.alive(game) {
             game.add_message_to_chat_group(
                 crate::game::chat::ChatGroup::All, 
-                ChatMessageVariant::PlayerQuit{player_index: self.index(), game_over: game.game_is_over()}
+                ChatMessageVariant::PlayerQuit{player_index: *self, game_over: game.game_is_over()}
             );
         }
     }
@@ -104,7 +104,7 @@ impl PlayerReference{
                 role_state: self.role_state(game).clone().get_client_ability_state(game, *self)
             },
             ToClientPacket::YourRoleLabels { 
-                role_labels: PlayerReference::ref_vec_map_to_index(self.revealed_players_map(game)) 
+                role_labels: self.revealed_players_map(game) 
             },
             ToClientPacket::YourAllowedControllers { 
                 save: game.controllers.controllers_allowed_to_player(*self).all_controllers().clone(),

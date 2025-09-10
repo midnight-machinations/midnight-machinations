@@ -62,7 +62,7 @@ impl Controllers{
         selection: ControllerSelection
     ){
         let chat_message = ChatMessageVariant::AbilityUsed{
-            player: player_ref.index(),
+            player: player_ref,
             ability_id: id,
             selection: selection.clone()
         };

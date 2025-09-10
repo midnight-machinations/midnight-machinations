@@ -170,7 +170,7 @@ export function ChatMessageSection(props: Readonly<{
     const players = useGameState((gameState)=>{return gameState.players}, ["gamePlayers"])??[];
     const filter = useMemo(() => props.filter ?? null, [props.filter]);
     const messages = useLobbyOrGameState(
-        state => state.chatMessages.values(),
+        state => state.chatMessages.entries(),
         ["addChatMessages"]
     )!;
     const roleList = useLobbyOrGameState(
@@ -179,18 +179,19 @@ export function ChatMessageSection(props: Readonly<{
     ) ?? [];
 
     const allMessages = messages
-        .filter((msg)=>filterMessage(filter, msg, players.map((p)=>p.toString()), roleList))
+        .filter((msg)=>filterMessage(filter, msg[1], players.map((p)=>p.toString()), roleList))
         .filter((msg, index, array)=>{
             //if there is a filter, remove repeat phaseChange message
             if(filter === null){return true}
-            if(msg.variant.type !== "phaseChange"){return true}
+            if(msg[1].variant.type !== "phaseChange"){return true}
             if(index+1===array.length){return true}
-            if(array[index+1].variant.type !== "phaseChange"){return true}
+            if(array[index+1][1].variant.type !== "phaseChange"){return true}
             return false;
         }).map((msg, index) => {
             return <ChatElement
                 key={index}
-                message={msg}
+                messageIndex={msg[0]}
+                message={msg[1]}
                 playerKeywordData={(() => {
                     if (filter===null) {return undefined}
                     if (filter.type === "whispersBetweenPlayers") {return undefined}

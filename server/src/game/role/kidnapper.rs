@@ -124,7 +124,7 @@ impl RoleStateTrait for Kidnapper {
 
                 Detained::add_detain(game, target);
                 actor_ref.add_private_chat_message(game, 
-                    ChatMessageVariant::JailedTarget{ player_index: target.index() }
+                    ChatMessageVariant::JailedTarget{ player_index: target }
                 );
             },
             PhaseType::Obituary => {

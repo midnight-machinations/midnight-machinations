@@ -117,8 +117,8 @@ impl RoleStateTrait for Medium {
 
                     game.add_message_to_chat_group(ChatGroup::Dead,
                         ChatMessageVariant::MediumHauntStarted {
-                            medium: actor_ref.index(),
-                            player: target.index()
+                            medium: actor_ref,
+                            player: target
                         }
                     );
                 };
@@ -136,8 +136,8 @@ impl RoleStateTrait for Medium {
                     self.seanced_target = Some(target);
                     game.add_message_to_chat_group(ChatGroup::Dead,
                         ChatMessageVariant::MediumSeance {
-                            medium: actor_ref.index(),
-                            player: target.index()
+                            medium: actor_ref,
+                            player: target
                         }
                     );
                 };

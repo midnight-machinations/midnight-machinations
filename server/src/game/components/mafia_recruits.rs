@@ -1,7 +1,8 @@
 use std::collections::HashSet;
 
 use crate::{game::{
-    attack_power::AttackPower, chat::ChatMessageVariant, components::{graves::grave::GraveKiller, insider_group::InsiderGroupID}, event::{
+    attack_power::AttackPower, chat::ChatMessageVariant, components::{graves::grave::GraveKiller, insider_group::InsiderGroupID},
+    event::{
         on_add_insider::OnAddInsider, on_midnight::{MidnightVariables, OnMidnight, OnMidnightPriority},
         on_remove_insider::OnRemoveInsider
     }, game_conclusion::GameConclusion, player::PlayerReference, role::Role, role_list::RoleSet, Game
@@ -36,7 +37,7 @@ impl MafiaRecruits{
 
 
         for mafia in MafiaRecruits::mafia_and_recruits(game){
-            mafia.push_night_message(midnight_variables, ChatMessageVariant::RecruiterPlayerIsNowRecruit{player: player.index()});
+            mafia.push_night_message(midnight_variables, ChatMessageVariant::RecruiterPlayerIsNowRecruit{player});
         }
 
         true

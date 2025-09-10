@@ -1,14 +1,14 @@
 use serde::{Deserialize, Serialize};
 
 use crate::game::{
-    controllers::{
-        controller_selection::ControllerSelection, ControllerInput, AvailableSelectionKind, ControllerID //ValidateAvailableSelection
-    }, chat::ChatMessage//, Game
+    chat::ChatMessageIndex, controllers::{
+        controller_selection::ControllerSelection, AvailableSelectionKind, ControllerID, ControllerInput //ValidateAvailableSelection
+    }//, Game
 };
 
 
 #[derive(Clone, Default, Debug, Serialize, Deserialize, PartialEq, Eq, PartialOrd, Ord)]
-pub struct ChatMessageSelection(pub Option<Box<ChatMessage>>);
+pub struct ChatMessageSelection(pub Option<ChatMessageIndex>);
 
 #[derive(Clone, Serialize, Deserialize, Debug, PartialEq, Eq)]
 pub struct AvailableChatMessageSelection;

@@ -94,8 +94,8 @@ impl RoleStateTrait for Cerenovous {
     fn on_whisper(self, game: &mut Game, actor_ref: PlayerReference, event: &OnWhisper, fold: &mut WhisperFold, priority: WhisperPriority) {
         if priority == WhisperPriority::Send && !fold.cancelled && event.receiver != actor_ref && event.sender != actor_ref {
             actor_ref.add_private_chat_message(game, ChatMessageVariant::Whisper {
-                from_player_index: event.sender.into(),
-                to_player_index: event.receiver.into(),
+                from_player_index: event.sender,
+                to_player_index: event.receiver,
                 text: event.message.clone()
             });
         }

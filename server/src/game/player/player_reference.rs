@@ -1,9 +1,5 @@
-use std::collections::HashMap;
-
 use serde::{Serialize, Deserialize};
-
-use crate::{game::Game, vec_map::VecMap};
-
+use crate::game::Game;
 use super::Player;
 
 pub type PlayerIndex = u8;
@@ -42,36 +38,7 @@ impl PlayerReference{
     pub fn index(&self) -> PlayerIndex {
         self.index
     }
-
-    pub fn ref_option_to_index(option: &Option<PlayerReference>) -> Option<PlayerIndex>{
-        option.as_ref().map(PlayerReference::index)
-    }
-    pub fn ref_vec_to_index(ref_vec: &[PlayerReference]) -> Vec<PlayerIndex>{
-        ref_vec.iter().map(PlayerReference::index).collect()
-    }
-    pub fn ref_map_to_index<T>(ref_map: HashMap<PlayerReference, T>) -> HashMap<PlayerIndex, T> {
-        ref_map.into_iter().map(|(player_ref, value)| {
-            (player_ref.index(), value)
-        }).collect()
-    }
-    pub fn ref_vec_map_to_index<T>(ref_map: VecMap<PlayerReference, T>) -> VecMap<PlayerIndex, T> {
-        ref_map.into_iter().map(|(player_ref, value)| {
-            (player_ref.index(), value)
-        }).collect()
-    }
     
-    pub fn index_option_to_ref(game: &Game, index_option: &Option<PlayerIndex>)->Result<Option<PlayerReference>, InvalidPlayerReferenceError>{
-        index_option
-            .map(|index| PlayerReference::new(game, index))
-            .transpose()
-    }
-    pub fn index_vec_to_ref(game: &Game, index_vec: &Vec<PlayerIndex>)->Result<Vec<PlayerReference>, InvalidPlayerReferenceError>{
-        let mut out = Vec::new();
-        for index in index_vec{
-            out.push(Self::new(game, *index)?);
-        }
-        Ok(out)
-    }
 
     pub fn all_players(game: &Game) -> PlayerReferenceIterator {
         unsafe { Self::all_players_from_count(

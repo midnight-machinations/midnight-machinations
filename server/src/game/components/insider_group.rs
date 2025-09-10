@@ -53,7 +53,6 @@ impl InsiderGroups{
     pub fn send_fellow_insiders_packets(game: &Game, player: PlayerReference){
         let fellow_insiders = PlayerReference::all_players(game)
             .filter(|p| InsiderGroupID::in_same_group(game, *p, player))
-            .map(|p| p.index())
             .collect();
 
         player.send_packet(game, ToClientPacket::YourFellowInsiders{fellow_insiders});

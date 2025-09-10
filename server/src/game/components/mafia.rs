@@ -132,7 +132,7 @@ impl Mafia{
                         AttackPower::Basic, false
                     );
                     game.add_message_to_chat_group(ChatGroup::Mafia, 
-                        ChatMessageVariant::GodfatherBackupKilled { backup: backup_visit.visitor.index() }
+                        ChatMessageVariant::GodfatherBackupKilled { backup: backup_visit.visitor }
                     );
                 }
             }

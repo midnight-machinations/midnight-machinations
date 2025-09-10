@@ -39,8 +39,8 @@ impl NominationController{
 
         if !HiddenNominationVotes::nomination_votes_are_hidden(game) {
             game.add_message_to_chat_group(ChatGroup::All, ChatMessageVariant::Voted{
-                voter: event.actor_ref.index(), 
-                votee: voted.first().map(|p|p.index())
+                voter: event.actor_ref, 
+                votee: voted.first().copied()
             });
         }
 

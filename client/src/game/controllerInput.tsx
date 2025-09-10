@@ -4,7 +4,7 @@ import { PhaseType, PlayerIndex, UnsafeString } from "./gameState.d";
 import translate, { translateChecked } from "./lang";
 import { Role } from "./roleState.d";
 import abilitiesJson from "../resources/abilityId.json";
-import { ChatMessage } from "../components/ChatMessage";
+import { ChatMessageIndex } from "../components/ChatMessage";
 
 export type AbilityJsonData = Partial<Record<ControllerIDLink, SingleAbilityJsonData>>;
 export type SingleAbilityJsonData = {
@@ -342,4 +342,4 @@ export type AvailableKiraSelection = {
     countMustGuess: number
 };
 
-export type ChatMessageSelection = ChatMessage | null;
+export type ChatMessageSelection = ChatMessageIndex | null;

@@ -36,8 +36,8 @@ impl RoleStateTrait for Informant {
             let message = ChatMessageVariant::InformantResult{
                 player: target_ref,
                 role: target_ref.role(game), 
-                visited_by: PlayerReference::ref_vec_to_index(visited_by.as_mut_slice()),
-                visited: PlayerReference::ref_vec_to_index(visited.as_slice())
+                visited_by,
+                visited
             };
             actor_ref.push_night_message(midnight_variables, message);
             actor_ref.reveal_players_role(game, target_ref);
@@ -67,8 +67,8 @@ impl RoleStateTrait for Informant {
     fn on_whisper(self, game: &mut Game, actor_ref: PlayerReference, event: &OnWhisper, fold: &mut WhisperFold, priority: WhisperPriority) {
         if priority == WhisperPriority::Send && !fold.cancelled && event.receiver != actor_ref && event.sender != actor_ref {
             actor_ref.add_private_chat_message(game, ChatMessageVariant::Whisper {
-                from_player_index: event.sender.into(),
-                to_player_index: event.receiver.into(),
+                from_player_index: event.sender,
+                to_player_index: event.receiver,
                 text: event.message.clone()
             });
         }

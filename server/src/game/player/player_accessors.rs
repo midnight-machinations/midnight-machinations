@@ -73,21 +73,21 @@ impl PlayerReference{
             revealed_player.alive(game) &&
             self.deref_mut(game).role_labels.insert(revealed_player).is_none()
         {
-            self.add_private_chat_message(game, ChatMessageVariant::PlayersRoleRevealed { player: revealed_player.index(), role: revealed_player.role(game) })
+            self.add_private_chat_message(game, ChatMessageVariant::PlayersRoleRevealed { player: revealed_player, role: revealed_player.role(game) })
         }
 
 
         self.send_packet(game, ToClientPacket::YourRoleLabels{
-            role_labels: PlayerReference::ref_vec_map_to_index(self.revealed_players_map(game)) 
+            role_labels: self.revealed_players_map(game)
         });
     }
     pub fn conceal_players_role(&self, game: &mut Game, concealed_player: PlayerReference){
         if self.deref_mut(game).role_labels.remove(&concealed_player).is_some() {
-            self.add_private_chat_message(game, ChatMessageVariant::PlayersRoleConcealed { player: concealed_player.index() })
+            self.add_private_chat_message(game, ChatMessageVariant::PlayersRoleConcealed { player: concealed_player })
         }
 
         self.send_packet(game, ToClientPacket::YourRoleLabels{
-            role_labels: PlayerReference::ref_vec_map_to_index(self.revealed_players_map(game)) 
+            role_labels: self.revealed_players_map(game)
         });
 
         OnConcealRole::new(*self, concealed_player).invoke(game);

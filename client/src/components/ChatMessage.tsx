@@ -24,6 +24,7 @@ function canCopyPasteChatMessages(roleState?: RoleState): boolean{
 
 const ChatElement = React.memo((
     props: {
+        messageIndex?: ChatMessageIndex,
         message: ChatMessage,
         playerNames?: string[],
         playerKeywordData?: KeywordDataMap,
@@ -93,7 +94,8 @@ const ChatElement = React.memo((
                 roleListKeywordData={props.roleListKeywordData}
             />
         case "normal":
-            return <NormalChatMessage 
+            return <NormalChatMessage
+                messageIndex={props.messageIndex}
                 message={message as any}
                 style={style}
                 chatGroupIcon={chatGroupIcon!}
@@ -199,13 +201,13 @@ const ChatElement = React.memo((
                 />
             }
             {
-                myIndex!==undefined && mouseHovering && forwardButton
-                && <Button
+                myIndex!==undefined && mouseHovering && forwardButton && props.messageIndex !== undefined && 
+                <Button
                     className="chat-message-div-small-button material-icons-round"
-                    onClick={()=>GAME_MANAGER.sendControllerInput({
+                    onClick={()=>props.messageIndex !== undefined?GAME_MANAGER.sendControllerInput({
                         id: {type: "forwardMessage", player: myIndex}, 
-                        selection: {type: "chatMessage", selection: props.message}
-                    })}
+                        selection: {type: "chatMessage", selection: props.messageIndex}
+                    }):null}
                 >forward</Button>
             }
         </div>}
@@ -282,6 +284,7 @@ function LobbyChatMessage(props: Readonly<{
 }
 
 function NormalChatMessage(props: Readonly<{
+    messageIndex?: ChatMessageIndex,
     message: ChatMessage & { variant: { type: "normal" } }
     style: string,
     chatGroupIcon: string,
@@ -357,13 +360,13 @@ function NormalChatMessage(props: Readonly<{
                 />
             }
             {
-                props.myIndex!==undefined && props.mouseHovering && props.forwardButton
+                props.myIndex!==undefined && props.mouseHovering && props.forwardButton && props.messageIndex !== undefined
                 && <Button
                     className="chat-message-div-small-button material-icons-round"
-                    onClick={()=>GAME_MANAGER.sendControllerInput({
+                    onClick={()=>props.messageIndex !== undefined?GAME_MANAGER.sendControllerInput({
                         id: {type: "forwardMessage", player: props.myIndex?props.myIndex:0}, 
-                        selection: {type: "chatMessage", selection: props.message}
-                    })}
+                        selection: {type: "chatMessage", selection: props.messageIndex}
+                    }):null}
                 >forward</Button>
             }
         </div>}
@@ -679,7 +682,7 @@ export function translateChatMessage(
             )
         case "deputyKilled":
             return translate("chatMessage.deputyKilled",
-                encodeString(playerNames[message.shotIndex])
+                encodeString(playerNames[message.shot])
             );
         case "puppeteerPlayerIsNowMarionette":
             return translate("chatMessage.puppeteerPlayerIsNowMarionette",
@@ -1013,7 +1016,7 @@ export type ChatMessageVariant = {
     type: "mediumExists"
 } | {
     type: "deputyKilled",
-    shotIndex: PlayerIndex
+    shot: PlayerIndex
 } | {
     type: "deputyShotYou"
 } | {

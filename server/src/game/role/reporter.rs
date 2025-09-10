@@ -111,7 +111,7 @@ impl RoleStateTrait for Reporter {
                 InsiderGroupID::send_message_in_available_insider_chat_or_private(
                     game,
                     target,
-                    ChatMessageVariant::PlayerIsBeingInterviewed { player_index: target.index() },
+                    ChatMessageVariant::PlayerIsBeingInterviewed { player_index: target },
                     true
                 );
             },

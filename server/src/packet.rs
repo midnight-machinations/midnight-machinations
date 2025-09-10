@@ -102,7 +102,7 @@ pub enum ToClientPacket{
     #[serde(rename_all = "camelCase")]
     YourPlayerIndex{player_index: PlayerIndex},
     #[serde(rename_all = "camelCase")]
-    YourFellowInsiders{fellow_insiders: VecSet<PlayerIndex>},
+    YourFellowInsiders{fellow_insiders: VecSet<PlayerReference>},
     #[serde(rename_all = "camelCase")]
     Phase{phase: PhaseState, day_number: u8},
     #[serde(rename_all = "camelCase")]
@@ -124,7 +124,7 @@ pub enum ToClientPacket{
     YourAllowedController{id: ControllerID, controller: Option<Controller>},
 
     #[serde(rename_all = "camelCase")]
-    YourRoleLabels{role_labels: VecMap<PlayerIndex, Role>},
+    YourRoleLabels{role_labels: VecMap<PlayerReference, Role>},
     #[serde(rename_all = "camelCase")]
     YourPlayerTags{player_tags: VecMap<PlayerReference, Vec1<Tag>>},
     YourNotes{notes: Vec<String>},

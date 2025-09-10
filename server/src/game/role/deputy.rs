@@ -39,26 +39,26 @@ impl RoleStateTrait for Deputy {
         let Some(PlayerListSelection(target_ref)) = ability_input.get_player_list_selection_if_id(
             ControllerID::role(actor_ref, Role::Deputy, 0)
         )else{return};
-        let Some(target_ref) = target_ref.first() else {return};
+        let Some(shot) = target_ref.first() else {return};
         
         
-        target_ref.add_private_chat_message(game, ChatMessageVariant::DeputyShotYou);
-        if target_ref.normal_defense(game).can_block(AttackPower::Basic) {
-            target_ref.add_private_chat_message(game, ChatMessageVariant::YouSurvivedAttack);
+        shot.add_private_chat_message(game, ChatMessageVariant::DeputyShotYou);
+        if shot.normal_defense(game).can_block(AttackPower::Basic) {
+            shot.add_private_chat_message(game, ChatMessageVariant::YouSurvivedAttack);
             actor_ref.add_private_chat_message(game, ChatMessageVariant::SomeoneSurvivedYourAttack);
 
         }else{
-            game.add_message_to_chat_group(ChatGroup::All, ChatMessageVariant::DeputyKilled{shot_index: target_ref.index()});
+            game.add_message_to_chat_group(ChatGroup::All, ChatMessageVariant::DeputyKilled{shot: *shot});
             
             
-            let mut grave = Grave::from_player_lynch(game, *target_ref);
+            let mut grave = Grave::from_player_lynch(game, *shot);
             if let GraveInformation::Normal{death_cause, ..} = &mut grave.information {
                 *death_cause = GraveDeathCause::Killers(vec![GraveKiller::Role(Role::Deputy)]);
             }
-            target_ref.die_and_add_grave(game, grave);
+            shot.die_and_add_grave(game, grave);
             
 
-            if target_ref.win_condition(game).is_loyalist_for(GameConclusion::Town) {
+            if shot.win_condition(game).is_loyalist_for(GameConclusion::Town) {
                 actor_ref.die_and_add_grave(game, Grave::from_player_leave_town(game, actor_ref));
             }
         }

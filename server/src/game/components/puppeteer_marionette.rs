@@ -32,7 +32,7 @@ impl PuppeteerMarionette{
         player.set_win_condition(game, WinCondition::GameConclusionReached { win_if_any: vec![GameConclusion::Fiends].into_iter().collect() });
 
         for fiend in PuppeteerMarionette::marionettes_and_puppeteer(game){
-            fiend.push_night_message(midnight_variables, ChatMessageVariant::PuppeteerPlayerIsNowMarionette{player: player.index()});
+            fiend.push_night_message(midnight_variables, ChatMessageVariant::PuppeteerPlayerIsNowMarionette{player});
         }
 
         true

@@ -10,7 +10,7 @@ import Icon from "../../../components/Icon";
 import { Button } from "../../../components/Button";
 import { useGameState, useLobbyOrGameState, usePlayerNames, usePlayerState, useSpectator } from "../../../components/useHooks";
 import PlayerNamePlate from "../../../components/PlayerNamePlate";
-import ChatMessage, { translateChatMessage } from "../../../components/ChatMessage";
+import ChatMessage, { ChatMessageIndex, translateChatMessage } from "../../../components/ChatMessage";
 import GraveComponent, { translateGraveRole } from "../../../components/grave";
 import { ChatMessageSection, ChatTextInput } from "./ChatMenu";
 import ListMap from "../../../ListMap";
@@ -122,8 +122,8 @@ function PlayerCard(props: Readonly<{
         chatGroup: "all"
     }
 
-    const mostRecentBlockMessage: undefined | NonAnonymousBlockMessage = useGameState(
-        gameState => findLast(gameState.chatMessages.values(), (message) =>
+    const mostRecentBlockMessage: undefined | [ChatMessageIndex, NonAnonymousBlockMessage] = useGameState(
+        gameState => findLast(gameState.chatMessages.entries(), ([idx, message]) =>
                 message.chatGroup === "all" && 
                 message.variant.type === "normal" &&
                 message.variant.block &&
@@ -131,7 +131,7 @@ function PlayerCard(props: Readonly<{
                 message.variant.messageSender.player === props.playerIndex
             ),
         ["addChatMessages", "gamePlayers"]
-    ) as undefined | NonAnonymousBlockMessage;
+    ) as undefined | [ChatMessageIndex, NonAnonymousBlockMessage];
 
     const [alibiOpen, setAlibiOpen] = React.useState(false);
     const [graveOpen, setGraveOpen] = React.useState(false);
@@ -170,7 +170,7 @@ function PlayerCard(props: Readonly<{
             <Button onClick={()=>setAlibiOpen(!alibiOpen)}>
                 <StyledText noLinks={true}>
                     {
-                        translateChatMessage(mostRecentBlockMessage.variant, playerNames, roleList)
+                        translateChatMessage(mostRecentBlockMessage[1].variant, playerNames, roleList)
                             .split("\n")[1]
                             .trim()
                             .substring(0,30)
@@ -227,7 +227,7 @@ function PlayerCard(props: Readonly<{
         })()}
     </div>
     {alibiOpen && mostRecentBlockMessage !== undefined ? <div onClick={()=>setAlibiOpen(false)}>
-        <ChatMessage message={mostRecentBlockMessage}/>
+        <ChatMessage message={mostRecentBlockMessage[1]} messageIndex={mostRecentBlockMessage[0]}/>
     </div> : null}
     {graveOpen && grave !== undefined ? <div onClick={()=>setGraveOpen(false)}>
         <GraveComponent grave={grave}/>

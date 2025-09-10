@@ -931,7 +931,7 @@ fn can_type_in_jail() {
     
     assert_contains!(jailor.get_messages(), 
         ChatMessageVariant::Normal { 
-            message_sender: MessageSender::Player { player: detective.index() }, 
+            message_sender: MessageSender::Player { player: detective.player_ref() }, 
             text: "Hello!".to_string(),
             block: false
         }
@@ -939,7 +939,7 @@ fn can_type_in_jail() {
     
     assert_contains!(detective.get_messages(), 
         ChatMessageVariant::Normal { 
-            message_sender: MessageSender::Player { player: detective.index() }, 
+            message_sender: MessageSender::Player { player: detective.player_ref() }, 
             text: "Hello!".to_string(),
             block: false
         }
@@ -2066,7 +2066,7 @@ fn martyr_suicide_ends_game() {
 
     assert_contains!(
         player1.get_messages(),
-        ChatMessageVariant::MartyrRevealed { martyr: martyr.index() }
+        ChatMessageVariant::MartyrRevealed { martyr: martyr.player_ref() }
     );
 
     martyr.send_ability_input_boolean_typical(true);
@@ -2100,7 +2100,7 @@ fn martyr_roleblocked() {
 
     assert_contains!(
         player1.get_messages(),
-        ChatMessageVariant::MartyrRevealed { martyr: martyr.index() }
+        ChatMessageVariant::MartyrRevealed { martyr: martyr.player_ref() }
     );
 
     martyr.send_ability_input_player_list_typical(martyr);
@@ -2133,7 +2133,7 @@ fn martyr_healed() {
 
     assert_contains!(
         player1.get_messages(),
-        ChatMessageVariant::MartyrRevealed { martyr: martyr.index() }
+        ChatMessageVariant::MartyrRevealed { martyr: martyr.player_ref() }
     );
 
     martyr.send_ability_input_player_list_typical(martyr);
