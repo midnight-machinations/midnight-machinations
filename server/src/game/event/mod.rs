@@ -6,7 +6,7 @@ pub(super) mod on_grave_added;
 pub(super) mod on_game_start;
 pub(super) mod on_role_switch;
 pub(super) mod on_convert;
-pub(super) mod before_role_switch;
+pub(super) mod on_ability_deletion;
 pub(super) mod before_phase_end;
 pub(super) mod on_midnight;
 pub(super) mod on_conceal_role;

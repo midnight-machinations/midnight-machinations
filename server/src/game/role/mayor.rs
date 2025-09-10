@@ -3,6 +3,7 @@ use serde::Serialize;
 
 use crate::game::controllers::AvailableUnitSelection;
 use crate::game::attack_power::DefensePower;
+use crate::game::event::on_ability_deletion::{OnAbilityDeletion, OnAbilityDeletionPriority};
 use crate::game::event::on_whisper::{OnWhisper, WhisperFold, WhisperPriority};
 use crate::game::components::enfranchise::Enfranchise;
 use crate::game::phase::PhaseType;
@@ -32,8 +33,8 @@ impl RoleStateTrait for Mayor {
 
         Enfranchise::enfranchise(game, actor_ref);
     }
-    fn before_role_switch(self, game: &mut Game, actor_ref: PlayerReference, player: PlayerReference, _new: super::RoleState, _old: super::RoleState) {
-        if actor_ref != player {return;}
+    fn on_ability_deletion(self, game: &mut Game, actor_ref: PlayerReference, event: &OnAbilityDeletion, _fold: &mut (), priority: OnAbilityDeletionPriority) {
+        if !event.id.is_players_role(actor_ref, Role::Mayor) || priority != OnAbilityDeletionPriority::BeforeSideEffect {return;}
         Enfranchise::unenfranchise(game, actor_ref);
     }
     fn controller_parameters_map(self, game: &Game, actor_ref: PlayerReference) -> ControllerParametersMap {

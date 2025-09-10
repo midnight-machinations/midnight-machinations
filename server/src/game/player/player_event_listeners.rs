@@ -36,9 +36,6 @@ impl PlayerReference {
     pub fn on_role_switch(&self, game: &mut Game, player: PlayerReference, old: RoleState, new: RoleState,){
         self.role_state(game).clone().on_role_switch(game, *self, player, old, new);
     }
-    pub fn before_role_switch(&self, game: &mut Game, player: PlayerReference, old: RoleState, new: RoleState,){
-        self.role_state(game).clone().before_role_switch(game, *self, player, old, new);
-    }
     pub fn before_initial_role_creation(&self, game: &mut Game){
         self.role_state(game).clone().before_initial_role_creation(game, *self)
     }

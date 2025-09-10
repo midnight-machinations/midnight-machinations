@@ -5,11 +5,13 @@ use crate::{
     game::{
         attack_power::{AttackPower, DefensePower}, chat::{ChatGroup, ChatMessage, ChatMessageVariant}, components::{
             fragile_vest::FragileVests, graves::{grave::{Grave, GraveKiller}, Graves}, insider_group::InsiderGroupID, night_visits::{NightVisitsIterator, Visits}, player_component::PlayerComponent, win_condition::WinCondition
-        }, controllers::{BooleanSelection, Controller, ControllerID, ControllerSelection, Controllers, PlayerListSelection, TwoPlayerOptionSelection}, event::{
-            before_role_switch::BeforeRoleSwitch, on_any_death::OnAnyDeath,
-            on_midnight::{MidnightVariables, OnMidnightPriority},
-            on_player_roleblocked::OnPlayerRoleblocked, on_role_switch::OnRoleSwitch,
-            on_visit_wardblocked::OnVisitWardblocked, Event
+        },
+        controllers::{
+            BooleanSelection, Controller, ControllerID, ControllerSelection, Controllers, PlayerListSelection, TwoPlayerOptionSelection
+        },
+        event::{
+            on_any_death::OnAnyDeath, on_midnight::{MidnightVariables, OnMidnightPriority},
+            on_player_roleblocked::OnPlayerRoleblocked, on_visit_wardblocked::OnVisitWardblocked, Event
         },
         game_conclusion::GameConclusion,
         modifiers::ModifierID, phase::PhaseType,
@@ -292,29 +294,11 @@ impl PlayerReference{
         OnAnyDeath::new(*self).invoke(game)
     }
     pub fn initial_role_creation(&self, game: &mut Game){
-        let role = self.role_state(game).role();
-        self.on_role_creation(game);    //this function can change role state
-        if role == self.role(game) {
-            self.add_private_chat_message(game, ChatMessageVariant::RoleAssignment{role: self.role(game)});
-        }
         self.set_win_condition(game, self.win_condition(game).clone());
         InsiderGroupID::set_player_insider_groups(
             InsiderGroupID::all_groups_with_player(game, *self), 
             game, *self
         );
-    }
-    pub fn set_role(&self, game: &mut Game, new_role_data: impl Into<RoleState>) {
-        let new_role_data = new_role_data.into();
-        let old = self.role_state(game).clone();
-        BeforeRoleSwitch::new(*self, old.clone(), new_role_data.clone()).invoke(game);
-
-        self.set_role_state(game, new_role_data.clone());
-        self.on_role_creation(game);    //this function can change role state
-        if new_role_data.role() == self.role(game) {
-            self.add_private_chat_message(game, ChatMessageVariant::RoleAssignment{role: self.role(game)});
-        }
-
-        OnRoleSwitch::new(*self, old, self.role_state(game).clone()).invoke(game);
     }
     /// Swaps this persons role, sends them the role chat message, and makes associated changes
     pub fn set_role_and_win_condition_and_revealed_group(&self, game: &mut Game, new_role_data: impl Into<RoleState>){

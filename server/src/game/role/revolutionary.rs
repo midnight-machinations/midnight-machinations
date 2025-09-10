@@ -1,15 +1,14 @@
 
 use rand::seq::IndexedRandom;
 use serde::Serialize;
-
 use crate::game::abilities::role_abilities::RoleAbility;
 use crate::game::abilities_component::ability::Ability;
-use crate::game::abilities_component::ability_id::AbilityID;
 use crate::game::attack_power::DefensePower;
 use crate::game::chat::{ChatGroup, ChatMessageVariant};
 use crate::game::components::graves::grave::Grave;
 use crate::game::components::tags::{TagSetID, Tags};
 use crate::game::event::on_ability_creation::{OnAbilityCreation, OnAbilityCreationFold, OnAbilityCreationPriority};
+use crate::game::event::on_ability_deletion::{OnAbilityDeletion, OnAbilityDeletionPriority};
 use crate::game::phase::{PhaseState, PhaseType};
 use crate::game::player::PlayerReference;
 use crate::game::role::RoleState;
@@ -72,7 +71,7 @@ impl RoleStateTrait for Revolutionary {
     }
     fn on_ability_creation(self, game: &mut Game, actor_ref: PlayerReference, event: &OnAbilityCreation, fold: &mut OnAbilityCreationFold, priority: OnAbilityCreationPriority){
         
-        if let AbilityID::Role{role, player} = event.id && player == actor_ref && role == Role::Revolutionary {
+        if event.id.is_players_role(actor_ref, Role::Revolutionary) {
             match priority {
                 OnAbilityCreationPriority::CancelOrEdit => {
                     if let Some(target) = PlayerReference::all_players(game)
@@ -98,7 +97,7 @@ impl RoleStateTrait for Revolutionary {
                     };
                 },
                 OnAbilityCreationPriority::SideEffect => {
-                    if let RevolutionaryTarget::Target(target) = self.target {
+                    if !fold.cancelled && let RevolutionaryTarget::Target(target) = self.target {
                         Tags::add_viewer(game, TagSetID::RevolutionaryTarget(actor_ref), actor_ref);
                         Tags::add_tag(game, TagSetID::RevolutionaryTarget(actor_ref), target);
                         actor_ref.reveal_players_role(game, target);
@@ -115,8 +114,8 @@ impl RoleStateTrait for Revolutionary {
             actor_ref.set_role_and_win_condition_and_revealed_group(game, RoleState::Jester(Jester::default()))
         }
     }
-    fn before_role_switch(self, game: &mut Game, actor_ref: PlayerReference, player: PlayerReference, _new: super::RoleState, _old: super::RoleState) {
-        if actor_ref != player {return}
+    fn on_ability_deletion(self, game: &mut Game, actor_ref: PlayerReference, event: &OnAbilityDeletion, _fold: &mut (), priority: OnAbilityDeletionPriority) {
+        if !event.id.is_players_role(actor_ref, Role::Revolutionary) || priority != OnAbilityDeletionPriority::BeforeSideEffect {return;}
         Tags::remove_viewer(game, TagSetID::RevolutionaryTarget(actor_ref), actor_ref);
     }
 }

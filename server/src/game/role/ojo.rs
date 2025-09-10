@@ -1,7 +1,5 @@
 use rand::seq::SliceRandom;
 use serde::Serialize;
-
-use crate::game::abilities_component::ability_id::AbilityID;
 use crate::game::components::night_visits::{NightVisitsIterator, Visits};
 use crate::game::controllers::ControllerParametersMap;
 use crate::game::attack_power::AttackPower;
@@ -85,10 +83,8 @@ impl RoleStateTrait for Ojo {
         )
     }
     fn on_ability_creation(self, game: &mut Game, actor_ref: PlayerReference, event: &OnAbilityCreation, fold: &mut OnAbilityCreationFold, priority: OnAbilityCreationPriority) {
-        if priority != OnAbilityCreationPriority::SideEffect || fold.cancelled {return;}
-        if let AbilityID::Role{role, player} = event.id && player == actor_ref && role == Role::Ojo {
-            PlayerReference::all_players(game).for_each(|p|actor_ref.reveal_players_role(game, p));
-        }
+        if priority != OnAbilityCreationPriority::SideEffect || !event.id.is_players_role(actor_ref, Role::Ojo) || fold.cancelled {return}
+        PlayerReference::all_players(game).for_each(|p|actor_ref.reveal_players_role(game, p));
     }
     fn on_conceal_role(self, game: &mut Game, actor_ref: PlayerReference, player: PlayerReference, concealed_player: PlayerReference){
         if player != actor_ref {return};

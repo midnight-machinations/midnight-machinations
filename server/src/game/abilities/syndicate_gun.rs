@@ -28,14 +28,14 @@ impl SyndicateGun {
     }
 
     pub fn give_gun_to_player(game: &mut Game, player: PlayerReference) {
-        AbilityID::SyndicateGun.set(game, Some(Self{
+        AbilityID::SyndicateGun.set_ability(game, Some(Self{
             player_with_gun: Some(player)
         }));
 
         Tags::set_tagged(game, TagSetID::SyndicateGun, &vec_set![player]);
     }
     pub fn remove_gun(game: &mut Game) {
-        AbilityID::SyndicateGun.set(game, Some(Self{
+        AbilityID::SyndicateGun.set_ability(game, Some(Self{
             player_with_gun: None
         }));
 
@@ -43,7 +43,7 @@ impl SyndicateGun {
     }
 
     pub fn player_with_gun(game: &Game) -> Option<PlayerReference> {
-        if let Some(Ability::SyndicateGun(SyndicateGun { player_with_gun })) = AbilityID::SyndicateGun.get(game) {
+        if let Some(Ability::SyndicateGun(SyndicateGun { player_with_gun })) = AbilityID::SyndicateGun.get_ability(game) {
             *player_with_gun
         }else{
             None

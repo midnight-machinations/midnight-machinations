@@ -3,6 +3,7 @@ use serde::Serialize;
 
 use crate::game::chat::ChatMessageVariant;
 use crate::game::game_conclusion::GameConclusion;
+use crate::game::role::drunk::Drunk;
 use crate::game::role_list::role_enabled_and_not_taken;
 use crate::game::{attack_power::DefensePower, role_list::RoleSet};
 use crate::game::player::PlayerReference;
@@ -31,18 +32,15 @@ impl RoleStateTrait for Pawn {
             ))
             .collect::<Vec<_>>();
 
-        //special case here. I don't want to use set_role because it alerts the player their role changed
-        //NOTE: It will still send a packet to the player that their role state updated,
-        //so it might be deducible that the player is a drunk
-        if let Some(random_town_role) = possible_roles.choose(&mut rand::rng()) {
-            actor_ref.set_role_state(game, random_town_role.new_state(game));
+        if let Some(new_role) = possible_roles.choose(&mut rand::rng()) {
+            Drunk::set_role_before_start(game, actor_ref, *new_role);
 
             for player in PlayerReference::all_players(game){
                 if
                     !player.win_condition(game).friends_with_conclusion(GameConclusion::Town) &&
                     player != actor_ref
                 {
-                    player.add_private_chat_message(game, ChatMessageVariant::PawnRole{role: *random_town_role});
+                    player.add_private_chat_message(game, ChatMessageVariant::PawnRole{role: *new_role});
                 }
             }
         }

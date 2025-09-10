@@ -2,6 +2,7 @@ use serde::Serialize;
 
 use crate::game::controllers::AvailableBooleanSelection;
 use crate::game::event::on_ability_creation::{OnAbilityCreation, OnAbilityCreationFold, OnAbilityCreationPriority};
+use crate::game::event::on_ability_deletion::{OnAbilityDeletion, OnAbilityDeletionPriority};
 use crate::game::event::on_midnight::{MidnightVariables, OnMidnightPriority};
 use crate::game::attack_power::AttackPower;
 use crate::game::components::tags::{TagSetID, Tags};
@@ -85,15 +86,14 @@ impl RoleStateTrait for Arsonist {
             false
         )
     }
-    fn on_ability_creation(self, game: &mut Game, actor_ref: PlayerReference, _event: &OnAbilityCreation, _fold: &mut OnAbilityCreationFold, priority: OnAbilityCreationPriority){
-        if priority != OnAbilityCreationPriority::SideEffect{return}
+    fn on_ability_creation(self, game: &mut Game, actor_ref: PlayerReference, event: &OnAbilityCreation, fold: &mut OnAbilityCreationFold, priority: OnAbilityCreationPriority){
+        if priority != OnAbilityCreationPriority::SideEffect || !event.id.is_players_role(actor_ref, Role::Arsonist) || fold.cancelled {return}
         Tags::remove_tag(game, TagSetID::ArsonistDoused, actor_ref);
         Tags::add_viewer(game, TagSetID::ArsonistDoused, actor_ref);
     }
-    fn before_role_switch(self, game: &mut Game, actor_ref: PlayerReference, player: PlayerReference, _new: super::RoleState, _old: super::RoleState) {
-        if actor_ref == player {
-            Tags::remove_viewer(game, TagSetID::ArsonistDoused, actor_ref); 
-        }
+    fn on_ability_deletion(self, game: &mut Game, actor_ref: PlayerReference, event: &OnAbilityDeletion, _fold: &mut (), priority: OnAbilityDeletionPriority) {
+        if !event.id.is_players_role(actor_ref, Role::Arsonist) || priority != OnAbilityDeletionPriority::BeforeSideEffect {return;}
+        Tags::remove_viewer(game, TagSetID::ArsonistDoused, actor_ref); 
     }
 }
 impl Arsonist{

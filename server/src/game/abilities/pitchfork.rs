@@ -41,7 +41,7 @@ impl PitchforkAbility{
             );
             self.charges = self.charges.saturating_sub(1);
         }
-        AbilityID::Pitchfork.set(game, Some(self));
+        AbilityID::Pitchfork.set_ability(game, Some(self));
     }
     pub fn before_phase_end(mut self, game: &mut Game, event: &BeforePhaseEnd, _fold: &mut (), _priority: ()){
         if event.phase != PhaseType::Night {return};
@@ -51,7 +51,7 @@ impl PitchforkAbility{
         }else{
             None
         };
-        AbilityID::Pitchfork.set(game, Some(self));
+        AbilityID::Pitchfork.set_ability(game, Some(self));
     }
 
     pub fn controller_parameters_map(self, game: &Game)->ControllerParametersMap{

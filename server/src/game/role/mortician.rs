@@ -1,7 +1,5 @@
 
 use serde::Serialize;
-
-use crate::game::abilities_component::ability_id::AbilityID;
 use crate::game::controllers::AvailablePlayerListSelection;
 use crate::game::attack_power::DefensePower;
 use crate::game::chat::ChatMessageVariant;
@@ -10,6 +8,8 @@ use crate::game::components::graves::grave_reference::GraveReference;
 use crate::game::event::on_ability_creation::OnAbilityCreation;
 use crate::game::event::on_ability_creation::OnAbilityCreationFold;
 use crate::game::event::on_ability_creation::OnAbilityCreationPriority;
+use crate::game::event::on_ability_deletion::OnAbilityDeletion;
+use crate::game::event::on_ability_deletion::OnAbilityDeletionPriority;
 use crate::game::event::on_midnight::MidnightVariables;
 use crate::game::event::on_midnight::OnMidnightPriority;
 use crate::game::components::tags::TagSetID;
@@ -22,7 +22,7 @@ use crate::game::Game;
 use super::ControllerID;
 use super::ControllerParametersMap;
 use super::Role;
-use super::{RoleState, RoleStateTrait};
+use super::RoleStateTrait;
 
 
 #[derive(Clone, Debug, Serialize)]
@@ -111,14 +111,11 @@ impl RoleStateTrait for Mortician {
         ].into_iter().collect()
     }
     fn on_ability_creation(self, game: &mut Game, actor_ref: PlayerReference, event: &OnAbilityCreation, fold: &mut OnAbilityCreationFold, priority: OnAbilityCreationPriority) {
-        if priority != OnAbilityCreationPriority::SideEffect || fold.cancelled {return;}
-        if let AbilityID::Role{role, player} = event.id && player == actor_ref && role == Role::Mortician {
-            Tags::add_viewer(game, TagSetID::MorticianTag(actor_ref), actor_ref);
-        }
+        if priority != OnAbilityCreationPriority::SideEffect || !event.id.is_players_role(actor_ref, Role::Mortician) || fold.cancelled {return}
+        Tags::add_viewer(game, TagSetID::MorticianTag(actor_ref), actor_ref);
     }
-    fn before_role_switch(self, game: &mut Game, actor_ref: PlayerReference, player: PlayerReference, _old: RoleState, _new: RoleState){
-        if actor_ref==player {
-            Tags::remove_viewer(game, TagSetID::MorticianTag(actor_ref), actor_ref);
-        }
+    fn on_ability_deletion(self, game: &mut Game, actor_ref: PlayerReference, event: &OnAbilityDeletion, _fold: &mut (), priority: OnAbilityDeletionPriority){
+        if !event.id.is_players_role(actor_ref, Role::Mortician) || priority != OnAbilityDeletionPriority::BeforeSideEffect {return;}
+        Tags::remove_viewer(game, TagSetID::MorticianTag(actor_ref), actor_ref);
     }
 }

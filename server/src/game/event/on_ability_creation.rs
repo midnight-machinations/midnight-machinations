@@ -1,6 +1,6 @@
-use crate::{event_priority, game::{abilities_component::{ability::{self, Ability}, ability_id::AbilityID, Abilities}, event::Event}};
+use crate::{event_priority, game::{abilities_component::{ability::Ability, ability_id::AbilityID, Abilities}, event::Event}};
 
-pub(crate) struct OnAbilityCreation{
+pub struct OnAbilityCreation{
     pub id: AbilityID,
     pub ability: Ability,
 }

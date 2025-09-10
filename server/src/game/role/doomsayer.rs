@@ -1,6 +1,5 @@
 use serde::{Serialize, Deserialize};
 
-use crate::game::abilities_component::ability_id::AbilityID;
 use crate::game::attack_power::{AttackPower, DefensePower};
 use crate::game::chat::ChatMessageVariant;
 use crate::game::event::on_ability_creation::{OnAbilityCreation, OnAbilityCreationFold, OnAbilityCreationPriority};
@@ -154,7 +153,7 @@ impl RoleStateTrait for Doomsayer {
     }
     fn on_ability_creation(self, game: &mut Game, actor_ref: PlayerReference, event: &OnAbilityCreation, fold: &mut OnAbilityCreationFold, priority: OnAbilityCreationPriority) {
         if priority != OnAbilityCreationPriority::CancelOrEdit{return}
-        if let AbilityID::Role{role, player} = event.id && role == Role::Doomsayer && player == actor_ref
+        if event.id.is_players_role(actor_ref, Role::Doomsayer)
         {
             fold.cancelled = Doomsayer::check_and_convert_to_jester(game, self, actor_ref);
         }

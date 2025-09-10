@@ -1,6 +1,5 @@
 use crate::game::{
-    components::player_component::PlayerComponent, player::PlayerReference, 
-    role::Role, Assignments, Game
+    components::player_component::PlayerComponent, event::on_role_switch::OnRoleSwitch, player::PlayerReference, role::{Role, RoleState}, Assignments, Game
 };
 
 pub type RoleComponent = PlayerComponent::<Role>;
@@ -22,5 +21,13 @@ impl RoleComponent{
 impl PlayerReference{
     pub fn role(&self, game: &Game) -> Role {
         *game.role.get(*self)
+    }
+    pub fn set_role(&self, game: &mut Game, new_role_data: impl Into<RoleState>) {
+        let new_role_data = new_role_data.into();
+        let old = self.role_state(game).clone();
+
+        self.set_role_state(game, new_role_data.clone());
+
+        OnRoleSwitch::new(*self, old, self.role_state(game).clone()).invoke(game);
     }
 }

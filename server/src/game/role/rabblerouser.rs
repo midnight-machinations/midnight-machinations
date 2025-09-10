@@ -1,11 +1,11 @@
 use serde::Serialize;
 
 use crate::game::{
-    abilities_component::ability_id::AbilityID, attack_power::DefensePower, components::pitchfork_item::PitchforkItemComponent, event::on_ability_creation::{OnAbilityCreation, OnAbilityCreationFold, OnAbilityCreationPriority}, player::PlayerReference, role::Role, Game
+    attack_power::DefensePower, components::pitchfork_item::PitchforkItemComponent, event::{on_ability_creation::{OnAbilityCreation, OnAbilityCreationFold, OnAbilityCreationPriority}, on_ability_deletion::{OnAbilityDeletion, OnAbilityDeletionPriority}}, player::PlayerReference, role::Role, Game
 };
 
 
-use super::{RoleState, RoleStateTrait};
+use super::RoleStateTrait;
 
 
 pub(super) const MAXIMUM_COUNT: Option<u8> = None;
@@ -17,15 +17,12 @@ pub struct Rabblerouser;
 impl RoleStateTrait for Rabblerouser {
     type ClientAbilityState = Rabblerouser;
     fn on_ability_creation(self, game: &mut Game, actor_ref: PlayerReference, event: &OnAbilityCreation, fold: &mut OnAbilityCreationFold, priority: OnAbilityCreationPriority) {
-        if priority != OnAbilityCreationPriority::SideEffect || fold.cancelled {return;}
-        if let AbilityID::Role{role, player} = event.id && player == actor_ref && role == Role::Rabblerouser {
-            PitchforkItemComponent::give_pitchfork(game, actor_ref);
-        }
+        if priority != OnAbilityCreationPriority::SideEffect || !event.id.is_players_role(actor_ref, Role::Rabblerouser) || fold.cancelled {return}
+        PitchforkItemComponent::give_pitchfork(game, actor_ref);
     }
-    fn before_role_switch(self, game: &mut Game, actor_ref: PlayerReference, player: PlayerReference, _old: RoleState, _new: RoleState) {
-        if player == actor_ref {
-            PitchforkItemComponent::remove_pitchfork(game, actor_ref);
-        }
+    fn on_ability_deletion(self, game: &mut Game, actor_ref: PlayerReference, event: &OnAbilityDeletion, _fold: &mut (), priority: OnAbilityDeletionPriority) {
+        if !event.id.is_players_role(actor_ref, Role::Rabblerouser) || priority != OnAbilityDeletionPriority::BeforeSideEffect {return;}
+        PitchforkItemComponent::remove_pitchfork(game, actor_ref);
     }
 }
 

@@ -1,9 +1,9 @@
 use serde::Serialize;
-use crate::game::abilities_component::ability_id::AbilityID;
 use crate::game::controllers::ControllerParametersMap;
 use crate::game::attack_power::{AttackPower, DefensePower};
 use crate::game::components::poison::{Poison, PoisonAlert};
 use crate::game::event::on_ability_creation::{OnAbilityCreation, OnAbilityCreationFold, OnAbilityCreationPriority};
+use crate::game::event::on_ability_deletion::{OnAbilityDeletion, OnAbilityDeletionPriority};
 use crate::game::event::on_midnight::{MidnightVariables, OnMidnightPriority};
 use crate::game::components::tags::{TagSetID, Tags};
 use crate::game::components::graves::grave::GraveKiller;
@@ -65,13 +65,11 @@ impl RoleStateTrait for Spiral {
         )
     }
     fn on_ability_creation(self, game: &mut Game, actor_ref: PlayerReference, event: &OnAbilityCreation, fold: &mut OnAbilityCreationFold, priority: OnAbilityCreationPriority) {
-        if priority != OnAbilityCreationPriority::SideEffect || fold.cancelled {return}
-        if let AbilityID::Role{role, player} = event.id && player == actor_ref && role == Role::Spiral {
-            Tags::add_viewer(game, TagSetID::UzumakiSpiral(actor_ref), actor_ref);
-        }
+        if priority != OnAbilityCreationPriority::SideEffect || !event.id.is_players_role(actor_ref, Role::Spiral) || fold.cancelled {return}
+        Tags::add_viewer(game, TagSetID::UzumakiSpiral(actor_ref), actor_ref);
     }
-    fn before_role_switch(self, game: &mut Game, actor_ref: PlayerReference, player: PlayerReference, _new: super::RoleState, _old: super::RoleState) {
-        if actor_ref != player {return}
+    fn on_ability_deletion(self, game: &mut Game, actor_ref: PlayerReference, event: &OnAbilityDeletion, _fold: &mut (), priority: OnAbilityDeletionPriority) {
+        if !event.id.is_players_role(actor_ref, Role::Spiral) || priority != OnAbilityDeletionPriority::BeforeSideEffect {return;}
         Tags::remove_viewer(game, TagSetID::UzumakiSpiral(actor_ref), actor_ref);
     }
 }

@@ -7,7 +7,7 @@ use crate::{
     game::{
         abilities::{pitchfork::PitchforkAbility, role_abilities::RoleAbility, syndicate_gun::SyndicateGun}, abilities_component::{
             ability::Ability, ability_id::AbilityID
-        }, event::on_ability_creation::OnAbilityCreation, Assignments, Game
+        }, event::{on_ability_creation::OnAbilityCreation, on_ability_deletion::OnAbilityDeletion, Event}, Assignments, Game
     },
     vec_map::{vec_map, VecMap}
 };
@@ -30,20 +30,31 @@ impl Abilities{
     }
     pub fn set_default_abilties(game: &mut Game){
         for (id, _) in game.abilities.abilities.clone() {
-            Abilities::set_ability(game, &id, Some(id.new_state(game)));
+            Abilities::new_ability(game, &id, id.new_state(game));
         }
     }
     pub fn set_ability(game: &mut Game, id: &AbilityID, new: Option<impl Into<Ability>>){
         if let Some(new) = new{
-            if let Some(_) = game.abilities.abilities.get(id){
-                game.abilities.abilities.insert(id.clone(), new.into());
+            if game.abilities.abilities.contains(id){
+                Self::edit_ability(game, id, new);
             }else{
-                OnAbilityCreation::new(id, new.into()).invoke();
-                game.abilities.abilities.sort();
+                Self::new_ability(game, id, new);
             }
         }else{
-            game.abilities.abilities.remove(id);
+            Self::delete_ability(game, id);
         }
+    }
+    pub fn new_ability(game: &mut Game, id: &AbilityID, new: impl Into<Ability>){
+        OnAbilityCreation::new(id.clone(), new.into()).invoke(game);
+        game.abilities.abilities.sort();
+    }
+    pub fn delete_ability(game: &mut Game, id: &AbilityID){
+        if game.abilities.abilities.contains(id) {
+            OnAbilityDeletion::new(id.clone()).invoke(game);
+        }
+    }
+    pub fn edit_ability(game: &mut Game, id: &AbilityID, new: impl Into<Ability>){
+        game.abilities.abilities.insert(id.clone(), new.into());
     }
 }
 impl AbilityID{
