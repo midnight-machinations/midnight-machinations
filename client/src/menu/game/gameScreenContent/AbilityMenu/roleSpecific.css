@@ -2,10 +2,9 @@
     display: flex;
     flex-direction: row;
     background-color: var(--primary-color);
-    border: var(--extra-small-space) solid var(--primary-border-color);
-    border-radius: var(--small-space);
-    padding: var(--small-space);
-    margin: var(--extra-small-space);
     align-items: center;
     justify-content: space-between;
+}
+.role-specific-section {
+    background-color: var(--secondary-color);
 }

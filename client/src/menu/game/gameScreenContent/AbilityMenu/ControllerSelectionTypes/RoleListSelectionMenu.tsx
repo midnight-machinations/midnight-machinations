@@ -33,25 +33,27 @@ export default function RoleListSelectionMenu(props: Readonly<{
     ) as Role[];
 
     return <div className="generic-list-controller-menu">
-        {
-            props.selection.map((p,i)=><RoleDropdown
-                enabledRoles={props.availableSelection.availableRoles.filter((p)=>
-                    props.availableSelection.canChooseDuplicates || !props.selection.includes(p) || p === props.selection[i]
-                ) as Role[]}
-                canChooseNone={true}
-                value={p}
-                onChange={(p)=>handleSelection(p, i)}
-            />)
-        }
-        {
-            (props.availableSelection?.maxRoles??Infinity) > props.selection.length ? <RoleDropdown
-                enabledRoles={newChoosableRoles}
-                canChooseNone={true}
-                value={null}
-                onChange={(p)=>handleSelection(p, props.selection.length)}
-            /> : null
-        }
-        <div>
+        <div className="generic-list-controller-menu-items">
+            {
+                props.selection.map((p,i)=><RoleDropdown
+                    enabledRoles={props.availableSelection.availableRoles.filter((p)=>
+                        props.availableSelection.canChooseDuplicates || !props.selection.includes(p) || p === props.selection[i]
+                    ) as Role[]}
+                    canChooseNone={true}
+                    value={p}
+                    onChange={(p)=>handleSelection(p, i)}
+                />)
+            }
+            {
+                (props.availableSelection?.maxRoles??Infinity) > props.selection.length ? <RoleDropdown
+                    enabledRoles={newChoosableRoles}
+                    canChooseNone={true}
+                    value={null}
+                    onChange={(p)=>handleSelection(p, props.selection.length)}
+                /> : null
+            }
+        </div>
+        <div className="generic-list-controller-menu-buttons">
             {
                 ((props.availableSelection.maxRoles??Infinity) >= props.availableSelection.availableRoles.length) && newChoosableRoles.length !== 0
                 ?

@@ -1,3 +1,6 @@
+.multiple-controllers-menu {
+    background-color: var(--tertiary-color);
+}
 .generic-ability-menu-tab-summary {
     display: flex;
     flex-direction: row;
@@ -11,11 +14,6 @@
     align-items: center;
     width: 100%;
     background-color: var(--secondary-color);
-    border-style: solid;
-    border-color: var(--primary-border-color);
-    border-radius: .4rem;
-    border-width: var(--extra-small-space);
-    margin-top: var(--small-space);
 }
 .generic-ability-menu-tab-no-summary > span{
     display: inline-flex;

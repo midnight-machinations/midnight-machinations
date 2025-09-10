@@ -4,7 +4,6 @@
     flex-direction: column;
     height: 100%;
     width: 100vw;
-    padding: var(--large-space);
     background-color: var(--background-color);
 }
 .standalone-wiki > header > h2 {

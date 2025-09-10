@@ -12,7 +12,9 @@ export default function Select<K extends { toString(): string}>(props: Readonly<
     value: K,
     disabled?: boolean,
     className?: string,
-    onChange?: (value: K)=>void
+    onChange?: (value: K)=>void,
+    openIcon?: string,
+    closedIcon?: string,
 } & ({
     optionsSearch: SelectOptionsSearch<K>,
 } | {
@@ -128,8 +130,8 @@ export default function Select<K extends { toString(): string}>(props: Readonly<
             }}
         >
             {open === true ? 
-                <Icon>keyboard_arrow_up</Icon> :
-                <Icon>keyboard_arrow_down</Icon>}
+                <Icon>{props.openIcon || "keyboard_arrow_up"}</Icon> :
+                <Icon>{props.closedIcon || "keyboard_arrow_down"}</Icon>}
             {value !== undefined?value[0]:props.value.toString()}
         </RawButton>
         <Popover className="custom-select-options-popover"
@@ -167,7 +169,7 @@ export function dropdownPlacementFunction(dropdownElement: HTMLElement, buttonEl
     const oneRem = parseFloat(getComputedStyle(buttonElement).fontSize);
 
     const maxHeight = (25 - .25) * oneRem;
-    const optionsHeight = 1 + .5 * oneRem + (dropdownElement.firstElementChild?.clientHeight ?? Infinity);
+    const optionsHeight = 1 + (dropdownElement.firstElementChild?.clientHeight ?? Infinity);
 
     if (spaceAbove > spaceBelow) {
         const newHeight = Math.min(maxHeight, spaceAbove - .25 * oneRem, optionsHeight);

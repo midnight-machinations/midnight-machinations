@@ -1,9 +1,6 @@
 .counter {
     display: flex;
     flex-direction: row;
-    background-color: var(--primary-color);
-    border: var(--extra-small-space) solid var(--primary-border-color);
-    border-radius: var(--small-space);
     justify-content: space-between;
     align-items: center;
 }
@@ -12,18 +9,14 @@
     display: flex;
     flex-direction: row;
     align-items: center;
-    margin: 0 var(--small-space);
-    gap: var(--small-space);
+    margin-right: .25em;
 }
 
 .counter-count .counter-circle {
-    width: 1em;
-    height: 1em;
-    border-radius: var(--medium-space);
+    width: .75em;
+    height: .75em;
+    border-radius: .5em;
     background-color: var(--focus-outline-color);
-    border: var(--extra-small-space) solid var(--primary-border-color);
-    border-bottom-color: var(--primary-border-shadow-color);
-    border-right-color: var(--primary-border-shadow-color);
 }
 
 .counter-count .counter-circle-empty {

@@ -1,8 +1,5 @@
 .two-role-outline-option-input .grid {
     display: grid;
-    padding: var(--extra-small-space);
-    gap: var(--extra-small-space) var(--small-space);
-    margin-bottom: var(--large-space);
     width: 100%;
     grid-template-columns: [role-list-start] 50% [role-list-end graves-start] 50% [graves-end];
 }
@@ -18,12 +15,10 @@
     align-items: center;
     padding-left: .2rem;
     text-align: left;
-    margin: 0;
     text-wrap: pretty;
     overflow-x: auto;
     overflow-y: hidden;
     background-color: var(--primary-color);
-    border: var(--extra-small-space) solid var(--primary-border-color);
 }
 /* .two-role-outline-option-input > .grid button.role-list-button {
     grid-column: role-list-start / role-list-end;

@@ -5,22 +5,9 @@
     align-items: center;
 
     background-color: var(--primary-color);
-    border-radius: var(--medium-space);
-    padding: var(--extra-small-space);
-}
-.details-summary-summary-container.open {
-    border-bottom-left-radius: 0;
-    border-bottom-right-radius: 0;
-    border-bottom: var(--extra-small-space) solid var(--primary-border-shadow-color);
 }
 .details-summary-container{
     display: flex;
     flex-direction: column;
-    margin: var(--extra-small-space);
-    padding: 0;
     background-color: var(--secondary-color);
-    border: var(--extra-small-space) solid var(--primary-border-color);
-    border-bottom-color: var(--primary-border-shadow-color);
-    border-right-color: var(--primary-border-shadow-color);
-    border-radius: var(--medium-space);
 }

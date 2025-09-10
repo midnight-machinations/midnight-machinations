@@ -3,10 +3,8 @@
     max-height: 50vh;
     overflow-y: auto;
     display: flex;
-    gap: var(--small-space);
     flex-direction: row;
     flex-wrap: wrap;
-    margin-top: var(--small-space);
 }
 .save-menu {
     display: flex;
@@ -19,9 +17,7 @@
 }
 .saved-game-modes .game-mode-label {
     display: flex;
-    border: var(--extra-small-space) solid var(--primary-border-color);
     background-color: var(--secondary-color);
-    border-radius: var(--medium-space);
     align-items: center;
     justify-content: space-between;
 }
@@ -49,9 +45,6 @@
 .saved-game-modes .game-mode-label .game-mode-folder .game-mode-folder-content {
     display: flex;
     flex-direction: column;
-    padding: var(--extra-small-space);
-    gap: var(--extra-small-space);
 }
 .saved-game-modes .game-mode-label .game-mode-label-buttons > button {
-    margin: var(--extra-small-space);
 }

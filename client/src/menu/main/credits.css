@@ -1,5 +1,4 @@
 .credits-menu{
-    margin-top: var(--large-space);
     overflow-y: auto;
     height: 100%;
 }
@@ -13,7 +12,6 @@
     position: sticky;
 }
 .credits-menu > div > h3 {
-    margin-bottom:var(--medium-space);
     margin-top: 2rem;
 }
 .credits-menu > div > p {

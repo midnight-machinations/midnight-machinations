@@ -2,10 +2,6 @@
     display: flex;
     flex-direction: row;
     background-color: var(--secondary-color);
-    border: var(--extra-small-space) solid var(--primary-border-color);
-    border-top-color: var(--primary-border-shadow-color);
-    border-left-color: var(--primary-border-shadow-color);
-    border-radius: var(--medium-space);
     margin: var(--extra-small-space) 0;
 }
 .disabled-role-selector-area > select {
@@ -15,10 +11,6 @@
 .placard {
     display: inline-block;
     background-color: var(--primary-color);
-    border: var(--extra-small-space) solid var(--primary-border-color);
-    padding: var(--extra-small-space) var(--small-space);
-    margin: var(--extra-small-space);
-    border-radius: var(--small-space);
     white-space: pre;
 }
 .placard.disabled {
@@ -32,9 +24,6 @@
 }
 .modifier-config-popover {
     background-color: var(--background-color);
-    border: var(--extra-small-space) solid var(--primary-border-color);
-    border-radius: var(--small-space);
-    padding: var(--extra-small-space);
     min-width: fit-content;
 }
 .modifier-config-popover .role-list-setter-list {

@@ -6,7 +6,7 @@
 }
 .chat-message-div-small-button {
     font-size: 1rem;
-    padding: 0.var(--large-space);
+    padding: 0.1rem;
     border-radius: 0.2rem;
 }
 .chat-message-div > details {
@@ -20,18 +20,18 @@
 }
 .chat-message.block {
     background-color: var(--primary-color);
-    border: var(--extra-small-space) solid var(--primary-border-color);
-    border-radius: var(--medium-space);
-    padding: var(--small-space);
+    border: .2rem solid var(--primary-border-color);
+    outline-offset: -.1rem;
+    padding: 0;
 }
 .chat-message {
     width: 100%;
     text-align: left;
-    margin: var(--extra-small-space);
+    margin: 0;
     margin-left: 0;
     margin-right: 0;
     overflow-wrap: anywhere;
-    tab-size: var(--large-space);
+    tab-size: 0;
 }
 .chat-message > p {
     color: inherit;
@@ -43,13 +43,12 @@
     text-align: left;
 }
 .chat-message ul, .chat-message ol {
-    padding-left: var(--large-space);
+    padding-left: 0;
     list-style-position: inside;
 }
 /* Chat message variants */
 .chat-message.player {
-    text-indent: -var(--large-space);
-    padding-left: var(--large-space);
+    padding-left: 0;
 }
 .chat-message.mention {
     /* Since it's so blurred, this shadow acts as a highlight overlay. */
@@ -57,7 +56,6 @@
 }
 .chat-message.dead {
     background-color: black;
-    border-radius: var(--medium-space);
     color: grey;
 }
 .chat-message.phase-change {
@@ -81,13 +79,7 @@
 .chat-message.important {
     color: yellow;
 }
-.chat-message.will {
-    border-top: var(--extra-small-space) solid var(--primary-border-color);
-    border-bottom: var(--extra-small-space) solid var(--primary-border-color);
-}
 .chat-message.deathNote {
-    border-top: var(--extra-small-space) solid var(--primary-border-color);
-    border-bottom: var(--extra-small-space) solid var(--primary-border-color);
     background-color: #ff000022;
 }
 .chat-message.trial {
@@ -113,21 +105,15 @@
     width: 100%;
     align-items: left;
     flex-direction: row;
-    padding-left: var(--medium-space);
-    padding-right: var(--medium-space);
-    border-radius: 0.4rem;
-    border-width: .07rem;
-    border-style: solid;
-    border-color: black;
 }
 .kira-guess-result.correct{
-    border-color: limegreen;
+    background-color: #007700;
 }
 .kira-guess-result.wrongSpot{
-    border-color: yellow;
+    background-color: #555500;
 }
 .kira-guess-result.notInGame{
-    border-color: red;
+    background-color: #550000;
 }
 .chat-message-div .details-summary-container {
     width: 100%;

@@ -32,27 +32,29 @@ export default function PlayerListSelectionMenu(props: Readonly<{
     ) as PlayerIndex[];
 
     return <div className="generic-list-controller-menu">
-        {
-            props.selection.map((p,i)=><PlayerOptionDropdown
-                key={i}
-                value={p}
-                onChange={(p)=>handleSelection(p,i)}
-                choosablePlayers={props.availableSelection.availablePlayers.filter((p)=>
-                    props.availableSelection.canChooseDuplicates || !props.selection.includes(p) || p === props.selection[i]
-                ) as PlayerIndex[]}
-                canChooseNone={true}
-            />)
-        }
-        {
-            ((props.availableSelection.maxPlayers??Infinity) > props.selection.length) && newChoosablePlayers.length !== 0 ? 
-            <PlayerOptionDropdown
-                value={null}
-                onChange={(p)=>handleSelection(p,props.selection.length)}
-                choosablePlayers={newChoosablePlayers}
-                canChooseNone={true}
-            /> : null
-        }
-        <div>
+        <div className="generic-list-controller-menu-items">
+            {
+                props.selection.map((p,i)=><PlayerOptionDropdown
+                    key={i}
+                    value={p}
+                    onChange={(p)=>handleSelection(p,i)}
+                    choosablePlayers={props.availableSelection.availablePlayers.filter((p)=>
+                        props.availableSelection.canChooseDuplicates || !props.selection.includes(p) || p === props.selection[i]
+                    ) as PlayerIndex[]}
+                    canChooseNone={true}
+                />)
+            }
+            {
+                ((props.availableSelection.maxPlayers??Infinity) > props.selection.length) && newChoosablePlayers.length !== 0 ? 
+                <PlayerOptionDropdown
+                    value={null}
+                    onChange={(p)=>handleSelection(p,props.selection.length)}
+                    choosablePlayers={newChoosablePlayers}
+                    canChooseNone={true}
+                /> : null
+            }
+        </div>
+        <div className="generic-list-controller-menu-buttons">
             {
                 ((props.availableSelection.maxPlayers??Infinity) >= props.availableSelection.availablePlayers.length) && newChoosablePlayers.length !== 0
                 ?

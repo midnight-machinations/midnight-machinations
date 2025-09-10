@@ -166,6 +166,7 @@ function TextDropdownLabel(
                 <Icon size="small">add</Icon>
             </Button> : null}
             <Button
+                className="text-area-dropdown-save"
                 highlighted={unsaved}
                 onClick={(e) => {
                     save(props.field);

@@ -8,7 +8,6 @@
     /* height: 20rem; */
     height: fit-content;
     min-height: 2rem;
-    margin: var(--extra-small-space);
     text-wrap: wrap;
     resize: none;
 }
@@ -20,7 +19,6 @@
     width: 100%;
     flex-direction: row;
     flex-wrap: wrap;
-    padding-left: var(--small-space);
     justify-content: space-between;
     text-align: left;
     align-items: baseline;
@@ -28,6 +26,8 @@
 .text-area-dropdown .details-summary-summary-container > div > div {
     display:flex;
     flex-wrap: wrap;
-    gap: 0var(--small-space);
     align-items: center;
+}
+.text-area-dropdown-save.highlighted > span {
+    color: yellow;
 }

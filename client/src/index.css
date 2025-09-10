@@ -123,10 +123,10 @@
     --hover-color: #30375a;
     --focus-outline-color: #929ccc;
 
-    --extra-small-space: .13rem;
-    --small-space: .25rem;
-    --medium-space: .5rem;
-    --large-space: 1rem;
+    --extra-small-space: 0;
+    --small-space: 0;
+    --medium-space: 0;
+    --large-space: 0;
 
     font-size: 1em;
     
@@ -138,7 +138,7 @@
 
 s {
     text-decoration: line-through;
-    text-decoration-thickness: var(--extra-small-space);
+    text-decoration-thickness: .1em;
 }
 
 *{
@@ -159,7 +159,7 @@ s {
 }
 .timer-box{
     width: 100%;
-    height:var(--medium-space);
+    height: 0.5rem;
     margin: 0%;
     padding: 0%;
     background-color: #220000;
@@ -168,19 +168,14 @@ s {
 .centered-label {
     display: inline-flex;
     align-items: center;
-    gap: var(--medium-space);
 }
 
 button, .button, input, select, option, textarea, .textarea, summary {
-    border-radius: var(--medium-space);
-    margin: var(--extra-small-space);
+    border: none;
+    margin: 0;
     background-color: var(--secondary-color);
-    border-color: var(--primary-border-color);
-    border-style: solid;
-    border-width: var(--extra-small-space);
-    color: white;
     font-size: 1em;
-    padding: var(--extra-small-space) var(--small-space);
+    padding: 0;
 }
 
 /*
@@ -200,12 +195,13 @@ textarea, .textarea {
 }
 
 *:focus-visible {
-    outline: var(--focus-outline-color) solid var(--extra-small-space);
+    outline: var(--focus-outline-color) solid .1rem;
+    outline-offset: -.1rem;
     background-color: var(--hover-color);
 }
 
 a {
-    text-decoration: none var(--extra-small-space);
+    text-decoration: none;
 }
 
 a:hover {
@@ -220,7 +216,7 @@ a:focus-visible {
 
 button, .button, summary {
     cursor: default;
-    background-color: var(--primary-color);
+    background-color: unset;
     white-space: nowrap;
 }
 button, .button, select, summary {
@@ -246,8 +242,8 @@ button.clear, .button.clear {
     display: none;
     font-size: 0.8em;
     position: absolute;
-    right: var(--medium-space);
-    top: 0.4rem;
+    right: 0;
+    top: 0;
     background: none;
     border: none;
     padding: 0;
@@ -264,7 +260,7 @@ button:disabled, .button:disabled, input:disabled, select:disabled, option:disab
 }
 summary {
     text-align: left;
-    padding-left: var(--medium-space);
+    padding-left: 0;
 }
 
 option {
@@ -286,7 +282,7 @@ button:hover:not([disabled]):not(:active), .button:hover:not([disabled]):not(:ac
 code, .code {
     font-family: 'Courier New', Courier, monospace;
     font-weight: bold;
-    padding: var(--small-space);
+    padding: 0;
     white-space: pre;
 }
 
@@ -344,7 +340,8 @@ code, .code {
 
     --hover-color: oklch(from var(--background-color) calc(l + 0.0707) calc(c + 0.0043) calc(h - 1.73));
 
-    --secondary-color: oklch(from var(--primary-color) calc(l + 0.0172) calc(c + 0.0032) calc(h + 4.13));
+    --secondary-color: oklch(from var(--primary-color) calc(l + 0.0344) calc(c + 0.0064) calc(h + 8.26));
+    --tertiary-color: oklch(from var(--secondary-color) calc(l + 0.0244) calc(c + 0.0064) calc(h + 8.26));
 
     --background-border-color: oklch(from var(--background-color) calc(l + .12) c h);
     --background-border-shadow-color: oklch(from var(--background-color) calc(l - .08) c h);

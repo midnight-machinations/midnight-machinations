@@ -22,15 +22,8 @@
     width: 20%;
     min-width: 15rem;
     box-shadow: 0 var(--medium-space) #0007;
-    
-    border-radius: 0.4rem;
-    border-style: solid;
-    padding: var(--medium-space);
+
     background-color: var(--secondary-color);
-    border-color: var(--primary-border-color);
-    border-bottom-color: var(--primary-border-shadow-color);
-    border-right-color: var(--primary-border-shadow-color);
-    border-width: var(--extra-small-space);
     color: white;
 }
 
@@ -82,10 +75,6 @@
     display: flex;
     position: relative;
     background-color: var(--background-color);
-    border: var(--extra-small-space) solid var(--background-border-color);
-    border-radius: var(--large-space);
-    border-right-color: var(--background-border-shadow-color);
-    border-bottom-color: var(--background-border-shadow-color);
     overflow-y: hidden;
     box-shadow: 0 var(--medium-space) #0007;
 
@@ -95,17 +84,14 @@
 
 .anchor-cover-card-content {
     display: flex;
-    padding: var(--large-space);
     width: 100%;
     height: 100%;
 }
 
 .anchor-cover-card .close-button {
     position: absolute;
-    padding: 0;
-    top: var(--medium-space);
-    right: var(--medium-space);
-    border-radius: var(--medium-space);
+    top: 0;
+    right: 0;
 }
 
 .anchor-cover-card-background-cover {

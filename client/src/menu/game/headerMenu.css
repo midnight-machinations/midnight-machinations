@@ -6,8 +6,6 @@
     margin: .2%;
     margin-bottom: 0;
     min-width: 10%;
-    padding-right:var(--medium-space);
-    padding-left:var(--medium-space);
     border-bottom: 0;
     border-radius: var(--medium-space)var(--medium-space) 0 0;
     background-color: var(--primary-color);
@@ -34,23 +32,17 @@
     background-image: url('../../../public/images/night.png');
 }
 .header-menu > .information {
-    padding: var(--small-space);
     display: flex;
     flex-direction: column;
-    gap: var(--small-space);
 }
 .header-menu > .information > .my-information {
     display: flex;
     flex-direction: row;
     justify-content: center;
-}.header-menu > .information > .my-information > div {
+}
+.header-menu > .information > .my-information > div {
     width: fit-content;
     background-color: var(--background-color);
-    border-color: var(--primary-border-color);
-    border-width: var(--extra-small-space);
-    border-style: solid;
-    border-radius: var(--medium-space);
-    padding: var(--extra-small-space) var(--small-space);
 }
 
 .header-menu .phase-specific {
@@ -61,15 +53,9 @@
 .header-menu .phase-specific > div {
     width: fit-content;
     background-color: var(--background-color);
-    border-width: var(--extra-small-space);
-    border-style: solid;
-    border-radius: var(--medium-space);
-    padding: var(--extra-small-space) var(--small-space);
 }
 .header-menu .judgement-info > button{
     width: max-content;
-    padding: var(--extra-small-space) var(--extra-small-space);
-    margin: var(--extra-small-space);
 } 
 .menu-buttons .chat-notification{
     font-size: 0.83rem;
@@ -77,8 +63,7 @@
     aspect-ratio: 1;
     background-color: var(--primary-color);
     position: absolute;
-    padding: 0 0 var(--large-space) 0;
-    border-width: var(--extra-small-space);
+    border-width: .1rem;
     border-style: solid;
     border-radius: 50%;
     top: 0;

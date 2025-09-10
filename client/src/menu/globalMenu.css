@@ -9,14 +9,7 @@
     min-width: fit-content;
     box-shadow: 0 var(--medium-space) #0007;
 
-    border: solid var(--extra-small-space) var(--primary-border-color);
-    border-bottom-color: var(--primary-border-shadow-color);
-    border-right-color: var(--primary-border-shadow-color);
-    border-radius: var(--medium-space);
-
-    gap: var(--medium-space);
     
-    padding: var(--medium-space);
     background-color: var(--background-color);
 
     z-index: 100;
@@ -28,18 +21,12 @@
 }
 
 .global-menu > section.standout {
-    border: solid var(--extra-small-space) var(--primary-border-color);
-    border-top-color: var(--primary-border-shadow-color);
-    border-left-color: var(--primary-border-shadow-color);
-    border-radius: var(--medium-space);
-    padding: var(--small-space);
     background-color: var(--secondary-color);
 }
 
 .global-menu button {
     display: flex;
     flex-direction: row;
-    gap: var(--small-space);
 }
 
 @media (prefers-reduced-motion = no-preference) {

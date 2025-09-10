@@ -5,12 +5,7 @@
 }
 .role-picker-option {
     display: block;
-    margin: var(--extra-small-space);
     background-color: var(--primary-color);
-    border: var(--extra-small-space) solid var(--primary-border-color);
-    border-radius: var(--medium-space);
-    border-bottom-color: var(--primary-border-shadow-color);
-    border-right-color: var(--primary-border-shadow-color);
     white-space: nowrap;
     text-wrap: nowrap;
 }
@@ -32,10 +27,6 @@
 }
 .role-list-setter-list {
     background-color: var(--primary-color);
-    border: var(--extra-small-space) solid var(--primary-border-color);
-    border-radius: var(--medium-space);
-    border-top-color: var(--background-border-shadow-color);
-    border-left-color: var(--background-border-shadow-color);
 }
 .role-list-setter-list>div:nth-of-type(even) {
     background-color: var(--background-color);
@@ -43,7 +34,6 @@
 .role-list-setter-outline-div {
     padding: 0 var(--small-space);
     align-items:center;
-    gap: var(--small-space);
     display: flex;
     overflow-x: auto;
 }
@@ -55,8 +45,5 @@
     min-width: max-content;
     overflow-y: auto;
 
-    padding: var(--extra-small-space) var(--extra-small-space);
     background-color: var(--secondary-color);
-    border-radius: var(--small-space);
-    border: var(--extra-small-space) solid var(--primary-border-color);
 }

@@ -3,9 +3,7 @@
     z-index: 99999999;
     transform: translateX(-50%);
 
-    padding: var(--extra-small-space) var(--small-space);
-    margin-top: var(--small-space);
+    padding: 0;
+    margin-top: 0;
     background-color: var(--secondary-color);
-    border-radius: var(--small-space);
-    border: var(--extra-small-space) solid var(--primary-border-color);
 }

@@ -21,7 +21,6 @@
     margin: .75%;
     overflow-y: auto;
     flex: 1 1;
-    padding-bottom: var(--large-space);
 }
 .wiki-search .masonry-item {
     width: 100%;
@@ -29,21 +28,15 @@
 .wiki-message-section {
     display: flex;
     flex-direction: column;
-    margin-top: var(--extra-small-space);
-    margin-bottom: var(--medium-space);
 }
 .wiki-article {
     text-align: left;
     height: 100%;
     width: 100%;
     overflow-y: auto;
-    padding-bottom: var(--large-space);
 }
 /* Markdown */
 .wiki-article > div {
-    margin: var(--small-space);
-    margin-bottom: var(--large-space);
-    margin-top: var(--large-space);
 }
 .wiki-article * {
     text-align: left;
@@ -51,8 +44,6 @@
 .wiki-article .details-summary-container {
     padding: 0.12rem;
     margin: var(--small-space) 0;
-    border: var(--extra-small-space) solid var(--primary-border-color);
-    border-radius: var(--medium-space);
     text-align: center;
 }
 .wiki-article blockquote {
@@ -60,7 +51,6 @@
     background-color: var(--primary-color);
     padding-top: 0.var(--large-space);
     padding-bottom: 0.0var(--large-space);
-    margin-bottom: var(--medium-space);
     text-align: left;
 }
 .wiki-article blockquote > * {
@@ -71,28 +61,21 @@
 .wiki-article h1 {
     text-align: center;
     font-size: 150%;
-    margin-bottom: var(--small-space);
 }
 .wiki-article h2 {
     text-align: center;
     font-size: 125%;
-    margin-bottom: var(--small-space);
 }
 .wiki-article h3 {
     text-align: center;
-    margin-bottom: var(--medium-space);
 }
 .wiki-article p {
-    margin-bottom: var(--medium-space);
 }
 .wiki-article ul, .wiki-article ol {
     padding-left: 1.5rem;
-    margin-bottom: var(--medium-space);
 }
 .wiki-search-divider {
-    margin: var(--medium-space);
     padding: 0.3rem;
-    border-radius: var(--large-space);
     background-color: var(--secondary-color);
 }
 .wiki-article-standard {

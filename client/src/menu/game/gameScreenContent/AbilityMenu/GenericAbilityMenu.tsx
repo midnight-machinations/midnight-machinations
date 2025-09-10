@@ -159,7 +159,7 @@ function MultipleControllersMenu(props: Readonly<{
     }
 
     return <DetailsSummary
-        className="generic-ability-menu"
+        className="generic-ability-menu multiple-controllers-menu"
         summary={
             <div className="generic-ability-menu-tab-summary">
                 <StyledText>{groupName}</StyledText>

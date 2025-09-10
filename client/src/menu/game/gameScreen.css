@@ -5,7 +5,6 @@
 }
 
 .game-screen > .menu-buttons > button {
-    padding: var(--medium-space);
     font-size: 1.5em;
     aspect-ratio: 1/1;
 }
@@ -32,9 +31,6 @@
     max-height: 100%;
     
     background-color: var(--background-color);
-    border: var(--extra-small-space) solid var(--background-border-color);
-    border-bottom-color: var(--background-border-shadow-color);
-    border-right-color: var(--background-border-shadow-color);
 
     overflow-y: auto;
     overflow-x: hidden;
@@ -67,11 +63,9 @@
     display: flex;
     flex-direction: row;
     height: max-content;
-    border-bottom: var(--extra-small-space) solid var(--background-border-shadow-color);
     width: 100%;
     margin: 0;
-    padding: .15rem .15rem;
-    background-color: var(--primary-color);
+    background-color: var(--primary-background-color);
     justify-content: space-between;
     align-items: center;
     user-select: none;
@@ -82,9 +76,9 @@
 }
 .content-tab > button {
     width: max-content;
-    margin: 0 .30rem;
+    margin: 0;
     padding: 0;
-    height: 1.2em;
+    height: 100%;
 }
 .content-tab > button > .icon-small {
     vertical-align: super;

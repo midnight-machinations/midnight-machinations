@@ -11,6 +11,4 @@
     background-color: var(--primary-color);
 }
 .large-hypnotist-menu > div:first-child {
-    margin-bottom: var(--large-space);
-    margin-top: var(--large-space);
 }

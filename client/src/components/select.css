@@ -11,10 +11,7 @@
     min-width: max-content;
     overflow: hidden;
 
-    padding: var(--extra-small-space) var(--extra-small-space);
     background-color: var(--secondary-color);
-    border-radius: var(--small-space);
-    border: var(--extra-small-space) solid var(--primary-border-color);
 }
 .custom-select-options-popover > div > .button {
     width: 100%;

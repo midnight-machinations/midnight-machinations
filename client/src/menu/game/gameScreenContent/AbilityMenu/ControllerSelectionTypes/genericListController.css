@@ -1,4 +1,17 @@
 .generic-list-controller-menu{
     display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+.generic-list-controller-menu-items {
+    display: flex;
+    flex-direction: row;
     flex-wrap: wrap;
+    justify-content: left;
+    align-items: start;
+}
+.generic-list-controller-menu-buttons {
+    display: flex;
+    flex-direction: column;
+    justify-content: start;
 }
