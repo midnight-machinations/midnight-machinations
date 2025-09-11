@@ -76,7 +76,6 @@ pub trait RoleStateTrait: Clone + std::fmt::Debug + Default + GetClientAbilitySt
     fn on_grave_added(self, _game: &mut Game, _actor_ref: PlayerReference, _grave: GraveReference) {}
     fn on_game_ending(self, _game: &mut Game, _actor_ref: PlayerReference) {}
     fn on_game_start(self, _game: &mut Game, _actor_ref: PlayerReference) {}
-    fn before_initial_role_creation(self, _game: &mut Game, _actor_ref: PlayerReference) {}
     fn on_conceal_role(self, _game: &mut Game, _actor_ref: PlayerReference, _player: PlayerReference, _concealed_player: PlayerReference) {}
     fn on_player_roleblocked(self, _game: &mut Game, midnight_variables: &mut MidnightVariables, actor_ref: PlayerReference, player: PlayerReference, _invisible: bool) {
         if player != actor_ref {return}
@@ -367,11 +366,6 @@ mod macros {
                 pub fn on_game_ending(self, game: &mut Game, actor_ref: PlayerReference){
                     match self {
                         $(Self::$name(role_struct) => role_struct.on_game_ending(game, actor_ref)),*
-                    }
-                }
-                pub fn before_initial_role_creation(self, game: &mut Game, actor_ref: PlayerReference){
-                    match self {
-                        $(Self::$name(role_struct) => role_struct.before_initial_role_creation(game, actor_ref)),*
                     }
                 }
                 pub fn get_client_ability_state(self, game: &Game, actor_ref: PlayerReference) -> ClientRoleStateEnum {

@@ -2,8 +2,10 @@ use rand::seq::IndexedRandom;
 use serde::Serialize;
 
 use crate::game::chat::ChatMessageVariant;
+use crate::game::event::on_ability_creation::{OnAbilityCreation, OnAbilityCreationFold, OnAbilityCreationPriority};
 use crate::game::game_conclusion::GameConclusion;
 use crate::game::role::drunk::Drunk;
+use crate::game::role::Role;
 use crate::game::role_list::role_enabled_and_not_taken;
 use crate::game::{attack_power::DefensePower, role_list::RoleSet};
 use crate::game::player::PlayerReference;
@@ -20,8 +22,9 @@ pub struct Pawn;
 
 impl RoleStateTrait for Pawn {
     type ClientAbilityState = Pawn;
-    fn before_initial_role_creation(self, game: &mut Game, actor_ref: PlayerReference) {
-
+    fn on_ability_creation(self, game: &mut Game, actor_ref: PlayerReference, event: &OnAbilityCreation, fold: &mut OnAbilityCreationFold, priority: OnAbilityCreationPriority) {
+        if priority != OnAbilityCreationPriority::SideEffect || !event.id.is_players_role(actor_ref, Role::Pawn) || fold.cancelled {return}
+        
         let possible_roles = RoleSet::TownInvestigative
             .get_roles()
             .into_iter()
@@ -44,6 +47,5 @@ impl RoleStateTrait for Pawn {
                 }
             }
         }
-
     }
 }

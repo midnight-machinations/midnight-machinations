@@ -53,7 +53,6 @@ pub(super) const DEFENSE: DefensePower = DefensePower::Armored;
 impl RoleStateTrait for Revolutionary {
     type ClientAbilityState = ClientRoleState;
     fn on_phase_start(self, game: &mut Game, actor_ref: PlayerReference, _phase: PhaseType){
-
         if self.target == RevolutionaryTarget::Won || !actor_ref.alive(game){
             return;
         }
@@ -72,8 +71,10 @@ impl RoleStateTrait for Revolutionary {
     fn on_ability_creation(self, game: &mut Game, actor_ref: PlayerReference, event: &OnAbilityCreation, fold: &mut OnAbilityCreationFold, priority: OnAbilityCreationPriority){
         
         if event.id.is_players_role(actor_ref, Role::Revolutionary) {
+            println!("{:?}", priority);
             match priority {
                 OnAbilityCreationPriority::CancelOrEdit => {
+                    let Ability::RoleAbility(RoleAbility(_, RoleState::Revolutionary(Revolutionary { target: RevolutionaryTarget::Won }))) = event.ability else {return};
                     if let Some(target) = PlayerReference::all_players(game)
                         .filter(|p|
                             RoleSet::Town

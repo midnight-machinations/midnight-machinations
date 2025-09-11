@@ -7,7 +7,7 @@
             mafia::Mafia, mafia_recruits::MafiaRecruits, player_component::PlayerComponent,
             poison::Poison, puppeteer_marionette::PuppeteerMarionette, silenced::Silenced,
             synopsis::SynopsisTracker, tags::Tags, verdicts_today::VerdictsToday, win_condition::WinCondition
-        }, event::{before_initial_role_creation::BeforeInitialRoleCreation, on_game_start::OnGameStart},
+        }, event::on_game_start::OnGameStart,
         phase::PhaseStateMachine, player::{test::mock_player, PlayerReference},
         settings::Settings, Assignments, Game, RejectStartReason
     };
@@ -81,8 +81,6 @@
             player.set_win_condition(&mut game, role_data.clone().default_win_condition());
             InsiderGroups::send_player_insider_groups_packet(&game, player);
         }
-        
-        BeforeInitialRoleCreation::invoke(&mut game);
         
         Abilities::set_default_abilties(&mut game);
 

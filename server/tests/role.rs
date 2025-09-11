@@ -334,7 +334,7 @@ fn jester_basic() {
 }
 
 #[test]
-fn rabble_rouser_dies(){
+fn revolutionary_dies(){
     kit::scenario!(game in Night 1 where
         exe: Revolutionary,
         townie: Detective,
@@ -350,9 +350,9 @@ fn rabble_rouser_dies(){
     mafioso.set_verdict(Verdict::Guilty);
 
     game.skip_to(FinalWords, 2);
-    assert!(!exe.alive());
     assert!(townie.alive());
     assert!(mafioso.alive());
+    assert!(!exe.alive());
 }
 
 #[test]
@@ -920,7 +920,7 @@ fn veteran_does_not_kill_framed_player(){
 }
 
 #[test]
-fn rabble_rouser_turns_into_jester(){
+fn revolutionary_turns_into_jester(){
     kit::scenario!(game in Night 2 where
         target: Detective,
         mafioso: Mafioso,
@@ -937,7 +937,7 @@ fn rabble_rouser_turns_into_jester(){
     let RoleState::Jester(_) = exe.role_state() else {panic!()};
 }
 #[test]
-fn rabble_rouser_instantly_turns_into_jester(){
+fn revolutionary_instantly_turns_into_jester(){
     kit::scenario!(_game where
         _godfather: Godfather,
         _serial_killer: SerialKiller,

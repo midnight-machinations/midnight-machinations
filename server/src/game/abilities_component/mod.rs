@@ -45,6 +45,7 @@ impl Abilities{
         }
     }
     pub fn new_ability(game: &mut Game, id: &AbilityID, new: impl Into<Ability>){
+        Self::delete_ability(game, id);
         OnAbilityCreation::new(id.clone(), new.into()).invoke(game);
         game.abilities.abilities.sort();
     }

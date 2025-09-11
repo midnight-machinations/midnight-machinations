@@ -24,8 +24,14 @@ pub struct Drunk;
 
 impl RoleStateTrait for Drunk {
     type ClientAbilityState = Drunk;
-    fn before_initial_role_creation(self, game: &mut Game, actor_ref: PlayerReference) {
-
+    fn on_role_switch(self, game: &mut Game, actor_ref: PlayerReference, player: PlayerReference, _new: super::RoleState, _old: super::RoleState) {
+        if actor_ref != player {return}
+        AbilityID::Role { role: Role::Drunk, player: actor_ref }.delete_ability(game);
+    }
+    fn on_ability_creation(self, game: &mut Game, actor_ref: PlayerReference, event: &crate::game::event::on_ability_creation::OnAbilityCreation, fold: &mut crate::game::event::on_ability_creation::OnAbilityCreationFold, priority: crate::game::event::on_ability_creation::OnAbilityCreationPriority) {
+        if priority != OnAbilityCreationPriority::SideEffect || !event.id.is_players_role(actor_ref, Role::Drunk) || fold.cancelled {return}
+        
+        Confused::add_player(game, actor_ref);
         let possible_roles = Self::POSSIBLE_ROLES.into_iter()
             .filter(|role|role_enabled_and_not_taken(
                 *role,
@@ -37,14 +43,6 @@ impl RoleStateTrait for Drunk {
         if let Some(new_role) = possible_roles.choose(&mut rand::rng()) {
             Self::set_role_before_start(game, actor_ref, *new_role);
         }
-
-    }
-    // fn on_role_switch(game: &mut Game, player: PlayerReference) {
-    //     Confused::remove_player(game, player);
-    // }
-    fn on_ability_creation(self, game: &mut Game, actor_ref: PlayerReference, event: &crate::game::event::on_ability_creation::OnAbilityCreation, fold: &mut crate::game::event::on_ability_creation::OnAbilityCreationFold, priority: crate::game::event::on_ability_creation::OnAbilityCreationPriority) {
-        if priority != OnAbilityCreationPriority::SideEffect || !event.id.is_players_role(actor_ref, Role::Drunk) || fold.cancelled {return}
-        Confused::add_player(game, actor_ref);
     }
     fn on_ability_deletion(self, game: &mut Game, actor_ref: PlayerReference, event: &crate::game::event::on_ability_deletion::OnAbilityDeletion, _fold: &mut (), priority: crate::game::event::on_ability_deletion::OnAbilityDeletionPriority) {
         if !event.id.is_players_role(actor_ref, Role::Drunk) || priority != OnAbilityDeletionPriority::BeforeSideEffect {return;}
@@ -65,7 +63,7 @@ impl Drunk{
         //NOTE: It will still send a packet to the player that their role state updated,
         //so it might be deducible that the player is a drunk
         AbilityID::Role { role: new_role, player: actor_ref }
-            .edit_ability(game, Ability::RoleAbility(RoleAbility(actor_ref, new_state.clone())));
+            .set_ability(game, Some(Ability::RoleAbility(RoleAbility(actor_ref, new_state.clone()))));
 
         actor_ref.send_packet(game, ToClientPacket::YourRoleState {
             role_state: new_state.get_client_ability_state(game, actor_ref)
