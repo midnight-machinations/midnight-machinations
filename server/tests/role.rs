@@ -127,7 +127,25 @@ fn informant_read_whisper(){
     });
 }
 
+#[test]
+fn tailor_basic(){
+    kit::scenario!(game in Night 1 where
+        tailor: Tailor,
+        townie: Detective,
+        _a: Godfather
+    );
 
+    tailor.send_ability_input_player_list_typical(townie);
+    tailor.send_ability_input(ControllerInput::new(
+        ControllerID::role(tailor.player_ref(), tailor.role(), 1),
+        RoleListSelection(vec![Role::Lookout]),
+    ));
+
+    game.skip_to(Obituary, 2);
+
+    assert_eq!(townie.role(), Role::Lookout);
+    assert_contains!(tailor.player_ref().revealed_players(&game), &townie.player_ref());
+}
 
 #[test]
 fn mortician_obscures_on_stand(){

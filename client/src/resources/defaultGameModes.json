@@ -1768,6 +1768,7 @@
           "enabledRoles": [
             "armorsmith",
             "pawn",
+            "tailor",
             "auditor",
             "bouncer",
             "cop",
@@ -1896,6 +1897,7 @@
           "enabledRoles": [
             "armorsmith",
             "pawn",
+            "tailor",
             "auditor",
             "bouncer",
             "cop",
@@ -2031,6 +2033,7 @@
           "enabledRoles": [
             "armorsmith",
             "pawn",
+            "tailor",
             "auditor",
             "bouncer",
             "cop",
@@ -2176,6 +2179,7 @@
           "enabledRoles": [
             "armorsmith",
             "pawn",
+            "tailor",
             "auditor",
             "bouncer",
             "cop",
@@ -2328,6 +2332,7 @@
           "enabledRoles": [
             "armorsmith",
             "pawn",
+            "tailor",
             "auditor",
             "bouncer",
             "cop",

@@ -181,6 +181,7 @@ macros::roles! {
     Warper : warper,
     Kidnapper : kidnapper,
     Pawn : pawn,
+    Tailor : tailor,
 
     Arsonist : arsonist,
     Werewolf : werewolf,

@@ -493,12 +493,10 @@
     
     "role.scarecrow.name": "Scarecrow",
     "role.scarecrow.name:var.0": "Scarecrows",
-    "role.scarecrow.target": "Ward",
     "controllerId.role.scarecrow.0.name": "Ward",
 
     "role.warper.name": "Warper",
     "role.warper.name:var.0": "Warpers",
-    "role.warper.target": "Warp",
     "controllerId.role.warper.0.name": "Warp",
 
     "role.kidnapper.name": "Kidnapper",
@@ -508,6 +506,11 @@
 
     "role.pawn.name": "Pawn",
     "role.pawn.name:var.0": "Pawns",
+    
+    "role.tailor.name": "Tailor",
+    "role.tailor.name:var.0": "Tailors",
+    "controllerId.role.tailor.0.name": "Measure",
+    "controllerId.role.tailor.1.name": "Fit",
 
     "role.politician.name": "Politician",
     "role.politician.name:var.0": "Politicians",
@@ -2072,6 +2075,12 @@
     "wiki.article.role.pawn.attributes": "",
     "wiki.article.role.pawn.extra": "",
     
+    "wiki.article.role.tailor.reminder": "Each night, choose a player to change their role. You can only change players from town roles to town roles.",
+    "wiki.article.role.tailor.guide": "- At night, choose a player and a town common role.\n    - If that player has a town common role, you change their role to the role you chose.\n    - At the start of obituary, your targets role is revealed to you, even if they did not have a town common role.\n    - If you don't choose a role, you do not visit.",
+    "wiki.article.role.tailor.abilities": "",
+    "wiki.article.role.tailor.attributes": "",
+    "wiki.article.role.tailor.extra": "",
+
     "wiki.article.role.politician.reminder": "If town is about to win, you win instead, and kill all non-politicians.",
     "wiki.article.role.politician.guide":"* If the town would win, instead the game skips to nomination, if you survive until the next dusk after that dusk, you win (killing all other players)\n* During the day, enfranchise to gain 3x voting power\n    - Everyone is told you enfranchised\n    - From now on, you can't whisper or be whispered to",
     "wiki.article.role.politician.abilities": "* You may enfranchise during the day to gain 3x voting power\n* If the town would win while you are alive, instead the game instantly goes to nominations and all players are told the politician is about to win. If you survive this trial, you win and all non-politicians die\n* You can't whisper or be whispered to",

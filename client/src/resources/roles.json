@@ -805,7 +805,7 @@
         "canWriteDeathNote": false,
         "canBeConvertedTo": [],
         "chatMessages":[
-            {"type": "roleAssignment", "role":"mafiaSupportWildcard"},
+            {"type": "roleAssignment", "role":"framer"},
             {"type": "wildcardConvertFailed", "role": "framer"}
         ]
     },
@@ -1055,6 +1055,18 @@
         "canBeConvertedTo": [],
         "chatMessages":[
             {"type": "pawnRole", "role": "detective"}
+        ]
+    },
+    "tailor":{
+        "mainRoleSet": "minions",
+        "roleSets": ["minions"],
+        "armor": false,
+        "aura": null,
+        "maxCount": null,
+        "canWriteDeathNote": false,
+        "canBeConvertedTo": [],
+        "chatMessages":[
+            {"type": "roleAssignment", "role":"mayor"}
         ]
     },
     "arsonist": {
