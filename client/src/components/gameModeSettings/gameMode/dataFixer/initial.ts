@@ -1,7 +1,7 @@
 import { VersionConverter } from ".";
 import { PHASES, PhaseTimes } from "../../../../game/gameState.d";
 import { Settings } from "../../../../game/localStorage";
-import { ROLE_SETS, RoleSet, getAllRoles } from "../../../../game/roleListState.d";
+import { BASE_ROLE_SETS, RoleSet, getAllRoles } from "../../../../game/roleListState.d";
 import { Role } from "../../../../game/roleState.d";
 import { Failure, ParseResult, ParseSuccess, Success, isFailure } from "../parse";
 
@@ -321,10 +321,10 @@ export function parseRoleSet(json: NonNullable<any>): ParseResult<RoleSet> {
     if (typeof json !== "string") {
         return Failure("roleSetIsNotString", json);
     }
-    if (!ROLE_SETS.includes(json as RoleSet)) {
+    if (!BASE_ROLE_SETS.includes(json as any)) {
         return Failure("invalidRoleSet", json);
     }
-    return Success(json as RoleSet);
+    return Success(json as any);
 }
 
 function parseFaction(json: NonNullable<any>): ParseResult<typeof FACTIONS[number]> {

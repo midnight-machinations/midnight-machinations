@@ -228,7 +228,9 @@ impl Lobby {
             ToServerPacket::SimplifyRoleList => {
                 if let Some(player) = self.clients.get(&room_client_id) && !player.is_host() {break 'packet_match}
 
-                self.settings.role_list.simplify();
+                let cloned_settings = self.settings.clone();
+
+                self.settings.role_list.simplify(&cloned_settings);
                 let role_list = self.settings.role_list.clone();
                 
                 self.send_to_all(ToClientPacket::RoleList { role_list });

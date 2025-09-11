@@ -96,6 +96,10 @@ function PlayerCard(props: Readonly<{
         ["roleList"]
     )!;
 
+    const modifierSettings = useLobbyOrGameState(
+        gameState => gameState.modifierSettings,
+        ["modifierSettings"]
+    )!;
 
     const controllers = new ListMap(
         usePlayerState(playerState=>playerState.savedControllers, ["yourAllowedControllers", "yourAllowedController"])??[],
@@ -170,7 +174,7 @@ function PlayerCard(props: Readonly<{
             <Button onClick={()=>setAlibiOpen(!alibiOpen)}>
                 <StyledText noLinks={true}>
                     {
-                        translateChatMessage(mostRecentBlockMessage[1].variant, playerNames, roleList)
+                        translateChatMessage(mostRecentBlockMessage[1].variant, playerNames, roleList, modifierSettings)
                             .split("\n")[1]
                             .trim()
                             .substring(0,30)

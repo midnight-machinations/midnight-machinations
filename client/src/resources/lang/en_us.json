@@ -667,6 +667,7 @@
     "minions:var.0": "Minion",
     "fiends": "Fiends",
     "fiends:var.0": "Fiend",
+    "roleSet.customUnnamed": "Custom \\0",
     "niceList": "Nice List",
     "niceList:var.0": "Nice",
     "naughtyList": "Naughty List",
@@ -849,6 +850,7 @@
     "forfeitNominationVote": "Forfeit Nomination Vote",
     "randomPlayerNames": "Random Player Names",
     "customRoleLimits": "Custom Role Limits",
+    "customRoleSets": "Custom Role Sets",
 
     "syndicateGunItem": "Syndicate Gun",
     "nightMessages": "Night Messages",

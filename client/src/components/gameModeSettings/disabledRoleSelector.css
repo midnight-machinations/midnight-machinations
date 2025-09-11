@@ -51,3 +51,8 @@
 .custom-role-limit-selection > input {
     width: 3rem;
 }
+.select-role-to-add {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+}
