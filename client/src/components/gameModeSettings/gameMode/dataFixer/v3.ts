@@ -218,7 +218,7 @@ function parseRoleOutline(json: NonNullable<any>): ParseResult<RoleOutline> {
 
     switch (json.type) {
         case "any":
-            return Success([{ roleSet: "any" }])
+            return Success([{ roleSet: "any" }] as any)
         case "roleOutlineOptions": {
             if (!Object.keys(json).includes('options')) {
                 return Failure("roleOutlineMissingOptionsKey", json);

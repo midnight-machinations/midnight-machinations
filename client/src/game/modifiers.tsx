@@ -1,4 +1,5 @@
 import { ListMapData } from "../ListMap";
+import { UnsafeString } from "./gameState.d";
 import { Role } from "./roleState.d";
 
 export const MODIFIERS = [
@@ -13,7 +14,7 @@ export const MODIFIERS = [
     "unscheduledNominations",
     "hiddenNominationVotes", "hiddenVerdictVotes",
     "forfeitNominationVote", "randomPlayerNames",
-    "customRoleLimits"
+    "customRoleLimits", "customRoleSets"
 ] as const;
 
 export type ModifierID = (typeof MODIFIERS)[number];
@@ -57,12 +58,20 @@ export type ModifierState = {
 } | {
     type: "customRoleLimits",
     limits: ListMapData<Role, number>
+} | {
+    type: "customRoleSets",
+    sets: {
+        name: UnsafeString,
+        roles: Role[]
+    }[]
 }
 
 export function defaultModifierState(modifierId: ModifierID): ModifierState {
     switch (modifierId) {
         case "customRoleLimits":
             return { type: modifierId, limits: [] };
+        case "customRoleSets":
+            return { type: modifierId, sets: [] };
         default:
             return { type: modifierId };
     }
@@ -71,6 +80,7 @@ export function defaultModifierState(modifierId: ModifierID): ModifierState {
 export function isModifierConfigurable(modifierId: ModifierID): boolean {
     switch (modifierId) {
         case "customRoleLimits":
+        case "customRoleSets":
             return true;
         default:
             return false;

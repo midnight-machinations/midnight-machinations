@@ -1,5 +1,5 @@
 import { PlayerIndex, UnsafeString } from "./gameState.d"
-import { RoleSet } from "./roleListState.d"
+import { BaseRoleSet } from "./roleListState.d"
 import ROLES from "./../resources/roles.json";
 import { ChatMessageVariant } from "../components/ChatMessage";
 import { AuditorResult } from "../menu/game/gameScreenContent/AbilityMenu/RoleSpecificMenus/AuditorMenu";
@@ -227,8 +227,8 @@ Doomsayer
 
 export type Role = keyof typeof ROLES;
 export type SingleRoleJsonData = {
-    mainRoleSet: RoleSet,
-    roleSets: RoleSet[],
+    mainRoleSet: BaseRoleSet,
+    roleSets: BaseRoleSet[],
     armor: boolean,
     aura: null | "innocent" | "suspicious",
     maxCount: null | number,
@@ -238,8 +238,8 @@ export type SingleRoleJsonData = {
 }
 export type RoleJsonData = Record<Role, SingleRoleJsonData>
 
-export function getMainRoleSetFromRole(role: Role): RoleSet {
-    return roleJsonData()[role].mainRoleSet as RoleSet;
+export function getMainRoleSetFromRole(role: Role): BaseRoleSet {
+    return roleJsonData()[role].mainRoleSet as BaseRoleSet;
 }
 
 export function roleJsonData(): RoleJsonData {

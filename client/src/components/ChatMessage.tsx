@@ -3,7 +3,7 @@ import React, { ReactElement } from "react";
 import GAME_MANAGER, { find, replaceMentions } from "..";
 import StyledText, { KeywordDataMap, PLAYER_SENDER_KEYWORD_DATA } from "./StyledText";
 import "./chatMessage.css"
-import { ChatGroup, Conclusion, DefensePower, InsiderGroup, PhaseState, PlayerIndex, Tag, translateConclusion, translateWinCondition, UnsafeString, Verdict, WinCondition } from "../game/gameState.d";
+import { ChatGroup, Conclusion, DefensePower, InsiderGroup, ModifierSettings, PhaseState, PlayerIndex, Tag, translateConclusion, translateWinCondition, UnsafeString, Verdict, WinCondition } from "../game/gameState.d";
 import { Role, RoleState } from "../game/roleState.d";
 import { Grave } from "../game/graveState";
 import GraveComponent from "./grave";
@@ -31,7 +31,8 @@ const ChatElement = React.memo((
         playerSenderKeywordData?: KeywordDataMap
         roleList?: RoleList,
         roleListKeywordData?: KeywordDataMap,
-    }, 
+        modifierSettings?: ModifierSettings,
+    },
 ) => {
     const roleState = usePlayerState(
         playerState => playerState.roleState,
@@ -56,12 +57,18 @@ const ChatElement = React.memo((
         ["roleList"]
     );
 
+    const realModifierSettings = useLobbyOrGameState(
+        state => state.modifierSettings,
+        ["modifierSettings"]
+    );
+
     const [mouseHovering, setMouseHovering] = React.useState(false); 
 
     const message = props.message;
     const realPlayerNames = usePlayerNames();
     const playerNames = props.playerNames ?? realPlayerNames;
     const roleList = props.roleList ?? realRoleList ?? [];
+    const modifierSettings = props.modifierSettings ?? realModifierSettings ?? new ListMap();
     const chatMessageStyles = require("../resources/styling/chatMessage.json");
     if(message.variant === undefined){
         console.error("ChatElement message with undefined variant:");
@@ -92,6 +99,7 @@ const ChatElement = React.memo((
                 playerKeywordData={props.playerKeywordData}
                 playerSenderKeywordData={props.playerSenderKeywordData}
                 roleListKeywordData={props.roleListKeywordData}
+                modifierSettings={modifierSettings}
             />
         case "normal":
             return <NormalChatMessage
@@ -109,6 +117,7 @@ const ChatElement = React.memo((
                 myIndex={myIndex}
                 forwardButton={forwardButton}
                 roleList={roleList}
+                modifierSettings={modifierSettings}
             />
         case "playerForwardedMessage":
         case "targetsMessage":
@@ -118,7 +127,7 @@ const ChatElement = React.memo((
                         playerKeywordData={props.playerKeywordData}
                         roleListKeywordData={props.roleListKeywordData}
                     >
-                        {(chatGroupIcon??"")} {translateChatMessage(message.variant, playerNames, roleList)}
+                        {(chatGroupIcon??"")} {translateChatMessage(message.variant, playerNames, roleList, modifierSettings)}
                     </StyledText>
                     <ChatElement {...props} message={{
                         variant: message.variant.message,
@@ -188,7 +197,7 @@ const ChatElement = React.memo((
             playerKeywordData={props.playerKeywordData}
             roleListKeywordData={props.roleListKeywordData}
         >
-            {(chatGroupIcon??"")} {translateChatMessage(message.variant, playerNames, roleList)}
+            {(chatGroupIcon??"")} {translateChatMessage(message.variant, playerNames, roleList, modifierSettings)}
         </StyledText>
         {mouseHovering && <div
             className="chat-message-div-small-button-div"
@@ -197,7 +206,7 @@ const ChatElement = React.memo((
                 canCopyPasteChatMessages(roleState)
                 && <CopyButton
                     className="chat-message-div-small-button"
-                    text={translateChatMessage(message.variant, playerNames, roleList)}
+                    text={translateChatMessage(message.variant, playerNames, roleList, modifierSettings)}
                 />
             }
             {
@@ -263,11 +272,12 @@ function LobbyChatMessage(props: Readonly<{
     playerKeywordData: KeywordDataMap | undefined,
     playerSenderKeywordData: KeywordDataMap | undefined,
     roleListKeywordData: KeywordDataMap | undefined,
-    chatGroupIcon: string
+    chatGroupIcon: string,
+    modifierSettings: ModifierSettings
 }>): ReactElement {
     let style = props.style;
 
-    if (useContainsMention(props.message.variant, props.playerNames, props.roleList)) {
+    if (useContainsMention(props.message.variant, props.playerNames, props.roleList, props.modifierSettings)) {
         style += " mention";
     }
 
@@ -279,7 +289,7 @@ function LobbyChatMessage(props: Readonly<{
         <StyledText
             playerKeywordData={props.playerKeywordData}
             roleListKeywordData={props.roleListKeywordData}
-        >{translateChatMessage(props.message.variant, props.playerNames, props.roleList)}</StyledText>
+        >{translateChatMessage(props.message.variant, props.playerNames, props.roleList, props.modifierSettings)}</StyledText>
     </span></div>;
 }
 
@@ -297,7 +307,8 @@ function NormalChatMessage(props: Readonly<{
     setMouseHovering: (hovering: boolean) => void,
     myIndex: PlayerIndex | undefined,
     forwardButton: boolean | undefined,
-    roleList: RoleList
+    roleList: RoleList,
+    modifierSettings: ModifierSettings
 }>): ReactElement {
     let style = props.style;
     let chatGroupIcon = props.chatGroupIcon;
@@ -321,7 +332,7 @@ function NormalChatMessage(props: Readonly<{
         messageSender = translate("role."+props.message.variant.messageSender.type+".name");
     }
     
-    if (useContainsMention(props.message.variant, props.playerNames, props.roleList)) {
+    if (useContainsMention(props.message.variant, props.playerNames, props.roleList, props.modifierSettings)) {
         style += " mention";
     }
 
@@ -346,7 +357,7 @@ function NormalChatMessage(props: Readonly<{
                 playerKeywordData={props.playerKeywordData}
                 roleListKeywordData={props.roleListKeywordData}
             >
-                {translateChatMessage(props.message.variant, props.playerNames, props.roleList)}
+                {translateChatMessage(props.message.variant, props.playerNames, props.roleList, props.modifierSettings)}
             </StyledText>
         </span>
         {props.mouseHovering && <div
@@ -356,7 +367,7 @@ function NormalChatMessage(props: Readonly<{
                 canCopyPasteChatMessages(props.roleState)
                 && <CopyButton
                     className="chat-message-div-small-button"
-                    text={translateChatMessage(props.message.variant, props.playerNames, props.roleList)}
+                    text={translateChatMessage(props.message.variant, props.playerNames, props.roleList, props.modifierSettings)}
                 />
             }
             {
@@ -373,7 +384,7 @@ function NormalChatMessage(props: Readonly<{
     </div>;
 }
 
-function useContainsMention(message: ChatMessageVariant & { text: string | UnsafeString }, playerNames: UnsafeString[], roleList: RoleList): boolean {
+function useContainsMention(message: ChatMessageVariant & { text: string | UnsafeString }, playerNames: UnsafeString[], roleList: RoleList, modifierSettings: ModifierSettings): boolean {
     const myName = useLobbyOrGameState(
         state => {
             if (state.stateType === "game" && state.clientState.type === "player")
@@ -394,7 +405,7 @@ function useContainsMention(message: ChatMessageVariant & { text: string | Unsaf
         return false;
     }
     return (
-        find(encodeString(myName)).test(encodeString(replaceMentions(message.text, playerNames, roleList)))
+        find(encodeString(myName)).test(encodeString(replaceMentions(message.text, playerNames, roleList, modifierSettings)))
     )
 }
 
@@ -431,19 +442,20 @@ export function encodeString(text: UnsafeString): string {
 export function translateChatMessage(
     message: ChatMessageVariant,
     playerNames: UnsafeString[],
-    roleList: RoleList
+    roleList: RoleList,
+    modifierSettings: ModifierSettings
 ): string {
     
     switch (message.type) {
         case "lobbyMessage":
-            return encodeString(replaceMentions(message.text, playerNames, roleList));
+            return encodeString(replaceMentions(message.text, playerNames, roleList, modifierSettings));
         case "normal":
-            return (message.block===true?"\n":"")+encodeString(replaceMentions(message.text, playerNames, roleList));
+            return (message.block===true?"\n":"")+encodeString(replaceMentions(message.text, playerNames, roleList, modifierSettings));
         case "whisper":
             return translate("chatMessage.whisper", 
                 encodeString(playerNames[message.fromPlayerIndex]),
                 encodeString(playerNames[message.toPlayerIndex]),
-                encodeString(replaceMentions(message.text, playerNames, roleList))
+                encodeString(replaceMentions(message.text, playerNames, roleList, modifierSettings))
             );
         case "broadcastWhisper":
             return translate("chatMessage.broadcastWhisper",
@@ -621,20 +633,20 @@ export function translateChatMessage(
                         translate("none") :
                         roleList === undefined ?
                             message.selection.selection[0].toString() :
-                            translateRoleOutline(roleList[message.selection.selection[0]], playerNames);
+                            translateRoleOutline(roleList[message.selection.selection[0]], playerNames, modifierSettings);
 
                     let second = message.selection.selection[1] === null ? 
                         translate("none") :
                         roleList === undefined ?
                             message.selection.selection[1].toString() :
-                            translateRoleOutline(roleList[message.selection.selection[1]], playerNames);
+                            translateRoleOutline(roleList[message.selection.selection[1]], playerNames, modifierSettings);
 
                     
 
                     out = translate("chatMessage.abilityUsed.selection.twoRoleOutlineOption", first, second);
                     break;
                 case "string":
-                    out = translate("chatMessage.abilityUsed.selection.string", encodeString(replaceMentions(message.selection.selection, playerNames, roleList)));
+                    out = translate("chatMessage.abilityUsed.selection.string", encodeString(replaceMentions(message.selection.selection, playerNames, roleList, modifierSettings)));
                     break;
                 case "integer":
                     let text = translateChecked("controllerId."+controllerIdToLink(message.abilityId).replace(/\//g, ".") + ".integer." + message.selection.selection);
@@ -662,7 +674,7 @@ export function translateChatMessage(
             );
         case "reporterReport":
             return translate("chatMessage.reporterReport",
-                encodeString(replaceMentions(message.report, playerNames, roleList))
+                encodeString(replaceMentions(message.report, playerNames, roleList, modifierSettings))
             );
         case "playerIsBeingInterviewed":
             return translate("chatMessage.playerIsBeingInterviewed",
@@ -736,7 +748,7 @@ export function translateChatMessage(
             return encodeString(replaceMentions(translate("chatMessage.auditorResult",
                 message.outlineIndex+1,
                 message.result.map((role)=>translate("role."+role+".name")).join(", ")
-            ), playerNames, roleList));
+            ), playerNames, roleList, modifierSettings));
         case "engineerVisitorsRole":
             return translate("chatMessage.engineerVisitorsRole", translate("role."+message.role+".name"));
         case "trapState":
@@ -747,7 +759,7 @@ export function translateChatMessage(
             return translate("chatMessage.playerRoleAndAlibi",
                 encodeString(playerNames[message.player]),
                 translate("role."+message.role+".name"),
-                encodeString(replaceMentions(message.will, playerNames, roleList))
+                encodeString(replaceMentions(message.will, playerNames, roleList, modifierSettings))
             );
         case "informantResult":
             return translate("chatMessage.informantResult",
@@ -803,7 +815,7 @@ export function translateChatMessage(
             return conclusionString + '\n'
                 + message.synopsis.playerSynopses.map((synopsis, index) => 
                     translate(`chatMessage.gameOver.player.won.${synopsis.won}`, encodeString(playerNames![index]))
-                        + ` (${synopsis.outlineAssignment + 1}: ${translateRoleOutline(roleList[synopsis.outlineAssignment], playerNames)}`
+                        + ` (${synopsis.outlineAssignment + 1}: ${translateRoleOutline(roleList[synopsis.outlineAssignment], playerNames, modifierSettings)}`
                         + `: ${synopsis.crumbs.map(crumb => 
                             translate("chatMessage.gameOver.player.crumb",
                                 crumb.insiderGroups.map(group => translate("chatGroup."+group+".icon")).join("|") || translate("chatGroup.all.icon"),

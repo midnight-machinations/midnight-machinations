@@ -64,7 +64,7 @@ impl RoleStateTrait for Auditor {
             .available_selection(AvailableTwoRoleOutlineOptionSelection(
                 RoleOutlineReference::all_outlines(game)
                     .filter(|o|!self.previously_given_results.contains(o))
-                    .filter(|o|o.deref(game).get_all_roles().len() > 1)
+                    .filter(|o|o.deref(game).get_all_roles(&game.settings).len() > 1)
                     .map(Some)
                     .chain(once(None))
                     .collect()
@@ -93,7 +93,7 @@ impl Auditor{
         let outline = chosen_outline.deref(game);
 
         let mut all_possible_fake_roles = outline
-            .get_all_roles()
+            .get_all_roles(&game.settings)
             .into_iter()
             .filter(|x|game.settings.enabled_roles.contains(x))
             .collect::<Vec<Role>>();

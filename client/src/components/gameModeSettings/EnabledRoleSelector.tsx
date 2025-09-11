@@ -1,7 +1,7 @@
-import React, { ReactElement, useCallback, useContext, useState } from "react"
+import React, { ReactElement, useCallback, useContext, useMemo, useState } from "react"
 import translate from "../../game/lang"
 import StyledText from "../StyledText"
-import { ROLE_SETS, RoleOrRoleSet, getAllRoles, getRolesFromRoleOrRoleSet } from "../../game/roleListState.d";
+import { BASE_ROLE_SETS, RoleOrRoleSet, getAllRoles, getRolesFromRoleOrRoleSet } from "../../game/roleListState.d";
 import { Role, roleJsonData } from "../../game/roleState.d";
 import { RoleOrRoleSetSelector } from "./OutlineSelector";
 import "./disabledRoleSelector.css"
@@ -9,6 +9,7 @@ import Icon from "../Icon";
 import { Button } from "../Button";
 import { GameModeContext } from "./GameModesEditor";
 import CheckBox from "../CheckBox";
+import ListMap from "../../ListMap";
 
 
 
@@ -19,16 +20,18 @@ export default function EnabledRoleSelector(props: Readonly<{
     onEnableRoles: (role: Role[]) => void,
     onIncludeAll: () => void
 }>): ReactElement {
-    const {enabledRoles} = useContext(GameModeContext);
+    const {enabledRoles, modifierSettings: modifierSettingsData} = useContext(GameModeContext);
 
-    const [roleOrRoleSet, setRoleOrRoleSet] = useState<RoleOrRoleSet>({ type: "roleSet", roleSet: "town" });
+    const modifierSettings = useMemo(() => new ListMap(modifierSettingsData), [modifierSettingsData]);
+
+    const [roleOrRoleSet, setRoleOrRoleSet] = useState<RoleOrRoleSet>({ type: "roleSet", roleSet: { type: "town" } });
 
     const disableOutlineOption = (outline: RoleOrRoleSet) => {
-        props.onDisableRoles(getRolesFromRoleOrRoleSet(outline));
+        props.onDisableRoles(getRolesFromRoleOrRoleSet(outline, modifierSettings));
     }
 
     const enableOutlineOption = (outline: RoleOrRoleSet) => {
-        props.onEnableRoles(getRolesFromRoleOrRoleSet(outline));
+        props.onEnableRoles(getRolesFromRoleOrRoleSet(outline, modifierSettings));
     }
 
     const disableAll = () => {
@@ -115,7 +118,7 @@ export function EnabledRolesDisplay(props: EnabledRolesDisplayProps): ReactEleme
             {getAllRoles()
                 .filter(role => isEnabled(role) || !hideDisabled || props.modifiable)
                 .sort((a, b) => props.modifiable ? 0 : (isEnabled(a) ? -1 : 1) - (isEnabled(b) ? -1 : 1))
-                .sort((a, b) => ROLE_SETS.indexOf(roleJsonData()[a].mainRoleSet) - ROLE_SETS.indexOf(roleJsonData()[b].mainRoleSet))
+                .sort((a, b) => BASE_ROLE_SETS.indexOf(roleJsonData()[a].mainRoleSet) - BASE_ROLE_SETS.indexOf(roleJsonData()[b].mainRoleSet))
                 .map((role, i) => 
                     props.modifiable 
                         ? <Button key={i}

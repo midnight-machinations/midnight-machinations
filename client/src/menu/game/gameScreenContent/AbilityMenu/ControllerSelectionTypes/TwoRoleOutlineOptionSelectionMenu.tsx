@@ -8,7 +8,7 @@ import translate from "../../../../../game/lang"
 import { useGameState, usePlayerNames } from "../../../../../components/useHooks"
 import { Button } from "../../../../../components/Button"
 import { AvailableTwoRoleOutlineOptionSelection, TwoRoleOutlineOptionSelection } from "../../../../../game/controllerInput"
-import { UnsafeString } from "../../../../../game/gameState.d"
+import { ModifierSettings, UnsafeString } from "../../../../../game/gameState.d"
 
 export type AuditorResult = Role[];
 type AuditorButtons = ({
@@ -30,6 +30,12 @@ export default function TwoRoleOutlineOptionSelectionMenu(props: {
             return gameState.roleList;
         },
         ["roleList"]
+    )!;
+    const modifierSettings = useGameState(
+        (gameState)=>{
+            return gameState.modifierSettings;
+        },
+        ["modifierSettings"]
     )!;
 
     const playerNames = usePlayerNames();
@@ -64,6 +70,7 @@ export default function TwoRoleOutlineOptionSelectionMenu(props: {
                 roleList={roleList}
                 strikenOutlineIndexs={strikenOutlineIndexs}
                 playerNames={playerNames}
+                modifierSettings={modifierSettings}
             />
             <ChooseButtons
                 buttons={buttons}
@@ -76,6 +83,7 @@ export default function TwoRoleOutlineOptionSelectionMenu(props: {
 function RoleListDisplay(props: {
     roleList: RoleList,
     playerNames: UnsafeString[],
+    modifierSettings: ModifierSettings,
     strikenOutlineIndexs: number[],
 }): ReactElement {
     return <>
@@ -88,10 +96,10 @@ function RoleListDisplay(props: {
                 {
                     props.strikenOutlineIndexs.includes(index) ? 
                     <s><StyledText>
-                        {`${index + 1}: ` + translateRoleOutline(entry, props.playerNames)}
+                        {`${index + 1}: ` + translateRoleOutline(entry, props.playerNames, props.modifierSettings)}
                     </StyledText></s> : 
                     <StyledText>
-                        {`${index + 1}: ` + translateRoleOutline(entry, props.playerNames)}
+                        {`${index + 1}: ` + translateRoleOutline(entry, props.playerNames, props.modifierSettings)}
                     </StyledText>
                 }
             </Button>

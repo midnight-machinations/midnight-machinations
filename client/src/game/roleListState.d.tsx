@@ -1,15 +1,16 @@
 
 import { encodeString } from "../components/ChatMessage";
-import { Conclusion, InsiderGroup, PlayerIndex, translateWinCondition, UnsafeString } from "./gameState.d";
+import { Conclusion, InsiderGroup, ModifierSettings, PlayerIndex, translateWinCondition, UnsafeString } from "./gameState.d";
 import translate from "./lang";
+import { ModifierState } from "./modifiers";
 import { Role, roleJsonData } from "./roleState.d";
 
 export type RoleList = RoleOutline[];
-export function getRolesFromRoleList(roleList: RoleList): Role[] {
+export function getRolesFromRoleList(roleList: RoleList, modifierSettings: ModifierSettings): Role[] {
 
     let set = new Set<Role>();
     for(let roleOutline of roleList){
-        for(let role of getRolesFromOutline(roleOutline)){
+        for(let role of getRolesFromOutline(roleOutline, modifierSettings)){
             set.add(role);
         }
     }
@@ -25,7 +26,7 @@ export function getRolesComplement(roleList: Role[]): Role[] {
 
 
 
-export const ROLE_SETS = [
+export const BASE_ROLE_SETS = [
     "any",
     "town", "townCommon", "townInvestigative", "townProtective", "townKilling", "townSupport", 
     "mafia", "mafiaKilling", "mafiaSupport",
@@ -33,15 +34,35 @@ export const ROLE_SETS = [
     "fiends",
     "cult"
 ] as const;
-export type RoleSet = typeof ROLE_SETS[number];
-export function getRolesFromRoleSet(roleSet: RoleSet): Role[] {
+export type BaseRoleSet = (typeof BASE_ROLE_SETS)[number];
+export type RoleSet = { type: BaseRoleSet } | { type: "custom", id: number };
+export function getRolesFromBaseRoleSet(roleSet: BaseRoleSet): Role[] {
     return getAllRoles().filter((role) => {
-        return getRoleSetsFromRole(role).includes(roleSet);
+        return getBaseRoleSetsFromRole(role).includes(roleSet);
     });
 }
-export function getRoleSetsFromRole(role: Role): RoleSet[] {
+export function getRolesFromRoleSet(roleSet: RoleSet, modifierSettings: ModifierSettings): Role[] {
+    return getAllRoles().filter((role) => {
+        return getRoleSetsFromRole(role, modifierSettings).some((rs) => deepEqual(rs, roleSet));
+    });
+}
+export function getBaseRoleSetsFromRole(role: Role): BaseRoleSet[] {
     const ROLES = roleJsonData();
     return [...ROLES[role].roleSets, "any"]
+}
+export function getRoleSetsFromRole(role: Role, modifierSettings: ModifierSettings): RoleSet[] {
+    const roleSets: RoleSet[] = getBaseRoleSetsFromRole(role).map((baseRoleSet) => ({ type: baseRoleSet }));
+
+    const customRoleSetsModifier = modifierSettings.get("customRoleSets");
+    if (customRoleSetsModifier !== null) {
+        (customRoleSetsModifier as ModifierState & { type: "customRoleSets" }).sets.forEach((set, index) => {
+            if (set.roles.includes(role)) {
+                roleSets.push({ type: "custom", id: index });
+            }
+        });
+    }
+
+    return roleSets
 }
 
 
@@ -68,9 +89,9 @@ export type RoleOrRoleSet = ({
 
 
 
-export function translateRoleOutline(roleOutline: RoleOutline, playerNames: UnsafeString[]): string {
+export function translateRoleOutline(roleOutline: RoleOutline, playerNames: UnsafeString[], modifierSettings: ModifierSettings): string {
     return roleOutline.map(outline => 
-        translateRoleOutlineOption(outline, playerNames)).join(" "+translate("union:var.0")+" "
+        translateRoleOutlineOption(outline, playerNames, modifierSettings)).join(" "+translate("union:var.0")+" "
     )
 }
 
@@ -88,7 +109,23 @@ export function translatePlayerPool(playerPool: PlayerIndex[], playerNames: Unsa
     return out;
 }
 
-export function translateRoleOutlineOption(roleOutlineOption: RoleOutlineOption, playerNames: UnsafeString[]): string {
+export function translateRoleSet(roleSet: RoleSet, modifierSettings?: ModifierSettings): string {
+    switch (roleSet.type) {
+        case "custom":
+            const customRoleSetsModifier = modifierSettings?.get("customRoleSets");
+            if (customRoleSetsModifier !== null && customRoleSetsModifier !== undefined) {
+                const set = (customRoleSetsModifier as ModifierState & { type: "customRoleSets" }).sets[roleSet.id];
+                if (set !== undefined) {
+                    return encodeString(set.name);
+                }
+            }
+            return translate("roleSet.customUnnamed", roleSet.id);
+        default:
+            return translate(roleSet.type);
+    }
+}
+
+export function translateRoleOutlineOption(roleOutlineOption: RoleOutlineOption, playerNames: UnsafeString[], modifierSettings: ModifierSettings): string {
     let out = "";
     if (roleOutlineOption.playerPool) {
         out += translatePlayerPool(roleOutlineOption.playerPool, playerNames) + ': ';
@@ -106,40 +143,40 @@ export function translateRoleOutlineOption(roleOutlineOption: RoleOutlineOption,
         out += `${translateWinCondition({ type: "gameConclusionReached", winIfAny: roleOutlineOption.winIfAny })}, `;
     }
     if ("roleSet" in roleOutlineOption) {
-        out += translate(roleOutlineOption.roleSet)
+        out += translateRoleSet(roleOutlineOption.roleSet, modifierSettings);
     } else {
         out += translate("role."+roleOutlineOption.role+".name")
     }
     return out;
 }
-export function translateRoleOrRoleSet(roleOrRoleSet: RoleOrRoleSet): string {
+export function translateRoleOrRoleSet(roleOrRoleSet: RoleOrRoleSet, modifierSettings: ModifierSettings): string {
     switch (roleOrRoleSet.type) {
         case "roleSet":
-            return translate(roleOrRoleSet.roleSet)
+            return translateRoleSet(roleOrRoleSet.roleSet, modifierSettings);
         case "role":
             return translate("role."+roleOrRoleSet.role+".name")
     }
 }
-export function getRolesFromOutline(roleOutline: RoleOutline): Role[] {
-    return roleOutline.flatMap((option) => getRolesFromOutlineOption(option));
+export function getRolesFromOutline(roleOutline: RoleOutline, modifierSettings: ModifierSettings): Role[] {
+    return roleOutline.flatMap((option) => getRolesFromOutlineOption(option, modifierSettings));
 }
-export function getRolesFromOutlineOption(roleOutlineOption: RoleOutlineOption): Role[] {
+export function getRolesFromOutlineOption(roleOutlineOption: RoleOutlineOption, modifierSettings: ModifierSettings): Role[] {
     if ("roleSet" in roleOutlineOption) {
-        return getRolesFromRoleSet(roleOutlineOption.roleSet)
+        return getRolesFromRoleSet(roleOutlineOption.roleSet, modifierSettings)
     } else {
         return [roleOutlineOption.role]
     }
 }
-export function getRolesFromRoleOrRoleSet(roleOrRoleSet: RoleOrRoleSet): Role[] {
+export function getRolesFromRoleOrRoleSet(roleOrRoleSet: RoleOrRoleSet, modifierSettings: ModifierSettings): Role[] {
     switch (roleOrRoleSet.type) {
         case "roleSet":
-            return getRolesFromRoleSet(roleOrRoleSet.roleSet)
+            return getRolesFromRoleSet(roleOrRoleSet.roleSet, modifierSettings)
         case "role":
             return [roleOrRoleSet.role]
     }
 }
 
-export function simplifyRoleOutline(roleOutline: RoleOutline): RoleOutline {
+export function simplifyRoleOutline(roleOutline: RoleOutline, modifierSettings: ModifierSettings): RoleOutline {
     let newOptions = [...roleOutline];
 
     newOptions = newOptions.filter((item, index, self) => {
@@ -148,23 +185,23 @@ export function simplifyRoleOutline(roleOutline: RoleOutline): RoleOutline {
 
     for(let optionA of roleOutline){
         for(let optionB of roleOutline){
-            if(outlineOptionIsSubset(optionA, optionB) && !deepEqual(optionA, optionB)){
+            if(outlineOptionIsSubset(optionA, optionB, modifierSettings) && !deepEqual(optionA, optionB)){
                 newOptions = newOptions.filter((option) => option !== optionA);
             }
         }
     }
 
-    newOptions = newOptions.sort(outlineOptionCompare);
+    newOptions = newOptions.sort((a, b) => outlineOptionCompare(a, b, modifierSettings));
     return newOptions;
 }
-function outlineOptionIsSubset(optionA: RoleOutlineOption, optionB: RoleOutlineOption): boolean {
-    let rolesA = getRolesFromOutlineOption(optionA);
-    let rolesB = getRolesFromOutlineOption(optionB);
+function outlineOptionIsSubset(optionA: RoleOutlineOption, optionB: RoleOutlineOption, modifierSettings: ModifierSettings): boolean {
+    let rolesA = getRolesFromOutlineOption(optionA, modifierSettings);
+    let rolesB = getRolesFromOutlineOption(optionB, modifierSettings);
     return rolesA.every((role) => rolesB.includes(role));
 }
-function outlineOptionCompare(optionA: RoleOutlineOption, optionB: RoleOutlineOption): number {
-    let rolesA = getRolesFromOutlineOption(optionA);
-    let rolesB = getRolesFromOutlineOption(optionB);
+function outlineOptionCompare(optionA: RoleOutlineOption, optionB: RoleOutlineOption, modifierSettings: ModifierSettings): number {
+    let rolesA = getRolesFromOutlineOption(optionA, modifierSettings);
+    let rolesB = getRolesFromOutlineOption(optionB, modifierSettings);
     return rolesB.length - rolesA.length;
 }
 
@@ -175,8 +212,8 @@ export function getAllRoles(): Role[] {
 
 export function sortRolesCanonically(a: Role, b: Role): number {
     const roleJson = roleJsonData()
-    const roleSetA = ROLE_SETS.indexOf(roleJson[a].mainRoleSet)
-    const roleSetB = ROLE_SETS.indexOf(roleJson[b].mainRoleSet)
+    const roleSetA = BASE_ROLE_SETS.indexOf(roleJson[a].mainRoleSet)
+    const roleSetB = BASE_ROLE_SETS.indexOf(roleJson[b].mainRoleSet)
     if (roleSetA !== roleSetB) {
         return roleSetA - roleSetB
     } else {

@@ -180,7 +180,7 @@ function convertRoleList(roleList: InitialRoleOutline[]): ParseResult<v3RoleOutl
                             if (option.type === "faction")
                                 return {
                                     type: "roleSet" as const,
-                                    roleSet: option.faction as RoleSet,
+                                    roleSet: option.faction as any,
                                 };
                             return option;
                         }

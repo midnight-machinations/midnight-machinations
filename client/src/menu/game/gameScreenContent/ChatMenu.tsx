@@ -3,7 +3,7 @@ import translate from "../../../game/lang";
 import GAME_MANAGER from "../../../index";
 import "../gameScreen.css";
 import "./chatMenu.css"
-import { PlayerClientType, PlayerIndex, UnsafeString } from "../../../game/gameState.d";
+import { ModifierSettings, PlayerClientType, PlayerIndex, UnsafeString } from "../../../game/gameState.d";
 import ChatElement, { ChatMessage, encodeString, translateChatMessage } from "../../../components/ChatMessage";
 import { ContentMenu, ContentTab } from "../GameScreen";
 import { HistoryPoller, HistoryQueue } from "../../../history";
@@ -15,6 +15,7 @@ import { Virtuoso } from 'react-virtuoso';
 import ListMap from "../../../ListMap";
 import { controllerIdToLinkWithPlayer } from "../../../game/controllerInput";
 import { RoleList } from "../../../game/roleListState.d";
+import { ModifierID, ModifierState } from "../../../game/modifiers";
 
 
 export default function ChatMenu(): ReactElement {
@@ -102,7 +103,8 @@ function filterMessage(
     filter: ChatFilter,
     message: ChatMessage,
     playerNames: UnsafeString[],
-    roleList: RoleList
+    roleList: RoleList,
+    modifierSettings: ModifierSettings
 ): boolean{
     if(filter === null || filter === undefined)
         return true;
@@ -126,11 +128,11 @@ function filterMessage(
                     }
                     break;
                 case "targetsMessage":
-                    msgTxt = translateChatMessage(message.variant.message, playerNames, roleList);
+                    msgTxt = translateChatMessage(message.variant.message, playerNames, roleList, modifierSettings);
                     break;
             }
 
-            msgTxt += translateChatMessage(message.variant, playerNames, roleList);
+            msgTxt += translateChatMessage(message.variant, playerNames, roleList, modifierSettings);
 
             return msgTxt.includes(encodeString(playerNames[filter.player]));
         // case "myWhispersWithPlayer":
@@ -177,9 +179,14 @@ export function ChatMessageSection(props: Readonly<{
         gameState => gameState.roleList,
         ["roleList"]
     ) ?? [];
+    const modifierSettings = useLobbyOrGameState(
+        state => state.modifierSettings,
+        ["modifierSettings"],
+        new ListMap<ModifierID, ModifierState>()
+    )!;
 
     const allMessages = messages
-        .filter((msg)=>filterMessage(filter, msg[1], players.map((p)=>p.toString()), roleList))
+        .filter((msg)=>filterMessage(filter, msg[1], players.map((p)=>p.toString()), roleList, modifierSettings))
         .filter((msg, index, array)=>{
             //if there is a filter, remove repeat phaseChange message
             if(filter === null){return true}

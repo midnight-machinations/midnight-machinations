@@ -440,19 +440,19 @@ pub(super) fn get_current_receive_chat_groups(game: &Game, actor_ref: PlayerRefe
 
 ///Only works for roles that win based on end game condition
 pub(super) fn default_win_condition(role: Role) -> WinCondition {
-    if RoleSet::Mafia.get_roles().contains(&role) {
+    if RoleSet::Mafia.get_roles_static().contains(&role) {
         WinCondition::GameConclusionReached{win_if_any: vec![GameConclusion::Mafia].into_iter().collect()}
 
-    }else if RoleSet::Cult.get_roles().contains(&role) {
+    }else if RoleSet::Cult.get_roles_static().contains(&role) {
         WinCondition::GameConclusionReached{win_if_any: vec![GameConclusion::Cult].into_iter().collect()}
 
-    }else if RoleSet::Town.get_roles().contains(&role) {
+    }else if RoleSet::Town.get_roles_static().contains(&role) {
         WinCondition::GameConclusionReached{win_if_any: vec![GameConclusion::Town].into_iter().collect()}
 
-    }else if RoleSet::Fiends.get_roles().contains(&role) {
+    }else if RoleSet::Fiends.get_roles_static().contains(&role) {
         WinCondition::GameConclusionReached{win_if_any: vec![GameConclusion::Fiends].into_iter().collect()}
 
-    }else if RoleSet::Minions.get_roles().contains(&role) {
+    }else if RoleSet::Minions.get_roles_static().contains(&role) {
         WinCondition::GameConclusionReached{win_if_any: GameConclusion::all().into_iter().filter(|end_game_condition|
             !matches!(end_game_condition, 
                 GameConclusion::Town | GameConclusion::Draw |

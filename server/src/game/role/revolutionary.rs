@@ -78,7 +78,7 @@ impl RoleStateTrait for Revolutionary {
                     if let Some(target) = PlayerReference::all_players(game)
                         .filter(|p|
                             RoleSet::Town
-                                .get_roles()
+                                .get_roles_static()
                                 .contains(&p.role(game)) &&
                                 !Self::CANT_CHOOSE_ROLES.contains(&p.role(game))
                         ).collect::<Vec<PlayerReference>>()

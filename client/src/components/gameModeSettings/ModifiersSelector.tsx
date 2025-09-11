@@ -10,7 +10,10 @@ import Popover from "../Popover";
 import Select, { dropdownPlacementFunction } from "../Select";
 import { Role, roleJsonData } from "../../game/roleState.d";
 import Icon from "../Icon";
-import { getAllRoles, sortRolesCanonically } from "../../game/roleListState.d";
+import { getAllRoles, getRolesFromRoleSet, RoleOrRoleSet, sortRolesCanonically } from "../../game/roleListState.d";
+import { ModifierSettings, UnsafeString } from "../../game/gameState.d";
+import { encodeString } from "../ChatMessage";
+import { RoleOrRoleSetSelector } from "./OutlineSelector";
 
 export function ModifiersSelector(props: Readonly<{
     disabled?: boolean,
@@ -34,6 +37,7 @@ function ModifierButton(props: Readonly<{
     modifiable: boolean,
     state: ModifierState | undefined,
     setModifier: (modifier: ModifierState | undefined) => void
+    modifierSettings: Readonly<ModifierSettings>
 }>): ReactElement {
     const ref = useRef<HTMLButtonElement>(null);
     const [open, setOpen] = useState(false);
@@ -92,6 +96,7 @@ function ModifierButton(props: Readonly<{
                 modifiable={props.modifiable}
                 setModifier={props.setModifier}
                 close={() => setOpen(false)}
+                modifierSettings={props.modifierSettings}
             />
         </Popover>
     </>
@@ -126,6 +131,8 @@ export function ModifierSettingsDisplay(props: ModifierSettingsDisplayProps): Re
 
     const [hideDisabled, setHideDisabled] = useState(true);
 
+    const modifierSettingsForReading: Readonly<ModifierSettings> = new ListMap(props.modifierSettings);
+
     return <div>
         {!props.modifiable && <label className="centered-label">
             {translate("hideDisabled")}
@@ -158,6 +165,7 @@ export function ModifierSettingsDisplay(props: ModifierSettingsDisplayProps): Re
                                     props.setModifiers(newModifiers.list);
                                 }
                             }}
+                            modifierSettings={modifierSettingsForReading}
                         />
                         : <div key={modifier} className={"placard" + (!isEnabled(modifier) ? " disabled" : "")}>
                             {modifierTextElement(modifier)}
@@ -173,6 +181,7 @@ export function ModifierConfigMenu(props: Readonly<{
     state: ModifierState | undefined,
     setModifier: (modifier: ModifierState | undefined) => void,
     close: () => void,
+    modifierSettings: Readonly<ModifierSettings>
 }>): ReactElement | null {
     // This will prevent it from opening until the server sends us the state
     if (props.state === undefined) {
@@ -186,6 +195,15 @@ export function ModifierConfigMenu(props: Readonly<{
                 modifiable={props.modifiable}
                 setModifier={props.setModifier}
                 close={props.close}
+            />
+        }
+        case "customRoleSets": {
+            return <CustomRoleSetsConfigMenu
+                state={props.state as ModifierState & { type: "customRoleSets" }}
+                modifiable={props.modifiable}
+                setModifier={props.setModifier}
+                close={props.close}
+                modifierSettings={props.modifierSettings}
             />
         }
         default:
@@ -323,5 +341,183 @@ function CustomRoleLimitSelection(props: Readonly<{
         </> : <>
             <StyledText>{translate(`role.${props.role}.name`)}</StyledText>: {props.limit}
         </>}
+    </div>
+}
+
+function CustomRoleSetsConfigMenu(props: Readonly<{
+    state: ModifierState & { type: "customRoleSets" },
+    modifiable: boolean,
+    setModifier: (modifier: ModifierState | undefined) => void,
+    close: () => void,
+    modifierSettings: Readonly<ModifierSettings>
+}>): ReactElement {
+    return <div>
+        {!props.modifiable && <StyledText>{translate(`customRoleSets`)}</StyledText>}
+        <div className="role-list-setter-list">
+            {props.state.sets.map(({ name, roles }, index) =>
+                <CustomRoleSetSelection
+                    key={name as string}
+                    name={name}
+                    setName={(newName) => {
+                        const sets = [...props.state.sets];
+                        sets[index] = { name: newName, roles };
+                        props.setModifier({ type: "customRoleSets", sets: sets });
+                    }}
+                    roles={roles}
+                    modifiable={props.modifiable}
+                    onChangeRoles={(newRoles) => {
+                        const sets = [...props.state.sets];
+                        sets[index] = { name: name, roles: newRoles };
+                        props.setModifier({ type: "customRoleSets", sets: sets });
+                    }}
+                    remove={() => {
+                        const sets = [...props.state.sets];
+                        sets.splice(index, 1);
+                        props.setModifier({ type: "customRoleSets", sets: sets });
+                    }}
+                    modifierSettings={props.modifierSettings}
+                />
+            )}
+            {props.modifiable && <div>
+                <Button onClick={() => {
+                    const sets = [...props.state.sets];
+                    const newSetName = translate("roleSet.customUnnamed", sets.length);
+
+                    sets.push({ name: newSetName as UnsafeString, roles: [] });
+                    props.setModifier({ type: "customRoleSets", sets: sets });
+                }}
+                ><Icon>add</Icon></Button>
+            </div>}
+        </div>
+        {props.modifiable && <div>
+            <Button onClick={() => {
+                props.setModifier(undefined)
+                props.close();
+            }}>
+                <Icon>delete</Icon>
+            </Button>
+            <Button onClick={() => {
+                props.close();
+            }}>
+                <Icon>expand_less</Icon>
+            </Button>
+
+        </div>}
+    </div>;
+}
+
+function CustomRoleSetSelection(props: Readonly<{
+    name: UnsafeString,
+    setName: (name: UnsafeString) => void,
+    roles: Role[],
+    modifiable: boolean,
+    onChangeRoles: (roles: Role[]) => void,
+    remove: () => void,
+    modifierSettings: Readonly<ModifierSettings>
+}>): ReactElement {
+    const enabledRoles = useContext(GameModeContext).enabledRoles;
+
+    const optionsSearch = new Map<Role, [ReactElement, string]>();
+
+    getAllRoles().forEach(role => {
+        optionsSearch.set(role, [
+            <StyledText
+                key={role}
+                noLinks={true}
+                className={!enabledRoles.includes(role) ? "keyword-disabled" : ""}
+            >
+                {translate(`role.${role}.name`)}
+            </StyledText>,
+            translate(`role.${role}.name`)
+        ]);
+    });
+
+    const handleRoleChange = (newRole: Role, index: number) => {
+        const newRoles = [...props.roles];
+
+        if (index >= newRoles.length) {
+            newRoles.push(newRole);
+        } else {
+            newRoles[index] = newRole;
+        }
+
+        props.onChangeRoles(newRoles);
+    }
+
+    const [nameField, setNameField] = useState(props.name as string);
+
+    const [roleOrRoleSetToAdd, setRoleOrRoleSetToAdd] = useState<RoleOrRoleSet>({ type: "roleSet", roleSet: { type: "any" } });
+
+    return <div className="custom-role-set-selection">
+        {props.modifiable ? <>
+            <input
+                type="text"
+                value={nameField}
+                onChange={(e) => {
+                    setNameField(e.target.value);
+                }}
+                onBlur={(e) => {
+                    props.setName(e.target.value as UnsafeString);
+                }}
+                onKeyUp={(e) => {
+                    if (e.key !== 'Enter') return;
+
+                    props.setName((e.target as React.ChangeEvent<HTMLInputElement>['target']).value as UnsafeString);
+                }}
+            />
+        </> : <>
+            <StyledText>{encodeString(props.name)}</StyledText>
+        </>}
+        <div className="role-list-setter-list">
+            {props.roles.map((role, i) => 
+                <div key={i} className="custom-role-limit-selection">
+                    {props.modifiable ? <>
+                        <Select
+                            className="role-outline-option-selector"
+                            value={role}
+                            onChange={r => handleRoleChange(r, i)}
+                            optionsSearch={optionsSearch}
+                        />
+                        <Button
+                            onClick={() => {
+                                const newRoles = [...props.roles];
+                                newRoles.splice(i, 1);
+                                props.onChangeRoles(newRoles);
+                            }}
+                        >
+                            <Icon>delete</Icon>
+                        </Button>
+                    </> : <>
+                        <StyledText
+                            noLinks={true}
+                            className={!enabledRoles.includes(role) ? "keyword-disabled" : ""}
+                        >
+                            {translate(`role.${role}.name`)}
+                        </StyledText>
+                    </>}
+                </div>
+            )}
+            {props.modifiable && <div className="select-role-to-add">
+                <RoleOrRoleSetSelector
+                    roleOrRoleSet={roleOrRoleSetToAdd}
+                    onChange={setRoleOrRoleSetToAdd}
+                />
+                <Button
+                    onClick={() => {
+                        if (roleOrRoleSetToAdd.type === "role") {
+                            handleRoleChange(roleOrRoleSetToAdd.role, props.roles.length);
+                        } else {
+                            // Add all roles in the role set
+                            const rolesToAdd = getRolesFromRoleSet(roleOrRoleSetToAdd.roleSet, props.modifierSettings)
+                                .filter(role => !props.roles.includes(role));
+                            
+                            props.onChangeRoles([...props.roles, ...rolesToAdd]);
+                        }
+                    }}
+                >
+                    <Icon>add</Icon>
+                </Button>
+            </div>}
+        </div>
     </div>
 }

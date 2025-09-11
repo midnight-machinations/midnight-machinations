@@ -91,7 +91,7 @@ impl Mafia{
                 InsiderGroupID::Mafia.contains_player(game, *p) &&
                 (
                     SyndicateGun::player_has_gun(game, *p) ||
-                    RoleSet::MafiaKilling.get_roles().contains(&p.role(game))
+                    RoleSet::MafiaKilling.get_roles_static().contains(&p.role(game))
                 )
             )
             .collect::<VecSet<_>>()
@@ -144,7 +144,7 @@ impl Mafia{
         let killing_role_exists = PlayerReference::all_players(game).any(
             |p|
                 InsiderGroupID::Mafia.contains_player(game, p) &&
-                RoleSet::MafiaKilling.get_roles().contains(&p.role(game))
+                RoleSet::MafiaKilling.get_roles_static().contains(&p.role(game))
         );
 
         if !killing_role_exists{
@@ -174,12 +174,12 @@ impl Mafia{
     /// - This must go after rolestate on any death
     /// - Godfathers backup should become godfather if godfather dies as part of the godfathers ability
     pub fn on_any_death(game: &mut Game, event: &OnAnyDeath, _fold: &mut (), _priority: ()){
-        if RoleSet::MafiaKilling.get_roles().contains(&event.dead_player.role(game)) {
+        if RoleSet::MafiaKilling.get_roles_static().contains(&event.dead_player.role(game)) {
             Mafia::give_mafia_killing_role(game, event.dead_player.role_state(game).clone());
         }
     }
     pub fn on_role_switch(game: &mut Game, old: RoleState, _new: RoleState) {
-        if RoleSet::MafiaKilling.get_roles().contains(&old.role()) {
+        if RoleSet::MafiaKilling.get_roles_static().contains(&old.role()) {
             Mafia::give_mafia_killing_role(game, old);
         }
     }
@@ -204,7 +204,7 @@ impl Mafia{
 
         //if they already have a mafia killing then return
         if living_players_to_convert.iter().any(|p|
-            RoleSet::MafiaKilling.get_roles().contains(&p.role(game))
+            RoleSet::MafiaKilling.get_roles_static().contains(&p.role(game))
         ) {return;}
         
         //choose random mafia to be mafia killing

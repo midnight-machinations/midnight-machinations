@@ -31,6 +31,10 @@ function RoleListDisplay(): ReactElement {
         gameState => gameState.roleList,
         ["roleList"]
     )!
+    const modifierSettings = useLobbyOrGameState(
+        gameState => gameState.modifierSettings,
+        ["modifierSettings"]
+    )!
     const crossedOutOutlines = usePlayerState(
         clientState => clientState.crossedOutOutlines,
         ["yourCrossedOutOutlines"],
@@ -64,10 +68,10 @@ function RoleListDisplay(): ReactElement {
                 {
                     crossedOutOutlines.includes(index) ? 
                     <s><StyledText>
-                        {`${index + 1}: ` + translateRoleOutline(entry, playerNames)}
+                        {`${index + 1}: ` + translateRoleOutline(entry, playerNames, modifierSettings)}
                     </StyledText></s> : 
                     <StyledText>
-                        {`${index + 1}: ` + translateRoleOutline(entry, playerNames)}
+                        {`${index + 1}: ` + translateRoleOutline(entry, playerNames, modifierSettings)}
                     </StyledText>
                 }
             </Button>

@@ -10,9 +10,6 @@ pub struct CustomRoleLimits {
     pub limits: VecMap<Role, u8>
 }
 
-/*
-    There is modifier specific code in the set_verdict() function
-*/
 impl From<&CustomRoleLimits> for ModifierID{
     fn from(_: &CustomRoleLimits) -> Self {
         ModifierID::CustomRoleLimits

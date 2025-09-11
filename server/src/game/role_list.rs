@@ -4,20 +4,20 @@ use vec1::{
     Vec1
 };
 
-use crate::{game::{player::PlayerIndex, settings::Settings}, vec_set::{vec_set, VecSet}};
+use crate::{game::{modifiers::ModifierState, player::PlayerIndex, settings::Settings}, vec_set::{vec_set, VecSet}};
 
 use super::{components::{insider_group::InsiderGroupID}, game_conclusion::GameConclusion, role::Role};
 
 #[derive(Default, Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct RoleList(pub Vec<RoleOutline>);
 impl RoleList {
-    pub fn simplify(&mut self){
+    pub fn simplify(&mut self, settings: &Settings){
         for entry in self.0.iter_mut(){
-            entry.simplify();
+            entry.simplify(settings);
         }
     }
-    pub fn sort(&mut self){
-        self.0.sort_by_key(|r| r.get_all_roles().len());
+    pub fn sort(&mut self, settings: &Settings){
+        self.0.sort_by_key(|r| r.get_all_roles(settings).len());
     }
 }
 
@@ -61,19 +61,19 @@ impl RoleOutline{
             player_pool: Default::default(),
         }]}
     }
-    pub fn get_all_roles(&self) -> Vec<Role>{
+    pub fn get_all_roles(&self, settings: &Settings) -> Vec<Role>{
         self.options.iter()
-            .flat_map(|outline_opt|outline_opt.roles.get_roles().into_iter())
+            .flat_map(|outline_opt|outline_opt.roles.get_roles(settings).into_iter())
             .collect()
     }
-    pub fn simplify(&mut self){
+    pub fn simplify(&mut self, settings: &Settings){
         let mut new_options = self.options.to_vec();
 
         new_options = new_options.into_iter().collect::<VecSet<_>>().into_iter().collect();
 
         for option_a in self.options.iter(){
             for option_b in self.options.iter(){
-                if option_a.roles.is_subset(&option_b.roles) && option_a != option_b {
+                if option_a.roles.is_subset(&option_b.roles, settings) && option_a != option_b {
                     new_options.retain(|r| r != option_a);
                 }
             }
@@ -180,17 +180,25 @@ impl Default for RoleOutlineOptionRoles {
     }
 }
 impl RoleOutlineOptionRoles{
-    pub fn get_roles(&self) -> VecSet<Role> {
+    pub fn get_roles(&self, settings: &Settings) -> VecSet<Role> {
         match self {
             RoleOutlineOptionRoles::RoleSet { role_set } => {
-                role_set.get_roles()
+                role_set.get_roles(settings)
+            }
+            _ => self.get_roles_static(),
+        }
+    }
+    pub fn get_roles_static(&self) -> VecSet<Role> {
+        match self {
+            RoleOutlineOptionRoles::RoleSet { role_set } => {
+                role_set.get_roles_static()
             }
             RoleOutlineOptionRoles::Role { role } => 
                 vec_set![*role]
         }
     }
-    pub fn is_subset(&self, other: &RoleOutlineOptionRoles) -> bool {
-        self.get_roles().iter().all(|r|other.get_roles().contains(r))
+    pub fn is_subset(&self, other: &RoleOutlineOptionRoles, settings: &Settings) -> bool {
+        self.get_roles(settings).iter().all(|r|other.get_roles(settings).contains(r))
     }
 }
 impl PartialOrd for RoleOutlineOptionRoles {
@@ -200,13 +208,13 @@ impl PartialOrd for RoleOutlineOptionRoles {
 }
 impl Ord for RoleOutlineOptionRoles {
     fn cmp(&self, other: &Self) -> std::cmp::Ordering {
-        other.get_roles().count().cmp(&self.get_roles().count())
+        other.get_roles_static().count().cmp(&self.get_roles_static().count())
     }
 }
 
 
 #[derive(Clone, Debug, PartialEq, Eq, Hash, Serialize, Deserialize, PartialOrd, Ord)]
-#[serde(rename_all = "camelCase")]
+#[serde(rename_all = "camelCase", tag = "type")]
 pub enum RoleSet {
     Any,
 
@@ -225,26 +233,28 @@ pub enum RoleSet {
     Fiends,
     
     Neutral,
-    Minions
+    Minions,
+
+    Custom { id: u8 }
 }
 impl RoleSet{
-    pub fn get_roles(&self) -> VecSet<Role> {
+    pub fn get_roles_static(&self) -> VecSet<Role> {
         match self {
             RoleSet::Any => Role::values(),
             RoleSet::Town => 
                 vec![
                     Role::Jailor, Role::Villager, Role::Drunk
                 ].into_iter().chain(
-                    RoleSet::TownCommon.get_roles()
+                    RoleSet::TownCommon.get_roles_static()
                 ).collect(),
             RoleSet::TownCommon => {
-                RoleSet::TownInvestigative.get_roles().into_iter()
+                RoleSet::TownInvestigative.get_roles_static().into_iter()
                 .chain(
-                    RoleSet::TownProtective.get_roles()
+                    RoleSet::TownProtective.get_roles_static()
                 ).chain(
-                    RoleSet::TownKilling.get_roles()
+                    RoleSet::TownKilling.get_roles_static()
                 ).chain(
-                    RoleSet::TownSupport.get_roles()
+                    RoleSet::TownSupport.get_roles_static()
                 ).collect()
             },
             RoleSet::TownInvestigative => 
@@ -276,9 +286,9 @@ impl RoleSet{
                 vec_set![
                     Role::Goon, Role::MafiaSupportWildcard, Role::MafiaKillingWildcard
                 ].into_iter().chain(
-                    RoleSet::MafiaKilling.get_roles()
+                    RoleSet::MafiaKilling.get_roles_static()
                 ).chain(
-                    RoleSet::MafiaSupport.get_roles()
+                    RoleSet::MafiaSupport.get_roles_static()
                 ).collect(),
             RoleSet::MafiaKilling => 
                 vec_set![
@@ -313,6 +323,23 @@ impl RoleSet{
                 vec_set![
                     Role::Apostle, Role::Disciple, Role::Zealot
                 ],
+            RoleSet::Custom { .. } => vec_set![]
+        }
+    }
+    pub fn get_roles(&self, settings: &Settings) -> VecSet<Role> {
+        match self {
+            RoleSet::Custom { id } => settings.modifiers.get_modifier_inner(super::modifiers::ModifierID::CustomRoleSets)
+                .and_then(|modifier| 
+                    if let ModifierState::CustomRoleSets(custom_role_sets) = modifier {
+                        Some(custom_role_sets)
+                    } else {
+                        None
+                    }
+                )
+                .and_then(|custom_role_sets|custom_role_sets.sets.get(*id as usize))
+                .map(|custom_role_set|custom_role_set.roles.clone())
+                .unwrap_or_default(),
+            _ => self.get_roles_static(),
         }
     }
 }
