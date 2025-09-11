@@ -1,17 +1,12 @@
 use rand::seq::IndexedRandom;
 use serde::Serialize;
-
-use crate::game::abilities::role_abilities::RoleAbility;
-use crate::game::abilities_component::ability::Ability;
 use crate::game::abilities_component::ability_id::AbilityID;
-use crate::game::components::role::RoleComponent;
 use crate::game::event::on_ability_creation::OnAbilityCreationPriority;
 use crate::game::event::on_ability_deletion::OnAbilityDeletionPriority;
 use crate::game::role_list::role_enabled_and_not_taken;
 use crate::game::{attack_power::DefensePower, components::confused::Confused};
 use crate::game::player::PlayerReference;
 use crate::game::Game;
-use crate::packet::ToClientPacket;
 
 use super::{Role, RoleStateTrait};
 
@@ -41,7 +36,7 @@ impl RoleStateTrait for Drunk {
             .collect::<Vec<_>>();
 
         if let Some(new_role) = possible_roles.choose(&mut rand::rng()) {
-            Self::set_role_before_start(game, actor_ref, *new_role);
+            actor_ref.set_role_state_without_deleting_previous(game, new_role.new_state(game));
         }
     }
     fn on_ability_deletion(self, game: &mut Game, actor_ref: PlayerReference, event: &crate::game::event::on_ability_deletion::OnAbilityDeletion, _fold: &mut (), priority: crate::game::event::on_ability_deletion::OnAbilityDeletionPriority) {
@@ -55,18 +50,4 @@ impl Drunk{
         Role::Philosopher, Role::Psychic, Role::TallyClerk,
         Role::Auditor
     ];
-    pub fn set_role_before_start(game: &mut Game, actor_ref: PlayerReference, new_role: Role){
-        let new_state = new_role.new_state(game);
-        RoleComponent::set_role(actor_ref, game, new_role);
-
-        //special case here. I don't want to use set_ability because it alerts the player their role changed
-        //NOTE: It will still send a packet to the player that their role state updated,
-        //so it might be deducible that the player is a drunk
-        AbilityID::Role { role: new_role, player: actor_ref }
-            .set_ability(game, Some(Ability::RoleAbility(RoleAbility(actor_ref, new_state.clone()))));
-
-        actor_ref.send_packet(game, ToClientPacket::YourRoleState {
-            role_state: new_state.get_client_ability_state(game, actor_ref)
-        });
-    }
 }

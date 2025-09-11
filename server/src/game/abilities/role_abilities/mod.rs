@@ -53,7 +53,7 @@ impl PlayerReference{
         AbilityID::Role { role: new_role, player: *self }
             .set_ability(game, Some(Ability::RoleAbility(RoleAbility(*self, new_role_data.clone()))));
 
-        if !self.role(game).should_inform_player_of_assignment() {
+        if self.role(game).should_inform_player_of_assignment() {
             self.send_packet(game, ToClientPacket::YourRoleState {
                 role_state: new_role_data.get_client_ability_state(game, *self)
             });

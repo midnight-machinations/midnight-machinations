@@ -1,10 +1,8 @@
 use rand::seq::IndexedRandom;
 use serde::Serialize;
-
 use crate::game::chat::ChatMessageVariant;
 use crate::game::event::on_ability_creation::{OnAbilityCreation, OnAbilityCreationFold, OnAbilityCreationPriority};
 use crate::game::game_conclusion::GameConclusion;
-use crate::game::role::drunk::Drunk;
 use crate::game::role::Role;
 use crate::game::role_list::role_enabled_and_not_taken;
 use crate::game::{attack_power::DefensePower, role_list::RoleSet};
@@ -36,7 +34,7 @@ impl RoleStateTrait for Pawn {
             .collect::<Vec<_>>();
 
         if let Some(new_role) = possible_roles.choose(&mut rand::rng()) {
-            Drunk::set_role_before_start(game, actor_ref, *new_role);
+            actor_ref.set_role_state_without_deleting_previous(game, new_role.new_state(game));
 
             for player in PlayerReference::all_players(game){
                 if

@@ -79,7 +79,7 @@ impl Abilities{
                 game.abilities.abilities.insert(event.id.clone(), fold.ability.clone());
                 if
                     let Ability::RoleAbility(RoleAbility(player, role)) = &fold.ability &&
-                    !role.role().should_inform_player_of_assignment()
+                    role.role().should_inform_player_of_assignment()
                 {
                     player.add_private_chat_message(game, ChatMessageVariant::RoleAssignment{role: role.role()});
                 }
