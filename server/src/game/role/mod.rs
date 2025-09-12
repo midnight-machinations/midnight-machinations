@@ -21,12 +21,11 @@ use serde::{Serialize, Deserialize};
 
 use super::components::win_condition::WinCondition;
 use super::{
-    controllers::*, components::{insider_group::InsiderGroupID, night_visits::Visits},
+    controllers::*, components::insider_group::InsiderGroupID,
     event::{
         on_midnight::{MidnightVariables, OnMidnightPriority},
         on_whisper::{OnWhisper, WhisperFold, WhisperPriority}
     },
-    visit::VisitTag,
 };
 
 pub trait GetClientAbilityState<CRS> {
@@ -78,18 +77,10 @@ pub trait RoleStateTrait: Clone + std::fmt::Debug + Default + GetClientAbilitySt
     fn on_game_start(self, _game: &mut Game, _actor_ref: PlayerReference) {}
     fn on_conceal_role(self, _game: &mut Game, _actor_ref: PlayerReference, _player: PlayerReference, _concealed_player: PlayerReference) {}
     fn on_player_roleblocked(self, _game: &mut Game, midnight_variables: &mut MidnightVariables, actor_ref: PlayerReference, player: PlayerReference, _invisible: bool) {
-        if player != actor_ref {return}
-
-        Visits::retain(midnight_variables, |v|
-            !matches!(v.tag, VisitTag::Role{..}) || v.visitor != actor_ref
-        );
+        common_role::on_player_roleblocked(midnight_variables, actor_ref, player);
     }
     fn on_visit_wardblocked(self, _game: &mut Game, midnight_variables: &mut MidnightVariables, actor_ref: PlayerReference, visit: Visit) {
-        if actor_ref != visit.visitor {return};
-
-        Visits::retain(midnight_variables, |v|
-            !matches!(v.tag, VisitTag::Role{..}) || v.visitor != actor_ref
-        );
+        common_role::on_visit_wardblocked(midnight_variables, actor_ref, visit);
     }
     fn on_whisper(self, _game: &mut Game, _actor_ref: PlayerReference, _event: &OnWhisper, _fold: &mut WhisperFold, _priority: WhisperPriority) {}
 

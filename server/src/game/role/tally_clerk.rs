@@ -62,7 +62,7 @@ impl TallyClerk {
 
         if Aura::suspicious(game, midnight_variables, player_ref){
             true
-        }else if Aura::innocent(game, player_ref){
+        }else if Aura::innocent(game, midnight_variables, player_ref){
             false
         }else{
             !player_ref.win_condition(game).is_loyalist_for(GameConclusion::Town)

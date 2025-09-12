@@ -1,14 +1,13 @@
 use std::collections::HashSet;
-
 use serde::Serialize;
-
 use crate::game::attack_power::DefensePower;
 use crate::game::chat::{ChatGroup, ChatMessageVariant};
 use crate::game::components::detained::Detained;
 use crate::game::controllers::AvailablePlayerListSelection;
+use crate::game::event::on_midnight::MidnightVariables;
 use crate::game::phase::PhaseType;
 use crate::game::player::PlayerReference;
-
+use crate::game::role::common_role;
 use crate::game::Game;
 
 use super::{
@@ -145,6 +144,12 @@ impl RoleStateTrait for Medium {
                 actor_ref.set_role_state(game, self);
             },
             _=>{}
+        }
+    }
+    fn on_player_roleblocked(self, game: &mut Game, midnight_variables: &mut MidnightVariables, actor_ref: PlayerReference, player: PlayerReference, invisible: bool) {
+        common_role::on_player_roleblocked(midnight_variables, actor_ref, player);
+        if let Some(seanced) = self.seanced_target {
+            seanced.roleblock(game, midnight_variables, invisible);
         }
     }
 }

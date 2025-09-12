@@ -60,7 +60,7 @@ impl Detective {
     pub fn player_is_suspicious(game: &Game, midnight_variables: &MidnightVariables, player_ref: PlayerReference) -> bool {
         if Aura::suspicious(game, midnight_variables, player_ref){
             true
-        }else if Aura::innocent(game, player_ref){
+        }else if Aura::innocent(game, midnight_variables, player_ref){
             false
         }else{
             !player_ref.win_condition(game).friends_with_conclusion(GameConclusion::Town)

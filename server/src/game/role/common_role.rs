@@ -2,13 +2,27 @@ use std::collections::HashSet;
 
 
 
-use crate::game::{chat::ChatGroup, components::{call_witness::CallWitness, detained::Detained, puppeteer_marionette::PuppeteerMarionette, silenced::Silenced, win_condition::WinCondition}, controllers::{ControllerID, ControllerSelection}, game_conclusion::GameConclusion, modifiers::ModifierID, phase::{PhaseState, PhaseType}, player::PlayerReference, role_list::RoleSet, visit::{Visit, VisitTag}, Game};
+use crate::game::{chat::ChatGroup, components::{call_witness::CallWitness, detained::Detained, night_visits::Visits, puppeteer_marionette::PuppeteerMarionette, silenced::Silenced, win_condition::WinCondition}, controllers::{ControllerID, ControllerSelection}, event::on_midnight::MidnightVariables, game_conclusion::GameConclusion, modifiers::ModifierID, phase::{PhaseState, PhaseType}, player::PlayerReference, role_list::RoleSet, visit::{Visit, VisitTag}, Game};
 
 use super::{medium::Medium, reporter::Reporter, warden::Warden, InsiderGroupID, Role, RoleState};
 
 
 pub fn standard_charges(game: &Game)->u8{
     game.num_players().div_ceil(5)
+}
+pub fn on_player_roleblocked(midnight_variables: &mut MidnightVariables, actor_ref: PlayerReference, player: PlayerReference){
+    if player != actor_ref {return}
+
+    Visits::retain(midnight_variables, |v|
+        !matches!(v.tag, VisitTag::Role{..}) || v.visitor != actor_ref
+    );
+}
+pub fn on_visit_wardblocked(midnight_variables: &mut MidnightVariables, actor_ref: PlayerReference, visit: Visit){
+    if actor_ref != visit.visitor {return};
+
+    Visits::retain(midnight_variables, |v|
+        !matches!(v.tag, VisitTag::Role{..}) || v.visitor != actor_ref
+    );
 }
 
 

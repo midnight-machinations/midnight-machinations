@@ -5,10 +5,10 @@ use crate::game::{
 
 pub struct Aura;
 impl Aura{
-    pub fn innocent(game: &Game, player: PlayerReference) -> bool {
+    pub fn innocent(game: &Game, midnight_variables: &MidnightVariables, player: PlayerReference) -> bool {
         match player.role(game) {
-            Role::Godfather => true,
-            Role::Disguiser => true,
+            Role::Godfather => !player.night_blocked(midnight_variables),
+            Role::Disguiser => !player.night_blocked(midnight_variables),
             Role::Pyrolisk => {
                 game.day_number() == 1
             },
