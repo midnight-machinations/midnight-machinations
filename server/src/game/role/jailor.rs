@@ -4,7 +4,7 @@ use serde::Serialize;
 
 use crate::game::controllers::AvailableBooleanSelection;
 use crate::game::attack_power::{AttackPower, DefensePower};
-use crate::game::chat::{ChatGroup, ChatMessageVariant};
+use crate::game::chat::{ChatGroup, ChatMessageVariant, PlayerChatGroupMap};
 use crate::game::components::detained::Detained;
 use crate::game::event::on_midnight::{MidnightVariables, OnMidnightPriority};
 use crate::game::game_conclusion::GameConclusion;
@@ -106,15 +106,19 @@ impl RoleStateTrait for Jailor {
             }
         )
     }
-    fn get_current_receive_chat_groups(self, game: &Game, actor_ref: PlayerReference) -> HashSet<ChatGroup> {
-        let mut out = crate::game::role::common_role::get_current_receive_chat_groups(game, actor_ref);
+    fn receive_player_chat_group_map(self, game: &Game, actor_ref: PlayerReference)-> PlayerChatGroupMap {
+        let mut out = PlayerChatGroupMap::new();
         if 
             game.current_phase().phase() == PhaseType::Night &&
             !actor_ref.ability_deactivated_from_death(game) &&
-            PlayerReference::all_players(game).any(|p|Detained::is_detained(game, p))
+            self.jailed_target_ref.is_some()
         {
-            out.insert(ChatGroup::Jail);
+            out.insert(actor_ref, ChatGroup::Jail);
         }
+        if let Some(target) = self.jailed_target_ref && game.current_phase().phase() == PhaseType::Night {
+            out.insert(target, ChatGroup::Jail);
+        }
+        
         out
     }
     fn on_phase_start(mut self, game: &mut Game, actor_ref: PlayerReference, phase: PhaseType){

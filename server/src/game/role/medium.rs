@@ -1,7 +1,7 @@
 use std::collections::HashSet;
 use serde::Serialize;
 use crate::game::attack_power::DefensePower;
-use crate::game::chat::{ChatGroup, ChatMessageVariant};
+use crate::game::chat::{ChatGroup, ChatMessageVariant, PlayerChatGroupMap};
 use crate::game::components::detained::Detained;
 use crate::game::controllers::AvailablePlayerListSelection;
 use crate::game::event::on_midnight::MidnightVariables;
@@ -80,20 +80,22 @@ impl RoleStateTrait for Medium {
         }
         out
     }
-    fn get_current_receive_chat_groups(self, game: &Game, actor_ref: PlayerReference) -> HashSet<ChatGroup> {
-        let mut out = crate::game::role::common_role::get_current_receive_chat_groups(game, actor_ref);
-
+    fn receive_player_chat_group_map(self, game: &Game, actor_ref: PlayerReference)->crate::game::chat::PlayerChatGroupMap {
+        let mut out = PlayerChatGroupMap::new();
         if 
+            !actor_ref.ability_deactivated_from_death(game) &&
             (
                 (
                     !Detained::is_detained(game, actor_ref) &&
                     game.current_phase().phase() == PhaseType::Night
                 ) || 
                 game.current_phase().phase() == PhaseType::Obituary
-            ) &&
-            actor_ref.alive(game)
+            )
         {
-            out.insert(ChatGroup::Dead);
+            out.insert(actor_ref, ChatGroup::Dead);
+        }
+        if let Some(target) = self.haunted_target && game.current_phase().phase() == PhaseType::Night {
+            out.insert(target, ChatGroup::Dead);
         }
         out
     }

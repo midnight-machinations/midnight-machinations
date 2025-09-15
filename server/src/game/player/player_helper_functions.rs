@@ -420,9 +420,6 @@ impl PlayerReference{
         }
         self.role_state(game).clone().get_current_send_chat_groups(game, *self)
     }
-    pub fn get_current_receive_chat_groups(&self, game: &Game) -> HashSet<ChatGroup> {
-        self.role_state(game).clone().get_current_receive_chat_groups(game, *self)
-    }
     pub fn convert_selection_to_visits(&self, game: &Game) -> Vec<Visit> {
         self.role_state(game).clone().convert_selection_to_visits(game, *self)
     }

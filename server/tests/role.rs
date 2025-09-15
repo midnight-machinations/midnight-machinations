@@ -965,7 +965,7 @@ fn revolutionary_instantly_turns_into_jester(){
 }
 
 #[test]
-fn can_type_in_jail() {
+fn can_message_in_jail() {
     kit::scenario!(game in Dusk 1 where
         _godfather: Godfather,
         jailor: Jailor,

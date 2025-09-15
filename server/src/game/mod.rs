@@ -286,7 +286,7 @@ impl Game {
     }
 
     pub fn add_message_to_chat_group(&mut self, group: ChatGroup, variant: ChatMessageVariant){
-        let message = ChatMessage::new_non_private(variant.clone(), group.clone());
+        let message = ChatMessage::new_non_private(variant.clone(), group);
 
         for player_ref in group.all_players_in_group(self){
             player_ref.add_chat_message(self, message.clone());
@@ -299,7 +299,7 @@ impl Game {
     }
     pub fn add_messages_to_chat_group(&mut self, group: ChatGroup, messages: Vec<ChatMessageVariant>){
         for message in messages {
-            self.add_message_to_chat_group(group.clone(), message);
+            self.add_message_to_chat_group(group, message);
         }
     }
     pub fn add_chat_message_to_spectators(&mut self, message: ChatMessageVariant){

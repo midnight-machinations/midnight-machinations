@@ -58,7 +58,7 @@ impl ChatComponent{
 
 
             game.add_message_to_chat_group(
-                chat_group.clone(),
+                chat_group,
                 ChatMessageVariant::Normal{
                     message_sender,
                     text: text.trim_newline().trim_whitespace().truncate(600).truncate_lines(35), 
