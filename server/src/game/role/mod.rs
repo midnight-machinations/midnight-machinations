@@ -1,19 +1,17 @@
 #![allow(clippy::single_match, reason = "May add more cases for more priorities later")]
 
-use std::collections::HashSet;
 use crate::game::components::graves::grave_reference::GraveReference;
 use crate::game::event::on_ability_creation::{OnAbilityCreation, OnAbilityCreationFold, OnAbilityCreationPriority};
 use crate::game::event::on_ability_deletion::{OnAbilityDeletion, OnAbilityDeletionPriority};
 use crate::game::role_list_generation::criteria::GenerationCriterion;
 use crate::vec_set::{vec_set, VecSet};
-
 use crate::game::player::PlayerReference;
 use crate::game::visit::Visit;
 use crate::game::Game;
 use crate::game::Settings;
 use crate::game::ModifierID;
 use crate::game::modifiers::ModifierState;
-use crate::game::chat::{ChatGroup, PlayerChatGroupMap};
+use crate::game::chat::PlayerChatGroupMap;
 use crate::game::phase::PhaseType;
 use crate::game::attack_power::DefensePower;
 
@@ -50,10 +48,10 @@ pub trait RoleStateTrait: Clone + std::fmt::Debug + Default + GetClientAbilitySt
         vec![]
     }
 
-    fn get_current_send_chat_groups(self, game: &Game, actor_ref: PlayerReference) -> HashSet<ChatGroup> {
-        crate::game::role::common_role::get_current_send_chat_groups(game, actor_ref, vec![])
+    fn send_player_chat_group_map(self, _game: &Game, _actor_ref: PlayerReference) -> PlayerChatGroupMap {
+        PlayerChatGroupMap::new()
     }
-    fn receive_player_chat_group_map(self, _game: &Game, _actor_ref: PlayerReference)->PlayerChatGroupMap {
+    fn receive_player_chat_group_map(self, _game: &Game, _actor_ref: PlayerReference) -> PlayerChatGroupMap {
         PlayerChatGroupMap::new()
     }
     fn new_state(_game: &Game) -> Self {
@@ -295,9 +293,9 @@ mod macros {
                         $(Self::$name(role_struct) => role_struct.convert_selection_to_visits(game, actor_ref)),*
                     }
                 }
-                pub fn get_current_send_chat_groups(self, game: &Game, actor_ref: PlayerReference) -> HashSet<ChatGroup>{
+                pub fn send_player_chat_group_map(self, game: &Game, actor_ref: PlayerReference) -> PlayerChatGroupMap{
                     match self {
-                        $(Self::$name(role_struct) => role_struct.get_current_send_chat_groups(game, actor_ref)),*
+                        $(Self::$name(role_struct) => role_struct.send_player_chat_group_map(game, actor_ref)),*
                     }
                 }
                 pub fn receive_player_chat_group_map(self, game: &Game, actor_ref: PlayerReference) -> PlayerChatGroupMap{

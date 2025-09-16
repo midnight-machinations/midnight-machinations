@@ -1,4 +1,3 @@
-use std::collections::HashSet;
 use serde::Serialize;
 use crate::game::attack_power::DefensePower;
 use crate::game::chat::{ChatGroup, ChatMessageVariant, PlayerChatGroupMap};
@@ -69,14 +68,22 @@ impl RoleStateTrait for Medium {
             .build_map()
         ])
     }
-    fn get_current_send_chat_groups(self, game: &Game, actor_ref: PlayerReference) -> HashSet<ChatGroup> {
-        let mut out = crate::game::role::common_role::get_current_send_chat_groups(game, actor_ref, vec![ChatGroup::Dead]);
-
+    fn send_player_chat_group_map(self, game: &Game, actor_ref: PlayerReference) -> PlayerChatGroupMap {
+        let mut out = PlayerChatGroupMap::new();
         if 
-            (game.current_phase().phase() == PhaseType::Obituary) &&
-            actor_ref.alive(game)
+            !actor_ref.ability_deactivated_from_death(game) &&
+            (
+                (
+                    !Detained::is_detained(game, actor_ref) &&
+                    game.current_phase().phase() == PhaseType::Night
+                ) || 
+                game.current_phase().phase() == PhaseType::Obituary
+            )
         {
-            out.insert(ChatGroup::Dead);
+            out.insert(actor_ref, ChatGroup::Dead);
+        }
+        if let Some(target) = self.haunted_target && game.current_phase().phase() == PhaseType::Night {
+            out.insert(target, ChatGroup::Dead);
         }
         out
     }

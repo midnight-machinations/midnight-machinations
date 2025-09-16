@@ -53,10 +53,18 @@ impl RoleStateTrait for Warden {
             },
             _ => {}
         }
-
-        
     }
-    fn receive_player_chat_group_map(self, game: &Game, actor_ref: PlayerReference)->crate::game::chat::PlayerChatGroupMap {
+    fn send_player_chat_group_map(self, game: &Game, _actor_ref: PlayerReference) -> PlayerChatGroupMap {
+        let mut out = PlayerChatGroupMap::new();
+        
+        if game.current_phase().phase() == PhaseType::Night {
+            for target in self.players_in_prison {
+                out.insert(target, ChatGroup::Warden);
+            }
+        }
+        out
+    }
+    fn receive_player_chat_group_map(self, game: &Game, actor_ref: PlayerReference) -> PlayerChatGroupMap {
         let mut out = PlayerChatGroupMap::new();
         out.insert(actor_ref, ChatGroup::Warden);
         if game.current_phase().phase() == PhaseType::Night {

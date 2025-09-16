@@ -1,7 +1,7 @@
 use crate::{
     client_connection::ClientConnection,
     game::{
-        abilities_component::Abilities, chat::ChatComponent,
+        abilities_component::Abilities, chat::{ChatComponent, PlayerChatGroups},
         components::{
             confused::Confused, cult::Cult, detained::Detained,
             fast_forward::FastForwardComponent, fragile_vest::FragileVestsComponent, graves::Graves,
@@ -106,6 +106,7 @@ impl Game{
                 phase_machine: PhaseStateMachine::new(settings.phase_times.clone()),
                 settings,
 
+                player_chat_groups: PlayerChatGroups::new(),
                 controllers: Controllers::default(),
                 abilities: Abilities::new(&assignments),
                 cult: Cult::default(),

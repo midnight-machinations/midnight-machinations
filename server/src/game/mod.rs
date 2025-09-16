@@ -28,6 +28,7 @@ pub mod abilities;
 use std::collections::VecDeque;
 use std::time::Instant;
 use crate::game::abilities_component::Abilities;
+use crate::game::chat::PlayerChatGroups;
 use crate::game::components::fast_forward::FastForwardComponent;
 use crate::game::components::pitchfork_item::PitchforkItemComponent;
 use crate::game::components::role::RoleComponent;
@@ -106,6 +107,7 @@ pub struct Game {
     
     
     //components with data
+    pub player_chat_groups: PlayerChatGroups,
     pub graves: Graves,
     pub controllers: Controllers,
     pub abilities: Abilities,

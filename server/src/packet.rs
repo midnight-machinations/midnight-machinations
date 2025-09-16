@@ -113,7 +113,7 @@ pub enum ToClientPacket{
     PlayerVotes{votes_for_player: VecMap<PlayerReference, u8>},
 
     #[serde(rename_all = "camelCase")]
-    YourSendChatGroups{send_chat_groups: Vec<ChatGroup>},
+    YourSendChatGroups{send_chat_groups: VecSet<ChatGroup>},
     #[serde(rename_all = "camelCase")]
     YourInsiderGroups{insider_groups: VecSet<InsiderGroupID>},
 

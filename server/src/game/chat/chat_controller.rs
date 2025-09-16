@@ -79,14 +79,14 @@ impl ChatComponent{
         OnWhisper::new(sender_player, *whispered_to_player, text.clone()).invoke(game);
     }
 
-    pub fn controller_parameters_map(game: &Game)->ControllerParametersMap{
+    pub fn controller_parameters_map(game: &mut Game)->ControllerParametersMap{
         ControllerParametersMap::combine(
             PlayerReference::all_players(game)
                 .map(|player|Self::one_player_controller_paraemeters_map(game, player))
         )
     }
 
-    fn one_player_controller_paraemeters_map(game: &Game, player: PlayerReference)->ControllerParametersMap{
+    fn one_player_controller_paraemeters_map(game: &mut Game, player: PlayerReference)->ControllerParametersMap{
         let mut allowed_players: VecSet<PlayerReference> = PlayerReference::all_players(game)
             .filter(|p|
                 if let RoleState::Cerenovous(cerenovous) = p.role_state(game){
@@ -112,10 +112,11 @@ impl ChatComponent{
             .allow_players(allowed_players.clone())
             .build_map();
 
+        let no_chat_groups = player.get_current_send_chat_groups(game).is_empty();
         let send_chat = ControllerParametersMap::builder(game)
             .id(ControllerID::SendChat{ player })
             .available_selection(AvailableUnitSelection)
-            .add_grayed_out_condition(player.get_current_send_chat_groups(game).is_empty())
+            .add_grayed_out_condition(no_chat_groups)
             .allow_players(allowed_players.clone())
             .build_map();
 

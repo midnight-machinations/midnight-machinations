@@ -2,15 +2,25 @@ use std::collections::HashSet;
 
 use crate::{
     game::{
-        chat::{ChatGroup, ChatMessageVariant}, components::silenced::Silenced, controllers::{AvailablePlayerListSelection, ControllerID, ControllerParametersMap, PlayerListSelection}, event::{on_phase_start::OnPhaseStart, on_validated_ability_input_received::OnValidatedControllerInputReceived}, phase::PhaseState, player::PlayerReference, role::RoleState, Game
+        chat::{ChatGroup, ChatMessageVariant, PlayerChatGroupMap}, components::silenced::Silenced,
+        controllers::{AvailablePlayerListSelection, ControllerID, ControllerParametersMap, PlayerListSelection},
+        event::{on_phase_start::OnPhaseStart, on_validated_ability_input_received::OnValidatedControllerInputReceived}, phase::PhaseState, player::PlayerReference, role::RoleState, Game
     },
-    packet::ToClientPacket, vec_set::VecSet
+    vec_set::VecSet
 };
 
 
 pub struct CallWitness;
 
 impl CallWitness{
+    pub fn send_player_chat_group_map(game: &Game) -> PlayerChatGroupMap {
+        let mut out = PlayerChatGroupMap::new();
+        for player in Self::witness_called(game){
+            if Silenced::silenced(game, player) {continue;}
+            out.insert(player, ChatGroup::All);
+        }
+        out
+    }
     pub fn controller_parameters_map(game: &mut Game)->ControllerParametersMap{
         ControllerParametersMap::combine(
             PlayerReference::all_players(game)
@@ -57,12 +67,6 @@ impl CallWitness{
         let ControllerID::CallWitness { player: player_controller_changed, .. } = event.input.id() else {return};
 
         if *player_on_trial != player_controller_changed {return};
-
-        for player in PlayerReference::all_players(game){
-            player.send_packet(game, ToClientPacket::YourSendChatGroups { send_chat_groups: 
-                player.get_current_send_chat_groups(game).into_iter().collect()
-            });
-        }
 
         Self::send_witness_called_message(game)
     }

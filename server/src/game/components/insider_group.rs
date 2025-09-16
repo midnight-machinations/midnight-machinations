@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 
-use crate::{game::{chat::{ChatGroup, ChatMessageVariant, PlayerChatGroupMap}, event::{on_add_insider::OnAddInsider, on_conceal_role::OnConcealRole, on_remove_insider::OnRemoveInsider, Event}, player::PlayerReference, Assignments, Game}, packet::ToClientPacket, vec_set::VecSet};
+use crate::{game::{chat::{ChatGroup, ChatMessageVariant, PlayerChatGroupMap}, components::detained::Detained, event::{on_add_insider::OnAddInsider, on_conceal_role::OnConcealRole, on_remove_insider::OnRemoveInsider, Event}, modifiers::ModifierID, phase::PhaseType, player::PlayerReference, Assignments, Game}, packet::ToClientPacket, vec_set::VecSet};
 
 #[derive(Debug)]
 pub struct InsiderGroups{
@@ -32,6 +32,18 @@ impl InsiderGroups{
         out
     }
 
+    pub fn send_player_chat_group_map(game: &Game)->PlayerChatGroupMap{
+        let mut out = PlayerChatGroupMap::new();
+        if game.modifier_settings().is_enabled(ModifierID::NoNightChat) {return out;}
+        if !matches!(game.current_phase().phase(), PhaseType::Night | PhaseType::Obituary) {return out;}
+        for group in InsiderGroupID::all(){
+            for player in group.players(game).iter() {
+                if Detained::is_detained(game, *player) {continue}
+                out.insert(*player, group.get_insider_chat_group());
+            }
+        }
+        out
+    }
     pub fn receive_player_chat_group_map(game: &Game)->PlayerChatGroupMap{
         let mut out = PlayerChatGroupMap::new();
         for group in InsiderGroupID::all(){
