@@ -1,8 +1,9 @@
 import { VersionConverter } from ".";
-import { GameMode, GameModeData, GameModeStorage, ShareableGameMode } from "..";
 import { defaultPhaseTimes } from "../../../../game/gameState";
-import { PHASES, PhaseTimes } from "../../../../game/gameState.d";
+import { Conclusion, InsiderGroup, PHASES, PhaseTimes, PlayerIndex } from "../../../../game/gameState.d";
 import { ModifierID, ModifierState } from "../../../../game/modifiers";
+import { BaseRoleSet } from "../../../../game/roleListState.d";
+import { Role } from "../../../../game/roleState.d";
 import { ListMapData } from "../../../../ListMap";
 import { Failure, ParseResult, ParseSuccess, Success, isFailure } from "../parse";
 import { parseName } from "./initial";
@@ -19,10 +20,35 @@ const v5: VersionConverter = {
 
 export default v5;
 
-type v6GameModeStorage = GameModeStorage;
-type v6GameMode = GameMode
-type v6GameModeData = GameModeData
-type v6ShareableGameMode = ShareableGameMode
+type v6GameModeStorage = {
+    format: 'v6',
+    gameModes: v6GameMode[]
+};
+type v6GameMode = {
+    name: string,
+    data: Record<number, v6GameModeData>
+}
+type v6GameModeData = {
+    roleList: v6RoleList,
+    phaseTimes: PhaseTimes,
+    enabledRoles: Role[],
+    modifierSettings: ListMapData<ModifierID, ModifierState>
+}
+type v6ShareableGameMode = {
+    format: 'v6',
+    name: string,
+} & v6GameModeData
+type v6RoleList = v6RoleOutline[];
+type v6RoleOutline = v6RoleOutlineOption[];
+type v6RoleOutlineOption = ({
+    roleSet: BaseRoleSet
+} | {
+    role: Role
+}) & {
+    winIfAny?: Conclusion[],
+    insiderGroups?: InsiderGroup[],
+    playerPool?: PlayerIndex[]
+}
 
 function parseGameModeStorage(json: NonNullable<any>): ParseResult<v6GameModeStorage> {
     if (typeof json !== "object" || Array.isArray(json)) {

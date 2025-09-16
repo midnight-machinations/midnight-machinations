@@ -150,7 +150,7 @@ export default function Popover<T extends HTMLElement = HTMLElement>(props: Read
         // Hopefully all closings of popovers are caused by clicks.
         window.addEventListener("click", checkAnchorOpen)
         return () => window.removeEventListener("click", checkAnchorOpen);
-    }, [props.anchorForPositionRef])
+    }, [props])
 
     //close on click outside
     useEffect(() => {

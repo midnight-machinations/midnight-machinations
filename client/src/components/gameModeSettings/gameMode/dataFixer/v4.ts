@@ -157,7 +157,7 @@ function parseGameModeData(json: NonNullable<any>): ParseResult<v5GameModeData> 
     });
 }
 
-export function parseRoleList(json: NonNullable<any>): ParseResult<RoleOutline[]> {
+export function parseRoleList(json: NonNullable<any>): ParseResult<any[]> {
     if (!Array.isArray(json)) {
         return Failure("roleListIsNotArray", json);
     }
@@ -237,7 +237,7 @@ function parseRoleOutlineOption(json: NonNullable<any>): ParseResult<RoleOutline
 }
 
 
-function parseRoleOutlineOptionWinIfAny(json: NonNullable<any>): ParseResult<Conclusion[]> {
+export function parseRoleOutlineOptionWinIfAny(json: NonNullable<any>): ParseResult<Conclusion[]> {
     if (!Array.isArray(json)) {
         return Failure("winIfAnyNotArray", json);
     }
@@ -250,7 +250,7 @@ function parseRoleOutlineOptionWinIfAny(json: NonNullable<any>): ParseResult<Con
     return Success(conclusions.map(success => (success as ParseSuccess<Conclusion>).value));
 }
 
-function parseConclusion(json: NonNullable<any>): ParseResult<Conclusion> {
+export function parseConclusion(json: NonNullable<any>): ParseResult<Conclusion> {
     if (typeof json !== "string") {
         return Failure("conclusionNotString", json);
     }
@@ -263,7 +263,7 @@ function parseConclusion(json: NonNullable<any>): ParseResult<Conclusion> {
 }
 
 
-function parseRoleOutlineOptionInsiderGroups(json: NonNullable<any>): ParseResult<InsiderGroup[]> {
+export function parseRoleOutlineOptionInsiderGroups(json: NonNullable<any>): ParseResult<InsiderGroup[]> {
     if (!Array.isArray(json)) {
         return Failure("insiderGroupsNotArray", json);
     }
@@ -276,7 +276,7 @@ function parseRoleOutlineOptionInsiderGroups(json: NonNullable<any>): ParseResul
     return Success(insiderGroups.map(success => (success as ParseSuccess<InsiderGroup>).value));
 }
 
-function parseInsiderGroup(json: NonNullable<any>): ParseResult<InsiderGroup> {
+export function parseInsiderGroup(json: NonNullable<any>): ParseResult<InsiderGroup> {
     if (typeof json !== "string") {
         return Failure("insiderGroupNotString", json);
     }
@@ -288,7 +288,7 @@ function parseInsiderGroup(json: NonNullable<any>): ParseResult<InsiderGroup> {
     return Success(json as InsiderGroup);
 }
 
-function parseModifierSettingsFromEnabledModifiers(json: NonNullable<any>): ParseResult<ListMapData<ModifierID, ModifierState>> {
+export function parseModifierSettingsFromEnabledModifiers(json: NonNullable<any>): ParseResult<ListMapData<ModifierID, ModifierState>> {
     const enabledModifiers = parseEnabledModifiers(json);
     if (isFailure(enabledModifiers)) return enabledModifiers;
 

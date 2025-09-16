@@ -31,7 +31,7 @@ type ConverterMap = {
 const VERSION_CONVERTERS: Record<string, VersionConverter> = { initial, v0, v1, v2, v3, v4, v5, v6 }
 
 /// This converter is the latest version, and acts as a verification step.
-export const LATEST_VERSION_STRING: CurrentFormat = "v6";
+export const LATEST_VERSION_STRING: CurrentFormat = "v7";
 const LATEST_VERSION: VersionConverter = VERSION_CONVERTERS[LATEST_VERSION_STRING];
 
 export default function parseFromJson<T extends keyof ConverterMap>(type: T, json: NonNullable<any>): ParseResult<ConverterMap[T]> {

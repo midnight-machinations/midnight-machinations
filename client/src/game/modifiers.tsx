@@ -1,4 +1,3 @@
-import { strictDeepEqual } from "../components/useHooks";
 import ListMap, { ListMapData } from "../ListMap";
 import { ModifierSettings, UnsafeString } from "./gameState.d";
 import { getRolesFromRoleSet, RoleSet } from "./roleListState.d";

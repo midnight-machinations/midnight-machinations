@@ -1,5 +1,5 @@
 import React, { ReactElement, useCallback, useContext, useEffect, useRef, useState } from "react";
-import { CustomRoleSetsModifierState, MODIFIERS, ModifierID, ModifierState, customRoleSetRoles, defaultModifierState, isModifierConfigurable } from "../../game/modifiers";
+import { CustomRoleSetsModifierState, MODIFIERS, ModifierID, ModifierState, defaultModifierState, isModifierConfigurable } from "../../game/modifiers";
 import translate from "../../game/lang";
 import StyledText from "../StyledText";
 import { GameModeContext } from "./GameModesEditor";

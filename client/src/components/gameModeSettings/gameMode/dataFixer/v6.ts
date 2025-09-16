@@ -1,11 +1,13 @@
 import { VersionConverter } from ".";
 import { GameMode, GameModeData, GameModeStorage, ShareableGameMode } from "..";
-import { PHASES, PhaseTimes } from "../../../../game/gameState.d";
+import { Conclusion, InsiderGroup, PHASES, PhaseTimes } from "../../../../game/gameState.d";
 import { getDefaultSettings, Settings } from "../../../../game/localStorage";
+import { BASE_ROLE_SETS, BaseRoleSet, RoleOutline, RoleOutlineOption, RoleSet } from "../../../../game/roleListState.d";
+import { Role } from "../../../../game/roleState.d";
 import { Failure, ParseResult, ParseSuccess, Success, isFailure } from "../parse";
-import { parseName } from "./initial";
+import { parseName, parseRole } from "./initial";
 import { parseEnabledRoles } from "./v2";
-import { parseRoleList } from "./v4";
+import { parseRoleOutlineOptionInsiderGroups, parseRoleOutlineOptionWinIfAny } from "./v4";
 import { parseModifierSettings } from "./v5";
 
 const v6: VersionConverter = {
@@ -62,7 +64,7 @@ function parseGameModeStorage(json: NonNullable<any>): ParseResult<GameModeStora
     }
 
     return Success({
-        format: "v6",
+        format: "v7",
         gameModes: gameModeList.map(gameMode => (gameMode as ParseSuccess<GameMode>).value)
     })
 }
@@ -98,7 +100,7 @@ function parseShareableGameModeData(json: NonNullable<any>): ParseResult<Shareab
         const name = parseName(json.name);
         if (isFailure(name)) return name;
 
-        return Success({ format: "v6", name: name.value, ...gameMode.value });
+        return Success({ format: "v7", name: name.value, ...gameMode.value });
     }
 }
 
@@ -161,6 +163,95 @@ function parseGameModeData(json: NonNullable<any>): ParseResult<GameModeData> {
         enabledRoles: enabledRoles.value,
         modifierSettings: modifierSettings.value
     });
+}
+
+function parseRoleList(json: NonNullable<any>): ParseResult<any[]> {
+    if (!Array.isArray(json)) {
+        return Failure("roleListIsNotArray", json);
+    }
+
+    if (json.length === 0) {
+        return Failure("roleListIsEmpty", json);
+    }
+
+    const roleList = json.map(parseRoleOutline);
+
+    for (const outline of roleList) {
+        if (isFailure(outline)) return outline;
+    }
+
+    return Success(roleList.map(success => (success as ParseSuccess<RoleOutline>).value));
+}
+
+function parseRoleOutline(json: NonNullable<any>): ParseResult<RoleOutline> {
+    const options = parseRoleOutlineOptionList(json);
+    if (isFailure(options)) return options;
+
+    return Success(options.value);
+}
+
+function parseRoleOutlineOptionList(json: NonNullable<any>): ParseResult<RoleOutlineOption[]> {
+    if (!Array.isArray(json)) {
+        return Failure("roleOutlineOptionListIsNotArray", json);
+    }
+
+    const outlineOptionList = json.map(parseRoleOutlineOption);
+    for (const option of outlineOptionList) {
+        if (isFailure(option)) return option;
+    }
+
+    return Success(outlineOptionList.map(success => (success as ParseSuccess<RoleOutlineOption>).value) as RoleOutlineOption[]);
+}
+
+function parseRoleOutlineOption(json: NonNullable<any>): ParseResult<RoleOutlineOption> {
+
+    let out: {
+        insiderGroups?: InsiderGroup[],
+        winIfAny?: Conclusion[],
+        role?: Role,
+        roleSet?: RoleSet
+    } = {}
+
+
+    if("insiderGroups" in json) {
+        const insiderGroupsResult = parseRoleOutlineOptionInsiderGroups(json.insiderGroups);
+        if (isFailure(insiderGroupsResult)) return insiderGroupsResult;
+        out.insiderGroups = insiderGroupsResult.value;
+    }
+
+    if("winIfAny" in json) {
+        const winIfAnyResult = parseRoleOutlineOptionWinIfAny(json.winIfAny);
+        if (isFailure(winIfAnyResult)) return winIfAnyResult;
+        out.winIfAny = winIfAnyResult.value;
+    }
+
+    if("role" in json && "roleSet" in json) {
+        return Failure("roleOutlineOptionBothRoleAndRoleSet", json);
+    }
+    
+    if ("role" in json) {
+        const roleResult = parseRole(json.role);
+        if (isFailure(roleResult)) return roleResult;
+        out.role = roleResult.value;
+    } else if ("roleSet" in json) {
+        const roleSetResult = parseRoleSet(json.roleSet);
+        if (isFailure(roleSetResult)) return roleSetResult;
+        out.roleSet = roleSetResult.value;
+    } else {
+        return Failure("roleOutlineOptionNeitherRoleNorRoleSet", json);
+    }
+
+    return Success(out as RoleOutlineOption);
+}
+
+export function parseRoleSet(json: NonNullable<any>): ParseResult<RoleSet> {
+    if (typeof json !== "string") {
+        return Failure("roleSetIsNotString", json);
+    }
+    if (!BASE_ROLE_SETS.includes(json as any)) {
+        return Failure("invalidRoleSet", json);
+    }
+    return Success({ type: json as BaseRoleSet });
 }
 
 export function parsePhaseTimes(json: NonNullable<any>): ParseResult<PhaseTimes> {
