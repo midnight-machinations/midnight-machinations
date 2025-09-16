@@ -1,5 +1,7 @@
-import { ListMapData } from "../ListMap";
-import { UnsafeString } from "./gameState.d";
+import { strictDeepEqual } from "../components/useHooks";
+import ListMap, { ListMapData } from "../ListMap";
+import { ModifierSettings, UnsafeString } from "./gameState.d";
+import { getRolesFromRoleSet, RoleSet } from "./roleListState.d";
 import { Role } from "./roleState.d";
 
 export const MODIFIERS = [
@@ -62,9 +64,15 @@ export type ModifierState = {
     type: "customRoleSets",
     sets: {
         name: UnsafeString,
-        roles: Role[]
+        roleSets?: {
+            roleSet: RoleSet,
+            excludedRoles: Role[]
+        }[],
+        roles?: Role[]
     }[]
 }
+
+export type CustomRoleSetsModifierState = Extract<ModifierState, { type: "customRoleSets" }>;
 
 export function defaultModifierState(modifierId: ModifierID): ModifierState {
     switch (modifierId) {
@@ -85,4 +93,43 @@ export function isModifierConfigurable(modifierId: ModifierID): boolean {
         default:
             return false;
     }
+}
+
+export function customRoleSetRoles(
+    setId: number,
+    modifierSettings: ModifierSettings
+): Role[] {
+    const newModifierSettings = new ListMap([...modifierSettings.list]);
+
+    const customRoleSets: CustomRoleSetsModifierState | null = newModifierSettings.get("customRoleSets") as any;
+
+    if (customRoleSets === null) {
+        return [];
+    }
+
+    const set = customRoleSets.sets.at(setId);
+
+    // Recursive calls should "forget" this custom role set, to prevent infinite recursion.
+    newModifierSettings.insert("customRoleSets", {
+        ...customRoleSets,
+        sets: customRoleSets.sets.filter((s, id) => id !== setId)
+    });
+
+    if (set === undefined) {
+        return []
+    }
+
+    const subRoleSets = set.roleSets ?? [];
+    const roles = set.roles ?? [];
+
+    const out: Role[] = [];
+
+    for (const subRoleSet of subRoleSets) {
+        const rolesFromRoleSet = getRolesFromRoleSet(subRoleSet.roleSet, newModifierSettings);
+        out.push(...rolesFromRoleSet.filter(role => !subRoleSet.excludedRoles.includes(role)));
+    }
+
+    out.push(...roles);
+
+    return out;
 }

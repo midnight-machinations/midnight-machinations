@@ -851,6 +851,10 @@
     "randomPlayerNames": "Random Player Names",
     "customRoleLimits": "Custom Role Limits",
     "customRoleSets": "Custom Role Sets",
+    "customRoleSets.addRoleOrRoleSet": "Add role or role set",
+    "customRoleSets.subRoleSet.minus": "Except:",
+    "customRoleSets.subRoleSets": "Role sets",
+    "customRoleSets.roles": "Roles",
 
     "syndicateGunItem": "Syndicate Gun",
     "nightMessages": "Night Messages",

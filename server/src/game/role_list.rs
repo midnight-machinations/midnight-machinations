@@ -337,7 +337,7 @@ impl RoleSet{
                     }
                 )
                 .and_then(|custom_role_sets|custom_role_sets.sets.get(*id as usize))
-                .map(|custom_role_set|custom_role_set.roles.clone())
+                .map(|custom_role_set|custom_role_set.roles(settings).clone())
                 .unwrap_or_default(),
             _ => self.get_roles_static(),
         }

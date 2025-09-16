@@ -1,5 +1,5 @@
 import React, { ReactElement, useCallback, useContext, useEffect, useRef, useState } from "react";
-import { MODIFIERS, ModifierID, ModifierState, defaultModifierState, isModifierConfigurable } from "../../game/modifiers";
+import { CustomRoleSetsModifierState, MODIFIERS, ModifierID, ModifierState, customRoleSetRoles, defaultModifierState, isModifierConfigurable } from "../../game/modifiers";
 import translate from "../../game/lang";
 import StyledText from "../StyledText";
 import { GameModeContext } from "./GameModesEditor";
@@ -10,7 +10,7 @@ import Popover from "../Popover";
 import Select, { dropdownPlacementFunction } from "../Select";
 import { Role, roleJsonData } from "../../game/roleState.d";
 import Icon from "../Icon";
-import { getAllRoles, getRolesFromRoleSet, RoleOrRoleSet, sortRolesCanonically } from "../../game/roleListState.d";
+import { BASE_ROLE_SETS, getAllRoles, getRolesFromRoleSet, RoleOrRoleSet, RoleSet, sortRolesCanonically, translateRoleSet } from "../../game/roleListState.d";
 import { ModifierSettings, UnsafeString } from "../../game/gameState.d";
 import { encodeString } from "../ChatMessage";
 import { RoleOrRoleSetSelector } from "./OutlineSelector";
@@ -181,7 +181,7 @@ export function ModifierConfigMenu(props: Readonly<{
     state: ModifierState | undefined,
     setModifier: (modifier: ModifierState | undefined) => void,
     close: () => void,
-    modifierSettings: Readonly<ModifierSettings>
+    modifierSettings: Readonly<ModifierSettings>,
 }>): ReactElement | null {
     // This will prevent it from opening until the server sends us the state
     if (props.state === undefined) {
@@ -349,25 +349,27 @@ function CustomRoleSetsConfigMenu(props: Readonly<{
     modifiable: boolean,
     setModifier: (modifier: ModifierState | undefined) => void,
     close: () => void,
-    modifierSettings: Readonly<ModifierSettings>
+    modifierSettings: Readonly<ModifierSettings>,
 }>): ReactElement {
     return <div>
         {!props.modifiable && <StyledText>{translate(`customRoleSets`)}</StyledText>}
         <div className="role-list-setter-list">
-            {props.state.sets.map(({ name, roles }, index) =>
-                <CustomRoleSetSelection
-                    key={name as string}
-                    name={name}
+            {props.state.sets.map((set, index) => {
+                return <CustomRoleSetSelection
+                    key={set.name as string}
+                    name={set.name}
                     setName={(newName) => {
                         const sets = [...props.state.sets];
-                        sets[index] = { name: newName, roles };
+                        sets[index] = { ...set, name: newName };
                         props.setModifier({ type: "customRoleSets", sets: sets });
                     }}
-                    roles={roles}
+                    setId={index}
+                    subRoleSets={set.roleSets ?? []}
+                    roles={set.roles ?? []}
                     modifiable={props.modifiable}
-                    onChangeRoles={(newRoles) => {
+                    onChange={(newSubRoleSets, newRoles) => {
                         const sets = [...props.state.sets];
-                        sets[index] = { name: name, roles: newRoles };
+                        sets[index] = { name: set.name, roleSets: newSubRoleSets, roles: newRoles };
                         props.setModifier({ type: "customRoleSets", sets: sets });
                     }}
                     remove={() => {
@@ -377,11 +379,11 @@ function CustomRoleSetsConfigMenu(props: Readonly<{
                     }}
                     modifierSettings={props.modifierSettings}
                 />
-            )}
+            })}
             {props.modifiable && <div>
                 <Button onClick={() => {
                     const sets = [...props.state.sets];
-                    const newSetName = translate("roleSet.customUnnamed", sets.length);
+                    const newSetName = translate("roleSet.customUnnamed", sets.length + 1);
 
                     sets.push({ name: newSetName as UnsafeString, roles: [] });
                     props.setModifier({ type: "customRoleSets", sets: sets });
@@ -409,18 +411,20 @@ function CustomRoleSetsConfigMenu(props: Readonly<{
 function CustomRoleSetSelection(props: Readonly<{
     name: UnsafeString,
     setName: (name: UnsafeString) => void,
+    setId: number,
+    subRoleSets: { roleSet: RoleSet, excludedRoles: Role[] }[],
     roles: Role[],
     modifiable: boolean,
-    onChangeRoles: (roles: Role[]) => void,
+    onChange: (subRoleSets: { roleSet: RoleSet, excludedRoles: Role[] }[], roles: Role[]) => void,
     remove: () => void,
-    modifierSettings: Readonly<ModifierSettings>
+    modifierSettings: Readonly<ModifierSettings>,
 }>): ReactElement {
     const enabledRoles = useContext(GameModeContext).enabledRoles;
 
-    const optionsSearch = new Map<Role, [ReactElement, string]>();
+    const roleOptionsSearch = new Map<Role, [ReactElement, string]>();
 
     getAllRoles().forEach(role => {
-        optionsSearch.set(role, [
+        roleOptionsSearch.set(role, [
             <StyledText
                 key={role}
                 noLinks={true}
@@ -432,92 +436,273 @@ function CustomRoleSetSelection(props: Readonly<{
         ]);
     });
 
-    const handleRoleChange = (newRole: Role, index: number) => {
-        const newRoles = [...props.roles];
+    const roleSetOptionsSearch = new Map<RoleSet, [ReactElement, string]>();
 
-        if (index >= newRoles.length) {
-            newRoles.push(newRole);
-        } else {
-            newRoles[index] = newRole;
-        }
+    BASE_ROLE_SETS.forEach(roleSet => {
+        roleSetOptionsSearch.set({ type: roleSet }, [
+            <StyledText
+                key={roleSet}
+                noLinks={true}
+            >
+                {translate(roleSet)}
+            </StyledText>,
+            translate(roleSet)
+        ]);
+    });
 
-        props.onChangeRoles(newRoles);
-    }
+    (props.modifierSettings.get("customRoleSets") as CustomRoleSetsModifierState | undefined)?.sets.forEach((set, id) => {
+        roleSetOptionsSearch.set({ type: "custom", id }, [
+            <StyledText
+                key={set.name as string}
+                noLinks={true}
+            >
+                {encodeString(set.name)}
+            </StyledText>,
+            encodeString(set.name)
+        ]);
+    });
 
     const [nameField, setNameField] = useState(props.name as string);
 
     const [roleOrRoleSetToAdd, setRoleOrRoleSetToAdd] = useState<RoleOrRoleSet>({ type: "roleSet", roleSet: { type: "any" } });
 
-    return <div className="custom-role-set-selection">
-        {props.modifiable ? <>
-            <input
-                type="text"
-                value={nameField}
-                onChange={(e) => {
-                    setNameField(e.target.value);
-                }}
-                onBlur={(e) => {
-                    props.setName(e.target.value as UnsafeString);
-                }}
-                onKeyUp={(e) => {
-                    if (e.key !== 'Enter') return;
+    const [open, setOpen] = useState<boolean>(false);
+    const ref = useRef<HTMLButtonElement>(null);
 
-                    props.setName((e.target as React.ChangeEvent<HTMLInputElement>['target']).value as UnsafeString);
-                }}
-            />
-        </> : <>
-            <StyledText>{encodeString(props.name)}</StyledText>
-        </>}
-        <div className="role-list-setter-list">
-            {props.roles.map((role, i) => 
-                <div key={i} className="custom-role-limit-selection">
-                    {props.modifiable ? <>
+    return <div>
+        <RawButton
+            ref={ref}
+            onClick={() => setOpen(open => !open)}
+        ><StyledText noLinks={true}>{encodeString(props.name)}</StyledText> {props.modifiable && <Icon>edit</Icon>}</RawButton>
+        {props.modifiable && <Button
+            onClick={props.remove}
+        ><Icon>delete</Icon></Button>}
+        <Popover
+            open={open}
+            setOpenOrClosed={setOpen}
+            anchorForPositionRef={ref}
+            doNotCloseOnOutsideClick={true}
+            onRender={dropdownPlacementFunction}
+        >
+            <div className="custom-role-set-selection">
+                {props.modifiable ? <>
+                    <input
+                        type="text"
+                        value={nameField}
+                        onChange={(e) => {
+                            setNameField(e.target.value);
+                        }}
+                        onBlur={(e) => {
+                            props.setName(e.target.value as UnsafeString);
+                        }}
+                        onKeyUp={(e) => {
+                            if (e.key !== 'Enter') return;
+
+                            props.setName((e.target as React.ChangeEvent<HTMLInputElement>['target']).value as UnsafeString);
+                        }}
+                    />
+                </> : <>
+                    <StyledText>{encodeString(props.name)}</StyledText>
+                </>}
+                <StyledText>{translate("customRoleSets.subRoleSets")}</StyledText>
+                <div className="role-list-setter-list">
+                    {props.subRoleSets.length > 0 ? props.subRoleSets.map((subRoleSet, i) =>
+                        <div key={subRoleSet.roleSet + '.' + subRoleSet.excludedRoles.join(',')} className="custom-role-limit-selection">
+                            <CustomRoleSetSelectionSubRoleSet
+                                setId={props.setId}
+                                subRoleSet={subRoleSet}
+                                modifiable={props.modifiable}
+                                roleSetOptionsSearch={roleSetOptionsSearch}
+                                onChange={(roleSet, excludedRoles) => {
+                                    const newSubRoleSets = [...props.subRoleSets];
+                                    newSubRoleSets[i] = { roleSet, excludedRoles };
+                                    props.onChange(newSubRoleSets, props.roles);
+                                }}
+                                onDelete={() => {
+                                    const newSubRoleSets = [...props.subRoleSets];
+                                    newSubRoleSets.splice(i, 1);
+                                    props.onChange(newSubRoleSets, props.roles)
+                                }}
+                                modifierSettings={props.modifierSettings}
+                            />
+                        </div>
+                    ) : translate("none")}
+                </div>
+                <StyledText>{translate("customRoleSets.roles")}</StyledText>
+                <div className="role-list-setter-list">
+                    {props.roles.length > 0 ? props.roles.map((role, i) => 
+                        <div key={role} className="custom-role-limit-selection">
+                            {props.modifiable ? <>
+                                <Select
+                                    className="role-outline-option-selector"
+                                    value={role}
+                                    onChange={r => {
+                                        const newRoles = [...props.roles];
+                                        newRoles[i] = r
+                                        props.onChange(props.subRoleSets, newRoles);
+                                    }}
+                                    optionsSearch={roleOptionsSearch}
+                                />
+                                <Button
+                                    onClick={() => {
+                                        const newRoles = [...props.roles];
+                                        newRoles.splice(i, 1);
+                                        props.onChange(props.subRoleSets, newRoles);
+                                    }}
+                                >
+                                    <Icon>delete</Icon>
+                                </Button>
+                            </> : <>
+                                <StyledText
+                                    noLinks={true}
+                                    className={!enabledRoles.includes(role) ? "keyword-disabled" : ""}
+                                >
+                                    {translate(`role.${role}.name`)}
+                                </StyledText>
+                            </>}
+                        </div>
+                    ) : translate("none")}
+                </div>
+                {props.modifiable && <StyledText>{translate("customRoleSets.addRoleOrRoleSet")}</StyledText>}
+                {props.modifiable && <div className="select-role-to-add">
+                    <RoleOrRoleSetSelector
+                        roleOrRoleSet={roleOrRoleSetToAdd}
+                        onChange={setRoleOrRoleSetToAdd}
+                    />
+                    <Button
+                        onClick={() => {
+                            if (roleOrRoleSetToAdd.type === "role") {
+                                const newRoles = [...props.roles];
+                                newRoles.push(roleOrRoleSetToAdd.role);
+                                props.onChange(props.subRoleSets, newRoles);
+                            } else {
+                                const newRoleSets = [...props.subRoleSets];
+                                newRoleSets.push({ roleSet: roleOrRoleSetToAdd.roleSet, excludedRoles: [] });
+                                props.onChange(newRoleSets, props.roles);
+                            }
+                        }}
+                    >
+                        <Icon>add</Icon>
+                    </Button>
+                </div>}
+            </div>
+        </Popover>
+    </div>
+}
+
+function CustomRoleSetSelectionSubRoleSet(props: Readonly<{
+    setId: number,
+    subRoleSet: { roleSet: RoleSet, excludedRoles: Role[] },
+    roleSetOptionsSearch: Map<RoleSet, [ReactElement, string]>,
+    modifiable: boolean,
+    onChange: (roleSet: RoleSet, excludedRoles: Role[]) => void,
+    onDelete: () => void,
+    modifierSettings: ModifierSettings
+}>): ReactElement {
+    const enabledRoles = useContext(GameModeContext).enabledRoles;
+
+    const rolesFromRoleSet = getRolesFromRoleSet(props.subRoleSet.roleSet, props.modifierSettings);
+    const rolesToAdd = rolesFromRoleSet.filter(role => !props.subRoleSet.excludedRoles.includes(role));
+
+    const roleOptionsSearch = new Map<Role, [ReactElement, string]>();
+
+    rolesFromRoleSet.forEach(role => {
+        roleOptionsSearch.set(role, [
+            <StyledText
+                key={role}
+                noLinks={true}
+                className={!enabledRoles.includes(role) ? "keyword-disabled" : ""}
+            >
+                {translate(`role.${role}.name`)}
+            </StyledText>,
+            translate(`role.${role}.name`)
+        ]);
+    });
+
+    const [open, setOpen] = useState<boolean>(false);
+    const ref = useRef<HTMLButtonElement>(null);
+
+    const buttonText = (
+        `${translateRoleSet(props.subRoleSet.roleSet, props.modifierSettings)} ` +
+        (props.subRoleSet.excludedRoles.length > 0 ? (
+            `${translate("customRoleSets.subRoleSet.minus")} ` +
+            `${props.subRoleSet.excludedRoles.map(role => translate("role." + role + ".name")).join(', ')}`
+        ) : '')
+    );
+
+    const maxLength = 25;
+
+    const truncatedText = buttonText.length < maxLength ? buttonText : (buttonText.substring(0, Math.min(buttonText.length, maxLength - 3)) + "...");
+
+    return props.modifiable ? <>
+        <RawButton ref={ref} onClick={() => setOpen(!open)}>
+            <StyledText noLinks={true}>{truncatedText}</StyledText>
+        </RawButton>
+        <Button onClick={props.onDelete}><Icon>delete</Icon></Button>
+        <Popover
+            open={open}
+            setOpenOrClosed={setOpen}
+            anchorForPositionRef={ref}
+            doNotCloseOnOutsideClick={true}
+            onRender={dropdownPlacementFunction}
+        >
+            <div className="sub-role-set">
+                <div className="sub-role-set-role-set">
+                    <Select
+                        className="role-outline-option-selector"
+                        value={props.subRoleSet.roleSet}
+                        onChange={rs => props.onChange(rs, [])}
+                        optionsSearch={props.roleSetOptionsSearch}
+                        compareFn={(a, b) => a.type === b.type && (a.type !== "custom" || b.type !== "custom" || a.id === b.id)}
+                    />
+                </div>
+                {translate("customRoleSets.subRoleSet.minus")}
+                <div className="role-list-setter-list">
+                    {props.subRoleSet.excludedRoles.map((role, index) => <div key={role}>
                         <Select
                             className="role-outline-option-selector"
                             value={role}
-                            onChange={r => handleRoleChange(r, i)}
-                            optionsSearch={optionsSearch}
+                            onChange={r => {
+                                const newExcludedRoles = [...props.subRoleSet.excludedRoles];
+                                newExcludedRoles[index] = r;
+                                props.onChange(props.subRoleSet.roleSet, newExcludedRoles);
+                            }}
+                            optionsSearch={roleOptionsSearch}
                         />
                         <Button
                             onClick={() => {
-                                const newRoles = [...props.roles];
-                                newRoles.splice(i, 1);
-                                props.onChangeRoles(newRoles);
+                                const newRoles = [...props.subRoleSet.excludedRoles];
+                                newRoles.splice(index, 1);
+                                props.onChange(props.subRoleSet.roleSet, newRoles);
                             }}
                         >
                             <Icon>delete</Icon>
                         </Button>
-                    </> : <>
-                        <StyledText
-                            noLinks={true}
-                            className={!enabledRoles.includes(role) ? "keyword-disabled" : ""}
-                        >
-                            {translate(`role.${role}.name`)}
-                        </StyledText>
-                    </>}
+                    </div>) || translate("noExclusions")}
+                    <div>
+                        {rolesToAdd.length > 0 && <Button onClick={() => {
+                            props.onChange(props.subRoleSet.roleSet, [
+                                ...props.subRoleSet.excludedRoles,
+                                rolesToAdd[0]
+                            ]);
+                        }}><Icon>add</Icon></Button>}
+                    </div>
                 </div>
-            )}
-            {props.modifiable && <div className="select-role-to-add">
-                <RoleOrRoleSetSelector
-                    roleOrRoleSet={roleOrRoleSetToAdd}
-                    onChange={setRoleOrRoleSetToAdd}
-                />
-                <Button
-                    onClick={() => {
-                        if (roleOrRoleSetToAdd.type === "role") {
-                            handleRoleChange(roleOrRoleSetToAdd.role, props.roles.length);
-                        } else {
-                            // Add all roles in the role set
-                            const rolesToAdd = getRolesFromRoleSet(roleOrRoleSetToAdd.roleSet, props.modifierSettings)
-                                .filter(role => !props.roles.includes(role));
-                            
-                            props.onChangeRoles([...props.roles, ...rolesToAdd]);
-                        }
-                    }}
+            </div>
+        </Popover>
+    </> : <>
+        <div>
+            <StyledText>{translateRoleSet(props.subRoleSet.roleSet, props.modifierSettings)}</StyledText>
+            {props.subRoleSet.excludedRoles.length > 0 && " " + translate("customRoleSets.subRoleSet.minus") + " "}
+            {props.subRoleSet.excludedRoles.map(role => <>
+                <StyledText
+                    key={role}
+                    noLinks={true}
+                    className={!enabledRoles.includes(role) ? "keyword-disabled" : ""}
                 >
-                    <Icon>add</Icon>
-                </Button>
-            </div>}
+                    {translate(`role.${role}.name`)}
+                </StyledText>
+            </>)}
         </div>
-    </div>
+    </>
 }

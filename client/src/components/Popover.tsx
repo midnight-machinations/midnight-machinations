@@ -128,6 +128,30 @@ export default function Popover<T extends HTMLElement = HTMLElement>(props: Read
         }
     }, [props, popoverRoot, anchorControllerContext, menuControllerContext, gameModeContext, mobileContext]);
 
+    // This is to make sure popovers which are "children" of closed popovers don't open
+    useEffect(() => {
+        const checkAnchorOpen = () => {
+            const anchorElement = props.anchorForPositionRef?.current;
+
+            const anchorRootIsOpen = (() => {
+                let current: HTMLElement | null | undefined = anchorElement;
+                while (current !== null && current !== undefined) {
+                    if (current.hidden) return false;
+                    current = current.parentElement;
+                }
+                return true;
+            })()
+
+            if (!anchorRootIsOpen) {
+                props.setOpenOrClosed(false);
+            }
+        }
+
+        // Hopefully all closings of popovers are caused by clicks.
+        window.addEventListener("click", checkAnchorOpen)
+        return () => window.removeEventListener("click", checkAnchorOpen);
+    }, [props.anchorForPositionRef])
+
     //close on click outside
     useEffect(() => {
         if (props.doNotCloseOnOutsideClick) {

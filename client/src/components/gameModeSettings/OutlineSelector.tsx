@@ -15,7 +15,7 @@ import Popover from "../Popover";
 import DUMMY_NAMES from "../../resources/dummyNames.json";
 import { encodeString } from "../ChatMessage";
 import ListMap from "../../ListMap";
-import { ModifierID, ModifierState } from "../../game/modifiers";
+import { CustomRoleSetsModifierState, ModifierID, ModifierState } from "../../game/modifiers";
 
 type RoleOutlineSelectorProps = {
     roleOutline: RoleOutline,
@@ -519,7 +519,7 @@ export function RoleOrRoleSetSelector(props: Readonly<{
     )!;
     
     const customRoleSets = useMemo(() => {
-        return (modifierSettings.get("customRoleSets") as (ModifierState & { type: "customRoleSets" }) | undefined)?.sets || [];
+        return (modifierSettings.get("customRoleSets") as CustomRoleSetsModifierState | null)?.sets || [];
     }, [modifierSettings]);
 
     const isRoleEnabled = useCallback((role: Role) => {

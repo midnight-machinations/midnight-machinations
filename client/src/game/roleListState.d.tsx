@@ -2,7 +2,7 @@
 import { encodeString } from "../components/ChatMessage";
 import { Conclusion, InsiderGroup, ModifierSettings, PlayerIndex, translateWinCondition, UnsafeString } from "./gameState.d";
 import translate from "./lang";
-import { ModifierState } from "./modifiers";
+import { customRoleSetRoles, CustomRoleSetsModifierState, ModifierState } from "./modifiers";
 import { Role, roleJsonData } from "./roleState.d";
 
 export type RoleList = RoleOutline[];
@@ -42,8 +42,11 @@ export function getRolesFromBaseRoleSet(roleSet: BaseRoleSet): Role[] {
     });
 }
 export function getRolesFromRoleSet(roleSet: RoleSet, modifierSettings: ModifierSettings): Role[] {
+    if (roleSet.type === "custom") {
+        return customRoleSetRoles(roleSet.id, modifierSettings);
+    }
     return getAllRoles().filter((role) => {
-        return getRoleSetsFromRole(role, modifierSettings).some((rs) => deepEqual(rs, roleSet));
+        return getBaseRoleSetsFromRole(role).includes(roleSet.type);
     });
 }
 export function getBaseRoleSetsFromRole(role: Role): BaseRoleSet[] {
@@ -55,9 +58,9 @@ export function getRoleSetsFromRole(role: Role, modifierSettings: ModifierSettin
 
     const customRoleSetsModifier = modifierSettings.get("customRoleSets");
     if (customRoleSetsModifier !== null) {
-        (customRoleSetsModifier as ModifierState & { type: "customRoleSets" }).sets.forEach((set, index) => {
-            if (set.roles.includes(role)) {
-                roleSets.push({ type: "custom", id: index });
+        (customRoleSetsModifier as CustomRoleSetsModifierState).sets.forEach((_, id) => {
+            if (customRoleSetRoles(id, modifierSettings).includes(role)) {
+                roleSets.push({ type: "custom", id });
             }
         });
     }
@@ -119,7 +122,7 @@ export function translateRoleSet(roleSet: RoleSet, modifierSettings?: ModifierSe
                     return encodeString(set.name);
                 }
             }
-            return translate("roleSet.customUnnamed", roleSet.id);
+            return translate("roleSet.customUnnamed", roleSet.id + 1);
         default:
             return translate(roleSet.type);
     }
