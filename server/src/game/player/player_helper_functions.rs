@@ -16,7 +16,7 @@ use crate::{
         visit::{Visit, VisitTag},
         Game
     },
-    packet::ToClientPacket, vec_map::VecMap, vec_set::VecSet
+    packet::ToClientPacket, vec_set::VecSet
 };
 
 use super::PlayerReference;
@@ -341,14 +341,6 @@ impl PlayerReference{
         }else{
             None
         }
-    }
-
-    pub fn revealed_players_map(&self, game: &Game) -> VecMap<PlayerReference, Role> {
-        let mut map = VecMap::new();
-        for player in self.revealed_players(game).iter() {
-            map.insert(*player, player.role(game));
-        }
-        map
     }
 
     pub fn ability_deactivated_from_death(&self, game: &Game) -> bool {

@@ -29,3 +29,4 @@ pub mod fast_forward;
 pub mod role;
 pub mod player_component;
 pub mod pitchfork_item;
+pub mod role_reveal;

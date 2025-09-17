@@ -32,6 +32,7 @@ use crate::game::chat::PlayerChatGroups;
 use crate::game::components::fast_forward::FastForwardComponent;
 use crate::game::components::pitchfork_item::PitchforkItemComponent;
 use crate::game::components::role::RoleComponent;
+use crate::game::components::role_reveal::RevealedPlayersComponent;
 use crate::game::controllers::Controllers;
 use crate::game::modifiers::ModifierID;
 use controllers::ControllerID;
@@ -108,6 +109,7 @@ pub struct Game {
     
     //components with data
     pub player_chat_groups: PlayerChatGroups,
+    pub revealed_players: RevealedPlayersComponent,
     pub graves: Graves,
     pub controllers: Controllers,
     pub abilities: Abilities,

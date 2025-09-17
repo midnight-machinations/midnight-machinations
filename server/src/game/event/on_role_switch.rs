@@ -1,31 +1,29 @@
 use crate::game::{
-    components::{cult::Cult, mafia::Mafia, synopsis::SynopsisTracker},
-    player::PlayerReference, 
-    role::RoleState, 
-    Game
+    abilities_component::Abilities, components::{cult::Cult, mafia::Mafia, role_reveal::RevealedPlayersComponent, synopsis::SynopsisTracker}, event::Event, player::PlayerReference, role::RoleState, Game
 };
 
 #[must_use = "Event must be invoked"]
 pub struct OnRoleSwitch{
-    player: PlayerReference,
-    old: RoleState,
-    new: RoleState,
+    pub player: PlayerReference,
+    pub old: RoleState,
+    pub new: RoleState,
 }
 impl OnRoleSwitch{
     pub fn new(player: PlayerReference, old: RoleState, new: RoleState) -> Self{
         Self{ player, old, new }
     }
-    pub fn invoke(self, game: &mut Game){
+}
+impl Event for OnRoleSwitch{
+    type FoldValue = ();
+    type Priority = ();
 
-        game.on_role_switch(self.player, self.old.role(), self.new.role());
+    fn listeners() -> Vec<super::EventListenerFunction<Self>> {vec![
+        RevealedPlayersComponent::on_role_switch,
+        Cult::on_role_switch,
+        Mafia::on_role_switch,
+        SynopsisTracker::on_role_switch,
+        Abilities::on_role_switch,
+    ]}
 
-        Cult::on_role_switch(game, self.old.role(), self.new.role());
-        Mafia::on_role_switch(game, self.old.clone(), self.new.clone());
-        SynopsisTracker::on_role_switch(game, self.player, self.old.role(), self.new.role());
-
-
-        for player in PlayerReference::all_players(game){
-            player.on_role_switch(game, self.player, self.old.clone(), self.new.clone());
-        }
-    }
+    fn initial_fold_value(&self, _game: &Game) -> Self::FoldValue {}
 }

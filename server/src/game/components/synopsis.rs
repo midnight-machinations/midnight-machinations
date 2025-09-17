@@ -2,7 +2,7 @@ use std::cmp::Ordering;
 
 use serde::{Deserialize, Serialize};
 
-use crate::{game::{components::insider_group::InsiderGroupID, game_conclusion::GameConclusion, phase::PhaseType, player::PlayerReference, role::Role, role_outline_reference::RoleOutlineReference, Game}, vec_set::VecSet};
+use crate::{game::{components::insider_group::InsiderGroupID, event::on_role_switch::OnRoleSwitch, game_conclusion::GameConclusion, phase::PhaseType, player::PlayerReference, role::Role, role_outline_reference::RoleOutlineReference, Game}, vec_set::VecSet};
 
 use super::win_condition::WinCondition;
 
@@ -41,8 +41,8 @@ impl SynopsisTracker {
         &mut game.synopsis_tracker.player_synopses
     }
 
-    pub fn on_role_switch(game: &mut Game, player: PlayerReference, _: Role, _: Role) {
-        SynopsisTracker::add_crumb_to_player(player, game);
+    pub fn on_role_switch(game: &mut Game, event: &OnRoleSwitch, _fold: &mut (), _priority: ()) {
+        SynopsisTracker::add_crumb_to_player(event.player, game);
     }
 
     pub fn on_convert(game: &mut Game, player: PlayerReference, _: WinCondition, _: WinCondition) {

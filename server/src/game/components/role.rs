@@ -1,5 +1,5 @@
 use crate::game::{
-    components::player_component::PlayerComponent, event::on_role_switch::OnRoleSwitch, player::PlayerReference, role::{Role, RoleState}, Assignments, Game
+    components::player_component::PlayerComponent, event::{on_role_switch::OnRoleSwitch, Event}, player::PlayerReference, role::{Role, RoleState}, Assignments, Game
 };
 
 pub type RoleComponent = PlayerComponent::<Role>;

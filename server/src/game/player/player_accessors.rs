@@ -3,10 +3,9 @@ use crate::{
     game::{
         chat::{ChatMessage, ChatMessageVariant, ChatPlayerComponent},
         components::player_component::PlayerComponent, controllers::{ControllerID, IntegerSelection},
-        event::{on_conceal_role::OnConcealRole, Event as _}, modifiers::ModifierID, verdict::Verdict, Game
+        modifiers::ModifierID, verdict::Verdict, Game
     },
     packet::ToClientPacket,
-    vec_set::VecSet
 };
 
 use super::PlayerReference;
@@ -62,35 +61,6 @@ impl PlayerReference{
     pub fn set_death_note(&self, game: &mut Game, death_note: Option<String>){
         self.deref_mut(game).death_note = death_note;
         self.send_packet(game, ToClientPacket::YourDeathNote { death_note: self.deref(game).death_note.clone() })
-    }
-    
-    pub fn revealed_players<'a>(&self, game: &'a Game) -> &'a VecSet<PlayerReference>{
-        &self.deref(game).role_labels
-    }  
-    pub fn reveal_players_role(&self, game: &mut Game, revealed_player: PlayerReference){
-        if
-            revealed_player != *self &&
-            revealed_player.alive(game) &&
-            self.deref_mut(game).role_labels.insert(revealed_player).is_none()
-        {
-            self.add_private_chat_message(game, ChatMessageVariant::PlayersRoleRevealed { player: revealed_player, role: revealed_player.role(game) })
-        }
-
-
-        self.send_packet(game, ToClientPacket::YourRoleLabels{
-            role_labels: self.revealed_players_map(game)
-        });
-    }
-    pub fn conceal_players_role(&self, game: &mut Game, concealed_player: PlayerReference){
-        if self.deref_mut(game).role_labels.remove(&concealed_player).is_some() {
-            self.add_private_chat_message(game, ChatMessageVariant::PlayersRoleConcealed { player: concealed_player })
-        }
-
-        self.send_packet(game, ToClientPacket::YourRoleLabels{
-            role_labels: self.revealed_players_map(game)
-        });
-
-        OnConcealRole::new(*self, concealed_player).invoke(game);
     }
 
     pub fn add_private_chat_message(&self, game: &mut Game, message: ChatMessageVariant) {

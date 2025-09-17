@@ -7,7 +7,7 @@ use super::{
     chat::{ChatGroup, ChatMessageVariant}, components::synopsis::SynopsisTracker,
     event::on_whisper::{OnWhisper, WhisperFold, WhisperPriority},
     game_conclusion::GameConclusion, phase::{PhaseState, PhaseStateMachine, PhaseType},
-    player::PlayerReference, role::Role, Game, GameOverReason
+    player::PlayerReference, Game, GameOverReason
 };
 
 //Event listerner functions for game defined here
@@ -36,14 +36,6 @@ impl Game{
         
         for other_player_ref in PlayerReference::all_players(game){
             other_player_ref.conceal_players_role(game, grave.player);
-        }
-    }
-    pub fn on_role_switch(&mut self, actor: PlayerReference, old: Role, new: Role){
-
-        if old == new {return;}
-
-        for player_ref in PlayerReference::all_players(self){
-            player_ref.conceal_players_role(self, actor);
         }
     }
     pub fn on_whisper(&mut self, event: &OnWhisper, fold: &mut WhisperFold, priority: WhisperPriority) {

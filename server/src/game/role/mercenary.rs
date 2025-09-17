@@ -5,6 +5,7 @@ use crate::game::components::graves::grave::{Grave, GraveKiller};
 use crate::game::event::on_ability_creation::{OnAbilityCreation, OnAbilityCreationFold, OnAbilityCreationPriority};
 use crate::game::event::on_midnight::{MidnightVariables, OnMidnightPriority};
 use crate::game::attack_power::{AttackPower, DefensePower};
+use crate::game::event::on_role_switch::OnRoleSwitch;
 use rand::seq::SliceRandom;
 use crate::game::player::PlayerReference;
 
@@ -122,7 +123,7 @@ impl RoleStateTrait for Mercenary {
     fn on_any_death(self, game: &mut Game, actor_ref: PlayerReference, _dead_player_ref: PlayerReference) {
         self.check_win(game, actor_ref);
     }
-    fn on_role_switch(self, game: &mut Game, actor_ref: PlayerReference, _player: PlayerReference, _new: super::RoleState, _old: super::RoleState) {   
+    fn on_role_switch(self, game: &mut Game, actor_ref: PlayerReference, _event: &OnRoleSwitch, _fold: &mut (), _priority: ()){   
         self.check_win(game, actor_ref);
     }
 }
