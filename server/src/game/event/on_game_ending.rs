@@ -1,5 +1,5 @@
 use crate::game::{
-    game_conclusion::GameConclusion, player::PlayerReference, Game
+    game_conclusion::GameConclusion, Game
 };
 
 #[must_use = "Event must be invoked"]
@@ -14,10 +14,6 @@ impl OnGameEnding{
         }
     }
     pub fn invoke(&self, game: &mut Game){
-        for player_ref in PlayerReference::all_players(game){
-            player_ref.on_game_ending(game);
-        }
-
         game.on_game_ending(self.conclusion);
     }
 }

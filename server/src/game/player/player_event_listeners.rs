@@ -26,13 +26,6 @@ impl PlayerReference {
         }
     }
 
-
-    pub fn on_game_start(&self, game: &mut Game){
-        self.role_state(game).clone().on_game_start(game, *self)
-    }
-    pub fn on_game_ending(&self, game: &mut Game){
-        self.role_state(game).clone().on_game_ending(game, *self)
-    }
     pub fn on_player_roleblocked(&self, game: &mut Game, midnight_variables: &mut MidnightVariables, player: PlayerReference, invisible: bool) {
         self.role_state(game).clone().on_player_roleblocked(game, midnight_variables, *self, player, invisible)
     }

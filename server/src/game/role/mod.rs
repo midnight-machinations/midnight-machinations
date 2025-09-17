@@ -72,8 +72,6 @@ pub trait RoleStateTrait: Clone + std::fmt::Debug + Default + GetClientAbilitySt
     fn on_role_switch(self, _game: &mut Game, _actor_ref: PlayerReference, _event: &OnRoleSwitch, _fold: &mut (), _priority: ()) {}
     fn on_any_death(self, _game: &mut Game, _actor_ref: PlayerReference, _dead_player_ref: PlayerReference) {}
     fn on_grave_added(self, _game: &mut Game, _actor_ref: PlayerReference, _grave: GraveReference) {}
-    fn on_game_ending(self, _game: &mut Game, _actor_ref: PlayerReference) {}
-    fn on_game_start(self, _game: &mut Game, _actor_ref: PlayerReference) {}
     fn on_conceal_role(self, _game: &mut Game, _actor_ref: PlayerReference, _player: PlayerReference, _concealed_player: PlayerReference) {}
     fn on_player_roleblocked(self, _game: &mut Game, midnight_variables: &mut MidnightVariables, actor_ref: PlayerReference, player: PlayerReference, _invisible: bool) {
         common_role::on_player_roleblocked(midnight_variables, actor_ref, player);
@@ -347,16 +345,6 @@ mod macros {
                 pub fn on_grave_added(self, game: &mut Game, actor_ref: PlayerReference, grave: GraveReference){
                     match self {
                         $(Self::$name(role_struct) => role_struct.on_grave_added(game, actor_ref, grave)),*
-                    }
-                }
-                pub fn on_game_start(self, game: &mut Game, actor_ref: PlayerReference){
-                    match self {
-                        $(Self::$name(role_struct) => role_struct.on_game_start(game, actor_ref)),*
-                    }
-                }
-                pub fn on_game_ending(self, game: &mut Game, actor_ref: PlayerReference){
-                    match self {
-                        $(Self::$name(role_struct) => role_struct.on_game_ending(game, actor_ref)),*
                     }
                 }
                 pub fn get_client_ability_state(self, game: &Game, actor_ref: PlayerReference) -> ClientRoleStateEnum {
