@@ -1,12 +1,12 @@
 use crate::{
-    game::event::{on_grave_added::OnGraveAdded, on_phase_start::OnPhaseStart},
+    game::event::{on_game_ending::OnGameEnding, on_grave_added::OnGraveAdded, on_phase_start::OnPhaseStart},
     packet::ToClientPacket
 };
 
 use super::{
     chat::{ChatGroup, ChatMessageVariant}, components::synopsis::SynopsisTracker,
     event::on_whisper::{OnWhisper, WhisperFold, WhisperPriority},
-    game_conclusion::GameConclusion, phase::{PhaseState, PhaseStateMachine, PhaseType},
+    phase::{PhaseState, PhaseStateMachine, PhaseType},
     player::PlayerReference, Game, GameOverReason
 };
 
@@ -19,8 +19,8 @@ impl Game{
         });
         self.send_packet_to_all(ToClientPacket::PhaseTimeLeft{ seconds_left: self.phase_machine.time_remaining.map(|o|o.as_secs().try_into().expect("Phase time should be below 18 hours")) });
     }
-    pub fn on_game_ending(&mut self, conclusion: GameConclusion){
-        let synopsis = SynopsisTracker::get(self, conclusion);
+    pub fn on_game_ending(&mut self, event: &OnGameEnding, _fold: &mut (), _priority: ()){
+        let synopsis = SynopsisTracker::get(self, event.conclusion);
 
         PhaseStateMachine::next_phase(self, Some(PhaseState::Recess));
         self.add_message_to_chat_group(ChatGroup::All, ChatMessageVariant::GameOver { synopsis });

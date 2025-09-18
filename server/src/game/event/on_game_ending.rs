@@ -1,19 +1,24 @@
 use crate::game::{
-    game_conclusion::GameConclusion, Game
+    event::Event, game_conclusion::GameConclusion, Game
 };
 
 #[must_use = "Event must be invoked"]
 pub struct OnGameEnding {
-    conclusion: GameConclusion
+    pub(crate) conclusion: GameConclusion
 }
 
 impl OnGameEnding{
     pub fn new(conclusion: GameConclusion) -> Self {
-        OnGameEnding {
+        Self {
             conclusion
         }
     }
-    pub fn invoke(&self, game: &mut Game){
-        game.on_game_ending(self.conclusion);
-    }
+}
+impl Event for OnGameEnding{
+    type FoldValue = ();
+    type Priority = ();
+    fn listeners() -> Vec<super::EventListenerFunction<Self>> {vec![
+        Game::on_game_ending,
+    ]}
+    fn initial_fold_value(&self, _game: &Game) -> Self::FoldValue {}
 }

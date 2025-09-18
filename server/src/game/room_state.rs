@@ -5,6 +5,7 @@ use crate::game::chat::ChatGroup;
 use crate::game::chat::ChatMessageVariant;
 use crate::game::components::synopsis::SynopsisTracker;
 use crate::game::event::on_game_ending::OnGameEnding;
+use crate::game::event::Event;
 use crate::game::game_client::GameClient;
 use crate::game::game_client::GameClientLocation;
 use crate::game::game_conclusion::GameConclusion;
