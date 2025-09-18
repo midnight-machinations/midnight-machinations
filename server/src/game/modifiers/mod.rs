@@ -19,12 +19,9 @@ pub mod forfeit_vote;
 pub mod random_player_names;
 
 use crate::{
-    game::{
-        event::{
-            before_phase_end::BeforePhaseEnd, on_any_death::OnAnyDeath, on_grave_added::OnGraveAdded,
-            on_phase_start::OnPhaseStart
-        }
-    },
+    game::event::{
+            before_phase_end::BeforePhaseEnd, on_any_death::OnAnyDeath, on_game_start::OnGameStart, on_grave_added::OnGraveAdded, on_phase_start::OnPhaseStart
+        },
     vec_map::VecMap
 };
 
@@ -43,7 +40,7 @@ pub trait ModifierStateImpl where Self: Clone + Sized + Default + Serialize + fo
     fn before_phase_end(self, _game: &mut Game, _phase: super::phase::PhaseType) {}
     fn on_phase_start(self, _game: &mut Game, _event: &OnPhaseStart, _fold: &mut (), _priority: ()) {}
     fn on_grave_added(self, _game: &mut Game, _event: &OnGraveAdded, _fold: &mut (), _priority: ()) {}
-    fn on_game_start(self, _game: &mut Game) {}
+    fn on_game_start(self, _game: &mut Game, _event: &OnGameStart, _fold: &mut (), _priority: ()) {}
     fn on_any_death(self, _game: &mut Game, _player: PlayerReference) {}
     fn on_whisper(self, _game: &mut Game, _event: &OnWhisper, _fold: &mut WhisperFold, _priority: WhisperPriority) {}
 }
@@ -109,9 +106,9 @@ impl ModifierSettings{
             modifier.1.on_grave_added(game, event, fold, priority);
         }
     }
-    pub fn on_game_start(game: &mut Game){
+    pub fn on_game_start(game: &mut Game, event: &OnGameStart, fold: &mut (), priority: ()){
         for modifier in game.modifier_settings().modifiers.clone(){
-            modifier.1.on_game_start(game);
+            modifier.1.on_game_start(game, event, fold, priority);
         }
     }
     pub fn before_phase_end(game: &mut Game, event: &BeforePhaseEnd, _fold: &mut (), _priority: ()){
@@ -204,10 +201,10 @@ mod macros {
                         )*
                     }
                 }
-                fn on_game_start(self, game: &mut Game) {
+                fn on_game_start(self, game: &mut Game, event: &OnGameStart, fold: &mut (), priority: ()) {
                     match self {
                         $(
-                            ModifierState::$name(s) => s.on_game_start(game),
+                            ModifierState::$name(s) => s.on_game_start(game, event, fold, priority),
                         )*
                     }
                 }

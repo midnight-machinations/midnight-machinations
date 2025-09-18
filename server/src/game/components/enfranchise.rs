@@ -1,5 +1,5 @@
 use crate::game::{
-    chat::{ChatGroup, ChatMessageVariant}, modifiers::ModifierID, player::PlayerReference, Game
+    chat::{ChatGroup, ChatMessageVariant}, event::on_game_start::OnGameStart, modifiers::ModifierID, player::PlayerReference, Game
 };
 
 use super::tags::Tags;
@@ -21,7 +21,7 @@ impl Enfranchise{
     pub fn enfranchised(game: &Game, player: PlayerReference)->bool{
         Tags::has_tag(game, super::tags::TagSetID::Enfranchised, player)
     }
-    pub fn on_game_start(game: &mut Game){
+    pub fn on_game_start(game: &mut Game, _event: &OnGameStart, _fold: &mut (), _priority: ()){
         Tags::set_viewers(game, super::tags::TagSetID::Enfranchised, &PlayerReference::all_players(game).collect());
     }
 }

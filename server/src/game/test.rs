@@ -1,5 +1,5 @@
 
-    use crate::{game::{abilities_component::Abilities, chat::{ChatComponent, PlayerChatGroups}, components::{fast_forward::FastForwardComponent, graves::Graves, pitchfork_item::PitchforkItemComponent, role::RoleComponent, role_reveal::RevealedPlayersComponent}, role_list_generation::RoleListGenerator}, vec_map::VecMap};
+    use crate::{game::{abilities_component::Abilities, chat::{ChatComponent, PlayerChatGroups}, components::{fast_forward::FastForwardComponent, graves::Graves, pitchfork_item::PitchforkItemComponent, role::RoleComponent, role_reveal::RevealedPlayersComponent}, event::Event, role_list_generation::RoleListGenerator}, vec_map::VecMap};
 
     use super::{
         controllers::Controllers, components::{
@@ -91,7 +91,7 @@
             player_ref.initial_role_creation(&mut game);
         }
 
-        OnGameStart::invoke(&mut game);
+        OnGameStart::new().invoke(&mut game);
 
         Ok((game, assignments))
     }
