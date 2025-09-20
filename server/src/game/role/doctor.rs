@@ -53,7 +53,7 @@ impl RoleStateTrait for Doctor {
             .id(ControllerID::role(actor_ref, Role::Doctor, 0))
             .single_player_selection_typical(actor_ref, self.self_heals_remaining > 0, true)
             .night_typical(actor_ref)
-            .add_grayed_out_condition(false)
+            
             .build_map()
     }
     fn convert_selection_to_visits(self, game: &Game, actor_ref: PlayerReference) -> Vec<Visit> {

@@ -149,7 +149,7 @@ impl RoleStateTrait for Engineer {
                     .id(ControllerID::role(actor_ref, Role::Engineer, 0))
                     .single_player_selection_typical(actor_ref, false, true)
                     .night_typical(actor_ref)
-                    .add_grayed_out_condition(false)
+                    
                     .build_map()
             },
             Trap::Set { .. } => {
@@ -157,7 +157,7 @@ impl RoleStateTrait for Engineer {
                     .id(ControllerID::role(actor_ref, Role::Engineer, 1))
                     .available_selection(AvailableBooleanSelection)
                     .night_typical(actor_ref)
-                    .add_grayed_out_condition(false)
+                    
                     .build_map()
             }
             _ => {

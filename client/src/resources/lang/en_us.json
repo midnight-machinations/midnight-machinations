@@ -232,7 +232,7 @@
 
     "role.tallyClerk.name": "Tally Clerk",
     "role.tallyClerk.name:var.0": "Tally Clerks",
-    "role.tallyClerk.target": "Distribute",
+    "controllerId.role.tallyClerk.0.name": "Tally",
 
     "role.doctor.name": "Doctor",
     "role.doctor.name:var.0": "Doctors",
@@ -1077,7 +1077,7 @@
     "chatMessage.snoopResult.inconclusive":"You can't tell what your target is.",
     "chatMessage.gossipResult.none": "Your target didn't visit a player that is enemies with town.",
     "chatMessage.gossipResult.enemies": "Your target visited a player that is enemies with town.",
-    "chatMessage.tallyClerkResult": "\\0 evil players voted guilty at some point today.",
+    "chatMessage.tallyClerkResult": "\\0 town enemies voted guilty during any of the selected trials.",
     "chatMessage.playerForwardedMessage":"\\0 forwarded:",
     "chatMessage.targetsMessage":"Your target got the following message:",
     "chatMessage.youWerePossessed":"You were possessed.",
@@ -1723,11 +1723,12 @@
     "wiki.article.role.gossip.attributes":"- If any player your target visits has a suspicious aura, then you are told they visited a town enemy",
     "wiki.article.role.gossip.extra":"- Suspicious aura overrides innocent aura\n- If your target visits multiple other players, you learn if at least one of them is a town enemy\n- False appeared visits can mess with your results, depending on who your target appears to visit\n- Your target having an aura does not mess with the results, however, their targets having an aura does",
 
-    "wiki.article.role.tallyClerk.reminder": "At night, you are told how many players are not town loyalists from the players who voted guilty today.",
-    "wiki.article.role.tallyClerk.guide": "- At night, you are told how many players are not town loyalists from the players who voted guilty during any of the trials today\n- If any player has innocent aura, they register as a town loyalist\n- If any player has suspicious aura, they register as not a town loyalist",
-    "wiki.article.role.tallyClerk.abilities":"- At night, you are told how many players are not town loyalists from the players who voted guilty today\n- If you are blocked, you aren't told anything\n- Your ability doesn't depend on visits",
-    "wiki.article.role.tallyClerk.attributes":"- A suspicious aura makes a player register as not a town loyalist\n- An innocent aura makes a player register as a town loyalist\n- A suspicious aura overwrites innocent aura to the Tally Clerk",
-    "wiki.article.role.tallyClerk.extra":"",
+    "wiki.article.role.tallyClerk.reminder": "At night, you are told how many players are town enemies from the players who voted guilty during selected trials.",
+    "wiki.article.role.tallyClerk.lore": "The tally clerk always tells rediculous stories of how people submit their votes. Others dismiss the stories as hyperbole, but the tally clerk delivers the stories with such an exhausted expression that you know they have been through it all.",
+    "wiki.article.role.tallyClerk.guide": "- At night, you are told how many players are town enemies from the players who voted guilty during the selected trials.\n    - Each night, choose a player to visit.\n        - If you visit a player who was on trial yesterday then you select all of that players trials from yesterday.\n        - If you visit a player who was not on trial yesterday then you select all trials from yesterday.",
+    "wiki.article.role.tallyClerk.abilities":"",
+    "wiki.article.role.tallyClerk.attributes":"",
+    "wiki.article.role.tallyClerk.extra":"- You can select to visit anyone, even yourself, even dead players.\n- Innocent aura makes players appear to be town friends.\n- Suspicious aura makes players appear to be town enemies.\n- Suspicious aura overwrites innocent aura.",
 
     "wiki.article.role.doctor.reminder": "At night, select a player to guard from attacks. You can guard yourself once per game.",
     "wiki.article.role.doctor.lore": "The doctor is so unimaginably talented that they can save anyone from any physical ailment conceivable. According to the doctor, saving someone is only worth the time if they are \"seriously\" in need of help, so the doctor only shows up when their patient is about to die. But it's nomatter, the doctor never fails.",

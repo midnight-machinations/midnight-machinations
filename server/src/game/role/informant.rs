@@ -50,9 +50,9 @@ impl RoleStateTrait for Informant {
     fn controller_parameters_map(self, game: &Game, actor_ref: PlayerReference) -> ControllerParametersMap {
         ControllerParametersMap::builder(game)
             .id(ControllerID::role(actor_ref, Role::Informant, 0))
-            .player_list_selection_typical(actor_ref, false, false, false, Some(2))
+            .player_list_selection_typical(actor_ref, false, false, false, false, Some(2))
             .night_typical(actor_ref)
-            .add_grayed_out_condition(false)
+            
             .build_map()
     }
     fn convert_selection_to_visits(self, game: &Game, actor_ref: PlayerReference) -> Vec<Visit> {

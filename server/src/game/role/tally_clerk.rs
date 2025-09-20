@@ -1,14 +1,17 @@
 use serde::Serialize;
-
 use crate::game::attack_power::DefensePower;
-use crate::game::components::aura::Aura;
 use crate::game::components::confused::Confused;
+use crate::game::components::night_visits::Visits;
+use crate::game::controllers::{ControllerID, ControllerParametersMap};
 use crate::game::event::on_midnight::{MidnightVariables, OnMidnightPriority};
+use crate::game::role::detective::Detective;
+use crate::game::role::Role;
+use crate::game::visit::Visit;
 use crate::game::{chat::ChatMessageVariant, components::verdicts_today::VerdictsToday};
-use crate::game::game_conclusion::GameConclusion;
 use crate::game::player::PlayerReference;
 
 use crate::game::Game;
+use crate::vec_set::VecSet;
 
 use super::RoleStateTrait;
 
@@ -23,49 +26,70 @@ pub struct TallyClerk;
 impl RoleStateTrait for TallyClerk {
     type ClientAbilityState = TallyClerk;
     fn on_midnight(self, game: &mut Game, midnight_variables: &mut MidnightVariables, actor_ref: PlayerReference, priority: OnMidnightPriority) {
-        if actor_ref.night_blocked(midnight_variables) {return}
-        if actor_ref.ability_deactivated_from_death(game) {return}
         if priority != OnMidnightPriority::Investigative {return;}
+        let target = 
+        if 
+            let Some(target) = Visits::default_target(game, midnight_variables, actor_ref) &&
+            VerdictsToday::player_was_on_trial(game, target)
+        {
+            Some(target)
+        }else{
+            None
+        };
 
         let evil_count = if Confused::is_confused(game, actor_ref){
-            Self::confused_result(game, midnight_variables)
+            Self::confused_result(game, midnight_variables, target)
         }else{
-            Self::result(game, midnight_variables)
+            Self::result(game, midnight_variables, target)
         };
         
         let message = ChatMessageVariant::TallyClerkResult{ evil_count };
         actor_ref.push_night_message(midnight_variables, message);
     }
+    fn controller_parameters_map(self, game: &Game, actor_ref: PlayerReference) -> ControllerParametersMap {
+        ControllerParametersMap::builder(game)
+            .id(ControllerID::role(actor_ref, Role::TallyClerk, 0))
+            .player_list_selection_typical(actor_ref, true, true, false, true, Some(1))
+            .night_typical(actor_ref)
+            .build_map()
+    }
+    fn convert_selection_to_visits(self, game: &Game, actor_ref: PlayerReference) -> Vec<Visit> {
+        crate::game::role::common_role::convert_controller_selection_to_visits(
+            game,
+            actor_ref,
+            ControllerID::role(actor_ref, Role::TallyClerk, 0),
+            false
+        )
+    }
 }
 
 impl TallyClerk {
-    fn result(game: &Game, midnight_variables: &MidnightVariables)->u8{
-        let mut out: u8 = 0;
-        for player in PlayerReference::all_players(game)
-            .filter(|player|player.alive(game))
-            .filter(|player|VerdictsToday::player_guiltied_today(game, player))
-        {
-            if TallyClerk::player_is_suspicious(game, midnight_variables, player){
-                out = out.saturating_add(1);
-            }
+    fn get_guilties(game: &Game, target: Option<PlayerReference>)->VecSet<PlayerReference>{
+        if let Some(target) = target {
+            VerdictsToday::guilties_during_trial(game, target)
+        }else{
+            VerdictsToday::guilties_during_any_trial(game)
         }
-        out
     }
-    fn confused_result(game: &Game, midnight_variables: &MidnightVariables)->u8{
-        let total_guilties = VerdictsToday::guilties(game).len();
+    fn result(game: &Game, midnight_variables: &MidnightVariables, target: Option<PlayerReference>)->u8{
+        let guilties = Self::get_guilties(game, target);
+        PlayerReference::all_players(game)
+            .filter(|player|player.alive(game))
+            .filter(|player|guilties.contains(player))
+            .filter(|player|TallyClerk::player_is_suspicious(game, midnight_variables, *player))
+            .count()
+            .try_into()
+            .unwrap_or(u8::MAX)
+    }
+    fn confused_result(game: &Game, midnight_variables: &MidnightVariables, target: Option<PlayerReference>)->u8{
+        let guilties = Self::get_guilties(game, target);
+        let total_guilties = guilties.count();
 
-        let evil_count = Self::result(game, midnight_variables).saturating_add_signed(rand::random_range(0..=1));
+        let evil_count = Self::result(game, midnight_variables, target).saturating_add_signed(rand::random_range(0..=1));
         
         evil_count.min(total_guilties.try_into().unwrap_or(u8::MAX))
     }
-    fn player_is_suspicious(game: &Game, midnight_variables: &MidnightVariables, player_ref: PlayerReference) -> bool {
-
-        if Aura::suspicious(game, midnight_variables, player_ref){
-            true
-        }else if Aura::innocent(game, midnight_variables, player_ref){
-            false
-        }else{
-            !player_ref.win_condition(game).is_loyalist_for(GameConclusion::Town)
-        }
+    fn player_is_suspicious(game: &Game, midnight_variables: &MidnightVariables, target: PlayerReference) -> bool {
+        Detective::player_is_suspicious(game, midnight_variables, target)
     }
 }
