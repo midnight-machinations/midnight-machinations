@@ -75,7 +75,7 @@ function UnobscuredGrave(props: Readonly<{
         } else {
             return translate("grave.deathCause."+props.grave.information.deathCause.type);
         }
-    }, [props.grave.information.deathCause]);
+    }, [props.grave.information.deathCause, props.modifierSettings]);
 
     let graveRoleString = translate(`role.${props.grave.information.role}.name`);
 
