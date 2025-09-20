@@ -34,7 +34,7 @@ impl ModifierStateImpl for RoleSetGraveKillers{
                                     RoleSet::Fiends,
                                     RoleSet::Minions,
                                     RoleSet::Neutral,
-                                ].iter().find(|set| set.get_roles().contains(&killer_role));
+                                ].iter().find(|set| set.get_roles_static().contains(&killer_role));
     
                                 if let Some(role_set) = killer_role_set {
                                     GraveKiller::RoleSet(role_set.clone())

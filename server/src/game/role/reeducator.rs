@@ -141,7 +141,7 @@ impl RoleStateTrait for Reeducator {
             ControllerParametersMap::builder(game)
                 .id(ControllerID::role(actor_ref, Role::Reeducator, 1))
                 .single_role_selection_typical(game, |role|
-                    RoleSet::MafiaSupport.get_roles().contains(role) &&
+                    RoleSet::MafiaSupport.get_roles_static().contains(role) &&
                     *role != Role::Reeducator
                 )
                 .default_selection(RoleListSelection(vec![Reeducator::default_role(game)]))
@@ -171,7 +171,7 @@ impl RoleStateTrait for Reeducator {
 
 impl Reeducator {
     pub fn default_role(game: &Game) -> Role {
-        RoleSet::MafiaSupport.get_roles().into_iter()
+        RoleSet::MafiaSupport.get_roles_static().into_iter()
             .filter(|p|game.settings.enabled_roles.contains(p))
             .filter(|p|*p!=Role::Reeducator)
             .choose(&mut rand::rng()).unwrap_or(Role::Reeducator)

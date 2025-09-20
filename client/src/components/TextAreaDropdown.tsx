@@ -10,6 +10,7 @@ import DetailsSummary from "./DetailsSummary";
 import { useLobbyOrGameState, usePlayerNames, usePlayerState } from "./useHooks";
 import { PlayerIndex, UnsafeString } from "../game/gameState.d";
 import PlayerOptionDropdown from "./PlayerOptionDropdown";
+import ListMap from "../ListMap";
 
 export function TextDropdownArea(props: Readonly<{
     titleString: UnsafeString,
@@ -124,6 +125,11 @@ function TextDropdownLabel(
         ["roleList"]
     ) ?? [];
 
+    const modifierSettings = useLobbyOrGameState(
+        gameState => gameState.modifierSettings,
+        ["modifierSettings"]
+    ) ?? new ListMap();
+
     function save(field: UnsafeString) {
         props.onSave(field);
     }
@@ -134,7 +140,7 @@ function TextDropdownLabel(
     }
 
     return <div>
-        <StyledText>{encodeString(replaceMentions(props.titleString, playerNames, roleList))}</StyledText>
+        <StyledText>{encodeString(replaceMentions(props.titleString, playerNames, roleList, modifierSettings))}</StyledText>
         <span>
             {props.onSubtract ? <Button
                 onClick={(e) => {
@@ -214,6 +220,11 @@ function PrettyTextArea(props: Readonly<{
         ["roleList"]
     ) ?? [];
 
+    const modifierSettings = useLobbyOrGameState(
+        gameState => gameState.modifierSettings,
+        ["modifierSettings"]
+    ) ?? new ListMap();
+
     const textareaRef = useRef<HTMLTextAreaElement>(null);
     const prettyTextAreaRef = useRef<HTMLDivElement>(null);
 
@@ -256,7 +267,7 @@ function PrettyTextArea(props: Readonly<{
                 className="textarea"
             >
                 <StyledText noLinks={true}>
-                    {encodeString(replaceMentions(props.field, playerNames, roleList))}
+                    {encodeString(replaceMentions(props.field, playerNames, roleList, modifierSettings))}
                 </StyledText>
             </div>
             :

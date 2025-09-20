@@ -25,7 +25,7 @@ pub const FILL_ALL_ROLES: GenerationCriterion = GenerationCriterion {
             .find(|(_, assignment)| assignment.role.is_none())
         {
             GenerationCriterionResult::Unmet(
-                settings.role_list.0[i].get_all_roles()
+                settings.role_list.0[i].get_all_roles(settings)
                     .iter()
                     .filter(|role| {
                         settings.enabled_roles.contains(role)
@@ -92,7 +92,7 @@ pub const FILL_ALL_OUTLINE_OPTIONS: GenerationCriterion = GenerationCriterion {
         {
             GenerationCriterionResult::Unmet(
                 settings.role_list.0[i].options.iter()
-                    .filter(|&o| assignment.role.is_some_and(|r| o.roles.get_roles().contains(&r)))
+                    .filter(|&o| assignment.role.is_some_and(|r| o.roles.get_roles(settings).contains(&r)))
                     .cloned()
                     .map(|outline_option| {
                         let mut new_node = node.clone();

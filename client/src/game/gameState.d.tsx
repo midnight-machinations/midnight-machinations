@@ -89,7 +89,7 @@ type GameState = {
     roleList: RoleList,
     enabledRoles: Role[],
     phaseTimes: PhaseTimes,
-    modifierSettings: ListMap<ModifierID, ModifierState>,
+    modifierSettings: ModifierSettings,
 
     ticking: boolean,
 
@@ -101,6 +101,8 @@ type GameState = {
     missedChatMessages: boolean
 }
 export default GameState;
+
+export type ModifierSettings = ListMap<ModifierID, ModifierState>;
 
 export type PlayerGameState = {
     type: "player",

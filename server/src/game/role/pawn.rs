@@ -24,7 +24,7 @@ impl RoleStateTrait for Pawn {
         if priority != OnAbilityCreationPriority::SideEffect || !event.id.is_players_role(actor_ref, Role::Pawn) || fold.cancelled {return}
         
         let possible_roles = RoleSet::TownInvestigative
-            .get_roles()
+            .get_roles_static()
             .into_iter()
             .filter(|role|role_enabled_and_not_taken(
                 *role,

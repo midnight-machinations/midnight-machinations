@@ -51,7 +51,7 @@ impl RoleStateTrait for Retributionist {
                         GraveReference::all_graves(game).any(|grave|
                             grave.deref(game).player == *target && 
                             if let Some(role) = grave.deref(game).role(){
-                                RoleSet::Town.get_roles().contains(&role)
+                                RoleSet::Town.get_roles_static().contains(&role)
                             }else{false}
                         ))
                     .filter(|target|

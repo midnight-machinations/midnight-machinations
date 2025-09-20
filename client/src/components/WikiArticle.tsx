@@ -3,7 +3,7 @@ import { Role, roleJsonData } from "../game/roleState.d";
 import React from "react";
 import translate, { langText, translateChecked } from "../game/lang";
 import StyledText, { DUMMY_NAMES_KEYWORD_DATA, DUMMY_NAMES_SENDER_KEYWORD_DATA, DUMMY_ROLE_LIST_KEYWORD_DATA, StyledTextProps } from "./StyledText";
-import { ROLE_SETS, RoleList, getAllRoles, getRolesFromRoleSet } from "../game/roleListState.d";
+import { BASE_ROLE_SETS, RoleList, getAllRoles, getRolesFromRoleSet } from "../game/roleListState.d";
 import ChatElement from "./ChatMessage";
 import DUMMY_NAMES from "../resources/dummyNames.json";
 import { ARTICLES, GeneratedArticle, getArticleTitle, WikiArticleLink, wikiPageIsEnabled } from "./WikiArticleLink";
@@ -15,6 +15,7 @@ import { partitionWikiPages, WikiCategory } from "./Wiki";
 import { MODIFIERS, ModifierID } from "../game/modifiers";
 import DUMMY_ROLE_LIST from "../resources/dummyRoleList.json";
 import Masonry from "react-responsive-masonry";
+import ListMap from "../ListMap";
 
 function WikiStyledText(props: Omit<StyledTextProps, 'markdown' | 'playerKeywordData'>): ReactElement {
     return <StyledText {...props} markdown={true} playerKeywordData={DUMMY_NAMES_KEYWORD_DATA} roleListKeywordData={DUMMY_ROLE_LIST_KEYWORD_DATA}/>
@@ -41,13 +42,13 @@ export default function WikiArticle(props: {
                         {"### "+roleData.roleSets.map((roleSet)=>{return translate(roleSet)}).join(" | ")+"\n"}
 
                         {"### "+translate("wiki.article.role.reminder")+"\n"}
-                        {replaceMentions(translateChecked("wiki.article.role."+role+".reminder") ?? translate("wiki.article.role.noReminder"), DUMMY_NAMES, (DUMMY_ROLE_LIST as RoleList))+"\n"}
+                        {replaceMentions(translateChecked("wiki.article.role."+role+".reminder") ?? translate("wiki.article.role.noReminder"), DUMMY_NAMES, (DUMMY_ROLE_LIST as RoleList), new ListMap())+"\n"}
 
                         {translateChecked("wiki.article.role."+role+".lore")!==null?("### "+translate("wiki.article.role.lore")+"\n"):""}
-                        {replaceMentions(translateChecked("wiki.article.role."+role+".lore") ?? "", DUMMY_NAMES, (DUMMY_ROLE_LIST as RoleList))+"\n"}
+                        {replaceMentions(translateChecked("wiki.article.role."+role+".lore") ?? "", DUMMY_NAMES, (DUMMY_ROLE_LIST as RoleList), new ListMap())+"\n"}
 
                         {"### "+translate("wiki.article.role.guide")+"\n"}
-                        {replaceMentions(translateChecked("wiki.article.role."+role+".guide") ?? translate("wiki.article.role.noGuide"), DUMMY_NAMES, (DUMMY_ROLE_LIST as RoleList))+"\n"}
+                        {replaceMentions(translateChecked("wiki.article.role."+role+".guide") ?? translate("wiki.article.role.noGuide"), DUMMY_NAMES, (DUMMY_ROLE_LIST as RoleList), new ListMap())+"\n"}
                     </WikiStyledText>
                 </div>
                 <div>
@@ -92,10 +93,10 @@ export default function WikiArticle(props: {
                         {"### "+translate("wiki.article.role.exampleAlibi")+"\n"}
                     </WikiStyledText>
                     {exampleAlibiDescription && <WikiStyledText>
-                        {replaceMentions(exampleAlibiDescription, DUMMY_NAMES, (DUMMY_ROLE_LIST as RoleList)) as string}
+                        {replaceMentions(exampleAlibiDescription, DUMMY_NAMES, (DUMMY_ROLE_LIST as RoleList), new ListMap()) as string}
                     </WikiStyledText>}
                     <blockquote>
-                        <WikiStyledText>{replaceMentions(exampleAlibi, DUMMY_NAMES, (DUMMY_ROLE_LIST as RoleList)) as string}</WikiStyledText>
+                        <WikiStyledText>{replaceMentions(exampleAlibi, DUMMY_NAMES, (DUMMY_ROLE_LIST as RoleList), new ListMap()) as string}</WikiStyledText>
                     </blockquote>
                 </div>}
                 <DetailsSummary 
@@ -126,7 +127,7 @@ export default function WikiArticle(props: {
             return <section className="wiki-article">
                 <WikiStyledText className="wiki-article-standard">
                     {"# "+translate(`wiki.article.${articleType}.${props.article.split("/")[1]}.title`)+"\n"}
-                    {replaceMentions(translate(`wiki.article.${articleType}.${props.article.split("/")[1]}.text`), DUMMY_NAMES, (DUMMY_ROLE_LIST as RoleList)) as string}
+                    {replaceMentions(translate(`wiki.article.${articleType}.${props.article.split("/")[1]}.text`), DUMMY_NAMES, (DUMMY_ROLE_LIST as RoleList), new ListMap()) as string}
                 </WikiStyledText>
             </section>
         }
@@ -158,7 +159,7 @@ function CategoryArticle(props: Readonly<{ category: WikiCategory }>): ReactElem
     return <section className="wiki-article">
         <WikiStyledText className="wiki-article-standard">
             {"# "+title+"\n"}
-            {description ? replaceMentions(description, DUMMY_NAMES, (DUMMY_ROLE_LIST as RoleList)) as string : ""}
+            {description ? replaceMentions(description, DUMMY_NAMES, (DUMMY_ROLE_LIST as RoleList), new ListMap()) as string : ""}
         </WikiStyledText>
         <PageCollection 
             title={title}
@@ -241,12 +242,13 @@ function RoleSetArticle(): ReactElement {
             <WikiStyledText>{"# "+translate("wiki.article.generated.roleSet.title")}</WikiStyledText>
         </section>
         <Masonry columnsCount={columnCount}>
-            {ROLE_SETS.filter(set=>set!=="any").map(set => {
-                const description = translateChecked(`${set}.description`);
-                return <div key={set} className="masonry-item">
+            {BASE_ROLE_SETS.filter(set=>set!=="any").map(set => ({ type: set })).map(set => {
+                const description = translateChecked(`${set.type}.description`);
+                return <div key={set.type} className="masonry-item">
                     <PageCollection
-                        title={translate(set)}
-                        pages={getRolesFromRoleSet(set).map(role => `role/${role}` as WikiArticleLink)}
+                        title={translate(set.type)}
+                        // We can pass in an empty list map since base role sets don't depend on modifiers
+                        pages={getRolesFromRoleSet(set, new ListMap()).map(role => `role/${role}` as WikiArticleLink)}
                         enabledRoles={enabledRoles}
                         enabledModifiers={[]}
                     >
@@ -265,7 +267,7 @@ function getSearchStringsGenerated(article: GeneratedArticle): string[]{
     switch(article){
         case "roleSet": {
             let out = [translate("wiki.article.generated.roleSet.title")];
-            for(let set of ROLE_SETS){
+            for(let set of BASE_ROLE_SETS){
                 out.push(translate(set));
             }
             return out;

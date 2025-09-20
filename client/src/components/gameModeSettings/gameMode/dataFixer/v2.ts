@@ -2,7 +2,7 @@ import { VersionConverter } from ".";
 import { GameMode, GameModeData } from "..";
 import { PhaseTimes } from "../../../../game/gameState.d";
 import { ModifierID, MODIFIERS } from "../../../../game/modifiers";
-import { RoleSet } from "../../../../game/roleListState.d";
+import { BaseRoleSet, RoleSet } from "../../../../game/roleListState.d";
 import { Role } from "../../../../game/roleState.d";
 import { Failure, ParseFailure, ParseResult, ParseSuccess, Success, isFailure } from "../parse";
 import { parseName, parsePhaseTimes, parseRoleList, parseRole, InitialRoleOutline } from "./initial";
@@ -180,7 +180,7 @@ function convertRoleList(roleList: InitialRoleOutline[]): ParseResult<v3RoleOutl
                             if (option.type === "faction")
                                 return {
                                     type: "roleSet" as const,
-                                    roleSet: option.faction as RoleSet,
+                                    roleSet: option.faction as BaseRoleSet,
                                 };
                             return option;
                         }

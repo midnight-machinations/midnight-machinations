@@ -51,3 +51,37 @@
 .custom-role-limit-selection > input {
     width: 3rem;
 }
+.select-role-to-add {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+}
+.custom-role-set-selection {
+    display: flex;
+    flex-direction: column;
+    min-width: 20rem;
+    border: .13rem solid var(--primary-border-color);
+    border-radius: .25rem;
+    background-color: var(--background-color);
+}
+.sub-role-set {
+    width: 100%;
+    min-width: 20rem;
+    border: .13rem solid var(--primary-border-color);
+    border-radius: .25rem;
+    background-color: var(--background-color);
+}
+.sub-role-set-role-set {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+}
+.sub-role-set .role-list-setter-list > div {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+}
+.sub-role-set .role-list-setter-list > div > .role-outline-option-selector {
+    flex-grow: 1;
+}

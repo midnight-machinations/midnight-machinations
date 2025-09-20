@@ -92,8 +92,8 @@ impl GameConclusion {
     /// For simplicity, i will just say only fiends, MK, apostle and zealot keep the game running
     pub fn keeps_game_running(role: Role)->bool{
         if
-            RoleSet::Fiends.get_roles().contains(&role) ||
-            RoleSet::MafiaKilling.get_roles().contains(&role) 
+            RoleSet::Fiends.get_roles_static().contains(&role) ||
+            RoleSet::MafiaKilling.get_roles_static().contains(&role) 
         {
             true
         }else{

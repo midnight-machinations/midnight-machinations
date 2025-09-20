@@ -1,7 +1,7 @@
 import React, { ReactElement, useCallback, useContext, useMemo, useRef, useState } from "react";
 import "./outlineSelector.css";
 import translate from "../../game/lang";
-import { getAllRoles, getRolesFromRoleSet, ROLE_SETS, RoleList, RoleOrRoleSet, RoleOutline, simplifyRoleOutline, translateRoleOutline, translateRoleOrRoleSet, translatePlayerPool} from "../../game/roleListState.d";
+import { getAllRoles, getRolesFromRoleSet, RoleList, RoleOrRoleSet, RoleOutline, simplifyRoleOutline, translateRoleOutline, translateRoleOrRoleSet, translatePlayerPool, BASE_ROLE_SETS, RoleSet} from "../../game/roleListState.d";
 import { Role } from "../../game/roleState.d";
 import Icon from "../Icon";
 import { DragAndDrop } from "../DragAndDrop";
@@ -15,6 +15,7 @@ import Popover from "../Popover";
 import DUMMY_NAMES from "../../resources/dummyNames.json";
 import { encodeString } from "../ChatMessage";
 import ListMap from "../../ListMap";
+import { CustomRoleSetsModifierState } from "../../game/modifiers";
 
 type RoleOutlineSelectorProps = {
     roleOutline: RoleOutline,
@@ -25,7 +26,7 @@ type RoleOutlineSelectorProps = {
 
 export default function RoleOutlineSelector(props: RoleOutlineSelectorProps): ReactElement {
     const handleAddUnion = () => {
-        props.onChange([...props.roleOutline, { roleSet: "any" }]);
+        props.onChange([...props.roleOutline, { roleSet: { type: "any" } }]);
     }
 
     return <div className="role-picker">
@@ -129,7 +130,7 @@ export default function RoleOutlineSelector(props: RoleOutlineSelectorProps): Re
                             let options = [...props.roleOutline];
                             options.splice(index, 1);
                             if(options.length === 0) {
-                                props.onChange([{ roleSet: "any" }]);
+                                props.onChange([{ roleSet: { type: "any" } }]);
                                 return
                             }
                             props.onChange(options);
@@ -511,35 +512,48 @@ export function RoleOrRoleSetSelector(props: Readonly<{
         getAllRoles()
     )!;
 
+    const gameModeContext = useContext(GameModeContext);
+
+    const modifierSettings = useMemo(() => new ListMap(gameModeContext.modifierSettings ?? []), [gameModeContext]);
+
+    const customRoleSets = useMemo(() => {
+        return (modifierSettings.get("customRoleSets") as CustomRoleSetsModifierState | null)?.sets ?? [];
+    }, [modifierSettings]);
+
     const isRoleEnabled = useCallback((role: Role) => {
         return enabledRoles.includes(role)
     }, [enabledRoles])
 
     const optionsSearch: SelectOptionsSearch<string> = new Map();
 
-    ROLE_SETS.forEach((roleSet) => {
-        optionsSearch.set(JSON.stringify({type: "roleSet", roleSet: roleSet}), [
+    [
+        ...BASE_ROLE_SETS
+            .map(set => ({ type: set })),
+        ...customRoleSets
+            .map((_, index) => ({ type: "custom" as const, id: index }))
+    ].forEach((roleSet: RoleSet) => {
+        optionsSearch.set(JSON.stringify({type: "roleSet", roleSet}), [
             <StyledText
                 key={0}
                 noLinks={!props.disabled}
-                className={getRolesFromRoleSet(roleSet).every(role => !isRoleEnabled(role)) ? "keyword-disabled" : ""}
+                className={getRolesFromRoleSet(roleSet, modifierSettings).every(role => !isRoleEnabled(role)) ? "keyword-disabled" : ""}
             >
-                {translateRoleOrRoleSet({type: "roleSet", roleSet: roleSet})}
+                {translateRoleOrRoleSet({type: "roleSet", roleSet}, modifierSettings)}
             </StyledText>, 
-            translateRoleOrRoleSet({type: "roleSet", roleSet: roleSet})]
+            translateRoleOrRoleSet({type: "roleSet", roleSet}, modifierSettings)]
         );
     });
     
     getAllRoles().forEach((role) => {
-        optionsSearch.set(JSON.stringify({type: "role", role: role}), [
+        optionsSearch.set(JSON.stringify({type: "role", role}), [
             <StyledText
                 key={0}
                 noLinks={!props.disabled}
                 className={!isRoleEnabled(role) ? "keyword-disabled" : ""}
             >
-                {translateRoleOrRoleSet({type: "role", role})}
+                {translateRoleOrRoleSet({type: "role", role}, modifierSettings)}
             </StyledText>,
-            translateRoleOrRoleSet({type: "role", role})
+            translateRoleOrRoleSet({type: "role", role}, modifierSettings)
         ]);
     });
 
@@ -548,9 +562,7 @@ export function RoleOrRoleSetSelector(props: Readonly<{
         disabled={props.disabled}
         value={JSON.stringify(props.roleOrRoleSet)}
         onChange={(value) => {
-            props.onChange(
-                value === "any" ? "any" : JSON.parse(value)
-            );
+            props.onChange(JSON.parse(value));
         }}
         optionsSearch={optionsSearch}
     />
@@ -563,12 +575,14 @@ export function OutlineListSelector(props: Readonly<{
     onRemoveOutline?: ((index: number) => void),
     setRoleList: (newRoleList: RoleList) => void,
 }>) {
-    const {roleList} = useContext(GameModeContext);
+    const {roleList, modifierSettings: modifierSettingsData} = useContext(GameModeContext);
+
+    const modifierSettings = useMemo(() => new ListMap(modifierSettingsData), [modifierSettingsData]);
 
     const playerNames = useNamesForPlayerPool(roleList.length);
 
     const simplify = () => {
-        props.setRoleList(roleList.map(simplifyRoleOutline));
+        props.setRoleList(roleList.map(outline => simplifyRoleOutline(outline, modifierSettings)));
     }
 
     return <section className="graveyard-menu-colors selector-section">
@@ -587,7 +601,7 @@ export function OutlineListSelector(props: Readonly<{
                         {props.disabled === true
                             ? <div className="placard">
                                 <StyledText>
-                                    {translateRoleOutline(outline, playerNames)}
+                                    {translateRoleOutline(outline, playerNames, modifierSettings)}
                                 </StyledText>
                             </div>
                             : <RoleOutlineSelector
