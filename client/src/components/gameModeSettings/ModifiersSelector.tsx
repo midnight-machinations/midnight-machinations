@@ -498,7 +498,7 @@ function CustomRoleSetSelection(props: Readonly<{
                         onKeyUp={(e) => {
                             if (e.key !== 'Enter') return;
 
-                            props.setName((e.target as React.ChangeEvent<HTMLInputElement>['target']).value as UnsafeString);
+                            props.setName((e.target as HTMLInputElement).value as UnsafeString);
                         }}
                     />
                 </> : <>
