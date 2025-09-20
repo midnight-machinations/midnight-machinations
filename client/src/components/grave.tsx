@@ -65,8 +65,7 @@ function UnobscuredGrave(props: Readonly<{
                     case "role":
                         return translate("role."+killer.value+".name");
                     case "roleSet":
-                        // Why would any attackers put a custom role set? That's insane. I'm not handling that.
-                        return translateRoleSet(killer.value);
+                        return translateRoleSet(killer.value, props.modifierSettings);
                     default:
                         return translate("grave.killer."+killer.type);
                 }

@@ -2,7 +2,7 @@ import { VersionConverter } from ".";
 import { GameMode } from "..";
 import { Conclusion, CONCLUSIONS, INSIDER_GROUPS, InsiderGroup, PhaseTimes } from "../../../../game/gameState.d";
 import { defaultModifierState, ModifierID, ModifierState } from "../../../../game/modifiers";
-import { RoleList, RoleOutline, RoleOutlineOption, RoleSet } from "../../../../game/roleListState.d";
+import { BaseRoleSet, RoleList, RoleOutline, RoleOutlineOption } from "../../../../game/roleListState.d";
 import { Role } from "../../../../game/roleState.d";
 import { ListMapData } from "../../../../ListMap";
 import { Failure, ParseResult, ParseSuccess, Success, isFailure } from "../parse";
@@ -201,7 +201,7 @@ function parseRoleOutlineOption(json: NonNullable<any>): ParseResult<RoleOutline
         insiderGroups?: InsiderGroup[],
         winIfAny?: Conclusion[],
         role?: Role,
-        roleSet?: RoleSet
+        roleSet?: BaseRoleSet
     } = {}
 
 

@@ -1,7 +1,7 @@
 import { VersionConverter } from ".";
 import { PHASES, PhaseTimes } from "../../../../game/gameState.d";
 import { Settings } from "../../../../game/localStorage";
-import { BASE_ROLE_SETS, RoleSet, getAllRoles } from "../../../../game/roleListState.d";
+import { BASE_ROLE_SETS, BaseRoleSet, getAllRoles } from "../../../../game/roleListState.d";
 import { Role } from "../../../../game/roleState.d";
 import { Failure, ParseResult, ParseSuccess, Success, isFailure } from "../parse";
 
@@ -20,7 +20,7 @@ type InitialGameMode = { name: string, roleList: InitialRoleOutline[], phaseTime
 type InitialGameModeStorage = Record<string, InitialGameMode>;
 
 const FACTIONS = ["mafia", "town", "neutral", "cult", "fiends"]
-export type InitialRoleOutlineOption = { type: "role", role: Role } | { type: "roleSet", roleSet: RoleSet } | { type: "faction", faction: typeof FACTIONS[number] }
+export type InitialRoleOutlineOption = { type: "role", role: Role } | { type: "roleSet", roleSet: BaseRoleSet } | { type: "faction", faction: typeof FACTIONS[number] }
 export type InitialRoleOutline = { type: "any" } | { type: "roleOutlineOptions", options: InitialRoleOutlineOption[] }
 
 
@@ -317,7 +317,7 @@ export function parseRole(json: NonNullable<any>): ParseResult<Role> {
     return Success(json as Role);
 }
 
-export function parseRoleSet(json: NonNullable<any>): ParseResult<RoleSet> {
+export function parseRoleSet(json: NonNullable<any>): ParseResult<BaseRoleSet> {
     if (typeof json !== "string") {
         return Failure("roleSetIsNotString", json);
     }

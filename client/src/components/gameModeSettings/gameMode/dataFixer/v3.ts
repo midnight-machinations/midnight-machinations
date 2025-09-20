@@ -211,14 +211,14 @@ function parseRoleList(json: NonNullable<any>): ParseResult<RoleOutline[]> {
     return Success(roleList.map(success => (success as ParseSuccess<RoleOutline>).value));
 }
 
-function parseRoleOutline(json: NonNullable<any>): ParseResult<RoleOutline> {
+function parseRoleOutline(json: NonNullable<any>): ParseResult<any> {
     if (!Object.keys(json).includes('type')) {
         return Failure("roleOutlineMissingTypeKey", json);
     }
 
     switch (json.type) {
         case "any":
-            return Success([{ roleSet: "any" }] as any)
+            return Success([{ roleSet: "any" }])
         case "roleOutlineOptions": {
             if (!Object.keys(json).includes('options')) {
                 return Failure("roleOutlineMissingOptionsKey", json);
@@ -247,7 +247,7 @@ function parseRoleOutlineOptionList(json: NonNullable<any>): ParseResult<RoleOut
     return Success(outlineOptionList.map(success => (success as ParseSuccess<RoleOutlineOption>).value) as RoleOutlineOption[]);
 }
 
-function parseRoleOutlineOption(json: NonNullable<any>): ParseResult<RoleOutlineOption> {
+function parseRoleOutlineOption(json: NonNullable<any>): ParseResult<any> {
     if (!Object.keys(json).includes('type')) {
         return Failure("roleOutlineOptionMissingTypeKey", json);
     }
