@@ -42,6 +42,7 @@ export default function RoleSpecificSection(): ReactElement{
     return <>{inner===null ? null : 
         <DetailsSummary
             summary={<StyledText>{translate("role."+roleState?.type+".name")}</StyledText>}
+            defaultOpen={true}
         >
             {inner}
         </DetailsSummary>

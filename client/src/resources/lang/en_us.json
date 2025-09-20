@@ -118,13 +118,7 @@
 
     "menu.playerList.title": "Players",
     "menu.playerList.icon": "🕵🏾",
-    
-    "menu.playerList.button.all": "All",
-    "menu.playerList.button.living": "Living",
-    "menu.playerList.button.usable": "Usable",
 
-    "menu.playerList.button.whisper":"Whisper",
-    "menu.playerList.button.vote":"Vote",
     "menu.playerList.button.filter":"Filter",
     "menu.playerList.player.votes":"\\0 votes",
 
@@ -823,6 +817,7 @@
     "defense.protected:var.3": "Protection",
     "defense.invincible": "Invincible",
 
+    "vote": "Vote",
     "vision": "Vision",
     "pitchfork": "Pitchfork",
     "pitchfork.description": "Vote for a player before midnight. If two-thirds of town loyalists vote for a player, that player dies.",

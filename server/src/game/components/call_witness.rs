@@ -1,10 +1,10 @@
-use std::collections::HashSet;
+use std::{collections::HashSet, iter::once};
 
 use crate::{
     game::{
         chat::{ChatGroup, ChatMessageVariant, PlayerChatGroupMap}, components::silenced::Silenced,
         controllers::{AvailablePlayerListSelection, ControllerID, ControllerParametersMap, PlayerListSelection},
-        event::{on_phase_start::OnPhaseStart, on_validated_ability_input_received::OnValidatedControllerInputReceived}, phase::PhaseState, player::PlayerReference, role::RoleState, Game
+        event::{on_phase_start::OnPhaseStart, on_validated_ability_input_received::OnValidatedControllerInputReceived}, phase::{PhaseState, PhaseType}, player::PlayerReference, role::RoleState, Game
     },
     vec_set::VecSet
 };
@@ -43,12 +43,15 @@ impl CallWitness{
         ControllerParametersMap::builder(game)
             .id(crate::game::controllers::ControllerID::CallWitness { player: actor })
             .available_selection(AvailablePlayerListSelection {
-                available_players: PlayerReference::all_players(game).filter(|p|p.alive(game)).collect(),
+                available_players: PlayerReference::all_players(game)
+                    .filter(|p|p.alive(game))
+                    .filter(|p|*p != actor)
+                    .collect(),
                 can_choose_duplicates: false,
                 max_players: None
             })
+            .add_grayed_out_condition(!matches!(game.current_phase().phase(), PhaseType::Nomination|PhaseType::Testimony))
             .reset_on_phase_start(crate::game::phase::PhaseType::Judgement)
-            .default_selection(PlayerListSelection::one(Some(actor)))
             .allow_players(allowed_players)
             .build_map()
     }
@@ -57,7 +60,7 @@ impl CallWitness{
             let PhaseState::Testimony{player_on_trial, ..} = game.phase_machine.current_state &&
             let Some(PlayerListSelection(players)) = (ControllerID::CallWitness { player: player_on_trial }).get_player_list_selection(game)
         {
-            players.clone().into_iter().collect()
+            players.clone().into_iter().chain(once(player_on_trial)).collect()
         }else{
             HashSet::new()
         }
