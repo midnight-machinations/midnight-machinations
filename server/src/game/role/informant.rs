@@ -73,11 +73,13 @@ impl RoleStateTrait for Informant {
     }
     fn on_player_roleblocked(mut self, game: &mut Game, midnight_variables: &mut MidnightVariables, actor_ref: PlayerReference, player: PlayerReference, _invisible: bool) {
         common_role::on_player_roleblocked(midnight_variables, actor_ref, player);
+        if player != actor_ref {return}
         self.blocked = true;
         actor_ref.set_role_state(game, self);
     }
     fn on_visit_wardblocked(mut self, game: &mut Game, midnight_variables: &mut MidnightVariables, actor_ref: PlayerReference, visit: Visit) {
         common_role::on_visit_wardblocked(midnight_variables, actor_ref, visit);
+        if actor_ref != visit.visitor {return};
         self.blocked = true;
         actor_ref.set_role_state(game, self);
     }
