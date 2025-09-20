@@ -15,7 +15,7 @@ import Popover from "../Popover";
 import DUMMY_NAMES from "../../resources/dummyNames.json";
 import { encodeString } from "../ChatMessage";
 import ListMap from "../../ListMap";
-import { CustomRoleSetsModifierState, ModifierID, ModifierState } from "../../game/modifiers";
+import { CustomRoleSetsModifierState } from "../../game/modifiers";
 
 type RoleOutlineSelectorProps = {
     roleOutline: RoleOutline,
@@ -512,14 +512,12 @@ export function RoleOrRoleSetSelector(props: Readonly<{
         getAllRoles()
     )!;
 
-    const modifierSettings = useLobbyOrGameState(
-        state => state.modifierSettings,
-        ["modifierSettings"],
-        new ListMap<ModifierID, ModifierState>()
-    )!;
-    
+    const gameModeContext = useContext(GameModeContext);
+
+    const modifierSettings = useMemo(() => new ListMap(gameModeContext.modifierSettings ?? []), [gameModeContext]);
+
     const customRoleSets = useMemo(() => {
-        return (modifierSettings.get("customRoleSets") as CustomRoleSetsModifierState | null)?.sets || [];
+        return (modifierSettings.get("customRoleSets") as CustomRoleSetsModifierState | null)?.sets ?? [];
     }, [modifierSettings]);
 
     const isRoleEnabled = useCallback((role: Role) => {

@@ -1577,6 +1577,8 @@
     "wiki.article.modifier.randomPlayerNames.text": "Random Player Names is a modifier that randomizes players names when the game starts, allowing anonymous games.",
     "wiki.article.modifier.customRoleLimits.title": "Custom Role Limits",
     "wiki.article.modifier.customRoleLimits.text": "Custom Role Limits is a modifier that allows the host to set custom limits for each role. For example, the host could allow for infinite Jailors or restrict the number of Detectives to 1.",
+    "wiki.article.modifier.customRoleSets.title": "Custom Role Sets",
+    "wiki.article.modifier.customRoleSets.text": "Custom Role Sets is a modifier that allows the host to set custom sets to use in the outline list. For example, the host could create a role set called Town Equitable which consists of Town Common roles, except Mayor.",
     
     "wiki.article.standard.syndicateGunItem.title":"Syndicate Gun",
     "wiki.article.standard.syndicateGunItem.text":"Syndicate Gun is an ability a syndicate member gets when theres no syndicate killing role present\n- A syndicate member is given a gun they can use to kill a player with a basic attack at night\n- The gun can't be used on the first night\n- The gun can be passed around between syndicate members, so a different syndicate member can shoot it every night\n- The gun still uses visits, so getting roleblocked still erases that visit, and transports still move it\n- The killer appears to be syndicate on the grave of the player who died to the gun\n- When the game starts, the player with the gun is given an armored fragile vest, and that player is told if it breaks.\n    - The vest does not move when the gun moves, so the player who starts with the vest keeps it.",
