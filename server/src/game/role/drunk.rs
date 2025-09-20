@@ -3,6 +3,7 @@ use serde::Serialize;
 use crate::game::abilities_component::ability_id::AbilityID;
 use crate::game::event::on_ability_creation::OnAbilityCreationPriority;
 use crate::game::event::on_ability_deletion::OnAbilityDeletionPriority;
+use crate::game::event::on_role_switch::OnRoleSwitch;
 use crate::game::role_list::role_enabled_and_not_taken;
 use crate::game::{attack_power::DefensePower, components::confused::Confused};
 use crate::game::player::PlayerReference;
@@ -19,8 +20,8 @@ pub struct Drunk;
 
 impl RoleStateTrait for Drunk {
     type ClientAbilityState = Drunk;
-    fn on_role_switch(self, game: &mut Game, actor_ref: PlayerReference, player: PlayerReference, _new: super::RoleState, _old: super::RoleState) {
-        if actor_ref != player {return}
+    fn on_role_switch(self, game: &mut Game, actor_ref: PlayerReference, event: &OnRoleSwitch, _fold: &mut (), _priority: ()) {
+        if actor_ref != event.player {return}
         AbilityID::Role { role: Role::Drunk, player: actor_ref }.delete_ability(game);
     }
     fn on_ability_creation(self, game: &mut Game, actor_ref: PlayerReference, event: &crate::game::event::on_ability_creation::OnAbilityCreation, fold: &mut crate::game::event::on_ability_creation::OnAbilityCreationFold, priority: crate::game::event::on_ability_creation::OnAbilityCreationPriority) {

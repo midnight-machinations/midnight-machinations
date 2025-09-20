@@ -1,14 +1,12 @@
-use std::collections::HashSet;
-
 use serde::Serialize;
-
 use crate::game::attack_power::DefensePower;
-use crate::game::chat::{ChatGroup, ChatMessageVariant};
+use crate::game::chat::{ChatGroup, ChatMessageVariant, PlayerChatGroupMap};
 use crate::game::components::detained::Detained;
 use crate::game::controllers::AvailablePlayerListSelection;
+use crate::game::event::on_midnight::MidnightVariables;
 use crate::game::phase::PhaseType;
 use crate::game::player::PlayerReference;
-
+use crate::game::role::common_role;
 use crate::game::Game;
 
 use super::{
@@ -70,31 +68,41 @@ impl RoleStateTrait for Medium {
             .build_map()
         ])
     }
-    fn get_current_send_chat_groups(self, game: &Game, actor_ref: PlayerReference) -> HashSet<ChatGroup> {
-        let mut out = crate::game::role::common_role::get_current_send_chat_groups(game, actor_ref, vec![ChatGroup::Dead]);
-
+    fn send_player_chat_group_map(self, game: &Game, actor_ref: PlayerReference) -> PlayerChatGroupMap {
+        let mut out = PlayerChatGroupMap::new();
         if 
-            (game.current_phase().phase() == PhaseType::Obituary) &&
-            actor_ref.alive(game)
-        {
-            out.insert(ChatGroup::Dead);
-        }
-        out
-    }
-    fn get_current_receive_chat_groups(self, game: &Game, actor_ref: PlayerReference) -> HashSet<ChatGroup> {
-        let mut out = crate::game::role::common_role::get_current_receive_chat_groups(game, actor_ref);
-
-        if 
+            !actor_ref.ability_deactivated_from_death(game) &&
             (
                 (
                     !Detained::is_detained(game, actor_ref) &&
                     game.current_phase().phase() == PhaseType::Night
                 ) || 
                 game.current_phase().phase() == PhaseType::Obituary
-            ) &&
-            actor_ref.alive(game)
+            )
         {
-            out.insert(ChatGroup::Dead);
+            out.insert(actor_ref, ChatGroup::Dead);
+        }
+        if let Some(target) = self.haunted_target && game.current_phase().phase() == PhaseType::Night {
+            out.insert(target, ChatGroup::Dead);
+        }
+        out
+    }
+    fn receive_player_chat_group_map(self, game: &Game, actor_ref: PlayerReference)->crate::game::chat::PlayerChatGroupMap {
+        let mut out = PlayerChatGroupMap::new();
+        if 
+            !actor_ref.ability_deactivated_from_death(game) &&
+            (
+                (
+                    !Detained::is_detained(game, actor_ref) &&
+                    game.current_phase().phase() == PhaseType::Night
+                ) || 
+                game.current_phase().phase() == PhaseType::Obituary
+            )
+        {
+            out.insert(actor_ref, ChatGroup::Dead);
+        }
+        if let Some(target) = self.haunted_target && game.current_phase().phase() == PhaseType::Night {
+            out.insert(target, ChatGroup::Dead);
         }
         out
     }
@@ -145,6 +153,13 @@ impl RoleStateTrait for Medium {
                 actor_ref.set_role_state(game, self);
             },
             _=>{}
+        }
+    }
+    fn on_player_roleblocked(self, game: &mut Game, midnight_variables: &mut MidnightVariables, actor_ref: PlayerReference, player: PlayerReference, invisible: bool) {
+        common_role::on_player_roleblocked(midnight_variables, actor_ref, player);
+        if player != actor_ref {return}
+        if let Some(seanced) = self.seanced_target {
+            seanced.roleblock(game, midnight_variables, invisible);
         }
     }
 }

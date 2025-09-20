@@ -28,8 +28,8 @@ impl RoleStateTrait for Spy {
         let Some(bugged) = Visits::default_target(game, midnight_variables, actor_ref) else {return};
 
         let mut roles: Vec<Role> = Visits::into_iter(midnight_variables)
-            .with_appeared(midnight_variables)
             .with_insider_visitor(game, InsiderGroupID::Mafia)
+            .with_investigatable()
             .with_target(bugged)
             .map_visitor()
             .map(|p|p.role(game))
@@ -37,8 +37,8 @@ impl RoleStateTrait for Spy {
         roles.shuffle(&mut rand::rng());
 
         let mut syndicate_visited_players: Vec<PlayerReference> = Visits::into_iter(midnight_variables)
-            .with_appeared(midnight_variables)
             .with_insider_visitor(game, InsiderGroupID::Mafia)
+            .with_investigatable()
             .map_target()
             .collect();
         syndicate_visited_players.shuffle(&mut rand::rng());

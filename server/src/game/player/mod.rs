@@ -9,7 +9,6 @@ pub use player_reference::PlayerIndex;
 pub use player_reference::PlayerReference;
 
 use crate::{
-    vec_set::VecSet,
     client_connection::ClientConnection,
     websocket_connections::connection::ClientSender,
 };
@@ -27,8 +26,6 @@ pub struct Player {
     notes: Vec<String>,
     crossed_out_outlines: Vec<u8>,
     death_note: Option<String>,
-
-    role_labels: VecSet<PlayerReference>,
 }
 impl Player {
     pub fn new(name: String, sender: ClientSender) -> Self {
@@ -40,8 +37,6 @@ impl Player {
             notes: vec![],
             crossed_out_outlines: vec![],
             death_note: None,
-
-            role_labels: VecSet::new(),
         }
     }
 }
@@ -49,7 +44,7 @@ impl Player {
 pub mod test {
     use std::time::Duration;
 
-    use crate::{client_connection::ClientConnection, vec_set::VecSet};
+    use crate::client_connection::ClientConnection;
 
     use super::Player;
 
@@ -63,8 +58,6 @@ pub mod test {
             notes: vec![],
             crossed_out_outlines: vec![],
             death_note: None,
-
-            role_labels: VecSet::new(),
         }
     }
 }

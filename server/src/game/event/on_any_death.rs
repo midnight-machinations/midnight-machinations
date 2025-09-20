@@ -25,8 +25,7 @@ impl Event for OnAnyDeath{
         Cult::on_any_death,
         ModifierSettings::on_any_death,
         Abilities::on_any_death,
-        DeadCanStillPlayMessage::on_any_death,
-        Game::on_any_death
+        DeadCanStillPlayMessage::on_any_death
     ]}
 
     fn initial_fold_value(&self, _game: &Game) -> Self::FoldValue {}

@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 
-use crate::{game::{chat::{ChatGroup, ChatMessageVariant}, event::{on_add_insider::OnAddInsider, on_conceal_role::OnConcealRole, on_remove_insider::OnRemoveInsider, Event}, player::PlayerReference, Assignments, Game}, packet::ToClientPacket, vec_set::VecSet};
+use crate::{game::{chat::{ChatGroup, ChatMessageVariant, PlayerChatGroupMap}, components::detained::Detained, event::{on_add_insider::OnAddInsider, on_conceal_role::OnConcealRole, on_remove_insider::OnRemoveInsider, Event}, modifiers::ModifierID, phase::PhaseType, player::PlayerReference, Assignments, Game}, packet::ToClientPacket, vec_set::VecSet};
 
 #[derive(Debug)]
 pub struct InsiderGroups{
@@ -9,15 +9,6 @@ pub struct InsiderGroups{
     puppeteer: InsiderGroup
 }
 impl InsiderGroups{
-
-    pub fn broken_new()->Self{
-        Self{
-            mafia: InsiderGroup::default(),
-            cult: InsiderGroup::default(),
-            puppeteer: InsiderGroup::default(),
-        }
-    }
-
     /// # Safety
     /// player_count is correct
     /// assignments contains all players
@@ -36,6 +27,28 @@ impl InsiderGroups{
                 .copied()
             {
                 out.get_group_mut(group).players.insert(player);
+            }
+        }
+        out
+    }
+
+    pub fn send_player_chat_group_map(game: &Game)->PlayerChatGroupMap{
+        let mut out = PlayerChatGroupMap::new();
+        if game.modifier_settings().is_enabled(ModifierID::NoNightChat) {return out;}
+        if !matches!(game.current_phase().phase(), PhaseType::Night | PhaseType::Obituary) {return out;}
+        for group in InsiderGroupID::all(){
+            for player in group.players(game).iter() {
+                if Detained::is_detained(game, *player) {continue}
+                out.insert(*player, group.get_insider_chat_group());
+            }
+        }
+        out
+    }
+    pub fn receive_player_chat_group_map(game: &Game)->PlayerChatGroupMap{
+        let mut out = PlayerChatGroupMap::new();
+        for group in InsiderGroupID::all(){
+            for player in group.players(game).iter() {
+                out.insert(*player, group.get_insider_chat_group());
             }
         }
         out

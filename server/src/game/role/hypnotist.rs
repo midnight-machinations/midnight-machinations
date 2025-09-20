@@ -62,27 +62,33 @@ impl RoleStateTrait for Hypnotist {
                 }
             },
             OnMidnightPriority::Deception => {
-                if self.you_were_roleblocked_message {
-                    target_ref.push_night_message(midnight_variables, ChatMessageVariant::RoleBlocked);
-                }
-                if self.you_survived_attack_message {
-                    target_ref.push_night_message(midnight_variables, ChatMessageVariant::YouSurvivedAttack);
-                }
-                if self.you_were_guarded_message {
-                    target_ref.push_night_message(midnight_variables, ChatMessageVariant::YouWereGuarded);
-                }
-                if self.you_were_transported_message {
-                    target_ref.push_night_message(midnight_variables, ChatMessageVariant::Transported);
-                }
-                if self.you_were_possessed_message {
-                    if target_ref.role(game).possession_immune() {
-                        target_ref.push_night_message(midnight_variables, ChatMessageVariant::YouWerePossessed { immune: true });
-                    } else {
-                        target_ref.push_night_message(midnight_variables, ChatMessageVariant::YouWerePossessed { immune: false });
+                if actor_ref.night_blocked(midnight_variables) {
+                    if self.roleblock {
+                        target_ref.push_night_message(midnight_variables, ChatMessageVariant::RoleBlocked);
                     }
-                }
-                if self.you_were_wardblocked_message {
-                    target_ref.push_night_message(midnight_variables, ChatMessageVariant::Wardblocked);
+                }else{
+                    if self.you_were_roleblocked_message {
+                        target_ref.push_night_message(midnight_variables, ChatMessageVariant::RoleBlocked);
+                    }
+                    if self.you_survived_attack_message {
+                        target_ref.push_night_message(midnight_variables, ChatMessageVariant::YouSurvivedAttack);
+                    }
+                    if self.you_were_guarded_message {
+                        target_ref.push_night_message(midnight_variables, ChatMessageVariant::YouWereGuarded);
+                    }
+                    if self.you_were_transported_message {
+                        target_ref.push_night_message(midnight_variables, ChatMessageVariant::Transported);
+                    }
+                    if self.you_were_possessed_message {
+                        if target_ref.role(game).possession_immune() {
+                            target_ref.push_night_message(midnight_variables, ChatMessageVariant::YouWerePossessed { immune: true });
+                        } else {
+                            target_ref.push_night_message(midnight_variables, ChatMessageVariant::YouWerePossessed { immune: false });
+                        }
+                    }
+                    if self.you_were_wardblocked_message {
+                        target_ref.push_night_message(midnight_variables, ChatMessageVariant::Wardblocked);
+                    }
                 }
             },
             _ => {}
@@ -93,7 +99,7 @@ impl RoleStateTrait for Hypnotist {
             .id(ControllerID::role(actor_ref, Role::Hypnotist, 0))
             .single_player_selection_typical(actor_ref, false, false)
             .night_typical(actor_ref)
-            .add_grayed_out_condition(false)
+            
             .build_map()
     }
     fn convert_selection_to_visits(self, game: &Game, actor_ref: PlayerReference) -> Vec<Visit> {

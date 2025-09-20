@@ -15,6 +15,7 @@ import GraveComponent, { translateGraveRole } from "../../../components/grave";
 import { ChatMessageSection, ChatTextInput } from "./ChatMenu";
 import ListMap from "../../../ListMap";
 import { controllerIdToLinkWithPlayer } from "../../../game/controllerInput";
+import Counter from "../../../components/Counter";
 
 export default function PlayerListMenu(): ReactElement {
     const players = useGameState(
@@ -192,8 +193,13 @@ function PlayerCard(props: Readonly<{
         : null}
         
         {
-            phaseState.type === "nomination" && playerAlive && 
-            <StyledText>{translate("menu.playerList.player.votes", numVoted)}</StyledText>
+            phaseState.type === "nomination" && playerAlive &&
+            <Counter
+                max={numVoted}
+                current={numVoted}
+            >
+                {numVoted}
+            </Counter>
         }
         {spectator ||
             <Button 

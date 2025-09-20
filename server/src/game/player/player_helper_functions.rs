@@ -1,9 +1,7 @@
-use std::collections::HashSet;
 use rand::seq::SliceRandom;
-
 use crate::{
     game::{
-        attack_power::{AttackPower, DefensePower}, chat::{ChatGroup, ChatMessage, ChatMessageVariant}, components::{
+        attack_power::{AttackPower, DefensePower}, chat::{ChatMessage, ChatMessageVariant}, components::{
             fragile_vest::FragileVests, graves::{grave::{Grave, GraveKiller}, Graves}, insider_group::InsiderGroupID, night_visits::{NightVisitsIterator, Visits}, player_component::PlayerComponent, win_condition::WinCondition
         },
         controllers::{
@@ -14,12 +12,11 @@ use crate::{
             on_player_roleblocked::OnPlayerRoleblocked, on_visit_wardblocked::OnVisitWardblocked, Event
         },
         game_conclusion::GameConclusion,
-        modifiers::ModifierID, phase::PhaseType,
         role::{chronokaiser::Chronokaiser, medium::Medium, Role, RoleState},
         visit::{Visit, VisitTag},
         Game
     },
-    packet::ToClientPacket, vec_map::VecMap, vec_set::VecSet
+    packet::ToClientPacket, vec_set::VecSet
 };
 
 use super::PlayerReference;
@@ -346,14 +343,6 @@ impl PlayerReference{
         }
     }
 
-    pub fn revealed_players_map(&self, game: &Game) -> VecMap<PlayerReference, Role> {
-        let mut map = VecMap::new();
-        for player in self.revealed_players(game).iter() {
-            map.insert(*player, player.role(game));
-        }
-        map
-    }
-
     pub fn ability_deactivated_from_death(&self, game: &Game) -> bool {
         !(
             self.alive(game) ||
@@ -407,21 +396,6 @@ impl PlayerReference{
             midnight_variables.get_mut(*self).died = true;
             midnight_variables.get_mut(*self).grave_killers = vec![GraveKiller::Quit]
         }
-    }
-    pub fn get_current_send_chat_groups(&self, game: &Game) -> HashSet<ChatGroup> {
-        if game.modifier_settings().is_enabled(ModifierID::NoChat)
-            || (
-                game.modifier_settings().is_enabled(ModifierID::NoNightChat)
-                && self.alive(game)
-                && matches!(game.current_phase().phase(), PhaseType::Night | PhaseType::Obituary)
-            )
-        {
-            return HashSet::new()
-        }
-        self.role_state(game).clone().get_current_send_chat_groups(game, *self)
-    }
-    pub fn get_current_receive_chat_groups(&self, game: &Game) -> HashSet<ChatGroup> {
-        self.role_state(game).clone().get_current_receive_chat_groups(game, *self)
     }
     pub fn convert_selection_to_visits(&self, game: &Game) -> Vec<Visit> {
         self.role_state(game).clone().convert_selection_to_visits(game, *self)

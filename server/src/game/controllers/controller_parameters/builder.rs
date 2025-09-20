@@ -74,7 +74,7 @@ impl<'a, I: BuilderIDState> ControllerParametersBuilder<'a, NoControllerSelectio
         can_select_self: bool,
         can_select_insiders: bool,
     ) -> ControllerParametersBuilder<'a, AvailablePlayerListSelection, I> {
-        self.player_list_selection_typical(actor_ref, can_select_self, can_select_insiders, false, Some(1))
+        self.player_list_selection_typical(actor_ref, can_select_self, can_select_insiders, false, false, Some(1))
     }
     pub fn player_list_selection_typical(
         self,
@@ -82,6 +82,7 @@ impl<'a, I: BuilderIDState> ControllerParametersBuilder<'a, NoControllerSelectio
         can_select_self: bool,
         can_select_insiders: bool,
         can_select_duplicates: bool,
+        can_select_dead: bool,
         max_players: Option<u8>
     ) -> ControllerParametersBuilder<'a, AvailablePlayerListSelection, I> {
         let game = self.game;
@@ -89,7 +90,7 @@ impl<'a, I: BuilderIDState> ControllerParametersBuilder<'a, NoControllerSelectio
             available_players: PlayerReference::all_players(game)
                 .filter(|player|
                     if !player.alive(game){
-                        false
+                        can_select_dead
                     }else if *player == actor_ref{
                         can_select_self
                     }else if InsiderGroupID::in_same_group(game, actor_ref, *player){

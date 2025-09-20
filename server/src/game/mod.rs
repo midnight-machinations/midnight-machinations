@@ -28,9 +28,11 @@ pub mod abilities;
 use std::collections::VecDeque;
 use std::time::Instant;
 use crate::game::abilities_component::Abilities;
+use crate::game::chat::PlayerChatGroups;
 use crate::game::components::fast_forward::FastForwardComponent;
 use crate::game::components::pitchfork_item::PitchforkItemComponent;
 use crate::game::components::role::RoleComponent;
+use crate::game::components::role_reveal::RevealedPlayersComponent;
 use crate::game::controllers::Controllers;
 use crate::game::modifiers::ModifierID;
 use controllers::ControllerID;
@@ -106,6 +108,8 @@ pub struct Game {
     
     
     //components with data
+    pub player_chat_groups: PlayerChatGroups,
+    pub revealed_players: RevealedPlayersComponent,
     pub graves: Graves,
     pub controllers: Controllers,
     pub abilities: Abilities,
@@ -286,7 +290,7 @@ impl Game {
     }
 
     pub fn add_message_to_chat_group(&mut self, group: ChatGroup, variant: ChatMessageVariant){
-        let message = ChatMessage::new_non_private(variant.clone(), group.clone());
+        let message = ChatMessage::new_non_private(variant.clone(), group);
 
         for player_ref in group.all_players_in_group(self){
             player_ref.add_chat_message(self, message.clone());
@@ -299,7 +303,7 @@ impl Game {
     }
     pub fn add_messages_to_chat_group(&mut self, group: ChatGroup, messages: Vec<ChatMessageVariant>){
         for message in messages {
-            self.add_message_to_chat_group(group.clone(), message);
+            self.add_message_to_chat_group(group, message);
         }
     }
     pub fn add_chat_message_to_spectators(&mut self, message: ChatMessageVariant){

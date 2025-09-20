@@ -3,11 +3,7 @@ use crate::game::{
     abilities_component::{ability::Ability, ability_id::AbilityID, Abilities}, chat::ChatMessageVariant,
     controllers::ControllerParametersMap,
     event::{
-        before_phase_end::BeforePhaseEnd, on_ability_creation::{OnAbilityCreation, OnAbilityCreationFold, OnAbilityCreationPriority},
-        on_ability_deletion::{OnAbilityDeletion, OnAbilityDeletionPriority}, on_add_insider::OnAddInsider, on_any_death::OnAnyDeath,
-        on_conceal_role::OnConcealRole, on_controller_selection_changed::OnControllerSelectionChanged, on_grave_added::OnGraveAdded,
-        on_midnight::{MidnightVariables, OnMidnight, OnMidnightPriority}, on_phase_start::OnPhaseStart, on_remove_insider::OnRemoveInsider,
-        on_validated_ability_input_received::OnValidatedControllerInputReceived, on_whisper::{OnWhisper, WhisperFold, WhisperPriority}
+        before_phase_end::BeforePhaseEnd, on_ability_creation::{OnAbilityCreation, OnAbilityCreationFold, OnAbilityCreationPriority}, on_ability_deletion::{OnAbilityDeletion, OnAbilityDeletionPriority}, on_add_insider::OnAddInsider, on_any_death::OnAnyDeath, on_conceal_role::OnConcealRole, on_controller_selection_changed::OnControllerSelectionChanged, on_grave_added::OnGraveAdded, on_midnight::{MidnightVariables, OnMidnight, OnMidnightPriority}, on_phase_start::OnPhaseStart, on_remove_insider::OnRemoveInsider, on_role_switch::OnRoleSwitch, on_validated_ability_input_received::OnValidatedControllerInputReceived, on_whisper::{OnWhisper, WhisperFold, WhisperPriority}
     },
     Game
 };
@@ -98,6 +94,11 @@ impl Abilities{
         if priority == OnAbilityDeletionPriority::DeleteAbility {
             game.abilities.abilities.remove(&event.id);
         }   
+    }
+    pub fn on_role_switch(game: &mut Game, event: &OnRoleSwitch, fold: &mut (), priority: ()){
+        for (id, _ability) in game.abilities.abilities.clone() {
+            id.on_role_switch(game, event, fold, priority);
+        }
     }
 
 
@@ -232,6 +233,15 @@ impl AbilityID{
         match if let Some(ability) = self.get_ability(game).cloned() {ability} else {return} {
             Ability::RoleAbility(RoleAbility(player, role_state)) => {
                 role_state.on_ability_deletion(game, player, event, fold, priority)
+            },
+            Ability::Pitchfork(_) => {},
+            Ability::SyndicateGun(_) => {}
+        }
+    }
+    pub fn on_role_switch(&self, game: &mut Game, event: &OnRoleSwitch, fold: &mut (), priority: ()){
+        match if let Some(ability) = self.get_ability(game).cloned() {ability} else {return} {
+            Ability::RoleAbility(RoleAbility(player, role_state)) => {
+                role_state.on_role_switch(game, player, event, fold, priority)
             },
             Ability::Pitchfork(_) => {},
             Ability::SyndicateGun(_) => {}

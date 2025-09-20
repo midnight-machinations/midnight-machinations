@@ -77,7 +77,7 @@ impl SyndicateGun {
                     })
                     .add_grayed_out_condition(
                         Detained::is_detained(game, player_with_gun) ||
-                        !player_with_gun.ability_deactivated_from_death(game)
+                        player_with_gun.ability_deactivated_from_death(game)
                     )
                     .reset_on_phase_start(PhaseType::Obituary)
                     .dont_save()

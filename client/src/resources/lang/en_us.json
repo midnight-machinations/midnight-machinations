@@ -118,13 +118,7 @@
 
     "menu.playerList.title": "Players",
     "menu.playerList.icon": "🕵🏾",
-    
-    "menu.playerList.button.all": "All",
-    "menu.playerList.button.living": "Living",
-    "menu.playerList.button.usable": "Usable",
 
-    "menu.playerList.button.whisper":"Whisper",
-    "menu.playerList.button.vote":"Vote",
     "menu.playerList.button.filter":"Filter",
     "menu.playerList.player.votes":"\\0 votes",
 
@@ -238,7 +232,7 @@
 
     "role.tallyClerk.name": "Tally Clerk",
     "role.tallyClerk.name:var.0": "Tally Clerks",
-    "role.tallyClerk.target": "Distribute",
+    "controllerId.role.tallyClerk.0.name": "Tally",
 
     "role.doctor.name": "Doctor",
     "role.doctor.name:var.0": "Doctors",
@@ -824,6 +818,7 @@
     "defense.protected:var.3": "Protection",
     "defense.invincible": "Invincible",
 
+    "vote": "Vote",
     "vision": "Vision",
     "pitchfork": "Pitchfork",
     "pitchfork.description": "Vote for a player before midnight. If two-thirds of town loyalists vote for a player, that player dies.",
@@ -1088,7 +1083,7 @@
     "chatMessage.snoopResult.inconclusive":"You can't tell what your target is.",
     "chatMessage.gossipResult.none": "Your target didn't visit a player that is enemies with town.",
     "chatMessage.gossipResult.enemies": "Your target visited a player that is enemies with town.",
-    "chatMessage.tallyClerkResult": "\\0 evil players voted guilty at some point today.",
+    "chatMessage.tallyClerkResult": "\\0 town enemies voted guilty during any of the selected trials.",
     "chatMessage.playerForwardedMessage":"\\0 forwarded:",
     "chatMessage.targetsMessage":"Your target got the following message:",
     "chatMessage.youWerePossessed":"You were possessed.",
@@ -1285,7 +1280,7 @@
     "wiki.article.standard.detain.title:var.0": "Detains",
     "wiki.article.standard.detain.title:var.1": "Detained",
     "wiki.article.standard.detain.title:var.2": "Detaining",
-    "wiki.article.standard.detain.text": "A player who is detained at night:\n- Is warded from all visits.\n- Is roleblocked.\n- Has their ability deactivated.\n- Them and their fellow insiders are told they are detained at the start of night.\n\nSome examples of roles that can detain players are: Jailor, and Kidnapper.\nWarden does not detain players.",
+    "wiki.article.standard.detain.text": "A player who is detained at night:\n - Is warded from all visits.\n - Is roleblocked.\n - Has their ability deactivated.\n - Them and their fellow insiders are told they are detained at the start of night.\n - They can't chat in their insider group chat during night, but can still read messages from it.\n\nSome examples of roles that can detain players are: Jailor, and Kidnapper.\nWarden does not detain players.",
     "wiki.article.standard.rampage.title": "Rampage",
     "wiki.article.standard.rampage.title:var.0": "Rampaged",
     "wiki.article.standard.rampage.title:var.1": "Rampages",
@@ -1342,8 +1337,7 @@
     "wiki.article.standard.loyalist.text": "A player who is a loyalist wins if and only if the conclusion their loyal to is reached.\n - A Detective is usually a town loyalist\n -  A Jester is usually not loyal to any win condition, their win condition is independent, (Even if they are friends with town, they aren't a town loyalist).\n\n Players who are loyal to different conclusions must be enemies.\n Players can only be loyal to game conclusions\n - \"Jester\" isn't a conclusion so there is no \"Jester Loyalist\".",
     "wiki.article.standard.insider.title": "Insider",
     "wiki.article.standard.insider.title:var.0": "Insiders",
-    "wiki.article.standard.insider.title:var.1": "Member",
-    "wiki.article.standard.insider.text": "An insider group is a group of players who have the following properties\n - They have the role of all other living insiders in their group revealed to them\n - They have a night chat group with all other living insiders\n\n For example, A typical Godfather is a Syndicate Insider, they have the roles of all syndicate insiders revealed and can talk to them at night.\n Marionettes are Puppeteer Insiders\n Detectives are not often Town Insiders because they don't have a night chat or have all town insiders revealed to them.\n Another name for insider is \"member\". A player is a syndicate insider or syndicate member if they are in the syndicate insider group\nSome examples of insider groups are:\n    - Syndicate\n    - Cult\n    - Puppeteer",
+    "wiki.article.standard.insider.text": "An insider group is a group of players who have the following properties\n - They have the role of all other living insiders in their group revealed to them\n - They have a chat group with all other insiders.\n    - During night and obituary, all insiders can send in the insider group chat, even if dead.\nSome examples of insider groups are:\n    - Syndicate\n    - Cult\n    - Puppeteer\n\n For example, A typical Mafioso is a Syndicate Insider, they have the roles of all syndicate insiders revealed and can talk to them at night.",
     "wiki.article.standard.conclusion.title": "Conclusion",
     "wiki.article.standard.conclusion.title:var.0": "Conclusions",
     "wiki.article.standard.conclusion.text": "The game only ends when a conclusion is decided. Most players win conditions will depend on the conclusion decided.\n- Some examples of conclusions are:\n    - Town\n    - Syndicate\n    - Cult\n    - Fiends\n    - Nice List\n    - Draw\n\n- A game conclusion is determined according to the following rules\n    - If all players who are *counted for the game conclusion check* are friends with a conclusion, that conclusion wins.\n        - If there are no players remaining, the game ends in a draw\n    - A player is only *counted for the game conclusion check* if any of the following is true\n        - Their role is in the syndicate killing role set, or their role is in the fiends role set\n        - They are a town loyalist\n        - They are a syndicate insider",
@@ -1687,7 +1681,7 @@
     "wiki.article.role.spy.reminder": "At night, you are told who syndicate insiders visit, and what happens to your bug target.",
     "wiki.article.role.spy.guide": "- At night, select a player to bug\n    - You are told what roles of syndicate insiders visited your target\n- You are told a list of players that syndicate insiders visited.",
     "wiki.article.role.spy.abilities":"* For each visit from a syndicate insider, you are told the target of that visits name",
-    "wiki.article.role.spy.attributes":"* Appeared visits can change information",
+    "wiki.article.role.spy.attributes":"* Appeared visits do not effect your information",
     "wiki.article.role.spy.extra": "- The syndicate visits count all syndicate insiders, even if they don't have a syndicate role",
     "wiki.article.role.spy.exampleAlibi":"Spy\nN1:\nBug @8 - Mortician, Informant\nSyndicate Visited: @1, @8, @8\nN2:\nBug @13 [I was roleblocked]",
     "wiki.article.role.spy.exampleAlibi.description":"Here is an example of an alibi from a spy who, on night 1, saw that @8 was visited by a Mortician and an Informant, and the syndicate visited @1 and @8 twice, and on night 2, the spy was roleblocked, so their ability did not work.",
@@ -1737,11 +1731,14 @@
     "wiki.article.role.gossip.attributes":"- If any player your target visits has a suspicious aura, then you are told they visited a town enemy",
     "wiki.article.role.gossip.extra":"- Suspicious aura overrides innocent aura\n- If your target visits multiple other players, you learn if at least one of them is a town enemy\n- False appeared visits can mess with your results, depending on who your target appears to visit\n- Your target having an aura does not mess with the results, however, their targets having an aura does",
 
-    "wiki.article.role.tallyClerk.reminder": "At night, you are told how many players are not town loyalists from the players who voted guilty today.",
-    "wiki.article.role.tallyClerk.guide": "- At night, you are told how many players are not town loyalists from the players who voted guilty during any of the trials today\n- If any player has innocent aura, they register as a town loyalist\n- If any player has suspicious aura, they register as not a town loyalist",
-    "wiki.article.role.tallyClerk.abilities":"- At night, you are told how many players are not town loyalists from the players who voted guilty today\n- If you are blocked, you aren't told anything\n- Your ability doesn't depend on visits",
-    "wiki.article.role.tallyClerk.attributes":"- A suspicious aura makes a player register as not a town loyalist\n- An innocent aura makes a player register as a town loyalist\n- A suspicious aura overwrites innocent aura to the Tally Clerk",
-    "wiki.article.role.tallyClerk.extra":"",
+    "wiki.article.role.tallyClerk.reminder": "At night, you are told how many players are town enemies from the players who voted guilty during selected trials.",
+    "wiki.article.role.tallyClerk.lore": "The tally clerk always tells ridiculous stories of how people submit their votes. Others dismiss the stories as hyperbole, but the tally clerk delivers the stories with such an exhausted expression that you know they've been through it all.",
+    "wiki.article.role.tallyClerk.guide": "- At night, you are told how many players are town enemies from the players who voted guilty during the selected trials. Trials are selected by your visit.\n- Each night, choose a player to visit.\n   - If you visit a player who was on trial yesterday then you select all of that players trials from yesterday.\n    - If you visit a player who was not on trial yesterday then you select all trials from yesterday.",
+    "wiki.article.role.tallyClerk.abilities":"",
+    "wiki.article.role.tallyClerk.attributes":"",
+    "wiki.article.role.tallyClerk.extra":"- You can select to visit anyone, even yourself, even dead players.\n- Innocent aura makes players appear to be town friends.\n- Suspicious aura makes players appear to be town enemies.\n- Suspicious aura overwrites innocent aura.",
+    "wiki.article.role.tallyClerk.exampleAlibi":"Tally Clerk\nN1: @4 - 0\nN2: @16 (selects @1 @2 @4 @10) - 2",
+    "wiki.article.role.tallyClerk.exampleAlibi.description":"On night 1 the tally clerk chose @4 and was told 0 because there was no previous trial. On night 2 they chose @16 and was told 2. They also made a note that the players who voted guilty during @16 trials are @1 @2 @4 and @10.",
 
     "wiki.article.role.doctor.reminder": "At night, select a player to guard from attacks. You can guard yourself once per game.",
     "wiki.article.role.doctor.lore": "The doctor is so unimaginably talented that they can save anyone from any physical ailment conceivable. According to the doctor, saving someone is only worth the time if they are \"seriously\" in need of help, so the doctor only shows up when their patient is about to die. But it's nomatter, the doctor never fails.",
@@ -1750,7 +1747,7 @@
     "wiki.article.role.doctor.attributes":"* If you visit yourself, you use the self guard charge, and you can't select yourself again",
     "wiki.article.role.doctor.extra":"",
     "wiki.article.role.doctor.exampleAlibi":"Doctor\nN1: @12\nN2: @16 [guarded someone]",
-    "wiki.article.role.doctor.exampleAlibi.description":"Here is an example of an alibi from a Doctor who, on night 1, guarded @12, and on night 2, guarded @16, and @16 was attacked, so the doctor wrote that they got a message saying that their target was guarded from an attack.",
+    "wiki.article.role.doctor.exampleAlibi.description":"An example of an alibi from a Doctor who, on night 1, guarded @12, and on night 2, guarded @16, and @16 was attacked, so the doctor wrote that they got a message saying that their target was guarded from an attack.",
 
     "wiki.article.role.bodyguard.reminder": "Each night* select a player. All attacks to them are directed towards you, and you attack them back.",
     "wiki.article.role.bodyguard.guide": "Each night except the first, select a player\n    - If your target is attacked, you are attacked instead, and you attack the attacker back\n- You can choose to guard yourself instead up to once per game",
@@ -1784,6 +1781,7 @@
     "wiki.article.role.armorsmith.extra":"* You can't choose yourself",
 
     "wiki.article.role.steward.reminder": "At night, select up to 2 roles to protect everyone with those roles.",
+    "wiki.article.role.steward.lore":"Parties are typically a safe space for the townsfolk. All thanks to the steward.",
     "wiki.article.role.steward.guide":"- At night, choose up to 2 roles to protect\n    - Everyone with these roles are protected from attacks\n    - You aren't told if anyone with this role is attacked\n    - You can't protect the same role twice in a row\n    - You can't protect Steward more than once per game\n    - Everyone you protect has the following night messages deleted: you were protected, and you survived an attack.", 
     "wiki.article.role.steward.abilities":"* Choose up to 2 roles to protect\n    * Everyone with either of the roles is protected\n    * You aren't told if anyone you protect is attacked\n    - Everyone you protect has the following night messages deleted: you were protected, and you survived an attack.",
     "wiki.article.role.steward.attributes":"* You can't protect the same role two nights in a row\n* You can't protect Steward more than once\n* Your ability does nothing if you are blocked, or dead",
@@ -1802,10 +1800,10 @@
     "wiki.article.role.courtesan.extra":"* When someone is roleblocked, their visits are wiped, so they don't visit anyone",
 
     "wiki.article.role.medium.reminder":"During the night, you can speak with the dead. Each day cycle, you can choose to seance a player and give them their ability back for the day cycle. After you're dead, you can haunt a living player to speak with them.",
-    "wiki.article.role.medium.guide":"- During night and obituary, speak in dead chat.\n- While alive, before night, choose to seance a player, from the start of night until the start of the next night that player can use their abilities dispite being dead.\n- While dead, before night, haunt a player to bring all dead players to chat with them during night and obituary\n    - You can haunt up to X times (X = Total players ÷ 5 (round up)).",
+    "wiki.article.role.medium.guide":"- During night and obituary, speak in dead chat.\n- While alive, before night, choose to seance a player, from the start of night until the start of the next night that player can use their abilities dispite being dead.\n- While dead, before night, haunt a player to bring all dead players to chat with them during night and obituary\n    - You can haunt up to X times (X = Total players ÷ 5 (round up)).\n- If you are roleblocked, the player you seance is also roleblocked.",
     "wiki.article.role.medium.abilities":"",
     "wiki.article.role.medium.attributes":"",
-    "wiki.article.role.medium.extra":"- You can't chat with the dead while in jail, but a haunted player can.\n- You are immune to possession",
+    "wiki.article.role.medium.extra":"- You can't chat with the dead while in jail, but a haunted player can.\n- You are immune to possession\n - If you are roleblocked without getting sent the message that you are roleblocked, then the seanced player is also roleblocked without getting sent the message that they are roleblocked.",
     "wiki.article.role.medium.exampleAlibi":"Medium\nN1: n/a\nN2: @2 (Detective)\n@2 said they got @5 as enemies with town\n @2 told me to say \"17253\".",
     "wiki.article.role.medium.exampleAlibi.description":"Here is an example of an alibi from a Medium who, on night 2, used their ability to give @2, a player who claims to be detective, their ability back, and then talked to them at night and wrote some important ntoes from what @2 said.",
 
@@ -1839,7 +1837,7 @@
     "wiki.article.role.rabblerouser.extra":"- The pitchfork menu stays available\n   - Even if all Rabblerousers are dead\n    - Even if there is no Rabblerouser\n    - Even if all three uses are consumed\n- Multiple Rabblerousers does not mean multiple attacks or more uses. There is a maximum of 3 uses and a maximum of 1 attack per night",
 
     "wiki.article.role.veteran.reminder":"Each night, choose to rampage yourself, killing all visitors to you.",
-    "wiki.article.role.veteran.lore": "Nobody actually knows what war they were in, but they said they are a veteran. Nobody really wants to ask them anything about themselves because it's just a bit too dangerous.",
+    "wiki.article.role.veteran.lore": "Nobody actually knows what war they were in, but they said they are a veteran. Definetly don't ask, it's far too dangerous.",
     "wiki.article.role.veteran.guide": "- At night, you can choose to alert to gain protected defense for the night and rampage yourself, attacking everyone who visits you\n- You can only use your ability X times (X = Total players ÷ 5 (round up))\n- You can't use your ability on night 1\n* You should try to trick evil players into visiting you, so you can block the attack and kill them. Try to avoid killing unnecessary townies.",
     "wiki.article.role.veteran.abilities":"* Select yourself\n    - rampage yourself\n    - gain protected defense for the night",
     "wiki.article.role.veteran.attributes":"* You only have three uses of your ability\n* You are told when a visitor is attacked by your rampage\n* You have an armor-piercing attack\n- You can't use your ability night 1",
@@ -1922,11 +1920,11 @@
     "wiki.article.role.goon.extra":"None",
 
     "wiki.article.role.hypnotist.reminder": "Each night, select a player to roleblock and/or send false messages.",
-    "wiki.article.role.hypnotist.lore": "They were a hypnotherapist whose \"uncanny\" abilities were used to help townsfolk deal with mental troubles. But when the town decided that their methods were too mysterious, they drove the hypnotist out of town. With nowhere left to turn, they have resorted to using their powers of suggestion for the syndicate, holding out a vain hope they may convince the town to accept them once again.",
-    "wiki.article.role.hypnotist.guide": "- At night, select a player to roleblock or hypnotize\n- If you roleblock your target, they can not use their ability that night\n- You can choose to send a false message to your target, or to not send them the message saying they are roleblocked",
-    "wiki.article.role.hypnotist.abilities":"* Visit a player to roleblock and choose a message to show them\n    * You can send that they were attempted to be roleblocked\n    * You can send that they were attacked but had defense\n    * You can send that they were protected by someone\n    * You can send that they were transported\n    * You can send that they were attempted to be possessed\n    * You can send that they are wardblocked",
-    "wiki.article.role.hypnotist.attributes":"* You are immune to roleblocks\n* You may choose to not roleblock your target\n* You can't choose to send no messages",
-    "wiki.article.role.hypnotist.extra":"* You can't select other syndicate members\n* When you roleblock someone, their visits will be cleared",
+    "wiki.article.role.hypnotist.lore": "A hypnotherapist who used their \"uncanny\" abilities to help townsfolk with mental troubles. When the town decided the hypnotherapists methods were too mysterious, they drove the hypnotist out of town. The patients had nowhere left to turn, so the hypnotist resorted to using their powers of suggestion underground, the rest was history.",
+    "wiki.article.role.hypnotist.guide": "- Each night choose a player\n    - You may choose to roleblock them\n    - You must send one or more of the following chat messages to your target\n        - You were roleblocked. (Your choice to send this message is independent of your choice to roleblock your target)\n        - You were guarded.\n        - You were attacked but had defense.\n        - You were transported.\n        - You were possessed.\n        - A visit of yours was wardblocked.",
+    "wiki.article.role.hypnotist.abilities":"None",
+    "wiki.article.role.hypnotist.attributes":"None",
+    "wiki.article.role.hypnotist.extra":"* You can't select other syndicate members\n - If you are roleblocked, you can still roleblock your target, but you can't send fake messages, and if you roleblock your target, they are told they are roleblocked.\n* You may choose to not roleblock your target\n* You can't choose to send no messages",
     
     "wiki.article.role.consort.reminder": "Each night, select a player to roleblock.",
     "wiki.article.role.consort.guide": "- At night, select a player to roleblock them, stopping them from using their ability\n- Your target is told they were roleblocked\n\n_For example_\n- A consort selects the vigilante, so the vigilante can't kill anyone, and nobody dies",
@@ -1941,13 +1939,13 @@
     "wiki.article.role.blackmailer.extra":"* The silenced player is no longer be silenced at the start of the next night\n* You can't select other syndicate members",
 
     "wiki.article.role.cerenovous.reminder": "Each night, select a player to brain, you can chat as that player until the next night.",
-    "wiki.article.role.cerenovous.guide": "- At night, select a player to brain\n- The brained player can't chat during the next day, instead you can chat as them.\n    - You can send block messages as them.\n    - You can whisper as them.\n- While a cerenovous is alive, nomination votes are hidden and verdict votes are hidden.\n- You can read whispers sent to other players.\n- You can't choose to brain the player you brained yesterday.\n- You can only brain X times (X = Total players ÷ 5 (round up))",
+    "wiki.article.role.cerenovous.guide": "- At night, select a player to brain\n- The brained player can't chat during the next day, instead you can chat as them.\n    - You can send block messages as them.\n    - You can whisper as them.\n- While a cerenovous is alive, nomination votes are hidden and verdict votes are hidden.\n- You can read whispers sent to other players.\n- You can't choose to brain the player you brained yesterday.\n- You can only brain X times (X = Total players ÷ 5 (round up))\n- When you are roleblocked, you can't read whispers until start of next night.",
     "wiki.article.role.cerenovous.abilities":"* Visit a player to brain them during the next day\n - When a player is brained, they are told they are brained, and their chat box dissapears.",
     "wiki.article.role.cerenovous.attributes":"",
     "wiki.article.role.cerenovous.extra":"- The brained player is no longer brained at the start of the next night.\n* You can't select other syndicate members",
 
     "wiki.article.role.informant.reminder": "Each night, select 2 players to reveal their role, you are told who visits them, and who they visited. You can see all whispers.",
-    "wiki.article.role.informant.guide": "- At night, select up to 2 players to be told:\n    - Their role (Their role is revealed to you)\n    - Who they visited\n    - Who visited them\n- You can read whispers that were sent to other players\n\nYou should communicate the information you get to the rest of the syndicate. It is fairly easy to fake claim lookout or tracker.",
+    "wiki.article.role.informant.guide": "- At night, select up to 2 players to be told:\n    - Their role (Their role is revealed to you)\n    - Who they visited\n    - Who visited them\n- You can read whispers that were sent to other players\n\nYou should communicate the information you get to the rest of the syndicate. It is fairly easy to fake claim lookout or tracker.\n- When you are roleblocked, you can't read whispers until start of next night.",
     "wiki.article.role.informant.abilities":"* Visit up to 2 players to\n    * Be told their role (Their role is revealed to you)\n    * Be told who visited them\n    * Be told who they visited\n* All whispers can be read regardless of whether or not they were sent to you\n* Appeared visits can change information",
     "wiki.article.role.informant.attributes":"* None",
     "wiki.article.role.informant.extra":"* You can't select other syndicate members\n* Appeared visits can change information",
@@ -1958,7 +1956,7 @@
     "wiki.article.role.necromancer.extra":"* You are immune to getting roleblocked or possessed\n* You can force your target to visit any living player\n* If you don't successfully possess the player you select, you can select them again\n* Your second target is investigate immune, indirect, and wardblock immune",
 
     "wiki.article.role.mortician.reminder": "Each night, select a player to tag them for obscuring. If they die, their role and alibi are hidden.",
-    "wiki.article.role.mortician.guide": "- At night, select a player to tag them for obscuring\n    - A player who is tagged for obscuring gets obscured when they die, erasing their role and alibi from their grave so nobody knows who they are\n    - You are told the obscured players role and alibi when they die\n- You can tag as many players as you want, but you can only obscure X players (X = Total players ÷ 5 (round up))",
+    "wiki.article.role.mortician.guide": "- At night, select a player to tag them for obscuring\n    - A player who is tagged for obscuring gets obscured when they die, erasing their role and alibi from their grave so nobody knows who they are\n    - You are told the obscured players role and alibi when they die\n- You can tag as many players as you want, but you can only obscure X players (X = Total players ÷ 5 (round up))\n- When you are roleblocked, your tags don't obscure players until the start of next night.",
     "wiki.article.role.mortician.abilities":"* Visit a player to tag them for obscuring\n* If a player is obscured, that player's role and alibi do not appear in the graveyard\n* You are told the role and alibi of the player you obscured when they die.",
     "wiki.article.role.mortician.attributes":"* You can only ever obscure X players per game (X = Total players ÷ 5 (round up))\n* You can't select a player who is already tagged\n* You can target other syndicate members",
     "wiki.article.role.mortician.extra":"* You can target other syndicate members, but not yourself\n* Your ability doesn't work after you are dead\n- You can't select a player who is already tagged",
@@ -1970,14 +1968,14 @@
     "wiki.article.role.forger.extra":"* If you visit a player to attempt to forge them, it costs an ability use, even if they don't die\n* If you are blocked, it doesn't cost an ability use\n* You can't target other syndicate members",
 
     "wiki.article.role.framer.reminder": "Each night, frame a player to give them suspicious aura. Choose more players to make the framed player appear to visit the others.",
-    "wiki.article.role.framer.guide": "- At night, select a player to frame\n    - Framed players have suspicious aura for tonight and the next night\n- If you select 2 players\n    - The first is framed\n  * The first player appears to visit all of the other players you visit for only tonight\n    - All your visits except the first is removed\n\n_For example_\n- You frame @15 and make them appear to visit @12. The godfather kills @12. A separate tracker selects @15 and sees that @15 visits @12. Since @12 dies, the tracker might think that @15 was the killer.",
+    "wiki.article.role.framer.guide": "- At night, select a player to frame\n    - Framed players have suspicious aura for tonight and the next night\n- If you select 2 players\n    - The first is framed\n  * The first player appears to visit all of the other players you visit for only tonight\n    - All your visits except the first is removed\n- When you are roleblocked, your tags don't frame players until the start of next night.",
     "wiki.article.role.framer.abilities":"* Visit a player to frame\n    - Framed players have suspicious aura for tonight the next night\n* Visit more players to:\n  * Frame the first player\n  * The first player appears to visit all of the other players you visit for only tonight\n - All your visits except the first is removed",
     "wiki.article.role.framer.attributes":"- For the first visit, you can select living players who aren't insiders with you\n- You can select anyone for the appeared into visit, even dead players or yourself",
     "wiki.article.role.framer.extra":"- Your appeared into visit is wardblock immune, investigate immune, and indirect",
 
     "wiki.article.role.disguiser.reminder": "Your grave shows whatever role you choose when you die. You have innocent aura. At night, give a fellow insider appeared visits.",
     "wiki.article.role.disguiser.lore": "The town did not approve of the costumes the disguiser made.",
-    "wiki.article.role.disguiser.guide": "- At night, select a fellow insider to make them appear to visit other players\n - You have your role appear to be what you chose on your grave\n - You have innocent aura",
+    "wiki.article.role.disguiser.guide": "- At night, select a fellow insider to make them appear to visit other players\n - You have your role appear to be what you chose on your grave\n - You have innocent aura\n - When you are roleblocked, until the start of next night, if you die, your grave shows disguiser on it.",
     "wiki.article.role.disguiser.abilities":"",
     "wiki.article.role.disguiser.attributes":"",
     "wiki.article.role.disguiser.extra":"- Your appeared into visit is wardblock immune, investigate immune, and indirect",

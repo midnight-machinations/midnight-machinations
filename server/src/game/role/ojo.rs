@@ -93,6 +93,6 @@ impl RoleStateTrait for Ojo {
         actor_ref.reveal_players_role(game, concealed_player);
     }
     fn on_whisper(self, game: &mut Game, actor_ref: PlayerReference, event: &OnWhisper, fold: &mut WhisperFold, priority: WhisperPriority) {
-        Informant::read_whispers(game, actor_ref, event, fold, priority);
+        Informant::read_whispers(false, game, actor_ref, event, fold, priority);
     }
 }

@@ -1,8 +1,14 @@
+use std::iter::once;
+
 use serde::{Deserialize, Serialize};
 
-use crate::game::{player::PlayerReference, Game};
+use crate::{
+    game::{
+        components::{call_witness::CallWitness, insider_group::InsiderGroups, silenced::Silenced}, modifiers::ModifierID, phase::PhaseType, player::PlayerReference, Game
+    }, packet::ToClientPacket, vec_map::VecMap, vec_set::{vec_set, VecSet}
+};
 
-#[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[derive(Copy, Clone, Debug, Serialize, Deserialize, PartialEq, Eq, PartialOrd, Ord, Hash)]
 #[serde(rename_all = "camelCase")]
 pub enum ChatGroup {
     All,
@@ -17,18 +23,127 @@ pub enum ChatGroup {
     Puppeteer,
     Warden,
 }
-impl ChatGroup{
-    pub fn player_receive_from_chat_group(&self, game: &Game, player_ref: PlayerReference)->bool{
-        player_ref.get_current_receive_chat_groups(game).contains(self)
-    }
+#[derive(PartialEq, Eq)]
+pub struct PlayerChatGroups{
+    send: PlayerChatGroupMap,
+}
+impl PlayerChatGroups{
+    pub fn new()->Self{Self { send: PlayerChatGroupMap::new() }}
+    pub fn send_player_chat_group_map(game: &mut Game)->PlayerChatGroupMap{
+        if game.modifier_settings().is_enabled(ModifierID::NoChat) {return PlayerChatGroupMap::new();}
+        
+        let out = PlayerChatGroupMap::combined(
+            PlayerReference::all_players(game)
+                .map(|p|p.send_player_chat_group_map(game))
+                .chain(once(InsiderGroups::send_player_chat_group_map(game)))
+                .chain(once(CallWitness::send_player_chat_group_map(game)))
+                .collect()
+        );
 
+        if game.player_chat_groups.send != out {
+            for player in PlayerReference::all_players(game){
+                player.send_packet(game, ToClientPacket::YourSendChatGroups { send_chat_groups: out.get(player)});
+            }
+        }
+
+        game.player_chat_groups.send = out.clone();
+
+        out
+    }
+    pub fn receive_player_chat_group_map(game: &Game)->PlayerChatGroupMap{
+        PlayerChatGroupMap::combined(
+            PlayerReference::all_players(game)
+                .map(|p|p.receive_player_chat_group_map(game))
+                .chain(once(InsiderGroups::receive_player_chat_group_map(game)))
+                .collect()
+        )
+    }
+}
+#[derive(Clone, PartialEq, Eq)]
+pub struct PlayerChatGroupMap(VecMap<PlayerReference, VecSet<ChatGroup>>);
+impl PlayerChatGroupMap{
+    pub fn new()->Self{
+        Self(
+            VecMap::new()
+        )
+    }
+    pub fn combined(other: Vec<Self>)->Self{
+        let mut out = Self::new();
+        for other in other {
+            for (player, other_chat_groups) in other.0 {
+                if let Some(chat_groups) = out.0.get_mut(&player) {
+                    chat_groups.extend(other_chat_groups);
+                }else{
+                    out.0.insert(player, other_chat_groups);
+                }
+            }
+        }
+        out
+    }
+    pub fn insert(&mut self, player: PlayerReference, chat_group: ChatGroup){
+        if let Some(groups) = self.0.get_mut(&player){
+            groups.insert(chat_group);
+        }else{
+            self.0.insert(player, vec_set![chat_group]);
+        }
+    }
+    fn get(&self, player: PlayerReference)->VecSet<ChatGroup>{
+        if let Some(out) = self.0.get(&player) {
+            out.clone()
+        }else{
+            VecSet::new()
+        }
+    }
+    fn player_in_group(&self, player: PlayerReference, chat_group: ChatGroup)->bool{
+        let Some(groups) = self.0.get(&player) else {return false};
+        groups.contains(&chat_group)
+    }
+}
+
+impl ChatGroup{
     pub fn all_players_in_group(&self, game: &Game)->Vec<PlayerReference>{
+        let map = PlayerChatGroups::receive_player_chat_group_map(game);
+
         let mut out = Vec::new();
         for player_ref in PlayerReference::all_players(game){
-            if self.player_receive_from_chat_group(game, player_ref){
+            if map.player_in_group(player_ref, *self) {
                 out.push(player_ref);
             }
         }
         out
+    }
+}
+impl PlayerReference{
+    fn receive_player_chat_group_map(&self, game: &Game)->PlayerChatGroupMap{
+        let mut out = self.role_state(game).clone().receive_player_chat_group_map(game, *self);
+        out.insert(*self, ChatGroup::All);
+        if !self.alive(game) {out.insert(*self, ChatGroup::Dead);}
+        out
+    }
+    fn send_player_chat_group_map(&self, game: &Game)->PlayerChatGroupMap{
+        if Silenced::silenced(game, *self) {
+            return PlayerChatGroupMap::new();
+        }
+
+        let mut out = self.role_state(game).clone().send_player_chat_group_map(game, *self);
+
+        if 
+            (
+                !matches!(game.current_phase().phase(), PhaseType::Night|PhaseType::Obituary|PhaseType::Testimony|PhaseType::Briefing|PhaseType::Recess) && 
+                self.alive(game)
+            ) || 
+            game.current_phase().phase()==PhaseType::Recess
+        {
+            out.insert(*self, ChatGroup::All);
+        }
+        if !self.alive(game) {
+            out.insert(*self, ChatGroup::Dead);
+        }
+        
+        out
+    }
+
+    pub fn get_current_send_chat_groups(&self, game: &mut Game) -> VecSet<ChatGroup> {
+        PlayerChatGroups::send_player_chat_group_map(game).get(*self)
     }
 }

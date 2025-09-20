@@ -70,7 +70,7 @@ impl Philosopher{
     pub fn players_are_enemies_night(game: &Game, midnight_variables: &MidnightVariables, a: PlayerReference, b: PlayerReference) -> bool {
         if Aura::suspicious(game, midnight_variables, a) || Aura::suspicious(game, midnight_variables, b){
             true
-        }else if Aura::innocent(game, a) || Aura::innocent(game, b){
+        }else if Aura::innocent(game, midnight_variables, a) || Aura::innocent(game, midnight_variables, b){
             false
         }else{
             !WinCondition::are_friends(a.win_condition(game), b.win_condition(game))

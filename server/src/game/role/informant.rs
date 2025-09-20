@@ -2,6 +2,8 @@ use rand::prelude::SliceRandom;
 use serde::Serialize;
 use crate::game::event::on_midnight::{MidnightVariables, OnMidnightPriority};
 use crate::game::event::on_whisper::{OnWhisper, WhisperFold, WhisperPriority};
+use crate::game::phase::PhaseType;
+use crate::game::role::common_role;
 use crate::game::{attack_power::DefensePower, chat::ChatMessageVariant};
 use crate::game::player::PlayerReference;
 
@@ -11,7 +13,9 @@ use crate::game::Game;
 use super::{ControllerID, ControllerParametersMap, Role, RoleStateTrait};
 
 #[derive(Clone, Debug, Serialize, Default)]
-pub struct Informant;
+pub struct Informant{
+    blocked: bool
+}
 
 
 pub(super) const MAXIMUM_COUNT: Option<u8> = Some(1);
@@ -46,9 +50,9 @@ impl RoleStateTrait for Informant {
     fn controller_parameters_map(self, game: &Game, actor_ref: PlayerReference) -> ControllerParametersMap {
         ControllerParametersMap::builder(game)
             .id(ControllerID::role(actor_ref, Role::Informant, 0))
-            .player_list_selection_typical(actor_ref, false, false, false, Some(2))
+            .player_list_selection_typical(actor_ref, false, false, false, false, Some(2))
             .night_typical(actor_ref)
-            .add_grayed_out_condition(false)
+            
             .build_map()
     }
     fn convert_selection_to_visits(self, game: &Game, actor_ref: PlayerReference) -> Vec<Visit> {
@@ -65,16 +69,31 @@ impl RoleStateTrait for Informant {
         ].into_iter().collect()
     }
     fn on_whisper(self, game: &mut Game, actor_ref: PlayerReference, event: &OnWhisper, fold: &mut WhisperFold, priority: WhisperPriority) {
-        Informant::read_whispers(game, actor_ref, event, fold, priority);
+        Informant::read_whispers(self.blocked, game, actor_ref, event, fold, priority);
+    }
+    fn on_player_roleblocked(mut self, game: &mut Game, midnight_variables: &mut MidnightVariables, actor_ref: PlayerReference, player: PlayerReference, _invisible: bool) {
+        common_role::on_player_roleblocked(midnight_variables, actor_ref, player);
+        if player != actor_ref {return}
+        self.blocked = true;
+        actor_ref.set_role_state(game, self);
+    }
+    fn on_visit_wardblocked(mut self, game: &mut Game, midnight_variables: &mut MidnightVariables, actor_ref: PlayerReference, visit: Visit) {
+        common_role::on_visit_wardblocked(midnight_variables, actor_ref, visit);
+        if actor_ref != visit.visitor {return};
+        self.blocked = true;
+        actor_ref.set_role_state(game, self);
+    }
+    fn on_phase_start(mut self, game: &mut Game, actor_ref: PlayerReference, phase: crate::game::phase::PhaseType) {
+        if matches!(phase, PhaseType::Night) {self.blocked = false; actor_ref.set_role_state(game, self);}
     }
 }
 
 impl Informant {
     pub fn new() -> Self {
-        Self{}
+        Self{blocked: false}
     }
-    pub fn read_whispers(game: &mut Game, actor_ref: PlayerReference, event: &OnWhisper, fold: &mut WhisperFold, priority: WhisperPriority) {
-        if priority == WhisperPriority::Send && !fold.cancelled && event.receiver != actor_ref && event.sender != actor_ref {
+    pub fn read_whispers(blocked: bool, game: &mut Game, actor_ref: PlayerReference, event: &OnWhisper, fold: &mut WhisperFold, priority: WhisperPriority) {
+        if !blocked && priority == WhisperPriority::Send && !fold.cancelled && event.receiver != actor_ref && event.sender != actor_ref {
             actor_ref.add_private_chat_message(game, ChatMessageVariant::Whisper {
                 from_player_index: event.sender,
                 to_player_index: event.receiver,

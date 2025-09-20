@@ -99,7 +99,7 @@ impl RoleStateTrait for Polymath {
             .default_selection(selection.into())
             .allow_players([actor_ref])
             .night_typical(actor_ref)
-            .add_grayed_out_condition(false)
+            
             .build_map();
 
         match selection {
@@ -109,7 +109,7 @@ impl RoleStateTrait for Polymath {
                 .id(ControllerID::role(actor_ref, Role::Polymath, 1))
                 .single_player_selection_typical(actor_ref, false, true)
                 .night_typical(actor_ref)
-                .add_grayed_out_condition(false)
+                
                 .build_map()
             ),
             PolymathAbilityType::Protect => ctrl.combine_overwrite(
@@ -117,7 +117,7 @@ impl RoleStateTrait for Polymath {
                 .id(ControllerID::role(actor_ref, Role::Polymath, 2))
                 .single_player_selection_typical(actor_ref, false, true)
                 .night_typical(actor_ref)
-                .add_grayed_out_condition(false)
+                
                 .build_map()
             ),
             PolymathAbilityType::Support => ctrl.combine_overwrite(
@@ -134,7 +134,7 @@ impl RoleStateTrait for Polymath {
                     can_choose_duplicates: false, 
                     can_choose_none: true
                 }).night_typical(actor_ref)
-                .add_grayed_out_condition(false)
+                
                 .build_map()
             ),
             PolymathAbilityType::Kill => {

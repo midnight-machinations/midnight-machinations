@@ -1,5 +1,5 @@
 use serde::{Deserialize, Serialize};
-use crate::{game::{event::on_convert::OnConvert, game_conclusion::GameConclusion, player::PlayerReference, Assignments, Game}, vec_set::{vec_set, VecSet}};
+use crate::{game::{event::{on_convert::OnConvert, Event}, game_conclusion::GameConclusion, player::PlayerReference, Assignments, Game}, vec_set::{vec_set, VecSet}};
 
 use super::player_component::PlayerComponent;
 pub type WinConditionComponent = PlayerComponent::<WinCondition>;

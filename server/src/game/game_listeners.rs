@@ -1,13 +1,13 @@
 use crate::{
-    game::event::{on_any_death::OnAnyDeath, on_grave_added::OnGraveAdded, on_phase_start::OnPhaseStart},
+    game::event::{on_game_ending::OnGameEnding, on_grave_added::OnGraveAdded, on_phase_start::OnPhaseStart},
     packet::ToClientPacket
 };
 
 use super::{
     chat::{ChatGroup, ChatMessageVariant}, components::synopsis::SynopsisTracker,
     event::on_whisper::{OnWhisper, WhisperFold, WhisperPriority},
-    game_conclusion::GameConclusion, phase::{PhaseState, PhaseStateMachine, PhaseType},
-    player::PlayerReference, role::Role, Game, GameOverReason
+    phase::{PhaseState, PhaseStateMachine, PhaseType},
+    player::PlayerReference, Game, GameOverReason
 };
 
 //Event listerner functions for game defined here
@@ -18,21 +18,9 @@ impl Game{
             day_number: self.phase_machine.day_number,
         });
         self.send_packet_to_all(ToClientPacket::PhaseTimeLeft{ seconds_left: self.phase_machine.time_remaining.map(|o|o.as_secs().try_into().expect("Phase time should be below 18 hours")) });
-        for player in PlayerReference::all_players(self){
-            player.send_packet(self, ToClientPacket::YourSendChatGroups { send_chat_groups: 
-                player.get_current_send_chat_groups(self).into_iter().collect()
-            });
-        }
     }
-    pub fn on_any_death(game: &mut Game, _event: &OnAnyDeath, _fold: &mut (), _priority: ()){
-        for player in PlayerReference::all_players(game){
-            player.send_packet(game, ToClientPacket::YourSendChatGroups { send_chat_groups: 
-                player.get_current_send_chat_groups(game).into_iter().collect()
-            });
-        }
-    }
-    pub fn on_game_ending(&mut self, conclusion: GameConclusion){
-        let synopsis = SynopsisTracker::get(self, conclusion);
+    pub fn on_game_ending(&mut self, event: &OnGameEnding, _fold: &mut (), _priority: ()){
+        let synopsis = SynopsisTracker::get(self, event.conclusion);
 
         PhaseStateMachine::next_phase(self, Some(PhaseState::Recess));
         self.add_message_to_chat_group(ChatGroup::All, ChatMessageVariant::GameOver { synopsis });
@@ -48,14 +36,6 @@ impl Game{
         
         for other_player_ref in PlayerReference::all_players(game){
             other_player_ref.conceal_players_role(game, grave.player);
-        }
-    }
-    pub fn on_role_switch(&mut self, actor: PlayerReference, old: Role, new: Role){
-
-        if old == new {return;}
-
-        for player_ref in PlayerReference::all_players(self){
-            player_ref.conceal_players_role(self, actor);
         }
     }
     pub fn on_whisper(&mut self, event: &OnWhisper, fold: &mut WhisperFold, priority: WhisperPriority) {

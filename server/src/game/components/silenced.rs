@@ -4,7 +4,7 @@ use crate::{
         event::{on_midnight::MidnightVariables, on_phase_start::OnPhaseStart},
         phase::PhaseState, player::PlayerReference, Game
     },
-    packet::ToClientPacket, vec_set::VecSet
+    vec_set::VecSet
 };
 
 impl Game {
@@ -24,9 +24,6 @@ impl Silenced {
         game.silenced_mut().silenced_players.insert(player);
 
         player.push_night_message(midnight_variables, ChatMessageVariant::Silenced);
-        player.send_packet(game, ToClientPacket::YourSendChatGroups { send_chat_groups: 
-            player.get_current_send_chat_groups(game).into_iter().collect()
-        });
     }
     pub fn unsilence(game: &mut Game, player: PlayerReference) {
         game.silenced_mut().silenced_players.remove(&player);

@@ -1,17 +1,12 @@
 use crate::{
     client_connection::ClientConnection,
     game::{
-        abilities_component::Abilities, chat::ChatComponent,
+        abilities_component::Abilities, chat::{ChatComponent, PlayerChatGroups},
         components::{
-            confused::Confused, cult::Cult, detained::Detained,
-            fast_forward::FastForwardComponent, fragile_vest::FragileVestsComponent, graves::Graves,
-            insider_group::{InsiderGroupID, InsiderGroups}, mafia::Mafia, mafia_recruits::MafiaRecruits,
-            pitchfork_item::PitchforkItemComponent, poison::Poison, puppeteer_marionette::PuppeteerMarionette,
-            role::RoleComponent, silenced::Silenced, synopsis::SynopsisTracker,
-            tags::Tags, verdicts_today::VerdictsToday, win_condition::WinConditionComponent
+            confused::Confused, cult::Cult, detained::Detained, fast_forward::FastForwardComponent, fragile_vest::FragileVestsComponent, graves::Graves, insider_group::{InsiderGroupID, InsiderGroups}, mafia::Mafia, mafia_recruits::MafiaRecruits, pitchfork_item::PitchforkItemComponent, poison::Poison, puppeteer_marionette::PuppeteerMarionette, role::RoleComponent, role_reveal::RevealedPlayersComponent, silenced::Silenced, synopsis::SynopsisTracker, tags::Tags, verdicts_today::VerdictsToday, win_condition::WinConditionComponent
         },
         controllers::Controllers,
-        event::on_game_start::OnGameStart, game_client::GameClient, modifiers::ModifierID, phase::PhaseStateMachine,
+        event::{on_game_start::OnGameStart, Event}, game_client::GameClient, modifiers::ModifierID, phase::PhaseStateMachine,
         player::{Player, PlayerInitializeParameters, PlayerReference},
         role_list_generation::{OutlineListAssignment, RoleListGenerator}, settings::Settings,
         spectator::{spectator_pointer::SpectatorPointer, Spectator, SpectatorInitializeParameters}, Assignments,
@@ -106,6 +101,8 @@ impl Game{
                 phase_machine: PhaseStateMachine::new(settings.phase_times.clone()),
                 settings,
 
+                player_chat_groups: PlayerChatGroups::new(),
+                revealed_players: unsafe{RevealedPlayersComponent::new(num_players)},
                 controllers: Controllers::default(),
                 abilities: Abilities::new(&assignments),
                 cult: Cult::default(),
@@ -175,7 +172,7 @@ impl Game{
         }
 
         //on game start needs to be called after all players have joined
-        OnGameStart::invoke(&mut game);
+        OnGameStart::new().invoke(&mut game);
 
         Ok(game)
     }

@@ -2,7 +2,7 @@ use rand::seq::IndexedRandom;
 
 use crate::{game::{
     abilities::syndicate_gun::SyndicateGun, attack_power::{AttackPower, DefensePower}, chat::{ChatGroup, ChatMessageVariant}, components::{graves::grave::GraveKiller, night_visits::NightVisitsIterator}, controllers::{AvailablePlayerListSelection, ControllerParametersMap}, event::{
-        on_add_insider::OnAddInsider, on_any_death::OnAnyDeath, on_controller_selection_changed::OnControllerSelectionChanged, on_midnight::{MidnightVariables, OnMidnight, OnMidnightPriority}, on_remove_insider::OnRemoveInsider
+        on_add_insider::OnAddInsider, on_any_death::OnAnyDeath, on_controller_selection_changed::OnControllerSelectionChanged, on_game_start::OnGameStart, on_midnight::{MidnightVariables, OnMidnight, OnMidnightPriority}, on_remove_insider::OnRemoveInsider, on_role_switch::OnRoleSwitch
     }, phase::PhaseType, player::PlayerReference, role::RoleState, role_list::RoleSet, visit::{Visit, VisitTag}, ControllerID, Game, PlayerListSelection
 }, vec_set::{vec_set, VecSet}};
 
@@ -139,7 +139,7 @@ impl Mafia{
             _ => {}
         }
     }
-    pub fn on_game_start(game: &mut Game) {
+    pub fn on_game_start(game: &mut Game, _event: &OnGameStart, _fold: &mut (), _priority: ()) {
 
         let killing_role_exists = PlayerReference::all_players(game).any(
             |p|
@@ -178,9 +178,9 @@ impl Mafia{
             Mafia::give_mafia_killing_role(game, event.dead_player.role_state(game).clone());
         }
     }
-    pub fn on_role_switch(game: &mut Game, old: RoleState, _new: RoleState) {
-        if RoleSet::MafiaKilling.get_roles_static().contains(&old.role()) {
-            Mafia::give_mafia_killing_role(game, old);
+    pub fn on_role_switch(game: &mut Game, event: &OnRoleSwitch, _fold: &mut (), _priority: ()) {
+        if RoleSet::MafiaKilling.get_roles_static().contains(&event.old.role()) {
+            Mafia::give_mafia_killing_role(game, event.old.clone());
         }
     }
     pub fn on_add_insider(game: &mut Game, _event: &OnAddInsider, _fold: &mut (), _priority: ()){

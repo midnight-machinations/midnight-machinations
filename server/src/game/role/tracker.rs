@@ -36,7 +36,7 @@ impl RoleStateTrait for Tracker {
             .id(ControllerID::role(actor_ref, Role::Tracker, 0))
             .single_player_selection_typical(actor_ref, false, true)
             .night_typical(actor_ref)
-            .add_grayed_out_condition(false)
+            
             .build_map()
     }
     fn convert_selection_to_visits(self, game: &Game, actor_ref: PlayerReference) -> Vec<Visit> {

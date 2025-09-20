@@ -1,47 +1,56 @@
-use std::collections::HashSet;
-
-use crate::game::{event::{before_phase_end::BeforePhaseEnd, on_phase_start::OnPhaseStart}, phase::PhaseType, player::PlayerReference, verdict::Verdict, Game};
+use crate::{game::{event::{before_phase_end::BeforePhaseEnd, on_phase_start::OnPhaseStart}, phase::{PhaseState, PhaseType}, player::PlayerReference, verdict::Verdict, Game}, vec_map::VecMap, vec_set::VecSet};
 
 #[derive(Default, Clone)]
 pub struct VerdictsToday{
-    guilties: HashSet<PlayerReference>,
-}
-
-impl Game{
-    pub fn verdicts_today(&self)->&VerdictsToday{
-        &self.verdicts_today
-    }
-    pub fn set_verdicts_today(&mut self, verdicts_today: VerdictsToday){
-        self.verdicts_today = verdicts_today;
-    }
+    guilties: VecMap<PlayerReference, VecSet<PlayerReference>>,
 }
 
 impl VerdictsToday{
     pub fn new()->Self{
         Self{
-            guilties: HashSet::new(),
+            guilties: VecMap::new(),
         }
     }
-    pub fn player_guiltied_today(game: &Game, player: &PlayerReference)->bool{
-        game.verdicts_today().guilties.contains(player)
+    pub fn guilties_during_any_trial(game: &Game)->VecSet<PlayerReference>{
+        game.verdicts_today.guilties
+            .iter()
+            .flat_map(|(_,players)|
+                players
+                .iter()
+                .copied()
+            )
+            .collect()
     }
-    pub fn guilties(game: &Game)->&HashSet<PlayerReference>{
-        &game.verdicts_today().guilties
+    pub fn guilties_during_trial(game: &Game, player_on_trial: PlayerReference)->VecSet<PlayerReference>{
+        game.verdicts_today.guilties.get(&player_on_trial).cloned().unwrap_or_default()
     }
     pub fn on_phase_start(game: &mut Game, event: &OnPhaseStart, _fold: &mut (), _priority: ()){
         if event.phase.phase() == PhaseType::Obituary {
-            game.set_verdicts_today(VerdictsToday::new());
+            game.verdicts_today = VerdictsToday::new();
         }
     }
+    pub fn player_was_on_trial(game: &Game, player_on_trial: PlayerReference)->bool{
+        game.verdicts_today.guilties.contains(&player_on_trial)
+    }
     pub fn before_phase_end(game: &mut Game, event: &BeforePhaseEnd, _fold: &mut (), _priority: ()){
-        if event.phase == PhaseType::Judgement {
-            let mut verdicts_today = game.verdicts_today().clone();
-            for player in PlayerReference::all_players(game) {
-                if player.verdict(game) == Verdict::Guilty {
-                    verdicts_today.guilties.insert(player);
-                }
-            }
-            game.set_verdicts_today(verdicts_today);
-        }
+        if event.phase != PhaseType::Judgement {return;}
+        let PhaseState::Judgement{
+            player_on_trial,
+            ..
+        } = game.current_phase() else {return};
+
+        game.verdicts_today.guilties.insert(
+            *player_on_trial,
+            game
+                .verdicts_today
+                .guilties
+                .get(player_on_trial)
+                .cloned()
+                .unwrap_or_default()
+                .into_iter()
+                .chain(
+                    PlayerReference::all_players(game).filter(|p|p.verdict(game)==Verdict::Guilty)
+                ).collect()
+        );
     }
 }

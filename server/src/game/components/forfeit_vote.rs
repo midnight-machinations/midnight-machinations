@@ -1,6 +1,6 @@
 use crate::{
     game::{
-        controllers::*, event::on_phase_start::OnPhaseStart, modifiers::ModifierID, phase::PhaseType, player::PlayerReference, Game
+        controllers::*, event::{on_game_start::OnGameStart, on_phase_start::OnPhaseStart}, modifiers::ModifierID, phase::PhaseType, player::PlayerReference, Game
     },
     vec_set::VecSet
 };
@@ -49,7 +49,7 @@ impl ForfeitNominationVote{
         }
     }
 
-    pub fn on_game_start(game: &mut Game){
+    pub fn on_game_start(game: &mut Game, _event: &OnGameStart, _fold: &mut (), _priority: ()){
         Tags::set_viewers(game, TagSetID::ForfeitNominationVote, &PlayerReference::all_players(game).collect());
     }
 

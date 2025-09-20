@@ -3,13 +3,13 @@ use crate::game::controllers::{AvailableBooleanSelection, AvailablePlayerListSel
 use crate::game::components::insider_group::InsiderGroupID;
 use crate::game::event::on_midnight::{MidnightVariables, OnMidnightPriority};
 use crate::{game::attack_power::AttackPower, vec_set::VecSet};
-use crate::game::chat::ChatMessageVariant;
+use crate::game::chat::{ChatGroup, ChatMessageVariant, PlayerChatGroupMap};
 use crate::game::components::graves::grave::GraveKiller;
 use crate::game::phase::PhaseType;
 use crate::game::attack_power::DefensePower;
 use crate::game::player::PlayerReference;
 use crate::game::Game;
-use super::{common_role, ControllerID, ControllerParametersMap, PlayerListSelection, Role, RoleStateTrait};
+use super::{ControllerID, ControllerParametersMap, PlayerListSelection, Role, RoleStateTrait};
 
 #[derive(Clone, Debug, Serialize, Default)]
 pub struct Warden{
@@ -53,14 +53,26 @@ impl RoleStateTrait for Warden {
             },
             _ => {}
         }
-
-        
     }
-    fn get_current_receive_chat_groups(self, game: &Game, actor_ref: PlayerReference) -> std::collections::HashSet<crate::game::chat::ChatGroup> {
-        common_role::get_current_receive_chat_groups(game, actor_ref)
-            .into_iter()
-            .chain([crate::game::chat::ChatGroup::Warden])
-            .collect()
+    fn send_player_chat_group_map(self, game: &Game, _actor_ref: PlayerReference) -> PlayerChatGroupMap {
+        let mut out = PlayerChatGroupMap::new();
+        
+        if game.current_phase().phase() == PhaseType::Night {
+            for target in self.players_in_prison {
+                out.insert(target, ChatGroup::Warden);
+            }
+        }
+        out
+    }
+    fn receive_player_chat_group_map(self, game: &Game, actor_ref: PlayerReference) -> PlayerChatGroupMap {
+        let mut out = PlayerChatGroupMap::new();
+        out.insert(actor_ref, ChatGroup::Warden);
+        if game.current_phase().phase() == PhaseType::Night {
+            for target in self.players_in_prison {
+                out.insert(target, ChatGroup::Warden);
+            }
+        }
+        out
     }
     fn controller_parameters_map(self, game: &Game, actor_ref: PlayerReference) -> ControllerParametersMap {
         ControllerParametersMap::combine([

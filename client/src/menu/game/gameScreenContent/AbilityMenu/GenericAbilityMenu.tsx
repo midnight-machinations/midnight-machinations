@@ -18,7 +18,6 @@ import {
     controllerIdToLink
 } from "../../../../game/controllerInput";
 import React from "react";
-import { usePlayerState } from "../../../../components/useHooks";
 import { Button } from "../../../../components/Button";
 import TwoRoleOutlineOptionSelectionMenu from "./ControllerSelectionTypes/TwoRoleOutlineOptionSelectionMenu";
 import GAME_MANAGER from "../../../..";
@@ -34,16 +33,16 @@ import StringSelectionMenu from "./ControllerSelectionTypes/StringSelectionMenu"
 import ListMap from "../../../../ListMap";
 import { Role } from "../../../../game/roleState.d";
 import { PlayerIndex } from "../../../../game/gameState.d";
-import Icon from "../../../../components/Icon";
 import PlayerListSelectionMenu from "./ControllerSelectionTypes/PlayerListSelectionMenu";
 import IntegerSelectionMenu from "./ControllerSelectionTypes/IntegerSelectionMenu";
 import BooleanSelectionMenu from "./ControllerSelectionTypes/BooleanSelectionMenu";
 import "./ControllerSelectionTypes/genericListController.css"
+import { usePlayerState } from "../../../../components/useHooks";
 
 type GroupName = `${PlayerIndex}/${Role}` | 
-    "syndicateGunItem" | 
-    "backup" | 
+    "syndicate" | 
     "chat" |
+    "vote" |
     "whisper" |
     ControllerID["type"];
 
@@ -52,16 +51,15 @@ type ControllerGroupsMap = ListMap<
     ListMap<ControllerID, SavedController>
 >;
 
-function getGroupNameFromControllerID(id: ControllerID): GroupName {
+export function getGroupNameFromControllerID(id: ControllerID): GroupName {
     switch (id.type){
         case "role":
-            return id.player+"/"+id.role as `${PlayerIndex}/${Role}`
+            return "role/"+id.player+"/"+id.role as `${PlayerIndex}/${Role}`
         case "syndicateGunItemGive":
         case "syndicateGunItemShoot":
-            return "syndicateGunItem";
         case "syndicateBackupAttack":
         case "syndicateChooseBackup":
-            return "backup";
+            return "syndicate";
         case "chat":
         case "chatIsBlock":
         case "sendChat":
@@ -70,6 +68,10 @@ function getGroupNameFromControllerID(id: ControllerID): GroupName {
         case "whisperToPlayer":
         case "sendWhisper":
             return "whisper";
+        case "nominate":
+        case "pitchforkVote":
+        case "callWitness":
+            return "vote";
         default:
             return id.type;
     }
@@ -81,18 +83,21 @@ function translateGroupName(id: ControllerID): string {
             return translate("role."+id.role+".name");
         case "syndicateGunItemGive":
         case "syndicateGunItemShoot":
-            return translate("syndicateGunItem");
         case "syndicateBackupAttack":
         case "syndicateChooseBackup":
-            return translate("backup");
+            return translate("mafia");
+        case "nominate":
+        case "pitchforkVote":
+        case "callWitness":
+            return translate("vote");
         default:
             return translateControllerID(id);
     }
 }
 
 /// True if this controller should be in this menu
-function showThisController(id: ControllerID): boolean {
-    return (singleAbilityJsonData(controllerIdToLink(id))?.visible)??true;
+export function controllerIsVisible(id: ControllerID, controller: SavedController): boolean {
+    return ((singleAbilityJsonData(controllerIdToLink(id))?.visible)??true) && !controller.parameters.grayedOut;
 }
 
 export default function GenericAbilityMenu(): ReactElement {
@@ -104,9 +109,7 @@ export default function GenericAbilityMenu(): ReactElement {
     let controllerGroupsMap: ControllerGroupsMap = new ListMap();
     //build this map ^
     for(let [controllerID, controller] of savedAbilities) {
-
-        if (!showThisController(controllerID)) {continue;}
-
+        if(!controllerIsVisible(controllerID, controller)){continue;}
         let groupName = getGroupNameFromControllerID(controllerID);
         
         let controllers = controllerGroupsMap.get(groupName);
@@ -120,21 +123,11 @@ export default function GenericAbilityMenu(): ReactElement {
 
     return <>
         {controllerGroupsMap.entries().map(([group, controllers], i)=>{
-
-            let firstController = controllers.entries()[0]
-            if(firstController !== undefined && controllers.entries().length === 1){
-                return <SingleAbilityMenu
-                    key={i}
-                    abilityId={firstController[0]}
-                    saveData={firstController[1]}
-                />
-            }else{
-                return <MultipleControllersMenu
-                    key={i}
-                    groupName={group}
-                    controllers={controllers}
-                />
-            }
+            return <MultipleControllersMenu
+                key={i}
+                groupName={group}
+                controllers={controllers}
+            />
         })}
     </>
 }
@@ -143,6 +136,17 @@ function MultipleControllersMenu(props: Readonly<{
     groupName: string,
     controllers: ListMap<ControllerID, SavedController>
 }>): ReactElement {
+    if(props.controllers.entries().length === 0){
+        return <></>;
+    }
+    if(props.controllers.entries().length === 1){
+        let firstController = props.controllers.entries()[0];
+        return <SingleAbilityMenu
+            abilityId={firstController[0]}
+            saveData={firstController[1]}
+            key={0}
+        />
+    }
 
     const disabled = !props.controllers.values().some((controller)=>!controller.parameters.grayedOut)
     const nightIcon = !props.controllers.keys().some(
@@ -196,17 +200,6 @@ function SingleAbilityMenu(props: Readonly<{
     //The chat message makes it more verbose, showing more relevant information
     // as menus get large, it makes it harder to parse. so i keep it out for now
     const inner = <>
-        {/* {props.saveData.availableAbilityData.dontSave ? null : 
-            <ChatMessage message={{
-                variant: {
-                    type: "abilityUsed",
-                    player: myIndex,
-                    abilityId: props.abilityId,
-                    selection: props.saveData.selection
-                },
-                chatGroup: "all"
-            }}/>
-        } */}
         <SwitchSingleAbilityMenuType
             id={props.abilityId}
             available={props.saveData.parameters.available}
@@ -233,20 +226,12 @@ function SingleAbilityMenu(props: Readonly<{
         return <>
             <div className="generic-ability-menu generic-ability-menu-tab-no-summary">
                 <span>
-                    {
-                        props.saveData.parameters.grayedOut === true ?
-                        <Icon>close</Icon>
-                        : null
-                    }
+
                     <StyledText>{controllerIdName}</StyledText>
                 </span>
                 {nightIcon?<span>{translate("night.icon")}</span>:null}
             </div>
-            {
-                props.saveData.parameters.grayedOut === false ?
-                <>{inner}</>
-                : null
-            }
+            <>{inner}</>
         </>
     }
     

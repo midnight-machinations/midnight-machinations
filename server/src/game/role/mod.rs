@@ -1,19 +1,18 @@
 #![allow(clippy::single_match, reason = "May add more cases for more priorities later")]
 
-use std::collections::HashSet;
 use crate::game::components::graves::grave_reference::GraveReference;
 use crate::game::event::on_ability_creation::{OnAbilityCreation, OnAbilityCreationFold, OnAbilityCreationPriority};
 use crate::game::event::on_ability_deletion::{OnAbilityDeletion, OnAbilityDeletionPriority};
+use crate::game::event::on_role_switch::OnRoleSwitch;
 use crate::game::role_list_generation::criteria::GenerationCriterion;
 use crate::vec_set::{vec_set, VecSet};
-
 use crate::game::player::PlayerReference;
 use crate::game::visit::Visit;
 use crate::game::Game;
 use crate::game::Settings;
 use crate::game::ModifierID;
 use crate::game::modifiers::ModifierState;
-use crate::game::chat::ChatGroup;
+use crate::game::chat::PlayerChatGroupMap;
 use crate::game::phase::PhaseType;
 use crate::game::attack_power::DefensePower;
 
@@ -21,12 +20,11 @@ use serde::{Serialize, Deserialize};
 
 use super::components::win_condition::WinCondition;
 use super::{
-    controllers::*, components::{insider_group::InsiderGroupID, night_visits::Visits},
+    controllers::*, components::insider_group::InsiderGroupID,
     event::{
         on_midnight::{MidnightVariables, OnMidnightPriority},
         on_whisper::{OnWhisper, WhisperFold, WhisperPriority}
     },
-    visit::VisitTag,
 };
 
 pub trait GetClientAbilityState<CRS> {
@@ -51,11 +49,11 @@ pub trait RoleStateTrait: Clone + std::fmt::Debug + Default + GetClientAbilitySt
         vec![]
     }
 
-    fn get_current_send_chat_groups(self, game: &Game, actor_ref: PlayerReference) -> HashSet<ChatGroup> {
-        crate::game::role::common_role::get_current_send_chat_groups(game, actor_ref, vec![])
+    fn send_player_chat_group_map(self, _game: &Game, _actor_ref: PlayerReference) -> PlayerChatGroupMap {
+        PlayerChatGroupMap::new()
     }
-    fn get_current_receive_chat_groups(self, game: &Game, actor_ref: PlayerReference) -> HashSet<ChatGroup> {
-        crate::game::role::common_role::get_current_receive_chat_groups(game, actor_ref)
+    fn receive_player_chat_group_map(self, _game: &Game, _actor_ref: PlayerReference) -> PlayerChatGroupMap {
+        PlayerChatGroupMap::new()
     }
     fn new_state(_game: &Game) -> Self {
         Self::default()
@@ -71,25 +69,15 @@ pub trait RoleStateTrait: Clone + std::fmt::Debug + Default + GetClientAbilitySt
     fn on_phase_start(self, _game: &mut Game, _actor_ref: PlayerReference, _phase: PhaseType) {}
     fn on_ability_creation(self, _game: &mut Game, _actor_ref: PlayerReference, _event: &OnAbilityCreation, _fold: &mut OnAbilityCreationFold, _priority: OnAbilityCreationPriority) {}
     fn on_ability_deletion(self, _game: &mut Game, _actor_ref: PlayerReference, _event: &OnAbilityDeletion, _fold: &mut (), _priority: OnAbilityDeletionPriority) {}
-    fn on_role_switch(self, _game: &mut Game, _actor_ref: PlayerReference, _player: PlayerReference, _new: RoleState, _old: RoleState) {}
+    fn on_role_switch(self, _game: &mut Game, _actor_ref: PlayerReference, _event: &OnRoleSwitch, _fold: &mut (), _priority: ()) {}
     fn on_any_death(self, _game: &mut Game, _actor_ref: PlayerReference, _dead_player_ref: PlayerReference) {}
     fn on_grave_added(self, _game: &mut Game, _actor_ref: PlayerReference, _grave: GraveReference) {}
-    fn on_game_ending(self, _game: &mut Game, _actor_ref: PlayerReference) {}
-    fn on_game_start(self, _game: &mut Game, _actor_ref: PlayerReference) {}
     fn on_conceal_role(self, _game: &mut Game, _actor_ref: PlayerReference, _player: PlayerReference, _concealed_player: PlayerReference) {}
     fn on_player_roleblocked(self, _game: &mut Game, midnight_variables: &mut MidnightVariables, actor_ref: PlayerReference, player: PlayerReference, _invisible: bool) {
-        if player != actor_ref {return}
-
-        Visits::retain(midnight_variables, |v|
-            !matches!(v.tag, VisitTag::Role{..}) || v.visitor != actor_ref
-        );
+        common_role::on_player_roleblocked(midnight_variables, actor_ref, player);
     }
     fn on_visit_wardblocked(self, _game: &mut Game, midnight_variables: &mut MidnightVariables, actor_ref: PlayerReference, visit: Visit) {
-        if actor_ref != visit.visitor {return};
-
-        Visits::retain(midnight_variables, |v|
-            !matches!(v.tag, VisitTag::Role{..}) || v.visitor != actor_ref
-        );
+        common_role::on_visit_wardblocked(midnight_variables, actor_ref, visit);
     }
     fn on_whisper(self, _game: &mut Game, _actor_ref: PlayerReference, _event: &OnWhisper, _fold: &mut WhisperFold, _priority: WhisperPriority) {}
 
@@ -304,14 +292,14 @@ mod macros {
                         $(Self::$name(role_struct) => role_struct.convert_selection_to_visits(game, actor_ref)),*
                     }
                 }
-                pub fn get_current_send_chat_groups(self, game: &Game, actor_ref: PlayerReference) -> HashSet<ChatGroup>{
+                pub fn send_player_chat_group_map(self, game: &Game, actor_ref: PlayerReference) -> PlayerChatGroupMap{
                     match self {
-                        $(Self::$name(role_struct) => role_struct.get_current_send_chat_groups(game, actor_ref)),*
+                        $(Self::$name(role_struct) => role_struct.send_player_chat_group_map(game, actor_ref)),*
                     }
                 }
-                pub fn get_current_receive_chat_groups(self, game: &Game, actor_ref: PlayerReference) -> HashSet<ChatGroup>{
+                pub fn receive_player_chat_group_map(self, game: &Game, actor_ref: PlayerReference) -> PlayerChatGroupMap{
                     match self {
-                        $(Self::$name(role_struct) => role_struct.get_current_receive_chat_groups(game, actor_ref)),*
+                        $(Self::$name(role_struct) => role_struct.receive_player_chat_group_map(game, actor_ref)),*
                     }
                 }
                 pub fn default_revealed_groups(self) -> VecSet<InsiderGroupID>{
@@ -339,9 +327,9 @@ mod macros {
                         $(Self::$name(role_struct) => role_struct.on_ability_creation(game, actor_ref, event, fold, priority)),*
                     }
                 }
-                pub fn on_role_switch(self, game: &mut Game, actor_ref: PlayerReference, player: PlayerReference, old: RoleState, new: RoleState){
+                pub fn on_role_switch(self, game: &mut Game, actor_ref: PlayerReference, event: &OnRoleSwitch, fold: &mut (), priority: ()){
                     match self {
-                        $(Self::$name(role_struct) => role_struct.on_role_switch(game, actor_ref, player, old, new)),*
+                        $(Self::$name(role_struct) => role_struct.on_role_switch(game, actor_ref, event, fold, priority)),*
                     }
                 }
                 pub fn on_ability_deletion(self, game: &mut Game, actor_ref: PlayerReference, event: &OnAbilityDeletion, fold: &mut (), priority: OnAbilityDeletionPriority){
@@ -357,16 +345,6 @@ mod macros {
                 pub fn on_grave_added(self, game: &mut Game, actor_ref: PlayerReference, grave: GraveReference){
                     match self {
                         $(Self::$name(role_struct) => role_struct.on_grave_added(game, actor_ref, grave)),*
-                    }
-                }
-                pub fn on_game_start(self, game: &mut Game, actor_ref: PlayerReference){
-                    match self {
-                        $(Self::$name(role_struct) => role_struct.on_game_start(game, actor_ref)),*
-                    }
-                }
-                pub fn on_game_ending(self, game: &mut Game, actor_ref: PlayerReference){
-                    match self {
-                        $(Self::$name(role_struct) => role_struct.on_game_ending(game, actor_ref)),*
                     }
                 }
                 pub fn get_client_ability_state(self, game: &Game, actor_ref: PlayerReference) -> ClientRoleStateEnum {
