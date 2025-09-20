@@ -817,7 +817,6 @@ export function translateChatMessage(
         case "playerForwardedMessage":
             return translate(`chatMessage.playerForwardedMessage`, encodeString(playerNames[message.forwarder]));
         case "fragileVestBreak":
-            console.log(playerNames);
             return translate(
                 `chatMessage.fragileVestBreak`,
                 translate("defense."+message.defense),
