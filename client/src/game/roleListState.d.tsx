@@ -67,6 +67,9 @@ export function getRoleSetsFromRole(role: Role, modifierSettings: ModifierSettin
 
     return roleSets
 }
+export function areRoleSetsEqual(a: RoleSet, b: RoleSet) {
+    return a.type === b.type && (a.type !== "custom" || b.type !== "custom" || a.id === b.id)
+}
 
 
 export type RoleOutline = RoleOutlineOption[];

@@ -10,7 +10,7 @@ import Popover from "../Popover";
 import Select, { dropdownPlacementFunction } from "../Select";
 import { Role, roleJsonData } from "../../game/roleState.d";
 import Icon from "../Icon";
-import { BASE_ROLE_SETS, getAllRoles, getRolesFromRoleSet, RoleOrRoleSet, RoleSet, sortRolesCanonically, translateRoleSet } from "../../game/roleListState.d";
+import { areRoleSetsEqual, BASE_ROLE_SETS, getAllRoles, getRolesFromRoleSet, RoleOrRoleSet, RoleSet, sortRolesCanonically, translateRoleSet } from "../../game/roleListState.d";
 import { ModifierSettings, UnsafeString } from "../../game/gameState.d";
 import { encodeString } from "../ChatMessage";
 import { RoleOrRoleSetSelector } from "./OutlineSelector";
@@ -653,7 +653,7 @@ function CustomRoleSetSelectionSubRoleSet(props: Readonly<{
                         value={props.subRoleSet.roleSet}
                         onChange={rs => props.onChange(rs, [])}
                         optionsSearch={props.roleSetOptionsSearch}
-                        compareFn={(a, b) => a.type === b.type && (a.type !== "custom" || b.type !== "custom" || a.id === b.id)}
+                        compareFn={areRoleSetsEqual}
                     />
                 </div>
                 {translate("customRoleSets.subRoleSet.minus")}
