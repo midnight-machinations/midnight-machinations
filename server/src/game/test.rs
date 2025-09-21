@@ -1,5 +1,5 @@
 
-    use crate::{game::{abilities_component::Abilities, chat::{ChatComponent, PlayerChatGroups}, components::{fast_forward::FastForwardComponent, graves::Graves, pitchfork_item::PitchforkItemComponent, role::RoleComponent, role_reveal::RevealedPlayersComponent}, event::Event, role_list_generation::RoleListGenerator}, vec_map::VecMap};
+    use crate::{game::{abilities_component::Abilities, chat::{ChatComponent, PlayerChatGroups}, components::{fast_forward::FastForwardComponent, graves::Graves, pitchfork_item::PitchforkItemComponent, role::RoleComponent, role_reveal::RevealedPlayersComponent}, event::Event, event_handlers::EventHandlers, role_list_generation::RoleListGenerator}, vec_map::VecMap};
 
     use super::{
         controllers::Controllers, components::{
@@ -44,6 +44,7 @@
             // pitchfork: Pitchfork::new(num_players),
             
             assignments: assignments.clone(),
+            event_handlers: EventHandlers::new(),
             ticking: true,
             spectators: Vec::new(),
             spectator_chat_messages: Vec::new(),

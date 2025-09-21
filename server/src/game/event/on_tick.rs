@@ -1,7 +1,4 @@
-use crate::game::{
-    controllers::Controllers, 
-    Game
-};
+use crate::game::event_handlers::Event;
 
 pub struct OnTick;
 
@@ -9,7 +6,9 @@ impl OnTick{
     pub fn new()->Self{
         Self{}
     }
-    pub fn invoke(&self, game: &mut Game){
-        Controllers::on_tick(game);
-    }
+}
+impl Event for OnTick{
+    type Fold = ();
+    type Priority = ();
+    fn new_fold(&self)->Self::Fold {}
 }

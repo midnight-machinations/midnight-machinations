@@ -1,17 +1,23 @@
 use crate::{
     game::{
-        controllers::{ControllerID, ControllerInput, Controllers}, 
-        event::{
-            on_controller_changed::OnControllerChanged, on_controller_input_received::OnControllerInputReceived,
-            on_phase_start::OnPhaseStart, on_validated_ability_input_received::OnValidatedControllerInputReceived,
-            Event
-        }, 
-        Game
+        controllers::{ControllerID, ControllerInput, Controllers}, event::{
+            on_controller_changed::OnControllerChanged, on_controller_input_received::OnControllerInputReceived, on_game_start::OnGameStart, on_phase_start::OnPhaseStart, on_tick::OnTick, on_validated_ability_input_received::OnValidatedControllerInputReceived, Event
+        }, event_handlers::{EventHandlers, EventListener, EventListenerParameters}, Game
     }, 
     packet::ToClientPacket, vec_set::VecSet
 };
 
 impl Controllers{
+    pub fn on_game_start(game: &mut Game, _event: &OnGameStart, _fold: &mut (), _priority: ()){
+        #[derive(Clone)]
+        struct L;
+        impl EventListener<OnTick> for L {
+            fn call(_state: &(), game: &mut Game, _param: &mut EventListenerParameters<OnTick>) {
+                Controllers::update_controllers_from_parameters(game);
+            }
+        }
+        EventHandlers::register(game, L);
+    }
     pub fn on_controller_input_received(
         game: &mut Game,
         event: &OnControllerInputReceived,
@@ -50,10 +56,6 @@ impl Controllers{
                 ).invoke(game);
             }
         }
-    }
-
-    pub fn on_tick(game: &mut Game){
-        Self::update_controllers_from_parameters(game);
     }
 
     pub fn send_controller_to_client(game: &mut Game, event: &OnControllerChanged, _fold: &mut (), _priority: ()){

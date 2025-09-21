@@ -24,6 +24,7 @@ pub mod room_state;
 pub mod new_game;
 pub mod abilities_component;
 pub mod abilities;
+pub mod event_handlers;
 
 use std::collections::VecDeque;
 use std::time::Instant;
@@ -34,6 +35,7 @@ use crate::game::components::pitchfork_item::PitchforkItemComponent;
 use crate::game::components::role::RoleComponent;
 use crate::game::components::role_reveal::RevealedPlayersComponent;
 use crate::game::controllers::Controllers;
+use crate::game::event_handlers::EventHandlers;
 use crate::game::modifiers::ModifierID;
 use controllers::ControllerID;
 use controllers::PlayerListSelection;
@@ -105,6 +107,7 @@ pub struct Game {
     
     /// Whether the game is still updating phase times
     pub ticking: bool,
+    pub event_handlers: EventHandlers,
     
     
     //components with data

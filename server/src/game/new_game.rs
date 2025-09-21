@@ -1,16 +1,9 @@
 use crate::{
     client_connection::ClientConnection,
     game::{
-        abilities_component::Abilities, chat::{ChatComponent, PlayerChatGroups},
-        components::{
+        abilities_component::Abilities, chat::{ChatComponent, PlayerChatGroups}, components::{
             confused::Confused, cult::Cult, detained::Detained, fast_forward::FastForwardComponent, fragile_vest::FragileVestsComponent, graves::Graves, insider_group::{InsiderGroupID, InsiderGroups}, mafia::Mafia, mafia_recruits::MafiaRecruits, pitchfork_item::PitchforkItemComponent, poison::Poison, puppeteer_marionette::PuppeteerMarionette, role::RoleComponent, role_reveal::RevealedPlayersComponent, silenced::Silenced, synopsis::SynopsisTracker, tags::Tags, verdicts_today::VerdictsToday, win_condition::WinConditionComponent
-        },
-        controllers::Controllers,
-        event::{on_game_start::OnGameStart, Event}, game_client::GameClient, modifiers::ModifierID, phase::PhaseStateMachine,
-        player::{Player, PlayerInitializeParameters, PlayerReference},
-        role_list_generation::{OutlineListAssignment, RoleListGenerator}, settings::Settings,
-        spectator::{spectator_pointer::SpectatorPointer, Spectator, SpectatorInitializeParameters}, Assignments,
-        Game, RejectStartReason
+        }, controllers::Controllers, event::{on_game_start::OnGameStart, Event}, event_handlers::EventHandlers, game_client::GameClient, modifiers::ModifierID, phase::PhaseStateMachine, player::{Player, PlayerInitializeParameters, PlayerReference}, role_list_generation::{OutlineListAssignment, RoleListGenerator}, settings::Settings, spectator::{spectator_pointer::SpectatorPointer, Spectator, SpectatorInitializeParameters}, Assignments, Game, RejectStartReason
     },
     packet::ToClientPacket, room::{name_validation::generate_random_name, RoomClientID},
     vec_map::VecMap
@@ -94,6 +87,7 @@ impl Game{
                 // pitchfork: Pitchfork::new(num_players),
 
                 assignments: assignments.clone(),
+                event_handlers: EventHandlers::new(),
                 ticking: true,
                 spectators: spectators.clone().into_iter().map(Spectator::new).collect(),
                 spectator_chat_messages: Vec::new(),

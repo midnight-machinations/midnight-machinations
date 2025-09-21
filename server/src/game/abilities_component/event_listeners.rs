@@ -1,11 +1,7 @@
 use crate::game::{
-    abilities::role_abilities::RoleAbility,
-    abilities_component::{ability::Ability, ability_id::AbilityID, Abilities}, chat::ChatMessageVariant,
-    controllers::ControllerParametersMap,
-    event::{
+    abilities::role_abilities::RoleAbility, abilities_component::{ability::Ability, ability_id::AbilityID, Abilities}, chat::ChatMessageVariant, controllers::ControllerParametersMap, event::{
         before_phase_end::BeforePhaseEnd, on_ability_creation::{OnAbilityCreation, OnAbilityCreationFold, OnAbilityCreationPriority}, on_ability_deletion::{OnAbilityDeletion, OnAbilityDeletionPriority}, on_add_insider::OnAddInsider, on_any_death::OnAnyDeath, on_conceal_role::OnConcealRole, on_controller_selection_changed::OnControllerSelectionChanged, on_grave_added::OnGraveAdded, on_midnight::{MidnightVariables, OnMidnight, OnMidnightPriority}, on_phase_start::OnPhaseStart, on_remove_insider::OnRemoveInsider, on_role_switch::OnRoleSwitch, on_validated_ability_input_received::OnValidatedControllerInputReceived, on_whisper::{OnWhisper, WhisperFold, WhisperPriority}
-    },
-    Game
+    }, event_handlers::EventHandlers, Game
 };
 
 impl Abilities{
@@ -67,12 +63,14 @@ impl Abilities{
     pub fn on_ability_creation(game: &mut Game, event: &OnAbilityCreation, fold: &mut OnAbilityCreationFold, priority: OnAbilityCreationPriority) {
         if priority == OnAbilityCreationPriority::CancelOrEdit {
             game.abilities.abilities.insert(event.id.clone(), fold.ability.clone());
+            game.abilities.abilities.sort();
         }
         if priority == OnAbilityCreationPriority::SetAbility{
             if fold.cancelled {
                 game.abilities.abilities.remove(&event.id);
             }else{
                 game.abilities.abilities.insert(event.id.clone(), fold.ability.clone());
+                game.abilities.abilities.sort();
                 if
                     let Ability::RoleAbility(RoleAbility(player, role)) = &fold.ability &&
                     role.role().should_inform_player_of_assignment()
@@ -93,7 +91,8 @@ impl Abilities{
 
         if priority == OnAbilityDeletionPriority::DeleteAbility {
             game.abilities.abilities.remove(&event.id);
-        }   
+        }
+        EventHandlers::unregister(game);
     }
     pub fn on_role_switch(game: &mut Game, event: &OnRoleSwitch, fold: &mut (), priority: ()){
         for (id, _ability) in game.abilities.abilities.clone() {
