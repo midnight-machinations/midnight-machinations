@@ -454,6 +454,7 @@
     "role.reeducator.name:var.0": "Reeducators",
     "controllerId.role.reeducator.0.name": "Student",
     "controllerId.role.reeducator.1.name": "Lesson",
+    "controllerId.role.reeducator.2.name": "Instant Convert",
 
     "role.ambusher.name": "Ambusher",
     "role.ambusher.name:var.0": "Ambushers",
@@ -1653,13 +1654,13 @@
 
     "wiki.article.role.mayor.reminder": "Once per game you can enfranchise with voting power 3.",
     "wiki.article.role.mayor.lore": "Who voted for this idiot?",
-    "wiki.article.role.mayor.guide": "Choose to enfranchise during the day to make your vote count as three votes for the rest of the game.\n- When you enfranchise\n    - Everyone is told you have enfranchised\n    - You can't whisper or be whispered to\n    - You have 3 voting power every day",
+    "wiki.article.role.mayor.guide": "Choose to enfranchise with voting power 3 during the day.\n - You can't whisper or be whispered to while enfranchised",
     "wiki.article.role.mayor.abilities":"",
     "wiki.article.role.mayor.attributes":"",
     "wiki.article.role.mayor.extra": "- If your role changes, you unenfranchise.",
 
-    "wiki.article.role.nepotist.reminder": "Once per game you can choose a successor to enfranchise with voting power 2, your successor who enfranchises after you die.",
-    "wiki.article.role.nepotist.guide": "Choose to enfranchise during the day to make your vote count as 2 votes for the rest of the game.\n- When you enfranchise\n    - Everyone is told you have enfranchised\n    - You can't whisper or be whispered to\n    - You have 2 voting power every day.\n     - When you die, your successor enfranchises and gets 2 voting power, but still can be whispered to.",
+    "wiki.article.role.nepotist.reminder": "Once per game, choose a successor, when you do, you enfranchise with voting power 2, your successor enfranchises after you die.",
+    "wiki.article.role.nepotist.guide": "-Choose to successor during the day. When you do, you enfranchise with voting power 2.\n - You can't whisper or be whispered while enfranchised\n     - When you die, your successor enfranchises and gets 2 voting power, but still can be whispered to.",
     "wiki.article.role.nepotist.abilities":"",
     "wiki.article.role.nepotist.attributes":"",
     "wiki.article.role.nepotist.extra": "- If your role changes, you unenfranchise.",
@@ -1858,7 +1859,7 @@
     "wiki.article.role.veteran.extra":"* You are immune to getting roleblocked and getting possessed\n* When you select yourself, you don't visit yourself\n* You can't attack dead players",
 
     "wiki.article.role.marksman.reminder": "Each night, mark up to 3 players and camp up to 3 players. If a marked player visits a camped player, you attack the marked player.",
-    "wiki.article.role.marksman.lore": "When the killings started, the marksman decided it's time the town had a curfew. If anyone steps out of line, its not the marksman's fault. \"Just don't be stupid and you'll be safe.\"",
+    "wiki.article.role.marksman.lore": "When the killings started, the marksman decided it's time the town had a curfew. If anyone steps out of line and dies, its not the marksman's fault. \"Just don't be stupid and you'll be safe.\"",
     "wiki.article.role.marksman.guide": "- Each night, choose up to three players to mark, and camp up to three players to camp\n    - If a marked player visits a camped player, you attack the marked player\n- You can't do anything on the first night\n- If you kill a townie, you can't use your ability again\n- You should try to mark players who act suspicious, and camp players that they would only visit if they're evil",
     "wiki.article.role.marksman.abilities":"* Choose to mark up to 3 players\n* Select up to 3 players, if you have nobody marked, you can't camp anyone\n    - If a marked player visits any of your targets, you attack them",
     "wiki.article.role.marksman.attributes":"* You can't mark or camp to camp on night 1\n* If you kill a town loyalist, you can't mark or camp again\n* You have a basic attack",
@@ -1994,11 +1995,12 @@
     "wiki.article.role.disguiser.attributes":"",
     "wiki.article.role.disguiser.extra":"- Your appeared into visit is wardblock immune, investigate immune, and indirect",
 
-    "wiki.article.role.reeducator.reminder": "At night, choose a fellow insider to become a syndicate support role that you choose. Once per game, convert a player to join the syndicate, but attack yourself.",
-    "wiki.article.role.reeducator.guide": "- At night, either select a player and syndicate support role\n    - If you visit a syndicate insider\n        - Their role switches to the role you choose\n    - If you visit someone who isn't a syndicate insider\n        - Their role switches to the role you choose\n        - They become a syndicate insider\n        - They become a syndicate loyalist\n        - You attack yourself with a protection-piercing attack\n        - You can only convert somebody once, if you visit a non syndicate insider again, your ability does nothing\n- On night 1, you can't use your ability.",
-    "wiki.article.role.reeducator.abilities": "- At night, either select a player and syndicate support role\n    - If you select a syndicate insider\n        - Their role switches to the role you choose\n    - If you select someone who isn't a syndicate insider\n        - Their role switches to the role you choose\n        - They become a syndicate insider\n        - They become a syndicate loyalist\n        - You attack yourself with a protection-piercing attack\n        - You can only convert somebody once, if you visit a non syndicate insider again, your ability does nothing\n- On night 1, you can't use your ability.",
-    "wiki.article.role.reeducator.attributes": "- After you convert somebody, you can't select non-insiders anymore\n- Converting a non-syndicate insider to join the syndicate does a defense check, it has an attack power of basic\n- If the convert is blocked by defense, the charge is not consumed, and you do not attack yourself\n- You can't convert a non syndicate insider on night 1\n- You can select yourself",
-    "wiki.article.role.reeducator.extra": "- It is possible to create roles that exceed role limits with this ability\n- You can't select roles that aren't enabled",
+    "wiki.article.role.reeducator.reminder": "Once per game at night*, choose a player to join the syndicate. At night you can instantly change the role of fellow insiders.",
+    "wiki.article.role.reeducator.lore": "Once a brilliant educator, now in hiding. They were nearly executed after they fell victim to the syndicates propoganda machine. They taught students that the syndicate knows more than the town leads you to believe.",
+    "wiki.article.role.reeducator.guide": "- Once per game, on any night except the first, select a player and syndicate support role. If they have no defense:\n    - Their role switches to the role you choose\n    - They become a syndicate insider\n    - They become a syndicate loyalist\n - During night, choose a fellow insider or yourself to instantly change to the syndicate support role you chose.\n - For each reeducator that generates at the start of the game, one less syndicate support generates.",
+    "wiki.article.role.reeducator.abilities": "",
+    "wiki.article.role.reeducator.attributes": "",
+    "wiki.article.role.reeducator.extra": "- It is possible to create roles that exceed role limits with this ability\n- You can't select roles that aren't enabled\n- If the convert is blocked by defense, the charge is not used.",
 
     "wiki.article.role.ambusher.reminder": "At night, choose a player to attack a random visitor to them",
     "wiki.article.role.ambusher.guide": "- At night, choose a player to camp\n    - You attack a random visitor to the player you chose to camp\n        - The attack prioritizes town loyalists\n   - All other visitors to your target are told you are the ambusher\n    - You can't use your ability night 1\n    - You only visit the player you camp",
@@ -2031,7 +2033,7 @@
     "wiki.article.role.doomsayer.extra":"* Your three guesses must be three different players\n* If the players you guessed correctly don't die, you still win\n* You do not visit when you attack\n* You can't try to guess a martyr\n* If you are blocked, your ability does nothing",
     
     "wiki.article.role.mercenary.reminder": "You are told a hit list of roles, if at least one player with each of those roles is dead, you win.",
-    "wiki.article.role.mercenary.lore":"Don't mind the mercenary, just doing what their paid to do.",
+    "wiki.article.role.mercenary.lore":"Don't mind the mercenary doing what they are paid for.",
     "wiki.article.role.mercenary.guide": "- At the start of the game, you are told a hit list of X different roles (X = Total players ÷ 5 (round up)), You win if, you live until the end of the game, and for each role, there is a dead player with that role or there is no player with that role\n    - Each player on your hit list is told they are on a mercenaries hit list\n    - The role Mercenary can't be on your hit list\n    - For each role on your hit list, there is at least one player with that role\n    - If there are not enough roles available to fill your hit list, your hit list is smaller, filling with as many roles as possible up to X\n- Choose between Investigate or Attack\n    - Investigate: Choose a player to visit and learn if they have a role on your hit list\n    - Attack: Choose a player to visit and attack with a basic attack\n        - You can't choose to attack night 1\n        - You can only attack up to X times (X = Total players ÷ 5 (round up)), if you are roleblocked it doesn't use an ability charge",
     "wiki.article.role.mercenary.abilities": "",
     "wiki.article.role.mercenary.attributes": "",
@@ -2044,10 +2046,11 @@
     "wiki.article.role.chronokaiser.extra":"* Roleblocking doesn't effect your ability\n If there are multiple Chronokaisers, the message is sent twice during discussion, and the game is sped up twice",
 
     "wiki.article.role.martyr.reminder": "If you die, you win, and everyone else dies too, you can shoot yourself.",
+    "wiki.article.role.martyr.lore":"An ex-cultist, they rejected you because you told the truth! Surely, when you die everyone will talk about the martyr you were.",
     "wiki.article.role.martyr.guide": "If you die, you win, and everyone commits suicide in an attempt to follow you to the afterlife\n - You are revealed to the entire town\n - You can choose to shoot yourself X times (X = Total players ÷ 5 (round up))\n - You can't shoot night 1",
     "wiki.article.role.martyr.abilities":"* Visit yourself to attack yourself and spend one bullet\n* You start with X bullets (X = Total players ÷ 5 (round up))\n* When you die, everyone else commits suicide and you win.",
     "wiki.article.role.martyr.attributes":"* When you have zero bullets left, you leave town and lose\n* You have a basic attack",
-    "wiki.article.role.martyr.extra":"* You're an ex-cultist, they rejected you because you told the truth",
+    "wiki.article.role.martyr.extra":"",
 
     "wiki.article.role.drunk.reminder": "You are told you are a town investigate role, not the drunk, but you get dubious information.",
     "wiki.article.role.drunk.guide": "Before the game starts, whoever gets this role switches roles without being told, and they become confused until the end of the game. Their role switches to either Detective, Philosopher, Snoop, Gossip, Tally Clerk, Auditor, or Psychic\n - This means that if you got one of those roles, you could be confused and not even know it.\n - The drunk is a town loyalist, so you still win with town.\n - You have suspicious aura\n - If your role changes, you stop being confused and you don't have suspicious aura anymore.",

@@ -159,6 +159,9 @@
     "role/reeducator/1": {
         "midnight": true
     },
+    "role/reeducator/2": {
+        "midnight": false
+    },
     "role/blackmailer/0": {
         "midnight": true
     },

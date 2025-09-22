@@ -49,7 +49,7 @@ impl RoleStateTrait for TallyClerk {
     fn controller_parameters_map(self, game: &Game, actor_ref: PlayerReference) -> ControllerParametersMap {
         ControllerParametersMap::builder(game)
             .id(ControllerID::role(actor_ref, Role::TallyClerk, 0))
-            .player_list_selection_typical(actor_ref, true, true, false, true, Some(1))
+            .player_list_selection_typical(actor_ref, true, true, false, true, true, Some(1))
             .night_typical(actor_ref)
             .build_map()
     }

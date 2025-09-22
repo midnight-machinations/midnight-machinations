@@ -1,23 +1,22 @@
-use rand::seq::IteratorRandom;
 use serde::Serialize;
-
-use crate::game::components::night_visits::{NightVisitsIterator, Visits};
-use crate::game::controllers::{AvailablePlayerListSelection, ControllerID};
+use crate::game::components::detained::Detained;
+use crate::game::components::night_visits::Visits;
+use crate::game::controllers::{ControllerID, PlayerListSelection};
 use crate::game::attack_power::AttackPower;
 use crate::game::chat::ChatMessageVariant;
-use crate::game::components::insider_group::InsiderGroupID;
 use crate::game::event::on_midnight::{MidnightVariables, OnMidnightPriority};
+use crate::game::phase::PhaseType;
 use crate::game::role_list::RoleSet;
-use crate::game::components::graves::grave::GraveKiller;
-
-use crate::game::components::win_condition::WinCondition;
+use crate::game::role_list_generation::criteria::{GenerationCriterion, GenerationCriterionResult};
+use crate::game::role_list_generation::PartialOutlineListAssignmentNode;
+use crate::game::settings::Settings;
 use crate::game::{attack_power::DefensePower, player::PlayerReference};
 
-use crate::game::visit::{Visit, VisitTag};
+use crate::game::visit::Visit;
 
 use crate::game::Game;
 use super::{
-    common_role, ControllerParametersMap, Role, RoleListSelection, 
+    common_role, ControllerParametersMap, Role,
     RoleStateTrait
 };
 
@@ -41,112 +40,60 @@ pub(super) const DEFENSE: DefensePower = DefensePower::None;
 impl RoleStateTrait for Reeducator {
     type ClientAbilityState = Reeducator;
     fn on_midnight(mut self, game: &mut Game, midnight_variables: &mut MidnightVariables, actor_ref: PlayerReference, priority: OnMidnightPriority) {
-        match priority {
-            OnMidnightPriority::Roleblock => {
-                if !self.convert_charges_remaining || game.day_number() <= 1 {return}
+        
+        let Some(target) = Visits::default_target(game, midnight_variables, actor_ref) else {return};
+        let Some(role) = ControllerID::role(actor_ref, Role::Reeducator, 1).get_role_list_selection_first(game) else {return};
+        if !matches!(priority, OnMidnightPriority::Convert) && self.convert_charges_remaining {return}
+        
+        if !AttackPower::Basic.can_pierce(target.night_defense(game, midnight_variables)) {
+            actor_ref.push_night_message(midnight_variables, ChatMessageVariant::YourConvertFailed);
+            return;
+        }
 
-                let mut converting = false;
+        self.convert_charges_remaining = false;
 
-                actor_ref.set_night_visits(midnight_variables, 
-                    Visits::into_iter(midnight_variables)
-                        .with_visitor(actor_ref)
-                        .map(|mut v|{
-                            if 
-                                !InsiderGroupID::in_same_group(game, actor_ref, v.target) &&
-                                v.tag == (VisitTag::Role{role: Role::Reeducator, id: 0})
-                            {
-                                v.attack = true;
-                                converting = true;
-                            }
-                            v
-                        })
-                        .collect()
-                );
+        target.set_role_and_win_condition_and_revealed_group(game, role.default_state());
 
-                if converting {
-                    for fellow_insider in InsiderGroupID::Mafia.players(game).clone().iter(){
-                        fellow_insider.roleblock(game, midnight_variables, true);
-                    }
-                }
-            },
-            OnMidnightPriority::Convert => {
-                if game.day_number() <= 1 {return};
-                let visits = actor_ref.untagged_night_visits_cloned(midnight_variables);
-                let Some(visit) = visits.first() else {return};
-
-                let role = 
-                if let Some(role) = ControllerID::role(actor_ref, Role::Reeducator, 1)
-                    .get_role_list_selection_first(game)
-                {
-                    *role
-                }else{
-                    Reeducator::default_role(game)
-                };
-
-                let new_state = role.new_state(game);
-
-                if visit.attack {
-                    if self.convert_charges_remaining {
-                        if visit.target.night_defense(game, midnight_variables).can_block(AttackPower::ProtectionPiercing) {
-                            actor_ref.push_night_message(midnight_variables, ChatMessageVariant::YourConvertFailed);
-                            return;
-                        }
-
-                        actor_ref.try_night_kill_single_attacker(
-                            actor_ref,
-                            game,
-                            midnight_variables,
-                            GraveKiller::RoleSet(RoleSet::Mafia),
-                            AttackPower::ProtectionPiercing,
-                            false,
-                        );
-    
-                        InsiderGroupID::Mafia.add_player_to_revealed_group(game, visit.target);
-                        visit.target.set_win_condition(
-                            game,
-                            WinCondition::new_loyalist(crate::game::game_conclusion::GameConclusion::Mafia)
-                        );
-                        visit.target.set_night_convert_role_to(midnight_variables, Some(new_state));
-    
-                        self.convert_charges_remaining = false;
-                        actor_ref.set_role_state(game, self);
-                    }
-                }else{
-                    visit.target.set_night_convert_role_to(midnight_variables, Some(new_state));
-                };
-            },
-            _ => {}
-        }                
+        actor_ref.set_role_state(game, self);
+    }
+    fn on_validated_ability_input_received(self, game: &mut Game, actor_ref: PlayerReference, input_player: PlayerReference, ability_input: crate::game::controllers::ControllerInput) {
+        if actor_ref != input_player {return;}
+        let Some(PlayerListSelection(target_ref)) = ability_input.get_player_list_selection_if_id(
+            ControllerID::role(actor_ref, Role::Reeducator, 2)
+        )else{return};
+        let Some(role) = ControllerID::role(actor_ref, Role::Reeducator, 1).get_role_list_selection_first(game) else {return};
+        let Some(target) = target_ref.first() else {return};
+        target.set_role(game, role.default_state());
     }
     fn controller_parameters_map(self, game: &Game, actor_ref: PlayerReference) -> super::ControllerParametersMap {
         ControllerParametersMap::combine([
             ControllerParametersMap::builder(game)
                 .id(ControllerID::role(actor_ref, Role::Reeducator, 0))
-                .available_selection(AvailablePlayerListSelection {
-                    available_players: PlayerReference::all_players(game)
-                        .filter(|player| 
-                            player.alive(game) &&
-                            (
-                                InsiderGroupID::in_same_group(game, actor_ref, *player) || 
-                                self.convert_charges_remaining
-                            )
-                        )
-                        .collect(),
-                    can_choose_duplicates: false,
-                    max_players: Some(1)
-                })
+                .single_player_selection_typical(actor_ref, false, false)
                 .night_typical(actor_ref)
                 .add_grayed_out_condition(game.day_number() <= 1)
                 .build_map(),
+
             ControllerParametersMap::builder(game)
                 .id(ControllerID::role(actor_ref, Role::Reeducator, 1))
                 .single_role_selection_typical(game, |role|
                     RoleSet::MafiaSupport.get_roles().contains(role) &&
                     *role != Role::Reeducator
                 )
-                .default_selection(RoleListSelection(vec![Reeducator::default_role(game)]))
                 .allow_players([actor_ref])
                 .add_grayed_out_condition(game.day_number() <= 1)
+                .build_map(),
+
+            ControllerParametersMap::builder(game)
+                .id(ControllerID::role(actor_ref, Role::Reeducator, 2))
+                .player_list_selection_typical(actor_ref, true, true, false, true, true, Some(1))
+                .add_grayed_out_condition(
+                    actor_ref.ability_deactivated_from_death(game) ||
+                    Detained::is_detained(game, actor_ref) ||
+                    !matches!(game.current_phase().phase(),PhaseType::Night)
+                )
+                .dont_save()
+                .allow_players([actor_ref])
                 .build_map()
         ])
     }
@@ -166,14 +113,80 @@ impl RoleStateTrait for Reeducator {
             crate::game::components::insider_group::InsiderGroupID::Mafia
         ].into_iter().collect()
     }
-    fn on_player_roleblocked(self, _game: &mut Game, _midnight_variables: &mut MidnightVariables, _actor_ref: PlayerReference, _player: PlayerReference, _invisible: bool) {}
-}
-
-impl Reeducator {
-    pub fn default_role(game: &Game) -> Role {
-        RoleSet::MafiaSupport.get_roles().into_iter()
-            .filter(|p|game.settings.enabled_roles.contains(p))
-            .filter(|p|*p!=Role::Reeducator)
-            .choose(&mut rand::rng()).unwrap_or(Role::Reeducator)
+    fn role_list_generation_criteria() -> Vec<GenerationCriterion> {
+        vec![ENSURE_ONE_FEWER_SYNDICATE_PER_REEDUCATOR]
     }
 }
+
+pub const ENSURE_ONE_FEWER_SYNDICATE_PER_REEDUCATOR: GenerationCriterion = GenerationCriterion {
+    evaluate: |node: &PartialOutlineListAssignmentNode, settings: &Settings| {
+        let enabled_roles = &settings.enabled_roles;
+        let syndicate_roles = RoleSet::Mafia.get_roles().intersection(enabled_roles);
+        let town_common_roles = RoleSet::TownCommon.get_roles().intersection(enabled_roles);
+
+        // There are currently no role sets which have mafia roles and town roles at the same time,
+        // but if there were, this check says "uhh sure let's just say this is fine".
+        if node.assignments
+            .iter()
+            .any(|assignment| 
+                assignment.outline_option
+                    .as_ref()
+                    .is_some_and(|o| {
+                        let outline_roles = o.roles.get_roles().intersection(enabled_roles);
+
+                        !outline_roles.intersection(&syndicate_roles).is_empty() &&
+                        !outline_roles.sub(&syndicate_roles).is_empty()
+                    })
+            )
+        {
+            return GenerationCriterionResult::Met;
+        }
+
+        // Which assignments are supposed to generate syndicate?
+        let expected_syndicate_members = node.assignments.iter()
+            .filter(|assignment| assignment.outline_option.as_ref().is_some_and(|o| {
+                let outline_roles = o.roles.get_roles().intersection(enabled_roles);
+
+                !outline_roles.is_empty() && outline_roles.is_subset(&syndicate_roles)
+            }))
+            .count();
+
+        // Which assignments are actually populated with syndicate roles?
+        let actual_syndicate_members = node.assignments.iter()
+            .filter(|assignment| assignment.role.is_some_and(|role| syndicate_roles.contains(&role)))
+            .count();
+
+        let number_of_recruiters = node.assignments.iter()
+            .filter(|assignment| assignment.role == Some(Role::Reeducator))
+            .count();
+
+        // For each recruiter, we should have one fewer syndicate member.
+        if actual_syndicate_members.saturating_add(number_of_recruiters) <= expected_syndicate_members {
+            GenerationCriterionResult::Met
+        } else {
+            let mut new_neighbors = Vec::new();
+
+            #[expect(clippy::indexing_slicing, reason = "Manual bounds checks")]
+            // Take a random syndicate member and replace it with a random town role.
+            for (syndicate_idx, _) in node.assignments.iter()
+                .enumerate()
+                .filter(|(_, assignment)| assignment.role.is_some_and(|role| RoleSet::Mafia.get_roles().contains(&role)))
+                .filter(|(_, assignment)| assignment.role != Some(Role::Reeducator))
+            {
+                for role in town_common_roles.iter() {
+                    let mut new_node = node.clone();
+                    new_node.assignments[syndicate_idx].role = Some(*role);
+                    new_node.assignments[syndicate_idx].win_condition = Some(role.default_state().default_win_condition());
+                    new_node.assignments[syndicate_idx].insider_groups = Some(role.default_state().default_revealed_groups());
+                    new_neighbors.push(new_node);
+                }
+            }
+
+            if new_neighbors.is_empty() {
+                return GenerationCriterionResult::Met;
+            }
+
+            GenerationCriterionResult::Unmet(new_neighbors)
+        }
+    }
+};

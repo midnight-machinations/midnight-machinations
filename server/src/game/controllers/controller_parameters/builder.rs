@@ -74,8 +74,9 @@ impl<'a, I: BuilderIDState> ControllerParametersBuilder<'a, NoControllerSelectio
         can_select_self: bool,
         can_select_insiders: bool,
     ) -> ControllerParametersBuilder<'a, AvailablePlayerListSelection, I> {
-        self.player_list_selection_typical(actor_ref, can_select_self, can_select_insiders, false, false, Some(1))
+        self.player_list_selection_typical(actor_ref, can_select_self, can_select_insiders, false, false, true, Some(1))
     }
+    #[expect(clippy::too_many_arguments, reason="later problem lmao")]
     pub fn player_list_selection_typical(
         self,
         actor_ref: PlayerReference,
@@ -83,6 +84,7 @@ impl<'a, I: BuilderIDState> ControllerParametersBuilder<'a, NoControllerSelectio
         can_select_insiders: bool,
         can_select_duplicates: bool,
         can_select_dead: bool,
+        can_select_default: bool,
         max_players: Option<u8>
     ) -> ControllerParametersBuilder<'a, AvailablePlayerListSelection, I> {
         let game = self.game;
@@ -96,7 +98,7 @@ impl<'a, I: BuilderIDState> ControllerParametersBuilder<'a, NoControllerSelectio
                     }else if InsiderGroupID::in_same_group(game, actor_ref, *player){
                         can_select_insiders
                     }else{
-                        true
+                        can_select_default
                     }
 
                 )

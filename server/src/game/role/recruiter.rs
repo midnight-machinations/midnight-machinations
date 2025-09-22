@@ -186,7 +186,7 @@ pub const ENSURE_ONE_FEWER_SYNDICATE_PER_RECRUITER: GenerationCriterion = Genera
             .count();
 
         // For each recruiter, we should have one fewer syndicate member.
-        if actual_syndicate_members + number_of_recruiters <= expected_syndicate_members {
+        if actual_syndicate_members.saturating_add(number_of_recruiters) <= expected_syndicate_members {
             GenerationCriterionResult::Met
         } else {
             let mut new_neighbors = Vec::new();
