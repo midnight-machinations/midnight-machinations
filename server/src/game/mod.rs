@@ -38,7 +38,7 @@ use crate::game::modifiers::ModifierID;
 use controllers::ControllerID;
 use controllers::PlayerListSelection;
 use components::confused::Confused;
-use components::enfranchise::Enfranchise;
+use components::enfranchise::EnfranchiseComponent;
 use components::forfeit_vote::ForfeitNominationVote;
 use components::mafia::Mafia;
 use components::mafia_recruits::MafiaRecruits;
@@ -126,6 +126,7 @@ pub struct Game {
     pub synopsis_tracker: SynopsisTracker,
     pub tags: Tags,
     pub silenced: Silenced,
+    pub enfranchise: EnfranchiseComponent,
     pub fragile_vests: FragileVestsComponent,
     pub win_condition: WinConditionComponent,
     pub role: RoleComponent,
@@ -168,16 +169,13 @@ impl Game {
     pub fn count_verdict_votes(&self, player_on_trial: PlayerReference)->(u8,u8){
         let mut guilty = 0u8;
         let mut innocent = 0u8;
-        for player_ref in PlayerReference::all_players(self){
-            if !player_ref.alive(self) || player_ref == player_on_trial {
+        for player in PlayerReference::all_players(self){
+            if !player.alive(self) || player == player_on_trial {
                 continue;
             }
-            let mut voting_power = 1u8;
-            if Enfranchise::enfranchised(self, player_ref) {
-                voting_power = voting_power.saturating_add(2);
-            }
+            let voting_power = EnfranchiseComponent::voting_power(self, player);
             
-            match player_ref.verdict(self) {
+            match player.verdict(self) {
                 Verdict::Innocent => innocent = innocent.saturating_add(voting_power),
                 Verdict::Abstain => {},
                 Verdict::Guilty => guilty = guilty.saturating_add(voting_power),
@@ -197,10 +195,7 @@ impl Game {
             let Some(&voted_player) = voted_players.first() else { continue };
             
 
-            let mut voting_power: u8 = 1;
-            if Enfranchise::enfranchised(self, player) {
-                voting_power = voting_power.saturating_add(2);
-            }
+            let voting_power: u8 = EnfranchiseComponent::voting_power(self, player);
 
             if let Some(num_votes) = voted_player_votes.get_mut(&voted_player) {
                 *num_votes = num_votes.saturating_add(voting_power);

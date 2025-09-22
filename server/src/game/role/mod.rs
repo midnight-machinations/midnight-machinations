@@ -126,6 +126,7 @@ macros::roles! {
     Porter : porter,
     Polymath : polymath,
     Courtesan : courtesan,
+    Nepotist : nepotist,
 
     // Mafia
     Godfather : godfather,

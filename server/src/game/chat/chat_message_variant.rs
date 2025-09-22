@@ -113,7 +113,7 @@ pub enum ChatMessageVariant {
 
     /* Role-specific */
     #[serde(rename_all = "camelCase")]
-    MayorRevealed{player_index: PlayerReference},
+    PlayerEnfranchised{player_index: PlayerReference},
     InvalidWhisper,
     #[serde(rename_all = "camelCase")]
     PoliticianCountdownStarted,

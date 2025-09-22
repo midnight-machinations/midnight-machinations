@@ -18,7 +18,7 @@
     "phaseFastForwarded": "important",
     "playerWonOrLost": "trial",
     "abilityUsed": "target",
-    "mayorRevealed": "special",
+    "playerEnfranchised": "special",
     "invalidWhisper": "special",
     "politicianCountdownStarted": "special", 
     "martyrRevealed": "special",

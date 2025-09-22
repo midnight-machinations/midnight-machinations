@@ -652,8 +652,8 @@ export function translateChatMessage(
             let abilityIdString = translateControllerID(message.abilityId);
 
             return translate("chatMessage.abilityUsed", encodeString(playerNames[message.player]), abilityIdString, out);
-        case "mayorRevealed":
-            return translate("chatMessage.mayorRevealed",
+        case "playerEnfranchised":
+            return translate("chatMessage.playerEnfranchised",
                 encodeString(playerNames[message.playerIndex]),
             );
         case "martyrRevealed":
@@ -976,7 +976,7 @@ export type ChatMessageVariant = {
 } |
 // Role-specific
 {
-    type: "mayorRevealed", 
+    type: "playerEnfranchised", 
     playerIndex: PlayerIndex
 } | {
     type: "invalidWhisper"

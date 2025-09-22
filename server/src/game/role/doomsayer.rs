@@ -33,7 +33,7 @@ pub enum DoomsayerGuess{
     // No TI
     Doctor, Bodyguard, Cop, Bouncer, Engineer, Armorsmith, Steward,
     Vigilante, Veteran, Marksman, Deputy, Rabblerouser,
-    Escort, Medium, Retributionist, Reporter, Mayor, Porter, Transporter, Polymath, Courtesan
+    Escort, Medium, Retributionist, Reporter, Mayor, Porter, Transporter, Polymath, Courtesan, Nepotist
 }
 impl DoomsayerGuess{
     fn convert_to_guess(role: Role)->Option<DoomsayerGuess>{
@@ -65,6 +65,7 @@ impl DoomsayerGuess{
             Role::Retributionist => Some(DoomsayerGuess::Retributionist),
             Role::Reporter => Some(DoomsayerGuess::Reporter),
             Role::Mayor => Some(DoomsayerGuess::Mayor),
+            Role::Nepotist => Some(DoomsayerGuess::Nepotist),
             Role::Porter => Some(DoomsayerGuess::Porter),
             Role::Transporter => Some(DoomsayerGuess::Transporter),
             Role::Polymath => Some(DoomsayerGuess::Polymath),

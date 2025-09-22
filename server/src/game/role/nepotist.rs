@@ -1,20 +1,18 @@
 
 use serde::Serialize;
-
-use crate::game::controllers::AvailableUnitSelection;
 use crate::game::attack_power::DefensePower;
 use crate::game::event::on_ability_deletion::{OnAbilityDeletion, OnAbilityDeletionPriority};
 use crate::game::event::on_whisper::{OnWhisper, WhisperFold, WhisperPriority};
 use crate::game::components::enfranchise::EnfranchiseComponent;
 use crate::game::phase::PhaseType;
 use crate::game::player::PlayerReference;
-
-
 use crate::game::Game;
 use super::{ControllerID, ControllerParametersMap, GetClientAbilityState, Role, RoleStateTrait};
 
 #[derive(Clone, Debug, Default)]
-pub struct Mayor;
+pub struct Nepotist{
+    pub successor: Option<PlayerReference>
+}
 
 #[derive(Clone, Debug, Serialize)]
 pub struct ClientRoleState;
@@ -23,24 +21,29 @@ pub struct ClientRoleState;
 pub(super) const MAXIMUM_COUNT: Option<u8> = Some(1);
 pub(super) const DEFENSE: DefensePower = DefensePower::None;
 
-impl RoleStateTrait for Mayor {
+impl RoleStateTrait for Nepotist {
     type ClientAbilityState = ClientRoleState;
-    fn on_validated_ability_input_received(self, game: &mut Game, actor_ref: PlayerReference, input_player: PlayerReference, ability_input: super::ControllerInput) {
+    fn on_validated_ability_input_received(mut self, game: &mut Game, actor_ref: PlayerReference, input_player: PlayerReference, ability_input: super::ControllerInput) {
         if actor_ref != input_player {return;}
-        if ability_input.id() != ControllerID::role(actor_ref, Role::Mayor, 0) {
+        let Some(player) = ability_input
+            .get_player_list_selection_if_id(ControllerID::role(actor_ref, Role::Nepotist, 0))
+            .and_then(|o| o.0.first().copied())
+        else {
             return;
-        }
+        };
 
-        EnfranchiseComponent::enfranchise(game, actor_ref, 3);
+        EnfranchiseComponent::enfranchise(game, actor_ref, 2);
+        self.successor = Some(player);
+        actor_ref.set_role_state(game, self);
     }
     fn on_ability_deletion(self, game: &mut Game, actor_ref: PlayerReference, event: &OnAbilityDeletion, _fold: &mut (), priority: OnAbilityDeletionPriority) {
-        if !event.id.is_players_role(actor_ref, Role::Mayor) || priority != OnAbilityDeletionPriority::BeforeSideEffect {return;}
+        if !event.id.is_players_role(actor_ref, Role::Nepotist) || priority != OnAbilityDeletionPriority::BeforeSideEffect {return;}
         EnfranchiseComponent::unenfranchise(game, actor_ref);
     }
     fn controller_parameters_map(self, game: &Game, actor_ref: PlayerReference) -> ControllerParametersMap {
         ControllerParametersMap::builder(game)
-            .id(ControllerID::role(actor_ref, Role::Mayor, 0))
-            .available_selection(AvailableUnitSelection)
+            .id(ControllerID::role(actor_ref, Role::Nepotist, 0))
+            .single_player_selection_typical(actor_ref, false, true)
             .add_grayed_out_condition(
                 actor_ref.ability_deactivated_from_death(game) ||
                 EnfranchiseComponent::enfranchised(game, actor_ref) || 
@@ -50,6 +53,15 @@ impl RoleStateTrait for Mayor {
             .dont_save()
             .allow_players([actor_ref])
             .build_map()
+    }
+    fn on_any_death(self, game: &mut Game, actor_ref: PlayerReference, dead_player_ref: PlayerReference) {
+        if dead_player_ref != actor_ref {return}
+        if 
+            let Some(successor) = self.successor &&
+            successor.alive(game)
+        {
+            EnfranchiseComponent::enfranchise(game, successor, 1);
+        }
     }
     fn on_whisper(self, game: &mut Game, actor_ref: PlayerReference, event: &OnWhisper, fold: &mut WhisperFold, priority: WhisperPriority) {
         if priority == WhisperPriority::Cancel && (
@@ -61,7 +73,7 @@ impl RoleStateTrait for Mayor {
         }
     }
 }
-impl GetClientAbilityState<ClientRoleState> for Mayor {
+impl GetClientAbilityState<ClientRoleState> for Nepotist {
     fn get_client_ability_state(self, _game: &Game, _actor_ref: PlayerReference) -> ClientRoleState {
         ClientRoleState
     }

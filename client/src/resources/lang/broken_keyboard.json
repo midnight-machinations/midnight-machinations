@@ -870,7 +870,7 @@
     "chatMessage.abilityUsed.selection.twoRoleOutlineOption": " slctng \\0 nd \\1",
     "chatMessage.abilityUsed.selection.string": " st t:\n\\0",
     "chatMessage.abilityUsed.selection.integer": " st t \\0",
-    "chatMessage.mayorRevealed": "\\0 hs nfrnchsd!",
+    "chatMessage.playerEnfranchised": "\\0 hs nfrnchsd!",
     "chatMessage.invalidWhisper": "Ths whspr cldn't b snt.",
     "chatMessage.politicianCountdownStarted": "Th pltcn s bt t sz cntrl f th twn! Ths s yr lst chnc t xct thm bfr thy tk vr!",
     "chatMessage.martyrRevealed": "Prs th Mrtyr \\0, fr thy wll ld s t hrmny!",

@@ -1,5 +1,5 @@
 
-    use crate::{game::{abilities_component::Abilities, chat::{ChatComponent, PlayerChatGroups}, components::{fast_forward::FastForwardComponent, graves::Graves, pitchfork_item::PitchforkItemComponent, role::RoleComponent, role_reveal::RevealedPlayersComponent}, event::Event, role_list_generation::RoleListGenerator}, vec_map::VecMap};
+    use crate::{game::{abilities_component::Abilities, chat::{ChatComponent, PlayerChatGroups}, components::{enfranchise::EnfranchiseComponent, fast_forward::FastForwardComponent, graves::Graves, pitchfork_item::PitchforkItemComponent, role::RoleComponent, role_reveal::RevealedPlayersComponent}, event::Event, role_list_generation::RoleListGenerator}, vec_map::VecMap};
 
     use super::{
         controllers::Controllers, components::{
@@ -52,6 +52,7 @@
             settings,
 
             player_chat_groups: PlayerChatGroups::new(),
+            enfranchise: unsafe{EnfranchiseComponent::new(num_players)},
             abilities: Abilities::new(&assignments),
             graves: Graves::default(),
             controllers: Controllers::default(),

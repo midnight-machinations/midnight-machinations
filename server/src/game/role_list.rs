@@ -268,7 +268,7 @@ impl RoleSet{
                 vec_set![
                     Role::Medium, Role::Retributionist,
                     Role::Transporter, Role::Porter,
-                    Role::Mayor, Role::Reporter,
+                    Role::Mayor, Role::Nepotist, Role::Reporter,
                     Role::Courtesan, Role::Escort,
                     Role::Polymath
                 ],

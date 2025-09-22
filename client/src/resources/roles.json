@@ -430,7 +430,20 @@
         "canWriteDeathNote": false,
         "canBeConvertedTo": [],
         "chatMessages":[
-            {"type": "mayorRevealed","playerIndex": 3},
+            {"type": "playerEnfranchised","playerIndex": 3},
+            {"type": "invalidWhisper"}
+        ]
+    },
+    "nepotist":{
+        "mainRoleSet": "town",
+        "roleSets": ["town", "townCommon", "townSupport"],
+        "armor": false,
+        "aura": null,
+        "maxCount": 1,
+        "canWriteDeathNote": false,
+        "canBeConvertedTo": [],
+        "chatMessages":[
+            {"type": "playerEnfranchised","playerIndex": 3},
             {"type": "invalidWhisper"}
         ]
     },
@@ -844,7 +857,7 @@
         "canBeConvertedTo": ["jester"],
         "chatMessages":[
             {"type": "politicianCountdownStarted"},
-            {"type": "mayorRevealed","playerIndex": 1},
+            {"type": "playerEnfranchised","playerIndex": 1},
             {"type": "invalidWhisper"},
             {"type": "youSurvivedAttack"}
         ]

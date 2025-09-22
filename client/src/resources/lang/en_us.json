@@ -274,6 +274,10 @@
     "role.mayor.name:var.0": "Mayors",
     "controllerId.role.mayor.0.name": "Enfranchise",
 
+    "role.nepotist.name": "Nepotist",
+    "role.nepotist.name:var.0": "Nepotists",
+    "controllerId.role.nepotist.0.name": "Successor",
+
     "role.transporter.name": "Transporter",
     "role.transporter.name:var.0": "Transporters",
     "controllerId.role.transporter.0.name": "Transport",
@@ -1025,7 +1029,7 @@
     "chatMessage.abilityUsed.selection.string":" set to:\n\\0",
     "chatMessage.abilityUsed.selection.integer":" set to \\0",
 
-    "chatMessage.mayorRevealed":"\\0 has enfranchised!",
+    "chatMessage.playerEnfranchised":"\\0 has enfranchised!",
     "chatMessage.invalidWhisper":"This whisper couldn't be sent.",
     "chatMessage.politicianCountdownStarted":"The politician is about to seize control of the town! This is your last chance to execute them before they take over!",
     "chatMessage.martyrRevealed":"Praise the Martyr \\0, for they will lead us to harmony!",
@@ -1309,6 +1313,15 @@
     "wiki.article.standard.fragileVest.title:var.1":"Vest",
     "wiki.article.standard.fragileVest.title:var.2":"Vests",
     "wiki.article.standard.fragileVest.text":"A player with a fragile vest has defense until they are attacked during midnight.\n - A player can have multiple fragile vests at once\n - Each vest gives a different defense power.\n - A vest breaks on the night the player with the vest is attacked\n - Each vest comes with a set of players, these players are told when the vest breaks. The player who has the vest is not necessarily told that they have a vest or that the vest broke.",
+    "wiki.article.standard.enfranchise.title":"Enfranchise",
+    "wiki.article.standard.enfranchise.title:var.0":"Enfranchises",
+    "wiki.article.standard.enfranchise.title:var.1":"Enfranchised",
+    "wiki.article.standard.enfranchise.title:var.2":"Enfranchiser",
+    "wiki.article.standard.enfranchise.title:var.3":"Unenfranchise",
+    "wiki.article.standard.enfranchise.title:var.4":"Unenfranchises",
+    "wiki.article.standard.enfranchise.title:var.5":"Unenfranchised",
+    "wiki.article.standard.enfranchise.title:var.6":"Unenfranchiser",
+    "wiki.article.standard.enfranchise.text":"\n - When a player enfranchises with power X.\n    - They gets X extra votes during every nomination and judgement.\n    - They gain the enfranchised tag, showing all players that they enfranchised.\n - When a player unenfranchises\n    - Their lose their extra votes given by enfranchise.\n    - They lose their enfranchised tag, all players in the lobby see that they are not enfranchised anymore.",
 
     "wiki.article.standard.dead.title": "Dead",
     "wiki.article.standard.dead.text": "When a player dies:\n- Their grave is added to the graveyard\n\nWhile a player is dead:\n- Most of their abilities don't work\n- They can't vote\n- They can't chat in all chat\n- They can chat in dead chat.",
@@ -1635,12 +1648,18 @@
     "wiki.article.role.villager.attributes":"None",
     "wiki.article.role.villager.extra":"None",
 
-    "wiki.article.role.mayor.reminder": "Once per game you can enfranchise to gain 3x voting power.",
+    "wiki.article.role.mayor.reminder": "Once per game you can enfranchise with voting power 3.",
     "wiki.article.role.mayor.lore": "Who voted for this idiot?",
-    "wiki.article.role.mayor.guide": "Choose to enfranchise during the day to make your vote count as three votes for the rest of the game.\n- When you enfranchise\n    - Everyone is told you have enfranchised\n    - You can't whisper or be whispered to\n    - You have triple voting power every day",
-    "wiki.article.role.mayor.abilities":"* Enfranchise during the day to triple your voting power, revealing to everyone that you are the Mayor",
-    "wiki.article.role.mayor.attributes":"* You get 3 votes during both nomination and judgement after you enfranchise\n* After you enfranchise you can't whisper or be whispered to",
-    "wiki.article.role.mayor.extra": "* If you are converted to a different role, players will still see that you are the mayor\n* Enfranchising does not increase the number of votes required to put someone on trial",
+    "wiki.article.role.mayor.guide": "Choose to enfranchise during the day to make your vote count as three votes for the rest of the game.\n- When you enfranchise\n    - Everyone is told you have enfranchised\n    - You can't whisper or be whispered to\n    - You have 3 voting power every day",
+    "wiki.article.role.mayor.abilities":"",
+    "wiki.article.role.mayor.attributes":"",
+    "wiki.article.role.mayor.extra": "- If your role changes, you unenfranchise.",
+
+    "wiki.article.role.nepotist.reminder": "Once per game you can choose a successor to enfranchise with voting power 2, your successor who enfranchises after you die.",
+    "wiki.article.role.nepotist.guide": "Choose to enfranchise during the day to make your vote count as 2 votes for the rest of the game.\n- When you enfranchise\n    - Everyone is told you have enfranchised\n    - You can't whisper or be whispered to\n    - You have 2 voting power every day.\n     - When you die, your successor enfranchises and gets 2 voting power, but still can be whispered to.",
+    "wiki.article.role.nepotist.abilities":"",
+    "wiki.article.role.nepotist.attributes":"",
+    "wiki.article.role.nepotist.extra": "- If your role changes, you unenfranchise.",
 
     "wiki.article.role.transporter.reminder": "At night, select 2 players to transport them with each other, swapping all visits to them.",
     "wiki.article.role.transporter.guide": "- At night, select 2 players\n    - If somebody else tries to visit the first player, they will instead visit the second player, and vice versa\n\n _For example_\n- If a godfather tries to attack @1, but you transported @1 and @4, then @4 will die instead\n\nIts often a good strategy to transport innocent looking players with suspicious looking ones to divert a potential attack from the innocent player onto the suspicious player.\n\n",
@@ -2081,7 +2100,7 @@
 
     "wiki.article.role.politician.reminder": "If town is about to win, you win instead, and kill all non-politicians.",
     "wiki.article.role.politician.guide":"* If the town would win, instead the game skips to nomination, if you survive until the next dusk after that dusk, you win (killing all other players)\n* During the day, enfranchise to gain 3x voting power\n    - Everyone is told you enfranchised\n    - From now on, you can't whisper or be whispered to",
-    "wiki.article.role.politician.abilities": "* You may enfranchise during the day to gain 3x voting power\n* If the town would win while you are alive, instead the game instantly goes to nominations and all players are told the politician is about to win. If you survive this trial, you win and all non-politicians die\n* You can't whisper or be whispered to",
+    "wiki.article.role.politician.abilities": "* You may enfranchise with voting power 3 during the day\n* If the town would win while you are alive, instead the game instantly goes to nominations and all players are told the politician is about to win. If you survive this trial, you win and all non-politicians die\n* You can't whisper or be whispered to while enfranchised",
     "wiki.article.role.politician.attributes": "* You win with other politicians\n* If there are no town loyalists alive, you leave town.\n* You have armor",
     "wiki.article.role.politician.extra":"* If the only players left are politicians, you win",
 

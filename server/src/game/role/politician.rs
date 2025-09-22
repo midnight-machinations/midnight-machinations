@@ -6,7 +6,7 @@ use crate::game::components::graves::grave::Grave;
 use crate::game::event::on_ability_creation::{OnAbilityCreation, OnAbilityCreationFold, OnAbilityCreationPriority};
 use crate::game::event::on_ability_deletion::{OnAbilityDeletion, OnAbilityDeletionPriority};
 use crate::game::event::on_whisper::{OnWhisper, WhisperFold, WhisperPriority};
-use crate::game::components::enfranchise::Enfranchise;
+use crate::game::components::enfranchise::EnfranchiseComponent;
 use crate::game::game_conclusion::GameConclusion;
 use crate::game::phase::PhaseType;
 use crate::game::player::PlayerReference;
@@ -65,7 +65,7 @@ impl RoleStateTrait for Politician {
             return;
         }
         
-        Enfranchise::enfranchise(game, actor_ref);
+        EnfranchiseComponent::enfranchise(game, actor_ref, 3);
     }
     fn controller_parameters_map(self, game: &Game, actor_ref: PlayerReference) -> ControllerParametersMap {
         ControllerParametersMap::builder(game)
@@ -73,7 +73,7 @@ impl RoleStateTrait for Politician {
             .available_selection(AvailableUnitSelection)
             .add_grayed_out_condition(
                 actor_ref.ability_deactivated_from_death(game) ||
-                Enfranchise::enfranchised(game, actor_ref) || 
+                EnfranchiseComponent::enfranchised(game, actor_ref) || 
                 PhaseType::Night == game.current_phase().phase() ||
                 PhaseType::Briefing == game.current_phase().phase()
             )
@@ -83,7 +83,7 @@ impl RoleStateTrait for Politician {
     }
     fn on_ability_deletion(self, game: &mut Game, actor_ref: PlayerReference, event: &OnAbilityDeletion, _fold: &mut (), priority: OnAbilityDeletionPriority) {
         if !event.id.is_players_role(actor_ref, Role::Politician) || priority != OnAbilityDeletionPriority::BeforeSideEffect {return;}
-        Enfranchise::unenfranchise(game, actor_ref);
+        EnfranchiseComponent::unenfranchise(game, actor_ref);
     }
     fn on_phase_start(mut self, game: &mut Game, actor_ref: PlayerReference, phase: PhaseType){
         Self::check_and_leave_town(&self, game, actor_ref);
@@ -133,7 +133,7 @@ impl RoleStateTrait for Politician {
         if priority == WhisperPriority::Cancel && (
             event.sender == actor_ref || 
             event.receiver == actor_ref
-        ) && Enfranchise::enfranchised(game, actor_ref) {
+        ) && EnfranchiseComponent::enfranchised(game, actor_ref) {
             fold.cancelled = true;
             fold.hide_broadcast = true;
         }
