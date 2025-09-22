@@ -554,7 +554,6 @@
             "medium",
             "philosopher",
             "psychic",
-            "reporter",
             "snoop",
             "spy",
             "veteran",
@@ -658,7 +657,6 @@
             "medium",
             "philosopher",
             "psychic",
-            "reporter",
             "snoop",
             "spy",
             "veteran",
@@ -772,7 +770,6 @@
             "medium",
             "philosopher",
             "psychic",
-            "reporter",
             "snoop",
             "spy",
             "veteran",
@@ -896,7 +893,6 @@
             "medium",
             "philosopher",
             "psychic",
-            "reporter",
             "snoop",
             "spy",
             "veteran",
@@ -1027,7 +1023,6 @@
             "medium",
             "philosopher",
             "psychic",
-            "reporter",
             "snoop",
             "spy",
             "veteran",
@@ -1807,7 +1802,8 @@
             "disguiser",
             "reeducator",
             "politician",
-            "polymath",
+            "nepotist",
+            "tallyClerk",
             "warden",
             "escort",
             "blackmailer",
@@ -1819,7 +1815,8 @@
               {
                 "type": "roleSetGraveKillers"
               }
-            ]
+            ],
+            ["noMajority", {"type": "noMajority"}]
           ]
         },
         "10": {
@@ -1936,7 +1933,8 @@
             "disguiser",
             "reeducator",
             "politician",
-            "polymath",
+            "nepotist",
+            "tallyClerk",
             "warden",
             "escort",
             "blackmailer",
@@ -1948,7 +1946,8 @@
               {
                 "type": "roleSetGraveKillers"
               }
-            ]
+            ],
+            ["noMajority", {"type": "noMajority"}]
           ]
         },
         "12": {
@@ -2072,7 +2071,8 @@
             "disguiser",
             "reeducator",
             "politician",
-            "polymath",
+            "nepotist",
+            "tallyClerk",
             "warden",
             "escort",
             "blackmailer",
@@ -2084,7 +2084,8 @@
               {
                 "type": "roleSetGraveKillers"
               }
-            ]
+            ],
+            ["noMajority", {"type": "noMajority"}]
           ]
         },
         "14": {
@@ -2218,7 +2219,8 @@
             "disguiser",
             "reeducator",
             "politician",
-            "polymath",
+            "nepotist",
+            "tallyClerk",
             "warden",
             "escort",
             "blackmailer",
@@ -2230,7 +2232,8 @@
               {
                 "type": "roleSetGraveKillers"
               }
-            ]
+            ],
+            ["noMajority", {"type": "noMajority"}]
           ]
         },
         "16": {
@@ -2371,7 +2374,8 @@
             "disguiser",
             "reeducator",
             "politician",
-            "polymath",
+            "nepotist",
+            "tallyClerk",
             "warden",
             "escort",
             "blackmailer",
@@ -2383,7 +2387,8 @@
               {
                 "type": "roleSetGraveKillers"
               }
-            ]
+            ],
+            ["noMajority", {"type": "noMajority"}]
           ]
         }
       }
