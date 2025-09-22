@@ -184,7 +184,6 @@ impl Game {
         (guilty, innocent)
     }
     
-    /// this is sent to the players whenever this function is called
     fn create_voted_player_map(&self) -> VecMap<PlayerReference, u8> {
         let mut voted_player_votes: VecMap<PlayerReference, u8> = VecMap::new();
 
@@ -246,12 +245,14 @@ impl Game {
         votes >= self.nomination_votes_required()
     }
     pub fn nomination_votes_required(&self)->u8{
+        if self.modifier_settings().is_enabled(ModifierID::NoMajority) {return 0}
+
         #[expect(clippy::cast_possible_truncation, reason = "Game can only have max 255 players")]
         let eligible_voters = PlayerReference::all_players(self)
             .filter(|p| p.alive(self) && !ForfeitNominationVote::forfeited_vote(self, *p))
             .count() as u8;
 
-        if self.settings.modifiers.is_enabled(ModifierID::TwoThirdsMajority) {
+        if self.modifier_settings().is_enabled(ModifierID::TwoThirdsMajority) {
             // equivalent to x - (x - (x + 1)/3)/2 to prevent overflow issues
             eligible_voters
             .saturating_sub(

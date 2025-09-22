@@ -7,7 +7,7 @@ export const MODIFIERS = [
     "deadCanChat", "abstaining",
     "noDeathCause",
     "roleSetGraveKillers", "autoGuilty", 
-    "twoThirdsMajority", "noTrialPhases", 
+    "twoThirdsMajority", "noMajority", "noTrialPhases", 
     "noWhispers", "hiddenWhispers",
     "noNightChat", "noChat", 
     "unscheduledNominations",
@@ -34,6 +34,8 @@ export type ModifierState = {
     type: "autoGuilty"
 } | {
     type: "twoThirdsMajority"
+} | {
+    type: "noMajority"
 } | {
     type: "noTrialPhases"
 } | {

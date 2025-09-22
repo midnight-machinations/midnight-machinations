@@ -17,6 +17,7 @@ pub mod hidden_nomination_votes;
 pub mod hidden_verdict_votes;
 pub mod forfeit_vote;
 pub mod random_player_names;
+pub mod no_majority;
 
 use crate::{
     game::event::{
@@ -54,6 +55,7 @@ macros::modifiers! {
     role_set_grave_killers: RoleSetGraveKillers,
     no_due_process: AutoGuilty,
     two_thirds_majority: TwoThirdsMajority,
+    no_majority: NoMajority,
     no_trial: NoTrialPhases,
     no_whispers: NoWhispers,
     no_night_chat: NoNightChat,
