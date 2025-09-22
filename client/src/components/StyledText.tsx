@@ -8,12 +8,13 @@ import "./styledText.css";
 import DUMMY_NAMES from "../resources/dummyNames.json";
 import { ARTICLES, WikiArticleLink, getArticleLangKey } from "./WikiArticleLink";
 import { MenuControllerContext } from "../menu/game/GameScreen";
-import { Player, UnsafeString } from "../game/gameState.d";
+import { ModifierSettings, Player, UnsafeString } from "../game/gameState.d";
 import { AnchorControllerContext } from "../menu/Anchor";
 import { setWikiSearchPage } from "./Wiki";
-import { getRoleSetsFromRole, RoleList, translateRoleOutline } from "../game/roleListState.d";
+import { getBaseRoleSetsFromRole, RoleList, translateRoleOutline } from "../game/roleListState.d";
 import { encodeString } from "./ChatMessage";
 import DUMMY_ROLE_LIST from "../resources/dummyRoleList.json";
+import ListMap from "../ListMap";
 
 export type TokenData = {
     style?: string, 
@@ -151,7 +152,7 @@ export function computeKeywordData() {
 
         let data: KeywordData | undefined = undefined;
 
-        const roleSets = getRoleSetsFromRole(role as Role);
+        const roleSets = getBaseRoleSetsFromRole(role as Role);
         if (roleSets.length === 1) {
             data = KEYWORD_DATA_JSON[roleSets[0]];
         }else if (data === undefined) {
@@ -210,16 +211,16 @@ export function computePlayerKeywordData(players: Player[]) {
 
 export const ROLE_LIST_KEYWORD_DATA: KeywordDataMap = {};
 
-export function computeRoleListKeywordData(playerNames: UnsafeString[], roleList: RoleList) {
+export function computeRoleListKeywordData(playerNames: UnsafeString[], roleList: RoleList, modifierSettings: ModifierSettings) {
     for (const key in ROLE_LIST_KEYWORD_DATA) {
         delete ROLE_LIST_KEYWORD_DATA[key];
     }
 
     for(const [index, outline] of roleList.entries()) {
-        ROLE_LIST_KEYWORD_DATA[`${index + 1}: ` + translateRoleOutline(outline, playerNames)] = [
+        ROLE_LIST_KEYWORD_DATA[`${index + 1}: ` + translateRoleOutline(outline, playerNames, modifierSettings)] = [
             { style: "keyword-outline-number", replacement: (index + 1).toString() },
             { replacement: " " },
-            { style: "keyword-outline", replacement: getStyledHtmlFromString(translateRoleOutline(outline, playerNames), PLAYER_KEYWORD_DATA, {}) },
+            { style: "keyword-outline", replacement: getStyledHtmlFromString(translateRoleOutline(outline, playerNames, modifierSettings), PLAYER_KEYWORD_DATA, {}) },
         ];
     }
 }
@@ -262,10 +263,10 @@ function computeDummyKeywordData() {
     }
 
     for (const [index, outline] of (DUMMY_ROLE_LIST as RoleList).entries()) {
-        DUMMY_ROLE_LIST_KEYWORD_DATA[`${index + 1}: ` + translateRoleOutline(outline, DUMMY_NAMES)] = [
+        DUMMY_ROLE_LIST_KEYWORD_DATA[`${index + 1}: ` + translateRoleOutline(outline, DUMMY_NAMES, new ListMap())] = [
             { style: "keyword-outline-number", replacement: (index + 1).toString() },
             { replacement: " " },
-            { style: "keyword-outline", replacement: getStyledHtmlFromString(translateRoleOutline(outline, DUMMY_NAMES), DUMMY_NAMES_KEYWORD_DATA, {}) },
+            { style: "keyword-outline", replacement: getStyledHtmlFromString(translateRoleOutline(outline, DUMMY_NAMES, new ListMap()), DUMMY_NAMES_KEYWORD_DATA, {}) },
         ];
     }
 }

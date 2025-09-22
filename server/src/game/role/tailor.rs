@@ -38,7 +38,7 @@ impl RoleStateTrait for Tailor {
         let Some(target) = Visits::default_target(game, midnight_variables, actor_ref) else {return};
         let Some(role) = ControllerID::role(actor_ref, Role::Tailor, 1).get_role_list_selection_first(game) else {return};
     
-        if !RoleSet::TownCommon.get_roles().contains(&target.role(game)) {return}
+        if !RoleSet::TownCommon.get_roles_static().contains(&target.role(game)) {return}
         target.set_night_convert_role_to(midnight_variables, Some(role.new_state(game)));
         actor_ref.set_role_state(game, Tailor{previous_target: Some(target)});
     }
@@ -61,7 +61,7 @@ impl RoleStateTrait for Tailor {
             //role
             ControllerParametersMap::builder(game)
                 .id(ControllerID::role(actor_ref, Role::Tailor, 1))
-                .single_role_selection_typical(game, |r|RoleSet::TownCommon.get_roles().contains(r))
+                .single_role_selection_typical(game, |r|RoleSet::TownCommon.get_roles_static().contains(r))
                 .night_typical(actor_ref)
                 .build_map()
         ])

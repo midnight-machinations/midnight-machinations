@@ -13,6 +13,7 @@ export default function Select<K extends { toString(): string}>(props: Readonly<
     disabled?: boolean,
     className?: string,
     onChange?: (value: K)=>void
+    compareFn?: (a: K, b: K) => boolean
 } & ({
     optionsSearch: SelectOptionsSearch<K>,
 } | {
@@ -103,9 +104,19 @@ export default function Select<K extends { toString(): string}>(props: Readonly<
 
     const ref = useRef<HTMLButtonElement>(null);
 
-    const value = optionsSearch.get(props.value);
+    let value = optionsSearch.get(props.value);
+
     if(value === undefined) {
-        console.error(`Value not found in options ${props.value}`);
+        if (props.compareFn !== undefined) {
+            for (let [key, val] of optionsSearch.entries()) {
+                if (props.compareFn(key, props.value)) {
+                    value = val;
+                }
+            }
+        }
+        if (value === undefined) {
+            console.error(`Value not found in options ${props.value}`);
+        }
     }
 
     return <>
@@ -237,7 +248,7 @@ function SelectOptions<K extends { toString(): string}>(props: Readonly<{
             {[...props.options.entries()]
                 .map(([key, value]) => {
                     return <Button
-                        key={key.toString()}
+                        key={key.toString === undefined ? JSON.stringify(key) : key.toString()}
                         onClick={()=>{
                             if(props.onChange) {
                                 props.onChange(key);

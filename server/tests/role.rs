@@ -3038,7 +3038,7 @@ fn recruiter_role_list_is_correct() {
                 }]}
             ]),
             phase_times: PhaseTimeSettings::default(),
-            enabled_roles: RoleSet::Any.get_roles(),
+            enabled_roles: RoleSet::Any.get_roles_static(),
             modifiers: ModifierSettings::default(),
         },
         4

@@ -226,7 +226,7 @@ export default function messageListener(packet: ToClientPacket){
                 );
                 // Recompute keyword data, since role list entries are keywords.
                 const names = getNamesForPlayerPoolFromLobbyClients(GAME_MANAGER.state.players)
-                computeRoleListKeywordData(names, GAME_MANAGER.state.roleList);
+                computeRoleListKeywordData(names, GAME_MANAGER.state.roleList, GAME_MANAGER.state.modifierSettings);
             }
         break;
         case "hostData":
@@ -294,7 +294,7 @@ export default function messageListener(packet: ToClientPacket){
                 // Recompute keyword data, since player names are keywords.
                 computePlayerKeywordData(GAME_MANAGER.state.players);
                 // Recompute keyword data, since role list entries are keywords.
-                computeRoleListKeywordData(GAME_MANAGER.state.players.map(p=>p.toString()), GAME_MANAGER.state.roleList);
+                computeRoleListKeywordData(GAME_MANAGER.state.players.map(p=>p.toString()), GAME_MANAGER.state.roleList, GAME_MANAGER.state.modifierSettings);
             }
         break;
         case "roleList":
@@ -304,10 +304,10 @@ export default function messageListener(packet: ToClientPacket){
 
                 // Recompute keyword data, since role list entries are keywords.
                 if(GAME_MANAGER.state.stateType === "game") {
-                    computeRoleListKeywordData(GAME_MANAGER.state.players.map(p=>p.toString()), GAME_MANAGER.state.roleList);
+                    computeRoleListKeywordData(GAME_MANAGER.state.players.map(p=>p.toString()), GAME_MANAGER.state.roleList, GAME_MANAGER.state.modifierSettings);
                 } else {
                     const names = getNamesForPlayerPoolFromLobbyClients(GAME_MANAGER.state.players)
-                    computeRoleListKeywordData(names, GAME_MANAGER.state.roleList);
+                    computeRoleListKeywordData(names, GAME_MANAGER.state.roleList, GAME_MANAGER.state.modifierSettings);
                 }
             }
         break;
@@ -320,10 +320,10 @@ export default function messageListener(packet: ToClientPacket){
 
                 // Recompute keyword data, since role list entries are keywords.
                 if(GAME_MANAGER.state.stateType === "game") {
-                    computeRoleListKeywordData(GAME_MANAGER.state.players.map(p=>p.toString()), GAME_MANAGER.state.roleList);
+                    computeRoleListKeywordData(GAME_MANAGER.state.players.map(p=>p.toString()), GAME_MANAGER.state.roleList, GAME_MANAGER.state.modifierSettings);
                 } else {
                     const names = getNamesForPlayerPoolFromLobbyClients(GAME_MANAGER.state.players)
-                    computeRoleListKeywordData(names, GAME_MANAGER.state.roleList);
+                    computeRoleListKeywordData(names, GAME_MANAGER.state.roleList, GAME_MANAGER.state.modifierSettings);
                 }
             }
         break;
@@ -342,8 +342,17 @@ export default function messageListener(packet: ToClientPacket){
                 GAME_MANAGER.state.enabledRoles = packet.roles;
         break;
         case "modifierSettings":
-            if(GAME_MANAGER.state.stateType === "lobby" || GAME_MANAGER.state.stateType === "game")
+            if(GAME_MANAGER.state.stateType === "lobby" || GAME_MANAGER.state.stateType === "game") {
                 GAME_MANAGER.state.modifierSettings = new ListMap(packet.modifierSettings.modifiers);
+
+                // Recompute keyword data, since role list entries are keywords.
+                if(GAME_MANAGER.state.stateType === "game") {
+                    computeRoleListKeywordData(GAME_MANAGER.state.players.map(p=>p.toString()), GAME_MANAGER.state.roleList, GAME_MANAGER.state.modifierSettings);
+                } else {
+                    const names = getNamesForPlayerPoolFromLobbyClients(GAME_MANAGER.state.players)
+                    computeRoleListKeywordData(names, GAME_MANAGER.state.roleList, GAME_MANAGER.state.modifierSettings);
+                }
+            }
         break;
         case "phase":
             if(GAME_MANAGER.state.stateType === "game"){

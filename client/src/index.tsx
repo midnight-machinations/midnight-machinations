@@ -5,7 +5,7 @@ import Anchor from './menu/Anchor';
 import { GameManager, createGameManager } from './game/gameManager';
 import LoadingScreen from './menu/LoadingScreen';
 import route from './routing';
-import { UnsafeString } from './game/gameState.d';
+import { ModifierSettings, UnsafeString } from './game/gameState.d';
 import { RoleList, RoleOutline, translateRoleOutline } from './game/roleListState.d';
 
 export const DEV_ENV = process.env.NODE_ENV !== 'production';
@@ -69,7 +69,7 @@ export function regEscape(text: string) {
     return text.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&')
 }
 
-export function replaceMentions(rawText: UnsafeString, playerNames: UnsafeString[], roleList: RoleList): UnsafeString {
+export function replaceMentions(rawText: UnsafeString, playerNames: UnsafeString[], roleList: RoleList, modifierSettings: ModifierSettings): UnsafeString {
     let text = rawText;
     playerNames.map((el, i) => [i, el] as [number, UnsafeString]).reverse().forEach(([i, player]) => {
         text = (text as string).replace(find(`@${i + 1}`), player as string);
@@ -78,7 +78,7 @@ export function replaceMentions(rawText: UnsafeString, playerNames: UnsafeString
         text = (text as string).replace(find(`@${player}`), player as string);
     });
     roleList.map((el, i) => [i, el] as [number, RoleOutline]).reverse().forEach(([i, outline]) => {
-        text = (text as string).replace(find(`@o${i + 1}`), `${i + 1}: ${translateRoleOutline(outline, playerNames)}`);
+        text = (text as string).replace(find(`@o${i + 1}`), `${i + 1}: ${translateRoleOutline(outline, playerNames, modifierSettings)}`);
     })
     return text;
 }

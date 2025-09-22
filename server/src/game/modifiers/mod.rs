@@ -2,6 +2,7 @@ pub mod obscured_graves;
 pub mod dead_can_chat;
 pub mod abstaining;
 pub mod custom_role_limits;
+pub mod custom_role_sets;
 pub mod no_death_cause;
 pub mod role_set_grave_killers;
 pub mod no_due_process;
@@ -66,7 +67,8 @@ macros::modifiers! {
     hidden_verdict_votes: HiddenVerdictVotes,
     forfeit_vote: ForfeitNominationVote,
     random_player_names: RandomPlayerNames,
-    custom_role_limits: CustomRoleLimits
+    custom_role_limits: CustomRoleLimits,
+    custom_role_sets: CustomRoleSets
 }
 
 

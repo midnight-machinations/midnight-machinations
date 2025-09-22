@@ -7,8 +7,8 @@ import StyledText from "./StyledText";
 import React, { ReactElement, useMemo } from "react";
 import "./grave.css";
 import { useGameState, useLobbyOrGameState } from "./useHooks";
-import { UnsafeString } from "../game/gameState.d";
-import { RoleList } from "../game/roleListState.d";
+import { ModifierSettings, UnsafeString } from "../game/gameState.d";
+import { RoleList, translateRoleSet } from "../game/roleListState.d";
 
 export function translateGraveRole(grave: Grave): string {
     if(grave.information.type === "obscured") {
@@ -22,6 +22,7 @@ export default function GraveComponent(props: Readonly<{
     grave: Grave, 
     playerNames?: UnsafeString[],
     roleList?: RoleList,
+    modifierSettings?: ModifierSettings,
     onClick?: () => void
 }>): ReactElement {
     const gamePlayerNames = useGameState(
@@ -35,13 +36,18 @@ export default function GraveComponent(props: Readonly<{
         gameState => gameState.roleList,
         ["roleList"]
     )!
+    const gameModifierSettings = useLobbyOrGameState(
+        gameState => gameState.modifierSettings,
+        ["modifierSettings"]
+    )!
 
     const roleList = props.roleList ?? gameRoleList;
+    const modifierSettings = props.modifierSettings ?? gameModifierSettings;
 
     if(props.grave.information.type === "obscured") {
         return <ObscuredGrave grave={props.grave} playerNames={playerNames}/>
     } else {
-        return <UnobscuredGrave grave={props.grave as any} playerNames={playerNames} roleList={roleList}/>;
+        return <UnobscuredGrave grave={props.grave as any} playerNames={playerNames} roleList={roleList} modifierSettings={modifierSettings}/>;
     }
 }
 
@@ -49,6 +55,7 @@ function UnobscuredGrave(props: Readonly<{
     grave: Grave & { information: GraveInformation & { type: "normal" } },
     playerNames: UnsafeString[],
     roleList: RoleList,
+    modifierSettings: ModifierSettings,
     onClick?: () => void
 }>): ReactElement {
     const graveDeathCause = useMemo(() => {
@@ -58,7 +65,7 @@ function UnobscuredGrave(props: Readonly<{
                     case "role":
                         return translate("role."+killer.value+".name");
                     case "roleSet":
-                        return translate(killer.value);
+                        return translateRoleSet(killer.value, props.modifierSettings);
                     default:
                         return translate("grave.killer."+killer.type);
                 }
@@ -68,7 +75,7 @@ function UnobscuredGrave(props: Readonly<{
         } else {
             return translate("grave.deathCause."+props.grave.information.deathCause.type);
         }
-    }, [props.grave.information.deathCause]);
+    }, [props.grave.information.deathCause, props.modifierSettings]);
 
     let graveRoleString = translate(`role.${props.grave.information.role}.name`);
 
@@ -90,7 +97,8 @@ function UnobscuredGrave(props: Readonly<{
                     {encodeString(replaceMentions(
                         props.grave.information.will,
                         props.playerNames,
-                        props.roleList
+                        props.roleList,
+                        props.modifierSettings
                     ))}
                 </StyledText>
             </div>
@@ -103,7 +111,8 @@ function UnobscuredGrave(props: Readonly<{
                         {encodeString(replaceMentions(
                             note,
                             props.playerNames,
-                            props.roleList
+                            props.roleList,
+                            props.modifierSettings
                         ))}
                     </StyledText>
                 </div>
