@@ -1773,7 +1773,6 @@
             "gossip",
             "lookout",
             "marksman",
-            "mayor",
             "medium",
             "philosopher",
             "psychic",
@@ -1807,7 +1806,7 @@
             "warden",
             "escort",
             "blackmailer",
-            "reporter"
+            "polymath"
           ],
           "modifierSettings": [
             [
@@ -1904,7 +1903,6 @@
             "gossip",
             "lookout",
             "marksman",
-            "mayor",
             "medium",
             "philosopher",
             "psychic",
@@ -1938,7 +1936,7 @@
             "warden",
             "escort",
             "blackmailer",
-            "reporter"
+            "polymath"
           ],
           "modifierSettings": [
             [
@@ -2042,7 +2040,6 @@
             "gossip",
             "lookout",
             "marksman",
-            "mayor",
             "medium",
             "philosopher",
             "psychic",
@@ -2076,7 +2073,7 @@
             "warden",
             "escort",
             "blackmailer",
-            "reporter"
+            "polymath"
           ],
           "modifierSettings": [
             [
@@ -2190,7 +2187,6 @@
             "gossip",
             "lookout",
             "marksman",
-            "mayor",
             "medium",
             "philosopher",
             "psychic",
@@ -2224,7 +2220,7 @@
             "warden",
             "escort",
             "blackmailer",
-            "reporter"
+            "polymath"
           ],
           "modifierSettings": [
             [
@@ -2345,7 +2341,6 @@
             "gossip",
             "lookout",
             "marksman",
-            "mayor",
             "medium",
             "philosopher",
             "psychic",
@@ -2379,7 +2374,7 @@
             "warden",
             "escort",
             "blackmailer",
-            "reporter"
+            "polymath"
           ],
           "modifierSettings": [
             [
