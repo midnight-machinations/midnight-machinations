@@ -1,7 +1,6 @@
 use crate::game::{
     abilities_component::Abilities, components::{
-        insider_group::InsiderGroupID, mafia::Mafia,
-        mafia_recruits::MafiaRecruits, puppeteer_marionette::PuppeteerMarionette,
+        cult::Cult, insider_group::InsiderGroupID, mafia::Mafia, mafia_recruits::MafiaRecruits, puppeteer_marionette::PuppeteerMarionette
     }, player::PlayerReference, Game
 };
 use super::Event;
@@ -29,6 +28,7 @@ impl Event for OnRemoveInsider {
         vec![
             Abilities::on_remove_insider,
             PuppeteerMarionette::on_remove_insider,
+            Cult::on_remove_insider,
             Mafia::on_remove_insider,
             MafiaRecruits::on_remove_insider,
         ]

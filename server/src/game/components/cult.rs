@@ -1,7 +1,7 @@
 use rand::seq::IndexedRandom;
 
 use crate::game::{
-    chat::ChatMessageVariant, components::{insider_group::InsiderGroupID, verdicts_today::VerdictsToday}, event::{on_any_death::OnAnyDeath, on_game_start::OnGameStart}, player::PlayerReference, role::Role, Game
+    chat::ChatMessageVariant, components::{insider_group::InsiderGroupID, verdicts_today::VerdictsToday}, event::{on_any_death::OnAnyDeath, on_game_start::OnGameStart, on_remove_insider::OnRemoveInsider, on_role_switch::OnRoleSwitch}, player::PlayerReference, role::Role, Game
 };
 
 #[derive(Default, Debug, Clone)]
@@ -12,8 +12,12 @@ pub struct Cult {
 }
 impl Cult{
     pub fn on_game_start(game: &mut Game, _event: &OnGameStart, _fold: &mut (), _priority: ()){
+        Self::ensure_apostle_exists(game);
+    }
+    fn ensure_apostle_exists(game: &mut Game){
         let mut cult_insiders: Vec<PlayerReference> = PlayerReference::all_players(game)
             .filter(|p|InsiderGroupID::Cult.contains_player(game, *p))
+            .filter(|p|p.alive(game))
             .collect();
         
         let apostle_exists = cult_insiders.iter()
@@ -35,6 +39,13 @@ impl Cult{
 
     pub fn on_any_death(game: &mut Game, _event: &OnAnyDeath, _fold: &mut (), _priority: ()) {
         Cult::increment_sacrifices(game);
+        Self::ensure_apostle_exists(game);
+    }
+    pub fn on_role_switch(game: &mut Game, _event: &OnRoleSwitch, _fold: &mut (), _priority: ()) {
+        Self::ensure_apostle_exists(game);
+    }
+    pub fn on_remove_insider(game: &mut Game, _event: &OnRemoveInsider, _fold: &mut (), _priority: ()){
+        Self::ensure_apostle_exists(game);
     }
 
 

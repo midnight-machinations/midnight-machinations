@@ -1,5 +1,5 @@
 use crate::game::{
-    abilities_component::Abilities, components::{mafia::Mafia, role_reveal::RevealedPlayersComponent, synopsis::SynopsisTracker}, event::Event, player::PlayerReference, role::RoleState, Game
+    abilities_component::Abilities, components::{cult::Cult, mafia::Mafia, role_reveal::RevealedPlayersComponent, synopsis::SynopsisTracker}, event::Event, player::PlayerReference, role::RoleState, Game
 };
 
 #[must_use = "Event must be invoked"]
@@ -19,6 +19,7 @@ impl Event for OnRoleSwitch{
 
     fn listeners() -> Vec<super::EventListenerFunction<Self>> {vec![
         RevealedPlayersComponent::on_role_switch,
+        Cult::on_role_switch,
         Mafia::on_role_switch,
         SynopsisTracker::on_role_switch,
         Abilities::on_role_switch,

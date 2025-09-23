@@ -211,7 +211,7 @@ impl Mafia{
         let random_mafia = living_players_to_convert.choose(&mut rand::rng());
         
         if let Some(random_mafia) = random_mafia {
-            random_mafia.set_role_and_win_condition_and_revealed_group(game, role);
+            random_mafia.set_role(game, role);
         }
     }
 }
