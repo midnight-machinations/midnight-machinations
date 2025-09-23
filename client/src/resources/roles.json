@@ -1327,7 +1327,8 @@
         "canBeConvertedTo": ["zealot","disciple"],
         "chatMessages":[
             {"type": "yourConvertFailed"},
-            {"type": "someoneSurvivedYourAttack"}
+            {"type": "cultSacrificeCount", "count":0},
+            {"type": "cultSacrificeCount", "count":1}
         ]
     },
     "disciple": {

@@ -89,6 +89,7 @@
     "targetHasWinCondition": "result",
     "werewolfTrackingResult": "result",
     "werewolfTracked": "special",
+    "cultSacrificeCount": "special",
     "youSurvivedAttack": "result",
     "doomsayerFailed": "result",
     "doomsayerWon": "result",

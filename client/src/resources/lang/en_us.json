@@ -1094,6 +1094,7 @@
     "chatMessage.targetIsPossessionImmune":"Your target was immune to possession.",
     "chatMessage.werewolfTrackingResult":"\\0 visited \\1.",
     "chatMessage.werewolfTracked":"A werewolf has caught your scent! They are tracking you.",
+    "chatMessage.cultSacrificeCount":"The cult has \\0 sacrifices.",
     "chatMessage.fragileVestBreak": "The \\0 fragile vest that \\1 had just broke.",
     "chatMessage.engineerVisitorsRole": "A \\0 visited the trapped player.",
     "chatMessage.trapState.dismantled": "Your trap is currently dismantled. You can't set it yet.",

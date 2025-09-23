@@ -1,7 +1,7 @@
 use rand::seq::IndexedRandom;
 
 use crate::game::{
-    components::{insider_group::InsiderGroupID, verdicts_today::VerdictsToday}, event::{on_any_death::OnAnyDeath, on_game_start::OnGameStart}, player::PlayerReference, role::Role, Game
+    chat::ChatMessageVariant, components::{insider_group::InsiderGroupID, verdicts_today::VerdictsToday}, event::{on_any_death::OnAnyDeath, on_game_start::OnGameStart}, player::PlayerReference, role::Role, Game
 };
 
 #[derive(Default, Debug, Clone)]
@@ -37,17 +37,29 @@ impl Cult{
         Cult::increment_sacrifices(game);
     }
 
-    fn increment_sacrifices(game: &mut Game){
-        game.cult.sacrifices = game.cult.sacrifices.saturating_add(1);
-    }
+
     pub fn enough_sacrifices(game: &Game)->bool{
         game.cult.sacrifices >= 2
     }
+    
+    fn increment_sacrifices(game: &mut Game){
+        Self::set_sacrifices(game, game.cult.sacrifices.saturating_add(1));
+    }
     pub fn use_sacrifices(game: &mut Game){
-        game.cult.sacrifices = game.cult.sacrifices.saturating_sub(2);
+        Self::set_sacrifices(game, game.cult.sacrifices.saturating_sub(2));
+    }
+    fn set_sacrifices(game: &mut Game, count: u8){
+        game.cult.sacrifices = count;
+        Self::send_sacrifice_count(game);
     }
 
     pub fn can_kill_tonight(game: &Game)->bool{
         VerdictsToday::player_last_executed(game).is_none()
+    }
+
+    pub fn send_sacrifice_count(game: &mut Game){
+        for p in PlayerReference::all_players(game){
+            p.add_private_chat_message(game, ChatMessageVariant::CultSacrificeCount{count: game.cult.sacrifices});
+        }
     }
 }

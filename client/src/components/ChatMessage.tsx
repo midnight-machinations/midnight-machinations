@@ -822,6 +822,8 @@ export function translateChatMessage(
                 translate("defense."+message.defense),
                 encodeString(playerNames[message.playerWithVest])
             );
+        case "cultSacrificeCount":
+            return translate(`chatMessage.cultSacrificeCount`, message.count);
         case "mercenaryYouAreAHit":
         case "deputyShotYou":
         case "mediumExists":
@@ -1200,6 +1202,9 @@ export type ChatMessageVariant = {
     player: PlayerIndex
 } | {
     type: "werewolfTracked"
+} | {
+    type: "cultSacrificeCount",
+    count: number
 }
 
 export type MessageSender = {

@@ -135,7 +135,7 @@ pub enum ChatMessageVariant {
     #[serde(rename_all = "camelCase")]
     WardenPlayersImprisoned{players: Vec<PlayerReference>},
     WerewolfTracked,
-
+    CultSacrificeCount{count: u8},
     PuppeteerPlayerIsNowMarionette{player: PlayerReference},
     RecruiterPlayerIsNowRecruit{player: PlayerReference},
 
