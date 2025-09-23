@@ -152,6 +152,9 @@ function MultipleControllersMenu(props: Readonly<{
     const nightIcon = !props.controllers.keys().some(
         (id)=>!singleAbilityJsonData(controllerIdToLink(id))?.midnight
     );
+    const instantIcon = !props.controllers.keys().some(
+        (id)=>!singleAbilityJsonData(controllerIdToLink(id))?.instant
+    );
 
 
     let anyControllerId = props.controllers.keys()[0]
@@ -167,7 +170,10 @@ function MultipleControllersMenu(props: Readonly<{
         summary={
             <div className="generic-ability-menu-tab-summary">
                 <StyledText>{groupName}</StyledText>
-                {nightIcon?<span>{translate("night.icon")}</span>:null}
+                <span>
+                    <>{instantIcon ? translate("instant.icon") : ""}</>
+                    <>{nightIcon ? translate("night.icon") : ""}</>
+                </span>
             </div>
         }
         defaultOpen={true}
@@ -191,6 +197,7 @@ function SingleAbilityMenu(props: Readonly<{
     includeDropdown?: boolean
 }>): ReactElement {
     const nightIcon = singleAbilityJsonData(controllerIdToLink(props.abilityId))?.midnight;
+    const instantIcon = singleAbilityJsonData(controllerIdToLink(props.abilityId))?.instant;
 
     let controllerIdName = translateControllerID(props.abilityId);
     if(props.abilityId.type === "role" && props.includeDropdown === false){
@@ -213,7 +220,10 @@ function SingleAbilityMenu(props: Readonly<{
             summary={
                 <div className="generic-ability-menu-tab-summary">
                     <span><StyledText>{controllerIdName}</StyledText></span>
-                    {nightIcon?<span>{translate("night.icon")}</span>:null}
+                    <span>
+                        <>{instantIcon ? translate("instant.icon") : ""}</>
+                        <>{nightIcon ? translate("night.icon") : ""}</>
+                    </span>
                 </div>
             }
             defaultOpen={true}
@@ -229,7 +239,10 @@ function SingleAbilityMenu(props: Readonly<{
 
                     <StyledText>{controllerIdName}</StyledText>
                 </span>
-                {nightIcon?<span>{translate("night.icon")}</span>:null}
+                <span>
+                    <>{instantIcon ? translate("instant.icon") : ""}</>
+                    <>{nightIcon ? translate("night.icon") : ""}</>
+                </span>
             </div>
             <>{inner}</>
         </>

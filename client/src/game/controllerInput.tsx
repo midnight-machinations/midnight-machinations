@@ -10,6 +10,7 @@ export type AbilityJsonData = Partial<Record<ControllerIDLink, SingleAbilityJson
 export type SingleAbilityJsonData = {
     midnight?: boolean,
     visible?: boolean,
+    instant?: boolean,
 }
 
 export function allAbilitiesJsonData(): AbilityJsonData {

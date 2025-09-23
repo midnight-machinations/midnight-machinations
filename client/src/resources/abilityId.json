@@ -46,7 +46,8 @@
         "midnight": true
     },
     "role/deputy/0": {
-        "midnight": false
+        "midnight": false,
+        "instant": true
     },
     "role/escort/0": {
         "midnight": true
@@ -55,7 +56,12 @@
         "midnight": true
     },
     "role/mayor/0": {
-        "midnight": false
+        "midnight": false,
+        "instant": true
+    },
+    "role/nepotist/0": {
+        "midnight": false,
+        "instant": true
     },
     "role/medium/0": {
         "midnight": false
@@ -157,10 +163,12 @@
         "midnight": true
     },
     "role/reeducator/1": {
-        "midnight": true
+        "midnight": true,
+        "instant": true
     },
     "role/reeducator/2": {
-        "midnight": false
+        "midnight": false,
+        "instant": true
     },
     "role/blackmailer/0": {
         "midnight": true
@@ -281,6 +289,14 @@
     },
     "syndicateGunItemShoot": {
         "midnight": true
+    },
+    "syndicateGunItemGive": {
+        "midnight": true,
+        "instant": true
+    },
+    "syndicateChooseBackup": {
+        "midnight": false,
+        "instant": true
     },
     "syndicateBackupAttack": {
         "midnight": true
