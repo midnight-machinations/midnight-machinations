@@ -215,6 +215,9 @@
     "role/witch/0": {
         "midnight": true
     },
+    "role/tailor/0": {
+        "midnight": true
+    },
     "role/warper/0": {
         "midnight": true
     },
@@ -303,7 +306,8 @@
     },
     "forwardMessage": {
         "midnight": false,
-        "visible": false
+        "visible": false,
+        "instant": true
     },
     "nominate": {
         "midnight": false
@@ -325,7 +329,8 @@
     },
     "sendChat":{
         "midnight": false,
-        "visible": false
+        "visible": false,
+        "instant": true
     },
     "whisper": {
         "midnight": false,
@@ -337,10 +342,12 @@
     },
     "sendWhisper":{
         "midnight": false,
-        "visible": false
+        "visible": false,
+        "instant": true
     },
     "alibi": {
         "midnight": false,
-        "visible": false
+        "visible": false,
+        "instant": true
     }
 }
