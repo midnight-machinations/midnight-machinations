@@ -832,8 +832,6 @@ export function translateChatMessage(
         case "wardblocked":
         case "roleBlocked":
         case "yourConvertFailed":
-        case "cultConvertsNext":
-        case "cultKillsNext":
         case "someoneSurvivedYourAttack":
         case "transported":
         case "targetIsPossessionImmune":
@@ -999,10 +997,6 @@ export type ChatMessageVariant = {
     players: PlayerIndex[]
 } | {
     type: "yourConvertFailed"
-} | {
-    type: "cultConvertsNext"
-} | {
-    type: "cultKillsNext"
 } | {
     type: "mediumHauntStarted",
     medium: PlayerIndex,

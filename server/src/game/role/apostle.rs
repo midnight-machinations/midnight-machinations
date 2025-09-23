@@ -1,17 +1,13 @@
 use serde::Serialize;
 
+use crate::game::chat::ChatMessageVariant;
+use crate::game::components::insider_group::InsiderGroupID;
+use crate::game::components::night_visits::Visits;
 use crate::game::controllers::ControllerParametersMap;
 use crate::game::attack_power::{AttackPower, DefensePower};
-use crate::game::chat::ChatMessageVariant;
-use crate::game::components::cult::{Cult, CultAbility};
-use crate::game::components::insider_group::InsiderGroupID;
-use crate::game::components::win_condition::WinCondition;
+use crate::game::components::cult::Cult;
 use crate::game::event::on_midnight::{MidnightVariables, OnMidnightPriority};
-use crate::game::components::graves::grave::GraveKiller;
 use crate::game::player::PlayerReference;
-use crate::game::game_conclusion::GameConclusion;
-
-use crate::game::role_list::RoleSet;
 use crate::game::visit::Visit;
 use crate::game::Game;
 use super::{common_role, ControllerID, Role, RoleStateTrait};
@@ -27,39 +23,24 @@ pub(super) const DEFENSE: DefensePower = DefensePower::None;
 impl RoleStateTrait for Apostle {
     type ClientAbilityState = Apostle;
     fn on_midnight(self, game: &mut Game, midnight_variables: &mut MidnightVariables, actor_ref: PlayerReference, priority: OnMidnightPriority) {
-
-        match (priority, Cult::next_ability(game)) {
-            (OnMidnightPriority::Kill, CultAbility::Kill) if game.cult().ordered_cultists.len() == 1 => {
-
-                let actor_visits = actor_ref.untagged_night_visits_cloned(midnight_variables);
-                let Some(visit) = actor_visits.first() else {return};
-                let target_ref = visit.target;
-                
-                if target_ref.try_night_kill_single_attacker(
-                    actor_ref, game, midnight_variables, GraveKiller::RoleSet(RoleSet::Cult), AttackPower::Basic, false
-                ) {
-                    Cult::set_ability_used_last_night(game, Some(CultAbility::Kill));
-                }
-            }
-            (OnMidnightPriority::Convert, CultAbility::Convert) => {
-                
-                let actor_visits = actor_ref.untagged_night_visits_cloned(midnight_variables);
-                let Some(visit) = actor_visits.first() else {return};
-                let target_ref = visit.target;
-
-                if target_ref.night_defense(game, midnight_variables).can_block(AttackPower::Basic) {
-                    actor_ref.push_night_message(midnight_variables, ChatMessageVariant::YourConvertFailed);
-                    return
-                }
-
-                target_ref.set_night_convert_role_to(midnight_variables, Some(Role::Zealot.new_state(game)));
-                InsiderGroupID::Cult.add_player_to_revealed_group(game, target_ref);
-                target_ref.set_win_condition(game, WinCondition::new_loyalist(GameConclusion::Cult));
-                
-                Cult::set_ability_used_last_night(game, Some(CultAbility::Convert));
-            }
-            _ => {}
+        if !matches!(priority, OnMidnightPriority::Convert) {return}
+        let Some(target) = Visits::default_target(game, midnight_variables, actor_ref) else {return};
+        if !Cult::enough_sacrifices(game) {return}
+        
+        if !AttackPower::Basic.can_pierce(target.night_defense(game, midnight_variables)) {
+            actor_ref.push_night_message(midnight_variables, ChatMessageVariant::YourConvertFailed);
+            return;
         }
+
+        Cult::use_sacrifices(game);
+        
+        for p in PlayerReference::all_players(game){
+            if !InsiderGroupID::Cult.contains_player(game, p) {continue}
+            if !matches!(p.role(game), Role::Zealot) {continue}
+            p.set_role(game, Role::Disciple.default_state())
+        }
+
+        target.set_role_and_win_condition_and_revealed_group(game, Role::Zealot.default_state());
     }
     fn convert_selection_to_visits(self, game: &Game, actor_ref: PlayerReference) -> Vec<Visit> {
         common_role::convert_controller_selection_to_visits(
@@ -75,8 +56,7 @@ impl RoleStateTrait for Apostle {
             .single_player_selection_typical(actor_ref, false, false)
             .night_typical(actor_ref)
             .add_grayed_out_condition(
-                game.cult().ordered_cultists.len() != 1 &&
-                Cult::next_ability(game) == CultAbility::Kill
+    game.day_number() <= 1 || !Cult::enough_sacrifices(game)
             )
             .build_map()
     }

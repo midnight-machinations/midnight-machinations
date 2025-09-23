@@ -15,7 +15,6 @@ pub use mafia_server::{
         player::PlayerReference,
         chat::{ChatGroup, ChatMessageVariant, MessageSender},
         components::{
-                cult::CultAbility,
                 graves::{
                     grave::{Grave, GraveDeathCause, GraveInformation, GraveKiller, GravePhase},
                     grave_reference::GraveReference
@@ -2243,106 +2242,98 @@ fn ojo_transporter(){
 }
 
 #[test]
-fn cult_alternates() {
-    // for _ in 0..20 {
-    //     kit::scenario!(game in Night 1 where
-    //         apostle: Apostle,
-    //         b: Detective,
-    //         c: Detective,
-    //         d: Detective,
-    //         e: Detective,
-    //         f: Detective,
-    //         g: Detective
-    //     );
+fn cult_doesnt_kill_on_execution_day() {
+    kit::scenario!(game in Nomination 2 where
+        apostle: Apostle,
+        zealot: Zealot,
+        detective: Detective,
+        engineer: Engineer
+    );
 
+    apostle.vote_for_player(engineer);
+    zealot.vote_for_player(engineer);
+    detective.vote_for_player(engineer);
 
-    //     //apostle converts
-    //     assert!(game.cult().next_ability == CultAbility::Convert);
-    //     assert!(apostle.send_ability_input_player_list_typical(b));
-    //     game.next_phase();
-    //     assert!(b.alive());
-    //     assert!(InsiderGroupID::Cult.contains_player(game.deref(), b.player_ref()));
-    //     assert_contains!(game.cult().ordered_cultists, b.player_ref());
+    game.skip_to(Judgement, 2);
 
-    //     //zealot kills, apostle waits
-    //     game.skip_to(Night, 2);
-    //     assert!(game.cult().next_ability == CultAbility::Kill);
-    //     assert!(game.cult().ordered_cultists.len() == 2);
-    //     assert!(b.send_ability_input_player_list_typical(c));
-    //     game.next_phase();
-    //     assert!(!c.alive());
-    //     assert!(d.alive());
-    //     assert!(!InsiderGroupID::Cult.contains_player(game.deref(), d.player_ref()));
-    //     assert_not_contains!(game.cult().ordered_cultists, d.player_ref());
+    apostle.set_verdict(Verdict::Guilty);
+    detective.set_verdict(Verdict::Guilty);
+    zealot.set_verdict(Verdict::Guilty);
 
-    //     //zealot waits, apostle converts
-    //     game.skip_to(Night, 3);
-    //     assert!(game.cult().ordered_cultists.len() == 2);
-    //     assert!(apostle.send_ability_input_player_list_typical(d));
-    //     game.next_phase();
-    //     assert!(e.alive());
-    //     assert!(d.alive());
-    //     assert!(InsiderGroupID::Cult.contains_player(game.deref(), d.player_ref()));
-    //     assert_contains!(game.cult().ordered_cultists, d.player_ref());
+    game.skip_to(Night, 2);
 
-    //     //zealot kills, apostle waits
-    //     game.skip_to(Night, 4);
-    //     assert!(game.cult().ordered_cultists.len() == 3);
-    //     assert!(d.send_ability_input_player_list_typical(g));
-    //     game.next_phase();
-    //     assert!(f.alive());
-    //     assert!(!g.alive());
-    // }
+    zealot.send_ability_input_player_list_typical(detective);
+
+    game.skip_to(Obituary, 3);
+
+    assert!(apostle.alive());
+    assert!(zealot.alive());
+    assert!(!engineer.alive());
+    assert!(detective.alive());
 }
 
 #[test]//writing "cult" here so if you ctrl+f for cult related tests you find this
 fn apostle_converting_trapped_player_day_later() {
-    for _ in 0..20 {
-        kit::scenario!(game in Night 2 where
-            apostle: Apostle,
-            zealot: Zealot,
-            trapped: Detective,
-            engineer: Engineer
-        );
-    
-    
-        assert!(engineer.send_ability_input_player_list_typical(trapped));
-    
-        game.skip_to(Night, 3);
-    
-        //explanation of why they are both targeting here:
-        //if zealot.player_index < apostle.player_index then this fails otherwise
-        //If the order is backwards, then the get converted in player order
-        //this should be fixed
-        assert!(apostle.send_ability_input_player_list_typical(trapped));
-        assert!(zealot.send_ability_input_player_list_typical(trapped));
-    
-        game.next_phase();
-    
-        assert_contains!(engineer.get_messages_after_night(3), ChatMessageVariant::EngineerVisitorsRole { role: Role::Apostle });
-        assert_eq!(trapped.role_state().role(), Role::Detective);
-    }
+    kit::scenario!(game in Night 2 where
+        apostle: Apostle,
+        zealot: Zealot,
+        trapped: Detective,
+        engineer: Engineer,
+        a: Detective,
+        b: Detective
+    );
+
+    assert!(engineer.send_ability_input_player_list_typical(trapped));
+    zealot.send_ability_input_player_list_typical(a);
+
+    game.skip_to(Night, 3);
+    zealot.send_ability_input_player_list_typical(b);
+
+    game.skip_to(Night, 4);
+    assert!(apostle.send_ability_input_player_list_typical(trapped));
+    assert!(zealot.send_ability_input_player_list_typical(trapped));
+
+    game.next_phase();
+
+    assert_contains!(
+        engineer.get_messages_after_night(4),
+        ChatMessageVariant::EngineerVisitorsRole { role: Role::Apostle }
+    );
+    assert_contains!(
+        engineer.get_messages_after_night(4),
+        ChatMessageVariant::EngineerVisitorsRole { role: Role::Zealot }
+    );
+    assert_eq!(trapped.role_state().role(), Role::Detective);
 }
 
 #[test]//writing "cult" here so if you ctrl+f for cult related tests you find this
 fn apostle_converting_trapped_player_same_day(){
-    for _ in 0..20 {
-        kit::scenario!(game in Night 2 where
-            apostle: Apostle,
-            _zealot: Zealot,
-            trapped: Detective,
-            engineer: Engineer
-        );
+    kit::scenario!(game in Night 2 where
+        apostle: Apostle,
+        zealot: Zealot,
+        trapped: Detective,
+        engineer: Engineer,
+        a: Detective,
+        b: Detective
+    );
 
+    zealot.send_ability_input_player_list_typical(a);
 
-        assert!(engineer.send_ability_input_player_list_typical(trapped));
-        assert!(apostle.send_ability_input_player_list_typical(trapped));
+    game.skip_to(Night, 3);
+    zealot.send_ability_input_player_list_typical(b);
 
-        game.next_phase();
+    game.skip_to(Night, 4);
+    assert!(engineer.send_ability_input_player_list_typical(trapped));
+    assert!(apostle.send_ability_input_player_list_typical(trapped));
 
-        assert_ne!(trapped.role_state().role(), Role::Zealot);
-        assert_eq!(trapped.role_state().role(), Role::Detective);
-    }
+    game.next_phase();
+
+    assert_ne!(trapped.role_state().role(), Role::Zealot);
+    assert_eq!(trapped.role_state().role(), Role::Detective);
+    assert_contains!(
+        engineer.get_messages_after_night(4),
+        ChatMessageVariant::EngineerVisitorsRole { role: Role::Apostle }
+    );
 }
 
 #[test]

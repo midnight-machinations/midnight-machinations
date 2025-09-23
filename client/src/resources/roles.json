@@ -1326,8 +1326,6 @@
         "canWriteDeathNote": true,
         "canBeConvertedTo": ["zealot","disciple"],
         "chatMessages":[
-            {"type": "cultConvertsNext"},
-            {"type": "cultKillsNext"},
             {"type": "yourConvertFailed"},
             {"type": "someoneSurvivedYourAttack"}
         ]
@@ -1341,8 +1339,7 @@
         "canWriteDeathNote": false,
         "canBeConvertedTo": ["zealot","apostle"],
         "chatMessages":[
-            {"type": "cultConvertsNext"},
-            {"type": "cultKillsNext"}
+            {"type": "yourConvertFailed"}
         ]
     },
     "zealot": {
@@ -1354,9 +1351,7 @@
         "canWriteDeathNote": true,
         "canBeConvertedTo": ["disciple","apostle"],
         "chatMessages":[
-            {"type": "someoneSurvivedYourAttack"},
-            {"type": "cultConvertsNext"},
-            {"type": "cultKillsNext"}
+            {"type": "someoneSurvivedYourAttack"}
         ]
     }
 }

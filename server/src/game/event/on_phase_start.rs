@@ -1,7 +1,7 @@
 use crate::game::{
     abilities_component::Abilities,
     components::{
-        call_witness::CallWitness, cult::Cult, detained::Detained,
+        call_witness::CallWitness, detained::Detained,
         fast_forward::FastForwardComponent, forfeit_vote::ForfeitNominationVote,
         silenced::Silenced, verdicts_today::VerdictsToday
     },
@@ -28,7 +28,6 @@ impl Event for OnPhaseStart{
         ForfeitNominationVote::on_phase_start,
         Detained::on_phase_start,
         VerdictsToday::on_phase_start,
-        Cult::on_phase_start,
         Controllers::on_phase_start,
         ModifierSettings::on_phase_start,
         FastForwardComponent::on_phase_start,

@@ -1118,8 +1118,6 @@
     "chatMessage.wildcardConvertFailed": "You failed to convert to the role \\0. The role might have been disabled or taken.",
     "chatMessage.kiraResult": "Kira result",
     "chatMessage.kiraSelection": "Kira selection",
-    "chatMessage.cultConvertsNext": "The cult will attempt to indoctrinate and convert someone tonight.",
-    "chatMessage.cultKillsNext": "The cult will attempt to sacrifice and kill someone tonight.",
     "chatMessage.addedToNiceList": "You've been good this year, so you have been added to the nice list.",
     "chatMessage.addedToNaughtyList": "You've been bad this year - you have been added to the naughty list.",
     "chatMessage.nextSantaAbility.nice": "Tonight you will add zero or one players to the nice list.",

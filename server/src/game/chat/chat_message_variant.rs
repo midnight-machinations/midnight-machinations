@@ -140,8 +140,6 @@ pub enum ChatMessageVariant {
     RecruiterPlayerIsNowRecruit{player: PlayerReference},
 
     YourConvertFailed,
-    CultConvertsNext,
-    CultKillsNext,
 
     NextSantaAbility { ability: SantaListKind },
     AddedToNiceList,
