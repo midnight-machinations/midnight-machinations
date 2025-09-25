@@ -1,6 +1,6 @@
 import React, { ReactElement } from "react";
 import translate from "../../../../game/lang";
-import { ContentMenu, ContentTab } from "../../GameScreen";
+import { ContentTab } from "../../GameScreen";
 import { useGameState } from "../../../../components/useHooks";
 import GenericAbilityMenu from "./GenericAbilityMenu";
 import "./abilityMenu.css";
@@ -13,7 +13,7 @@ export default function AbilityMenu(): ReactElement {
     )!;
 
     return <div className="ability-menu role-specific-colors">
-        <ContentTab close={ContentMenu.RoleSpecificMenu} helpMenu={"standard/abilityMenu"}>
+        <ContentTab close={"RoleSpecificMenu"}>
             {translate("menu.ability.title")}
         </ContentTab>
         {!mySpectator && <div>

@@ -7,13 +7,13 @@ import { Role, getMainRoleSetFromRole, roleJsonData } from "../game/roleState.d"
 import "./styledText.css";
 import DUMMY_NAMES from "../resources/dummyNames.json";
 import { ARTICLES, WikiArticleLink, getArticleLangKey } from "./WikiArticleLink";
-import { MenuControllerContext } from "../menu/game/GameScreen";
 import { Player, UnsafeString } from "../game/gameState.d";
 import { AnchorControllerContext } from "../menu/Anchor";
 import { setWikiSearchPage } from "./Wiki";
 import { getRoleSetsFromRole, RoleList, translateRoleOutline } from "../game/roleListState.d";
 import { encodeString } from "./ChatMessage";
 import DUMMY_ROLE_LIST from "../resources/dummyRoleList.json";
+import { MenuControllerContext } from "../menu/game/menuController";
 
 export type TokenData = {
     style?: string, 

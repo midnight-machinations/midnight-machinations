@@ -1,13 +1,13 @@
 import React, { ReactElement, useEffect, useMemo } from "react";
 import translate from "../../../game/lang";
 import GAME_MANAGER from "../../../index";
-import { ContentMenu, ContentTab } from "../GameScreen";
 import { usePlayerState } from "../../../components/useHooks";
 import { getSingleRoleJsonData } from "../../../game/roleState.d";
 import { TextDropdownArea } from "../../../components/TextAreaDropdown";
 import ListMap from "../../../ListMap";
 import { controllerIdToLinkWithPlayer } from "../../../game/controllerInput";
 import { PlayerIndex, UnsafeString } from "../../../game/gameState.d";
+import { ContentTab } from "../GameScreen";
 
 export function defaultAlibi(): string {
     return DEFAULT_ALIBI;
@@ -61,8 +61,7 @@ export default function WillMenu(): ReactElement {
     
     return <div className="will-menu will-menu-colors">
         <ContentTab
-            close={ContentMenu.WillMenu}
-            helpMenu={"standard/alibi"}
+            close={"WillMenu"}
         >
                 {translate("menu.will.title")}
         </ContentTab>

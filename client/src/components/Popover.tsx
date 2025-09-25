@@ -2,8 +2,8 @@ import React, { ReactElement, ReactNode, useContext, useEffect, useMemo, useRef 
 import ReactDOM from "react-dom/client";
 import { THEME_CSS_ATTRIBUTES } from "..";
 import { AnchorControllerContext, MobileContext } from "../menu/Anchor";
-import { MenuControllerContext } from "../menu/game/GameScreen";
 import { GameModeContext } from "./gameModeSettings/GameModesEditor";
+import { MenuControllerContext } from "../menu/game/menuController";
 
 export default function Popover<T extends HTMLElement = HTMLElement>(props: Readonly<{
     open: boolean,

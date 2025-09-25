@@ -4,7 +4,7 @@ import GAME_MANAGER from "../../../index";
 import "./playerListMenu.css"
 import "./../gameScreen.css"
 import { PlayerIndex } from "../../../game/gameState.d";
-import { ContentMenu, ContentTab } from "../GameScreen";
+import { ContentTab } from "../GameScreen";
 import StyledText from "../../../components/StyledText";
 import Icon from "../../../components/Icon";
 import { Button } from "../../../components/Button";
@@ -30,7 +30,7 @@ export default function PlayerListMenu(): ReactElement {
 
 
     return <div className="player-list-menu player-list-menu-colors">
-        <ContentTab close={ContentMenu.PlayerListMenu} helpMenu={"standard/playerList"}>{translate("menu.playerList.title")}</ContentTab>
+        <ContentTab close={"PlayerListMenu"}>{translate("menu.playerList.title")}</ContentTab>
 
         <div className="player-list">
             {players
