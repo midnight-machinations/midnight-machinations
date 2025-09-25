@@ -5,7 +5,7 @@ import "../gameScreen.css";
 import "./chatMenu.css"
 import { PlayerClientType, PlayerIndex, UnsafeString } from "../../../game/gameState.d";
 import ChatElement, { ChatMessage, encodeString, translateChatMessage } from "../../../components/ChatMessage";
-import { ContentMenu, ContentTab } from "../GameScreen";
+import { ContentTab } from "../GameScreen";
 import { HistoryPoller, HistoryQueue } from "../../../history";
 import { Button } from "../../../components/Button";
 import Icon from "../../../components/Icon";
@@ -48,7 +48,7 @@ export default function ChatMenu(): ReactElement {
     );
 
     return <div className="chat-menu chat-menu-colors">
-        <ContentTab close={ContentMenu.ChatMenu} helpMenu={"standard/chat"}>{translate("menu.chat.title")}</ContentTab>
+        <ContentTab close={"ChatMenu"}>{translate("menu.chat.title")}</ContentTab>
         {filter === undefined || filter === null || <div className="chat-filter-zone highlighted">
             <StyledText>{translate("menu.chat.playerFilter", filterString)}</StyledText>
             <Button 

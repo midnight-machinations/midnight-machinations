@@ -1,5 +1,5 @@
 import React, { ReactElement } from "react";
-import { ContentMenu, ContentTab } from "../GameScreen";
+import { ContentTab } from "../GameScreen";
 import "./wikiMenu.css"
 import translate from "../../../game/lang";
 import Wiki from "../../../components/Wiki";
@@ -20,7 +20,7 @@ export default function WikiMenu(): ReactElement {
     )!;
 
     return <div className="wiki-menu wiki-menu-colors">
-        <ContentTab close={ContentMenu.WikiMenu} helpMenu={null}>{translate("menu.wiki.title")}</ContentTab>
+        <ContentTab close={"WikiMenu"}>{translate("menu.wiki.title")}</ContentTab>
         
         <div className="wiki-menu-search">
             <Wiki enabledRoles={enabledRoles} enabledModifiers={enabledModifiers}/>
