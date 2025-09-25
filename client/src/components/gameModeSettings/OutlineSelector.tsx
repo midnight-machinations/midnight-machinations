@@ -15,6 +15,7 @@ import Popover from "../Popover";
 import DUMMY_NAMES from "../../resources/dummyNames.json";
 import { encodeString } from "../ChatMessage";
 import ListMap from "../../ListMap";
+import { PopoutContext } from "../popout";
 
 type RoleOutlineSelectorProps = {
     roleOutline: RoleOutline,
@@ -232,6 +233,8 @@ function ConclusionsSelectorLabel(props: Readonly<{
         }
     }, [props.conclusions])
     
+    const myWindow = useContext(PopoutContext)?.window??window;
+    
     return <>
         <RawButton
             ref={ref}
@@ -244,7 +247,7 @@ function ConclusionsSelectorLabel(props: Readonly<{
             open={popupOpen}
             setOpenOrClosed={setPopupOpen}
             anchorForPositionRef={ref}
-            onRender={dropdownPlacementFunction}
+            onRender={(dropdown, button)=>dropdownPlacementFunction(myWindow, dropdown, button)}
         >
             <ConclusionsSelector
                 disabled={props.disabled}
@@ -344,6 +347,8 @@ function InsiderGroupSelectorLabel(props: Readonly<{
         }
     }, [props.insiderGroups])
     
+    const myWindow = useContext(PopoutContext)?.window??window;
+    
     return <>
         <RawButton
             ref={ref}
@@ -356,7 +361,7 @@ function InsiderGroupSelectorLabel(props: Readonly<{
             open={popupOpen}
             setOpenOrClosed={setPopupOpen}
             anchorForPositionRef={ref}
-            onRender={dropdownPlacementFunction}
+            onRender={(dropdown, button)=>dropdownPlacementFunction(myWindow, dropdown, button)}
         >
             <InsiderGroupSelector
                 disabled={props.disabled}
@@ -477,6 +482,8 @@ function PlayerPoolSelectorLabel(props: Readonly<{
         }
     }, [props.playerPool, playerNames]);
 
+    const myWindow = useContext(PopoutContext)?.window??window;
+
     return <>
         <RawButton
             ref={ref}
@@ -488,7 +495,7 @@ function PlayerPoolSelectorLabel(props: Readonly<{
             open={popupOpen}
             setOpenOrClosed={setPopupOpen}
             anchorForPositionRef={ref}
-            onRender={dropdownPlacementFunction}
+            onRender={(dropdown, button)=>dropdownPlacementFunction(myWindow, dropdown, button)}
         >
             <PlayerPoolSelector
                 disabled={props.disabled}

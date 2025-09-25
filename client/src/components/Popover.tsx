@@ -12,18 +12,20 @@ export default function Popover<T extends HTMLElement = HTMLElement>(props: Read
     onRender?: (popoverElement: HTMLDivElement, anchorElement?: T | undefined) => void
     anchorForPositionRef?: React.RefObject<T>,
     className?: string,
-    doNotCloseOnOutsideClick?: boolean
+    doNotCloseOnOutsideClick?: boolean,
+    myDocumentProp?: Document
 }>): ReactElement {
+    const myDocument = props.myDocumentProp??document;
     const thisRef = useRef<HTMLDivElement>(null);
-    const popoverRef = useRef<HTMLDivElement>(document.createElement('div'));
+    const popoverRef = useRef<HTMLDivElement>(myDocument.createElement('div'));
 
     const popoverRoot = useMemo(() => {
         const popoverElement = popoverRef.current;
         popoverElement.style.position = "absolute";
 
-        document.body.appendChild(popoverElement);
+        myDocument.body.appendChild(popoverElement);
         return ReactDOM.createRoot(popoverElement);
-    }, [])
+    }, [myDocument.body])
 
     //set ref
     useEffect(() => {
@@ -34,9 +36,9 @@ export default function Popover<T extends HTMLElement = HTMLElement>(props: Read
             })
             initialPopover.remove();
             
-            popoverRef.current = document.createElement('div');
+            popoverRef.current = myDocument.createElement('div');
         }
-    }, [popoverRoot])
+    }, [popoverRoot, myDocument, myDocument.body])
 
     //match css styles
     useEffect(() => {
@@ -141,14 +143,14 @@ export default function Popover<T extends HTMLElement = HTMLElement>(props: Read
         };
 
         setTimeout(() => {
-            document.addEventListener("click", handleClickOutside);
+            myDocument.addEventListener("click", handleClickOutside);
         })
         return () => {
             setTimeout(() => {
-                document.removeEventListener("click", handleClickOutside);
+                myDocument.removeEventListener("click", handleClickOutside);
             })
         }
-    }, [props]);
+    }, [props, myDocument, myDocument.body]);
 
     return <div ref={thisRef} />
 }
