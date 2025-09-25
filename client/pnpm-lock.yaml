@@ -41,6 +41,9 @@ importers:
       react-dom:
         specifier: 18.2.0
         version: 18.2.0(react@18.3.1)
+      react-popout:
+        specifier: ^4.0.0
+        version: 4.0.0(react-dom@18.2.0(react@18.3.1))(react@18.3.1)
       react-resizable-panels:
         specifier: ^2.1.6
         version: 2.1.7(react-dom@18.2.0(react@18.3.1))(react@18.3.1)
@@ -4535,6 +4538,12 @@ packages:
 
   react-is@18.3.1:
     resolution: {integrity: sha512-/LLMVyas0ljjAtoYiPqYiL8VWXzUUdThrmU5+n20DZv+a+ClRoevUzw5JxU+Ieh5/c87ytoTBV9G1FiKfNJdmg==}
+
+  react-popout@4.0.0:
+    resolution: {integrity: sha512-ntSt0f4BwLjd14pIp790QGFZA/6mUwXYu0kf+EXYpm8IhDVZWBN6rfhSdIboYE8cYTMXET37Bw+tvclxa14jTA==}
+    peerDependencies:
+      react: ^18.2.0
+      react-dom: ^18.2.0
 
   react-refresh@0.11.0:
     resolution: {integrity: sha512-F27qZr8uUqwhWZboondsPx8tnC3Ct3SxZA3V5WyEvujRyyNv0VYPhoBg1gZ8/MV5tubQp76Trw8lTv9hzRBa+A==}
@@ -10994,6 +11003,11 @@ snapshots:
   react-is@17.0.2: {}
 
   react-is@18.3.1: {}
+
+  react-popout@4.0.0(react-dom@18.2.0(react@18.3.1))(react@18.3.1):
+    dependencies:
+      react: 18.3.1
+      react-dom: 18.2.0(react@18.3.1)
 
   react-refresh@0.11.0: {}
 
