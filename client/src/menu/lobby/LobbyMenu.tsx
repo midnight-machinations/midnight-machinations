@@ -39,11 +39,11 @@ export default function LobbyMenu(): ReactElement {
     )!;
     const mobile = useContext(MobileContext)!;
 
-    const [advancedView, setAdvancedView] = useState<boolean>(isHost || mobile);
+    const [advancedView, setAdvancedView] = useState<boolean>(!mobile);
 
     useEffect(() => {
-        setAdvancedView(isHost || mobile)
-    }, [mobile, isHost])
+        setAdvancedView(!mobile)
+    }, [mobile, isHost]);
 
     useEffect(() => {
         const onBeforeUnload = (e: BeforeUnloadEvent) => {
@@ -52,7 +52,7 @@ export default function LobbyMenu(): ReactElement {
 
         window.addEventListener("beforeunload", onBeforeUnload);
         return () => window.removeEventListener("beforeunload", onBeforeUnload);
-    }, [])
+    }, []);
 
     return <div className="lm">
         <div>

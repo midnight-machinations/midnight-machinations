@@ -74,7 +74,6 @@ impl TallyClerk {
     fn result(game: &Game, midnight_variables: &MidnightVariables, target: Option<PlayerReference>)->u8{
         let guilties = Self::get_guilties(game, target);
         PlayerReference::all_players(game)
-            .filter(|player|player.alive(game))
             .filter(|player|guilties.contains(player))
             .filter(|player|TallyClerk::player_is_suspicious(game, midnight_variables, *player))
             .count()
