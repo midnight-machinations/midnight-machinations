@@ -61,7 +61,7 @@ impl MafiaRecruits{
             .collect();
 
         for player in players{
-            player.try_night_kill(&recruiters, game, midnight_variables, GraveKiller::RoleSet(RoleSet::Mafia), attack_power, false);
+            player.try_night_kill(recruiters.clone(), game, midnight_variables, GraveKiller::RoleSet(RoleSet::Mafia), attack_power, false);
         }
     }
 

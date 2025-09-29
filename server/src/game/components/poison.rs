@@ -88,7 +88,7 @@ impl Poison{
     }
     fn attack_poisoned_player(game: &mut Game, midnight_variables: &mut MidnightVariables, poison: PlayerPoison){
         poison.player.try_night_kill(
-            &poison.attackers,
+            poison.attackers.clone(),
             game,
             midnight_variables,
             poison.grave_killer,

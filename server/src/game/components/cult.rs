@@ -70,6 +70,9 @@ impl Cult{
 
     pub fn send_sacrifice_count(game: &mut Game){
         for p in PlayerReference::all_players(game){
+            if !InsiderGroupID::Cult.contains_player(game, p) {
+                continue;
+            }
             p.add_private_chat_message(game, ChatMessageVariant::CultSacrificeCount{count: game.cult.sacrifices});
         }
     }

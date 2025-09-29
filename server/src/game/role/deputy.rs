@@ -3,6 +3,7 @@ use serde::Serialize;
 
 use crate::game::attack_power::{AttackPower, DefensePower};
 use crate::game::chat::{ChatGroup, ChatMessageVariant};
+use crate::game::components::attack::normal_attack::Attack;
 use crate::game::components::graves::grave::{Grave, GraveDeathCause, GraveInformation, GraveKiller};
 use crate::game::game_conclusion::GameConclusion;
 use crate::game::phase::PhaseType;
@@ -10,6 +11,7 @@ use crate::game::player::PlayerReference;
 
 
 use crate::game::Game;
+use crate::vec_set;
 use super::{ControllerID, ControllerParametersMap, PlayerListSelection, Role, RoleStateTrait};
 
 
@@ -40,27 +42,25 @@ impl RoleStateTrait for Deputy {
             ControllerID::role(actor_ref, Role::Deputy, 0)
         )else{return};
         let Some(shot) = target_ref.first() else {return};
-        
-        
+
+        let mut grave = Grave::from_player_lynch(game, *shot);
+        if let GraveInformation::Normal{death_cause, ..} = &mut grave.information {
+            *death_cause = GraveDeathCause::Killers(vec![GraveKiller::Role(Role::Deputy)]);
+        }
+
         shot.add_private_chat_message(game, ChatMessageVariant::DeputyShotYou);
-        if shot.normal_defense(game).can_block(AttackPower::Basic) {
-            shot.add_private_chat_message(game, ChatMessageVariant::YouSurvivedAttack);
-            actor_ref.add_private_chat_message(game, ChatMessageVariant::SomeoneSurvivedYourAttack);
-
-        }else{
+        let killed = Attack::new_attack(
+            game,
+            true,
+            *shot,
+            vec_set!(actor_ref),
+            AttackPower::Basic,
+            grave
+        );
+        
+        if killed && shot.win_condition(game).is_loyalist_for(GameConclusion::Town) {
             game.add_message_to_chat_group(ChatGroup::All, ChatMessageVariant::DeputyKilled{shot: *shot});
-            
-            
-            let mut grave = Grave::from_player_lynch(game, *shot);
-            if let GraveInformation::Normal{death_cause, ..} = &mut grave.information {
-                *death_cause = GraveDeathCause::Killers(vec![GraveKiller::Role(Role::Deputy)]);
-            }
-            shot.die_and_add_grave(game, grave);
-            
-
-            if shot.win_condition(game).is_loyalist_for(GameConclusion::Town) {
-                actor_ref.die_and_add_grave(game, Grave::from_player_leave_town(game, actor_ref));
-            }
+            actor_ref.die_and_add_grave(game, Grave::from_player_leave_town(game, actor_ref));
         }
 
         actor_ref.set_role_state(game, Deputy{bullets_remaining:self.bullets_remaining.saturating_sub(1)});

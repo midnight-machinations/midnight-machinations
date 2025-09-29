@@ -56,7 +56,7 @@ impl PuppeteerMarionette{
             .collect();
 
         for player in players{
-            player.try_night_kill(&puppeteers, game, midnight_variables,GraveKiller::Role(Role::Puppeteer), attack_power, true);
+            player.try_night_kill(puppeteers.clone(), game, midnight_variables,GraveKiller::Role(Role::Puppeteer), attack_power, true);
         }
     }
 

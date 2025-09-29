@@ -30,3 +30,4 @@ pub mod role;
 pub mod player_component;
 pub mod pitchfork_item;
 pub mod role_reveal;
+pub mod attack;

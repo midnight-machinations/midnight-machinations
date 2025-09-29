@@ -38,6 +38,7 @@ impl FastForwardComponent {
     }
 
     fn attempt_skip(game: &mut Game){
+        if game.game_is_over() {return;}
         if Self::all_players_want_skip(game) {
             Self::skip(game)
         }

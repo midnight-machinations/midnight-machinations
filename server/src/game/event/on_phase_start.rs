@@ -30,10 +30,10 @@ impl Event for OnPhaseStart{
         VerdictsToday::on_phase_start,
         Controllers::on_phase_start,
         ModifierSettings::on_phase_start,
-        FastForwardComponent::on_phase_start,
         Silenced::on_phase_start,   //silenced needs to go before call witness, I could do priority but erm
         CallWitness::on_phase_start,    //must go after silenced
-        Game::on_phase_start
+        Game::on_phase_start,
+        FastForwardComponent::on_phase_start,
     ]}
 
     fn initial_fold_value(&self, _game: &Game) -> Self::FoldValue {}

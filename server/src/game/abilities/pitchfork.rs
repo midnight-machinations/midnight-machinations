@@ -33,7 +33,7 @@ impl PitchforkAbility{
         
         if let Some(target) = self.angry_mobbed_player {
             target.try_night_kill(
-                &pitchfork_players, 
+                pitchfork_players.clone(), 
                 game, midnight_variables,
                 GraveKiller::RoleSet(RoleSet::Town), 
                 AttackPower::ProtectionPiercing, 
