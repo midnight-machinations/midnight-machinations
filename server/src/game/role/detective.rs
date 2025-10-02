@@ -36,7 +36,6 @@ impl RoleStateTrait for Detective {
         actor_ref.push_night_message(midnight_variables, ChatMessageVariant::DetectiveResult {
             suspicious
         });
-        
     }
     fn controller_parameters_map(self, game: &Game, actor_ref: PlayerReference) -> ControllerParametersMap {
         ControllerParametersMap::builder(game)

@@ -1,5 +1,6 @@
 
 use serde::Serialize;
+use crate::game::components::blocked::BlockedComponent;
 use crate::game::controllers::AvailablePlayerListSelection;
 use crate::game::attack_power::DefensePower;
 use crate::game::chat::ChatMessageVariant;
@@ -14,10 +15,7 @@ use crate::game::event::on_midnight::MidnightVariables;
 use crate::game::event::on_midnight::OnMidnightPriority;
 use crate::game::components::tags::TagSetID;
 use crate::game::components::tags::Tags;
-use crate::game::phase::PhaseType;
 use crate::game::player::PlayerReference;
-
-use crate::game::role::common_role;
 use crate::game::visit::Visit;
 
 use crate::game::Game;
@@ -94,7 +92,7 @@ impl RoleStateTrait for Mortician {
     }
     fn on_grave_added(mut self, game: &mut Game, actor_ref: PlayerReference, grave_ref: GraveReference){
         if
-            !self.blocked &&
+            !BlockedComponent::blocked(game, actor_ref) &&
             !actor_ref.ability_deactivated_from_death(game) &&
             Tags::has_tag(game, TagSetID::MorticianTag(actor_ref), grave_ref.deref(game).player) &&
             self.cremations_remaining > 0
@@ -123,20 +121,5 @@ impl RoleStateTrait for Mortician {
     fn on_ability_deletion(self, game: &mut Game, actor_ref: PlayerReference, event: &OnAbilityDeletion, _fold: &mut (), priority: OnAbilityDeletionPriority){
         if !event.id.is_players_role(actor_ref, Role::Mortician) || priority != OnAbilityDeletionPriority::BeforeSideEffect {return;}
         Tags::remove_viewer(game, TagSetID::MorticianTag(actor_ref), actor_ref);
-    }
-    fn on_player_roleblocked(mut self, game: &mut Game, midnight_variables: &mut MidnightVariables, actor_ref: PlayerReference, player: PlayerReference, _invisible: bool) {
-        common_role::on_player_roleblocked(midnight_variables, actor_ref, player);
-        if player != actor_ref {return}
-        self.blocked = true;
-        actor_ref.set_role_state(game, self);
-    }
-    fn on_visit_wardblocked(mut self, game: &mut Game, midnight_variables: &mut MidnightVariables, actor_ref: PlayerReference, visit: Visit) {
-        common_role::on_visit_wardblocked(midnight_variables, actor_ref, visit);
-        if actor_ref != visit.visitor {return};
-        self.blocked = true;
-        actor_ref.set_role_state(game, self);
-    }
-    fn on_phase_start(mut self, game: &mut Game, actor_ref: PlayerReference, phase: crate::game::phase::PhaseType) {
-        if matches!(phase, PhaseType::Night) {self.blocked = false; actor_ref.set_role_state(game, self);}
     }
 }

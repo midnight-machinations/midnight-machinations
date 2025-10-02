@@ -1,14 +1,12 @@
 use serde::Serialize;
 
+use crate::game::components::blocked::BlockedComponent;
 use crate::game::controllers::*;
 use crate::game::attack_power::DefensePower;
 use crate::game::components::graves::grave::GraveInformation;
 use crate::game::components::graves::grave_reference::GraveReference;
 use crate::game::event::on_midnight::{MidnightVariables, OnMidnightPriority};
-use crate::game::phase::PhaseType;
 use crate::game::player::PlayerReference;
-
-use crate::game::role::common_role;
 use crate::game::visit::Visit;
 
 use crate::game::Game;
@@ -57,7 +55,7 @@ impl RoleStateTrait for Impostor {
         ])
     }
     fn on_grave_added(self, game: &mut Game, actor_ref: PlayerReference, grave: GraveReference) {
-        if self.blocked {return;}
+        if BlockedComponent::blocked(game, actor_ref) {return;}
         let Some(RoleListSelection(roles)) = ControllerID::role(actor_ref, Role::Impostor, 1)
             .get_role_list_selection(game).cloned() else {return};
         let Some(role) = roles.first().copied() else {return};
@@ -80,20 +78,5 @@ impl RoleStateTrait for Impostor {
         vec![
             crate::game::components::insider_group::InsiderGroupID::Mafia
         ].into_iter().collect()
-    }
-    fn on_player_roleblocked(mut self, game: &mut Game, midnight_variables: &mut MidnightVariables, actor_ref: PlayerReference, player: PlayerReference, _invisible: bool) {
-        common_role::on_player_roleblocked(midnight_variables, actor_ref, player);
-        if player != actor_ref {return}
-        self.blocked = true;
-        actor_ref.set_role_state(game, self);
-    }
-    fn on_visit_wardblocked(mut self, game: &mut Game, midnight_variables: &mut MidnightVariables, actor_ref: PlayerReference, visit: Visit) {
-        common_role::on_visit_wardblocked(midnight_variables, actor_ref, visit);
-        if actor_ref != visit.visitor {return};
-        self.blocked = true;
-        actor_ref.set_role_state(game, self);
-    }
-    fn on_phase_start(mut self, game: &mut Game, actor_ref: PlayerReference, phase: crate::game::phase::PhaseType) {
-        if matches!(phase, PhaseType::Night) {self.blocked = false; actor_ref.set_role_state(game, self);}
     }
 }

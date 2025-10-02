@@ -1654,13 +1654,13 @@
 
     "wiki.article.role.mayor.reminder": "Once per game you can enfranchise with voting power 3.",
     "wiki.article.role.mayor.lore": "Who voted for this idiot?",
-    "wiki.article.role.mayor.guide": "Choose to enfranchise with voting power 3 during the day.\n - You can't whisper or be whispered to while enfranchised",
+    "wiki.article.role.mayor.guide": "Choose to enfranchise with voting power 3 during the day.\n - You can't whisper or be whispered to while enfranchised\n- If you were blocked last night, you can't enfranchise today.",
     "wiki.article.role.mayor.abilities":"",
     "wiki.article.role.mayor.attributes":"",
     "wiki.article.role.mayor.extra": "- If your role changes, you unenfranchise.",
 
     "wiki.article.role.nepotist.reminder": "Once per game, choose a successor, when you do, you enfranchise with voting power 2, your successor enfranchises after you die.",
-    "wiki.article.role.nepotist.guide": "-Choose to successor during the day. When you do, you enfranchise with voting power 2.\n - You can't whisper or be whispered while enfranchised\n     - When you die, your successor enfranchises and gets 2 voting power, but still can be whispered to.",
+    "wiki.article.role.nepotist.guide": "-Choose to successor during the day. When you do, you enfranchise with voting power 2.\n - You can't whisper or be whispered while enfranchised\n     - When you die, your successor enfranchises and gets 2 voting power, but still can be whispered to.\n- If you were blocked last night, you can't enfranchise today.",
     "wiki.article.role.nepotist.abilities":"",
     "wiki.article.role.nepotist.attributes":"",
     "wiki.article.role.nepotist.extra": "- If your role changes, you unenfranchise.",
@@ -1869,7 +1869,7 @@
 
     "wiki.article.role.deputy.reminder": "Once per game, during the day, shoot someone. If you kill a town loyalist you leave town.",
     "wiki.article.role.deputy.lore": "\"When you know, you know.\"",
-    "wiki.article.role.deputy.guide":"- Once per game, you can shoot a player during the day\n- If you kill a townie, you instantly leave town\n- If you kill someone, everyone is told that a deputy shot someone\n- If the player you shoot survives your attack, only the player you attacked is told, nobody else is told\n- You can only shoot during discussion, nomination, adjournment, or dusk\n\nIf you attack someone and they survive it is likely that they are a role that is armored. Most roles that are armored are evil.",
+    "wiki.article.role.deputy.guide":"- Once per game, you can shoot a player during the day\n- If you kill a townie, you instantly leave town\n- If you kill someone, everyone is told that a deputy shot someone\n- If the player you shoot survives your attack, only the player you attacked is told, nobody else is told\n- You can only shoot during discussion, nomination, adjournment, or dusk\n- If you were blocked last night, you can't shoot today.\n\nIf you attack someone and they survive it is likely that they are a role that is armored. Most roles that are armored are evil.",
     "wiki.article.role.deputy.abilities":"* Once per game, you may choose a player to attack instantly. You can do this during discussion, nomination, adjournment, or dusk.",
     "wiki.article.role.deputy.attributes":"* If the player you attack has defense, they are told they were attacked by a deputy\n* When you kill someone, everyone is told a deputy shot someone\n* If you kill a town loyalist, you instantly leave town",
     "wiki.article.role.deputy.extra":"* You only have a basic attack\n* You can not attack day 1",

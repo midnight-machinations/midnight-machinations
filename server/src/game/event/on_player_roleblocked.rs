@@ -1,5 +1,5 @@
 use crate::game::{ 
-    abilities::syndicate_gun::SyndicateGun, chat::ChatMessageVariant, components::mafia::Mafia, player::PlayerReference, Game
+    abilities::syndicate_gun::SyndicateGun, chat::ChatMessageVariant, components::{blocked::BlockedComponent, mafia::Mafia}, player::PlayerReference, Game
 };
 
 use super::on_midnight::MidnightVariables;
@@ -26,5 +26,6 @@ impl OnPlayerRoleblocked{
         }
         Mafia::on_player_roleblocked(game, midnight_variables, self.player);
         SyndicateGun::on_player_roleblocked(game, midnight_variables, self.player);
+        BlockedComponent::set_blocked(game, self.player);
     }
 }

@@ -1,6 +1,6 @@
 use crate::game::{ 
     abilities::syndicate_gun::SyndicateGun, chat::ChatMessageVariant,
-    components::mafia::Mafia, player::PlayerReference, visit::Visit, Game
+    components::{blocked::BlockedComponent, mafia::Mafia}, player::PlayerReference, visit::Visit, Game
 };
 
 use super::on_midnight::MidnightVariables;
@@ -22,5 +22,6 @@ impl OnVisitWardblocked{
         }
         Mafia::on_visit_wardblocked(game, midnight_variables, self.visit);
         SyndicateGun::on_visit_wardblocked(game, midnight_variables, self.visit);
+        BlockedComponent::set_blocked(game, self.visit.visitor);
     }
 }

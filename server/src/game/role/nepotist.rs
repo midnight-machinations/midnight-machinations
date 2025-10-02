@@ -1,6 +1,7 @@
 
 use serde::Serialize;
 use crate::game::attack_power::DefensePower;
+use crate::game::components::blocked::BlockedComponent;
 use crate::game::event::on_ability_deletion::{OnAbilityDeletion, OnAbilityDeletionPriority};
 use crate::game::event::on_whisper::{OnWhisper, WhisperFold, WhisperPriority};
 use crate::game::components::enfranchise::EnfranchiseComponent;
@@ -24,6 +25,7 @@ pub(super) const DEFENSE: DefensePower = DefensePower::None;
 impl RoleStateTrait for Nepotist {
     type ClientAbilityState = ClientRoleState;
     fn on_validated_ability_input_received(mut self, game: &mut Game, actor_ref: PlayerReference, input_player: PlayerReference, ability_input: super::ControllerInput) {
+        if BlockedComponent::blocked(game, actor_ref) {return}
         if actor_ref != input_player {return;}
         let Some(player) = ability_input
             .get_player_list_selection_if_id(ControllerID::role(actor_ref, Role::Nepotist, 0))
@@ -48,6 +50,7 @@ impl RoleStateTrait for Nepotist {
                 actor_ref.ability_deactivated_from_death(game) ||
                 EnfranchiseComponent::enfranchised(game, actor_ref) || 
                 PhaseType::Night == game.current_phase().phase() ||
+                BlockedComponent::blocked(game, actor_ref) ||
                 PhaseType::Briefing == game.current_phase().phase()
             )
             .dont_save()

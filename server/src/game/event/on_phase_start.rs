@@ -1,9 +1,7 @@
 use crate::game::{
     abilities_component::Abilities,
     components::{
-        call_witness::CallWitness, detained::Detained,
-        fast_forward::FastForwardComponent, forfeit_vote::ForfeitNominationVote,
-        silenced::Silenced, verdicts_today::VerdictsToday
+        blocked::BlockedComponent, call_witness::CallWitness, detained::Detained, fast_forward::FastForwardComponent, forfeit_vote::ForfeitNominationVote, silenced::Silenced, verdicts_today::VerdictsToday
     },
     controllers::Controllers, event::Event, modifiers::ModifierSettings, phase::PhaseState,
     Game
@@ -24,6 +22,7 @@ impl Event for OnPhaseStart{
     type Priority = ();
 
     fn listeners() -> Vec<super::EventListenerFunction<Self>> {vec![
+        BlockedComponent::on_phase_start,
         Abilities::on_phase_start,
         ForfeitNominationVote::on_phase_start,
         Detained::on_phase_start,
