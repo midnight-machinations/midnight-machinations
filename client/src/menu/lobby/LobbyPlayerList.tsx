@@ -1,4 +1,4 @@
-import React, { ReactElement, useRef, useState } from "react";
+import React, { ReactElement, useContext, useRef, useState } from "react";
 import translate from "../../game/lang";
 import GAME_MANAGER from "../../index";
 import "./lobbyMenu.css";
@@ -10,6 +10,7 @@ import Popover from "../../components/Popover";
 import { dropdownPlacementFunction } from "../../components/Select";
 import StyledText from "../../components/StyledText";
 import { encodeString } from "../../components/ChatMessage";
+import { PopoutContext } from "../../components/popout";
 
 type PlayerDisplayData = {
     id: number,
@@ -111,6 +112,8 @@ function LobbyPlayerListPlayer(props: Readonly<{ player: PlayerDisplayData }>): 
 
     const [renameOpen, setRenameOpen] = useState(false);
     const renameButtonRef = useRef<HTMLButtonElement>(null);
+    
+    const myWindow = useContext(PopoutContext)?.window??window;
 
     return <li key={props.player.id} className={props.player.connection==="connected" ? "" : "keyword-dead"}>
         <div>
@@ -135,7 +138,7 @@ function LobbyPlayerListPlayer(props: Readonly<{ player: PlayerDisplayData }>): 
                 <Popover
                     open={renameOpen}
                     setOpenOrClosed={setRenameOpen}
-                    onRender={dropdownPlacementFunction}
+                    onRender={(dropdown, button)=>dropdownPlacementFunction(myWindow, dropdown, button)}
                     anchorForPositionRef={renameButtonRef}
                 ><LobbyPlayerListPlayerRename {...props}/></Popover>
             </>}
