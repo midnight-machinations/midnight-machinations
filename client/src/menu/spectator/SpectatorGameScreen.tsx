@@ -1,15 +1,11 @@
 import React, { ReactElement, useContext } from "react";
 import "../game/gameScreen.css"
 import HeaderMenu, { MenuButtons } from "../game/HeaderMenu";
-import { MenuController, useMenuController, MenuControllerContext, GameScreenMenus } from "../game/GameScreen";
+import { GameScreenMenus } from "../game/GameScreen";
 import { MobileContext } from "../Anchor";
 import { loadSettingsParsed } from "../../game/localStorage";
-
-let CONTENT_CONTROLLER: MenuController | undefined;
-
-export function getSpectatorScreenContentController(): MenuController | undefined {
-    return CONTENT_CONTROLLER;
-}
+import { MenuControllerContext, useMenuController } from "../game/menuController";
+import GAME_MANAGER from "../..";
 
 export default function SpectatorGameScreen(): ReactElement {
     const mobile = useContext(MobileContext)!;
@@ -17,9 +13,8 @@ export default function SpectatorGameScreen(): ReactElement {
 
     const contentController = useMenuController(
         maxMenus,
-        Object.fromEntries(menuOrder),
-        () => CONTENT_CONTROLLER!,
-        contentController => CONTENT_CONTROLLER = contentController
+        menuOrder.filter((kvp)=>kvp[1]).map((kvp)=>kvp[0]),
+        GAME_MANAGER.state.stateType==="game"&&GAME_MANAGER.state.clientState.type==="spectator"
     );
 
 

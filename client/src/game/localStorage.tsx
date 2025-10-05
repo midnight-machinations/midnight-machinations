@@ -2,10 +2,10 @@ import DEFAULT_GAME_MODES from "../resources/defaultGameModes.json";
 import { CurrentFormat, GameModeStorage } from "../components/gameModeSettings/gameMode";
 import { Language } from "./lang";
 import parseFromJson from "../components/gameModeSettings/gameMode/dataFixer";
-import { ContentMenu } from "../menu/game/GameScreen";
 import { ParseResult, Success } from "../components/gameModeSettings/gameMode/parse";
 import { UnsafeString } from "./gameState.d";
 import { ListMapData } from "../ListMap";
+import { ContentMenu } from "../menu/game/menuController";
 
 
 export function saveReconnectData(roomCode: number, playerId: number) {
@@ -75,21 +75,21 @@ export function getDefaultSettings(): Readonly<Settings> {
     let menuOrder: undefined | ListMapData<ContentMenu, boolean> = undefined;
     if(mobile) {
         menuOrder = [
-            [ContentMenu.ChatMenu, true],
-            [ContentMenu.WikiMenu, false], 
-            [ContentMenu.GraveyardMenu, false], 
-            [ContentMenu.PlayerListMenu, false],
-            [ContentMenu.WillMenu, false], 
-            [ContentMenu.RoleSpecificMenu, false]
+            ["ChatMenu", true],
+            ["WikiMenu", false], 
+            ["GraveyardMenu", false], 
+            ["PlayerListMenu", false],
+            ["WillMenu", false], 
+            ["RoleSpecificMenu", false]
         ]
     }else{
         menuOrder = [
-            [ContentMenu.WikiMenu, false], 
-            [ContentMenu.GraveyardMenu, false], 
-            [ContentMenu.PlayerListMenu, true], 
-            [ContentMenu.ChatMenu, true], 
-            [ContentMenu.WillMenu, false], 
-            [ContentMenu.RoleSpecificMenu, true]
+            ["WikiMenu", false], 
+            ["GraveyardMenu", false], 
+            ["PlayerListMenu", true], 
+            ["ChatMenu", true], 
+            ["WillMenu", false], 
+            ["RoleSpecificMenu", true]
         ]
     }
 

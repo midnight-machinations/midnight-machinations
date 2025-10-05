@@ -1,7 +1,7 @@
 import React, { ReactElement } from "react";
 import translate from "../../../game/lang";
 import GAME_MANAGER from "../../../index";
-import { ContentMenu, ContentTab } from "../GameScreen";
+import { ContentTab } from "../GameScreen";
 import "./graveyardMenu.css";
 import StyledText from "../../../components/StyledText";
 import { EnabledRolesDisplay } from "../../../components/gameModeSettings/EnabledRoleSelector";
@@ -13,7 +13,7 @@ import { ModifierSettingsDisplay } from "../../../components/gameModeSettings/Mo
 
 export default function GraveyardMenu(): ReactElement {
     return <div className="graveyard-menu graveyard-menu-colors">
-        <ContentTab close={ContentMenu.GraveyardMenu} helpMenu={"standard/gameMode"}>{translate("menu.gameMode.title")}</ContentTab>
+        <ContentTab close={"GraveyardMenu"}>{translate("menu.gameMode.title")}</ContentTab>
             
         <DetailsSummary
             summary={translate("menu.lobby.roleList")}

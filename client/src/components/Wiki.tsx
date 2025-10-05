@@ -7,7 +7,6 @@ import WikiArticle, { getSearchStrings, PageCollection } from "./WikiArticle";
 import { ARTICLES, WikiArticleLink, getArticleTitle, wikiPageIsEnabled } from "./WikiArticleLink";
 import StyledText from "./StyledText";
 import Icon from "./Icon";
-import { ContentMenu, MenuController } from "../menu/game/GameScreen";
 import { AnchorController } from "../menu/Anchor";
 import WikiCoverCard from "./WikiCoverCard";
 import { getAllRoles } from "../game/roleListState.d";
@@ -15,12 +14,17 @@ import { useLobbyOrGameState } from "./useHooks";
 import { MODIFIERS, ModifierID } from "../game/modifiers";
 import Masonry from "react-responsive-masonry";
 import CheckBox from "./CheckBox";
+import { MenuController } from "../menu/game/menuController";
 
 
-export function setWikiSearchPage(page: WikiArticleLink, anchorController: AnchorController, menuController?: MenuController) {
+export function setWikiSearchPage(
+    page: WikiArticleLink,
+    anchorController: AnchorController,
+    menuController?: MenuController
+) {
     if (GAME_MANAGER.wikiArticleCallbacks.length === 0) {
-        if (menuController?.canOpen(ContentMenu.WikiMenu)) {
-            menuController.openMenu(ContentMenu.WikiMenu, () => {
+        if (menuController?.canOpen("WikiMenu")) {
+            menuController.openMenu("WikiMenu", () => {
                 GAME_MANAGER.setWikiArticle(page);
             });
         } else {

@@ -2,7 +2,7 @@ import React, { ReactElement, useContext, useMemo } from "react";
 import translate from "../../game/lang";
 import GAME_MANAGER from "../../index";
 import { FastForwardSetting, PHASES, PhaseState, PhaseType, Player, Verdict } from "../../game/gameState.d";
-import { MenuControllerContext, ContentMenu, MENU_THEMES, MENU_TRANSLATION_KEYS } from "./GameScreen";
+import { MENU_THEMES, MENU_TRANSLATION_KEYS } from "./GameScreen";
 import "./headerMenu.css";
 import StyledText from "../../components/StyledText";
 import Icon from "../../components/Icon";
@@ -11,6 +11,7 @@ import { useGameState, usePlayerState, useSpectator } from "../../components/use
 import { MobileContext } from "../Anchor";
 import { encodeString } from "../../components/ChatMessage";
 import Select from "../../components/Select";
+import { MenuControllerContext } from "./menuController";
 
 
 export default function HeaderMenu(props: Readonly<{
@@ -206,7 +207,7 @@ export function MenuButtons(props: Readonly<{ chatMenuNotification: boolean }>):
             if(
                 GAME_MANAGER.state.stateType === "game" &&
                 GAME_MANAGER.state.clientState.type === "spectator" &&
-                (menu === ContentMenu.WillMenu || menu === ContentMenu.RoleSpecificMenu)
+                (menu === "WillMenu" || menu === "RoleSpecificMenu")
             ){
                 return null;
             }
@@ -214,7 +215,7 @@ export function MenuButtons(props: Readonly<{ chatMenuNotification: boolean }>):
                 highlighted={menuController.menusOpen().includes(menu)} 
                 onClick={()=>menuController.closeOrOpenMenu(menu)}
             >
-                {menu === ContentMenu.ChatMenu
+                {menu === "ChatMenu"
                     && props.chatMenuNotification
                     && <div className="chat-notification highlighted">!</div>
                 }
