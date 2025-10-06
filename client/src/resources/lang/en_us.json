@@ -560,6 +560,7 @@
     "role.warden.name": "Warden",
     "role.warden.name:var.0": "Wardens",
     "controllerId.role.warden.0.name": "Imprison",
+    "role.warden.roleDataText": "\\0/\\1 charges.",
 
     "role.yer.name": "Yer",
     "role.yer.name:var.0": "Yers",
@@ -758,9 +759,9 @@
     "controllerId.syndicateBackupAttack.name": "Backup Attack",
     "controllerId.forwardMessage.name": "Forward Message",
     "controllerId.pitchforkVote.name": "Pitchfork Vote",
-    "controllerId.wardenLiveOrDie.name": "Warden, Live or Die",
-    "controllerId.wardenLiveOrDie.boolean.true": "Live",
-    "controllerId.wardenLiveOrDie.boolean.false": "Die",
+    "controllerId.wardenCooperate.name": "Warden, Cooperate Or Defect",
+    "controllerId.wardenCooperate.boolean.true": "Cooperate",
+    "controllerId.wardenCooperate.boolean.false": "Defect",
 
 
     "standard":"Uncategorized",
@@ -1051,7 +1052,7 @@
     "chatMessage.deputyShotYou":"A Deputy shot you!",
     "chatMessage.puppeteerPlayerIsNowMarionette":"The puppeteer strung up \\0 into a marionette. They are now a Fiends Loyalist and Puppeteer Insider. They will be attacked every night.",
     "chatMessage.recruiterPlayerIsNowRecruit":"The recruiter recruited \\0 into the syndicate. They are now a Syndicate Loyalist and Syndicate Insider. They will be attacked every night.",
-    "chatMessage.wardenPlayersImprisoned": "The warden has forced these players into a choice of live or die: \\0.",
+    "chatMessage.wardenPlayersImprisoned": "The warden has made these players their prisoners: \\0. They will be roleblocked and each must choose cooperate or defect.",
     "chatMessage.yourConvertFailed": "You failed to convert your target.",
 
     "chatMessage.youDied":"You died!",
@@ -2154,11 +2155,11 @@
     "wiki.article.role.spiral.attributes":"- Players are not told when they start to spiral\n* If you are blocked, spiraling players still die\n* Your attack is armor piercing",
     "wiki.article.role.spiral.extra":"- You can't cause yourself to spiral\n- If a dead player is spiraling, they stay spiraling, and you attack them again, even while they are dead. Although they cannot die after already dead.",
 
-    "wiki.article.role.warden.reminder": "Each night*, put up to 3 players in your prison who each must choose to either live or die, but if they all choose to live, they all die instead.",
-    "wiki.article.role.warden.guide":"- Each night except the first, choose up to 3 players to put in prison\n    - The prisoners must choose to live or die\n        - If a player chooses die, you attack them (armor-piercing)\n        - If all of the players in your prison choose live, you attack all of them (armor-piercing)\n    - The players in your prison can talk in a private chat group at night\n        - You can always read from the private prisoner chat group\n    - The players in your prison are roleblocked, but not warded\n    - You can put yourself in your prison, but you can't ever die or be roleblocked by your own ability",
-    "wiki.article.role.warden.abilities":"- Each night except the first, choose up to 3 players to put in prison\n    - The prisoners must choose to live or die\n        - If a player chooses die, you attack them (armor-piercing)\n        - If all of the players in your prison choose live, you attack all of them (armor-piercing)\n    - The players in your prison can talk in a private chat group at night\n        - You can always read from the private prisoner chat group\n    - The players in your prison are roleblocked, but not warded\n    - You can put yourself in your prison, but you can't ever die or be roleblocked by your own ability",
-    "wiki.article.role.warden.attributes":" - You can't die to your own ability, but the logic of your ability doesn't change. _For example_:\n You imprison yourself and another player. You both choose live. You survive and the other player dies. All players in prison chose to live so both players should die, but you can't die to your own ability.",
-    "wiki.article.role.warden.extra":" - You don't visit anybody due to your own ability",
+    "wiki.article.role.warden.reminder": "Each night*, put up to 3 players in your prison who each must choose to either cooperate or defect. If they all cooperate they all live, otherwise, defectors live and cooperates die. If everyone defects then they all die.",
+    "wiki.article.role.warden.guide":"- Each day except the first, choose up to 3 players to put in prison\n    - The prisoners much each secretly choose to cooperate or defect\n        - If all prisoners choose defect, you attack each of them.\n        - If all prisoners choose cooperate, you don't attack, but you gain charges equal to the number of prisoners - 1\n        - Otherwise, you attack the prisoners who chose cooperate.\n    - Prisoners can chat in a private chat group at night.\n        - You can read the private chat group.\n    - Prisoners are roleblocked.\n    - You may choose to make yourself a prisoner.\n - If either of the following are true, then you attack your prisoners regardless of their choices.\n    - There is only 1 prisoner.\n    - Your charges are greater than or equal to half the number of players in the lobby rounded up.",
+    "wiki.article.role.warden.abilities":"",
+    "wiki.article.role.warden.attributes":"",
+    "wiki.article.role.warden.extra":" - You don't visit anybody due to your own ability.\n - Your attack is armor piercing.\n - You can't roleblock yourself.",
 
     "wiki.article.role.yer.reminder":"Each night*, either attack a player, or convert a player to be a yer, and attack yourself.",
     "wiki.article.role.yer.guide":"- At night choose to either shapeshift or not\n    - If you don't shapeshift\n        - Choose a player to attack with an armor piercing attack\n    - If you shapeshift\n        - Choose a player to convert with an armor-piercing attack\n        - If the attack succeeds\n            - That players role becomes yer            - That player converts to fiends loyalist\n            - You attack yourself with a protection piercing attack\n            - If you die, your grave shows the role you disguised as on it \n- You can only shapeshift X times (X = Total players ÷ 5 (round up))",

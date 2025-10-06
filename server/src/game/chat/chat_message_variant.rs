@@ -133,7 +133,7 @@ pub enum ChatMessageVariant {
     #[serde(rename_all = "camelCase")]
     DeputyShotYou,
     #[serde(rename_all = "camelCase")]
-    WardenPlayersImprisoned{players: Vec<PlayerReference>},
+    WardenPlayersImprisoned{players: VecSet<PlayerReference>},
     WerewolfTracked,
     CultSacrificeCount{count: u8},
     PuppeteerPlayerIsNowMarionette{player: PlayerReference},

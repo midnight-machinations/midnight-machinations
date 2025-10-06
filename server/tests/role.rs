@@ -3,7 +3,7 @@ use std::vec;
 
 pub(crate) use kit::{assert_contains, assert_not_contains};
 
-use mafia_server::game::controllers::{StringSelection, UnitSelection};
+use mafia_server::game::controllers::{BooleanSelection, ControllerSelection, StringSelection, UnitSelection};
 pub use mafia_server::{
     vec_set,
     packet::ToServerPacket,
@@ -1788,6 +1788,39 @@ fn godfather_backup_sets_off_engineer_trap() {
 }
 
 #[test]
+fn warden_basic() {
+    kit::scenario!(game in Dusk 2 where
+        warden: Warden,
+        eng: Engineer,
+        esc: Escort
+    );
+
+    warden.send_ability_input_player_list(vec![esc, eng], 0);
+
+    game.skip_to(Night, 2);
+
+    eng.send_ability_input(ControllerInput {
+        id: ControllerID::WardenCooperate {
+            warden: warden.player_ref(),
+            player: eng.player_ref()
+        },
+        selection: ControllerSelection::Boolean(BooleanSelection(false))
+    });
+    esc.send_ability_input(ControllerInput {
+        id: ControllerID::WardenCooperate {
+            warden: warden.player_ref(),
+            player: esc.player_ref()
+        },
+        selection: ControllerSelection::Boolean(BooleanSelection(true))
+    });
+
+    game.skip_to(Obituary, 3);
+
+    assert!(warden.alive());
+    assert!(eng.alive());
+    assert!(!esc.alive());
+}
+#[test]
 fn warden_dismantles_trap() {
     kit::scenario!(game in Dusk 2 where
         warden: Warden,
@@ -1796,17 +1829,27 @@ fn warden_dismantles_trap() {
     );
 
     warden.send_ability_input_player_list_typical(esc);
+
+    game.skip_to(Night, 2);
+
     eng.send_ability_input_player_list_typical(esc);
+    esc.send_ability_input(ControllerInput {
+        id: ControllerID::WardenCooperate {
+            warden: warden.player_ref(),
+            player: esc.player_ref()
+        },
+        selection: ControllerSelection::Boolean(BooleanSelection(true))
+    });
 
     game.skip_to(Obituary, 3);
 
+    assert!(esc.alive());
+    assert!(warden.alive());
+    assert!(eng.alive());
     assert!(matches!(
         eng.role_state(),
         RoleState::Engineer(Engineer { trap: Trap::Dismantled })
     ));
-    assert!(esc.alive());
-    assert!(warden.alive());
-    assert!(eng.alive());
 }
 
 #[test]
