@@ -1741,10 +1741,10 @@
 
     "wiki.article.role.gossip.reminder": "At night, select a player to eavesdrop on, and learn if they visited a player who is enemies with town.",
     "wiki.article.role.gossip.lore":"The gossip never shuts up. No secret is safe with them. You would think that's a bad thing... and many do...",
-    "wiki.article.role.gossip.guide": "- At night, select a player. You are told if they visited a player who is enemies with town\n- If they visited a friend, or nobody, they did not visit an enemy\n* Appeared visits can change information",
+    "wiki.article.role.gossip.guide": "- At night, select a player. You are told if they visited a player who is enemies with town\n- If they visited a friend, or nobody, they did not visit an enemy\n* Appeared visits do effect your information",
     "wiki.article.role.gossip.abilities":"- Visit a player to eavesdrop on\n    - If your target visited a player who is enemies with town, you are told so\n    - If your target visited nobody, then they didn't visit an enemy of the town",
     "wiki.article.role.gossip.attributes":"- If any player your target visits has a suspicious aura, then you are told they visited a town enemy",
-    "wiki.article.role.gossip.extra":"- Suspicious aura overrides innocent aura\n- If your target visits multiple other players, you learn if at least one of them is a town enemy\n- False appeared visits can mess with your results, depending on who your target appears to visit\n- Your target having an aura does not mess with the results, however, their targets having an aura does",
+    "wiki.article.role.gossip.extra":"- Suspicious aura overrides innocent aura\n- False appeared visits do not mess with your results\n- Your target having aura does not mess with the results, however, their targets having aura does",
 
     "wiki.article.role.tallyClerk.reminder": "At night, you are told how many players are town enemies from the players who voted guilty during selected trials.",
     "wiki.article.role.tallyClerk.lore": "The tally clerk always tells ridiculous stories of how people submit their votes. Others dismiss the stories as hyperbole, but the tally clerk delivers the stories with such an exhausted expression that you know they've been through it all.",

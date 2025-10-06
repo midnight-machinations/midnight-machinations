@@ -1,7 +1,9 @@
 use rand::seq::IndexedRandom;
 use serde::Serialize;
+use crate::game::abilities_component::ability_id::AbilityID;
 use crate::game::chat::ChatMessageVariant;
 use crate::game::event::on_ability_creation::{OnAbilityCreation, OnAbilityCreationFold, OnAbilityCreationPriority};
+use crate::game::event::on_role_switch::OnRoleSwitch;
 use crate::game::game_conclusion::GameConclusion;
 use crate::game::role::Role;
 use crate::game::role_list::role_enabled_and_not_taken;
@@ -20,6 +22,10 @@ pub struct Pawn;
 
 impl RoleStateTrait for Pawn {
     type ClientAbilityState = Pawn;
+    fn on_role_switch(self, game: &mut Game, actor_ref: PlayerReference, event: &OnRoleSwitch, _fold: &mut (), _priority: ()) {
+        if actor_ref != event.player {return}
+        AbilityID::Role { role: Role::Pawn, player: actor_ref }.delete_ability(game);
+    }
     fn on_ability_creation(self, game: &mut Game, actor_ref: PlayerReference, event: &OnAbilityCreation, fold: &mut OnAbilityCreationFold, priority: OnAbilityCreationPriority) {
         if priority != OnAbilityCreationPriority::SideEffect || !event.id.is_players_role(actor_ref, Role::Pawn) || fold.cancelled {return}
         

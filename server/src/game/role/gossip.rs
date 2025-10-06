@@ -1,7 +1,7 @@
 use serde::Serialize;
 
 use crate::game::components::confused::Confused;
-use crate::game::components::night_visits::Visits;
+use crate::game::components::night_visits::{NightVisitsIterator as _, Visits};
 use crate::game::event::on_midnight::{MidnightVariables, OnMidnightPriority};
 use crate::game::{attack_power::DefensePower, chat::ChatMessageVariant};
 use crate::game::player::PlayerReference;
@@ -55,7 +55,9 @@ impl RoleStateTrait for Gossip {
 
 impl Gossip {
     pub fn enemies_night(game: &Game, midnight_variables: &mut MidnightVariables, player_ref: PlayerReference) -> bool {
-        player_ref.tracker_seen_players(midnight_variables)
+        Visits::into_iter(midnight_variables)
+            .with_visitor(player_ref)
+            .map_target()
             .any(|targets_target|
                 Detective::player_is_suspicious(game, midnight_variables, targets_target)
             )

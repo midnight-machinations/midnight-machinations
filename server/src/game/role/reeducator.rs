@@ -67,11 +67,15 @@ impl RoleStateTrait for Reeducator {
     }
     fn controller_parameters_map(self, game: &Game, actor_ref: PlayerReference) -> super::ControllerParametersMap {
         ControllerParametersMap::combine([
+            //convert
             ControllerParametersMap::builder(game)
                 .id(ControllerID::role(actor_ref, Role::Reeducator, 0))
                 .single_player_selection_typical(actor_ref, false, false)
                 .night_typical(actor_ref)
-                .add_grayed_out_condition(game.day_number() <= 1)
+                .add_grayed_out_condition(
+                    game.day_number() <= 1 ||
+                    !self.convert_charges_remaining
+                )
                 .build_map(),
 
             ControllerParametersMap::builder(game)
@@ -86,7 +90,7 @@ impl RoleStateTrait for Reeducator {
 
             ControllerParametersMap::builder(game)
                 .id(ControllerID::role(actor_ref, Role::Reeducator, 2))
-                .player_list_selection_typical(actor_ref, true, true, false, true, true, Some(1))
+                .player_list_selection_typical(actor_ref, true, true, false, false, false, Some(1))
                 .add_grayed_out_condition(
                     actor_ref.ability_deactivated_from_death(game) ||
                     Detained::is_detained(game, actor_ref) ||
@@ -97,15 +101,12 @@ impl RoleStateTrait for Reeducator {
                 .build_map()
         ])
     }
-    // Unlike other conversion roles, its visit isn't tagged as an attack.
-    // This is because if the target is syndicate then it is converted without an attack
-    // After transportation, it becomes an attack
     fn convert_selection_to_visits(self, game: &Game, actor_ref: PlayerReference) -> Vec<Visit> {
         common_role::convert_controller_selection_to_visits(
             game, 
             actor_ref, 
             ControllerID::role(actor_ref, Role::Reeducator, 0),
-            false
+            true
         )
     }
     fn default_revealed_groups(self) -> crate::vec_set::VecSet<crate::game::components::insider_group::InsiderGroupID> {

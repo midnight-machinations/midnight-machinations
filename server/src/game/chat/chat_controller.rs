@@ -129,7 +129,7 @@ impl ChatComponent{
 
         let whisper_to_player = ControllerParametersMap::builder(game)
             .id(ControllerID::WhisperToPlayer { player })
-            .single_player_selection_typical(player, false, true)
+            .single_player_selection_typical(player, true, true)
             .allow_players(allowed_players.clone())
             .build_map();
 
