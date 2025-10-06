@@ -1869,10 +1869,10 @@
 
     "wiki.article.role.deputy.reminder": "Once per game, during the day, shoot someone. If you kill a town loyalist you leave town.",
     "wiki.article.role.deputy.lore": "\"When you know, you know.\"",
-    "wiki.article.role.deputy.guide":"- Once per game, you can shoot a player during the day\n- If you kill a townie, you instantly leave town\n- If you kill someone, everyone is told that a deputy shot someone\n- If the player you shoot survives your attack, only the player you attacked is told, nobody else is told\n- You can only shoot during discussion, nomination, adjournment, or dusk\n- If you were blocked last night, you can't shoot today.\n\nIf you attack someone and they survive it is likely that they are a role that is armored. Most roles that are armored are evil.",
+    "wiki.article.role.deputy.guide":"- Once per game, you can shoot a player during the day\n- If you kill a townie, you instantly leave town\n- If you kill someone, everyone is told that a deputy shot someone\n- If the player you shoot survives your attack, only the player you attacked is told, nobody else is told\n- You can only shoot during discussion, nomination, adjournment, or dusk\n- If you were blocked last night, you can't shoot today.",
     "wiki.article.role.deputy.abilities":"* Once per game, you may choose a player to attack instantly. You can do this during discussion, nomination, adjournment, or dusk.",
-    "wiki.article.role.deputy.attributes":"* If the player you attack has defense, they are told they were attacked by a deputy\n* When you kill someone, everyone is told a deputy shot someone\n* If you kill a town loyalist, you instantly leave town",
-    "wiki.article.role.deputy.extra":"* You only have a basic attack\n* You can not attack day 1",
+    "wiki.article.role.deputy.attributes":"* If the player you attack survives, they are told they were attacked by a deputy\n* When you kill someone, everyone is told a deputy shot someone\n* If you kill a town loyalist, you instantly leave town",
+    "wiki.article.role.deputy.extra":"* You have an armor-piercing attack\n* You can not attack day 1",
 
     "wiki.article.role.godfather.reminder": "Each night*, select a player to attack. Each night, select a player to appeared visit. You have armor and innocent aura.",
     "wiki.article.role.godfather.guide": "- At night, select a player to attack with a basic attack\n    - You can't attack night 1\n- Select a player to appeared visit",

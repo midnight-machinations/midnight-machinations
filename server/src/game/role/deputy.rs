@@ -55,7 +55,7 @@ impl RoleStateTrait for Deputy {
             true,
             *shot,
             vec_set!(actor_ref),
-            AttackPower::Basic,
+            AttackPower::ArmorPiercing,
             grave
         );
         
