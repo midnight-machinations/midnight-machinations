@@ -511,6 +511,23 @@ fn doctor_basic() {
     assert!(maf.alive());
 }
 
+#[test]
+fn vigilante_runs_out_of_bullets() {
+    kit::scenario!(game in Night 2 where
+        vig: Vigilante, 
+        a: Mafioso,
+        b: Goon
+    );
+    vig.send_ability_input_player_list_typical(a);
+    game.skip_to(Night, 3);
+    vig.send_ability_input_player_list_typical(b);
+    game.skip_to(Obituary, 4);
+
+    assert!(!a.alive());
+    assert!(vig.alive());
+    assert!(b.alive());
+}
+
 /// Tests if transporter properly swaps, redirecting actions on their first target to their
 /// second. The vigilante will try to kill town1, which should end up killing town2.
 #[test]

@@ -23,7 +23,7 @@ impl Abilities{
         );
         for (player, o) in assignments.iter(){
             let id = AbilityID::Role { role: o.role, player: *player };
-            abilities.insert(id.clone(), Ability::RoleAbility(RoleAbility(*player, o.role.default_state())));
+            abilities.insert(id.clone(), Ability::RoleAbility(RoleAbility(o.role.default_state())));
         }
         abilities.sort();
         Self{abilities}
@@ -61,7 +61,7 @@ impl Abilities{
 impl AbilityID{
     fn new_state(&self, game: &Game)->Ability{
         match self {
-            AbilityID::Role { role, player } => {RoleAbility(*player, role.new_state(game)).into()},
+            AbilityID::Role { role, .. } => {RoleAbility(role.new_state(game)).into()},
             AbilityID::Pitchfork => {PitchforkAbility::new_state(game).into()},
             AbilityID::SyndicateGun => {SyndicateGun::default().into()},
         }

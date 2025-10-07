@@ -1,5 +1,6 @@
 use serde::Serialize;
 
+use crate::game::abilities_component::ability_id::AbilityID;
 use crate::game::controllers::AvailableTwoPlayerOptionSelection;
 use crate::game::event::on_midnight::{MidnightVariables, OnMidnightPriority};
 use crate::game::{attack_power::DefensePower, player::PlayerReference};
@@ -20,7 +21,7 @@ pub(super) const DEFENSE: DefensePower = DefensePower::None;
 
 impl RoleStateTrait for Courtesan {
     type ClientAbilityState = Courtesan;
-    fn on_midnight(mut self, game: &mut Game, midnight_variables: &mut MidnightVariables, actor_ref: PlayerReference, priority: OnMidnightPriority) {
+    fn on_midnight(mut self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut MidnightVariables, priority: OnMidnightPriority) {
         if priority != OnMidnightPriority::Roleblock {return;}
         let actor_visits = actor_ref.untagged_night_visits_cloned(midnight_variables);
         let mut previous = Vec::new();

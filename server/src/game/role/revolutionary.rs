@@ -69,12 +69,10 @@ impl RoleStateTrait for Revolutionary {
         }
     }
     fn on_ability_creation(self, game: &mut Game, actor_ref: PlayerReference, event: &OnAbilityCreation, fold: &mut OnAbilityCreationFold, priority: OnAbilityCreationPriority){
-        
         if event.id.is_players_role(actor_ref, Role::Revolutionary) {
-            println!("{:?}", priority);
             match priority {
                 OnAbilityCreationPriority::CancelOrEdit => {
-                    let Ability::RoleAbility(RoleAbility(_, RoleState::Revolutionary(Revolutionary { target: RevolutionaryTarget::Won }))) = event.ability else {return};
+                    let Ability::RoleAbility(RoleAbility(RoleState::Revolutionary(Revolutionary { target: RevolutionaryTarget::Won }))) = event.ability else {return};
                     if let Some(target) = PlayerReference::all_players(game)
                         .filter(|p|
                             RoleSet::Town
@@ -84,14 +82,9 @@ impl RoleStateTrait for Revolutionary {
                         ).collect::<Vec<PlayerReference>>()
                         .choose(&mut rand::rng())
                     {
-                        fold.ability = Ability::RoleAbility(
-                            RoleAbility(
-                                actor_ref,
-                                RoleState::Revolutionary(
-                                    Revolutionary{target: RevolutionaryTarget::Target(*target)}
-                                )
-                            )
-                        );
+                        fold.ability = Ability::RoleAbility(RoleAbility(RoleState::Revolutionary(
+                            Revolutionary{target: RevolutionaryTarget::Target(*target)}
+                        )));
                     }else{
                         fold.cancelled = true;
                         actor_ref.set_role_and_win_condition_and_revealed_group(game, RoleState::Jester(Jester::default()))

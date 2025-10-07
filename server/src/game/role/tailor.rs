@@ -13,6 +13,7 @@ use super::{
     ControllerParametersMap,
     Role, RoleStateTrait
 };
+use crate::game::abilities_component::ability_id::AbilityID;
 
 
 #[derive(Clone, Debug, Default)]
@@ -33,7 +34,7 @@ pub(super) const DEFENSE: DefensePower = DefensePower::None;
 
 impl RoleStateTrait for Tailor {
     type ClientAbilityState = ClientRoleState;
-    fn on_midnight(self, game: &mut Game, midnight_variables: &mut MidnightVariables, actor_ref: PlayerReference, priority: OnMidnightPriority) {
+    fn on_midnight(self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut MidnightVariables, priority: OnMidnightPriority) {
         if priority != OnMidnightPriority::Convert {return;}
         let Some(target) = Visits::default_target(game, midnight_variables, actor_ref) else {return};
         let Some(role) = ControllerID::role(actor_ref, Role::Tailor, 1).get_role_list_selection_first(game) else {return};

@@ -1,4 +1,5 @@
 use serde::{Serialize, Deserialize};
+use crate::game::abilities_component::ability_id::AbilityID;
 
 use crate::game::attack_power::{AttackPower, DefensePower};
 use crate::game::chat::ChatMessageVariant;
@@ -116,7 +117,7 @@ pub(super) const DEFENSE: DefensePower = DefensePower::None;
 
 impl RoleStateTrait for Doomsayer {
     type ClientAbilityState = ClientRoleState;
-    fn on_midnight(self, game: &mut Game, midnight_variables: &mut MidnightVariables, actor_ref: PlayerReference, priority: OnMidnightPriority) {
+    fn on_midnight(self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut MidnightVariables, priority: OnMidnightPriority) {
         if priority != OnMidnightPriority::TopPriority {return;}
 
         if actor_ref.night_blocked(midnight_variables) {return;}

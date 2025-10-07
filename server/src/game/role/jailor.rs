@@ -8,6 +8,7 @@ use crate::game::game_conclusion::GameConclusion;
 use crate::game::components::graves::grave::GraveKiller;
 use crate::game::phase::PhaseType;
 use crate::game::player::PlayerReference;
+use crate::game::abilities_component::ability_id::AbilityID;
 
 use crate::game::role::BooleanSelection;
 use crate::game::Game;
@@ -46,7 +47,7 @@ impl RoleStateTrait for Jailor {
             ..Self::default()
         }
     }
-    fn on_midnight(mut self, game: &mut Game, midnight_variables: &mut MidnightVariables, actor_ref: PlayerReference, priority: OnMidnightPriority) {
+    fn on_midnight(mut self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut MidnightVariables, priority: OnMidnightPriority) {
         match priority {
             OnMidnightPriority::Kill => {
 

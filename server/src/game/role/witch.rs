@@ -4,6 +4,7 @@ use crate::game::controllers::AvailableTwoPlayerOptionSelection;
 use crate::game::components::graves::grave::Grave;
 use crate::game::event::on_midnight::{MidnightVariables, OnMidnightPriority};
 
+use crate::game::abilities_component::ability_id::AbilityID;
 use crate::game::components::win_condition::WinCondition;
 use crate::game::attack_power::DefensePower;
 use crate::game::phase::PhaseType;
@@ -33,7 +34,7 @@ pub(super) const DEFENSE: DefensePower = DefensePower::None;
 
 impl RoleStateTrait for Witch {
     type ClientAbilityState = ClientRoleState;
-    fn on_midnight(self, game: &mut Game, midnight_variables: &mut MidnightVariables, actor_ref: PlayerReference, priority: OnMidnightPriority) {
+    fn on_midnight(self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut MidnightVariables, priority: OnMidnightPriority) {
         if let Some(currently_used_player) = actor_ref.possess_night_action(game, midnight_variables, priority, self.currently_used_player){
             actor_ref.set_role_state(game, Witch{
                 currently_used_player: Some(currently_used_player)

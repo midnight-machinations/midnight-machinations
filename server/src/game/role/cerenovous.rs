@@ -8,6 +8,7 @@ use crate::game::phase::PhaseType;
 use crate::game::role::informant::Informant;
 use crate::game::{attack_power::DefensePower, player::PlayerReference};
 
+use crate::game::abilities_component::ability_id::AbilityID;
 use crate::game::visit::Visit;
 
 use crate::game::Game;
@@ -34,7 +35,7 @@ impl RoleStateTrait for Cerenovous {
             ..Self::default()
         }
     }
-    fn on_midnight(mut self, game: &mut Game, midnight_variables: &mut MidnightVariables, actor_ref: PlayerReference, priority: OnMidnightPriority) {
+    fn on_midnight(mut self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut MidnightVariables, priority: OnMidnightPriority) {
         if priority != OnMidnightPriority::Deception {return}
 
         let actor_visits = actor_ref.untagged_night_visits_cloned(midnight_variables);

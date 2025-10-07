@@ -1,4 +1,5 @@
 use std::iter::once;
+use crate::game::abilities_component::ability_id::AbilityID;
 use serde::{Deserialize, Serialize};
 use crate::game::components::confused::Confused;
 use crate::game::role_outline_reference::RoleOutlineReference;
@@ -29,7 +30,7 @@ pub(super) const DEFENSE: DefensePower = DefensePower::None;
 
 impl RoleStateTrait for Auditor {
     type ClientAbilityState = Auditor;
-    fn on_midnight(mut self, game: &mut Game, midnight_variables: &mut MidnightVariables, actor_ref: PlayerReference, priority: OnMidnightPriority) {
+    fn on_midnight(mut self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut MidnightVariables, priority: OnMidnightPriority) {
 
         if priority != OnMidnightPriority::Investigative {return;}
         if actor_ref.night_blocked(midnight_variables) {return;}

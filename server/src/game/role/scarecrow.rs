@@ -6,6 +6,7 @@ use crate::game::event::on_midnight::{MidnightVariables, OnMidnightPriority};
 use crate::game::components::win_condition::WinCondition;
 use crate::game::{attack_power::DefensePower, chat::ChatMessageVariant};
 use crate::game::phase::PhaseType;
+use crate::game::abilities_component::ability_id::AbilityID;
 use crate::game::player::PlayerReference;
 use crate::game::visit::Visit;
 use crate::game::Game;
@@ -21,7 +22,7 @@ pub(super) const DEFENSE: DefensePower = DefensePower::None;
 
 impl RoleStateTrait for Scarecrow {
     type ClientAbilityState = Scarecrow;
-    fn on_midnight(self, game: &mut Game, midnight_variables: &mut MidnightVariables, actor_ref: PlayerReference, priority: OnMidnightPriority) {
+    fn on_midnight(self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut MidnightVariables, priority: OnMidnightPriority) {
         let Some(target) = Visits::default_target(game, midnight_variables, actor_ref) else {return};
 
         if matches!(priority, OnMidnightPriority::PreWard | OnMidnightPriority::Ward) {

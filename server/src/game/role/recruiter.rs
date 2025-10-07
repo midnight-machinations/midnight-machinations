@@ -12,6 +12,7 @@ use crate::game::role_list_generation::criteria::{GenerationCriterion, Generatio
 use crate::game::role_list_generation::PartialOutlineListAssignmentNode;
 use crate::game::settings::Settings;
 use crate::game::visit::Visit;
+use crate::game::abilities_component::ability_id::AbilityID;
 
 use crate::game::Game;
 use super::godfather::Godfather;
@@ -46,7 +47,7 @@ impl RoleStateTrait for Recruiter {
             recruits_remaining: crate::game::role::common_role::standard_charges(game),
         }
     }
-    fn on_midnight(self, game: &mut Game, midnight_variables: &mut MidnightVariables, actor_ref: PlayerReference, priority: OnMidnightPriority) {
+    fn on_midnight(self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut MidnightVariables, priority: OnMidnightPriority) {
 
         let choose_attack = Self::choose_attack(game, actor_ref);
 

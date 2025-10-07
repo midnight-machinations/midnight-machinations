@@ -2,6 +2,7 @@ use std::collections::HashSet;
 
 use serde::{Deserialize, Serialize};
 
+use crate::game::abilities_component::ability_id::AbilityID;
 use crate::game::attack_power::AttackPower;
 use crate::game::chat::ChatMessageVariant;
 use crate::game::components::graves::grave::{Grave, GraveKiller};
@@ -37,7 +38,7 @@ pub(super) const DEFENSE: DefensePower = DefensePower::Armored;
 
 impl RoleStateTrait for Krampus {
     type ClientAbilityState = ();
-    fn on_midnight(self, game: &mut Game, midnight_variables: &mut MidnightVariables, actor_ref: PlayerReference, priority: OnMidnightPriority) {
+    fn on_midnight(self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut MidnightVariables, priority: OnMidnightPriority) {
         let actor_visits = actor_ref.untagged_night_visits_cloned(midnight_variables);
 
         match (priority, self.ability) {

@@ -1,5 +1,6 @@
 use rand::seq::SliceRandom;
 use serde::Serialize;
+use crate::game::abilities_component::ability_id::AbilityID;
 use crate::game::components::night_visits::{NightVisitsIterator, Visits};
 use crate::game::controllers::ControllerParametersMap;
 use crate::game::attack_power::AttackPower;
@@ -27,7 +28,7 @@ pub(super) const DEFENSE: DefensePower = DefensePower::Armored;
 
 impl RoleStateTrait for Ojo {
     type ClientAbilityState = Ojo;
-    fn on_midnight(self, game: &mut Game, midnight_variables: &mut MidnightVariables, actor_ref: PlayerReference, priority: OnMidnightPriority) {
+    fn on_midnight(self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut MidnightVariables, priority: OnMidnightPriority) {
         match priority {
             OnMidnightPriority::Kill => {
                 if game.day_number() == 1 {return}

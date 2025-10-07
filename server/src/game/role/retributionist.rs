@@ -1,4 +1,5 @@
 use serde::Serialize;
+use crate::game::abilities_component::ability_id::AbilityID;
 
 use crate::game::controllers::AvailableTwoPlayerOptionSelection;
 use crate::game::components::graves::grave_reference::GraveReference;
@@ -30,7 +31,7 @@ pub struct ClientRoleState;
 
 impl RoleStateTrait for Retributionist {
     type ClientAbilityState = ClientRoleState;
-    fn on_midnight(self, game: &mut Game, midnight_variables: &mut MidnightVariables, actor_ref: PlayerReference, priority: OnMidnightPriority) {
+    fn on_midnight(self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut MidnightVariables, priority: OnMidnightPriority) {
         if let Some(currently_used_player) = actor_ref.possess_night_action(game, midnight_variables, priority, self.currently_used_player){
             let mut used_bodies = self.used_bodies;
             used_bodies.push(currently_used_player);

@@ -4,7 +4,7 @@ use crate::game::chat::ChatMessageVariant;
 use crate::game::event::on_midnight::{MidnightVariables, OnMidnightPriority};
 use crate::game::game_conclusion::GameConclusion;
 use crate::game::phase::PhaseType;
-
+use crate::game::abilities_component::ability_id::AbilityID;
 use crate::game::components::win_condition::WinCondition;
 use crate::game::attack_power::{AttackPower, DefensePower};
 use crate::game::player::PlayerReference;
@@ -32,7 +32,7 @@ pub(super) const DEFENSE: DefensePower = DefensePower::None;
 
 impl RoleStateTrait for SantaClaus {
     type ClientAbilityState = SantaClaus;
-    fn on_midnight(self, game: &mut Game, midnight_variables: &mut MidnightVariables, actor_ref: PlayerReference, priority: OnMidnightPriority) {
+    fn on_midnight(self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut MidnightVariables, priority: OnMidnightPriority) {
         if priority != OnMidnightPriority::Convert { return }
 
         match self.get_next_santa_ability() {

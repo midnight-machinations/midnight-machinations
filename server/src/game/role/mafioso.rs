@@ -8,6 +8,7 @@ use crate::game::event::on_midnight::{MidnightVariables, OnMidnightPriority};
 use crate::game::role_list::RoleSet;
 use crate::game::attack_power::DefensePower;
 use crate::game::player::PlayerReference;
+use crate::game::abilities_component::ability_id::AbilityID;
 
 use crate::game::visit::Visit;
 
@@ -24,7 +25,7 @@ pub(super) const DEFENSE: DefensePower = DefensePower::None;
 
 impl RoleStateTrait for Mafioso {
     type ClientAbilityState = Mafioso;
-    fn on_midnight(self, game: &mut Game, midnight_variables: &mut MidnightVariables, actor_ref: PlayerReference, priority: OnMidnightPriority) {
+    fn on_midnight(self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut MidnightVariables, priority: OnMidnightPriority) {
         if priority != OnMidnightPriority::Kill {return}
         if game.day_number() == 1 {return}
         if let Some(visit) = Visits::default_visit(game, midnight_variables, actor_ref) {

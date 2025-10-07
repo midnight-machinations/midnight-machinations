@@ -8,6 +8,7 @@ use crate::game::attack_power::{AttackPower, DefensePower};
 use crate::game::event::on_role_switch::OnRoleSwitch;
 use rand::seq::SliceRandom;
 use crate::game::player::PlayerReference;
+use crate::game::abilities_component::ability_id::AbilityID;
 
 use crate::game::visit::{Visit, VisitTag};
 use crate::game::Game;
@@ -51,7 +52,7 @@ impl RoleStateTrait for Mercenary {
         
         Self { won: false, roles, attacks_remaining }
     }
-    fn on_midnight(self, game: &mut Game, midnight_variables: &mut MidnightVariables, actor_ref: PlayerReference, priority: OnMidnightPriority) {
+    fn on_midnight(self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut MidnightVariables, priority: OnMidnightPriority) {
         
         let visits = actor_ref.untagged_night_visits_cloned(midnight_variables);
         let Some(visit) = visits.first() else {return};

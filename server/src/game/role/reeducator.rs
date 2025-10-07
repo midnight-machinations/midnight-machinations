@@ -11,6 +11,7 @@ use crate::game::role_list_generation::criteria::{GenerationCriterion, Generatio
 use crate::game::role_list_generation::PartialOutlineListAssignmentNode;
 use crate::game::settings::Settings;
 use crate::game::{attack_power::DefensePower, player::PlayerReference};
+use crate::game::abilities_component::ability_id::AbilityID;
 
 use crate::game::visit::Visit;
 
@@ -39,7 +40,7 @@ pub(super) const DEFENSE: DefensePower = DefensePower::None;
 
 impl RoleStateTrait for Reeducator {
     type ClientAbilityState = Reeducator;
-    fn on_midnight(mut self, game: &mut Game, midnight_variables: &mut MidnightVariables, actor_ref: PlayerReference, priority: OnMidnightPriority) {
+    fn on_midnight(mut self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut MidnightVariables, priority: OnMidnightPriority) {
         
         let Some(target) = Visits::default_target(game, midnight_variables, actor_ref) else {return};
         let Some(role) = ControllerID::role(actor_ref, Role::Reeducator, 1).get_role_list_selection_first(game) else {return};

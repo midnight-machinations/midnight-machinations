@@ -7,6 +7,7 @@ use crate::game::{attack_power::DefensePower, chat::ChatMessageVariant};
 use crate::game::components::graves::grave::GraveKiller;
 use crate::game::player::PlayerReference;
 
+use crate::game::abilities_component::ability_id::AbilityID;
 use crate::game::Game;
 use crate::vec_map::VecMap;
 use crate::game::controllers::*;
@@ -170,7 +171,7 @@ pub(super) const DEFENSE: DefensePower = DefensePower::Armored;
 
 impl RoleStateTrait for Kira {
     type ClientAbilityState = Kira;
-    fn on_midnight(self, game: &mut Game, midnight_variables: &mut MidnightVariables, actor_ref: PlayerReference, priority: OnMidnightPriority) {
+    fn on_midnight(self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut MidnightVariables, priority: OnMidnightPriority) {
         if actor_ref.night_blocked(midnight_variables) {return;}
         if actor_ref.ability_deactivated_from_death(game) {return;}
 

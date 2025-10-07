@@ -7,6 +7,7 @@ use crate::game::{attack_power::DefensePower, chat::ChatMessageVariant};
 use crate::game::phase::PhaseType;
 use crate::game::player::PlayerReference;
 use crate::game::Game;
+use crate::game::abilities_component::ability_id::AbilityID;
 use super::{ControllerParametersMap, GetClientAbilityState, Role, RoleStateTrait};
 
 #[derive(Clone, Debug)]
@@ -39,7 +40,7 @@ pub(super) const DEFENSE: DefensePower = DefensePower::None;
 
 impl RoleStateTrait for Steward {
     type ClientAbilityState = ClientRoleState;
-    fn on_midnight(mut self, game: &mut Game, midnight_variables: &mut MidnightVariables, actor_ref: PlayerReference, priority: OnMidnightPriority) {
+    fn on_midnight(mut self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut MidnightVariables, priority: OnMidnightPriority) {
 
         if actor_ref.night_blocked(midnight_variables) {return}
         if actor_ref.ability_deactivated_from_death(game) {return}

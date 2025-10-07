@@ -17,6 +17,7 @@ use crate::game::components::tags::TagSetID;
 use crate::game::components::tags::Tags;
 use crate::game::player::PlayerReference;
 use crate::game::visit::Visit;
+use crate::game::abilities_component::ability_id::AbilityID;
 
 use crate::game::Game;
 use super::ControllerID;
@@ -53,7 +54,7 @@ impl RoleStateTrait for Mortician {
             blocked: false
         }
     }
-    fn on_midnight(self, game: &mut Game, midnight_variables: &mut MidnightVariables, actor_ref: PlayerReference, priority: OnMidnightPriority) {
+    fn on_midnight(self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut MidnightVariables, priority: OnMidnightPriority) {
         match priority {
             OnMidnightPriority::Deception=>{
                 let actor_visits = actor_ref.untagged_night_visits_cloned(midnight_variables);

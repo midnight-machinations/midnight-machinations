@@ -10,7 +10,8 @@ use crate::game::player::PlayerReference;
 use crate::game::visit::Visit;
 
 use crate::game::Game;
-use super::{ControllerID, ControllerParametersMap, Role, RoleState, RoleStateTrait};
+use crate::game::abilities_component::ability_id::AbilityID;
+use super::{ControllerID, ControllerParametersMap, Role, RoleStateTrait};
 
 #[derive(Clone, Debug, Serialize)]
 #[serde(rename_all = "camelCase")]
@@ -40,7 +41,7 @@ pub(super) const DEFENSE: DefensePower = DefensePower::None;
 
 impl RoleStateTrait for Vigilante {
     type ClientAbilityState = Vigilante;
-    fn on_midnight(mut self, game: &mut Game, midnight_variables: &mut MidnightVariables, actor_ref: PlayerReference, priority: OnMidnightPriority) {
+    fn on_midnight(mut self, game: &mut Game, id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut MidnightVariables, priority: OnMidnightPriority) {
         match priority{
             OnMidnightPriority::TopPriority => {
                 if VigilanteState::WillSuicide == self.state {
@@ -76,7 +77,9 @@ impl RoleStateTrait for Vigilante {
             },
             _ => {}
         }
-    actor_ref.set_role_state(game, RoleState::Vigilante(self));
+        
+        id.edit_role_ability(game, self);
+        // actor_ref.set_role_state(game, self);
     }
     fn controller_parameters_map(self, game: &Game, actor_ref: PlayerReference) -> ControllerParametersMap {
         let can_shoot = if let VigilanteState::Loaded { bullets } = &self.state {

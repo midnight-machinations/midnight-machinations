@@ -1,5 +1,6 @@
 #![allow(clippy::single_match, reason = "May add more cases for more priorities later")]
 
+use crate::game::abilities_component::ability_id::AbilityID;
 use crate::game::components::graves::grave_reference::GraveReference;
 use crate::game::event::on_ability_creation::{OnAbilityCreation, OnAbilityCreationFold, OnAbilityCreationPriority};
 use crate::game::event::on_ability_deletion::{OnAbilityDeletion, OnAbilityDeletionPriority};
@@ -37,7 +38,7 @@ impl<T: RoleStateTrait> GetClientAbilityState<T> for T {
 
 pub trait RoleStateTrait: Clone + std::fmt::Debug + Default + GetClientAbilityState<<Self as RoleStateTrait>::ClientAbilityState> {
     type ClientAbilityState: Clone + std::fmt::Debug + Serialize;
-    fn on_midnight(self, _game: &mut Game, _midnight_variables: &mut MidnightVariables, _actor_ref: PlayerReference, _priority: OnMidnightPriority) {}
+    fn on_midnight(self, _game: &mut Game, _id: &AbilityID, _actor_ref: PlayerReference, _midnight_variables: &mut MidnightVariables, _priority: OnMidnightPriority) {}
 
     fn controller_parameters_map(self, _game: &Game, _actor_ref: PlayerReference) -> ControllerParametersMap {
         ControllerParametersMap::default()
@@ -268,9 +269,9 @@ mod macros {
                         $(Self::$name(role_struct) => role_struct.on_visit_wardblocked(game, midnight_variables, actor_ref, visit)),*
                     }
                 }
-                pub fn on_midnight(self, game: &mut Game, midnight_variables: &mut MidnightVariables, actor_ref: PlayerReference, priority: OnMidnightPriority){
+                pub fn on_midnight(self, game: &mut Game, id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut MidnightVariables, priority: OnMidnightPriority){
                     match self {
-                        $(Self::$name(role_struct) => role_struct.on_midnight(game, midnight_variables, actor_ref, priority)),*
+                        $(Self::$name(role_struct) => role_struct.on_midnight(game, id, actor_ref, midnight_variables, priority)),*
                     }
                 }
                 pub fn controller_parameters_map(self, game: &Game, actor_ref: PlayerReference) -> ControllerParametersMap {

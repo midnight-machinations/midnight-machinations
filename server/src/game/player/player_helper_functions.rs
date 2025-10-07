@@ -82,7 +82,7 @@ impl PlayerReference{
     /**
     ### Example use in witch case
         
-    fn on_midnight(self, game: &mut Game, midnight_variables: &mut MidnightVariables, actor_ref: PlayerReference, priority: OnMidnightPriority) {
+    fn on_midnight(self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut MidnightVariables, priority: OnMidnightPriority) {
         if let Some(currently_used_player) = actor_ref.possess_night_action(game, self.currently_used_player){
             actor_ref.set_role_state(game, RoleState::Witch(Witch{
                 currently_used_player: Some(currently_used_player)

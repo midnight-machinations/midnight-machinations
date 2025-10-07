@@ -9,6 +9,7 @@ use crate::game::components::graves::grave_reference::GraveReference;
 use crate::game::event::on_midnight::{MidnightVariables, OnMidnightPriority};
 use crate::game::{attack_power::DefensePower, player::PlayerReference};
 use crate::game::visit::{Visit, VisitTag};
+use crate::game::abilities_component::ability_id::AbilityID;
 use crate::game::Game;
 use super::{InsiderGroupID, Role, RoleStateTrait};
 
@@ -28,7 +29,7 @@ pub(super) const DEFENSE: DefensePower = DefensePower::None;
 
 impl RoleStateTrait for Disguiser {
     type ClientAbilityState = Disguiser;
-    fn on_midnight(mut self, game: &mut Game, midnight_variables: &mut MidnightVariables, actor_ref: PlayerReference, priority: OnMidnightPriority) {
+    fn on_midnight(mut self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut MidnightVariables, priority: OnMidnightPriority) {
         if priority != OnMidnightPriority::Deception {return}
 
         let Some(appeared_visit_player) = Visits::default_target(game, midnight_variables, actor_ref) else {return};

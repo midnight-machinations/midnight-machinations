@@ -1,5 +1,6 @@
 use serde::Serialize;
 
+use crate::game::abilities_component::ability_id::AbilityID;
 use crate::game::components::night_visits::Visits;
 use crate::game::event::on_midnight::{MidnightVariables, OnMidnightPriority};
 use crate::game::{attack_power::DefensePower, player::PlayerReference};
@@ -19,7 +20,7 @@ pub(super) const DEFENSE: DefensePower = DefensePower::None;
 
 impl RoleStateTrait for Bouncer {
     type ClientAbilityState = Bouncer;
-    fn on_midnight(self, game: &mut Game, midnight_variables: &mut MidnightVariables, actor_ref: PlayerReference, priority: OnMidnightPriority) {
+    fn on_midnight(self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut MidnightVariables, priority: OnMidnightPriority) {
         if let Some(target) = Visits::default_target(game, midnight_variables, actor_ref) {
             target.ward_night_action(game, midnight_variables, priority);
         }

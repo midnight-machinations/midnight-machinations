@@ -1,5 +1,5 @@
 use serde::Serialize;
-
+use crate::game::abilities_component::ability_id::AbilityID;
 use crate::game::controllers::AvailableTwoPlayerOptionSelection;
 use crate::game::event::on_midnight::{MidnightVariables, OnMidnightPriority};
 use crate::game::attack_power::DefensePower;
@@ -23,7 +23,7 @@ pub(super) const DEFENSE: DefensePower = DefensePower::None;
 
 impl RoleStateTrait for Transporter {
     type ClientAbilityState = Transporter;
-    fn on_midnight(self, _game: &mut Game, midnight_variables: &mut MidnightVariables, actor_ref: PlayerReference, priority: OnMidnightPriority) {
+    fn on_midnight(self, _game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut MidnightVariables, priority: OnMidnightPriority) {
         if priority != OnMidnightPriority::Transporter {return;}
     
         let transporter_visits = actor_ref.untagged_night_visits_cloned(midnight_variables);

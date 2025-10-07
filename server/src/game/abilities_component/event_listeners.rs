@@ -74,7 +74,8 @@ impl Abilities{
             }else{
                 game.abilities.abilities.insert(event.id.clone(), fold.ability.clone());
                 if
-                    let Ability::RoleAbility(RoleAbility(player, role)) = &fold.ability &&
+                    let Ability::RoleAbility(RoleAbility(role)) = &fold.ability &&
+                    let Some(player) = event.id.get_player_from_role_id() &&
                     role.role().should_inform_player_of_assignment()
                 {
                     player.add_private_chat_message(game, ChatMessageVariant::RoleAssignment{role: role.role()});

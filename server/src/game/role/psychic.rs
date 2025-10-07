@@ -1,6 +1,7 @@
 use rand::seq::SliceRandom;
 use serde::Serialize;
 
+use crate::game::abilities_component::ability_id::AbilityID;
 use crate::game::components::aura::Aura;
 use crate::game::components::confused::Confused;
 use crate::game::event::on_midnight::{MidnightVariables, OnMidnightPriority};
@@ -22,7 +23,7 @@ pub(super) const DEFENSE: DefensePower = DefensePower::None;
 
 impl RoleStateTrait for Psychic {
     type ClientAbilityState = Psychic;
-    fn on_midnight(self, game: &mut Game, midnight_variables: &mut MidnightVariables, actor_ref: PlayerReference, priority: OnMidnightPriority) {
+    fn on_midnight(self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut MidnightVariables, priority: OnMidnightPriority) {
         if priority != OnMidnightPriority::Investigative {return}
 
         
