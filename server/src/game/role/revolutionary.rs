@@ -72,7 +72,7 @@ impl RoleStateTrait for Revolutionary {
         if event.id.is_players_role(actor_ref, Role::Revolutionary) {
             match priority {
                 OnAbilityCreationPriority::CancelOrEdit => {
-                    let Ability::RoleAbility(RoleAbility(RoleState::Revolutionary(Revolutionary { target: RevolutionaryTarget::Won }))) = event.ability else {return};
+                    let Ability::Role(RoleAbility(RoleState::Revolutionary(Revolutionary { target: RevolutionaryTarget::Won }))) = event.ability else {return};
                     if let Some(target) = PlayerReference::all_players(game)
                         .filter(|p|
                             RoleSet::Town
@@ -82,7 +82,7 @@ impl RoleStateTrait for Revolutionary {
                         ).collect::<Vec<PlayerReference>>()
                         .choose(&mut rand::rng())
                     {
-                        fold.ability = Ability::RoleAbility(RoleAbility(RoleState::Revolutionary(
+                        fold.ability = Ability::Role(RoleAbility(RoleState::Revolutionary(
                             Revolutionary{target: RevolutionaryTarget::Target(*target)}
                         )));
                     }else{

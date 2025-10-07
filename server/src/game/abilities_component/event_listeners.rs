@@ -1,9 +1,15 @@
 use crate::game::{
-    abilities::role_abilities::RoleAbility,
-    abilities_component::{ability::Ability, ability_id::AbilityID, ability_trait::AbilityTrait, Abilities}, chat::ChatMessageVariant,
+    abilities_component::{ability::Ability, ability_id::AbilityID, ability_trait::AbilityTrait, Abilities},
     controllers::ControllerParametersMap,
     event::{
-        before_phase_end::BeforePhaseEnd, on_ability_creation::{OnAbilityCreation, OnAbilityCreationFold, OnAbilityCreationPriority}, on_ability_deletion::{OnAbilityDeletion, OnAbilityDeletionPriority}, on_add_insider::OnAddInsider, on_any_death::OnAnyDeath, on_conceal_role::OnConcealRole, on_controller_selection_changed::OnControllerSelectionChanged, on_grave_added::OnGraveAdded, on_midnight::{MidnightVariables, OnMidnight, OnMidnightPriority}, on_phase_start::OnPhaseStart, on_remove_insider::OnRemoveInsider, on_role_switch::OnRoleSwitch, on_validated_ability_input_received::OnValidatedControllerInputReceived, on_whisper::{OnWhisper, WhisperFold, WhisperPriority}
+        before_phase_end::BeforePhaseEnd, on_ability_creation::{OnAbilityCreation, OnAbilityCreationFold, OnAbilityCreationPriority},
+        on_ability_deletion::{OnAbilityDeletion, OnAbilityDeletionPriority}, on_ability_edit::OnAbilityEdit,
+        on_add_insider::OnAddInsider, on_any_death::OnAnyDeath, on_conceal_role::OnConcealRole,
+        on_controller_selection_changed::OnControllerSelectionChanged, on_grave_added::OnGraveAdded,
+        on_midnight::{MidnightVariables, OnMidnight, OnMidnightPriority}, on_phase_start::OnPhaseStart,
+        on_remove_insider::OnRemoveInsider, on_role_switch::OnRoleSwitch,
+        on_validated_ability_input_received::OnValidatedControllerInputReceived, on_whisper::{OnWhisper, WhisperFold, WhisperPriority},
+        Event as _
     },
     Game
 };
@@ -73,13 +79,7 @@ impl Abilities{
                 game.abilities.abilities.remove(&event.id);
             }else{
                 game.abilities.abilities.insert(event.id.clone(), fold.ability.clone());
-                if
-                    let Ability::RoleAbility(RoleAbility(role)) = &fold.ability &&
-                    let Some(player) = event.id.get_player_from_role_id() &&
-                    role.role().should_inform_player_of_assignment()
-                {
-                    player.add_private_chat_message(game, ChatMessageVariant::RoleAssignment{role: role.role()});
-                }
+                OnAbilityEdit::new(event.id.clone(), Some(fold.ability.clone())).invoke(game);
             }
         }
 
@@ -94,6 +94,7 @@ impl Abilities{
 
         if priority == OnAbilityDeletionPriority::DeleteAbility {
             game.abilities.abilities.remove(&event.id);
+            OnAbilityEdit::new(event.id.clone(), None).invoke(game);
         }   
     }
     pub fn on_role_switch(game: &mut Game, event: &OnRoleSwitch, fold: &mut (), priority: ()){
@@ -164,7 +165,7 @@ impl AbilityID{
     
     fn get_dyn_cloned_ability_expect(&self, game: &Game)->Box<dyn AbilityTrait>{
         match self.get_ability(game).expect("Event called on abilityId not in event map should be impossible").clone() {
-            Ability::RoleAbility(role_ability) => {Box::new(role_ability)},
+            Ability::Role(role_ability) => {Box::new(role_ability)},
             Ability::Pitchfork(pitchfork_ability) => {Box::new(pitchfork_ability)},
             Ability::SyndicateGun(syndicate_gun) => {Box::new(syndicate_gun)},
         }

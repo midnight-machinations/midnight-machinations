@@ -1,6 +1,6 @@
-use crate::game::{
-    components::player_component::PlayerComponent, event::{on_role_switch::OnRoleSwitch, Event}, player::PlayerReference, role::{Role, RoleState}, Assignments, Game
-};
+use crate::{game::{
+    abilities::role_abilities::RoleAbility, abilities_component::{ability::Ability, ability_id::AbilityID}, components::player_component::PlayerComponent, event::{on_ability_edit::OnAbilityEdit, on_role_switch::OnRoleSwitch, Event}, player::PlayerReference, role::{Role, RoleState}, Assignments, Game
+}, packet::ToClientPacket};
 
 pub type RoleComponent = PlayerComponent::<Role>;
 impl RoleComponent{
@@ -16,6 +16,23 @@ impl RoleComponent{
     }
     pub fn set_role(player: PlayerReference, game: &mut Game, role: Role){
         *game.role.get_mut(player) = role;
+        Self::send_your_role_state(game, player, player.role_state_ability(game));
+    }
+    pub fn on_ability_edit(game: &mut Game, event: &OnAbilityEdit, _fold: &mut (), _priority: ()){
+        let AbilityID::Role{player, ..} = event.id else {return};
+        let Some(ref new_ability) = event.new_ability else {return};
+        Self::send_your_role_state(game, player, new_ability);
+    }
+
+    fn send_your_role_state(game: &Game, player: PlayerReference, new_ability: &Ability){
+        let Ability::Role(RoleAbility(new_role_data)) = new_ability else {return};
+
+        if !new_role_data.role().should_inform_player_of_assignment() {return}
+        if player.role(game) != new_role_data.role() {return} 
+
+        player.send_packet(game, ToClientPacket::YourRoleState {
+            role_state: new_role_data.clone().get_client_ability_state(game, player)
+        });
     }
 }
 impl PlayerReference{

@@ -1,13 +1,10 @@
-use crate::{
-    game::{
+use crate::game::{
         abilities_component::{
             ability::Ability,
             ability_id::AbilityID,
             ability_trait::AbilityTrait
-        }, components::role::RoleComponent, event::on_conceal_role::OnConcealRole, player::PlayerReference, role::{Role, RoleState}, Game
-    },
-    packet::ToClientPacket
-};
+        }, chat::ChatMessageVariant, components::role::RoleComponent, event::{on_ability_creation::OnAbilityCreationPriority, on_conceal_role::OnConcealRole}, player::PlayerReference, role::{Role, RoleState}, Game
+    };
 
 #[derive(Clone)]
 pub struct RoleAbility(pub RoleState);
@@ -38,6 +35,15 @@ impl AbilityTrait for RoleAbility {
         self.0.clone().on_any_death(game, id.get_role_actor_expect(), event.dead_player);
     }
     fn on_ability_creation(&self, game: &mut Game, id: &AbilityID, event: &crate::game::event::on_ability_creation::OnAbilityCreation, fold: &mut crate::game::event::on_ability_creation::OnAbilityCreationFold, priority: crate::game::event::on_ability_creation::OnAbilityCreationPriority) {
+        if
+            matches!(priority, OnAbilityCreationPriority::SideEffect) &&
+            !fold.cancelled &&
+            let Ability::Role(RoleAbility(role)) = &fold.ability &&
+            role.role().should_inform_player_of_assignment() &&
+            *id == event.id
+        {
+            event.id.get_role_actor_expect().add_private_chat_message(game, ChatMessageVariant::RoleAssignment{role: role.role()});
+        }
         self.0.clone().on_ability_creation(game, id.get_role_actor_expect(), event, fold, priority)
     }
     fn on_ability_deletion(&self, game: &mut Game, id: &AbilityID, event: &crate::game::event::on_ability_deletion::OnAbilityDeletion, fold: &mut (), priority: crate::game::event::on_ability_deletion::OnAbilityDeletionPriority) {
@@ -64,7 +70,7 @@ impl AbilityID {
 
 impl From<RoleAbility> for Ability where RoleAbility: AbilityTrait {
     fn from(role_struct: RoleAbility) -> Self {
-        Ability::RoleAbility(role_struct)
+        Ability::Role(role_struct)
     }
 }
 impl Role{
@@ -74,11 +80,13 @@ impl Role{
 }
 
 impl PlayerReference{
-    pub fn role_state<'a>(&self, game: &'a Game) -> &'a RoleState {
-        let Ability::RoleAbility(RoleAbility(role_state)) = AbilityID::Role { role: self.role(game), player: *self }
+    pub fn role_state_ability<'a>(&self, game: &'a Game) -> &'a Ability {
+        AbilityID::Role { role: self.role(game), player: *self }
             .get_ability(game)
             .expect("every player must have a role ability")
-            else { unreachable!() };
+    }
+    pub fn role_state<'a>(&self, game: &'a Game) -> &'a RoleState {
+        let Ability::Role(RoleAbility(role_state)) = self.role_state_ability(game) else { unreachable!("AbilityID::Role must correspond to a role") };
         
         role_state
     }
@@ -96,15 +104,10 @@ impl PlayerReference{
     pub fn set_role_state_without_deleting_previous(&self, game: &mut Game, new_role_data: impl Into<RoleState>){
         let new_role_data = new_role_data.into();
         let new_role = new_role_data.role();
-        RoleComponent::set_role(*self, game, new_role);
-
+        
         AbilityID::Role { role: new_role, player: *self }
             .set_role_ability(game, Some(new_role_data.clone()));
-
-        if self.role(game).should_inform_player_of_assignment() {
-            self.send_packet(game, ToClientPacket::YourRoleState {
-                role_state: new_role_data.get_client_ability_state(game, *self)
-            });
-        }
+        
+        RoleComponent::set_role(*self, game, new_role);
     }
 }
