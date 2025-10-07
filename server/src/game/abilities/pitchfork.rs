@@ -14,7 +14,6 @@ pub struct PitchforkAbility{
     charges: u8,
     angry_mobbed_player: Option<PlayerReference>,
 }
-impl AbilityTrait for PitchforkAbility {}
 impl From<PitchforkAbility> for Ability where PitchforkAbility: AbilityTrait {
     fn from(ability: PitchforkAbility) -> Self {
         Ability::Pitchfork(ability)
@@ -25,63 +24,7 @@ impl PitchforkAbility{
         Self { charges: common_role::standard_charges(game), angry_mobbed_player: None }
     }
 
-    pub fn on_midnight(mut self, game: &mut Game, _event: &OnMidnight, midnight_variables: &mut MidnightVariables, priority: OnMidnightPriority){
-        if priority != OnMidnightPriority::Kill {return;}
-        if game.day_number() <= 1 {return;}
-        let pitchfork_players = PitchforkItemComponent::players_with_pitchfork(game, midnight_variables);
-        if pitchfork_players.is_empty() {return;}
-        
-        if let Some(target) = self.angry_mobbed_player {
-            target.try_night_kill(
-                pitchfork_players.clone(), 
-                game, midnight_variables,
-                GraveKiller::RoleSet(RoleSet::Town), 
-                AttackPower::ProtectionPiercing, 
-                false
-            );
-            self.charges = self.charges.saturating_sub(1);
-        }
-        AbilityID::Pitchfork.set_ability(game, Some(self));
-    }
-    pub fn before_phase_end(mut self, game: &mut Game, event: &BeforePhaseEnd, _fold: &mut (), _priority: ()){
-        if event.phase != PhaseType::Night {return};
-        
-        self.angry_mobbed_player = if self.charges > 0 && let Some(target) = Self::player_is_voted(game){
-            Some(target)
-        }else{
-            None
-        };
-        AbilityID::Pitchfork.set_ability(game, Some(self));
-    }
-
-    pub fn controller_parameters_map(self, game: &Game)->ControllerParametersMap{
-        if !game.settings.enabled_roles.contains(&Role::Rabblerouser) {
-            return ControllerParametersMap::default();
-        }
-
-        ControllerParametersMap::combine(
-            PlayerReference::all_players(game).map(|player|
-                ControllerParametersMap::builder(game)
-                    .id(ControllerID::pitchfork_vote(player))
-                    .available_selection(AvailablePlayerListSelection{
-                        available_players: PlayerReference::all_players(game)
-                            .filter(|p|p.alive(game))
-                            .collect(),
-                        can_choose_duplicates: false,
-                        max_players: Some(1)
-                    })
-                    .add_grayed_out_condition(
-                        game.day_number() == 1 ||
-                        player.ability_deactivated_from_death(game) ||
-                        !player.win_condition(game).is_loyalist_for(GameConclusion::Town)
-                    )
-                    .reset_on_phase_start(PhaseType::Obituary)
-                    .allow_players([player])
-                    .build_map()
-            )
-        )
-    }
-
+    
     pub fn player_is_voted(game: &Game) -> Option<PlayerReference> {
         let mut votes: VecMap<PlayerReference, u8> = VecMap::new();
 
@@ -125,5 +68,65 @@ impl PitchforkAbility{
             .saturating_div(2)
         );
         if two_thirds == 0 {1} else {two_thirds}
+    }
+}
+impl AbilityTrait for PitchforkAbility{
+    fn on_midnight(&self, game: &mut Game, _id: &AbilityID, _event: &OnMidnight, midnight_variables: &mut MidnightVariables, priority: OnMidnightPriority){
+        if priority != OnMidnightPriority::Kill {return;}
+        if game.day_number() <= 1 {return;}
+        let pitchfork_players = PitchforkItemComponent::players_with_pitchfork(game, midnight_variables);
+        if pitchfork_players.is_empty() {return;}
+        
+        let mut ability = self.clone();
+        if let Some(target) = ability.angry_mobbed_player {
+            target.try_night_kill(
+                pitchfork_players.clone(), 
+                game, midnight_variables,
+                GraveKiller::RoleSet(RoleSet::Town), 
+                AttackPower::ProtectionPiercing, 
+                false
+            );
+            ability.charges = ability.charges.saturating_sub(1);
+        }
+        AbilityID::Pitchfork.set_ability(game, Some(ability));
+    }
+    fn before_phase_end(&self, game: &mut Game, _id: &AbilityID, event: &BeforePhaseEnd, _fold: &mut (), _priority: ()){
+        if event.phase != PhaseType::Night {return};
+        
+        let mut ability = self.clone();
+        ability.angry_mobbed_player = if ability.charges > 0 && let Some(target) = Self::player_is_voted(game){
+            Some(target)
+        }else{
+            None
+        };
+        AbilityID::Pitchfork.set_ability(game, Some(ability));
+    }
+
+    fn controller_parameters_map(&self, game: &Game, _id: &AbilityID)->ControllerParametersMap{
+        if !game.settings.enabled_roles.contains(&Role::Rabblerouser) {
+            return ControllerParametersMap::default();
+        }
+
+        ControllerParametersMap::combine(
+            PlayerReference::all_players(game).map(|player|
+                ControllerParametersMap::builder(game)
+                    .id(ControllerID::pitchfork_vote(player))
+                    .available_selection(AvailablePlayerListSelection{
+                        available_players: PlayerReference::all_players(game)
+                            .filter(|p|p.alive(game))
+                            .collect(),
+                        can_choose_duplicates: false,
+                        max_players: Some(1)
+                    })
+                    .add_grayed_out_condition(
+                        game.day_number() == 1 ||
+                        player.ability_deactivated_from_death(game) ||
+                        !player.win_condition(game).is_loyalist_for(GameConclusion::Town)
+                    )
+                    .reset_on_phase_start(PhaseType::Obituary)
+                    .allow_players([player])
+                    .build_map()
+            )
+        )
     }
 }

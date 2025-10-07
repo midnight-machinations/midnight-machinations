@@ -36,4 +36,11 @@ impl AbilityID{
             false
         }
     }
+    pub fn get_player_from_role_id(&self)->Option<PlayerReference>{
+        if let Self::Role { player, .. } = self {
+            Some(*player)
+        }else{
+            None
+        }
+    }
 }
