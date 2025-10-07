@@ -38,7 +38,7 @@ impl RoleStateTrait for Apostle {
         for p in PlayerReference::all_players(game){
             if !InsiderGroupID::Cult.contains_player(game, p) {continue}
             if !matches!(p.role(game), Role::Zealot) {continue}
-            p.set_role(game, Role::Disciple.default_state())
+            p.set_new_role_delete_old(game, Role::Disciple.default_state())
         }
 
         target.set_role_and_win_condition_and_revealed_group(game, Role::Zealot.default_state());

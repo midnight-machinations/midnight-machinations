@@ -63,6 +63,9 @@ impl AbilityID {
     pub fn set_role_ability(&self, game: &mut Game, new: Option<impl Into<RoleState>>){
         self.set_ability(game, new.map(|o| RoleAbility(o.into())));
     }
+    pub fn new_role_ability(&self, game: &mut Game, new: impl Into<RoleState>){
+        self.new_ability(game, RoleAbility(new.into()));
+    }
     pub fn edit_role_ability(&self, game: &mut Game, new: impl Into<RoleState>){
         self.edit_ability(game, RoleAbility(new.into()));
     }
@@ -91,6 +94,7 @@ impl PlayerReference{
         role_state
     }
     pub fn set_role_state(&self, game: &mut Game, new_role_data: impl Into<RoleState>) {
+        // id.edit_role_ability(game, self);
         let new_role_data = new_role_data.into();
         let new_role = new_role_data.role();
 

@@ -64,7 +64,7 @@ impl RoleStateTrait for Reeducator {
         )else{return};
         let Some(role) = ControllerID::role(actor_ref, Role::Reeducator, 1).get_role_list_selection_first(game) else {return};
         let Some(target) = target_ref.first() else {return};
-        target.set_role(game, role.default_state());
+        target.set_new_role_delete_old(game, role.default_state());
     }
     fn controller_parameters_map(self, game: &Game, actor_ref: PlayerReference) -> super::ControllerParametersMap {
         ControllerParametersMap::combine([

@@ -158,7 +158,7 @@ impl PhaseState {
             PhaseState::Obituary { last_night } => {
                 for player in PlayerReference::all_players(game){
                     let Some(role_state) = player.night_convert_role_to(&last_night).clone() else {continue};
-                    player.set_role(game, role_state);
+                    player.set_new_role_delete_old(game, role_state);
                 }
 
                 for player_ref in PlayerReference::all_players(game) {

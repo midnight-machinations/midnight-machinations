@@ -271,7 +271,7 @@ impl PlayerReference{
     pub fn set_role_and_win_condition_and_revealed_group(&self, game: &mut Game, new_role_data: impl Into<RoleState>){
         let new_role_data = new_role_data.into();
         
-        self.set_role(game, new_role_data);
+        self.set_new_role_delete_old(game, new_role_data);
     
         self.set_win_condition(game, self.role_state(game).clone().default_win_condition());
         

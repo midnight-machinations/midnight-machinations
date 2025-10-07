@@ -39,11 +39,20 @@ impl PlayerReference{
     pub fn role(&self, game: &Game) -> Role {
         *game.role.get(*self)
     }
-    pub fn set_role(&self, game: &mut Game, new_role_data: impl Into<RoleState>) {
-        let new_role_data = new_role_data.into();
+    pub fn set_new_role_delete_old(&self, game: &mut Game, new_role_data: impl Into<RoleState>) {
         let old = self.role_state(game).clone();
 
-        self.set_role_state(game, new_role_data.clone());
+        let new_role_data = new_role_data.into();
+        let new_role = new_role_data.role();
+        let role_ability_id = AbilityID::Role { role: self.role(game), player: *self };
+
+        if self.role(game) != new_role {
+            role_ability_id.delete_ability(game);
+        }
+        
+        role_ability_id.new_role_ability(game, new_role_data.clone());
+        
+        RoleComponent::set_role(*self, game, new_role);
 
         OnRoleSwitch::new(*self, old, self.role_state(game).clone()).invoke(game);
     }
