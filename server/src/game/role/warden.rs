@@ -9,6 +9,7 @@ use crate::game::components::graves::grave::GraveKiller;
 use crate::game::phase::PhaseType;
 use crate::game::attack_power::DefensePower;
 use crate::game::player::PlayerReference;
+use crate::game::abilities_component::ability_id::AbilityID;
 use crate::game::Game;
 use super::{ControllerID, ControllerParametersMap, PlayerListSelection, Role, RoleStateTrait};
 
@@ -26,7 +27,7 @@ pub(super) const DEFENSE: DefensePower = DefensePower::Armored;
 
 impl RoleStateTrait for Warden {
     type ClientAbilityState = Warden;
-    fn on_midnight(mut self, game: &mut Game, midnight_variables: &mut MidnightVariables, actor_ref: PlayerReference, priority: OnMidnightPriority) {
+    fn on_midnight(mut self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut MidnightVariables, priority: OnMidnightPriority) {
         if game.day_number() == 1 {return}
 
         match priority {
@@ -55,7 +56,7 @@ impl RoleStateTrait for Warden {
                 if self.all_prisoners_cooperated(&players_to_kill) {
                     self.increment_charges();
 
-                    actor_ref.set_role_state(game, self);
+                    actor_ref.edit_role_ability_helper(game, self);
                 }
             },
             _ => {}
@@ -123,7 +124,7 @@ impl RoleStateTrait for Warden {
                 
                 self.players_in_prison = players_in_prison.into_iter().collect();
                 
-                actor_ref.set_role_state(game, self.clone());
+                actor_ref.edit_role_ability_helper(game, self.clone());
 
                 game.add_message_to_chat_group(
                     crate::game::chat::ChatGroup::Warden,
@@ -144,7 +145,7 @@ impl RoleStateTrait for Warden {
             },
             PhaseType::Obituary => {
                 self.players_in_prison = VecSet::new();
-                actor_ref.set_role_state(game, self);
+                actor_ref.edit_role_ability_helper(game, self);
             },
             _ => {}
         }

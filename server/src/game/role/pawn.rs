@@ -23,6 +23,7 @@ pub struct Pawn;
 impl RoleStateTrait for Pawn {
     type ClientAbilityState = Pawn;
     fn on_role_switch(self, game: &mut Game, actor_ref: PlayerReference, event: &OnRoleSwitch, _fold: &mut (), _priority: ()) {
+        if event.old.role() == Role::Pawn {return} 
         if actor_ref != event.player {return}
         AbilityID::Role { role: Role::Pawn, player: actor_ref }.delete_ability(game);
     }
@@ -40,7 +41,7 @@ impl RoleStateTrait for Pawn {
             .collect::<Vec<_>>();
 
         if let Some(new_role) = possible_roles.choose(&mut rand::rng()) {
-            actor_ref.set_role_state_without_deleting_previous(game, new_role.new_state(game));
+            actor_ref.set_new_role(game, new_role.new_state(game), false);
 
             for player in PlayerReference::all_players(game){
                 if

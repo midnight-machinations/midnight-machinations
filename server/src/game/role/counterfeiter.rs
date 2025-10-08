@@ -1,5 +1,6 @@
 use serde::Serialize;
 
+use crate::game::abilities_component::ability_id::AbilityID;
 use crate::game::controllers::{AvailableIntegerSelection, AvailableStringSelection, RoleListSelection};
 use crate::game::attack_power::{AttackPower, DefensePower};
 use crate::game::chat::ChatMessageVariant;
@@ -52,14 +53,14 @@ impl RoleStateTrait for Counterfeiter {
             ..Self::default()
         }
     }
-    fn on_midnight(self, game: &mut Game, midnight_variables: &mut MidnightVariables, actor_ref: PlayerReference, priority: OnMidnightPriority) {
+    fn on_midnight(self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut MidnightVariables, priority: OnMidnightPriority) {
         if game.day_number() <= 1 {return}
 
         match priority {
             OnMidnightPriority::Deception => {
                 if self.forges_remaining == 0 || chose_no_forge(game, actor_ref) {return}
                 
-                let actor_visits = actor_ref.untagged_night_visits_cloned(midnight_variables);
+                let actor_visits = actor_ref.role_night_visits_cloned(midnight_variables);
                 let Some(visit) = actor_visits.first() else{return};
 
                 let target_ref = visit.target;
@@ -76,13 +77,13 @@ impl RoleStateTrait for Counterfeiter {
 
                 target_ref.set_night_grave_will(midnight_variables, fake_alibi);
 
-                actor_ref.set_role_state(game, Counterfeiter { 
+                actor_ref.edit_role_ability_helper(game, Counterfeiter { 
                     forges_remaining: self.forges_remaining.saturating_sub(1), 
                     forged_ref: Some(target_ref)
                 });
             },
             OnMidnightPriority::Kill => {
-                let actor_visits = actor_ref.untagged_night_visits_cloned(midnight_variables);
+                let actor_visits = actor_ref.role_night_visits_cloned(midnight_variables);
                 if let Some(visit) = actor_visits.first(){
                     let target_ref = visit.target;
             
@@ -150,7 +151,7 @@ impl RoleStateTrait for Counterfeiter {
         ])
     }
     fn on_phase_start(self, game: &mut Game, actor_ref: PlayerReference, _phase: PhaseType){
-        actor_ref.set_role_state(game, Counterfeiter{
+        actor_ref.edit_role_ability_helper(game, Counterfeiter{
             forged_ref: None,
             ..self
         });

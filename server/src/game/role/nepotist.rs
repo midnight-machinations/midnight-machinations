@@ -36,7 +36,7 @@ impl RoleStateTrait for Nepotist {
 
         EnfranchiseComponent::enfranchise(game, actor_ref, 2);
         self.successor = Some(player);
-        actor_ref.set_role_state(game, self);
+        actor_ref.edit_role_ability_helper(game, self);
     }
     fn on_ability_deletion(self, game: &mut Game, actor_ref: PlayerReference, event: &OnAbilityDeletion, _fold: &mut (), priority: OnAbilityDeletionPriority) {
         if !event.id.is_players_role(actor_ref, Role::Nepotist) || priority != OnAbilityDeletionPriority::BeforeSideEffect {return;}

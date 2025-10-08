@@ -190,7 +190,7 @@ impl TestPlayer {
     }
 
     pub fn set_role_state(&self, new_role_data: RoleState){
-        self.0.set_role_state(game!(self), new_role_data);
+        self.0.edit_role_ability_helper(game!(self), new_role_data);
     }
 
     pub fn get_won_game(&self) -> bool {

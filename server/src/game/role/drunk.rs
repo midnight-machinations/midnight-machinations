@@ -21,6 +21,7 @@ pub struct Drunk;
 impl RoleStateTrait for Drunk {
     type ClientAbilityState = Drunk;
     fn on_role_switch(self, game: &mut Game, actor_ref: PlayerReference, event: &OnRoleSwitch, _fold: &mut (), _priority: ()) {
+        if event.old.role() == Role::Drunk {return} 
         if actor_ref != event.player {return}
         AbilityID::Role { role: Role::Drunk, player: actor_ref }.delete_ability(game);
     }
@@ -37,7 +38,7 @@ impl RoleStateTrait for Drunk {
             .collect::<Vec<_>>();
 
         if let Some(new_role) = possible_roles.choose(&mut rand::rng()) {
-            actor_ref.set_role_state_without_deleting_previous(game, new_role.new_state(game));
+            actor_ref.set_new_role(game, new_role.new_state(game), false);
         }
     }
     fn on_ability_deletion(self, game: &mut Game, actor_ref: PlayerReference, event: &crate::game::event::on_ability_deletion::OnAbilityDeletion, _fold: &mut (), priority: crate::game::event::on_ability_deletion::OnAbilityDeletionPriority) {

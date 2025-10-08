@@ -1,4 +1,5 @@
 use serde::{Serialize, Deserialize};
+use crate::game::abilities_component::ability_id::AbilityID;
 
 use crate::game::attack_power::{AttackPower, DefensePower};
 use crate::game::chat::ChatMessageVariant;
@@ -116,7 +117,7 @@ pub(super) const DEFENSE: DefensePower = DefensePower::None;
 
 impl RoleStateTrait for Doomsayer {
     type ClientAbilityState = ClientRoleState;
-    fn on_midnight(self, game: &mut Game, midnight_variables: &mut MidnightVariables, actor_ref: PlayerReference, priority: OnMidnightPriority) {
+    fn on_midnight(self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut MidnightVariables, priority: OnMidnightPriority) {
         if priority != OnMidnightPriority::TopPriority {return;}
 
         if actor_ref.night_blocked(midnight_variables) {return;}
@@ -144,7 +145,7 @@ impl RoleStateTrait for Doomsayer {
             self.guesses[1].0.try_night_kill_single_attacker(actor_ref, game, midnight_variables, GraveKiller::Role(super::Role::Doomsayer), AttackPower::ProtectionPiercing, true);
             self.guesses[2].0.try_night_kill_single_attacker(actor_ref, game, midnight_variables, GraveKiller::Role(super::Role::Doomsayer), AttackPower::ProtectionPiercing, true);
             actor_ref.try_night_kill_single_attacker(actor_ref, game, midnight_variables, GraveKiller::Suicide, AttackPower::ProtectionPiercing, false);
-            actor_ref.set_role_state(game, RoleState::Doomsayer(Doomsayer { guesses: self.guesses, won: true }));
+            actor_ref.edit_role_ability_helper(game, RoleState::Doomsayer(Doomsayer { guesses: self.guesses, won: true }));
         }else{
             actor_ref.add_private_chat_message(game, ChatMessageVariant::DoomsayerFailed);
         }
@@ -179,7 +180,7 @@ impl Doomsayer{
                 player.alive(game) && DoomsayerGuess::convert_to_guess(player.role(game)).is_some() && *player != actor_ref
             ).count() < 3
         {
-            actor_ref.set_role_and_win_condition_and_revealed_group(game, RoleState::Jester(Jester::default()));
+            actor_ref.set_role_win_con_insider_group(game, RoleState::Jester(Jester::default()));
             true
         }else{
             false

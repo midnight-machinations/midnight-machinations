@@ -17,7 +17,7 @@ impl Aura{
     }
     pub fn suspicious(game: &Game, midnight_variables: &MidnightVariables, player: PlayerReference) -> bool {
         player.night_framed(midnight_variables) ||
-        AbilityID::Role { role: Role::Drunk, player }.get_ability(game).is_some() ||
+        AbilityID::Role { role: Role::Drunk, player }.exists(game) ||
         Arsonist::has_suspicious_aura_douse(game, player)
     }
 }

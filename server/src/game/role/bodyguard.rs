@@ -1,6 +1,6 @@
 
 use serde::Serialize;
-
+use crate::game::abilities_component::ability_id::AbilityID;
 use crate::game::attack_power::AttackPower;
 use crate::game::attack_power::DefensePower;
 use crate::game::components::transport::Transport;
@@ -50,12 +50,12 @@ pub(super) const DEFENSE: DefensePower = DefensePower::None;
 
 impl RoleStateTrait for Bodyguard {
     type ClientAbilityState = ClientRoleState;
-    fn on_midnight(self, game: &mut Game, midnight_variables: &mut MidnightVariables, actor_ref: PlayerReference, priority: OnMidnightPriority) {
+    fn on_midnight(self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut MidnightVariables, priority: OnMidnightPriority) {
         if game.day_number() <= 1 {return};
         
         match priority {
             OnMidnightPriority::Bodyguard => {
-                let actor_visits = actor_ref.untagged_night_visits_cloned(midnight_variables);
+                let actor_visits = actor_ref.role_night_visits_cloned(midnight_variables);
                 let Some(target_ref) = actor_visits.get(0).map(|v| v.target) else {return};
                 
                 if actor_ref == target_ref {return}
@@ -65,20 +65,20 @@ impl RoleStateTrait for Bodyguard {
                     &vec_map![(target_ref, actor_ref)], |v| v.attack, false, 
                 ).iter().filter(|v|!v.indirect).map(|v| v.visitor).collect();
 
-                actor_ref.set_role_state(game, Bodyguard {
+                actor_ref.edit_role_ability_helper(game, Bodyguard {
                     redirected_player_refs,
                     ..self
                 });
                 
             },
             OnMidnightPriority::Heal => {
-                let actors_visits = actor_ref.untagged_night_visits_cloned(midnight_variables);
+                let actors_visits = actor_ref.role_night_visits_cloned(midnight_variables);
                 let Some(visit) = actors_visits.first() else {return};
                 let target_ref = visit.target;
     
                 if actor_ref == target_ref {
                     let self_shields_remaining = self.self_shields_remaining.saturating_sub(1);
-                    actor_ref.set_role_state(game, Bodyguard{
+                    actor_ref.edit_role_ability_helper(game, Bodyguard{
                         self_shields_remaining, 
                         ..self
                     });
@@ -111,7 +111,7 @@ impl RoleStateTrait for Bodyguard {
         )
     }
     fn on_phase_start(self, game: &mut Game, actor_ref: PlayerReference, _phase: PhaseType){
-        actor_ref.set_role_state(game, Bodyguard {
+        actor_ref.edit_role_ability_helper(game, Bodyguard {
             self_shields_remaining: self.self_shields_remaining,
             redirected_player_refs: Vec::new(),
         });

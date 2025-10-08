@@ -8,6 +8,7 @@ use crate::game::event::on_midnight::{MidnightVariables, OnMidnightPriority};
 use crate::game::phase::PhaseType;
 use crate::game::player::PlayerReference;
 use crate::game::visit::Visit;
+use crate::game::abilities_component::ability_id::AbilityID;
 
 use crate::game::Game;
 use super::{ControllerID, ControllerParametersMap, GetClientAbilityState, Role};
@@ -48,12 +49,12 @@ impl RoleStateTrait for Forger {
             ..Self::default()
         }
     }
-    fn on_midnight(self, game: &mut Game, midnight_variables: &mut MidnightVariables, actor_ref: PlayerReference, priority: OnMidnightPriority) {
+    fn on_midnight(self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut MidnightVariables, priority: OnMidnightPriority) {
         if self.forges_remaining == 0 {return}
 
         match priority {
             OnMidnightPriority::Deception=>{
-                let actor_visits = actor_ref.untagged_night_visits_cloned(midnight_variables);
+                let actor_visits = actor_ref.role_night_visits_cloned(midnight_variables);
                 let Some(visit) = actor_visits.first() else{return};
 
                 let target_ref = visit.target;
@@ -72,7 +73,7 @@ impl RoleStateTrait for Forger {
 
                 target_ref.set_night_grave_will(midnight_variables, fake_alibi);
 
-                actor_ref.set_role_state(game, Forger { 
+                actor_ref.edit_role_ability_helper(game, Forger { 
                     forges_remaining: self.forges_remaining.saturating_sub(1), 
                     forged_ref: Some(target_ref),
                 });
@@ -134,7 +135,7 @@ impl RoleStateTrait for Forger {
         )
     }
     fn on_phase_start(self, game: &mut Game, actor_ref: PlayerReference, _phase: PhaseType){
-        actor_ref.set_role_state(game, RoleState::Forger(Forger{
+        actor_ref.edit_role_ability_helper(game, RoleState::Forger(Forger{
             forged_ref: None,
             ..self
         }));

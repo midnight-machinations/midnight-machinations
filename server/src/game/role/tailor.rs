@@ -13,6 +13,7 @@ use super::{
     ControllerParametersMap,
     Role, RoleStateTrait
 };
+use crate::game::abilities_component::ability_id::AbilityID;
 
 
 #[derive(Clone, Debug, Default)]
@@ -33,21 +34,21 @@ pub(super) const DEFENSE: DefensePower = DefensePower::None;
 
 impl RoleStateTrait for Tailor {
     type ClientAbilityState = ClientRoleState;
-    fn on_midnight(self, game: &mut Game, midnight_variables: &mut MidnightVariables, actor_ref: PlayerReference, priority: OnMidnightPriority) {
+    fn on_midnight(self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut MidnightVariables, priority: OnMidnightPriority) {
         if priority != OnMidnightPriority::Convert {return;}
         let Some(target) = Visits::default_target(game, midnight_variables, actor_ref) else {return};
         let Some(role) = ControllerID::role(actor_ref, Role::Tailor, 1).get_role_list_selection_first(game) else {return};
     
         if !RoleSet::TownCommon.get_roles().contains(&target.role(game)) {return}
         target.set_night_convert_role_to(midnight_variables, Some(role.new_state(game)));
-        actor_ref.set_role_state(game, Tailor{previous_target: Some(target)});
+        actor_ref.edit_role_ability_helper(game, Tailor{previous_target: Some(target)});
     }
     fn on_phase_start(self, game: &mut Game, actor_ref: PlayerReference, phase: crate::game::phase::PhaseType) {
         if matches!(phase, PhaseType::Obituary){
             if let Some(target) = self.previous_target {
                 actor_ref.reveal_players_role(game, target);
             }
-            actor_ref.set_role_state(game, Tailor{previous_target: None});
+            actor_ref.edit_role_ability_helper(game, Tailor{previous_target: None});
         }
     }
     fn controller_parameters_map(self, game: &Game, actor_ref: PlayerReference) -> super::ControllerParametersMap {

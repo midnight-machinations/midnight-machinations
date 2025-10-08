@@ -61,7 +61,7 @@ impl RoleStateTrait for Revolutionary {
             PhaseState::FinalWords { player_on_trial } => {
                 if Some(player_on_trial) == self.target.get_target() {
                     game.add_message_to_chat_group(ChatGroup::All, ChatMessageVariant::RevolutionaryWon);
-                    actor_ref.set_role_state(game, RoleState::Revolutionary(Revolutionary { target: RevolutionaryTarget::Won }));
+                    actor_ref.edit_role_ability_helper(game, RoleState::Revolutionary(Revolutionary { target: RevolutionaryTarget::Won }));
                     actor_ref.die_and_add_grave(game, Grave::from_player_leave_town(game, actor_ref));
                 }
             }
@@ -69,12 +69,10 @@ impl RoleStateTrait for Revolutionary {
         }
     }
     fn on_ability_creation(self, game: &mut Game, actor_ref: PlayerReference, event: &OnAbilityCreation, fold: &mut OnAbilityCreationFold, priority: OnAbilityCreationPriority){
-        
         if event.id.is_players_role(actor_ref, Role::Revolutionary) {
-            println!("{:?}", priority);
             match priority {
                 OnAbilityCreationPriority::CancelOrEdit => {
-                    let Ability::RoleAbility(RoleAbility(_, RoleState::Revolutionary(Revolutionary { target: RevolutionaryTarget::Won }))) = event.ability else {return};
+                    let Ability::Role(RoleAbility(RoleState::Revolutionary(Revolutionary { target: RevolutionaryTarget::Won }))) = event.ability else {return};
                     if let Some(target) = PlayerReference::all_players(game)
                         .filter(|p|
                             RoleSet::Town
@@ -84,17 +82,12 @@ impl RoleStateTrait for Revolutionary {
                         ).collect::<Vec<PlayerReference>>()
                         .choose(&mut rand::rng())
                     {
-                        fold.ability = Ability::RoleAbility(
-                            RoleAbility(
-                                actor_ref,
-                                RoleState::Revolutionary(
-                                    Revolutionary{target: RevolutionaryTarget::Target(*target)}
-                                )
-                            )
-                        );
+                        fold.ability = Ability::Role(RoleAbility(RoleState::Revolutionary(
+                            Revolutionary{target: RevolutionaryTarget::Target(*target)}
+                        )));
                     }else{
                         fold.cancelled = true;
-                        actor_ref.set_role_and_win_condition_and_revealed_group(game, RoleState::Jester(Jester::default()))
+                        actor_ref.set_role_win_con_insider_group(game, RoleState::Jester(Jester::default()))
                     };
                 },
                 OnAbilityCreationPriority::SideEffect => {
@@ -112,7 +105,7 @@ impl RoleStateTrait for Revolutionary {
     }
     fn on_any_death(self, game: &mut Game, actor_ref: PlayerReference, dead_player_ref: PlayerReference){
         if Some(dead_player_ref) == self.target.get_target() && self.target != RevolutionaryTarget::Won {
-            actor_ref.set_role_and_win_condition_and_revealed_group(game, RoleState::Jester(Jester::default()))
+            actor_ref.set_role_win_con_insider_group(game, RoleState::Jester(Jester::default()))
         }
     }
     fn on_ability_deletion(self, game: &mut Game, actor_ref: PlayerReference, event: &OnAbilityDeletion, _fold: &mut (), priority: OnAbilityDeletionPriority) {

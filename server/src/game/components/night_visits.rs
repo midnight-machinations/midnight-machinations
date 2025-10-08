@@ -27,7 +27,7 @@ impl Visits{
 }
 
 impl PlayerReference{
-    pub fn untagged_night_visits_cloned(&self, midnight_variables: &MidnightVariables) -> Vec<Visit>{
+    pub fn role_night_visits_cloned(&self, midnight_variables: &MidnightVariables) -> Vec<Visit>{
         Visits::iter(midnight_variables)
             .with_visitor(*self)
             .filter(|visit| matches!(visit.tag, VisitTag::Role{..}))

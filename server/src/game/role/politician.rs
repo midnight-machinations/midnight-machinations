@@ -103,7 +103,7 @@ impl RoleStateTrait for Politician {
             match phase {
                 PhaseType::Nomination => {
                     self.state = PoliticianState::FinalNomination;
-                    actor_ref.set_role_state(game, self);
+                    actor_ref.edit_role_ability_helper(game, self);
                 },
                 PhaseType::Dusk => {
                     if self.state == PoliticianState::FinalNomination {
@@ -172,7 +172,7 @@ impl Politician {
             Politician::start_countdown(&mut self, game);
         }
 
-        actor_ref.set_role_state(game, self);
+        actor_ref.edit_role_ability_helper(game, self);
     }
 
 

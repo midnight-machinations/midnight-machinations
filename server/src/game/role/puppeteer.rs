@@ -1,5 +1,6 @@
 use serde::Serialize;
 
+use crate::game::abilities_component::ability_id::AbilityID;
 use crate::game::components::night_visits::Visits;
 use crate::game::controllers::{AvailableIntegerSelection, AvailablePlayerListSelection};
 use crate::game::attack_power::AttackPower;
@@ -39,7 +40,7 @@ impl RoleStateTrait for Puppeteer {
             marionettes_remaining: crate::game::role::common_role::standard_charges(game),
         }
     }
-    fn on_midnight(mut self, game: &mut Game, midnight_variables: &mut MidnightVariables, actor_ref: PlayerReference, priority: OnMidnightPriority) {
+    fn on_midnight(mut self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut MidnightVariables, priority: OnMidnightPriority) {
 
         if priority != OnMidnightPriority::Kill {return;}
         if game.day_number() <= 1 {return;}
@@ -57,7 +58,7 @@ impl RoleStateTrait for Puppeteer {
                     if PuppeteerMarionette::string(game, midnight_variables, target){
                         self.marionettes_remaining = self.marionettes_remaining.saturating_sub(1);
                     }
-                    actor_ref.set_role_state(game, self);
+                    actor_ref.edit_role_ability_helper(game, self);
                 }
             }else{
                 target.try_night_kill_single_attacker(

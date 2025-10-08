@@ -8,6 +8,7 @@ use crate::game::event::on_ability_creation::{OnAbilityCreation, OnAbilityCreati
 use crate::game::event::on_midnight::{MidnightVariables, OnMidnightPriority};
 use crate::game::phase::PhaseType;
 use crate::game::player::PlayerReference;
+use crate::game::abilities_component::ability_id::AbilityID;
 
 use crate::game::role::BooleanSelection;
 use crate::game::visit::Visit;
@@ -54,11 +55,11 @@ impl RoleStateTrait for Martyr {
             state: MartyrState::StillPlaying { bullets: crate::game::role::common_role::standard_charges(game) }
         }
     }
-    fn on_midnight(mut self, game: &mut Game, midnight_variables: &mut MidnightVariables, actor_ref: PlayerReference, priority: OnMidnightPriority) {
+    fn on_midnight(mut self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut MidnightVariables, priority: OnMidnightPriority) {
         if priority != OnMidnightPriority::Kill {return}
         let MartyrState::StillPlaying { bullets } = self.state else {return};
         if bullets == 0 {return}
-        let actor_visits = actor_ref.untagged_night_visits_cloned(midnight_variables);
+        let actor_visits = actor_ref.role_night_visits_cloned(midnight_variables);
         if let Some(visit) = actor_visits.first() {
             let target_ref = visit.target;
 
@@ -73,7 +74,7 @@ impl RoleStateTrait for Martyr {
             }
         };
 
-        actor_ref.set_role_state(game, self);
+        actor_ref.edit_role_ability_helper(game, self);
     }
     fn controller_parameters_map(self, game: &Game, actor_ref: PlayerReference) -> super::ControllerParametersMap {
         ControllerParametersMap::builder(game)
@@ -127,7 +128,7 @@ impl RoleStateTrait for Martyr {
                 player.die_and_add_grave(game, Grave::from_player_suicide(game, player));
             }
     
-            actor_ref.set_role_state(game, RoleState::Martyr(Martyr {
+            actor_ref.edit_role_ability_helper(game, RoleState::Martyr(Martyr {
                 state: MartyrState::Won
             }));
         }

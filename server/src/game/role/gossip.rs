@@ -9,6 +9,7 @@ use crate::game::player::PlayerReference;
 use crate::game::visit::Visit;
 use crate::game::Game;
 
+use crate::game::abilities_component::ability_id::AbilityID;
 use super::detective::Detective;
 use super::{ControllerID, ControllerParametersMap, Role, RoleStateTrait};
 
@@ -21,7 +22,7 @@ pub struct Gossip;
 
 impl RoleStateTrait for Gossip {
     type ClientAbilityState = Gossip;
-    fn on_midnight(self, game: &mut Game, midnight_variables: &mut MidnightVariables, actor_ref: PlayerReference, priority: OnMidnightPriority) {
+    fn on_midnight(self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut MidnightVariables, priority: OnMidnightPriority) {
         if priority != OnMidnightPriority::Investigative {return;}
 
         if let Some(visit) = Visits::default_visit(game, midnight_variables, actor_ref) {

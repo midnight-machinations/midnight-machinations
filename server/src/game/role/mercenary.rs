@@ -8,6 +8,7 @@ use crate::game::attack_power::{AttackPower, DefensePower};
 use crate::game::event::on_role_switch::OnRoleSwitch;
 use rand::seq::SliceRandom;
 use crate::game::player::PlayerReference;
+use crate::game::abilities_component::ability_id::AbilityID;
 
 use crate::game::visit::{Visit, VisitTag};
 use crate::game::Game;
@@ -51,9 +52,9 @@ impl RoleStateTrait for Mercenary {
         
         Self { won: false, roles, attacks_remaining }
     }
-    fn on_midnight(self, game: &mut Game, midnight_variables: &mut MidnightVariables, actor_ref: PlayerReference, priority: OnMidnightPriority) {
+    fn on_midnight(self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut MidnightVariables, priority: OnMidnightPriority) {
         
-        let visits = actor_ref.untagged_night_visits_cloned(midnight_variables);
+        let visits = actor_ref.role_night_visits_cloned(midnight_variables);
         let Some(visit) = visits.first() else {return};
 
         match (priority, visit.tag) {
@@ -67,7 +68,7 @@ impl RoleStateTrait for Mercenary {
                     AttackPower::Basic,
                     true
                 );
-                actor_ref.set_role_state(game, Self{attacks_remaining: self.attacks_remaining.saturating_sub(1), ..self});
+                actor_ref.edit_role_ability_helper(game, Self{attacks_remaining: self.attacks_remaining.saturating_sub(1), ..self});
             },
             (OnMidnightPriority::Investigative, VisitTag::Role { role: Role::Mercenary, id: 1 }) => {
                 actor_ref.push_night_message(
@@ -151,7 +152,7 @@ impl Mercenary{
     }
     pub fn check_win(&self, game: &mut Game, actor: PlayerReference){
         if self.hits_dead(game) && actor.alive(game) && !self.won {
-            actor.set_role_state(game, Self{won: true, ..self.clone()});
+            actor.edit_role_ability_helper(game, Self{won: true, ..self.clone()});
             actor.die_and_add_grave(game, Grave::from_player_leave_town(game, actor));
         }
     }
