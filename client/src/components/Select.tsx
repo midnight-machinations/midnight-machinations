@@ -1,9 +1,10 @@
-import React, { useCallback, useMemo, useRef } from "react";
+import React, { useCallback, useContext, useMemo, useRef } from "react";
 import { Button, RawButton } from "./Button";
 import "./select.css";
 import Icon from "./Icon";
 import Popover from "./Popover";
 import translate from "../game/lang";
+import { PopoutContext } from "./popout";
 
 export type SelectOptionsNoSearch<K extends { toString(): string}> = Map<K, React.ReactNode>;
 export type SelectOptionsSearch<K extends { toString(): string}> = Map<K, [React.ReactNode, string]>;
@@ -108,6 +109,8 @@ export default function Select<K extends { toString(): string}>(props: Readonly<
         console.error(`Value not found in options ${props.value}`);
     }
 
+    const myWindow = useContext(PopoutContext)?.window??window;
+    
     return <>
         <RawButton
             ref={ref}
@@ -135,7 +138,7 @@ export default function Select<K extends { toString(): string}>(props: Readonly<
         <Popover className="custom-select-options-popover"
             open={open}
             setOpenOrClosed={handleSetOpen}
-            onRender={dropdownPlacementFunction}
+            onRender={(dropdown, button)=>dropdownPlacementFunction(myWindow,dropdown,button)}
             anchorForPositionRef={ref}
         >
             <div>
@@ -154,7 +157,7 @@ export default function Select<K extends { toString(): string}>(props: Readonly<
 }
 
 /// Assumes there is only 1 element inside Popover
-export function dropdownPlacementFunction(dropdownElement: HTMLElement, buttonElement: HTMLElement | undefined) {
+export function dropdownPlacementFunction(myWindow: Window, dropdownElement: HTMLElement, buttonElement: HTMLElement | undefined) {
     if (!buttonElement) return;
 
     const buttonBounds = buttonElement.getBoundingClientRect();
@@ -162,7 +165,7 @@ export function dropdownPlacementFunction(dropdownElement: HTMLElement, buttonEl
     dropdownElement.style.left = `${buttonBounds.left}px`;
 
     const spaceAbove = buttonBounds.top;
-    const spaceBelow = window.innerHeight - buttonBounds.bottom;
+    const spaceBelow = myWindow.innerHeight - buttonBounds.bottom;
 
     const oneRem = parseFloat(getComputedStyle(buttonElement).fontSize);
 
@@ -181,23 +184,23 @@ export function dropdownPlacementFunction(dropdownElement: HTMLElement, buttonEl
         dropdownElement.style.bottom = `unset`;
     }
 
-    keepPopoverOnScreen(dropdownElement, buttonElement);
+    keepPopoverOnScreen(myWindow, dropdownElement, buttonElement);
 }
 
-function keepPopoverOnScreen(dropdownElement: HTMLElement, buttonElement?: HTMLElement) {
+function keepPopoverOnScreen(myWindow: Window, dropdownElement: HTMLElement, buttonElement?: HTMLElement) {
     const dropdownBounds = dropdownElement.getBoundingClientRect();
 
     const modifyTop = dropdownElement.style.bottom === 'unset' || dropdownElement.style.bottom === "";
     const modifyLeft = dropdownElement.style.right === 'unset' || dropdownElement.style.right === "";
 
     const spaceAbove = dropdownBounds.top;
-    const spaceBelow = window.innerHeight - dropdownBounds.bottom;
-    const spaceToTheRight = window.innerWidth - dropdownBounds.right;
+    const spaceBelow = myWindow.innerHeight - dropdownBounds.bottom;
+    const spaceToTheRight = myWindow.innerWidth - dropdownBounds.right;
     const spaceToTheLeft = dropdownBounds.left;
 
     if (spaceToTheRight < 0) {
         if (modifyLeft) {
-            dropdownElement.style.left = `${window.innerWidth - dropdownBounds.width}px`
+            dropdownElement.style.left = `${myWindow.innerWidth - dropdownBounds.width}px`
         } else {
             dropdownElement.style.right = "0px"
         }
