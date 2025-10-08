@@ -69,6 +69,14 @@
     "menu.settings.roleSpecificMenus": "Role Specific Menus",
     "menu.settings.roleSpecificMenus.playerList": "Player list",
     "menu.settings.roleSpecificMenus.standalone": "Standalone",
+    
+    "menu.profile.title": "Profile",
+    "menu.profile.picture": "Profile picture",
+    "menu.profile.gamesPlayed": "Games played: \\0",
+    "menu.profile.gamesWon": "Games won: \\0",
+    "login": "Log in",
+    "logout": "Log out",
+    "logout.confirm": "Are you sure you want to log out?",
 
     "confirmDelete": "Are you sure you want to delete this?",
     "confirmOverwrite": "Are you sure you want to overwrite?",
@@ -87,6 +95,7 @@
     "menu.loading.host": "Starting Server",
     "menu.loading.join": "Connecting to Lobby",
     "menu.loading.default": "Loading",
+    "menu.loading.login": "Logging in",
     "menu.loading.disconnect": "Disconnecting",
 
     "menu.chat.title": "Chat",

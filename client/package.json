@@ -4,6 +4,7 @@
   "private": true,
   "packageManager": "pnpm@10.9.0",
   "dependencies": {
+    "@auth0/auth0-react": "^2.3.0",
     "@types/dompurify": "^3.0.2",
     "@types/jest": "^29.5.0",
     "@types/marked": "^5.0.0",

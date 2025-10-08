@@ -1,0 +1,31 @@
+
+
+.profile-menu {
+    min-width: 20rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+.profile-menu > header {
+    display: flex;
+    flex-direction: row;
+    gap: 0.5rem;
+    justify-content: space-between;
+    margin-right: 1.5rem;
+}
+.profile-menu > .profile {
+    display: flex;
+    flex-direction: row;
+    gap: 0.5rem;
+}
+.profile-menu > .profile > img {
+    flex-grow: 0;
+    width: 6rem;
+    height: 6rem;
+}
+.profile-menu > .profile > .profile-details {
+    text-align: left;
+}
+.profile-menu > .profile > .profile-details > h2 {
+    text-align: left;
+}

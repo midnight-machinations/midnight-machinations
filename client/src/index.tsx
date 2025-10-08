@@ -5,6 +5,7 @@ import Anchor from './menu/Anchor';
 import { GameManager, createGameManager } from './game/gameManager';
 import LoadingScreen from './menu/LoadingScreen';
 import route from './routing';
+import { Auth0Provider } from '@auth0/auth0-react';
 import { UnsafeString } from './game/gameState.d';
 import { RoleList, RoleOutline, translateRoleOutline } from './game/roleListState.d';
 
@@ -45,9 +46,17 @@ new MutationObserver(mutations => {
 }).observe(document.body, { subtree: true, childList: true });
 
 ROOT.render(
-    <Anchor onMount={anchorController => route(anchorController, window.location)}>
-        <LoadingScreen type="default"/>
-    </Anchor>
+    <Auth0Provider
+        domain="dev-kzbamocv0cpw3ix1.us.auth0.com"
+        clientId="siwf4DrHZHYqQd1wCyAxAxNeCGaisgQ1"
+        authorizationParams={{
+            redirect_uri: `${window.location.origin}/loginSuccess`
+        }}
+    >
+        <Anchor onMount={anchorController => route(anchorController, window.location)}>
+            <LoadingScreen type="default"/>
+        </Anchor>
+    </Auth0Provider>
 );
 
 export function find(text: string): RegExp {
