@@ -68,7 +68,7 @@ impl RoleStateTrait for Mercenary {
                     AttackPower::Basic,
                     true
                 );
-                actor_ref.set_role_state(game, Self{attacks_remaining: self.attacks_remaining.saturating_sub(1), ..self});
+                actor_ref.edit_role_ability_helper(game, Self{attacks_remaining: self.attacks_remaining.saturating_sub(1), ..self});
             },
             (OnMidnightPriority::Investigative, VisitTag::Role { role: Role::Mercenary, id: 1 }) => {
                 actor_ref.push_night_message(
@@ -152,7 +152,7 @@ impl Mercenary{
     }
     pub fn check_win(&self, game: &mut Game, actor: PlayerReference){
         if self.hits_dead(game) && actor.alive(game) && !self.won {
-            actor.set_role_state(game, Self{won: true, ..self.clone()});
+            actor.edit_role_ability_helper(game, Self{won: true, ..self.clone()});
             actor.die_and_add_grave(game, Grave::from_player_leave_town(game, actor));
         }
     }

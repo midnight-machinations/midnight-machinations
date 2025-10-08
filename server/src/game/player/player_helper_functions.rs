@@ -2,7 +2,7 @@ use rand::seq::SliceRandom;
 use crate::{
     game::{
         attack_power::{AttackPower, DefensePower}, chat::{ChatMessage, ChatMessageVariant}, components::{
-            attack::night_attack::NightAttack, fragile_vest::FragileVests, graves::{grave::{Grave, GraveKiller}, Graves}, insider_group::InsiderGroupID, night_visits::{NightVisitsIterator, Visits}, player_component::PlayerComponent, win_condition::WinCondition
+            attack::night_attack::NightAttack, fragile_vest::FragileVests, graves::{grave::{Grave, GraveKiller}, Graves}, insider_group::InsiderGroupID, night_visits::{NightVisitsIterator, Visits}, player_component::PlayerComponent, role::RoleComponent, win_condition::WinCondition
         },
         controllers::{
             BooleanSelection, Controller, ControllerID, ControllerSelection, Controllers, PlayerListSelection, TwoPlayerOptionSelection
@@ -266,12 +266,13 @@ impl PlayerReference{
             InsiderGroupID::all_groups_with_player(game, *self), 
             game, *self
         );
+        RoleComponent::set_role_without_ability(*self, game, self.role(game));
     }
     /// Swaps this persons role, sends them the role chat message, and makes associated changes
-    pub fn set_role_and_win_condition_and_revealed_group(&self, game: &mut Game, new_role_data: impl Into<RoleState>){
+    pub fn set_role_win_con_insider_group(&self, game: &mut Game, new_role_data: impl Into<RoleState>){
         let new_role_data = new_role_data.into();
         
-        self.set_new_role_delete_old(game, new_role_data);
+        self.set_new_role(game, new_role_data, true);
     
         self.set_win_condition(game, self.role_state(game).clone().default_win_condition());
         
@@ -279,7 +280,19 @@ impl PlayerReference{
             self.role_state(game).clone().default_revealed_groups(), 
             game, *self
         );
+    }
+    /// Swaps this persons role, sends them the role chat message, and makes associated changes
+    pub fn set_role_win_con_insider_group_midnight(&self, game: &mut Game, midnight_variables: &mut MidnightVariables, new_role_data: impl Into<RoleState>){
+        let new_role_data = new_role_data.into();
         
+        self.set_night_convert_role_to(midnight_variables, Some(new_role_data.clone()));
+    
+        self.set_win_condition(game, new_role_data.clone().default_win_condition());
+        
+        InsiderGroupID::set_player_insider_groups(
+            new_role_data.clone().default_revealed_groups(), 
+            game, *self
+        );
     }
     
     

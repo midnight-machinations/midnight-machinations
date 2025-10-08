@@ -53,7 +53,7 @@ impl RoleStateTrait for Cerenovous {
         }else{
             self.previous = None;
         }
-        actor_ref.set_role_state(game, self);
+        actor_ref.edit_role_ability_helper(game, self);
     }
     fn controller_parameters_map(self, game: &Game, actor_ref: PlayerReference) -> ControllerParametersMap {
         ControllerParametersMap::builder(game)
@@ -90,7 +90,7 @@ impl RoleStateTrait for Cerenovous {
     fn on_phase_start(mut self, game: &mut Game, actor_ref: PlayerReference, phase: crate::game::phase::PhaseType) {
         if matches!(phase, PhaseType::Night) {
             self.currently_brained = None;
-            actor_ref.set_role_state(game, self);
+            actor_ref.edit_role_ability_helper(game, self);
         }
     }
     fn on_whisper(self, game: &mut Game, actor_ref: PlayerReference, event: &OnWhisper, fold: &mut WhisperFold, priority: WhisperPriority) {

@@ -110,7 +110,7 @@ impl RoleStateTrait for Reporter {
                 
                 self.interviewed_target = Some(target);
                 
-                actor_ref.set_role_state(game, self);
+                actor_ref.edit_role_ability_helper(game, self);
 
                 InsiderGroupID::send_message_in_available_insider_chat_or_private(
                     game,
@@ -121,7 +121,7 @@ impl RoleStateTrait for Reporter {
             },
             PhaseType::Obituary => {
                 self.interviewed_target = None;
-                actor_ref.set_role_state(game, self);
+                actor_ref.edit_role_ability_helper(game, self);
             },
             _ => {}
         }

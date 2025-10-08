@@ -126,7 +126,7 @@ impl Game {
             ToServerPacket::SetDoomsayerGuess { guesses } => {
                 if let RoleState::Doomsayer(mut doomsayer) = sender_player_ref.role_state(self).clone(){
                     doomsayer.guesses = guesses;
-                    sender_player_ref.set_role_state(self, RoleState::Doomsayer(doomsayer));
+                    sender_player_ref.edit_role_ability_helper(self, RoleState::Doomsayer(doomsayer));
                 }
             },
             ToServerPacket::SetConsortOptions { 
@@ -151,7 +151,7 @@ impl Game {
                     //There must be at least one message enabled, so if none are, enable roleblocked message
                     hypnotist.ensure_at_least_one_message();
 
-                    sender_player_ref.set_role_state(self, RoleState::Hypnotist(hypnotist));
+                    sender_player_ref.edit_role_ability_helper(self, RoleState::Hypnotist(hypnotist));
                 }
             },
             ToServerPacket::VoteFastForwardPhase { fast_forward } => {

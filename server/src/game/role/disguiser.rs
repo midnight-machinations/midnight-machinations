@@ -44,7 +44,7 @@ impl RoleStateTrait for Disguiser {
                 .map(|v|Visit::new_appeared(appeared_visit_player, v.target))
         );
 
-        actor_ref.set_role_state(game, self);
+        actor_ref.edit_role_ability_helper(game, self);
     }
     fn convert_selection_to_visits(self, game: &Game, actor_ref: PlayerReference) -> Vec<Visit> {
         crate::game::role::common_role::convert_controller_selection_to_visits(

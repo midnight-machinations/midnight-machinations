@@ -67,7 +67,7 @@ impl RoleStateTrait for Jailor {
     
                     self.executions_remaining = 
                         if target.win_condition(game).is_loyalist_for(GameConclusion::Town) {0} else {self.executions_remaining.saturating_sub(1)};
-                    actor_ref.set_role_state(game, self);
+                    actor_ref.edit_role_ability_helper(game, self);
                 }
                 
             },
@@ -137,7 +137,7 @@ impl RoleStateTrait for Jailor {
                 
                 self.jailed_target_ref = Some(*target);
                 
-                actor_ref.set_role_state(game, self);
+                actor_ref.edit_role_ability_helper(game, self);
 
                 Detained::add_detain(game, *target);
                 actor_ref.add_private_chat_message(game, 
@@ -146,7 +146,7 @@ impl RoleStateTrait for Jailor {
             },
             PhaseType::Obituary => {
                 self.jailed_target_ref = None;
-                actor_ref.set_role_state(game, self);
+                actor_ref.edit_role_ability_helper(game, self);
             },
             _ => {}
         }

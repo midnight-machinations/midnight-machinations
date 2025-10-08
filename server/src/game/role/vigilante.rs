@@ -41,7 +41,7 @@ pub(super) const DEFENSE: DefensePower = DefensePower::None;
 
 impl RoleStateTrait for Vigilante {
     type ClientAbilityState = Vigilante;
-    fn on_midnight(mut self, game: &mut Game, id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut MidnightVariables, priority: OnMidnightPriority) {
+    fn on_midnight(mut self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut MidnightVariables, priority: OnMidnightPriority) {
         match priority{
             OnMidnightPriority::TopPriority => {
                 if VigilanteState::WillSuicide == self.state {
@@ -78,7 +78,7 @@ impl RoleStateTrait for Vigilante {
             _ => {}
         }
         
-        actor_ref.set_role_state(game, self);
+        actor_ref.edit_role_ability_helper(game, self);
     }
     fn controller_parameters_map(self, game: &Game, actor_ref: PlayerReference) -> ControllerParametersMap {
         let can_shoot = if let VigilanteState::Loaded { bullets } = &self.state {

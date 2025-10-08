@@ -73,7 +73,7 @@ impl RoleStateTrait for Armorsmith {
         }
         
 
-        actor_ref.set_role_state(game, self);
+        actor_ref.edit_role_ability_helper(game, self);
     }
     fn controller_parameters_map(self, game: &Game, actor_ref: PlayerReference) -> ControllerParametersMap {
         ControllerParametersMap::builder(game)
@@ -92,7 +92,7 @@ impl RoleStateTrait for Armorsmith {
         )
     }
     fn on_phase_start(self, game: &mut Game, actor_ref: PlayerReference, _phase: PhaseType){
-        actor_ref.set_role_state(game, 
+        actor_ref.edit_role_ability_helper(game, 
             Armorsmith{
                 night_open_shop: false,
                 ..self

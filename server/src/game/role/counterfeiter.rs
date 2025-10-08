@@ -77,7 +77,7 @@ impl RoleStateTrait for Counterfeiter {
 
                 target_ref.set_night_grave_will(midnight_variables, fake_alibi);
 
-                actor_ref.set_role_state(game, Counterfeiter { 
+                actor_ref.edit_role_ability_helper(game, Counterfeiter { 
                     forges_remaining: self.forges_remaining.saturating_sub(1), 
                     forged_ref: Some(target_ref)
                 });
@@ -151,7 +151,7 @@ impl RoleStateTrait for Counterfeiter {
         ])
     }
     fn on_phase_start(self, game: &mut Game, actor_ref: PlayerReference, _phase: PhaseType){
-        actor_ref.set_role_state(game, Counterfeiter{
+        actor_ref.edit_role_ability_helper(game, Counterfeiter{
             forged_ref: None,
             ..self
         });

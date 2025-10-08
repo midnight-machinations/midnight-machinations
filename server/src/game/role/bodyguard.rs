@@ -65,7 +65,7 @@ impl RoleStateTrait for Bodyguard {
                     &vec_map![(target_ref, actor_ref)], |v| v.attack, false, 
                 ).iter().filter(|v|!v.indirect).map(|v| v.visitor).collect();
 
-                actor_ref.set_role_state(game, Bodyguard {
+                actor_ref.edit_role_ability_helper(game, Bodyguard {
                     redirected_player_refs,
                     ..self
                 });
@@ -78,7 +78,7 @@ impl RoleStateTrait for Bodyguard {
     
                 if actor_ref == target_ref {
                     let self_shields_remaining = self.self_shields_remaining.saturating_sub(1);
-                    actor_ref.set_role_state(game, Bodyguard{
+                    actor_ref.edit_role_ability_helper(game, Bodyguard{
                         self_shields_remaining, 
                         ..self
                     });
@@ -111,7 +111,7 @@ impl RoleStateTrait for Bodyguard {
         )
     }
     fn on_phase_start(self, game: &mut Game, actor_ref: PlayerReference, _phase: PhaseType){
-        actor_ref.set_role_state(game, Bodyguard {
+        actor_ref.edit_role_ability_helper(game, Bodyguard {
             self_shields_remaining: self.self_shields_remaining,
             redirected_player_refs: Vec::new(),
         });

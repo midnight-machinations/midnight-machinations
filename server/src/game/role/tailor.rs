@@ -41,14 +41,14 @@ impl RoleStateTrait for Tailor {
     
         if !RoleSet::TownCommon.get_roles().contains(&target.role(game)) {return}
         target.set_night_convert_role_to(midnight_variables, Some(role.new_state(game)));
-        actor_ref.set_role_state(game, Tailor{previous_target: Some(target)});
+        actor_ref.edit_role_ability_helper(game, Tailor{previous_target: Some(target)});
     }
     fn on_phase_start(self, game: &mut Game, actor_ref: PlayerReference, phase: crate::game::phase::PhaseType) {
         if matches!(phase, PhaseType::Obituary){
             if let Some(target) = self.previous_target {
                 actor_ref.reveal_players_role(game, target);
             }
-            actor_ref.set_role_state(game, Tailor{previous_target: None});
+            actor_ref.edit_role_ability_helper(game, Tailor{previous_target: None});
         }
     }
     fn controller_parameters_map(self, game: &Game, actor_ref: PlayerReference) -> super::ControllerParametersMap {

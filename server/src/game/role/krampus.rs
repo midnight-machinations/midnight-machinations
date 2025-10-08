@@ -48,7 +48,7 @@ impl RoleStateTrait for Krampus {
 
                     target_ref.try_night_kill_single_attacker(actor_ref, game, midnight_variables, GraveKiller::Role(Role::Krampus), AttackPower::Basic, true);
 
-                    actor_ref.set_role_state(game, Krampus {
+                    actor_ref.edit_role_ability_helper(game, Krampus {
                         last_used_ability: Some(KrampusAbility::Kill),
                         ..self
                     });
@@ -70,7 +70,7 @@ impl RoleStateTrait for Krampus {
         }
 
         if self.ability == KrampusAbility::DoNothing {
-            actor_ref.set_role_state(game, Krampus {
+            actor_ref.edit_role_ability_helper(game, Krampus {
                 last_used_ability: Some(KrampusAbility::DoNothing),
                 ..self
             });
@@ -98,7 +98,7 @@ impl RoleStateTrait for Krampus {
             }
 
             actor_ref.add_private_chat_message(game, ChatMessageVariant::NextKrampusAbility { ability: new_state.ability });
-            actor_ref.set_role_state(game, new_state);
+            actor_ref.edit_role_ability_helper(game, new_state);
         }
     }
     fn controller_parameters_map(self, game: &Game, actor_ref: PlayerReference) -> ControllerParametersMap {

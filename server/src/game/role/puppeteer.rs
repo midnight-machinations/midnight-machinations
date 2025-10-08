@@ -58,7 +58,7 @@ impl RoleStateTrait for Puppeteer {
                     if PuppeteerMarionette::string(game, midnight_variables, target){
                         self.marionettes_remaining = self.marionettes_remaining.saturating_sub(1);
                     }
-                    actor_ref.set_role_state(game, self);
+                    actor_ref.edit_role_ability_helper(game, self);
                 }
             }else{
                 target.try_night_kill_single_attacker(

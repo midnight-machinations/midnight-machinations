@@ -58,7 +58,7 @@ impl RoleStateTrait for SantaClaus {
                     target_ref.set_win_condition(game, WinCondition::GameConclusionReached { win_if_any });
                     target_ref.push_night_message(midnight_variables, ChatMessageVariant::AddedToNiceList);
 
-                    actor_ref.set_role_state(game, Self {
+                    actor_ref.edit_role_ability_helper(game, Self {
                         ability_used_last_night: Some(SantaListKind::Nice),
                     });
                 }
@@ -85,7 +85,7 @@ impl RoleStateTrait for SantaClaus {
                     target_ref.set_win_condition(game, WinCondition::GameConclusionReached { win_if_any });
                     target_ref.push_night_message(midnight_variables, ChatMessageVariant::AddedToNaughtyList);
 
-                    actor_ref.set_role_state(game, Self {
+                    actor_ref.edit_role_ability_helper(game, Self {
                         ability_used_last_night: Some(SantaListKind::Naughty),
                     });
                     

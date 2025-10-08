@@ -36,7 +36,7 @@ impl RoleStateTrait for Witch {
     type ClientAbilityState = ClientRoleState;
     fn on_midnight(self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut MidnightVariables, priority: OnMidnightPriority) {
         if let Some(currently_used_player) = actor_ref.possess_night_action(game, midnight_variables, priority, self.currently_used_player){
-            actor_ref.set_role_state(game, Witch{
+            actor_ref.edit_role_ability_helper(game, Witch{
                 currently_used_player: Some(currently_used_player)
             })
         }
@@ -77,7 +77,7 @@ impl RoleStateTrait for Witch {
             actor_ref.die_and_add_grave(game, Grave::from_player_leave_town(game, actor_ref));
         }
         if phase == PhaseType::Night {
-            actor_ref.set_role_state(game, Witch { currently_used_player: None });
+            actor_ref.edit_role_ability_helper(game, Witch { currently_used_player: None });
         }
     }
     fn on_player_roleblocked(self, _game: &mut Game, _midnight_variables: &mut MidnightVariables, _actor_ref: PlayerReference, _player: PlayerReference, _invisible: bool) {}

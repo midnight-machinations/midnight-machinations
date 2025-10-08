@@ -56,7 +56,7 @@ impl RoleStateTrait for Warden {
                 if self.all_prisoners_cooperated(&players_to_kill) {
                     self.increment_charges();
 
-                    actor_ref.set_role_state(game, self);
+                    actor_ref.edit_role_ability_helper(game, self);
                 }
             },
             _ => {}
@@ -124,7 +124,7 @@ impl RoleStateTrait for Warden {
                 
                 self.players_in_prison = players_in_prison.into_iter().collect();
                 
-                actor_ref.set_role_state(game, self.clone());
+                actor_ref.edit_role_ability_helper(game, self.clone());
 
                 game.add_message_to_chat_group(
                     crate::game::chat::ChatGroup::Warden,
@@ -145,7 +145,7 @@ impl RoleStateTrait for Warden {
             },
             PhaseType::Obituary => {
                 self.players_in_prison = VecSet::new();
-                actor_ref.set_role_state(game, self);
+                actor_ref.edit_role_ability_helper(game, self);
             },
             _ => {}
         }

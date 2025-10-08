@@ -207,7 +207,7 @@ mod macros {
             }
             impl Role {
                 pub fn values() -> VecSet<Role> {
-                    return vec_set![$(Role::$name),*];
+                    vec_set![$(Role::$name),*]
                 }
                 pub fn default_state(&self) -> RoleState {
                     match self {

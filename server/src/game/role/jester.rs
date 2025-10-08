@@ -86,14 +86,14 @@ impl RoleStateTrait for Jester {
         match game.current_phase() {
             PhaseState::FinalWords { player_on_trial } => {
                 if *player_on_trial == actor_ref {
-                    actor_ref.set_role_state(game, Jester { 
+                    actor_ref.edit_role_ability_helper(game, Jester { 
                         executed_yesterday: true,
                         won: true
                     });
                 }
             }
             PhaseState::Obituary { .. } => {
-                actor_ref.set_role_state(game, Jester { 
+                actor_ref.edit_role_ability_helper(game, Jester { 
                     executed_yesterday: false,
                     ..self
                 });

@@ -110,7 +110,7 @@ impl RoleStateTrait for Medium {
         match phase {
             PhaseType::Discussion => {
                 self.haunted_target = None;
-                actor_ref.set_role_state(game, self);
+                actor_ref.edit_role_ability_helper(game, self);
             },
             PhaseType::Night => {
                 if let Some(target) = ControllerID::role(actor_ref, Role::Medium, 1)
@@ -121,7 +121,7 @@ impl RoleStateTrait for Medium {
                     self.haunts_remaining = self.haunts_remaining.saturating_sub(1);
                     self.haunted_target = Some(target);
                     //need to run set_role_state first because otherwise the haunted player will not get the message
-                    actor_ref.set_role_state(game, self.clone());
+                    actor_ref.edit_role_ability_helper(game, self.clone());
 
                     game.add_message_to_chat_group(ChatGroup::Dead,
                         ChatMessageVariant::MediumHauntStarted {
@@ -150,7 +150,7 @@ impl RoleStateTrait for Medium {
                     );
                 };
                 
-                actor_ref.set_role_state(game, self);
+                actor_ref.edit_role_ability_helper(game, self);
             },
             _=>{}
         }

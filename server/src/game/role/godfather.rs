@@ -111,6 +111,6 @@ impl Godfather{
         let Some(backup) = backup.first().copied() else {return};
 
         //convert backup to godfather
-        backup.set_new_role_delete_old(game, new_role_data);
+        backup.set_new_role(game, new_role_data, true);
     }
 }

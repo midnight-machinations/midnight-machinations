@@ -35,7 +35,7 @@ impl RoleStateTrait for Blackmailer {
         }else{
             self.previous = None;
         }
-        actor_ref.set_role_state(game, self);
+        actor_ref.edit_role_ability_helper(game, self);
     }
     fn controller_parameters_map(self, game: &Game, actor_ref: PlayerReference) -> ControllerParametersMap {
         ControllerParametersMap::builder(game)

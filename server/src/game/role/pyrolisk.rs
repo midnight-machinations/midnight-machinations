@@ -60,7 +60,7 @@ impl RoleStateTrait for Pyrolisk {
                     }
                 }
                 
-                actor_ref.set_role_state(game, Pyrolisk{tagged_for_obscure});
+                actor_ref.edit_role_ability_helper(game, Pyrolisk{tagged_for_obscure});
             }
             _ => {}
         }
@@ -95,7 +95,7 @@ impl RoleStateTrait for Pyrolisk {
         grave_ref.deref_mut(game).information = GraveInformation::Obscured;
     }
     fn on_phase_start(self, game: &mut Game, actor_ref: PlayerReference, _phase: crate::game::phase::PhaseType) {
-        actor_ref.set_role_state(game, Pyrolisk{tagged_for_obscure: VecSet::new()});
+        actor_ref.edit_role_ability_helper(game, Pyrolisk{tagged_for_obscure: VecSet::new()});
     }
 }
 impl GetClientAbilityState<ClientRoleState> for Pyrolisk {

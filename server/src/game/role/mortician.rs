@@ -107,7 +107,7 @@ impl RoleStateTrait for Mortician {
 
             grave_ref.deref_mut(game).information = GraveInformation::Obscured;
             
-            actor_ref.set_role_state(game, self);
+            actor_ref.edit_role_ability_helper(game, self);
         }
     }
     fn default_revealed_groups(self) -> crate::vec_set::VecSet<crate::game::components::insider_group::InsiderGroupID> {

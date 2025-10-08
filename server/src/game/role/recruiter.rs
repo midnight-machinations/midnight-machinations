@@ -60,9 +60,9 @@ impl RoleStateTrait for Recruiter {
                 let actor_visits = actor_ref.untagged_night_visits_cloned(midnight_variables);
                 if let Some(visit) = actor_visits.first() && Recruiter::night_ability(self.clone(), game, midnight_variables, actor_ref, visit.target) {
                     if choose_attack {
-                        actor_ref.set_role_state(game, Recruiter{recruits_remaining: self.recruits_remaining.saturating_add(1)})
+                        actor_ref.edit_role_ability_helper(game, Recruiter{recruits_remaining: self.recruits_remaining.saturating_add(1)})
                     }else{
-                        actor_ref.set_role_state(game, Recruiter{recruits_remaining: self.recruits_remaining.saturating_sub(1)});
+                        actor_ref.edit_role_ability_helper(game, Recruiter{recruits_remaining: self.recruits_remaining.saturating_sub(1)});
                     }
                 }
             },

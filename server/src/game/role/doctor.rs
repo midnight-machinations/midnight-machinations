@@ -40,7 +40,7 @@ impl RoleStateTrait for Doctor {
                 actor_ref.guard_player(game, midnight_variables, target_ref);
 
                 if actor_ref == target_ref{
-                    actor_ref.set_role_state(game, Doctor{
+                    actor_ref.edit_role_ability_helper(game, Doctor{
                         self_heals_remaining: self.self_heals_remaining.saturating_sub(1), 
                     });
                 }

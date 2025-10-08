@@ -74,7 +74,7 @@ impl RoleStateTrait for Martyr {
             }
         };
 
-        actor_ref.set_role_state(game, self);
+        actor_ref.edit_role_ability_helper(game, self);
     }
     fn controller_parameters_map(self, game: &Game, actor_ref: PlayerReference) -> super::ControllerParametersMap {
         ControllerParametersMap::builder(game)
@@ -128,7 +128,7 @@ impl RoleStateTrait for Martyr {
                 player.die_and_add_grave(game, Grave::from_player_suicide(game, player));
             }
     
-            actor_ref.set_role_state(game, RoleState::Martyr(Martyr {
+            actor_ref.edit_role_ability_helper(game, RoleState::Martyr(Martyr {
                 state: MartyrState::Won
             }));
         }

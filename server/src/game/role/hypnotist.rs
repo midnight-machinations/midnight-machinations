@@ -55,7 +55,7 @@ impl RoleStateTrait for Hypnotist {
             OnMidnightPriority::TopPriority => {
                 let mut hypnotist = self.clone();
                 hypnotist.ensure_at_least_one_message();
-                actor_ref.set_role_state(game, RoleState::Hypnotist(self));
+                actor_ref.edit_role_ability_helper(game, RoleState::Hypnotist(self));
             },
             OnMidnightPriority::Roleblock => {
                 if self.roleblock {

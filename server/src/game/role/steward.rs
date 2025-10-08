@@ -68,7 +68,7 @@ impl RoleStateTrait for Steward {
                         if roles.contains(&Role::Steward){1}else{0}
                     );
                 
-                actor_ref.set_role_state(game, Steward{
+                actor_ref.edit_role_ability_helper(game, Steward{
                     previous_input: RoleListSelection(
                         vec![roles.first(), roles.get(1)]
                             .into_iter()
@@ -127,7 +127,7 @@ impl RoleStateTrait for Steward {
         out
     }
     fn on_phase_start(self, game: &mut Game, actor_ref: PlayerReference, _phase: PhaseType){
-        actor_ref.set_role_state(game, Steward{
+        actor_ref.edit_role_ability_helper(game, Steward{
             self_heals_remaining: self.self_heals_remaining,
             target_healed_refs: vec![],
             previous_input: self.previous_input

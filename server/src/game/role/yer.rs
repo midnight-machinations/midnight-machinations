@@ -101,7 +101,7 @@ impl RoleStateTrait for Yer {
                     true
                 );
 
-                actor_ref.set_role_state(game, self);
+                actor_ref.edit_role_ability_helper(game, self);
             }
         }
     }

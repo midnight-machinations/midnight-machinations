@@ -58,7 +58,7 @@ impl RoleStateTrait for Kidnapper {
                     );
     
                     self.executions_remaining = self.executions_remaining.saturating_sub(1);
-                    actor_ref.set_role_state(game, self);
+                    actor_ref.edit_role_ability_helper(game, self);
                 }
             },
             _ => {}
@@ -128,7 +128,7 @@ impl RoleStateTrait for Kidnapper {
                 
                 self.jailed_target_ref = Some(target);
                 
-                actor_ref.set_role_state(game, self);
+                actor_ref.edit_role_ability_helper(game, self);
 
                 Detained::add_detain(game, target);
                 actor_ref.add_private_chat_message(game, 
@@ -137,7 +137,7 @@ impl RoleStateTrait for Kidnapper {
             },
             PhaseType::Obituary => {
                 self.jailed_target_ref = None;
-                actor_ref.set_role_state(game, self);
+                actor_ref.edit_role_ability_helper(game, self);
             },
             _ => {}
         }
