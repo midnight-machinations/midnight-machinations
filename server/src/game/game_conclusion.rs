@@ -113,7 +113,11 @@ impl GameOverCheckPlayer{
         if self.insider_groups.contains(&InsiderGroupID::Mafia) {return true;}
         if self.insider_groups.contains(&InsiderGroupID::Cult) {return true;}
         if self.win_condition.is_loyalist_for(GameConclusion::Town) {return true;}
-        
+        // mafia included because if they're not in the mafia insider group,
+        // they will be went they select a role
+        if matches!(self.role, Role::TrueWildcard | Role::Wildcard |
+             Role::MafiaKillingWildcard | Role::MafiaSupportWildcard
+            ) {return true;} 
         GameConclusion::keeps_game_running(self.role)
     }
 }
