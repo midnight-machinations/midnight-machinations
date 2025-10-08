@@ -51,7 +51,7 @@ impl RoleStateTrait for Pyrolisk {
                 }
 
                 if !killed_at_least_once {
-                    let actor_visits = actor_ref.untagged_night_visits_cloned(midnight_variables);
+                    let actor_visits = actor_ref.role_night_visits_cloned(midnight_variables);
                     if let Some(visit) = actor_visits.first(){
                         let attack_success = visit.target.try_night_kill_single_attacker(actor_ref, game, midnight_variables, GraveKiller::Role(Role::Pyrolisk), AttackPower::ArmorPiercing, true);
                         if attack_success {

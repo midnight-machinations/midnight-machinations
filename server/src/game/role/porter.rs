@@ -24,7 +24,7 @@ impl RoleStateTrait for Porter {
     fn on_midnight(self, _game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut MidnightVariables, priority: OnMidnightPriority) {
         if priority != OnMidnightPriority::Warper {return;}
     
-        let transporter_visits = actor_ref.untagged_night_visits_cloned(midnight_variables);
+        let transporter_visits = actor_ref.role_night_visits_cloned(midnight_variables);
         let Some(first_visit) = transporter_visits.get(0).map(|v| v.target) else {return};
         let Some(second_visit) = transporter_visits.get(1).map(|v| v.target) else {return};
         

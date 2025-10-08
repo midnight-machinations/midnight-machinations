@@ -90,7 +90,7 @@ impl Godfather{
         match priority {
             //kill the target
             OnMidnightPriority::Kill => {
-                let actor_visits = actor_ref.untagged_night_visits_cloned(midnight_variables);
+                let actor_visits = actor_ref.role_night_visits_cloned(midnight_variables);
                 let Some(visit) = actor_visits.first() else {return};
                 visit.target.clone().try_night_kill_single_attacker(
                     actor_ref, game, midnight_variables, GraveKiller::RoleSet(RoleSet::Mafia),

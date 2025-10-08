@@ -55,7 +55,7 @@ impl RoleStateTrait for Bodyguard {
         
         match priority {
             OnMidnightPriority::Bodyguard => {
-                let actor_visits = actor_ref.untagged_night_visits_cloned(midnight_variables);
+                let actor_visits = actor_ref.role_night_visits_cloned(midnight_variables);
                 let Some(target_ref) = actor_visits.get(0).map(|v| v.target) else {return};
                 
                 if actor_ref == target_ref {return}
@@ -72,7 +72,7 @@ impl RoleStateTrait for Bodyguard {
                 
             },
             OnMidnightPriority::Heal => {
-                let actors_visits = actor_ref.untagged_night_visits_cloned(midnight_variables);
+                let actors_visits = actor_ref.role_night_visits_cloned(midnight_variables);
                 let Some(visit) = actors_visits.first() else {return};
                 let target_ref = visit.target;
     

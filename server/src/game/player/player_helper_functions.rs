@@ -93,7 +93,7 @@ impl PlayerReference{
     pub fn possess_night_action(&self, game: &mut Game, midnight_variables: &mut MidnightVariables, priority: OnMidnightPriority, currently_used_player: Option<PlayerReference>)->Option<PlayerReference>{
         match priority {
             OnMidnightPriority::Possess => {
-                let untagged_possessor_visits = self.untagged_night_visits_cloned(midnight_variables);
+                let untagged_possessor_visits = self.role_night_visits_cloned(midnight_variables);
                 let possessed_visit = untagged_possessor_visits.get(0)?;
                 let possessed_into_visit = untagged_possessor_visits.get(1)?;
                 

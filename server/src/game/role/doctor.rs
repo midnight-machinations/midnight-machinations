@@ -33,7 +33,7 @@ impl RoleStateTrait for Doctor {
         match priority {
             OnMidnightPriority::Heal => {
                 
-                let actor_visits = actor_ref.untagged_night_visits_cloned(midnight_variables);
+                let actor_visits = actor_ref.role_night_visits_cloned(midnight_variables);
                 let Some(visit) = actor_visits.first() else {return};
                 let target_ref = visit.target;
 

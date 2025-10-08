@@ -60,7 +60,7 @@ impl RoleStateTrait for Counterfeiter {
             OnMidnightPriority::Deception => {
                 if self.forges_remaining == 0 || chose_no_forge(game, actor_ref) {return}
                 
-                let actor_visits = actor_ref.untagged_night_visits_cloned(midnight_variables);
+                let actor_visits = actor_ref.role_night_visits_cloned(midnight_variables);
                 let Some(visit) = actor_visits.first() else{return};
 
                 let target_ref = visit.target;
@@ -83,7 +83,7 @@ impl RoleStateTrait for Counterfeiter {
                 });
             },
             OnMidnightPriority::Kill => {
-                let actor_visits = actor_ref.untagged_night_visits_cloned(midnight_variables);
+                let actor_visits = actor_ref.role_night_visits_cloned(midnight_variables);
                 if let Some(visit) = actor_visits.first(){
                     let target_ref = visit.target;
             

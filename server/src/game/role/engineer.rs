@@ -85,7 +85,7 @@ impl RoleStateTrait for Engineer {
                             actor_ref.edit_role_ability_helper(game, Engineer {trap: Trap::Ready});
                         },
                         Trap::Ready => {
-                            if let Some(visit) = actor_ref.untagged_night_visits_cloned(midnight_variables).first(){
+                            if let Some(visit) = actor_ref.role_night_visits_cloned(midnight_variables).first(){
                                 actor_ref.edit_role_ability_helper(game, Engineer {trap: Trap::Set{target: visit.target}});
                             }
                         },

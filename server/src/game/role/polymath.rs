@@ -30,7 +30,7 @@ impl RoleStateTrait for Polymath {
         let selection = Self::ability_type_selection(game, actor_ref);
         match (priority, selection) {
             (OnMidnightPriority::Investigative, PolymathAbilityType::Investigate) => {
-                let actor_visits = actor_ref.untagged_night_visits_cloned(midnight_variables);
+                let actor_visits = actor_ref.role_night_visits_cloned(midnight_variables);
                 let Some(target) = actor_visits.first().map(|v|v.target) else {return};
                 actor_ref.push_night_message(midnight_variables, 
                     ChatMessageVariant::PolymathSnoopResult {inno:
@@ -40,7 +40,7 @@ impl RoleStateTrait for Polymath {
                 );
             },
             (OnMidnightPriority::Heal, PolymathAbilityType::Protect) => {
-                let actor_visits = actor_ref.untagged_night_visits_cloned(midnight_variables);
+                let actor_visits = actor_ref.role_night_visits_cloned(midnight_variables);
                 let Some(target) = actor_visits.first().map(|v|v.target) else {return};
                 if Visits::into_iter(midnight_variables)
                     .with_visitor(target)
@@ -52,7 +52,7 @@ impl RoleStateTrait for Polymath {
                 }
             },
             (OnMidnightPriority::Warper, PolymathAbilityType::Support) => {    
-                let actor_visits = actor_ref.untagged_night_visits_cloned(midnight_variables);
+                let actor_visits = actor_ref.role_night_visits_cloned(midnight_variables);
                 let Some(from) = actor_visits.first().map(|v| v.target) else {return};
                 let Some(to) = actor_visits.get(1).map(|v| v.target) else {return};
                 
@@ -65,7 +65,7 @@ impl RoleStateTrait for Polymath {
                 );
             }
             (OnMidnightPriority::Kill, PolymathAbilityType::Kill) => {
-                let Some(&actor_visit) = actor_ref.untagged_night_visits_cloned(midnight_variables).first() else {return};
+                let Some(&actor_visit) = actor_ref.role_night_visits_cloned(midnight_variables).first() else {return};
                 let Some(PlayerListSelection(mark)) = ControllerID::role(actor_ref, Role::Polymath, 4)
                     .get_player_list_selection(game)
                     .cloned() else {return};

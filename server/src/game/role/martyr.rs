@@ -59,7 +59,7 @@ impl RoleStateTrait for Martyr {
         if priority != OnMidnightPriority::Kill {return}
         let MartyrState::StillPlaying { bullets } = self.state else {return};
         if bullets == 0 {return}
-        let actor_visits = actor_ref.untagged_night_visits_cloned(midnight_variables);
+        let actor_visits = actor_ref.role_night_visits_cloned(midnight_variables);
         if let Some(visit) = actor_visits.first() {
             let target_ref = visit.target;
 

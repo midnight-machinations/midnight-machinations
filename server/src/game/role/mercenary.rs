@@ -54,7 +54,7 @@ impl RoleStateTrait for Mercenary {
     }
     fn on_midnight(self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut MidnightVariables, priority: OnMidnightPriority) {
         
-        let visits = actor_ref.untagged_night_visits_cloned(midnight_variables);
+        let visits = actor_ref.role_night_visits_cloned(midnight_variables);
         let Some(visit) = visits.first() else {return};
 
         match (priority, visit.tag) {

@@ -37,7 +37,7 @@ impl RoleStateTrait for SantaClaus {
 
         match self.get_next_santa_ability() {
             SantaListKind::Nice => {
-                let actor_visits = actor_ref.untagged_night_visits_cloned(midnight_variables).into_iter();
+                let actor_visits = actor_ref.role_night_visits_cloned(midnight_variables).into_iter();
                 let targets = actor_visits.map(|v| v.target);
 
                 for target_ref in targets {
@@ -64,7 +64,7 @@ impl RoleStateTrait for SantaClaus {
                 }
             }
             SantaListKind::Naughty => {
-                let actor_visits = actor_ref.untagged_night_visits_cloned(midnight_variables).into_iter();
+                let actor_visits = actor_ref.role_night_visits_cloned(midnight_variables).into_iter();
                 let targets = actor_visits.map(|v| v.target);
 
                 for target_ref in targets {

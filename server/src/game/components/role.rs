@@ -56,4 +56,26 @@ impl PlayerReference{
 
         OnRoleSwitch::new(*self, old, self.role_state(game).clone()).invoke(game);
     }
+
+    pub fn role_state_ability<'a>(&self, game: &'a Game) -> &'a Ability {
+        AbilityID::Role { role: self.role(game), player: *self }
+            .get_ability(game)
+            .expect("every player must have a role ability")
+    }
+    pub fn role_state<'a>(&self, game: &'a Game) -> &'a RoleState {
+        let Ability::Role(RoleAbility(role_state)) = self.role_state_ability(game) else { unreachable!("AbilityID::Role must correspond to a role") };
+        
+        role_state
+    }
+    pub fn edit_role_ability_helper(&self, game: &mut Game, new_role_data: impl Into<RoleState>) {
+        let new_role_data = new_role_data.into();
+        let role = new_role_data.role();
+        AbilityID::Role { role, player: *self }
+            .edit_role_ability(game, new_role_data);
+    }
+}
+impl Role{
+    pub fn should_inform_player_of_assignment(&self)->bool{
+        !matches!(self, Role::Pawn|Role::Drunk)
+    }
 }

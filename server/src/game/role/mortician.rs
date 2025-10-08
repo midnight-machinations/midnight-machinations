@@ -57,7 +57,7 @@ impl RoleStateTrait for Mortician {
     fn on_midnight(self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut MidnightVariables, priority: OnMidnightPriority) {
         match priority {
             OnMidnightPriority::Deception=>{
-                let actor_visits = actor_ref.untagged_night_visits_cloned(midnight_variables);
+                let actor_visits = actor_ref.role_night_visits_cloned(midnight_variables);
                 let Some(visit) = actor_visits.first() else{return};
 
                 Tags::add_tag(game, TagSetID::MorticianTag(actor_ref), visit.target);

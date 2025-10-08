@@ -3,7 +3,7 @@ use crate::game::{
             ability::Ability,
             ability_id::AbilityID,
             ability_trait::AbilityTrait
-        }, event::{on_conceal_role::OnConcealRole}, player::PlayerReference, role::{Role, RoleState}, Game
+        }, event::{on_conceal_role::OnConcealRole}, player::PlayerReference, role::RoleState, Game
     };
 
 #[derive(Clone)]
@@ -65,29 +65,5 @@ impl AbilityID {
 impl From<RoleAbility> for Ability where RoleAbility: AbilityTrait {
     fn from(role_struct: RoleAbility) -> Self {
         Ability::Role(role_struct)
-    }
-}
-impl Role{
-    pub fn should_inform_player_of_assignment(&self)->bool{
-        !matches!(self, Role::Pawn|Role::Drunk)
-    }
-}
-
-impl PlayerReference{
-    pub fn role_state_ability<'a>(&self, game: &'a Game) -> &'a Ability {
-        AbilityID::Role { role: self.role(game), player: *self }
-            .get_ability(game)
-            .expect("every player must have a role ability")
-    }
-    pub fn role_state<'a>(&self, game: &'a Game) -> &'a RoleState {
-        let Ability::Role(RoleAbility(role_state)) = self.role_state_ability(game) else { unreachable!("AbilityID::Role must correspond to a role") };
-        
-        role_state
-    }
-    pub fn edit_role_ability_helper(&self, game: &mut Game, new_role_data: impl Into<RoleState>) {
-        let new_role_data = new_role_data.into();
-        let role = new_role_data.role();
-        AbilityID::Role { role, player: *self }
-            .edit_role_ability(game, new_role_data);
     }
 }

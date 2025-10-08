@@ -44,7 +44,7 @@ impl RoleStateTrait for Hypnotist {
     type ClientAbilityState = Hypnotist;
     fn on_midnight(self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut MidnightVariables, priority: OnMidnightPriority) {
 
-        let actor_visits = actor_ref.untagged_night_visits_cloned(midnight_variables);
+        let actor_visits = actor_ref.role_night_visits_cloned(midnight_variables);
         let Some(visit) = actor_visits.first() else {
             return;
         };

@@ -25,7 +25,7 @@ impl RoleStateTrait for Informant {
         if priority != OnMidnightPriority::Investigative {return}
         
 
-        let actor_visits = actor_ref.untagged_night_visits_cloned(midnight_variables);
+        let actor_visits = actor_ref.role_night_visits_cloned(midnight_variables);
         for visit in actor_visits{
             let target_ref = visit.target;
 

@@ -23,7 +23,7 @@ impl RoleStateTrait for Courtesan {
     type ClientAbilityState = Courtesan;
     fn on_midnight(mut self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut MidnightVariables, priority: OnMidnightPriority) {
         if priority != OnMidnightPriority::Roleblock {return;}
-        let actor_visits = actor_ref.untagged_night_visits_cloned(midnight_variables);
+        let actor_visits = actor_ref.role_night_visits_cloned(midnight_variables);
         let mut previous = Vec::new();
         for visit in actor_visits{
             previous.push(visit.target);

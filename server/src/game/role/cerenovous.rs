@@ -38,7 +38,7 @@ impl RoleStateTrait for Cerenovous {
     fn on_midnight(mut self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut MidnightVariables, priority: OnMidnightPriority) {
         if priority != OnMidnightPriority::Deception {return}
 
-        let actor_visits = actor_ref.untagged_night_visits_cloned(midnight_variables);
+        let actor_visits = actor_ref.role_night_visits_cloned(midnight_variables);
         if let Some(visit) = actor_visits.first() {
             if self.charges != 0 {
                 let target_ref = visit.target;

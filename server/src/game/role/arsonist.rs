@@ -30,7 +30,7 @@ impl RoleStateTrait for Arsonist {
         match priority {
             OnMidnightPriority::Deception => {
                 //douse target
-                let actor_visits = actor_ref.untagged_night_visits_cloned(midnight_variables);
+                let actor_visits = actor_ref.role_night_visits_cloned(midnight_variables);
                 if let Some(visit) = actor_visits.first(){
                     let target_ref = visit.target;
                     Self::douse(game, target_ref);
