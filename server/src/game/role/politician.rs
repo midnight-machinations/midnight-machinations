@@ -86,7 +86,7 @@ impl RoleStateTrait for Politician {
         EnfranchiseComponent::unenfranchise(game, actor_ref);
     }
     fn on_phase_start(mut self, game: &mut Game, actor_ref: PlayerReference, phase: PhaseType){
-        Self::check_and_leave_town(&self, game, actor_ref);
+        Self::check_for_lose_leave_town(&self, game, actor_ref);
 
         if self.state.countdown_started() && actor_ref.alive(game) {
             //for skipping phases
@@ -117,12 +117,12 @@ impl RoleStateTrait for Politician {
     }
     
     fn on_any_death(self, game: &mut Game, actor_ref: PlayerReference, _dead_player_ref: PlayerReference){
-        self.check_and_start_countdown(game, actor_ref);
+        self.check_for_and_start_countdown(game, actor_ref);
     }
 
     fn on_ability_creation(self, game: &mut Game, actor_ref: PlayerReference, event: &OnAbilityCreation, fold: &mut OnAbilityCreationFold, priority: OnAbilityCreationPriority) {
         if priority != OnAbilityCreationPriority::SideEffect || !event.id.is_players_role(actor_ref, Role::Politician) || fold.cancelled {return}
-        self.check_and_start_countdown(game, actor_ref);
+        self.check_for_and_start_countdown(game, actor_ref);
     }
 
     fn default_win_condition(self) -> WinCondition where RoleState: From<Self> {
@@ -147,23 +147,20 @@ impl GetClientAbilityState<ClientRoleState> for Politician {
 }
 
 impl Politician {
-    fn check_and_leave_town(&self, game: &mut Game, actor_ref: PlayerReference){
+    fn check_for_lose_leave_town(&self, game: &mut Game, actor_ref: PlayerReference){
         if
             !self.state.countdown_started() &&
             actor_ref.alive(game) &&
             PlayerReference::all_players(game)
-                .filter(|p|p.alive(game))
                 .filter(|p|p.keeps_game_running(game))
-                .all(|p|
-                    !p.win_condition(game).is_loyalist_for(GameConclusion::Town)
-                )
+                .all(|p|!p.win_condition(game).is_loyalist_for(GameConclusion::Town))
 
         {
             actor_ref.die_and_add_grave(game, Grave::from_player_leave_town(game, actor_ref));
         }
     }
 
-    fn check_and_start_countdown(mut self, game: &mut Game, actor_ref: PlayerReference){
+    fn check_for_and_start_countdown(mut self, game: &mut Game, actor_ref: PlayerReference){
         if !actor_ref.alive(game) || self.state.countdown_started() {
             return; 
         }
@@ -175,14 +172,12 @@ impl Politician {
         actor_ref.edit_role_ability_helper(game, self);
     }
 
-
     fn should_start_countdown(&self, game: &Game, actor_ref: PlayerReference)->bool{
         !self.state.countdown_started() &&
         actor_ref.alive(game) &&
-            PlayerReference::all_players(game)
+        PlayerReference::all_players(game)
             .filter(|p|*p != actor_ref)
             .filter(|p|p.keeps_game_running(game))
-            .filter(|p|p.alive(game))
             .all(|player| {
                 player.win_condition(game).is_loyalist_for(GameConclusion::Town)
             })

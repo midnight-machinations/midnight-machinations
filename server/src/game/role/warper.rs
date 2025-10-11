@@ -1,13 +1,8 @@
 use serde::Serialize;
-
 use crate::game::controllers::AvailableTwoPlayerOptionSelection;
-use crate::game::components::graves::grave::Grave;
 use crate::game::components::transport::{Transport, TransportPriority};
 use crate::game::event::on_midnight::{MidnightVariables, OnMidnightPriority};
-use crate::game::phase::PhaseType;
 use crate::game::abilities_component::ability_id::AbilityID;
-
-use crate::game::components::win_condition::WinCondition;
 use crate::game::{attack_power::DefensePower, chat::ChatMessageVariant};
 use crate::game::player::PlayerReference;
 use crate::game::visit::Visit;
@@ -41,20 +36,6 @@ impl RoleStateTrait for Warper {
         actor_ref.push_night_message(
             midnight_variables, ChatMessageVariant::TargetHasRole { role: first_visit.role(game) }
         );
-    }
-    fn on_phase_start(self, game: &mut Game, actor_ref: PlayerReference, _phase: PhaseType){
-        if
-            actor_ref.alive(game) &&
-            PlayerReference::all_players(game)
-                .filter(|p|p.alive(game))
-                .filter(|p|p.keeps_game_running(game))
-                .all(|p|
-                    WinCondition::are_friends(p.win_condition(game), actor_ref.win_condition(game))
-                )
-
-        {
-            actor_ref.die_and_add_grave(game, Grave::from_player_leave_town(game, actor_ref));
-        }
     }
     fn controller_parameters_map(self, game: &Game, actor_ref: PlayerReference) -> super::ControllerParametersMap {
         ControllerParametersMap::builder(game)

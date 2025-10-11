@@ -1,9 +1,9 @@
 mod kit;
-use std::vec;
+use std::{time::Duration, vec};
 
 pub(crate) use kit::{assert_contains, assert_not_contains};
 
-use mafia_server::game::controllers::{BooleanSelection, ControllerSelection, StringSelection, UnitSelection};
+use mafia_server::{game::controllers::{BooleanSelection, ControllerSelection, StringSelection, UnitSelection}, room::RoomState};
 pub use mafia_server::{
     vec_set,
     packet::ToServerPacket,
@@ -2593,6 +2593,7 @@ fn witch_leaves_by_winning(){
     assert!(gf.send_ability_input_player_list_typical(t));
 
     game.next_phase();
+    let _ = game.tick(Duration::from_secs(5));
 
     assert!(gf.alive());
     assert!(!min.alive());
@@ -2611,6 +2612,7 @@ fn scarecrow_leaves_by_winning(){
     assert!(gf.send_ability_input_player_list_typical(t));
 
     game.next_phase();
+    let _ = game.tick(Duration::from_secs(5));
 
     assert!(gf.alive());
     assert!(!min.alive());
@@ -2639,6 +2641,7 @@ fn witch_leaves_by_winning_puppeteer(){
     assert!(gf.send_ability_input_player_list_typical(t2));
 
     game.next_phase();
+    let _ = game.tick(Duration::from_secs(5));
 
     assert!(gf.alive());
     assert!(!min.alive());

@@ -5,7 +5,6 @@ use crate::game::abilities::role_abilities::RoleAbility;
 use crate::game::abilities_component::ability::Ability;
 use crate::game::attack_power::DefensePower;
 use crate::game::chat::{ChatGroup, ChatMessageVariant};
-use crate::game::components::graves::grave::Grave;
 use crate::game::components::tags::{TagSetID, Tags};
 use crate::game::event::on_ability_creation::{OnAbilityCreation, OnAbilityCreationFold, OnAbilityCreationPriority};
 use crate::game::event::on_ability_deletion::{OnAbilityDeletion, OnAbilityDeletionPriority};
@@ -62,7 +61,6 @@ impl RoleStateTrait for Revolutionary {
                 if Some(player_on_trial) == self.target.get_target() {
                     game.add_message_to_chat_group(ChatGroup::All, ChatMessageVariant::RevolutionaryWon);
                     actor_ref.edit_role_ability_helper(game, RoleState::Revolutionary(Revolutionary { target: RevolutionaryTarget::Won }));
-                    actor_ref.die_and_add_grave(game, Grave::from_player_leave_town(game, actor_ref));
                 }
             }
             _=>{}
@@ -87,7 +85,7 @@ impl RoleStateTrait for Revolutionary {
                         )));
                     }else{
                         fold.cancelled = true;
-                        actor_ref.set_role_win_con_insider_group(game, RoleState::Jester(Jester::default()))
+                        actor_ref.set_new_role(game, RoleState::Jester(Jester::default()), true)
                     };
                 },
                 OnAbilityCreationPriority::SideEffect => {
@@ -105,7 +103,7 @@ impl RoleStateTrait for Revolutionary {
     }
     fn on_any_death(self, game: &mut Game, actor_ref: PlayerReference, dead_player_ref: PlayerReference){
         if Some(dead_player_ref) == self.target.get_target() && self.target != RevolutionaryTarget::Won {
-            actor_ref.set_role_win_con_insider_group(game, RoleState::Jester(Jester::default()))
+            actor_ref.set_new_role(game, RoleState::Jester(Jester::default()), true)
         }
     }
     fn on_ability_deletion(self, game: &mut Game, actor_ref: PlayerReference, event: &OnAbilityDeletion, _fold: &mut (), priority: OnAbilityDeletionPriority) {

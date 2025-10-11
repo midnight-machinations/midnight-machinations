@@ -3,8 +3,7 @@ use crate::game::controllers::{AvailableBooleanSelection, BooleanSelection};
 use crate::game::attack_power::{AttackPower, DefensePower};
 use crate::game::chat::{ChatGroup, ChatMessageVariant, PlayerChatGroupMap};
 use crate::game::components::detained::Detained;
-use crate::game::components::graves::grave::{Grave, GraveKiller};
-use crate::game::components::win_condition::WinCondition;
+use crate::game::components::graves::grave::GraveKiller;
 use crate::game::event::on_midnight::{MidnightVariables, OnMidnightPriority};
 use crate::game::phase::PhaseType;
 use crate::game::player::PlayerReference;
@@ -140,19 +139,6 @@ impl RoleStateTrait for Kidnapper {
                 actor_ref.edit_role_ability_helper(game, self);
             },
             _ => {}
-        }
-
-        if
-            actor_ref.alive(game) &&
-            PlayerReference::all_players(game)
-                .filter(|p|p.alive(game))
-                .filter(|p|p.keeps_game_running(game))
-                .all(|p|
-                    WinCondition::are_friends(p.win_condition(game), actor_ref.win_condition(game))
-                )
-
-        {
-            actor_ref.die_and_add_grave(game, Grave::from_player_leave_town(game, actor_ref));
         }
     }
 }

@@ -32,3 +32,4 @@ pub mod pitchfork_item;
 pub mod role_reveal;
 pub mod attack;
 pub mod blocked;
+pub mod ascend;

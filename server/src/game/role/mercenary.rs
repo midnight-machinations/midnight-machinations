@@ -1,7 +1,7 @@
 use serde::Serialize;
 use crate::game::controllers::{AvailableIntegerSelection, IntegerSelection};
 use crate::game::chat::ChatMessageVariant;
-use crate::game::components::graves::grave::{Grave, GraveKiller};
+use crate::game::components::graves::grave::GraveKiller;
 use crate::game::event::on_ability_creation::{OnAbilityCreation, OnAbilityCreationFold, OnAbilityCreationPriority};
 use crate::game::event::on_midnight::{MidnightVariables, OnMidnightPriority};
 use crate::game::attack_power::{AttackPower, DefensePower};
@@ -153,7 +153,6 @@ impl Mercenary{
     pub fn check_win(&self, game: &mut Game, actor: PlayerReference){
         if self.hits_dead(game) && actor.alive(game) && !self.won {
             actor.edit_role_ability_helper(game, Self{won: true, ..self.clone()});
-            actor.die_and_add_grave(game, Grave::from_player_leave_town(game, actor));
         }
     }
     pub fn won(&self)->bool{

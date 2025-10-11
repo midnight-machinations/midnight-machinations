@@ -2,7 +2,9 @@ use rand::seq::SliceRandom;
 use crate::{
     game::{
         attack_power::{AttackPower, DefensePower}, chat::{ChatMessage, ChatMessageVariant}, components::{
-            attack::night_attack::NightAttack, fragile_vest::FragileVests, graves::{grave::{Grave, GraveKiller}, Graves}, insider_group::InsiderGroupID, night_visits::{NightVisitsIterator, Visits}, player_component::PlayerComponent, role::RoleComponent, win_condition::WinCondition
+            attack::night_attack::NightAttack, fragile_vest::FragileVests, graves::{grave::{Grave, GraveKiller}, Graves},
+            insider_group::InsiderGroupID, night_visits::{NightVisitsIterator, Visits}, player_component::PlayerComponent,
+            role::RoleComponent,
         },
         controllers::{
             BooleanSelection, Controller, ControllerID, ControllerSelection, Controllers, PlayerListSelection, TwoPlayerOptionSelection
@@ -11,8 +13,7 @@ use crate::{
             on_any_death::OnAnyDeath, on_midnight::{MidnightVariables, OnMidnightPriority},
             on_player_roleblocked::OnPlayerRoleblocked, on_visit_wardblocked::OnVisitWardblocked, Event
         },
-        game_conclusion::GameConclusion,
-        role::{chronokaiser::Chronokaiser, medium::Medium, Role, RoleState},
+        role::{medium::Medium, Role, RoleState},
         visit::{Visit, VisitTag},
         Game
     },
@@ -341,33 +342,6 @@ impl PlayerReference{
         )
     }
     
-    pub fn get_won_game(&self, game: &Game, conclusion: GameConclusion) -> bool {
-        match self.win_condition(game){
-            WinCondition::GameConclusionReached { win_if_any } => win_if_any.contains(&conclusion),
-            WinCondition::RoleStateWon => {
-                match self.role_state(game) {
-                    RoleState::Jester(r) => r.won(),
-                    RoleState::Doomsayer(r) => r.won(),
-                    RoleState::Mercenary(r) => r.won(),
-                    RoleState::Revolutionary(r) => r.won(),
-                    RoleState::Chronokaiser(_) => Chronokaiser::won(game, *self),
-                    RoleState::Martyr(r) => r.won(),
-                    _ => false
-                }
-            },
-        }
-    }
-    /// If they can consistently kill then they keep the game running
-    /// Town kills by voting
-    /// Mafia kills with MK or gun
-    /// Cult kills / converts
-    pub fn keeps_game_running(&self, game: &Game) -> bool {
-        if InsiderGroupID::Mafia.contains_player(game, *self) {return true;}
-        if InsiderGroupID::Cult.contains_player(game, *self) {return true;}
-        if self.win_condition(game).is_loyalist_for(GameConclusion::Town) {return true;}
-        
-        GameConclusion::keeps_game_running(self.role(game))
-    }
 
     /*
         Role functions

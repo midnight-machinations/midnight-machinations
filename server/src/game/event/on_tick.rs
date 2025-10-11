@@ -1,6 +1,5 @@
 use crate::game::{
-    controllers::Controllers, 
-    Game
+    components::ascend::Ascend, controllers::Controllers, Game
 };
 
 pub struct OnTick;
@@ -11,5 +10,6 @@ impl OnTick{
     }
     pub fn invoke(&self, game: &mut Game){
         Controllers::on_tick(game);
+        Ascend::on_tick(game);
     }
 }
