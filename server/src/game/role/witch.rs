@@ -1,10 +1,7 @@
 use serde::Serialize;
-
 use crate::game::controllers::AvailableTwoPlayerOptionSelection;
-use crate::game::components::graves::grave::Grave;
 use crate::game::event::on_midnight::{MidnightVariables, OnMidnightPriority};
-
-use crate::game::components::win_condition::WinCondition;
+use crate::game::abilities_component::ability_id::AbilityID;
 use crate::game::attack_power::DefensePower;
 use crate::game::phase::PhaseType;
 use crate::game::player::PlayerReference;
@@ -33,9 +30,9 @@ pub(super) const DEFENSE: DefensePower = DefensePower::None;
 
 impl RoleStateTrait for Witch {
     type ClientAbilityState = ClientRoleState;
-    fn on_midnight(self, game: &mut Game, midnight_variables: &mut MidnightVariables, actor_ref: PlayerReference, priority: OnMidnightPriority) {
+    fn on_midnight(self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut MidnightVariables, priority: OnMidnightPriority) {
         if let Some(currently_used_player) = actor_ref.possess_night_action(game, midnight_variables, priority, self.currently_used_player){
-            actor_ref.set_role_state(game, Witch{
+            actor_ref.edit_role_ability_helper(game, Witch{
                 currently_used_player: Some(currently_used_player)
             })
         }
@@ -63,21 +60,8 @@ impl RoleStateTrait for Witch {
         )
     }
     fn on_phase_start(self, game: &mut Game, actor_ref: PlayerReference, phase: PhaseType){
-        if
-            actor_ref.alive(game) &&
-            PlayerReference::all_players(game)
-                .filter(|p|p.alive(game))
-                .filter(|p|p.keeps_game_running(game))
-                .all(|p|
-                    WinCondition::are_friends(p.win_condition(game), actor_ref.win_condition(game))
-                )
-
-        {
-            actor_ref.die_and_add_grave(game, Grave::from_player_leave_town(game, actor_ref));
-        }
-        if phase == PhaseType::Night {
-            actor_ref.set_role_state(game, Witch { currently_used_player: None });
-        }
+        if phase != PhaseType::Night {return}
+        actor_ref.edit_role_ability_helper(game, Witch { currently_used_player: None });
     }
     fn on_player_roleblocked(self, _game: &mut Game, _midnight_variables: &mut MidnightVariables, _actor_ref: PlayerReference, _player: PlayerReference, _invisible: bool) {}
 }

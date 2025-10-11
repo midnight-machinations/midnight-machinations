@@ -2,7 +2,9 @@ use rand::seq::SliceRandom;
 use crate::{
     game::{
         attack_power::{AttackPower, DefensePower}, chat::{ChatMessage, ChatMessageVariant}, components::{
-            attack::night_attack::NightAttack, fragile_vest::FragileVests, graves::{grave::{Grave, GraveKiller}, Graves}, insider_group::InsiderGroupID, night_visits::{NightVisitsIterator, Visits}, player_component::PlayerComponent, win_condition::WinCondition
+            attack::night_attack::NightAttack, fragile_vest::FragileVests, graves::{grave::{Grave, GraveKiller}, Graves},
+            insider_group::InsiderGroupID, night_visits::{NightVisitsIterator, Visits}, player_component::PlayerComponent,
+            role::RoleComponent,
         },
         controllers::{
             BooleanSelection, Controller, ControllerID, ControllerSelection, Controllers, PlayerListSelection, TwoPlayerOptionSelection
@@ -11,8 +13,7 @@ use crate::{
             on_any_death::OnAnyDeath, on_midnight::{MidnightVariables, OnMidnightPriority},
             on_player_roleblocked::OnPlayerRoleblocked, on_visit_wardblocked::OnVisitWardblocked, Event
         },
-        game_conclusion::GameConclusion,
-        role::{chronokaiser::Chronokaiser, medium::Medium, Role, RoleState},
+        role::{medium::Medium, Role, RoleState},
         visit::{Visit, VisitTag},
         Game
     },
@@ -82,7 +83,7 @@ impl PlayerReference{
     /**
     ### Example use in witch case
         
-    fn on_midnight(self, game: &mut Game, midnight_variables: &mut MidnightVariables, actor_ref: PlayerReference, priority: OnMidnightPriority) {
+    fn on_midnight(self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut MidnightVariables, priority: OnMidnightPriority) {
         if let Some(currently_used_player) = actor_ref.possess_night_action(game, self.currently_used_player){
             actor_ref.set_role_state(game, RoleState::Witch(Witch{
                 currently_used_player: Some(currently_used_player)
@@ -93,7 +94,7 @@ impl PlayerReference{
     pub fn possess_night_action(&self, game: &mut Game, midnight_variables: &mut MidnightVariables, priority: OnMidnightPriority, currently_used_player: Option<PlayerReference>)->Option<PlayerReference>{
         match priority {
             OnMidnightPriority::Possess => {
-                let untagged_possessor_visits = self.untagged_night_visits_cloned(midnight_variables);
+                let untagged_possessor_visits = self.role_night_visits_cloned(midnight_variables);
                 let possessed_visit = untagged_possessor_visits.get(0)?;
                 let possessed_into_visit = untagged_possessor_visits.get(1)?;
                 
@@ -266,12 +267,13 @@ impl PlayerReference{
             InsiderGroupID::all_groups_with_player(game, *self), 
             game, *self
         );
+        RoleComponent::set_role_without_ability(*self, game, self.role(game));
     }
     /// Swaps this persons role, sends them the role chat message, and makes associated changes
-    pub fn set_role_and_win_condition_and_revealed_group(&self, game: &mut Game, new_role_data: impl Into<RoleState>){
+    pub fn set_role_win_con_insider_group(&self, game: &mut Game, new_role_data: impl Into<RoleState>){
         let new_role_data = new_role_data.into();
         
-        self.set_role(game, new_role_data);
+        self.set_new_role(game, new_role_data, true);
     
         self.set_win_condition(game, self.role_state(game).clone().default_win_condition());
         
@@ -279,7 +281,19 @@ impl PlayerReference{
             self.role_state(game).clone().default_revealed_groups(), 
             game, *self
         );
+    }
+    /// Swaps this persons role, sends them the role chat message, and makes associated changes
+    pub fn set_role_win_con_insider_group_midnight(&self, game: &mut Game, midnight_variables: &mut MidnightVariables, new_role_data: impl Into<RoleState>){
+        let new_role_data = new_role_data.into();
         
+        self.set_night_convert_role_to(midnight_variables, Some(new_role_data.clone()));
+    
+        self.set_win_condition(game, new_role_data.clone().default_win_condition());
+        
+        InsiderGroupID::set_player_insider_groups(
+            new_role_data.clone().default_revealed_groups(), 
+            game, *self
+        );
     }
     
     
@@ -328,33 +342,6 @@ impl PlayerReference{
         )
     }
     
-    pub fn get_won_game(&self, game: &Game, conclusion: GameConclusion) -> bool {
-        match self.win_condition(game){
-            WinCondition::GameConclusionReached { win_if_any } => win_if_any.contains(&conclusion),
-            WinCondition::RoleStateWon => {
-                match self.role_state(game) {
-                    RoleState::Jester(r) => r.won(),
-                    RoleState::Doomsayer(r) => r.won(),
-                    RoleState::Mercenary(r) => r.won(),
-                    RoleState::Revolutionary(r) => r.won(),
-                    RoleState::Chronokaiser(_) => Chronokaiser::won(game, *self),
-                    RoleState::Martyr(r) => r.won(),
-                    _ => false
-                }
-            },
-        }
-    }
-    /// If they can consistently kill then they keep the game running
-    /// Town kills by voting
-    /// Mafia kills with MK or gun
-    /// Cult kills / converts
-    pub fn keeps_game_running(&self, game: &Game) -> bool {
-        if InsiderGroupID::Mafia.contains_player(game, *self) {return true;}
-        if InsiderGroupID::Cult.contains_player(game, *self) {return true;}
-        if self.win_condition(game).is_loyalist_for(GameConclusion::Town) {return true;}
-        
-        GameConclusion::keeps_game_running(self.role(game))
-    }
 
     /*
         Role functions

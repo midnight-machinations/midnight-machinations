@@ -7,6 +7,7 @@ use crate::game::{attack_power::DefensePower, chat::ChatMessageVariant};
 use crate::game::phase::PhaseType;
 use crate::game::player::PlayerReference;
 use crate::game::Game;
+use crate::game::abilities_component::ability_id::AbilityID;
 use super::{ControllerParametersMap, GetClientAbilityState, Role, RoleStateTrait};
 
 #[derive(Clone, Debug)]
@@ -39,7 +40,7 @@ pub(super) const DEFENSE: DefensePower = DefensePower::None;
 
 impl RoleStateTrait for Steward {
     type ClientAbilityState = ClientRoleState;
-    fn on_midnight(mut self, game: &mut Game, midnight_variables: &mut MidnightVariables, actor_ref: PlayerReference, priority: OnMidnightPriority) {
+    fn on_midnight(mut self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut MidnightVariables, priority: OnMidnightPriority) {
 
         if actor_ref.night_blocked(midnight_variables) {return}
         if actor_ref.ability_deactivated_from_death(game) {return}
@@ -67,7 +68,7 @@ impl RoleStateTrait for Steward {
                         if roles.contains(&Role::Steward){1}else{0}
                     );
                 
-                actor_ref.set_role_state(game, Steward{
+                actor_ref.edit_role_ability_helper(game, Steward{
                     previous_input: RoleListSelection(
                         vec![roles.first(), roles.get(1)]
                             .into_iter()
@@ -126,7 +127,7 @@ impl RoleStateTrait for Steward {
         out
     }
     fn on_phase_start(self, game: &mut Game, actor_ref: PlayerReference, _phase: PhaseType){
-        actor_ref.set_role_state(game, Steward{
+        actor_ref.edit_role_ability_helper(game, Steward{
             self_heals_remaining: self.self_heals_remaining,
             target_healed_refs: vec![],
             previous_input: self.previous_input

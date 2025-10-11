@@ -231,7 +231,7 @@ pub const GAME_DOESNT_END_INSTANTLY: GenerationCriterion = GenerationCriterion {
                 let Some(role) = a.role
             {
                 Some(GameOverCheckPlayer{
-                    role, win_condition: win_condition.clone(), insider_groups: insider_groups.clone()
+                    alive: true, role, win_condition: win_condition.clone(), insider_groups: insider_groups.clone()
                 })
             }else{
                 None

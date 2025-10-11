@@ -1,5 +1,6 @@
 use rand::seq::SliceRandom;
 use serde::Serialize;
+use crate::game::abilities_component::ability_id::AbilityID;
 use crate::game::components::night_visits::{NightVisitsIterator, Visits};
 use crate::game::controllers::ControllerParametersMap;
 use crate::game::attack_power::AttackPower;
@@ -27,11 +28,11 @@ pub(super) const DEFENSE: DefensePower = DefensePower::Armored;
 
 impl RoleStateTrait for Ojo {
     type ClientAbilityState = Ojo;
-    fn on_midnight(self, game: &mut Game, midnight_variables: &mut MidnightVariables, actor_ref: PlayerReference, priority: OnMidnightPriority) {
+    fn on_midnight(self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut MidnightVariables, priority: OnMidnightPriority) {
         match priority {
             OnMidnightPriority::Kill => {
                 if game.day_number() == 1 {return}
-                let actor_visits = actor_ref.untagged_night_visits_cloned(midnight_variables);
+                let actor_visits = actor_ref.role_night_visits_cloned(midnight_variables);
                 if let Some(visit) = actor_visits.first(){
                     let target_ref = visit.target;
             
@@ -93,6 +94,6 @@ impl RoleStateTrait for Ojo {
         actor_ref.reveal_players_role(game, concealed_player);
     }
     fn on_whisper(self, game: &mut Game, actor_ref: PlayerReference, event: &OnWhisper, fold: &mut WhisperFold, priority: WhisperPriority) {
-        Informant::read_whispers(false, game, actor_ref, event, fold, priority);
+        Informant::read_whispers(game, actor_ref, event, fold, priority);
     }
 }

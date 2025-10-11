@@ -2,6 +2,7 @@
 use rand::seq::IndexedRandom;
 use serde::Serialize;
 
+use crate::game::abilities_component::ability_id::AbilityID;
 use crate::game::attack_power::AttackPower;
 use crate::game::attack_power::DefensePower;
 use crate::game::components::night_visits::Visits;
@@ -29,7 +30,7 @@ pub(super) const DEFENSE: DefensePower = DefensePower::None;
 
 impl RoleStateTrait for Cop {
     type ClientAbilityState = Self;
-    fn on_midnight(self, game: &mut Game, midnight_variables: &mut MidnightVariables, actor_ref: PlayerReference, priority: OnMidnightPriority) {
+    fn on_midnight(self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut MidnightVariables, priority: OnMidnightPriority) {
         if game.day_number() <= 1 {return}
 
         match priority {

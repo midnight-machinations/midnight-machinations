@@ -9,6 +9,7 @@ use crate::game::components::tags::{TagSetID, Tags};
 use crate::game::components::graves::grave::GraveKiller;
 use crate::game::player::PlayerReference;
 use crate::game::visit::Visit;
+use crate::game::abilities_component::ability_id::AbilityID;
 use crate::game::Game;
 use super::{ControllerID, GetClientAbilityState, Role, RoleStateTrait};
 
@@ -24,11 +25,11 @@ pub(super) const DEFENSE: DefensePower = DefensePower::Armored;
 
 impl RoleStateTrait for Spiral {
     type ClientAbilityState = ClientRoleState;
-    fn on_midnight(self, game: &mut Game, midnight_variables: &mut MidnightVariables, actor_ref: PlayerReference, priority: OnMidnightPriority) {
+    fn on_midnight(self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut MidnightVariables, priority: OnMidnightPriority) {
         if priority != OnMidnightPriority::Poison { return };
         
         if Tags::tagged(game, TagSetID::UzumakiSpiral(actor_ref)).is_empty() && game.day_number() > 1 {
-            if let Some(visit) = actor_ref.untagged_night_visits_cloned(midnight_variables).first(){
+            if let Some(visit) = actor_ref.role_night_visits_cloned(midnight_variables).first(){
                 let target_ref = visit.target;
                 
                 target_ref.try_night_kill_single_attacker(

@@ -29,6 +29,7 @@ use std::collections::VecDeque;
 use std::time::Instant;
 use crate::game::abilities_component::Abilities;
 use crate::game::chat::PlayerChatGroups;
+use crate::game::components::blocked::BlockedComponent;
 use crate::game::components::fast_forward::FastForwardComponent;
 use crate::game::components::pitchfork_item::PitchforkItemComponent;
 use crate::game::components::role::RoleComponent;
@@ -118,6 +119,7 @@ pub struct Game {
     pub puppeteer_marionette: PuppeteerMarionette,
     pub mafia_recruits: MafiaRecruits,
     pub verdicts_today: VerdictsToday,
+    pub blocked: BlockedComponent,
     pub pitchfork_item: PitchforkItemComponent,
     pub poison: Poison,
     pub insider_groups: InsiderGroups,

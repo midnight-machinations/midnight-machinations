@@ -8,6 +8,7 @@ use crate::game::event::on_midnight::{MidnightVariables, OnMidnightPriority};
 use crate::game::{attack_power::DefensePower, chat::ChatMessageVariant};
 use crate::game::game_conclusion::GameConclusion;
 use crate::game::player::PlayerReference;
+use crate::game::abilities_component::ability_id::AbilityID;
 
 use crate::game::visit::Visit;
 use crate::game::Game;
@@ -22,7 +23,7 @@ pub struct Detective;
 
 impl RoleStateTrait for Detective {
     type ClientAbilityState = Detective;
-    fn on_midnight(self, game: &mut Game, midnight_variables: &mut MidnightVariables, actor_ref: PlayerReference, priority: OnMidnightPriority) {
+    fn on_midnight(self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut MidnightVariables, priority: OnMidnightPriority) {
         if priority != OnMidnightPriority::Investigative {return;}
         
         let Some(target) = Visits::default_target(game, midnight_variables, actor_ref) else {return};
@@ -36,7 +37,6 @@ impl RoleStateTrait for Detective {
         actor_ref.push_night_message(midnight_variables, ChatMessageVariant::DetectiveResult {
             suspicious
         });
-        
     }
     fn controller_parameters_map(self, game: &Game, actor_ref: PlayerReference) -> ControllerParametersMap {
         ControllerParametersMap::builder(game)

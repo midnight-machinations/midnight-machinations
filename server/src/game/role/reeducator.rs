@@ -11,6 +11,7 @@ use crate::game::role_list_generation::criteria::{GenerationCriterion, Generatio
 use crate::game::role_list_generation::PartialOutlineListAssignmentNode;
 use crate::game::settings::Settings;
 use crate::game::{attack_power::DefensePower, player::PlayerReference};
+use crate::game::abilities_component::ability_id::AbilityID;
 
 use crate::game::visit::Visit;
 
@@ -39,11 +40,11 @@ pub(super) const DEFENSE: DefensePower = DefensePower::None;
 
 impl RoleStateTrait for Reeducator {
     type ClientAbilityState = Reeducator;
-    fn on_midnight(mut self, game: &mut Game, midnight_variables: &mut MidnightVariables, actor_ref: PlayerReference, priority: OnMidnightPriority) {
-        
+    fn on_midnight(mut self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut MidnightVariables, priority: OnMidnightPriority) {
+        if !matches!(priority, OnMidnightPriority::Convert) {return}
         let Some(target) = Visits::default_target(game, midnight_variables, actor_ref) else {return};
         let Some(role) = ControllerID::role(actor_ref, Role::Reeducator, 1).get_role_list_selection_first(game) else {return};
-        if !matches!(priority, OnMidnightPriority::Convert) && self.convert_charges_remaining {return}
+        if !self.convert_charges_remaining {return}
         
         if !AttackPower::Basic.can_pierce(target.night_defense(game, midnight_variables)) {
             actor_ref.push_night_message(midnight_variables, ChatMessageVariant::YourConvertFailed);
@@ -52,9 +53,9 @@ impl RoleStateTrait for Reeducator {
 
         self.convert_charges_remaining = false;
 
-        target.set_role_and_win_condition_and_revealed_group(game, role.default_state());
+        target.set_role_win_con_insider_group_midnight(game, midnight_variables, role.default_state());
 
-        actor_ref.set_role_state(game, self);
+        actor_ref.edit_role_ability_helper(game, self);
     }
     fn on_validated_ability_input_received(self, game: &mut Game, actor_ref: PlayerReference, input_player: PlayerReference, ability_input: crate::game::controllers::ControllerInput) {
         if actor_ref != input_player {return;}
@@ -63,15 +64,19 @@ impl RoleStateTrait for Reeducator {
         )else{return};
         let Some(role) = ControllerID::role(actor_ref, Role::Reeducator, 1).get_role_list_selection_first(game) else {return};
         let Some(target) = target_ref.first() else {return};
-        target.set_role(game, role.default_state());
+        target.set_new_role(game, role.default_state(), true);
     }
     fn controller_parameters_map(self, game: &Game, actor_ref: PlayerReference) -> super::ControllerParametersMap {
         ControllerParametersMap::combine([
+            //convert
             ControllerParametersMap::builder(game)
                 .id(ControllerID::role(actor_ref, Role::Reeducator, 0))
                 .single_player_selection_typical(actor_ref, false, false)
                 .night_typical(actor_ref)
-                .add_grayed_out_condition(game.day_number() <= 1)
+                .add_grayed_out_condition(
+                    game.day_number() <= 1 ||
+                    !self.convert_charges_remaining
+                )
                 .build_map(),
 
             ControllerParametersMap::builder(game)
@@ -81,12 +86,19 @@ impl RoleStateTrait for Reeducator {
                     *role != Role::Reeducator
                 )
                 .allow_players([actor_ref])
-                .add_grayed_out_condition(game.day_number() <= 1)
+                .add_grayed_out_condition(
+                    game.day_number() <= 1 && 
+                    (
+                        actor_ref.ability_deactivated_from_death(game) ||
+                        Detained::is_detained(game, actor_ref) ||
+                        !matches!(game.current_phase().phase(),PhaseType::Night)
+                    )
+                )
                 .build_map(),
 
             ControllerParametersMap::builder(game)
                 .id(ControllerID::role(actor_ref, Role::Reeducator, 2))
-                .player_list_selection_typical(actor_ref, true, true, false, true, true, Some(1))
+                .player_list_selection_typical(actor_ref, true, true, false, false, false, Some(1))
                 .add_grayed_out_condition(
                     actor_ref.ability_deactivated_from_death(game) ||
                     Detained::is_detained(game, actor_ref) ||
@@ -97,15 +109,12 @@ impl RoleStateTrait for Reeducator {
                 .build_map()
         ])
     }
-    // Unlike other conversion roles, its visit isn't tagged as an attack.
-    // This is because if the target is syndicate then it is converted without an attack
-    // After transportation, it becomes an attack
     fn convert_selection_to_visits(self, game: &Game, actor_ref: PlayerReference) -> Vec<Visit> {
         common_role::convert_controller_selection_to_visits(
             game, 
             actor_ref, 
             ControllerID::role(actor_ref, Role::Reeducator, 0),
-            false
+            true
         )
     }
     fn default_revealed_groups(self) -> crate::vec_set::VecSet<crate::game::components::insider_group::InsiderGroupID> {

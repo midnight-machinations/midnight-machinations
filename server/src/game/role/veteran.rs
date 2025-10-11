@@ -1,4 +1,5 @@
 use serde::Serialize;
+use crate::game::abilities_component::ability_id::AbilityID;
 
 use crate::game::controllers::{AvailableBooleanSelection, ControllerParametersMap};
 use crate::game::attack_power::AttackPower;
@@ -45,13 +46,13 @@ impl RoleStateTrait for Veteran {
             ..Self::default()
         }
     }
-    fn on_midnight(self, game: &mut Game, midnight_variables: &mut MidnightVariables, actor_ref: PlayerReference, priority: OnMidnightPriority) {
+    fn on_midnight(self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut MidnightVariables, priority: OnMidnightPriority) {
         match priority {
             OnMidnightPriority::TopPriority => {
                 let can_alert = self.alerts_remaining > 0 && game.day_number() > 1;
                 let chose_to_alert = matches!(ControllerID::role(actor_ref, Role::Veteran, 0).get_boolean_selection(game), Some(BooleanSelection(true)));
                 if can_alert && chose_to_alert{
-                    actor_ref.set_role_state(game, Veteran { 
+                    actor_ref.edit_role_ability_helper(game, Veteran { 
                         alerts_remaining: self.alerts_remaining.saturating_sub(1), 
                         alerting_tonight: true 
                     });
@@ -86,7 +87,7 @@ impl RoleStateTrait for Veteran {
             .build_map()
     }
     fn on_phase_start(self, game: &mut Game, actor_ref: PlayerReference, _phase: PhaseType){
-        actor_ref.set_role_state(
+        actor_ref.edit_role_ability_helper(
             game,
             Veteran { alerts_remaining: self.alerts_remaining, alerting_tonight: false });   
     }

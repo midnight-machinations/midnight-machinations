@@ -4,7 +4,7 @@ use crate::game::chat::ChatMessageVariant;
 use crate::game::event::on_midnight::{MidnightVariables, OnMidnightPriority};
 use crate::game::game_conclusion::GameConclusion;
 use crate::game::phase::PhaseType;
-
+use crate::game::abilities_component::ability_id::AbilityID;
 use crate::game::components::win_condition::WinCondition;
 use crate::game::attack_power::{AttackPower, DefensePower};
 use crate::game::player::PlayerReference;
@@ -32,12 +32,12 @@ pub(super) const DEFENSE: DefensePower = DefensePower::None;
 
 impl RoleStateTrait for SantaClaus {
     type ClientAbilityState = SantaClaus;
-    fn on_midnight(self, game: &mut Game, midnight_variables: &mut MidnightVariables, actor_ref: PlayerReference, priority: OnMidnightPriority) {
+    fn on_midnight(self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut MidnightVariables, priority: OnMidnightPriority) {
         if priority != OnMidnightPriority::Convert { return }
 
         match self.get_next_santa_ability() {
             SantaListKind::Nice => {
-                let actor_visits = actor_ref.untagged_night_visits_cloned(midnight_variables).into_iter();
+                let actor_visits = actor_ref.role_night_visits_cloned(midnight_variables).into_iter();
                 let targets = actor_visits.map(|v| v.target);
 
                 for target_ref in targets {
@@ -58,13 +58,13 @@ impl RoleStateTrait for SantaClaus {
                     target_ref.set_win_condition(game, WinCondition::GameConclusionReached { win_if_any });
                     target_ref.push_night_message(midnight_variables, ChatMessageVariant::AddedToNiceList);
 
-                    actor_ref.set_role_state(game, Self {
+                    actor_ref.edit_role_ability_helper(game, Self {
                         ability_used_last_night: Some(SantaListKind::Nice),
                     });
                 }
             }
             SantaListKind::Naughty => {
-                let actor_visits = actor_ref.untagged_night_visits_cloned(midnight_variables).into_iter();
+                let actor_visits = actor_ref.role_night_visits_cloned(midnight_variables).into_iter();
                 let targets = actor_visits.map(|v| v.target);
 
                 for target_ref in targets {
@@ -85,7 +85,7 @@ impl RoleStateTrait for SantaClaus {
                     target_ref.set_win_condition(game, WinCondition::GameConclusionReached { win_if_any });
                     target_ref.push_night_message(midnight_variables, ChatMessageVariant::AddedToNaughtyList);
 
-                    actor_ref.set_role_state(game, Self {
+                    actor_ref.edit_role_ability_helper(game, Self {
                         ability_used_last_night: Some(SantaListKind::Naughty),
                     });
                     

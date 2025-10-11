@@ -206,7 +206,8 @@ Doomsayer
     type: "puppeteer"
     marionettesRemaining: number
 } | {
-    type: "warden"
+    type: "warden",
+    charges: number
 } | {
     type: "yer",
     starPassesRemaining: number

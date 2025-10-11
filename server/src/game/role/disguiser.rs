@@ -1,15 +1,15 @@
 
 use serde::Serialize;
 
+use crate::game::components::blocked::BlockedComponent;
 use crate::game::components::night_visits::{NightVisitsIterator, Visits};
 use crate::game::controllers::*;
 use crate::game::components::graves::grave::GraveInformation;
 use crate::game::components::graves::grave_reference::GraveReference;
 use crate::game::event::on_midnight::{MidnightVariables, OnMidnightPriority};
-use crate::game::phase::PhaseType;
-use crate::game::role::common_role;
 use crate::game::{attack_power::DefensePower, player::PlayerReference};
 use crate::game::visit::{Visit, VisitTag};
+use crate::game::abilities_component::ability_id::AbilityID;
 use crate::game::Game;
 use super::{InsiderGroupID, Role, RoleStateTrait};
 
@@ -17,12 +17,11 @@ use super::{InsiderGroupID, Role, RoleStateTrait};
 #[derive(Clone, Debug, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct Disguiser{
-    pub last_role_selection: Role,
-    pub blocked: bool,
+    pub last_role_selection: Role
 }
 impl Default for Disguiser {
     fn default() -> Self {
-        Self { last_role_selection: Role::Disguiser, blocked: false }
+        Self { last_role_selection: Role::Disguiser }
     }
 }
 pub(super) const MAXIMUM_COUNT: Option<u8> = Some(1);
@@ -30,7 +29,7 @@ pub(super) const DEFENSE: DefensePower = DefensePower::None;
 
 impl RoleStateTrait for Disguiser {
     type ClientAbilityState = Disguiser;
-    fn on_midnight(mut self, game: &mut Game, midnight_variables: &mut MidnightVariables, actor_ref: PlayerReference, priority: OnMidnightPriority) {
+    fn on_midnight(mut self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut MidnightVariables, priority: OnMidnightPriority) {
         if priority != OnMidnightPriority::Deception {return}
 
         let Some(appeared_visit_player) = Visits::default_target(game, midnight_variables, actor_ref) else {return};
@@ -45,7 +44,7 @@ impl RoleStateTrait for Disguiser {
                 .map(|v|Visit::new_appeared(appeared_visit_player, v.target))
         );
 
-        actor_ref.set_role_state(game, self);
+        actor_ref.edit_role_ability_helper(game, self);
     }
     fn convert_selection_to_visits(self, game: &Game, actor_ref: PlayerReference) -> Vec<Visit> {
         crate::game::role::common_role::convert_controller_selection_to_visits(
@@ -112,7 +111,7 @@ impl RoleStateTrait for Disguiser {
         ])
     }
     fn on_grave_added(self, game: &mut Game, actor_ref: PlayerReference, grave: GraveReference) {
-        if self.blocked {return;}
+        if BlockedComponent::blocked(game, actor_ref) {return;}
         let grave_ref = grave;
         
         if actor_ref == grave.deref(game).player && actor_ref.alive(game) {
@@ -135,21 +134,6 @@ impl RoleStateTrait for Disguiser {
         vec![
             crate::game::components::insider_group::InsiderGroupID::Mafia
         ].into_iter().collect()
-    }
-    fn on_player_roleblocked(mut self, game: &mut Game, midnight_variables: &mut MidnightVariables, actor_ref: PlayerReference, player: PlayerReference, _invisible: bool) {
-        common_role::on_player_roleblocked(midnight_variables, actor_ref, player);
-        if player != actor_ref {return}
-        self.blocked = true;
-        actor_ref.set_role_state(game, self);
-    }
-    fn on_visit_wardblocked(mut self, game: &mut Game, midnight_variables: &mut MidnightVariables, actor_ref: PlayerReference, visit: Visit) {
-        common_role::on_visit_wardblocked(midnight_variables, actor_ref, visit);
-        if actor_ref != visit.visitor {return};
-        self.blocked = true;
-        actor_ref.set_role_state(game, self);
-    }
-    fn on_phase_start(mut self, game: &mut Game, actor_ref: PlayerReference, phase: crate::game::phase::PhaseType) {
-        if matches!(phase, PhaseType::Night) {self.blocked = false; actor_ref.set_role_state(game, self);}
     }
 }
 

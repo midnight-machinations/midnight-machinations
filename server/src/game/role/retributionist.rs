@@ -1,4 +1,5 @@
 use serde::Serialize;
+use crate::game::abilities_component::ability_id::AbilityID;
 
 use crate::game::controllers::AvailableTwoPlayerOptionSelection;
 use crate::game::components::graves::grave_reference::GraveReference;
@@ -30,12 +31,12 @@ pub struct ClientRoleState;
 
 impl RoleStateTrait for Retributionist {
     type ClientAbilityState = ClientRoleState;
-    fn on_midnight(self, game: &mut Game, midnight_variables: &mut MidnightVariables, actor_ref: PlayerReference, priority: OnMidnightPriority) {
+    fn on_midnight(self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut MidnightVariables, priority: OnMidnightPriority) {
         if let Some(currently_used_player) = actor_ref.possess_night_action(game, midnight_variables, priority, self.currently_used_player){
             let mut used_bodies = self.used_bodies;
             used_bodies.push(currently_used_player);
 
-            actor_ref.set_role_state(game, Retributionist{
+            actor_ref.edit_role_ability_helper(game, Retributionist{
                 used_bodies,
                 currently_used_player: Some(currently_used_player)
             })
@@ -75,7 +76,7 @@ impl RoleStateTrait for Retributionist {
     }
     fn on_phase_start(self, game: &mut Game, actor_ref: PlayerReference, phase: PhaseType){
         if phase == PhaseType::Night {
-            actor_ref.set_role_state(game, Retributionist { currently_used_player: None, ..self });
+            actor_ref.edit_role_ability_helper(game, Retributionist { currently_used_player: None, ..self });
         }
     }
     fn on_player_roleblocked(self, _game: &mut Game, _midnight_variables: &mut MidnightVariables, _actor_ref: PlayerReference, _player: PlayerReference, _invisible: bool) {}

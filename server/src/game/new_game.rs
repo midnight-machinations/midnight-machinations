@@ -3,7 +3,7 @@ use crate::{
     game::{
         abilities_component::Abilities, chat::{ChatComponent, PlayerChatGroups},
         components::{
-            confused::Confused, cult::Cult, detained::Detained, enfranchise::EnfranchiseComponent, fast_forward::FastForwardComponent, fragile_vest::FragileVestsComponent, graves::Graves, insider_group::{InsiderGroupID, InsiderGroups}, mafia::Mafia, mafia_recruits::MafiaRecruits, pitchfork_item::PitchforkItemComponent, poison::Poison, puppeteer_marionette::PuppeteerMarionette, role::RoleComponent, role_reveal::RevealedPlayersComponent, silenced::Silenced, synopsis::SynopsisTracker, tags::Tags, verdicts_today::VerdictsToday, win_condition::WinConditionComponent
+            blocked::BlockedComponent, confused::Confused, cult::Cult, detained::Detained, enfranchise::EnfranchiseComponent, fast_forward::FastForwardComponent, fragile_vest::FragileVestsComponent, graves::Graves, insider_group::{InsiderGroupID, InsiderGroups}, mafia::Mafia, mafia_recruits::MafiaRecruits, pitchfork_item::PitchforkItemComponent, poison::Poison, puppeteer_marionette::PuppeteerMarionette, role::RoleComponent, role_reveal::RevealedPlayersComponent, silenced::Silenced, synopsis::SynopsisTracker, tags::Tags, verdicts_today::VerdictsToday, win_condition::WinConditionComponent
         },
         controllers::Controllers,
         event::{on_game_start::OnGameStart, Event}, game_client::GameClient, modifiers::ModifierID, phase::PhaseStateMachine,
@@ -111,6 +111,7 @@ impl Game{
                 puppeteer_marionette: PuppeteerMarionette::default(),
                 mafia_recruits: MafiaRecruits::default(),
                 verdicts_today: VerdictsToday::default(),
+                blocked: unsafe{BlockedComponent::new(num_players)},
                 poison: Poison::default(),
                 pitchfork_item: unsafe{PitchforkItemComponent::new(num_players)},
                 graves: Graves::default(),

@@ -9,6 +9,7 @@ use crate::game::player::PlayerReference;
 use crate::game::visit::Visit;
 use crate::game::Game;
 use super::{ControllerID, ControllerParametersMap, Role, RoleStateTrait};
+use crate::game::abilities_component::ability_id::AbilityID;
 
 
 #[derive(Clone, Debug, Default, Serialize)]
@@ -20,7 +21,7 @@ pub(super) const DEFENSE: DefensePower = DefensePower::None;
 
 impl RoleStateTrait for Zealot {
     type ClientAbilityState = Zealot;
-    fn on_midnight(self, game: &mut Game, midnight_variables: &mut MidnightVariables, actor_ref: PlayerReference, priority: OnMidnightPriority) {
+    fn on_midnight(self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut MidnightVariables, priority: OnMidnightPriority) {
         if !matches!(priority, OnMidnightPriority::Kill) {return}
         let Some(target) = Visits::default_target(game, midnight_variables, actor_ref) else {return};
         if !Cult::can_kill_tonight(game) {return}

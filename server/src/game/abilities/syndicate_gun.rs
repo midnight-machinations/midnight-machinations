@@ -53,51 +53,15 @@ impl SyndicateGun {
         Self::player_with_gun(game).is_some_and(|s|s==player)
     }
 
-    //available ability
-    pub fn controller_parameters_map(self, game: &Game) -> ControllerParametersMap {
-        if let Some(player_with_gun) = self.player_with_gun {
-            ControllerParametersMap::combine([
-                ControllerParametersMap::builder(game)
-                    .id(ControllerID::syndicate_gun_item_shoot())
-                    .single_player_selection_typical(player_with_gun, false, false)
-                    .night_typical(player_with_gun)
-                    .add_grayed_out_condition(game.day_number() <= 1)
-                    .build_map(),
-                ControllerParametersMap::builder(game)
-                    .id(ControllerID::syndicate_gun_item_give())
-                    .available_selection(AvailablePlayerListSelection {
-                        available_players: PlayerReference::all_players(game)
-                            .filter(|target|
-                                player_with_gun != *target &&
-                                target.alive(game) &&
-                                InsiderGroupID::Mafia.contains_player(game, *target))
-                            .collect(),
-                        can_choose_duplicates: false,
-                        max_players: Some(1)
-                    })
-                    .add_grayed_out_condition(
-                        Detained::is_detained(game, player_with_gun) ||
-                        player_with_gun.ability_deactivated_from_death(game)
-                    )
-                    .reset_on_phase_start(PhaseType::Obituary)
-                    .dont_save()
-                    .allow_players([player_with_gun])
-                    .build_map()
-            ])
-        }else{
-            ControllerParametersMap::default()
-        }
-    }
-
-
-    //event listeners
-    pub fn on_add_insider(self, game: &mut Game, _event: &OnAddInsider, _fold: &mut (), _priority: ()){
+}
+impl AbilityTrait for SyndicateGun {
+    fn on_add_insider(&self, game: &mut Game, _id: &AbilityID, _event: &OnAddInsider, _fold: &mut (), _priority: ()){
         Tags::set_viewers(game, TagSetID::SyndicateGun, &InsiderGroupID::Mafia.players(game).clone());
     }
-    pub fn on_remove_insider(self, game: &mut Game, _event: &OnRemoveInsider, _fold: &mut (), _priority: ()){
+    fn on_remove_insider(&self, game: &mut Game, _id: &AbilityID, _event: &OnRemoveInsider, _fold: &mut (), _priority: ()){
         Tags::set_viewers(game, TagSetID::SyndicateGun, &InsiderGroupID::Mafia.players(game).clone());
     }
-    pub fn on_any_death(&self, game: &mut Game, event: &OnAnyDeath, _fold: &mut (), _priority: ())  {
+    fn on_any_death(&self, game: &mut Game, _id: &AbilityID, event: &OnAnyDeath, _fold: &mut (), _priority: ())  {
         if self.player_with_gun.is_some_and(|p|p==event.dead_player) {
             Self::remove_gun(game);
 
@@ -107,7 +71,7 @@ impl SyndicateGun {
             }
         }
     }
-    pub fn on_midnight(self, game: &mut Game, _event: &OnMidnight, midnight_variables: &mut MidnightVariables, priority: OnMidnightPriority) {
+    fn on_midnight(&self, game: &mut Game, _id: &AbilityID, _event: &OnMidnight, midnight_variables: &mut MidnightVariables, priority: OnMidnightPriority) {
         if game.day_number() <= 1 {return}
         match priority {
             OnMidnightPriority::TopPriority => {
@@ -147,7 +111,7 @@ impl SyndicateGun {
             _ => {}
         }
     }
-    pub fn on_validated_ability_input_received(self, game: &mut Game, event: &OnValidatedControllerInputReceived, _fold: &mut (), _priority: ()) {
+    fn on_validated_ability_input_received(&self, game: &mut Game, _id: &AbilityID, event: &OnValidatedControllerInputReceived, _fold: &mut (), _priority: ()) {
         if let Some(player_with_gun) = self.player_with_gun {
             if event.actor_ref != player_with_gun {
                 return;
@@ -169,10 +133,43 @@ impl SyndicateGun {
             SyndicateGun::give_gun_to_player(game, *target);
         }
     }
-}
 
-impl AbilityTrait for SyndicateGun {}
-impl From<SyndicateGun> for Ability where SyndicateGun: AbilityTrait {
+    fn controller_parameters_map(&self, game: &Game, _id: &AbilityID) -> ControllerParametersMap {
+        if let Some(player_with_gun) = self.player_with_gun {
+            ControllerParametersMap::combine([
+                ControllerParametersMap::builder(game)
+                    .id(ControllerID::syndicate_gun_item_shoot())
+                    .single_player_selection_typical(player_with_gun, false, false)
+                    .night_typical(player_with_gun)
+                    .add_grayed_out_condition(game.day_number() <= 1)
+                    .build_map(),
+                ControllerParametersMap::builder(game)
+                    .id(ControllerID::syndicate_gun_item_give())
+                    .available_selection(AvailablePlayerListSelection {
+                        available_players: PlayerReference::all_players(game)
+                            .filter(|target|
+                                player_with_gun != *target &&
+                                target.alive(game) &&
+                                InsiderGroupID::Mafia.contains_player(game, *target))
+                            .collect(),
+                        can_choose_duplicates: false,
+                        max_players: Some(1)
+                    })
+                    .add_grayed_out_condition(
+                        Detained::is_detained(game, player_with_gun) ||
+                        player_with_gun.ability_deactivated_from_death(game)
+                    )
+                    .reset_on_phase_start(PhaseType::Obituary)
+                    .dont_save()
+                    .allow_players([player_with_gun])
+                    .build_map()
+            ])
+        }else{
+            ControllerParametersMap::default()
+        }
+    }
+}
+impl From<SyndicateGun> for Ability {
     fn from(role_struct: SyndicateGun) -> Self {
         Ability::SyndicateGun(role_struct)
     }

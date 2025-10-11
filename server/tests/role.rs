@@ -1,9 +1,9 @@
 mod kit;
-use std::vec;
+use std::{time::Duration, vec};
 
 pub(crate) use kit::{assert_contains, assert_not_contains};
 
-use mafia_server::game::controllers::{StringSelection, UnitSelection};
+use mafia_server::{game::controllers::{BooleanSelection, ControllerSelection, StringSelection, UnitSelection}, room::RoomState};
 pub use mafia_server::{
     vec_set,
     packet::ToServerPacket,
@@ -509,6 +509,23 @@ fn doctor_basic() {
     assert_contains!(doc.get_messages(), ChatMessageVariant::YouGuardedSomeone);
 
     assert!(maf.alive());
+}
+
+#[test]
+fn vigilante_runs_out_of_bullets() {
+    kit::scenario!(game in Night 2 where
+        vig: Vigilante, 
+        a: Mafioso,
+        b: Goon
+    );
+    vig.send_ability_input_player_list_typical(a);
+    game.skip_to(Night, 3);
+    vig.send_ability_input_player_list_typical(b);
+    game.skip_to(Obituary, 4);
+
+    assert!(!a.alive());
+    assert!(vig.alive());
+    assert!(b.alive());
 }
 
 /// Tests if transporter properly swaps, redirecting actions on their first target to their
@@ -1788,6 +1805,39 @@ fn godfather_backup_sets_off_engineer_trap() {
 }
 
 #[test]
+fn warden_basic() {
+    kit::scenario!(game in Dusk 2 where
+        warden: Warden,
+        eng: Engineer,
+        esc: Escort
+    );
+
+    warden.send_ability_input_player_list(vec![esc, eng], 0);
+
+    game.skip_to(Night, 2);
+
+    eng.send_ability_input(ControllerInput {
+        id: ControllerID::WardenCooperate {
+            warden: warden.player_ref(),
+            player: eng.player_ref()
+        },
+        selection: ControllerSelection::Boolean(BooleanSelection(false))
+    });
+    esc.send_ability_input(ControllerInput {
+        id: ControllerID::WardenCooperate {
+            warden: warden.player_ref(),
+            player: esc.player_ref()
+        },
+        selection: ControllerSelection::Boolean(BooleanSelection(true))
+    });
+
+    game.skip_to(Obituary, 3);
+
+    assert!(warden.alive());
+    assert!(eng.alive());
+    assert!(!esc.alive());
+}
+#[test]
 fn warden_dismantles_trap() {
     kit::scenario!(game in Dusk 2 where
         warden: Warden,
@@ -1796,17 +1846,27 @@ fn warden_dismantles_trap() {
     );
 
     warden.send_ability_input_player_list_typical(esc);
+
+    game.skip_to(Night, 2);
+
     eng.send_ability_input_player_list_typical(esc);
+    esc.send_ability_input(ControllerInput {
+        id: ControllerID::WardenCooperate {
+            warden: warden.player_ref(),
+            player: esc.player_ref()
+        },
+        selection: ControllerSelection::Boolean(BooleanSelection(true))
+    });
 
     game.skip_to(Obituary, 3);
 
+    assert!(esc.alive());
+    assert!(warden.alive());
+    assert!(eng.alive());
     assert!(matches!(
         eng.role_state(),
         RoleState::Engineer(Engineer { trap: Trap::Dismantled })
     ));
-    assert!(esc.alive());
-    assert!(warden.alive());
-    assert!(eng.alive());
 }
 
 #[test]
@@ -2533,6 +2593,7 @@ fn witch_leaves_by_winning(){
     assert!(gf.send_ability_input_player_list_typical(t));
 
     game.next_phase();
+    let _ = game.tick(Duration::from_secs(5));
 
     assert!(gf.alive());
     assert!(!min.alive());
@@ -2551,6 +2612,7 @@ fn scarecrow_leaves_by_winning(){
     assert!(gf.send_ability_input_player_list_typical(t));
 
     game.next_phase();
+    let _ = game.tick(Duration::from_secs(5));
 
     assert!(gf.alive());
     assert!(!min.alive());
@@ -2579,6 +2641,7 @@ fn witch_leaves_by_winning_puppeteer(){
     assert!(gf.send_ability_input_player_list_typical(t2));
 
     game.next_phase();
+    let _ = game.tick(Duration::from_secs(5));
 
     assert!(gf.alive());
     assert!(!min.alive());

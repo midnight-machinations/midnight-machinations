@@ -560,6 +560,7 @@
     "role.warden.name": "Warden",
     "role.warden.name:var.0": "Wardens",
     "controllerId.role.warden.0.name": "Imprison",
+    "role.warden.roleDataText": "\\0/\\1 charges.",
 
     "role.yer.name": "Yer",
     "role.yer.name:var.0": "Yers",
@@ -642,10 +643,7 @@
     "grave.deathCause.execution:var.0": "Execute",
     "grave.deathCause.execution:var.1": "Executed",
     "grave.deathCause.execution:var.2": "Executes",
-    "grave.deathCause.leftTown": "Leaving Town",
-    "grave.deathCause.leftTown:var.0": "Left Town",
-    "grave.deathCause.leftTown:var.1": "Leave Town",
-    "grave.deathCause.leftTown:var.2": "Leaves Town",
+    "grave.deathCause.leftTown": "Ascension",
     "grave.killer.quit": "Quitting",
     "grave.killer.quit:var.0": "Quit",
     "grave.killer.quit:var.1": "Quits",
@@ -758,9 +756,9 @@
     "controllerId.syndicateBackupAttack.name": "Backup Attack",
     "controllerId.forwardMessage.name": "Forward Message",
     "controllerId.pitchforkVote.name": "Pitchfork Vote",
-    "controllerId.wardenLiveOrDie.name": "Warden, Live or Die",
-    "controllerId.wardenLiveOrDie.boolean.true": "Live",
-    "controllerId.wardenLiveOrDie.boolean.false": "Die",
+    "controllerId.wardenCooperate.name": "Warden, Cooperate Or Defect",
+    "controllerId.wardenCooperate.boolean.true": "Cooperate",
+    "controllerId.wardenCooperate.boolean.false": "Defect",
 
 
     "standard":"Uncategorized",
@@ -1051,7 +1049,7 @@
     "chatMessage.deputyShotYou":"A Deputy shot you!",
     "chatMessage.puppeteerPlayerIsNowMarionette":"The puppeteer strung up \\0 into a marionette. They are now a Fiends Loyalist and Puppeteer Insider. They will be attacked every night.",
     "chatMessage.recruiterPlayerIsNowRecruit":"The recruiter recruited \\0 into the syndicate. They are now a Syndicate Loyalist and Syndicate Insider. They will be attacked every night.",
-    "chatMessage.wardenPlayersImprisoned": "The warden has forced these players into a choice of live or die: \\0.",
+    "chatMessage.wardenPlayersImprisoned": "The warden has made these players their prisoners: \\0. They will be roleblocked and each must choose cooperate or defect.",
     "chatMessage.yourConvertFailed": "You failed to convert your target.",
 
     "chatMessage.youDied":"You died!",
@@ -1216,6 +1214,11 @@
     "wiki.category.trial:var.10": "Voting",
     "wiki.category.trial.text": "The trial phases occur after discussion and end before dusk, and are the phases in which players can be voted up and voted out.\n\nThe trial phases go in this order:\n- Nomination\n- Testimony\n- Judgement\n- Final Words\n\nA player is nominated after getting voted up by more than half of the living players.\nAfter being nominated, during testimony, only the nominated player can speak so they can defend themselves.\nAfter testimony, during judgement, everyone votes either guilty or innocent. If there are more guilty votes than innocent votes, the game goes to final words. Otherwise, it goes back to nomination if there are trials left, or else it goes to dusk.\nDuring final words, the player who was voted guilty says their last thoughts before being killed by execution.\nThere can only be up to 3 nomination phases per day. If 3 trials happen and no player is executed, dusk starts.",
     
+    "wiki.article.standard.leftTown.title": "Ascension",
+    "wiki.article.standard.leftTown.title:var.0": "Ascended",
+    "wiki.article.standard.leftTown.title:var.1": "Ascends",
+    "wiki.article.standard.leftTown.title:var.2": "Ascent",
+    "wiki.article.standard.leftTown.text": "When a player ascends, they die, and their grave shows they died due to ascention.\n\nA player ascends according to the conditions:\n- If they win early then they ascend, this can be due to things like a mercenary or revolutionary.\n- If they are friends with every living player and their win condition depends on a game conclusion then they ascend.",
     "wiki.article.standard.visit.title": "Visit",
     "wiki.article.standard.visit.title:var.0": "Visits",
     "wiki.article.standard.visit.title:var.1": "Visiting",
@@ -1654,13 +1657,13 @@
 
     "wiki.article.role.mayor.reminder": "Once per game you can enfranchise with voting power 3.",
     "wiki.article.role.mayor.lore": "Who voted for this idiot?",
-    "wiki.article.role.mayor.guide": "Choose to enfranchise with voting power 3 during the day.\n - You can't whisper or be whispered to while enfranchised",
+    "wiki.article.role.mayor.guide": "Choose to enfranchise with voting power 3 during the day.\n - You can't whisper or be whispered to while enfranchised\n- If you were blocked last night, you can't enfranchise today.",
     "wiki.article.role.mayor.abilities":"",
     "wiki.article.role.mayor.attributes":"",
     "wiki.article.role.mayor.extra": "- If your role changes, you unenfranchise.",
 
     "wiki.article.role.nepotist.reminder": "Once per game, choose a successor, when you do, you enfranchise with voting power 2, your successor enfranchises after you die.",
-    "wiki.article.role.nepotist.guide": "-Choose to successor during the day. When you do, you enfranchise with voting power 2.\n - You can't whisper or be whispered while enfranchised\n     - When you die, your successor enfranchises and gets 2 voting power, but still can be whispered to.",
+    "wiki.article.role.nepotist.guide": "-Choose to successor during the day. When you do, you enfranchise with voting power 2.\n - You can't whisper or be whispered while enfranchised\n     - When you die, your successor enfranchises and gets 2 voting power, but still can be whispered to.\n- If you were blocked last night, you can't enfranchise today.",
     "wiki.article.role.nepotist.abilities":"",
     "wiki.article.role.nepotist.attributes":"",
     "wiki.article.role.nepotist.extra": "- If your role changes, you unenfranchise.",
@@ -1741,10 +1744,10 @@
 
     "wiki.article.role.gossip.reminder": "At night, select a player to eavesdrop on, and learn if they visited a player who is enemies with town.",
     "wiki.article.role.gossip.lore":"The gossip never shuts up. No secret is safe with them. You would think that's a bad thing... and many do...",
-    "wiki.article.role.gossip.guide": "- At night, select a player. You are told if they visited a player who is enemies with town\n- If they visited a friend, or nobody, they did not visit an enemy\n* Appeared visits can change information",
+    "wiki.article.role.gossip.guide": "- At night, select a player. You are told if they visited a player who is enemies with town\n- If they visited a friend, or nobody, they did not visit an enemy\n* Appeared visits do effect your information",
     "wiki.article.role.gossip.abilities":"- Visit a player to eavesdrop on\n    - If your target visited a player who is enemies with town, you are told so\n    - If your target visited nobody, then they didn't visit an enemy of the town",
     "wiki.article.role.gossip.attributes":"- If any player your target visits has a suspicious aura, then you are told they visited a town enemy",
-    "wiki.article.role.gossip.extra":"- Suspicious aura overrides innocent aura\n- If your target visits multiple other players, you learn if at least one of them is a town enemy\n- False appeared visits can mess with your results, depending on who your target appears to visit\n- Your target having an aura does not mess with the results, however, their targets having an aura does",
+    "wiki.article.role.gossip.extra":"- Suspicious aura overrides innocent aura\n- False appeared visits do not mess with your results\n- Your target having aura does not mess with the results, however, their targets having aura does",
 
     "wiki.article.role.tallyClerk.reminder": "At night, you are told how many players are town enemies from the players who voted guilty during selected trials.",
     "wiki.article.role.tallyClerk.lore": "The tally clerk always tells ridiculous stories of how people submit their votes. Others dismiss the stories as hyperbole, but the tally clerk delivers the stories with such an exhausted expression that you know they've been through it all.",
@@ -1869,10 +1872,10 @@
 
     "wiki.article.role.deputy.reminder": "Once per game, during the day, shoot someone. If you kill a town loyalist you leave town.",
     "wiki.article.role.deputy.lore": "\"When you know, you know.\"",
-    "wiki.article.role.deputy.guide":"- Once per game, you can shoot a player during the day\n- If you kill a townie, you instantly leave town\n- If you kill someone, everyone is told that a deputy shot someone\n- If the player you shoot survives your attack, only the player you attacked is told, nobody else is told\n- You can only shoot during discussion, nomination, adjournment, or dusk\n\nIf you attack someone and they survive it is likely that they are a role that is armored. Most roles that are armored are evil.",
+    "wiki.article.role.deputy.guide":"- Once per game, you can shoot a player during the day\n- If you kill a townie, you instantly leave town\n- If you kill someone, everyone is told that a deputy shot someone\n- If the player you shoot survives your attack, only the player you attacked is told, nobody else is told\n- You can only shoot during discussion, nomination, adjournment, or dusk\n- If you were blocked last night, you can't shoot today.",
     "wiki.article.role.deputy.abilities":"* Once per game, you may choose a player to attack instantly. You can do this during discussion, nomination, adjournment, or dusk.",
-    "wiki.article.role.deputy.attributes":"* If the player you attack has defense, they are told they were attacked by a deputy\n* When you kill someone, everyone is told a deputy shot someone\n* If you kill a town loyalist, you instantly leave town",
-    "wiki.article.role.deputy.extra":"* You only have a basic attack\n* You can not attack day 1",
+    "wiki.article.role.deputy.attributes":"* If the player you attack survives, they are told they were attacked by a deputy\n* When you kill someone, everyone is told a deputy shot someone\n* If you kill a town loyalist, you instantly leave town",
+    "wiki.article.role.deputy.extra":"* You have an armor-piercing attack\n* You can not attack day 1",
 
     "wiki.article.role.godfather.reminder": "Each night*, select a player to attack. Each night, select a player to appeared visit. You have armor and innocent aura.",
     "wiki.article.role.godfather.guide": "- At night, select a player to attack with a basic attack\n    - You can't attack night 1\n- Select a player to appeared visit",
@@ -2034,10 +2037,10 @@
     
     "wiki.article.role.mercenary.reminder": "You are told a hit list of roles, if at least one player with each of those roles is dead, you win.",
     "wiki.article.role.mercenary.lore":"Don't mind the mercenary doing what they are paid for.",
-    "wiki.article.role.mercenary.guide": "- At the start of the game, you are told a hit list of X different roles (X = Total players ÷ 5 (round up)), You win if, you live until the end of the game, and for each role, there is a dead player with that role or there is no player with that role\n    - Each player on your hit list is told they are on a mercenaries hit list\n    - The role Mercenary can't be on your hit list\n    - For each role on your hit list, there is at least one player with that role\n    - If there are not enough roles available to fill your hit list, your hit list is smaller, filling with as many roles as possible up to X\n- Choose between Investigate or Attack\n    - Investigate: Choose a player to visit and learn if they have a role on your hit list\n    - Attack: Choose a player to visit and attack with a basic attack\n        - You can't choose to attack night 1\n        - You can only attack up to X times (X = Total players ÷ 5 (round up)), if you are roleblocked it doesn't use an ability charge",
+    "wiki.article.role.mercenary.guide": "- At the start of the game, you are told a hit list of X different roles (X = Total players ÷ 5 (round up))\n - While you are alive, if one of each of the players with roles on your hit list are dead, you win.\n - Each player on your hit list is told they are on a mercenaries hit list\n    - The role Mercenary can't be on your hit list\n    - For each role on your hit list, there is at least one player with that role\n    - If there are not enough roles available to fill your hit list, your hit list is smaller, filling with as many roles as possible up to X\n- Choose between Investigate or Attack\n    - Investigate: Choose a player to visit and learn if they have a role on your hit list\n    - Attack: Choose a player to visit and attack with a basic attack\n        - You can't choose to attack night 1\n        - You can only attack up to X times (X = Total players ÷ 5 (round up)), if you are roleblocked it doesn't use an ability charge",
     "wiki.article.role.mercenary.abilities": "",
     "wiki.article.role.mercenary.attributes": "",
-    "wiki.article.role.mercenary.extra": "",
+    "wiki.article.role.mercenary.extra": "\n - You win if, while you are alive, for each role, there is a dead player with that role or there is no player with that role.\n    - You either need a dead player with each hit role, or all players with that role have had their role changed.",
 
     "wiki.article.role.chronokaiser.reminder": "Each day while you are alive, time speeds up by 60%. You win if you live to the end of the game.",
     "wiki.article.role.chronokaiser.guide": "- Each day while you are alive, time speeds up by 60%\n - Every discussion phase, the amount that you sped up the game is announced in chat\n - If you are alive at the end of the game, you win",
@@ -2154,11 +2157,11 @@
     "wiki.article.role.spiral.attributes":"- Players are not told when they start to spiral\n* If you are blocked, spiraling players still die\n* Your attack is armor piercing",
     "wiki.article.role.spiral.extra":"- You can't cause yourself to spiral\n- If a dead player is spiraling, they stay spiraling, and you attack them again, even while they are dead. Although they cannot die after already dead.",
 
-    "wiki.article.role.warden.reminder": "Each night*, put up to 3 players in your prison who each must choose to either live or die, but if they all choose to live, they all die instead.",
-    "wiki.article.role.warden.guide":"- Each night except the first, choose up to 3 players to put in prison\n    - The prisoners must choose to live or die\n        - If a player chooses die, you attack them (armor-piercing)\n        - If all of the players in your prison choose live, you attack all of them (armor-piercing)\n    - The players in your prison can talk in a private chat group at night\n        - You can always read from the private prisoner chat group\n    - The players in your prison are roleblocked, but not warded\n    - You can put yourself in your prison, but you can't ever die or be roleblocked by your own ability",
-    "wiki.article.role.warden.abilities":"- Each night except the first, choose up to 3 players to put in prison\n    - The prisoners must choose to live or die\n        - If a player chooses die, you attack them (armor-piercing)\n        - If all of the players in your prison choose live, you attack all of them (armor-piercing)\n    - The players in your prison can talk in a private chat group at night\n        - You can always read from the private prisoner chat group\n    - The players in your prison are roleblocked, but not warded\n    - You can put yourself in your prison, but you can't ever die or be roleblocked by your own ability",
-    "wiki.article.role.warden.attributes":" - You can't die to your own ability, but the logic of your ability doesn't change. _For example_:\n You imprison yourself and another player. You both choose live. You survive and the other player dies. All players in prison chose to live so both players should die, but you can't die to your own ability.",
-    "wiki.article.role.warden.extra":" - You don't visit anybody due to your own ability",
+    "wiki.article.role.warden.reminder": "Each night*, put up to 3 players in your prison who each must choose to either cooperate or defect. If they all cooperate they all live, otherwise, defectors live and cooperates die. If everyone defects then they all die.",
+    "wiki.article.role.warden.guide":"- Each day except the first, choose up to 3 players to put in prison\n    - The prisoners much each secretly choose to cooperate or defect\n        - If all prisoners choose defect, you attack each of them.\n        - If all prisoners choose cooperate, you don't attack, but you gain charges equal to the number of prisoners - 1\n        - Otherwise, you attack the prisoners who chose cooperate.\n    - Prisoners can chat in a private chat group at night.\n        - You can read the private chat group.\n    - Prisoners are roleblocked.\n    - You may choose to make yourself a prisoner.\n - If either of the following are true, then you attack your prisoners regardless of their choices.\n    - There is only 1 prisoner.\n    - Your charges are greater than or equal to half the number of players in the lobby rounded up.",
+    "wiki.article.role.warden.abilities":"",
+    "wiki.article.role.warden.attributes":"",
+    "wiki.article.role.warden.extra":" - You don't visit anybody due to your own ability.\n - Your attack is armor piercing.\n - You can't roleblock yourself.",
 
     "wiki.article.role.yer.reminder":"Each night*, either attack a player, or convert a player to be a yer, and attack yourself.",
     "wiki.article.role.yer.guide":"- At night choose to either shapeshift or not\n    - If you don't shapeshift\n        - Choose a player to attack with an armor piercing attack\n    - If you shapeshift\n        - Choose a player to convert with an armor-piercing attack\n        - If the attack succeeds\n            - That players role becomes yer            - That player converts to fiends loyalist\n            - You attack yourself with a protection piercing attack\n            - If you die, your grave shows the role you disguised as on it \n- You can only shapeshift X times (X = Total players ÷ 5 (round up))",

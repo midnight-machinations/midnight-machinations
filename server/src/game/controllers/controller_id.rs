@@ -46,7 +46,7 @@ pub enum ControllerID{
     SyndicateChooseBackup,
     SyndicateBackupAttack,
 
-    WardenLiveOrDie{
+    WardenCooperate{
         warden: PlayerReference,
         player: PlayerReference,
     }

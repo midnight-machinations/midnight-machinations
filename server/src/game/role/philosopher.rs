@@ -1,4 +1,5 @@
 use serde::Serialize;
+use crate::game::abilities_component::ability_id::AbilityID;
 
 use crate::game::controllers::AvailableTwoPlayerOptionSelection;
 use crate::game::components::aura::Aura;
@@ -23,10 +24,10 @@ pub(super) const DEFENSE: DefensePower = DefensePower::None;
 
 impl RoleStateTrait for Philosopher {
     type ClientAbilityState = Philosopher;
-    fn on_midnight(self, game: &mut Game, midnight_variables: &mut MidnightVariables, actor_ref: PlayerReference, priority: OnMidnightPriority) {
+    fn on_midnight(self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut MidnightVariables, priority: OnMidnightPriority) {
         if priority != OnMidnightPriority::Investigative {return;}
 
-        let actor_visits = actor_ref.untagged_night_visits_cloned(midnight_variables);
+        let actor_visits = actor_ref.role_night_visits_cloned(midnight_variables);
         let Some(first_visit) = actor_visits.get(0) else {return;};
         let Some(second_visit) = actor_visits.get(1) else {return;};
 

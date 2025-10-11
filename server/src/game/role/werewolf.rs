@@ -12,6 +12,7 @@ use crate::game::player::PlayerReference;
 use crate::game::visit::Visit;
 use crate::game::phase::PhaseType;
 use crate::game::Game;
+use crate::game::abilities_component::ability_id::AbilityID;
 use super::{ControllerID, ControllerParametersMap, PlayerListSelection, GetClientAbilityState, Role, RoleStateTrait};
 
 
@@ -30,7 +31,7 @@ const ENRAGED_DENOMINATOR: usize = 3;
 
 impl RoleStateTrait for Werewolf {
     type ClientAbilityState = ClientRoleState;
-    fn on_midnight(self, game: &mut Game, midnight_variables: &mut MidnightVariables, actor_ref: PlayerReference, priority: OnMidnightPriority) {
+    fn on_midnight(self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut MidnightVariables, priority: OnMidnightPriority) {
         match priority {
             OnMidnightPriority::Deception => {
                 let Some(target) = Visits::default_target(game, midnight_variables, actor_ref) else {return};

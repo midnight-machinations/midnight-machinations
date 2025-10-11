@@ -160,6 +160,16 @@ function roleSpecificSectionInner(
             >
                 <StyledText>{translate("role.cerenovous.roleDataText", roleState.charges)}</StyledText>
             </Counter>
+        case "warden":
+            {
+                let required = Math.ceil(numPlayers/2);
+                return <Counter
+                    max={required}
+                    current={roleState.charges}
+                >
+                    <StyledText>{translate("role.warden.roleDataText", roleState.charges, required)}</StyledText>
+                </Counter>
+            }
         case "mortician":
             return <Counter
                 max={maxChargesCounter}

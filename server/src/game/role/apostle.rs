@@ -1,5 +1,6 @@
 use serde::Serialize;
 
+use crate::game::abilities_component::ability_id::AbilityID;
 use crate::game::chat::ChatMessageVariant;
 use crate::game::components::insider_group::InsiderGroupID;
 use crate::game::components::night_visits::Visits;
@@ -22,7 +23,7 @@ pub(super) const DEFENSE: DefensePower = DefensePower::None;
 
 impl RoleStateTrait for Apostle {
     type ClientAbilityState = Apostle;
-    fn on_midnight(self, game: &mut Game, midnight_variables: &mut MidnightVariables, actor_ref: PlayerReference, priority: OnMidnightPriority) {
+    fn on_midnight(self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut MidnightVariables, priority: OnMidnightPriority) {
         if !matches!(priority, OnMidnightPriority::Convert) {return}
         let Some(target) = Visits::default_target(game, midnight_variables, actor_ref) else {return};
         if !Cult::enough_sacrifices(game) {return}
@@ -37,10 +38,10 @@ impl RoleStateTrait for Apostle {
         for p in PlayerReference::all_players(game){
             if !InsiderGroupID::Cult.contains_player(game, p) {continue}
             if !matches!(p.role(game), Role::Zealot) {continue}
-            p.set_role(game, Role::Disciple.default_state())
+            p.set_night_convert_role_to(midnight_variables, Some(Role::Disciple.default_state()))
         }
 
-        target.set_role_and_win_condition_and_revealed_group(game, Role::Zealot.default_state());
+        target.set_role_win_con_insider_group_midnight(game, midnight_variables, Role::Zealot.default_state());
     }
     fn convert_selection_to_visits(self, game: &Game, actor_ref: PlayerReference) -> Vec<Visit> {
         common_role::convert_controller_selection_to_visits(
@@ -56,7 +57,7 @@ impl RoleStateTrait for Apostle {
             .single_player_selection_typical(actor_ref, false, false)
             .night_typical(actor_ref)
             .add_grayed_out_condition(
-    game.day_number() <= 1 || !Cult::enough_sacrifices(game)
+        game.day_number() <= 1 || !Cult::enough_sacrifices(game)
             )
             .build_map()
     }

@@ -1,5 +1,5 @@
 
-    use crate::{game::{abilities_component::Abilities, chat::{ChatComponent, PlayerChatGroups}, components::{enfranchise::EnfranchiseComponent, fast_forward::FastForwardComponent, graves::Graves, pitchfork_item::PitchforkItemComponent, role::RoleComponent, role_reveal::RevealedPlayersComponent}, event::Event, role_list_generation::RoleListGenerator}, vec_map::VecMap};
+    use crate::{game::{abilities_component::Abilities, chat::{ChatComponent, PlayerChatGroups}, components::{blocked::BlockedComponent, enfranchise::EnfranchiseComponent, fast_forward::FastForwardComponent, graves::Graves, pitchfork_item::PitchforkItemComponent, role::RoleComponent, role_reveal::RevealedPlayersComponent}, event::Event, role_list_generation::RoleListGenerator}, vec_map::VecMap};
 
     use super::{
         controllers::Controllers, components::{
@@ -61,6 +61,7 @@
             puppeteer_marionette: PuppeteerMarionette::default(),
             mafia_recruits: MafiaRecruits::default(),
             verdicts_today: VerdictsToday::default(),
+            blocked: unsafe {BlockedComponent::new(num_players)},
             poison: Poison::default(),
             insider_groups: unsafe{InsiderGroups::new(num_players, &assignments)},
             detained: Default::default(),

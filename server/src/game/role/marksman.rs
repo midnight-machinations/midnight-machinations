@@ -9,6 +9,7 @@ use crate::game::game_conclusion::GameConclusion;
 use crate::game::components::graves::grave::GraveKiller;
 use crate::game::phase::PhaseType;
 use crate::game::player::PlayerReference;
+use crate::game::abilities_component::ability_id::AbilityID;
 
 use crate::game::visit::Visit;
 
@@ -41,11 +42,11 @@ pub(super) const DEFENSE: DefensePower = DefensePower::None;
 
 impl RoleStateTrait for Marksman {
     type ClientAbilityState = Marksman;
-    fn on_midnight(mut self, game: &mut Game, midnight_variables: &mut MidnightVariables, actor_ref: PlayerReference, priority: OnMidnightPriority) {
+    fn on_midnight(mut self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut MidnightVariables, priority: OnMidnightPriority) {
         if priority != OnMidnightPriority::Kill {return};
 
         let visiting_players: Vec<_> = actor_ref
-            .untagged_night_visits_cloned(midnight_variables)
+            .role_night_visits_cloned(midnight_variables)
             .into_iter()
             .flat_map(|p|p.target.all_direct_night_visitors_cloned(midnight_variables))
             .collect();
@@ -64,7 +65,7 @@ impl RoleStateTrait for Marksman {
             }
         }
         
-        actor_ref.set_role_state(game, self);
+        actor_ref.edit_role_ability_helper(game, self);
     }
     fn controller_parameters_map(self, game: &Game, actor_ref: PlayerReference) -> super::ControllerParametersMap {
         ControllerParametersMap::combine([
@@ -120,7 +121,7 @@ impl RoleStateTrait for Marksman {
             matches!(phase, PhaseType::Obituary) && 
             matches!(self.state, MarksmanState::NotLoaded)
         {
-            actor_ref.set_role_state(game, Marksman{state: MarksmanState::Loaded})
+            actor_ref.edit_role_ability_helper(game, Marksman{state: MarksmanState::Loaded})
         }
     }
 }

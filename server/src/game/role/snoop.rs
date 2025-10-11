@@ -8,6 +8,7 @@ use crate::game::{attack_power::DefensePower, chat::ChatMessageVariant};
 use crate::game::game_conclusion::GameConclusion;
 use crate::game::player::PlayerReference;
 
+use crate::game::abilities_component::ability_id::AbilityID;
 use crate::game::visit::Visit;
 use crate::game::Game;
 
@@ -22,7 +23,7 @@ pub struct Snoop;
 
 impl RoleStateTrait for Snoop {
     type ClientAbilityState = Snoop;
-    fn on_midnight(self, game: &mut Game, midnight_variables: &mut MidnightVariables, actor_ref: PlayerReference, priority: OnMidnightPriority) {
+    fn on_midnight(self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut MidnightVariables, priority: OnMidnightPriority) {
         if priority != OnMidnightPriority::Investigative {return;}
 
         let buddy = ControllerID::role(actor_ref, Role::Snoop, 1).get_role_list_selection_first(game).copied();

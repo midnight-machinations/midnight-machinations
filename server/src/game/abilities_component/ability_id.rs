@@ -10,6 +10,9 @@ pub enum AbilityID{
     SyndicateGun
 }
 impl AbilityID{
+    pub fn exists(&self, game: &Game)->bool{
+        game.abilities.abilities.contains_key(self)
+    }
     pub fn get_ability<'a>(&self, game: &'a Game)->Option<&'a Ability>{
         game.abilities.abilities.get(self)
     }
@@ -34,6 +37,13 @@ impl AbilityID{
             *player_on_id == player && *role_on_id == role
         }else{
             false
+        }
+    }
+    pub fn get_player_from_role_id(&self)->Option<PlayerReference>{
+        if let Self::Role { player, .. } = self {
+            Some(*player)
+        }else{
+            None
         }
     }
 }

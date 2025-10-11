@@ -8,6 +8,7 @@ use crate::game::game_conclusion::GameConclusion;
 use crate::game::components::graves::grave::GraveKiller;
 use crate::game::phase::PhaseType;
 use crate::game::player::PlayerReference;
+use crate::game::abilities_component::ability_id::AbilityID;
 
 use crate::game::role::BooleanSelection;
 use crate::game::Game;
@@ -46,7 +47,7 @@ impl RoleStateTrait for Jailor {
             ..Self::default()
         }
     }
-    fn on_midnight(mut self, game: &mut Game, midnight_variables: &mut MidnightVariables, actor_ref: PlayerReference, priority: OnMidnightPriority) {
+    fn on_midnight(mut self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut MidnightVariables, priority: OnMidnightPriority) {
         match priority {
             OnMidnightPriority::Kill => {
 
@@ -66,7 +67,7 @@ impl RoleStateTrait for Jailor {
     
                     self.executions_remaining = 
                         if target.win_condition(game).is_loyalist_for(GameConclusion::Town) {0} else {self.executions_remaining.saturating_sub(1)};
-                    actor_ref.set_role_state(game, self);
+                    actor_ref.edit_role_ability_helper(game, self);
                 }
                 
             },
@@ -136,7 +137,7 @@ impl RoleStateTrait for Jailor {
                 
                 self.jailed_target_ref = Some(*target);
                 
-                actor_ref.set_role_state(game, self);
+                actor_ref.edit_role_ability_helper(game, self);
 
                 Detained::add_detain(game, *target);
                 actor_ref.add_private_chat_message(game, 
@@ -145,7 +146,7 @@ impl RoleStateTrait for Jailor {
             },
             PhaseType::Obituary => {
                 self.jailed_target_ref = None;
-                actor_ref.set_role_state(game, self);
+                actor_ref.edit_role_ability_helper(game, self);
             },
             _ => {}
         }

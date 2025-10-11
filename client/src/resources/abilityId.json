@@ -257,7 +257,7 @@
     "role/warden/1": {
         "midnight": true
     },
-    "wardenLiveOrDie": {
+    "wardenCooperate": {
         "midnight": true
     },
     "role/yer/0": {

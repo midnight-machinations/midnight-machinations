@@ -1,7 +1,7 @@
 use serde::Serialize;
 
 use crate::game::components::confused::Confused;
-use crate::game::components::night_visits::Visits;
+use crate::game::components::night_visits::{NightVisitsIterator as _, Visits};
 use crate::game::event::on_midnight::{MidnightVariables, OnMidnightPriority};
 use crate::game::{attack_power::DefensePower, chat::ChatMessageVariant};
 use crate::game::player::PlayerReference;
@@ -9,6 +9,7 @@ use crate::game::player::PlayerReference;
 use crate::game::visit::Visit;
 use crate::game::Game;
 
+use crate::game::abilities_component::ability_id::AbilityID;
 use super::detective::Detective;
 use super::{ControllerID, ControllerParametersMap, Role, RoleStateTrait};
 
@@ -21,7 +22,7 @@ pub struct Gossip;
 
 impl RoleStateTrait for Gossip {
     type ClientAbilityState = Gossip;
-    fn on_midnight(self, game: &mut Game, midnight_variables: &mut MidnightVariables, actor_ref: PlayerReference, priority: OnMidnightPriority) {
+    fn on_midnight(self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut MidnightVariables, priority: OnMidnightPriority) {
         if priority != OnMidnightPriority::Investigative {return;}
 
         if let Some(visit) = Visits::default_visit(game, midnight_variables, actor_ref) {
@@ -55,7 +56,9 @@ impl RoleStateTrait for Gossip {
 
 impl Gossip {
     pub fn enemies_night(game: &Game, midnight_variables: &mut MidnightVariables, player_ref: PlayerReference) -> bool {
-        player_ref.tracker_seen_players(midnight_variables)
+        Visits::into_iter(midnight_variables)
+            .with_visitor(player_ref)
+            .map_target()
             .any(|targets_target|
                 Detective::player_is_suspicious(game, midnight_variables, targets_target)
             )

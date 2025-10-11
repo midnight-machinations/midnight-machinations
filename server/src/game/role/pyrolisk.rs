@@ -6,6 +6,7 @@ use crate::game::components::graves::grave::{GraveInformation, GraveKiller};
 use crate::game::components::graves::grave_reference::GraveReference;
 use crate::game::event::on_midnight::{MidnightVariables, OnMidnightPriority};
 use crate::game::player::PlayerReference;
+use crate::game::abilities_component::ability_id::AbilityID;
 
 use crate::game::visit::Visit;
 use crate::game::Game;
@@ -27,7 +28,7 @@ pub(super) const DEFENSE: DefensePower = DefensePower::Armored;
 
 impl RoleStateTrait for Pyrolisk {
     type ClientAbilityState = ClientRoleState;
-    fn on_midnight(self, game: &mut Game, midnight_variables: &mut MidnightVariables, actor_ref: PlayerReference, priority: OnMidnightPriority) {
+    fn on_midnight(self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut MidnightVariables, priority: OnMidnightPriority) {
         if game.day_number() <= 1 {return;}
 
         match priority {
@@ -50,7 +51,7 @@ impl RoleStateTrait for Pyrolisk {
                 }
 
                 if !killed_at_least_once {
-                    let actor_visits = actor_ref.untagged_night_visits_cloned(midnight_variables);
+                    let actor_visits = actor_ref.role_night_visits_cloned(midnight_variables);
                     if let Some(visit) = actor_visits.first(){
                         let attack_success = visit.target.try_night_kill_single_attacker(actor_ref, game, midnight_variables, GraveKiller::Role(Role::Pyrolisk), AttackPower::ArmorPiercing, true);
                         if attack_success {
@@ -59,7 +60,7 @@ impl RoleStateTrait for Pyrolisk {
                     }
                 }
                 
-                actor_ref.set_role_state(game, Pyrolisk{tagged_for_obscure});
+                actor_ref.edit_role_ability_helper(game, Pyrolisk{tagged_for_obscure});
             }
             _ => {}
         }
@@ -94,7 +95,7 @@ impl RoleStateTrait for Pyrolisk {
         grave_ref.deref_mut(game).information = GraveInformation::Obscured;
     }
     fn on_phase_start(self, game: &mut Game, actor_ref: PlayerReference, _phase: crate::game::phase::PhaseType) {
-        actor_ref.set_role_state(game, Pyrolisk{tagged_for_obscure: VecSet::new()});
+        actor_ref.edit_role_ability_helper(game, Pyrolisk{tagged_for_obscure: VecSet::new()});
     }
 }
 impl GetClientAbilityState<ClientRoleState> for Pyrolisk {
