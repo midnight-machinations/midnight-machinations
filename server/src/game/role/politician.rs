@@ -2,7 +2,7 @@ use serde::Serialize;
 use crate::game::controllers::AvailableUnitSelection;
 use crate::game::attack_power::DefensePower;
 use crate::game::chat::{ChatGroup, ChatMessageVariant};
-use crate::game::components::graves::grave::Grave;
+use crate::game::components::graves::grave::{Grave, GraveDeathCause, GraveInformation, GraveKiller};
 use crate::game::event::on_ability_creation::{OnAbilityCreation, OnAbilityCreationFold, OnAbilityCreationPriority};
 use crate::game::event::on_ability_deletion::{OnAbilityDeletion, OnAbilityDeletionPriority};
 use crate::game::event::on_whisper::{OnWhisper, WhisperFold, WhisperPriority};
@@ -156,7 +156,7 @@ impl Politician {
                 .all(|p|!p.win_condition(game).is_loyalist_for(GameConclusion::Town))
 
         {
-            actor_ref.die_and_add_grave(game, Grave::from_player_leave_town(game, actor_ref));
+            actor_ref.die_and_add_grave(game, Grave::from_player_suicide(game, actor_ref));
         }
     }
 
@@ -195,9 +195,14 @@ impl Politician {
 
     fn kill_all(game: &mut Game){
         for player in PlayerReference::all_players(game){
-            if player.alive(game) && !player.win_condition(game).is_loyalist_for(GameConclusion::Politician) {
-                player.die_and_add_grave(game, Grave::from_player_leave_town(game, player));
+            if !player.alive(game) || player.win_condition(game).is_loyalist_for(GameConclusion::Politician) {continue}
+            
+            let mut grave = Grave::from_player_lynch(game, player);
+            if let GraveInformation::Normal{death_cause, ..} = &mut grave.information {
+                *death_cause = GraveDeathCause::Killers(vec![GraveKiller::Role(Role::Politician)]);
             }
+            player.die_and_add_grave(game, grave);
+            
         }
     }
 }

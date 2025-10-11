@@ -41,7 +41,6 @@
     "neutral": { "style": "keyword-neutral", "link": "category/neutral"},
     "cult": { "style": "keyword-cult", "link": "category/cult"},
 
-    "grave.deathCause.leftTown": { "style": "keyword-info"},
     "grave.killer.suicide": { "style": "keyword-info"},
     "grave.killer.quit": { "style": "keyword-info"},
     "random.gay": { "style": "keyword-pride","replacement": "random.gay","link": "role/transporter"},
