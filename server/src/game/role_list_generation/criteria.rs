@@ -2,7 +2,7 @@
 
 use std::collections::HashMap;
 
-use crate::{game::{components::{insider_group::InsiderGroupID, win_condition::WinCondition}, game_conclusion::{GameConclusion, GameOverCheckPlayer}, player::PlayerReference, role_list::{RoleOutlineOptionInsiderGroups, RoleOutlineOptionWinCondition}, role_list_generation::{PartialOutlineAssignment, PartialOutlineListAssignmentNode}, settings::Settings}, vec_set::VecSet};
+use crate::{game::{components::{ascend::Ascend, insider_group::InsiderGroupID, win_condition::WinCondition}, game_conclusion::{GameConclusion, GameOverCheckPlayer}, player::PlayerReference, role_list::{RoleOutlineOptionInsiderGroups, RoleOutlineOptionWinCondition}, role_list_generation::{PartialOutlineAssignment, PartialOutlineListAssignmentNode}, settings::Settings}, vec_set::VecSet};
 
 
 #[derive(Clone, Copy)]
@@ -240,6 +240,31 @@ pub const GAME_DOESNT_END_INSTANTLY: GenerationCriterion = GenerationCriterion {
         .collect();
     
     if GameConclusion::game_is_over(players).is_some(){
+        GenerationCriterionResult::Unmet(Vec::new())
+    }else{
+        GenerationCriterionResult::Met
+    }
+}};
+
+pub const NO_PLAYERS_INSTANTLY_ASCEND: GenerationCriterion = GenerationCriterion {evaluate: |node, _| {
+    let players: Vec<GameOverCheckPlayer> = node.assignments
+        .iter()
+        .filter_map(|a|
+            if
+                let Some(win_condition) = &a.win_condition &&
+                let Some(insider_groups) = &a.insider_groups &&
+                let Some(role) = a.role
+            {
+                Some(GameOverCheckPlayer{
+                    alive: true, role, win_condition: win_condition.clone(), insider_groups: insider_groups.clone()
+                })
+            }else{
+                None
+            }
+        )
+        .collect();
+    
+    if Ascend::any_instantly_ascends(players) {
         GenerationCriterionResult::Unmet(Vec::new())
     }else{
         GenerationCriterionResult::Met

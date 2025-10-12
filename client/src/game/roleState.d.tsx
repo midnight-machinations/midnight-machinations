@@ -191,7 +191,7 @@ Doomsayer
     state: {
         type: "won"
     } | {
-        type: "leftTown"
+        type: "ascension"
     } | {
         type: "stillPlaying",
         bullets: number
