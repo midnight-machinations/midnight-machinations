@@ -105,6 +105,7 @@ impl WinCondition{
             _ => false
         }
     }
+    
 }
 
 impl PlayerReference{

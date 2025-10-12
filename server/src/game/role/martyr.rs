@@ -31,7 +31,7 @@ pub enum MartyrState {
     StillPlaying {
         bullets: u8
     },
-    LeftTown
+    Ascension
 }
 
 impl Default for Martyr {
@@ -114,7 +114,7 @@ impl RoleStateTrait for Martyr {
         let left_town = GraveReference::all_graves(game).any(|grave| 
             grave.deref(game).player == dead_player_ref &&
             if let GraveInformation::Normal { death_cause, .. } = &grave.deref(game).information {
-                *death_cause == GraveDeathCause::LeftTown
+                *death_cause == GraveDeathCause::Ascension
             } else {false}
         );
 

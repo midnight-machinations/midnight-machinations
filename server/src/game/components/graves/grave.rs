@@ -35,7 +35,7 @@ pub enum GraveInformation {
 pub enum GraveDeathCause {
     None,
     Execution,
-    LeftTown,
+    Ascension,
     Killers(Vec<GraveKiller>)
 }
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq, PartialOrd, Ord, Hash)]
@@ -124,7 +124,7 @@ impl Grave{
             day_number: game.phase_machine.day_number,
             information: GraveInformation::Normal { 
                 role: player_ref.role(game), 
-                death_cause: GraveDeathCause::LeftTown, 
+                death_cause: GraveDeathCause::Ascension, 
                 will: player_ref.alibi(game).to_owned(), 
                 death_notes: vec![]
             }
