@@ -18,6 +18,8 @@ import translate from "../../game/lang";
 import { useGameState } from "../../components/useHooks";
 import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
 import { loadSettingsParsed } from "../../game/localStorage";
+// import Popout from "../../components/popout";
+import Popout from 'react-popout';
 
 export enum ContentMenu {
     ChatMenu = "ChatMenu",
@@ -59,13 +61,18 @@ const ALL_CONTENT_MENUS = Object.values(ContentMenu);
 
 export interface MenuController {
     closeOrOpenMenu(menu: ContentMenu): void;
+    canOpen(menu: ContentMenu): boolean;
+    menus(): ContentMenu[]
+    maxMenus: number
+
     closeMenu(menu: ContentMenu): void;
     openMenu(menu: ContentMenu, callback?: ()=>void): void;
     menusOpen(): ContentMenu[];
     menuOpen(menu: ContentMenu): boolean;
-    canOpen(menu: ContentMenu): boolean;
-    menus(): ContentMenu[]
-    maxMenus: number
+
+    closePopout(menu: ContentMenu): void;
+    openPopout(menu: ContentMenu, callback?: ()=>void): void;
+    popoutsOpen(): ContentMenu[];
 }
 
 export function useMenuController<C extends Partial<Record<ContentMenu, boolean>>>(
@@ -75,6 +82,11 @@ export function useMenuController<C extends Partial<Record<ContentMenu, boolean>
     setMenuController: (menuController: MenuController | undefined) => void,
 ): MenuController {
     const [contentMenus, setContentMenus] = useState<C>(initial);
+    let popoutInitial: any = {};
+    for(let [menu, _open] of Object.entries(initial)){
+        popoutInitial[menu] = false
+    }
+    const [popoutMenus, setPopoutMenus] = useState<C>(popoutInitial as C);
 
     const [callbacks, setCallbacks] = useState<(() => void)[]>([]);
 
@@ -101,6 +113,18 @@ export function useMenuController<C extends Partial<Record<ContentMenu, boolean>
 
             return newMenus;
         }
+        function setAndGetPopoutMenus(menu: ContentMenu, open: boolean): C {
+            const newMenus = {...popoutMenus};
+
+            if (newMenus[menu] === undefined) {
+                console.log(`This screen does not have a ${menu} menu.`);
+                return newMenus;
+            } else {
+                newMenus[menu] = open;
+            }
+
+            return newMenus;
+        }
 
         function setContentMenu(menu: ContentMenu, open: boolean) {
             const newMenus = setAndGetContentMenus(menu, open)
@@ -112,6 +136,17 @@ export function useMenuController<C extends Partial<Record<ContentMenu, boolean>
             }
 
             setContentMenus(newMenus);
+        }
+        function setPopoutMenu(menu: ContentMenu, open: boolean) {
+            const newMenus = setAndGetPopoutMenus(menu, open)
+
+            const menusOpen = getMenuController().popoutsOpen();
+            if(menusOpen.length + 1 > maxContent && menusOpen.length > 0 && open) {
+                const menuToClose = menusOpen[menusOpen.length - 1];
+                newMenus[menuToClose] = false;
+            }
+
+            setPopoutMenus(newMenus);
         }
 
         setMenuController({
@@ -172,9 +207,43 @@ export function useMenuController<C extends Partial<Record<ContentMenu, boolean>
                 return Object.keys(contentMenus)
                     .filter(menu => contentMenus[menu as ContentMenu] !== undefined) as ContentMenu[];
             },
-            maxMenus: maxContent
+            maxMenus: maxContent,
+            closePopout(menu) {
+                setPopoutMenu(menu, false)
+
+                if (GAME_MANAGER.state.stateType === "game" && menu === ContentMenu.ChatMenu){
+                    GAME_MANAGER.state.missedChatMessages = false;
+                }
+                GAME_MANAGER.invokeStateListeners("closeGameMenu");
+            },
+            popoutsOpen(){
+                return Object.entries(popoutMenus)
+                    .filter(([_, open]) => open)
+                    .map(([menu, _]) => menu) as ContentMenu[];
+            },
+            openPopout(menu, callback) {
+                getMenuController().closeMenu(menu);
+                if(
+                    GAME_MANAGER.state.stateType === "game" &&
+                    GAME_MANAGER.state.clientState.type === "spectator" &&
+                    (menu === ContentMenu.WillMenu || menu === ContentMenu.RoleSpecificMenu)
+                ){
+                    return;
+                }
+                setPopoutMenu(menu, true);
+
+                if (GAME_MANAGER.state.stateType === "game" && menu === ContentMenu.ChatMenu){
+                    GAME_MANAGER.state.missedChatMessages = false;
+                }
+
+                if (callback) {
+                    setCallbacks(callbacks => callbacks.concat(callback))
+                }
+
+                GAME_MANAGER.invokeStateListeners("openGameMenu");
+            },
         })
-    }, [contentMenus, getMenuController, maxContent, setMenuController]);
+    }, [contentMenus, popoutMenus, getMenuController, maxContent, setMenuController]);
 
     // Initialize on component load so MenuButtons component doesn't freak out
     initializeMenuController();
@@ -273,11 +342,9 @@ export function GameScreenMenus(): ReactElement {
         [ContentMenu.WikiMenu]: 15,
     }
 
-    return <PanelGroup direction="horizontal" className="content">
-        {menuController
-            .menusOpen()
-            .flatMap((menu, index, menusOpen) => {
-
+    return <>
+        {
+            menuController.popoutsOpen().map((menu)=>{
                 if(
                     GAME_MANAGER.state.stateType === "game" &&
                     GAME_MANAGER.state.clientState.type === "spectator" &&
@@ -285,29 +352,55 @@ export function GameScreenMenus(): ReactElement {
                 ){
                     return null;
                 }
-
                 const MenuElement = MENU_ELEMENTS[menu];
-
-                const out = [<Panel
-                    className="panel"
-                    minSize={minSize}
-                    defaultSize={mobile===false?defaultSizes[menu]:undefined}
-                    key={index.toString()+".panel"}
+                return <Popout
+                    onClose={() => { menuController.closePopout(menu); } }
+                    url={""}
+                    containerId={"tearoff"}
+                    options={{left: '100px', top: '200px'}}
+                    onError={()=>{}}
                 >
-                    <MenuElement />
-                </Panel>];
-
-                if(!mobile && menusOpen.length > index + 1){
-                    out.push(<PanelResizeHandle key={index.toString()+".handle"} className="panel-handle"/>)
-                }
-                return out;
-
+                    <MenuElement/>
+                </Popout>;
             })
+
         }
-        {menuController.menusOpen().length === 0 && <Panel><div className="no-content">
-            {translate("menu.gameScreen.noContent")}
-        </div></Panel>}
-    </PanelGroup>
+        <PanelGroup direction="horizontal" className="content">
+            {menuController
+                .menusOpen()
+                .flatMap((menu, index, menusOpen) => {
+
+                    if(
+                        GAME_MANAGER.state.stateType === "game" &&
+                        GAME_MANAGER.state.clientState.type === "spectator" &&
+                        (menu === ContentMenu.WillMenu || menu === ContentMenu.RoleSpecificMenu)
+                    ){
+                        return null;
+                    }
+
+                    const MenuElement = MENU_ELEMENTS[menu];
+
+                    const out = [<Panel
+                        className="panel"
+                        minSize={minSize}
+                        defaultSize={mobile===false?defaultSizes[menu]:undefined}
+                        key={index.toString()+".panel"}
+                    >
+                        <MenuElement />
+                    </Panel>];
+
+                    if(!mobile && menusOpen.length > index + 1){
+                        out.push(<PanelResizeHandle key={index.toString()+".handle"} className="panel-handle"/>)
+                    }
+                    return out;
+
+                })
+            }
+            {menuController.menusOpen().length === 0 && <Panel><div className="no-content">
+                {translate("menu.gameScreen.noContent")}
+            </div></Panel>}
+        </PanelGroup>
+    </>
 }
 
 export function ContentTab(props: Readonly<{
@@ -328,12 +421,21 @@ export function ContentTab(props: Readonly<{
                 {props.children}
             </StyledText>
         </div>
-
-        {props.close && (!spectator || mobile) && <Button className="close"
-            onClick={()=>menuController.closeMenu(props.close as ContentMenu)}
-        >
-            <Icon size="small">close</Icon>
-        </Button>}
+        <div>
+            {props.close && (!spectator || mobile) && <Button className="close"
+                onClick={()=>menuController.closeMenu(props.close as ContentMenu)}
+            >
+                <Icon size="small">close</Icon>
+            </Button>}
+            {<Button
+                onClick={()=>{
+                    menuController.openPopout(props.close as ContentMenu)
+                }}
+            >
+                <Icon size="small">open_in_new</Icon>
+            </Button>}
+        </div>
+        
         {props.helpMenu && !spectator && <Button className="help"
             onClick={()=>{
                 menuController.openMenu(ContentMenu.WikiMenu, ()=>{

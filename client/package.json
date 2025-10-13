@@ -15,6 +15,7 @@
     "marked": "^5.1.0",
     "react": "^18.2.0",
     "react-dom": "18.2.0",
+    "react-popout": "^4.0.0",
     "react-resizable-panels": "^2.1.6",
     "react-responsive-masonry": "^2.6.0",
     "react-scripts": "^5.0.1",

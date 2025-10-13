@@ -11,6 +11,7 @@ import Select, { dropdownPlacementFunction } from "../Select";
 import { Role, roleJsonData } from "../../game/roleState.d";
 import Icon from "../Icon";
 import { getAllRoles, sortRolesCanonically } from "../../game/roleListState.d";
+import { PopoutContext } from "../popout";
 
 export function ModifiersSelector(props: Readonly<{
     disabled?: boolean,
@@ -43,6 +44,8 @@ function ModifierButton(props: Readonly<{
             setOpen(false);
         }
     }, [props.state]);
+    
+    const myWindow = useContext(PopoutContext)?.window??window;
 
     return <>
         <RawButton
@@ -83,7 +86,7 @@ function ModifierButton(props: Readonly<{
             open={open}
             setOpenOrClosed={setOpen}
             anchorForPositionRef={ref}
-            onRender={dropdownPlacementFunction}
+            onRender={(dropdown, button)=>dropdownPlacementFunction(myWindow,dropdown,button)}
             doNotCloseOnOutsideClick={props.modifiable}
         >
             <ModifierConfigMenu
