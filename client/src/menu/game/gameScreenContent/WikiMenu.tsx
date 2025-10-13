@@ -20,7 +20,7 @@ export default function WikiMenu(): ReactElement {
     )!;
 
     return <div className="wiki-menu wiki-menu-colors">
-        <ContentTab close={ContentMenu.WikiMenu} helpMenu={null}>{translate("menu.wiki.title")}</ContentTab>
+        <ContentTab close={ContentMenu.WikiMenu}>{translate("menu.wiki.title")}</ContentTab>
         
         <div className="wiki-menu-search">
             <Wiki enabledRoles={enabledRoles} enabledModifiers={enabledModifiers}/>

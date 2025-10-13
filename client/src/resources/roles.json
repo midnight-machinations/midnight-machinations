@@ -1287,8 +1287,7 @@
             {"type": "wardenPlayersImprisoned", "players": [5,2,10]},
             {"type": "youAttackedSomeone"},
             {"type": "someoneSurvivedYourAttack"},
-            {"type": "roleBlocked"},
-            {"type": "wardblocked"}
+            {"type": "roleBlocked"}
         ]
     },
     "yer": {

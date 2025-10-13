@@ -62,9 +62,8 @@ export default function WillMenu(): ReactElement {
     return <div className="will-menu will-menu-colors">
         <ContentTab
             close={ContentMenu.WillMenu}
-            helpMenu={"standard/alibi"}
         >
-                {translate("menu.will.title")}
+            {translate("menu.will.title")}
         </ContentTab>
         <section>
             <TextDropdownArea

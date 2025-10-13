@@ -9,9 +9,7 @@ impl Aura{
         match player.role(game) {
             Role::Godfather => !player.night_blocked(midnight_variables),
             Role::Disguiser => !player.night_blocked(midnight_variables),
-            Role::Pyrolisk => {
-                game.day_number() == 1
-            },
+            Role::Pyrolisk => game.day_number() == 1,
             _ => false,
         }
     }
