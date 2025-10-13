@@ -6,6 +6,7 @@ use crate::game::attack_power::{AttackPower, DefensePower};
 use crate::game::event::on_midnight::{MidnightVariables, OnMidnightPriority};
 use crate::game::components::graves::grave::GraveKiller;
 use crate::game::player::PlayerReference;
+use crate::game::abilities_component::ability_id::AbilityID;
 
 use crate::game::role_list::RoleSet;
 use crate::game::visit::{Visit, VisitTag};
@@ -23,7 +24,7 @@ pub(super) const DEFENSE: DefensePower = DefensePower::Armored;
 
 impl RoleStateTrait for Godfather {
     type ClientAbilityState = Godfather;
-    fn on_midnight(self, game: &mut Game, midnight_variables: &mut MidnightVariables, actor_ref: PlayerReference, priority: OnMidnightPriority) {
+    fn on_midnight(self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut MidnightVariables, priority: OnMidnightPriority) {
         Self::night_kill_ability(game, midnight_variables, actor_ref, priority);
 
         if priority != OnMidnightPriority::Deception {return};
@@ -89,7 +90,7 @@ impl Godfather{
         match priority {
             //kill the target
             OnMidnightPriority::Kill => {
-                let actor_visits = actor_ref.untagged_night_visits_cloned(midnight_variables);
+                let actor_visits = actor_ref.role_night_visits_cloned(midnight_variables);
                 let Some(visit) = actor_visits.first() else {return};
                 visit.target.clone().try_night_kill_single_attacker(
                     actor_ref, game, midnight_variables, GraveKiller::RoleSet(RoleSet::Mafia),
@@ -110,6 +111,6 @@ impl Godfather{
         let Some(backup) = backup.first().copied() else {return};
 
         //convert backup to godfather
-        backup.set_role(game, new_role_data);
+        backup.set_new_role(game, new_role_data, true);
     }
 }

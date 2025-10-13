@@ -12,6 +12,7 @@ use crate::game::role_list_generation::criteria::{GenerationCriterion, Generatio
 use crate::game::role_list_generation::PartialOutlineListAssignmentNode;
 use crate::game::settings::Settings;
 use crate::game::visit::Visit;
+use crate::game::abilities_component::ability_id::AbilityID;
 
 use crate::game::Game;
 use super::godfather::Godfather;
@@ -46,7 +47,7 @@ impl RoleStateTrait for Recruiter {
             recruits_remaining: crate::game::role::common_role::standard_charges(game),
         }
     }
-    fn on_midnight(self, game: &mut Game, midnight_variables: &mut MidnightVariables, actor_ref: PlayerReference, priority: OnMidnightPriority) {
+    fn on_midnight(self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut MidnightVariables, priority: OnMidnightPriority) {
 
         let choose_attack = Self::choose_attack(game, actor_ref);
 
@@ -56,12 +57,12 @@ impl RoleStateTrait for Recruiter {
 
         match priority {
             OnMidnightPriority::Kill => {
-                let actor_visits = actor_ref.untagged_night_visits_cloned(midnight_variables);
+                let actor_visits = actor_ref.role_night_visits_cloned(midnight_variables);
                 if let Some(visit) = actor_visits.first() && Recruiter::night_ability(self.clone(), game, midnight_variables, actor_ref, visit.target) {
                     if choose_attack {
-                        actor_ref.set_role_state(game, Recruiter{recruits_remaining: self.recruits_remaining.saturating_add(1)})
+                        actor_ref.edit_role_ability_helper(game, Recruiter{recruits_remaining: self.recruits_remaining.saturating_add(1)})
                     }else{
-                        actor_ref.set_role_state(game, Recruiter{recruits_remaining: self.recruits_remaining.saturating_sub(1)});
+                        actor_ref.edit_role_ability_helper(game, Recruiter{recruits_remaining: self.recruits_remaining.saturating_sub(1)});
                     }
                 }
             },

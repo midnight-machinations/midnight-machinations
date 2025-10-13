@@ -7,6 +7,7 @@ use crate::game::event::on_midnight::{MidnightVariables, OnMidnightPriority};
 use crate::game::components::graves::grave::GraveKiller;
 use crate::game::{attack_power::DefensePower, chat::ChatMessageVariant};
 use crate::game::phase::PhaseType;
+use crate::game::abilities_component::ability_id::AbilityID;
 use crate::game::player::PlayerReference;
 
 use crate::game::visit::Visit;
@@ -73,7 +74,7 @@ pub(super) const DEFENSE: DefensePower = DefensePower::None;
 
 impl RoleStateTrait for Engineer {
     type ClientAbilityState = ClientRoleState;
-    fn on_midnight(self, game: &mut Game, midnight_variables: &mut MidnightVariables, actor_ref: PlayerReference, priority: OnMidnightPriority) {
+    fn on_midnight(self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut MidnightVariables, priority: OnMidnightPriority) {
         match priority {
             OnMidnightPriority::Heal => {
                 //upgrade state
@@ -81,16 +82,16 @@ impl RoleStateTrait for Engineer {
                 if !actor_ref.night_blocked(midnight_variables) {
                     match self.trap {
                         Trap::Dismantled => {
-                            actor_ref.set_role_state(game, Engineer {trap: Trap::Ready});
+                            actor_ref.edit_role_ability_helper(game, Engineer {trap: Trap::Ready});
                         },
                         Trap::Ready => {
-                            if let Some(visit) = actor_ref.untagged_night_visits_cloned(midnight_variables).first(){
-                                actor_ref.set_role_state(game, Engineer {trap: Trap::Set{target: visit.target}});
+                            if let Some(visit) = actor_ref.role_night_visits_cloned(midnight_variables).first(){
+                                actor_ref.edit_role_ability_helper(game, Engineer {trap: Trap::Set{target: visit.target}});
                             }
                         },
                         Trap::Set { .. } => {
                             if let Some(BooleanSelection(true)) = ControllerID::role(actor_ref, Role::Engineer, 1).get_boolean_selection(game){
-                                actor_ref.set_role_state(game, Engineer {trap: Trap::Ready});
+                                actor_ref.edit_role_ability_helper(game, Engineer {trap: Trap::Ready});
                             }
                         }
                     }
@@ -131,7 +132,7 @@ impl RoleStateTrait for Engineer {
                     }
 
                     if should_dismantle {
-                        actor_ref.set_role_state(game, RoleState::Engineer(Engineer {trap: Trap::Dismantled}));
+                        actor_ref.edit_role_ability_helper(game, RoleState::Engineer(Engineer {trap: Trap::Dismantled}));
                     }
                 }
 

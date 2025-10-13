@@ -42,17 +42,7 @@ impl GameConclusion {
     pub fn game_is_over_game(game: &Game)->Option<GameConclusion> {
         Self::game_is_over(
             PlayerReference::all_players(game)
-                .filter_map(|player|
-                    if player.alive(game) {
-                        Some(GameOverCheckPlayer{
-                            role: player.role(game),
-                            insider_groups: InsiderGroupID::all_groups_with_player(game, player),
-                            win_condition: player.win_condition(game).clone()
-                        })
-                    }else{
-                        None
-                    }
-                )
+                .map(|p|GameOverCheckPlayer::from_player(game, p))
                 .collect()
         )
     }
@@ -83,41 +73,48 @@ impl GameConclusion {
     pub fn get_premature_conclusion(game: &Game) -> GameConclusion {
         GameConclusion::game_is_over_game(game).unwrap_or(GameConclusion::Draw)
     }
-    
-
-    ///Town, Mafia, Cult, NK
-    /// Has the ability to consistently kill till the end of the game
-    /// *has the ability to change what the set of living players win conditions are until game over (convert, marionette, kill)*
-    /// A detective and a witch game never ends so this needs to make sure they dont keep the game running
-    /// For simplicity, i will just say only fiends, MK, apostle and zealot keep the game running
-    pub fn keeps_game_running(role: Role)->bool{
-        if
-            RoleSet::Fiends.get_roles().contains(&role) ||
-            RoleSet::MafiaKilling.get_roles().contains(&role) 
-        {
-            true
-        }else{
-            matches!(role, Role::Apostle | Role::Zealot | Role::Krampus | Role::Politician)
-        }
+}
+impl PlayerReference{
+    /// If they can consistently kill then they keep the game running
+    /// Town kills by voting
+    /// Mafia kills with MK or gun
+    /// Cult kills / converts
+    pub fn keeps_game_running(&self, game: &Game) -> bool {
+        GameOverCheckPlayer::from_player(game, *self).keeps_game_running()
     }
 }
 
 #[derive(PartialEq, Eq, Debug)]
 pub struct GameOverCheckPlayer{
+    pub alive: bool,
     pub role: Role,
     pub insider_groups: VecSet<InsiderGroupID>,
     pub win_condition: WinCondition,
 }
 impl GameOverCheckPlayer{
+    fn from_player(game: &Game, player: PlayerReference)->Self{
+        Self{
+            alive: player.alive(game),
+            role: player.role(game),
+            insider_groups: InsiderGroupID::all_groups_with_player(game, player),
+            win_condition: player.win_condition(game).clone()
+        }
+    }
+    /// *has the ability to change what the set of living players win conditions are until game over (convert, marionette, kill)*
     pub fn keeps_game_running(&self)->bool{
-        if self.insider_groups.contains(&InsiderGroupID::Mafia) {return true;}
-        if self.insider_groups.contains(&InsiderGroupID::Cult) {return true;}
-        if self.win_condition.is_loyalist_for(GameConclusion::Town) {return true;}
-        // mafia included because if they're not in the mafia insider group,
-        // they will be went they select a role
-        if matches!(self.role, Role::TrueWildcard | Role::Wildcard |
-             Role::MafiaKillingWildcard | Role::MafiaSupportWildcard
-            ) {return true;} 
-        GameConclusion::keeps_game_running(self.role)
+        if !self.alive {return false;}
+        if self.insider_groups.contains(&InsiderGroupID::Mafia) {return true;}  //will get SK or gun
+        if self.insider_groups.contains(&InsiderGroupID::Cult) {return true;}   //will get converted to apostle, so can kill
+        if self.win_condition.is_loyalist_for(GameConclusion::Town) {return true;}  //"can vote", need this or else theres no other team
+        
+        //Role can kill / convert or can become a role that does
+        if
+            RoleSet::Fiends.get_roles().contains(&self.role) ||
+            RoleSet::MafiaKilling.get_roles().contains(&self.role) 
+        {
+            true
+        } else {
+            matches!(self.role, Role::Apostle | Role::Zealot | Role::Krampus | Role::Politician | Role::TrueWildcard | Role::Wildcard)
+        }
     }
 }

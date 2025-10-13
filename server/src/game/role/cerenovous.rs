@@ -8,6 +8,7 @@ use crate::game::phase::PhaseType;
 use crate::game::role::informant::Informant;
 use crate::game::{attack_power::DefensePower, player::PlayerReference};
 
+use crate::game::abilities_component::ability_id::AbilityID;
 use crate::game::visit::Visit;
 
 use crate::game::Game;
@@ -34,10 +35,10 @@ impl RoleStateTrait for Cerenovous {
             ..Self::default()
         }
     }
-    fn on_midnight(mut self, game: &mut Game, midnight_variables: &mut MidnightVariables, actor_ref: PlayerReference, priority: OnMidnightPriority) {
+    fn on_midnight(mut self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut MidnightVariables, priority: OnMidnightPriority) {
         if priority != OnMidnightPriority::Deception {return}
 
-        let actor_visits = actor_ref.untagged_night_visits_cloned(midnight_variables);
+        let actor_visits = actor_ref.role_night_visits_cloned(midnight_variables);
         if let Some(visit) = actor_visits.first() {
             if self.charges != 0 {
                 let target_ref = visit.target;
@@ -52,7 +53,7 @@ impl RoleStateTrait for Cerenovous {
         }else{
             self.previous = None;
         }
-        actor_ref.set_role_state(game, self);
+        actor_ref.edit_role_ability_helper(game, self);
     }
     fn controller_parameters_map(self, game: &Game, actor_ref: PlayerReference) -> ControllerParametersMap {
         ControllerParametersMap::builder(game)
@@ -89,7 +90,7 @@ impl RoleStateTrait for Cerenovous {
     fn on_phase_start(mut self, game: &mut Game, actor_ref: PlayerReference, phase: crate::game::phase::PhaseType) {
         if matches!(phase, PhaseType::Night) {
             self.currently_brained = None;
-            actor_ref.set_role_state(game, self);
+            actor_ref.edit_role_ability_helper(game, self);
         }
     }
     fn on_whisper(self, game: &mut Game, actor_ref: PlayerReference, event: &OnWhisper, fold: &mut WhisperFold, priority: WhisperPriority) {

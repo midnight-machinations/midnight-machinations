@@ -39,6 +39,7 @@ impl RoleListGenerator {
                 criteria::FILL_ALL_WIN_CONDITIONS,
                 criteria::FILL_ALL_INSIDER_GROUPS,
                 criteria::GAME_DOESNT_END_INSTANTLY,
+                criteria::NO_PLAYERS_INSTANTLY_ASCEND,
             ]
         }
     }

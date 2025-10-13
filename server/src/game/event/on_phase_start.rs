@@ -1,7 +1,7 @@
 use crate::game::{
     abilities_component::Abilities,
     components::{
-        blocked::BlockedComponent, call_witness::CallWitness, detained::Detained, fast_forward::FastForwardComponent, forfeit_vote::ForfeitNominationVote, silenced::Silenced, verdicts_today::VerdictsToday
+        ascend::Ascend, blocked::BlockedComponent, call_witness::CallWitness, detained::Detained, fast_forward::FastForwardComponent, forfeit_vote::ForfeitNominationVote, silenced::Silenced, verdicts_today::VerdictsToday
     },
     controllers::Controllers, event::Event, modifiers::ModifierSettings, phase::PhaseState,
     Game
@@ -33,6 +33,7 @@ impl Event for OnPhaseStart{
         CallWitness::on_phase_start,    //must go after silenced
         Game::on_phase_start,
         FastForwardComponent::on_phase_start,
+        Ascend::on_phase_start,
     ]}
 
     fn initial_fold_value(&self, _game: &Game) -> Self::FoldValue {}

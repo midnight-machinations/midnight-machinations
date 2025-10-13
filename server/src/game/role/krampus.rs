@@ -2,6 +2,7 @@ use std::collections::HashSet;
 
 use serde::{Deserialize, Serialize};
 
+use crate::game::abilities_component::ability_id::AbilityID;
 use crate::game::attack_power::AttackPower;
 use crate::game::chat::ChatMessageVariant;
 use crate::game::components::graves::grave::{Grave, GraveKiller};
@@ -37,8 +38,8 @@ pub(super) const DEFENSE: DefensePower = DefensePower::Armored;
 
 impl RoleStateTrait for Krampus {
     type ClientAbilityState = ();
-    fn on_midnight(self, game: &mut Game, midnight_variables: &mut MidnightVariables, actor_ref: PlayerReference, priority: OnMidnightPriority) {
-        let actor_visits = actor_ref.untagged_night_visits_cloned(midnight_variables);
+    fn on_midnight(self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut MidnightVariables, priority: OnMidnightPriority) {
+        let actor_visits = actor_ref.role_night_visits_cloned(midnight_variables);
 
         match (priority, self.ability) {
             (OnMidnightPriority::Kill, KrampusAbility::Kill) => {
@@ -47,7 +48,7 @@ impl RoleStateTrait for Krampus {
 
                     target_ref.try_night_kill_single_attacker(actor_ref, game, midnight_variables, GraveKiller::Role(Role::Krampus), AttackPower::Basic, true);
 
-                    actor_ref.set_role_state(game, Krampus {
+                    actor_ref.edit_role_ability_helper(game, Krampus {
                         last_used_ability: Some(KrampusAbility::Kill),
                         ..self
                     });
@@ -69,7 +70,7 @@ impl RoleStateTrait for Krampus {
         }
 
         if self.ability == KrampusAbility::DoNothing {
-            actor_ref.set_role_state(game, Krampus {
+            actor_ref.edit_role_ability_helper(game, Krampus {
                 last_used_ability: Some(KrampusAbility::DoNothing),
                 ..self
             });
@@ -97,7 +98,7 @@ impl RoleStateTrait for Krampus {
             }
 
             actor_ref.add_private_chat_message(game, ChatMessageVariant::NextKrampusAbility { ability: new_state.ability });
-            actor_ref.set_role_state(game, new_state);
+            actor_ref.edit_role_ability_helper(game, new_state);
         }
     }
     fn controller_parameters_map(self, game: &Game, actor_ref: PlayerReference) -> ControllerParametersMap {

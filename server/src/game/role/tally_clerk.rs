@@ -9,6 +9,7 @@ use crate::game::role::Role;
 use crate::game::visit::Visit;
 use crate::game::{chat::ChatMessageVariant, components::verdicts_today::VerdictsToday};
 use crate::game::player::PlayerReference;
+use crate::game::abilities_component::ability_id::AbilityID;
 
 use crate::game::Game;
 use crate::vec_set::VecSet;
@@ -25,7 +26,7 @@ pub struct TallyClerk;
 
 impl RoleStateTrait for TallyClerk {
     type ClientAbilityState = TallyClerk;
-    fn on_midnight(self, game: &mut Game, midnight_variables: &mut MidnightVariables, actor_ref: PlayerReference, priority: OnMidnightPriority) {
+    fn on_midnight(self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut MidnightVariables, priority: OnMidnightPriority) {
         if priority != OnMidnightPriority::Investigative {return;}
         let target = 
         if 

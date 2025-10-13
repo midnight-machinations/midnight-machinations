@@ -1,5 +1,6 @@
 use serde::Serialize;
 
+use crate::game::abilities_component::ability_id::AbilityID;
 use crate::game::controllers::AvailableTwoPlayerOptionSelection;
 use crate::game::event::on_midnight::{MidnightVariables, OnMidnightPriority};
 use crate::game::{attack_power::DefensePower, phase::PhaseType};
@@ -28,12 +29,12 @@ pub struct ClientRoleState;
 
 impl RoleStateTrait for Necromancer {
     type ClientAbilityState = ClientRoleState;
-    fn on_midnight(self, game: &mut Game, midnight_variables: &mut MidnightVariables, actor_ref: PlayerReference, priority: OnMidnightPriority) {
+    fn on_midnight(self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut MidnightVariables, priority: OnMidnightPriority) {
         if let Some(currently_used_player) = actor_ref.possess_night_action(game, midnight_variables, priority, self.currently_used_player){
             let mut used_bodies = self.used_bodies;
             used_bodies.push(currently_used_player);
 
-            actor_ref.set_role_state(game, Necromancer{
+            actor_ref.edit_role_ability_helper(game, Necromancer{
                 used_bodies,
                 currently_used_player: Some(currently_used_player)
             })
@@ -66,7 +67,7 @@ impl RoleStateTrait for Necromancer {
     }
     fn on_phase_start(self, game: &mut Game, actor_ref: PlayerReference, phase: PhaseType){
         if phase == PhaseType::Night {
-            actor_ref.set_role_state(game, Necromancer { currently_used_player: None, ..self });
+            actor_ref.edit_role_ability_helper(game, Necromancer { currently_used_player: None, ..self });
         }
     }
     fn default_revealed_groups(self) -> crate::vec_set::VecSet<crate::game::components::insider_group::InsiderGroupID> {

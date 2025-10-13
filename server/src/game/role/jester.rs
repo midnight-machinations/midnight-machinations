@@ -1,6 +1,7 @@
 
 use rand::seq::IndexedRandom;
 use serde::Serialize;
+use crate::game::abilities_component::ability_id::AbilityID;
 
 use crate::game::controllers::AvailablePlayerListSelection;
 use crate::game::attack_power::{AttackPower, DefensePower};
@@ -32,7 +33,7 @@ pub(super) const DEFENSE: DefensePower = DefensePower::None;
 
 impl RoleStateTrait for Jester {
     type ClientAbilityState = ClientRoleState;
-    fn on_midnight(self, game: &mut Game, midnight_variables: &mut MidnightVariables, actor_ref: PlayerReference, priority: OnMidnightPriority) {
+    fn on_midnight(self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut MidnightVariables, priority: OnMidnightPriority) {
         if priority != OnMidnightPriority::TopPriority {return;}
         if actor_ref.alive(game) {return;}
         if !self.executed_yesterday {return}
@@ -85,14 +86,14 @@ impl RoleStateTrait for Jester {
         match game.current_phase() {
             PhaseState::FinalWords { player_on_trial } => {
                 if *player_on_trial == actor_ref {
-                    actor_ref.set_role_state(game, Jester { 
+                    actor_ref.edit_role_ability_helper(game, Jester { 
                         executed_yesterday: true,
                         won: true
                     });
                 }
             }
             PhaseState::Obituary { .. } => {
-                actor_ref.set_role_state(game, Jester { 
+                actor_ref.edit_role_ability_helper(game, Jester { 
                     executed_yesterday: false,
                     ..self
                 });

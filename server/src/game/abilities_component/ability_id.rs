@@ -10,6 +10,9 @@ pub enum AbilityID{
     SyndicateGun
 }
 impl AbilityID{
+    pub fn exists(&self, game: &Game)->bool{
+        game.abilities.abilities.contains_key(self)
+    }
     pub fn get_ability<'a>(&self, game: &'a Game)->Option<&'a Ability>{
         game.abilities.abilities.get(self)
     }

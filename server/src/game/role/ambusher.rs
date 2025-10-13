@@ -2,6 +2,7 @@
 use rand::seq::IndexedRandom;
 use serde::Serialize;
 
+use crate::game::abilities_component::ability_id::AbilityID;
 use crate::game::attack_power::AttackPower;
 use crate::game::attack_power::DefensePower;
 use crate::game::chat::ChatMessageVariant;
@@ -32,52 +33,46 @@ pub(super) const DEFENSE: DefensePower = DefensePower::None;
 
 impl RoleStateTrait for Ambusher {
     type ClientAbilityState = Ambusher;
-    fn on_midnight(self, game: &mut Game, midnight_variables: &mut MidnightVariables, actor_ref: PlayerReference, priority: OnMidnightPriority) {
+    fn on_midnight(self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut MidnightVariables, priority: OnMidnightPriority) {
         if game.day_number() <= 1 {return}
-
-        match priority {
-            OnMidnightPriority::Kill => {
-                let Some(ambush_visit) = Visits::default_visit(game, midnight_variables, actor_ref) else {return};
-
+        if !matches!(priority, OnMidnightPriority::Kill) {return};
+        let Some(ambush_visit) = Visits::default_visit(game, midnight_variables, actor_ref) else {return};
                 
-                if let Some(player_to_attack) = Visits::into_iter(midnight_variables)
-                    .without_visit(ambush_visit)
-                    .with_target(ambush_visit.target)
-                    .with_alive_visitor(game)
-                    .with_direct()
-                    .with_loyalist_visitor(game, GameConclusion::Town)
-                    .map_visitor()
-                    .collect::<Box<[PlayerReference]>>()
-                    .choose(&mut rand::rng())
-                    .copied()
-                    .or_else(||Visits::into_iter(midnight_variables)
-                        .without_visit(ambush_visit)
-                        .with_target(ambush_visit.target)
-                        .with_alive_visitor(game)
-                        .with_direct()
-                        .map_visitor()
-                        .collect::<Box<[PlayerReference]>>()
-                        .choose(&mut rand::rng())
-                        .copied()
-                    )
-                {
-                    player_to_attack.try_night_kill_single_attacker(
-                        actor_ref,
-                        game,
-                        midnight_variables,
-                        GraveKiller::Role(Role::Ambusher),
-                        AttackPower::Basic,
-                        false
-                    );
+        let Some(player_to_attack) = Visits::into_iter(midnight_variables)
+            .without_visit(ambush_visit)
+            .with_target(ambush_visit.target)
+            .with_alive_visitor(game)
+            .with_direct()
+            .with_loyalist_visitor(game, GameConclusion::Town)
+            .map_visitor()
+            .collect::<Box<[PlayerReference]>>()
+            .choose(&mut rand::rng())
+            .copied()
+            .or_else(||Visits::into_iter(midnight_variables)
+                .without_visit(ambush_visit)
+                .with_target(ambush_visit.target)
+                .with_alive_visitor(game)
+                .with_direct()
+                .map_visitor()
+                .collect::<Box<[PlayerReference]>>()
+                .choose(&mut rand::rng())
+                .copied()
+            ) else {return};
 
-                    for visitor in ambush_visit.target.all_direct_night_visitors_cloned(midnight_variables){
-                        if visitor == player_to_attack || visitor == actor_ref {continue;}
-                        visitor.push_night_message(midnight_variables, ChatMessageVariant::AmbusherCaught { ambusher: actor_ref });
-                    }
-                }
-            }
-            _ => {}
+        player_to_attack.try_night_kill_single_attacker(
+            actor_ref,
+            game,
+            midnight_variables,
+            GraveKiller::Role(Role::Ambusher),
+            AttackPower::Basic,
+            false
+        );
+
+        for visitor in ambush_visit.target.all_direct_night_visitors_cloned(midnight_variables){
+            if visitor == player_to_attack || visitor == actor_ref {continue;}
+            visitor.push_night_message(midnight_variables, ChatMessageVariant::AmbusherCaught { ambusher: actor_ref });
         }
+        
     }
     fn controller_parameters_map(self, game: &Game, actor_ref: PlayerReference) -> ControllerParametersMap {
         ControllerParametersMap::builder(game)

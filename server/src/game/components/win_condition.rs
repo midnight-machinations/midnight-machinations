@@ -1,5 +1,5 @@
 use serde::{Deserialize, Serialize};
-use crate::{game::{event::{on_convert::OnConvert, Event}, game_conclusion::GameConclusion, player::PlayerReference, Assignments, Game}, vec_set::{vec_set, VecSet}};
+use crate::{game::{event::{on_convert::OnConvert, Event}, game_conclusion::GameConclusion, player::PlayerReference, role::{chronokaiser::Chronokaiser, RoleState}, Assignments, Game}, vec_set::{vec_set, VecSet}};
 
 use super::player_component::PlayerComponent;
 pub type WinConditionComponent = PlayerComponent::<WinCondition>;
@@ -92,5 +92,27 @@ impl WinCondition{
     
     pub fn new_loyalist(resolution_state: GameConclusion) -> WinCondition {
         WinCondition::GameConclusionReached { win_if_any: vec_set![resolution_state] }
+    }
+
+    pub fn won_with_role_state(game: &Game, player: PlayerReference)->bool{
+        match player.role_state(game) {
+            RoleState::Jester(r) => r.won(),
+            RoleState::Doomsayer(r) => r.won(),
+            RoleState::Mercenary(r) => r.won(),
+            RoleState::Revolutionary(r) => r.won(),
+            RoleState::Chronokaiser(_) => Chronokaiser::won(game, player),
+            RoleState::Martyr(r) => r.won(),
+            _ => false
+        }
+    }
+    
+}
+
+impl PlayerReference{
+    pub fn get_won_game(&self, game: &Game, conclusion: GameConclusion) -> bool {
+        match self.win_condition(game){
+            WinCondition::GameConclusionReached { win_if_any } => win_if_any.contains(&conclusion),
+            WinCondition::RoleStateWon => WinCondition::won_with_role_state(game, *self),
+        }
     }
 }

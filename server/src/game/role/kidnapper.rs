@@ -3,12 +3,12 @@ use crate::game::controllers::{AvailableBooleanSelection, BooleanSelection};
 use crate::game::attack_power::{AttackPower, DefensePower};
 use crate::game::chat::{ChatGroup, ChatMessageVariant, PlayerChatGroupMap};
 use crate::game::components::detained::Detained;
-use crate::game::components::graves::grave::{Grave, GraveKiller};
-use crate::game::components::win_condition::WinCondition;
+use crate::game::components::graves::grave::GraveKiller;
 use crate::game::event::on_midnight::{MidnightVariables, OnMidnightPriority};
 use crate::game::phase::PhaseType;
 use crate::game::player::PlayerReference;
 use crate::game::Game;
+use crate::game::abilities_component::ability_id::AbilityID;
 
 use super::{
     ControllerID,
@@ -38,7 +38,7 @@ pub(super) const DEFENSE: DefensePower = DefensePower::None;
 
 impl RoleStateTrait for Kidnapper {
     type ClientAbilityState = Kidnapper;
-    fn on_midnight(mut self, game: &mut Game, midnight_variables: &mut MidnightVariables, actor_ref: PlayerReference, priority: OnMidnightPriority) {
+    fn on_midnight(mut self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut MidnightVariables, priority: OnMidnightPriority) {
 
 
         match priority {
@@ -57,7 +57,7 @@ impl RoleStateTrait for Kidnapper {
                     );
     
                     self.executions_remaining = self.executions_remaining.saturating_sub(1);
-                    actor_ref.set_role_state(game, self);
+                    actor_ref.edit_role_ability_helper(game, self);
                 }
             },
             _ => {}
@@ -127,7 +127,7 @@ impl RoleStateTrait for Kidnapper {
                 
                 self.jailed_target_ref = Some(target);
                 
-                actor_ref.set_role_state(game, self);
+                actor_ref.edit_role_ability_helper(game, self);
 
                 Detained::add_detain(game, target);
                 actor_ref.add_private_chat_message(game, 
@@ -136,22 +136,9 @@ impl RoleStateTrait for Kidnapper {
             },
             PhaseType::Obituary => {
                 self.jailed_target_ref = None;
-                actor_ref.set_role_state(game, self);
+                actor_ref.edit_role_ability_helper(game, self);
             },
             _ => {}
-        }
-
-        if
-            actor_ref.alive(game) &&
-            PlayerReference::all_players(game)
-                .filter(|p|p.alive(game))
-                .filter(|p|p.keeps_game_running(game))
-                .all(|p|
-                    WinCondition::are_friends(p.win_condition(game), actor_ref.win_condition(game))
-                )
-
-        {
-            actor_ref.die_and_add_grave(game, Grave::from_player_leave_town(game, actor_ref));
         }
     }
 }

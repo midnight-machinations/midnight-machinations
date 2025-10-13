@@ -17,6 +17,7 @@ use crate::game::components::tags::TagSetID;
 use crate::game::components::tags::Tags;
 use crate::game::player::PlayerReference;
 use crate::game::visit::Visit;
+use crate::game::abilities_component::ability_id::AbilityID;
 
 use crate::game::Game;
 use super::ControllerID;
@@ -53,10 +54,10 @@ impl RoleStateTrait for Mortician {
             blocked: false
         }
     }
-    fn on_midnight(self, game: &mut Game, midnight_variables: &mut MidnightVariables, actor_ref: PlayerReference, priority: OnMidnightPriority) {
+    fn on_midnight(self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut MidnightVariables, priority: OnMidnightPriority) {
         match priority {
             OnMidnightPriority::Deception=>{
-                let actor_visits = actor_ref.untagged_night_visits_cloned(midnight_variables);
+                let actor_visits = actor_ref.role_night_visits_cloned(midnight_variables);
                 let Some(visit) = actor_visits.first() else{return};
 
                 Tags::add_tag(game, TagSetID::MorticianTag(actor_ref), visit.target);
@@ -106,7 +107,7 @@ impl RoleStateTrait for Mortician {
 
             grave_ref.deref_mut(game).information = GraveInformation::Obscured;
             
-            actor_ref.set_role_state(game, self);
+            actor_ref.edit_role_ability_helper(game, self);
         }
     }
     fn default_revealed_groups(self) -> crate::vec_set::VecSet<crate::game::components::insider_group::InsiderGroupID> {

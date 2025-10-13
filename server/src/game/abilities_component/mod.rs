@@ -7,7 +7,7 @@ use crate::{
     game::{
         abilities::{pitchfork::PitchforkAbility, role_abilities::RoleAbility, syndicate_gun::SyndicateGun}, abilities_component::{
             ability::Ability, ability_id::AbilityID
-        }, event::{on_ability_creation::OnAbilityCreation, on_ability_deletion::OnAbilityDeletion, Event}, Assignments, Game
+        }, event::{on_ability_creation::OnAbilityCreation, on_ability_deletion::OnAbilityDeletion, on_ability_edit::OnAbilityEdit, Event}, Assignments, Game
     },
     vec_map::{vec_map, VecMap}
 };
@@ -23,7 +23,7 @@ impl Abilities{
         );
         for (player, o) in assignments.iter(){
             let id = AbilityID::Role { role: o.role, player: *player };
-            abilities.insert(id.clone(), Ability::RoleAbility(RoleAbility(*player, o.role.default_state())));
+            abilities.insert(id.clone(), Ability::Role(RoleAbility(o.role.default_state())));
         }
         abilities.sort();
         Self{abilities}
@@ -55,13 +55,15 @@ impl Abilities{
         }
     }
     pub fn edit_ability(game: &mut Game, id: &AbilityID, new: impl Into<Ability>){
-        game.abilities.abilities.insert(id.clone(), new.into());
+        let ability = new.into();
+        game.abilities.abilities.insert(id.clone(), ability.clone());
+        OnAbilityEdit::new(id.clone(), Some(ability)).invoke(game);
     }
 }
 impl AbilityID{
     fn new_state(&self, game: &Game)->Ability{
         match self {
-            AbilityID::Role { role, player } => {RoleAbility(*player, role.new_state(game)).into()},
+            AbilityID::Role { role, .. } => {RoleAbility(role.new_state(game)).into()},
             AbilityID::Pitchfork => {PitchforkAbility::new_state(game).into()},
             AbilityID::SyndicateGun => {SyndicateGun::default().into()},
         }

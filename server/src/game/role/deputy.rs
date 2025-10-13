@@ -61,10 +61,10 @@ impl RoleStateTrait for Deputy {
         
         if killed && shot.win_condition(game).is_loyalist_for(GameConclusion::Town) {
             game.add_message_to_chat_group(ChatGroup::All, ChatMessageVariant::DeputyKilled{shot: *shot});
-            actor_ref.die_and_add_grave(game, Grave::from_player_leave_town(game, actor_ref));
+            actor_ref.die_and_add_grave(game, Grave::from_player_suicide(game, actor_ref));
         }
 
-        actor_ref.set_role_state(game, Deputy{bullets_remaining:self.bullets_remaining.saturating_sub(1)});
+        actor_ref.edit_role_ability_helper(game, Deputy{bullets_remaining:self.bullets_remaining.saturating_sub(1)});
     }
     fn controller_parameters_map(self, game: &Game, actor_ref: PlayerReference) -> ControllerParametersMap {
         ControllerParametersMap::builder(game)

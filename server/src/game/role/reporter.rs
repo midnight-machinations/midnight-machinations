@@ -7,6 +7,7 @@ use crate::game::components::silenced::Silenced;
 use crate::game::event::on_midnight::{MidnightVariables, OnMidnightPriority};
 use crate::game::phase::PhaseType;
 use crate::game::player::PlayerReference;
+use crate::game::abilities_component::ability_id::AbilityID;
 
 
 use crate::game::Game;
@@ -27,7 +28,7 @@ pub(super) const DEFENSE: DefensePower = DefensePower::None;
 
 impl RoleStateTrait for Reporter {
     type ClientAbilityState = Reporter;
-    fn on_midnight(self, game: &mut Game, midnight_variables: &mut MidnightVariables, actor_ref: PlayerReference, priority: OnMidnightPriority) {
+    fn on_midnight(self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut MidnightVariables, priority: OnMidnightPriority) {
         if 
             priority == OnMidnightPriority::Investigative &&
             Self::get_public(game, actor_ref) && 
@@ -109,7 +110,7 @@ impl RoleStateTrait for Reporter {
                 
                 self.interviewed_target = Some(target);
                 
-                actor_ref.set_role_state(game, self);
+                actor_ref.edit_role_ability_helper(game, self);
 
                 InsiderGroupID::send_message_in_available_insider_chat_or_private(
                     game,
@@ -120,7 +121,7 @@ impl RoleStateTrait for Reporter {
             },
             PhaseType::Obituary => {
                 self.interviewed_target = None;
-                actor_ref.set_role_state(game, self);
+                actor_ref.edit_role_ability_helper(game, self);
             },
             _ => {}
         }

@@ -21,6 +21,7 @@ pub(super) mod on_add_insider;
 pub(super) mod on_remove_insider;
 pub(super) mod on_controller_changed;
 pub(super) mod on_ability_creation;
+pub(super) mod on_ability_edit;
 
 pub trait EventPriority: Sized + Copy {
     fn values() -> Vec<Self>;

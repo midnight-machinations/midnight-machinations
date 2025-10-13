@@ -1,6 +1,7 @@
 use rand::seq::IndexedRandom;
 use serde::Serialize;
 
+use crate::game::abilities_component::ability_id::AbilityID;
 use crate::game::components::night_visits::Visits;
 use crate::game::controllers::ControllerParametersMap;
 use crate::game::components::fragile_vest::FragileVests;
@@ -41,7 +42,7 @@ pub(super) const DEFENSE: DefensePower = DefensePower::None;
 
 impl RoleStateTrait for Armorsmith {
     type ClientAbilityState = ClientRoleState;
-    fn on_midnight(mut self, game: &mut Game, midnight_variables: &mut MidnightVariables, actor_ref: PlayerReference, priority: OnMidnightPriority) {
+    fn on_midnight(mut self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut MidnightVariables, priority: OnMidnightPriority) {
         if priority != OnMidnightPriority::Heal {return;}
         let Some(target) = Visits::default_target(game, midnight_variables, actor_ref) else {return};
         if self.open_shops_remaining == 0 {return}
@@ -72,7 +73,7 @@ impl RoleStateTrait for Armorsmith {
         }
         
 
-        actor_ref.set_role_state(game, self);
+        actor_ref.edit_role_ability_helper(game, self);
     }
     fn controller_parameters_map(self, game: &Game, actor_ref: PlayerReference) -> ControllerParametersMap {
         ControllerParametersMap::builder(game)
@@ -91,7 +92,7 @@ impl RoleStateTrait for Armorsmith {
         )
     }
     fn on_phase_start(self, game: &mut Game, actor_ref: PlayerReference, _phase: PhaseType){
-        actor_ref.set_role_state(game, 
+        actor_ref.edit_role_ability_helper(game, 
             Armorsmith{
                 night_open_shop: false,
                 ..self

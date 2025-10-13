@@ -5,6 +5,7 @@ use crate::game::chat::ChatMessageVariant;
 use crate::game::components::graves::grave::GraveKiller;
 use crate::game::components::night_visits::Visits;
 use crate::game::event::on_midnight::{MidnightVariables, OnMidnightPriority};
+use crate::game::abilities_component::ability_id::AbilityID;
 
 use crate::game::components::win_condition::WinCondition;
 use crate::game::attack_power::DefensePower;
@@ -43,7 +44,7 @@ impl RoleStateTrait for Yer {
             ..Self::default()
         }
     }
-    fn on_midnight(mut self, game: &mut Game, midnight_variables: &mut MidnightVariables, actor_ref: PlayerReference, priority: OnMidnightPriority) {
+    fn on_midnight(mut self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut MidnightVariables, priority: OnMidnightPriority) {
         if game.day_number() == 1 {return}
 
         let chose_to_convert = ControllerID::role(actor_ref, Role::Yer, 0)
@@ -100,7 +101,7 @@ impl RoleStateTrait for Yer {
                     true
                 );
 
-                actor_ref.set_role_state(game, self);
+                actor_ref.edit_role_ability_helper(game, self);
             }
         }
     }

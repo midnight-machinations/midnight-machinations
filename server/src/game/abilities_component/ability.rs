@@ -2,7 +2,7 @@ use crate::game::abilities::{pitchfork::PitchforkAbility, role_abilities::RoleAb
 
 #[derive(Clone)]
 pub enum Ability{
-    RoleAbility(RoleAbility),
+    Role(RoleAbility),
     Pitchfork(PitchforkAbility),
     SyndicateGun(SyndicateGun),
 }
