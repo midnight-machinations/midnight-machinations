@@ -714,7 +714,10 @@
     "tag.disguise":"🥸",
     "tag.disguise.name":"Disguise",
     "tag.syndicateGun":"🔫",
-    "tag.syndicateGun.name":"Gun",
+    "tag.syndicateGun.name":"Syndicate Gun",
+    
+    "visitTag.syndicateGun.name": "Syndicate Gun",
+    "visitTag.appeared.name": "Appeared",
 
     "dead.icon":"💀",
     "trial.icon": "⚖️",
@@ -750,8 +753,8 @@
     "controllerId.whisperToPlayer.name": "Whisper To Player",
     "controllerId.sendWhisper.name": "Send Whisper",
     "controllerId.forfeitNominationVote.name": "Forfeit Nomination Vote",
-    "controllerId.syndicateGunItemShoot.name": "Shoot Gun",
-    "controllerId.syndicateGunItemGive.name": "Give Gun",
+    "controllerId.syndicateGunShoot.name": "Shoot Gun",
+    "controllerId.syndicateGunGive.name": "Give Gun",
     "controllerId.syndicateChooseBackup.name": "Choose Backup",
     "controllerId.syndicateBackupAttack.name": "Backup Attack",
     "controllerId.forwardMessage.name": "Forward Message",
@@ -849,7 +852,7 @@
     "randomPlayerNames": "Random Player Names",
     "customRoleLimits": "Custom Role Limits",
 
-    "syndicateGunItem": "Syndicate Gun",
+    "syndicateGun": "Syndicate Gun",
     "nightMessages": "Night Messages",
     
     "simplify":"Simplify",
@@ -1068,12 +1071,12 @@
 
     "chatMessage.detectiveResult.suspicious":"Your target is enemies with the town.",
     "chatMessage.detectiveResult.innocent":"Your target is friends with the town.",
-    "chatMessage.lookoutResult":"Your target was visited by \\0.",
+    "chatMessage.lookoutResult":"Your target was visited by these players: \\0.",
     "chatMessage.trackerResult":"Your target visited \\0.",
     "chatMessage.seerResult.friends":"Your targets are friends.",
     "chatMessage.seerResult.enemies":"Your targets are enemies.",
     "chatMessage.spyMafiaVisit":"The syndicate visited \\0.",
-    "chatMessage.spyBug":"Your target was visited by these roles: \\0.",
+    "chatMessage.spyBug":"Your target was visited by these abilities: \\0.",
     "chatMessage.psychicGood":"Between your target, and \\0, at least one player is a town loyalist.",
     "chatMessage.psychicEvil":"Between your target, \\0, and \\1, at least one player is not a town loyalist.",
     "chatMessage.psychicFailed":"This vision is impossible.",
@@ -1094,7 +1097,6 @@
     "chatMessage.werewolfTracked":"A werewolf has caught your scent! They are tracking you.",
     "chatMessage.cultSacrificeCount":"The cult has \\0 sacrifices.",
     "chatMessage.fragileVestBreak": "The \\0 fragile vest that \\1 had just broke.",
-    "chatMessage.engineerVisitorsRole": "A \\0 visited the trapped player.",
     "chatMessage.trapState.dismantled": "Your trap is currently dismantled. You can't set it yet.",
     "chatMessage.trapState.ready": "Your trap is currently ready. It can be set and potentially triggered tonight.",
     "chatMessage.trapState.set": "Your trap is currently set. You can dismantle it or wait for it to trigger.",
@@ -1278,7 +1280,7 @@
     "wiki.article.standard.block.title:var.0": "Blocked",
     "wiki.article.standard.block.title:var.1": "Blocking",
     "wiki.article.standard.block.title:var.2": "Blocks",
-    "wiki.article.standard.block.text": "A player who is blocked was either roleblocked, wardblocked, or both. A player isn't blocked if they're immune",
+    "wiki.article.standard.block.text": "A player who is blocked was either roleblocked, wardblocked, or both. A player isn't blocked if they're immune.",
     "wiki.article.standard.detain.title": "Detain",
     "wiki.article.standard.detain.title:var.0": "Detains",
     "wiki.article.standard.detain.title:var.1": "Detained",
@@ -1586,10 +1588,10 @@
     "wiki.article.modifier.customRoleLimits.title": "Custom Role Limits",
     "wiki.article.modifier.customRoleLimits.text": "Custom Role Limits is a modifier that allows the host to set custom limits for each role. For example, the host could allow for infinite Jailors or restrict the number of Detectives to 1.",
     
-    "wiki.article.standard.syndicateGunItem.title":"Syndicate Gun",
-    "wiki.article.standard.syndicateGunItem.text":"Syndicate Gun is an ability a syndicate member gets when theres no syndicate killing role present\n- A syndicate member is given a gun they can use to kill a player with a basic attack at night\n- The gun can't be used on the first night\n- The gun can be passed around between syndicate members, so a different syndicate member can shoot it every night\n- The gun still uses visits, so getting roleblocked still erases that visit, and transports still move it\n- The killer appears to be syndicate on the grave of the player who died to the gun\n- When the game starts, the player with the gun is given an armored fragile vest, and that player is told if it breaks.\n    - The vest does not move when the gun moves, so the player who starts with the vest keeps it.",
-    "syndicateGunItem.description":"Choose a player to shoot with the syndicate gun. Or choose to give it to another syndicate insider.",
-    "syndicateGunItem.give":"Pass gun",
+    "wiki.article.standard.syndicateGun.title":"Syndicate Gun",
+    "wiki.article.standard.syndicateGun.text":"Syndicate Gun is an ability a syndicate member gets when theres no syndicate killing role present\n- A syndicate member is given a gun they can use to kill a player with a basic attack at night\n- The gun can't be used on the first night\n- The gun can be passed around between syndicate members, so a different syndicate member can shoot it every night\n- The gun still uses visits, so getting roleblocked still erases that visit, and transports still move it\n- The killer appears to be syndicate on the grave of the player who died to the gun\n- When the game starts, the player with the gun is given an armored fragile vest, and that player is told if it breaks.\n    - The vest does not move when the gun moves, so the player who starts with the vest keeps it.",
+    "syndicateGun.description":"Choose a player to shoot with the syndicate gun. Or choose to give it to another syndicate insider.",
+    "syndicateGun.give":"Pass gun",
 
 
     "wiki.article.standard.nobody.title":"Nobody",
@@ -1878,7 +1880,7 @@
     "wiki.article.role.deputy.extra":"* You have an armor-piercing attack\n* You can not attack day 1",
 
     "wiki.article.role.godfather.reminder": "Each night*, select a player to attack. Each night, select a player to appeared visit. You have armor and innocent aura.",
-    "wiki.article.role.godfather.guide": "- At night, select a player to attack with a basic attack\n    - You can't attack night 1\n- Select a player to appeared visit",
+    "wiki.article.role.godfather.guide": "- At night, select a player to attack with a basic attack\n    - You can't attack night 1\n- Select a player to appear to visit\n - When you are blocked, you don't have innocent aura for the night.",
     "wiki.article.role.godfather.abilities":"* Visit a player to attack\n- Appeared visit any other player\n - You can appeared visit yourself, or other syndicate insiders",
     "wiki.article.role.godfather.attributes":"",
     "wiki.article.role.godfather.extra":"- Your appeared into visit is wardblock immune, investigate immune, and indirect",
@@ -1993,7 +1995,7 @@
 
     "wiki.article.role.disguiser.reminder": "Your grave shows whatever role you choose when you die. You have innocent aura. At night, give a fellow insider appeared visits.",
     "wiki.article.role.disguiser.lore": "The town did not approve of the costumes the disguiser made.",
-    "wiki.article.role.disguiser.guide": "- At night, select a fellow insider to make them appear to visit other players\n - You have your role appear to be what you chose on your grave\n - You have innocent aura\n - When you are roleblocked, until the start of next night, if you die, your grave shows disguiser on it.",
+    "wiki.article.role.disguiser.guide": "- At night, select a fellow insider to make them appear to visit other players\n - You have your role appear to be what you chose on your grave\n - You have innocent aura\n - When you are roleblocked, until the start of next night, if you die, your grave shows disguiser on it, and you don't have innocent aura.",
     "wiki.article.role.disguiser.abilities":"",
     "wiki.article.role.disguiser.attributes":"",
     "wiki.article.role.disguiser.extra":"- Your appeared into visit is wardblock immune, investigate immune, and indirect",

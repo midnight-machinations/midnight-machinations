@@ -3,7 +3,7 @@ use std::{time::Duration, vec};
 
 pub(crate) use kit::{assert_contains, assert_not_contains};
 
-use mafia_server::{game::controllers::{BooleanSelection, ControllerSelection, StringSelection, UnitSelection}, room::RoomState};
+use mafia_server::{game::{controllers::{BooleanSelection, ControllerSelection, StringSelection, UnitSelection}, visit::VisitTag}, room::RoomState};
 pub use mafia_server::{
     vec_set,
     packet::ToServerPacket,
@@ -464,7 +464,7 @@ fn spy_basic_transported() {
 
     game.next_phase();
     
-    assert_contains!(spy.get_messages(), ChatMessageVariant::SpyBug { roles: vec![Role::Blackmailer] });
+    assert_contains!(spy.get_messages(), ChatMessageVariant::SpyBug { visit_tags: vec![VisitTag::Role{role: Role::Blackmailer, id: 0}] });
     assert_contains!(spy.get_messages(), ChatMessageVariant::SpyMafiaVisit { players: vec![bugged.player_ref()] });
 }
 
@@ -2357,11 +2357,7 @@ fn apostle_converting_trapped_player_day_later() {
 
     assert_contains!(
         engineer.get_messages_after_night(4),
-        ChatMessageVariant::EngineerVisitorsRole { role: Role::Apostle }
-    );
-    assert_contains!(
-        engineer.get_messages_after_night(4),
-        ChatMessageVariant::EngineerVisitorsRole { role: Role::Zealot }
+        ChatMessageVariant::SpyBug { visit_tags: vec![VisitTag::Role { role: Role::Apostle, id: 0 }, VisitTag::Role { role: Role::Zealot, id: 0 }] }
     );
     assert_eq!(trapped.role_state().role(), Role::Detective);
 }
@@ -2392,7 +2388,7 @@ fn apostle_converting_trapped_player_same_day(){
     assert_eq!(trapped.role_state().role(), Role::Detective);
     assert_contains!(
         engineer.get_messages_after_night(4),
-        ChatMessageVariant::EngineerVisitorsRole { role: Role::Apostle }
+        ChatMessageVariant::SpyBug { visit_tags: vec![VisitTag::Role { role: Role::Apostle, id: 0 }] }
     );
 }
 
@@ -2413,7 +2409,7 @@ fn engineer_day_later(){
 
     game.next_phase();
 
-    assert_contains!(engineer.get_messages_after_night(3), ChatMessageVariant::EngineerVisitorsRole { role: Role::Mafioso });
+    assert_contains!(engineer.get_messages_after_night(3), ChatMessageVariant::SpyBug { visit_tags: vec![VisitTag::Role { role: Role::Mafioso, id: 0 }] });
     assert!(!maf.alive());
     assert!(trapped.alive());
 }

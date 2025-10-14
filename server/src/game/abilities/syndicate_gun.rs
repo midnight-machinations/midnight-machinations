@@ -18,12 +18,12 @@ pub struct SyndicateGun {
 impl SyndicateGun {
     pub fn on_visit_wardblocked(_game: &mut Game, midnight_variables: &mut MidnightVariables, visit: Visit){
         Visits::retain(midnight_variables, |v|
-            v.tag != VisitTag::SyndicateGunItem || v.visitor != visit.visitor
+            v.tag != VisitTag::SyndicateGun || v.visitor != visit.visitor
         );
     }
     pub fn on_player_roleblocked(_game: &mut Game, midnight_variables: &mut MidnightVariables, player: PlayerReference){
         Visits::retain(midnight_variables, |v|
-            v.tag != VisitTag::SyndicateGunItem || v.visitor != player
+            v.tag != VisitTag::SyndicateGun || v.visitor != player
         );
     }
 
@@ -85,7 +85,7 @@ impl AbilityTrait for SyndicateGun {
                     Visit {
                         visitor: player_with_gun,
                         target: *gun_target,
-                        tag: VisitTag::SyndicateGunItem,
+                        tag: VisitTag::SyndicateGun,
                         attack: true,
                         wardblock_immune: false,
                         transport_immune: false,
@@ -96,7 +96,7 @@ impl AbilityTrait for SyndicateGun {
             }
             OnMidnightPriority::Kill => {
                 for (attacker, target) in Visits::into_iter(midnight_variables)
-                    .with_tag(VisitTag::SyndicateGunItem)
+                    .with_tag(VisitTag::SyndicateGun)
                     .map(|visit| (visit.visitor, visit.target))
                 {
                     target.try_night_kill_single_attacker(
@@ -121,7 +121,7 @@ impl AbilityTrait for SyndicateGun {
         }
 
         let Some(PlayerListSelection(target)) = event.input
-            .get_player_list_selection_if_id(ControllerID::SyndicateGunItemGive)
+            .get_player_list_selection_if_id(ControllerID::SyndicateGunGive)
         else {return};
         let Some(target) = target.first() else {return};
 

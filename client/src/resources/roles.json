@@ -128,9 +128,9 @@
         "canWriteDeathNote": false,
         "canBeConvertedTo": [],
         "chatMessages":[
-            {"type": "spyBug", "roles": []},
-            {"type": "spyBug", "roles": ["framer"]},
-            {"type": "spyBug", "roles": ["informant", "hypnotist"]},
+            {"type": "spyBug", "visitTags": []},
+            {"type": "spyBug", "visitTags": [{"type":"role", "role":"framer", "id":0}]},
+            {"type": "spyBug", "visitTags": [{"type":"role", "role":"hypnotist", "id":0},{"type":"syndicateGun"}]},
             {"type": "spyMafiaVisit", "players": [16,17,18,16]},
             {"type": "spyMafiaVisit", "players": []}
         ]
@@ -246,7 +246,9 @@
             {"type": "trapStateEndOfNight", "state":{"type":"dismantled"}},
             {"type": "trapStateEndOfNight", "state":{"type":"ready"}},
             {"type": "trapStateEndOfNight", "state":{"type":"set"}},
-            {"type": "engineerVisitorsRole", "role": "framer"},
+            {"type": "spyBug", "visitTags": []},
+            {"type": "spyBug", "visitTags": [{"type":"syndicateGun"}]},
+            {"type": "spyBug", "visitTags": [{"type":"role", "role":"gossip", "id":0},{"type":"role", "role":"tracker", "id":0}]},
             {"type": "youAttackedSomeone"},
             {"type": "youGuardedSomeone"},
             {"type": "youWereGuarded"},

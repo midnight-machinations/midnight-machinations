@@ -1,10 +1,10 @@
 use serde::Serialize;
 
 use crate::{game::{
-    controllers::*, attack_power::DefensePower, components::{graves::grave::Grave, synopsis::Synopsis, tags::Tag, win_condition::WinCondition}, phase::PhaseState, player::PlayerReference, role::{
+    attack_power::DefensePower, components::{graves::grave::Grave, synopsis::Synopsis, tags::Tag, win_condition::WinCondition}, controllers::*, phase::PhaseState, player::PlayerReference, role::{
         auditor::AuditorResult, engineer::TrapState, kira::KiraResult, krampus::KrampusAbility,
         santa_claus::SantaListKind, Role
-    }, role_outline_reference::OutlineIndex, verdict::Verdict
+    }, role_outline_reference::OutlineIndex, verdict::Verdict, visit::VisitTag
 }, vec_set::VecSet};
 
 
@@ -168,7 +168,8 @@ pub enum ChatMessageVariant {
     TrackerResult{players: Vec<PlayerReference>},
     SeerResult{enemies: bool},
     SpyMafiaVisit{players: Vec<PlayerReference>},
-    SpyBug{roles: Vec<Role>},
+    #[serde(rename_all = "camelCase")]
+    SpyBug{visit_tags: Vec<VisitTag>},
     PsychicGood{player: PlayerReference},
     PsychicEvil{first: PlayerReference, second: PlayerReference},
     PsychicFailed,
@@ -180,7 +181,6 @@ pub enum ChatMessageVariant {
     #[serde(rename_all = "camelCase")]
     TallyClerkResult{evil_count: u8},
 
-    EngineerVisitorsRole{role: Role},
     TrapState{state: TrapState},
     TrapStateEndOfNight{state: TrapState},
     

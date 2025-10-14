@@ -100,6 +100,7 @@ pub trait NightVisitsIterator: Sized {
 
     fn map_visitor(self) -> impl Iterator<Item = PlayerReference>;
     fn map_target(self) -> impl Iterator<Item = PlayerReference>;
+    fn map_tag(self) -> impl Iterator<Item = VisitTag>;
 
     fn default_visit(self, game: &Game, actor: PlayerReference) -> Option<Self::Item>;
     fn default_target(self, game: &Game, actor: PlayerReference) -> Option<PlayerReference>;
@@ -145,6 +146,9 @@ where
 
     fn map_visitor(self) -> impl Iterator<Item = PlayerReference>{
         self.map(|v|v.borrow().visitor)
+    }
+    fn map_tag(self) -> impl Iterator<Item = VisitTag> {
+        self.map(|v|v.borrow().tag)
     }
     fn map_target(self) -> impl Iterator<Item = PlayerReference> {
         self.map(|v|v.borrow().target)

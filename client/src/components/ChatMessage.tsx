@@ -3,7 +3,7 @@ import React, { ReactElement } from "react";
 import GAME_MANAGER, { find, replaceMentions } from "..";
 import StyledText, { KeywordDataMap, PLAYER_SENDER_KEYWORD_DATA } from "./StyledText";
 import "./chatMessage.css"
-import { ChatGroup, Conclusion, DefensePower, InsiderGroup, PhaseState, PlayerIndex, Tag, translateConclusion, translateWinCondition, UnsafeString, Verdict, WinCondition } from "../game/gameState.d";
+import { ChatGroup, Conclusion, DefensePower, InsiderGroup, PhaseState, PlayerIndex, Tag, translateConclusion, translateVisitTag, translateWinCondition, UnsafeString, Verdict, VisitTag, WinCondition } from "../game/gameState.d";
 import { Role, RoleState } from "../game/roleState.d";
 import { Grave } from "../game/graveState";
 import GraveComponent from "./grave";
@@ -408,7 +408,14 @@ function playerListToString(playerList: PlayerIndex[], playerNames: UnsafeString
         return encodeString(playerNames[playerIndex]);
     }).join(", ");
 }
-
+function visitTagListToString(visitTags: VisitTag[]): string {
+    if (visitTags === null || visitTags.length === 0) {
+        return translate("none");
+    }
+    return visitTags.map((vT) => {
+        return translateVisitTag(vT);
+    }).join(", ");
+}
 function roleListToString(roleList: Role[]): string {
     if (roleList === null || roleList.length === 0) {
         return translate("none");
@@ -716,7 +723,7 @@ export function translateChatMessage(
         case "spyMafiaVisit":
             return translate("chatMessage.spyMafiaVisit", playerListToString(message.players, playerNames));
         case "spyBug":
-            return translate("chatMessage.spyBug", roleListToString(message.roles));
+            return translate("chatMessage.spyBug", visitTagListToString(message.visitTags));
         case "trackerResult":
             return translate("chatMessage.trackerResult", playerListToString(message.players, playerNames));
         case "seerResult":
@@ -737,8 +744,6 @@ export function translateChatMessage(
                 message.outlineIndex+1,
                 message.result.map((role)=>translate("role."+role+".name")).join(", ")
             ), playerNames, roleList));
-        case "engineerVisitorsRole":
-            return translate("chatMessage.engineerVisitorsRole", translate("role."+message.role+".name"));
         case "trapState":
             return translate("chatMessage.trapState."+message.state.type);
         case "trapStateEndOfNight":
@@ -1059,7 +1064,7 @@ export type ChatMessageVariant = {
     players: PlayerIndex[]
 } | {
     type: "spyBug", 
-    roles: Role[]
+    visitTags: VisitTag[]
 } | {
     type: "trackerResult",
     players: PlayerIndex[]

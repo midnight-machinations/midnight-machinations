@@ -175,6 +175,24 @@ export type Player = {
     toString(): UnsafeString
 }
 
+export type VisitTag = 
+    {type: "role", role: Role, id: number} |
+    {type: "syndicateGun"} | 
+    {type: "syndicateBackupAttack"} |
+    {type: "appeared"}
+
+export function translateVisitTag(visitTag: VisitTag): string{
+    switch(visitTag.type){
+        case "role":
+            return translate(`role.${visitTag.role}.name`);
+        case "syndicateGun":
+        case "syndicateBackupAttack":
+            return translate("visitTag.syndicateGun.name");
+        case "appeared":
+            return translate("visitTag.appeared.name");
+    }
+}
+
 // Not actually unknown, but this prevents use without sanitization
 export type UnsafeString = string | (unknown & { __brand?: "UnsafeString" });
 
