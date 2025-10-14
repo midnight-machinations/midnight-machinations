@@ -218,8 +218,6 @@ pub enum ChatMessageVariant {
     JesterWon,
     RevolutionaryWon,
     ChronokaiserSpeedUp{percent: u32},
-    DoomsayerWon,
-    DoomsayerFailed,
     MercenaryYouAreAHit,
     MercenaryResult{hit: bool},
     MercenaryHits{roles: VecSet<Role>},

@@ -44,7 +44,6 @@
   - If no information is required, skip this step.
   - If only a small amount of information is required, create a small role-specific menu by editing the render function in `client/src/menu/game/gameScreenContent/AbilityMenu/RoleSpecific.tsx`.
   - If a large amount of information is required, create a large role-specific menu by creating a new file in `client/src/menu/game/gameScreenContent/AbilityMenu/RoleSpecificMenus/`.
-* Add the role to the Doomsayer menu in `client/src/menu/game/gameScreenContent/AbilityMenu/RoleSpecificMenus/LargeDoomsayerMenu.tsx`
 
 ## Creating new Messages
 

@@ -1,7 +1,6 @@
 import { useGameState, usePlayerNames, usePlayerState } from "../../../../components/useHooks";
 import React, { ReactElement } from "react";
 import AuditorMenu from "./RoleSpecificMenus/AuditorMenu";
-import LargeDoomsayerMenu from "./RoleSpecificMenus/LargeDoomsayerMenu";
 import Counter from "../../../../components/Counter";
 import StyledText from "../../../../components/StyledText";
 import translate from "../../../../game/lang";
@@ -67,8 +66,6 @@ function roleSpecificSectionInner(
             return <AuditorMenu roleState={roleState}/>;
         case "hypnotist":
             return <HypnotistMenu roleState={roleState}/>;
-        case "doomsayer":
-            return <LargeDoomsayerMenu/>;
         case "jailor": 
             return <Counter 
                 max={maxChargesCounter} 

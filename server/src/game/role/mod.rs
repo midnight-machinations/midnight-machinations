@@ -157,7 +157,6 @@ macros::roles! {
     Jester : jester,
     Revolutionary : revolutionary,
     Politician : politician,
-    Doomsayer : doomsayer,
     Mercenary : mercenary,
     Wildcard : wild_card,
     TrueWildcard : true_wildcard,
@@ -377,7 +376,7 @@ impl Role{
             | Role::Bouncer
             | Role::Veteran | Role::Medium
             | Role::Transporter | Role::Retributionist
-            | Role::Witch | Role::Doomsayer | Role::Scarecrow | Role::Warper | Role::Porter
+            | Role::Witch | Role::Scarecrow | Role::Warper | Role::Porter
             | Role::Necromancer 
         )
     }

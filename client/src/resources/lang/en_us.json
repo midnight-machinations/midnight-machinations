@@ -470,9 +470,6 @@
 
     "role.revolutionary.name": "Revolutionary",
     "role.revolutionary.name:var.0": "Revolutionaries",
-    
-    "role.doomsayer.name": "Doomsayer",
-    "role.doomsayer.name:var.0": "Doomsayers",
 
     "role.mercenary.name": "Mercenary",
     "role.mercenary.name:var.0": "Mercenaries",
@@ -1127,8 +1124,6 @@
     "chatMessage.nextKrampusAbility.doNothing": "Tonight you will investigate someone.",
     "chatMessage.santaAddedPlayerToNaughtyList": "Santa added \\0 to the naughty list.",
     "chatMessage.phaseFastForwarded": "The phase has been fast forwarded.",
-    "chatMessage.doomsayerFailed": "At least one of your guesses was incorrect or invalid.",
-    "chatMessage.doomsayerWon": "Your guesses were correct. You win!",
     "chatMessage.mercenaryHits": "Your hits are: \\0.",
     "chatMessage.mercenaryResult.hit": "Your target is a hit.",
     "chatMessage.mercenaryResult.notHit": "Your target is not a hit.",
@@ -1152,7 +1147,7 @@
     "wiki.category.mafia": "Syndicate",
     "wiki.category.mafia.text": "These are the roles in the Syndicate role set. By default, most people with these roles are syndicate loyalists, syndicate insiders, and are part of the Syndicate hierarchy.",
     "wiki.category.neutral": "Neutral",
-    "wiki.category.neutral.text": "Neutrals are not all on the same team. Each neutral role has special win conditions. Most of them are against both the town and the syndicate. Some neutral roles can win before the game ends like the Jester, Revolutionary, and Doomsayer.\nThese are the roles in the Neutral role set. By default, most people with these roles are not insiders and don't win based on the game's conclusion. For example, the Jester wins when it dies.",
+    "wiki.category.neutral.text": "Neutrals are not all on the same team. Each neutral role has special win conditions. Most of them are against both the town and the syndicate. Some neutral roles can win before the game ends like the Jester, Revolutionary, and Mercenary.\nThese are the roles in the Neutral role set. By default, most people with these roles are not insiders and don't win based on the game's conclusion. For example, the Jester wins when it dies.",
     "wiki.category.minions": "Minion",
     "wiki.category.minions.text": "Minions is a Role Set that contains roles which win only if town loses. They are not loyal to any conclusion. They leave the game if all their enemies are dead. They aren't insiders to any group, so they don't communicate at night.\n\nThese are the roles in the Minion role set. By default, most people with these roles win when town loses, and are not insiders. If the only players left alive are friends with a minion player, that player leaves town and wins.",
     "wiki.category.cult": "Cult",
@@ -1612,7 +1607,7 @@
     "wiki.article.standard.claimswap.title:var.0":"Claimswap",
     "wiki.article.standard.claimswap.title:var.2":"Claim swapped",
     "wiki.article.standard.claimswap.title:var.3":"Claim swapping",
-    "wiki.article.standard.claimswap.text":"When 2 players do a claim swap, they are both claiming each others roles. John Proctor is claiming engineer even though Deodat Lawson is engineer, and Deodat Lawson is claiming detective even thought John Proctor is detective. This is in order to hide information from evil players while still giving information to town. A doomsayer or kira can easily kill a lot of townies if they know the exact roles of townies. Claim swap might help a veteran kill evil players.",
+    "wiki.article.standard.claimswap.text":"When 2 players do a claim swap, they are both claiming each others roles. John Proctor is claiming engineer even though Deodat Lawson is engineer, and Deodat Lawson is claiming detective even thought John Proctor is detective. This is in order to hide information from evil players while still giving information to town. Kira can easily kill a lot of townies if they know the exact roles of townies. Claim swap might help a veteran kill evil players.",
     "wiki.article.standard.passcode.title":"Passcode",
     "wiki.article.standard.passcode.title:var.0":"Passcodes",
     "wiki.article.standard.passcode.title:var.1":"Passcode",
@@ -2031,12 +2026,6 @@
     "wiki.article.role.revolutionary.attributes":"* When your execution target is executed, you win\n* After you win, you leave town at the start of final words\n* You are armored",
     "wiki.article.role.revolutionary.extra":"* If your target dies by something other than execution, you convert to a jester immediately, even while dead\n* If there are no valid targets in the game when you become the Revolutionary, you convert to a Jester",
 
-    "wiki.article.role.doomsayer.reminder": "Guess the role of three different players correctly to win. When you win you attack the players you guessed.",
-    "wiki.article.role.doomsayer.guide": "- Guess the role of three different players correctly to win\n- If you get all your guesses correct and win, you attack all three players, and then leave town\n- You can't guess town investigative roles\n- If a player has a non town role, you don't need to guess their exact role, just that they are non town\n\n In order to counter a doomsayer, players often claimswap",
-    "wiki.article.role.doomsayer.abilities":"* Use the Doomsayer menu to guess the role of three different living players in one night, attacking them and winning",
-    "wiki.article.role.doomsayer.attributes":"* When you win, you leave town at the start of the next obituary\n* You have to guess the exact role of townies, but you only need to guess the faction of all other roles\n* You can't try to guess town investigative roles\n* When there are not enough players left for you to guess, you convert to a jester\n* You have a protection-piercing attack",
-    "wiki.article.role.doomsayer.extra":"* Your three guesses must be three different players\n* If the players you guessed correctly don't die, you still win\n* You do not visit when you attack\n* You can't try to guess a martyr\n* If you are blocked, your ability does nothing",
-    
     "wiki.article.role.mercenary.reminder": "You are told a hit list of roles, if at least one player with each of those roles is dead, you win.",
     "wiki.article.role.mercenary.lore":"Don't mind the mercenary doing what they are paid for.",
     "wiki.article.role.mercenary.guide": "- At the start of the game, you are told a hit list of X different roles (X = Total players ÷ 5 (round up))\n - While you are alive, if one of each of the players with roles on your hit list are dead, you win.\n - Each player on your hit list is told they are on a mercenaries hit list\n    - The role Mercenary can't be on your hit list\n    - For each role on your hit list, there is at least one player with that role\n    - If there are not enough roles available to fill your hit list, your hit list is smaller, filling with as many roles as possible up to X\n- Choose between Investigate or Attack\n    - Investigate: Choose a player to visit and learn if they have a role on your hit list\n    - Attack: Choose a player to visit and attack with a basic attack\n        - You can't choose to attack night 1\n        - You can only attack up to X times (X = Total players ÷ 5 (round up)), if you are roleblocked it doesn't use an ability charge",

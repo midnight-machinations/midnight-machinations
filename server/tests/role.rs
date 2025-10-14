@@ -32,7 +32,7 @@ pub use mafia_server::{
             PhaseState, 
             PhaseType::{self, *}
         },
-        role::{ambusher::Ambusher, apostle::Apostle, armorsmith::Armorsmith, arsonist::Arsonist, auditor::{Auditor, AuditorResult}, blackmailer::Blackmailer, bodyguard::Bodyguard, bouncer::Bouncer, cop::Cop, counterfeiter::Counterfeiter, deputy::Deputy, detective::Detective, doctor::Doctor, doomsayer::{Doomsayer, DoomsayerGuess}, drunk::Drunk, engineer::{Engineer, Trap}, escort::Escort, fiends_wildcard::FiendsWildcard, framer::Framer, godfather::Godfather, gossip::Gossip, hypnotist::Hypnotist, impostor::Impostor, informant::Informant, jailor::Jailor, jester::Jester, krampus::Krampus, lookout::Lookout, mafia_support_wildcard::MafiaSupportWildcard, mafioso::Mafioso, marksman::Marksman, martyr::Martyr, mayor::Mayor, medium::Medium, mortician::Mortician, necromancer::Necromancer, ojo::Ojo, philosopher::Philosopher, politician::Politician, polymath::Polymath, psychic::Psychic, puppeteer::Puppeteer, pyrolisk::Pyrolisk, rabblerouser::Rabblerouser, recruiter::Recruiter, retributionist::Retributionist, revolutionary::Revolutionary, santa_claus::SantaClaus, scarecrow::Scarecrow, snoop::Snoop, spiral::Spiral, tally_clerk::TallyClerk, tracker::Tracker, transporter::Transporter, veteran::Veteran, vigilante::Vigilante, villager::Villager, warden::Warden, warper::Warper, werewolf::Werewolf, wild_card::Wildcard, witch::Witch, yer::Yer, zealot::Zealot, Role, RoleState},
+        role::{ambusher::Ambusher, apostle::Apostle, armorsmith::Armorsmith, arsonist::Arsonist, auditor::{Auditor, AuditorResult}, blackmailer::Blackmailer, bodyguard::Bodyguard, bouncer::Bouncer, cop::Cop, counterfeiter::Counterfeiter, deputy::Deputy, detective::Detective, doctor::Doctor, drunk::Drunk, engineer::{Engineer, Trap}, escort::Escort, fiends_wildcard::FiendsWildcard, framer::Framer, godfather::Godfather, gossip::Gossip, hypnotist::Hypnotist, impostor::Impostor, informant::Informant, jailor::Jailor, jester::Jester, krampus::Krampus, lookout::Lookout, mafia_support_wildcard::MafiaSupportWildcard, mafioso::Mafioso, marksman::Marksman, martyr::Martyr, mayor::Mayor, medium::Medium, mortician::Mortician, necromancer::Necromancer, ojo::Ojo, philosopher::Philosopher, politician::Politician, polymath::Polymath, psychic::Psychic, puppeteer::Puppeteer, pyrolisk::Pyrolisk, rabblerouser::Rabblerouser, recruiter::Recruiter, retributionist::Retributionist, revolutionary::Revolutionary, santa_claus::SantaClaus, scarecrow::Scarecrow, snoop::Snoop, spiral::Spiral, tally_clerk::TallyClerk, tracker::Tracker, transporter::Transporter, veteran::Veteran, vigilante::Vigilante, villager::Villager, warden::Warden, warper::Warper, werewolf::Werewolf, wild_card::Wildcard, witch::Witch, yer::Yer, zealot::Zealot, Role, RoleState},
         role_list::{
             RoleList, RoleOutline, RoleOutlineOption, RoleOutlineOptionInsiderGroups, RoleOutlineOptionRoles,
             RoleOutlineOptionWinCondition, RoleSet
@@ -2355,10 +2355,17 @@ fn apostle_converting_trapped_player_day_later() {
 
     game.next_phase();
 
-    assert_contains!(
-        engineer.get_messages_after_night(4),
-        ChatMessageVariant::SpyBug { visit_tags: vec![VisitTag::Role { role: Role::Apostle, id: 0 }, VisitTag::Role { role: Role::Zealot, id: 0 }] }
-    );
+    if
+        !engineer
+            .get_messages_after_night(4)
+            .contains(&ChatMessageVariant::SpyBug { visit_tags: vec![VisitTag::Role { role: Role::Apostle, id: 0 }, VisitTag::Role { role: Role::Zealot, id: 0 }] })
+        &&
+        !engineer
+            .get_messages_after_night(4)
+            .contains(&ChatMessageVariant::SpyBug { visit_tags: vec![VisitTag::Role { role: Role::Zealot, id: 0 }, VisitTag::Role { role: Role::Apostle, id: 0 }] })
+    {
+        panic!("Engineer did not see {:?}", ChatMessageVariant::SpyBug { visit_tags: vec![VisitTag::Role { role: Role::Zealot, id: 0 }, VisitTag::Role { role: Role::Apostle, id: 0 }] });
+    }
     assert_eq!(trapped.role_state().role(), Role::Detective);
 }
 

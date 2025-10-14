@@ -864,19 +864,6 @@
             {"type": "youSurvivedAttack"}
         ]
     },
-    "doomsayer":{
-        "mainRoleSet": "neutral",
-        "roleSets": ["neutral"],
-        "armor": false,
-        "aura": null,
-        "maxCount": 1,
-        "canWriteDeathNote": true,
-        "canBeConvertedTo": ["jester"],
-        "chatMessages":[
-            {"type": "doomsayerWon"},
-            {"type": "doomsayerFailed"}
-        ]
-    },
     "mercenary":{
         "mainRoleSet": "neutral",
         "roleSets": ["neutral"],

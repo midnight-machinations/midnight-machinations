@@ -844,8 +844,6 @@ export function translateChatMessage(
         case "targetIsPossessionImmune":
         case "youSurvivedAttack":
         case "youArePoisoned":
-        case "doomsayerFailed":
-        case "doomsayerWon":
         case "silenced":
         case "brained":
         case "martyrFailed":
@@ -1165,10 +1163,6 @@ export type ChatMessageVariant = {
 } | {
     type: "chronokaiserSpeedUp"
     percent: number
-} | {
-    type: "doomsayerFailed"
-} | {
-    type: "doomsayerWon"
 } | {
     type: "mercenaryHits",
     roles: Role[]
