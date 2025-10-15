@@ -2091,7 +2091,7 @@
     "wiki.article.role.pawn.extra": "",
     
     "wiki.article.role.tailor.reminder": "Each night, choose a player to change their role. You can only change players from town roles to town roles.",
-    "wiki.article.role.tailor.guide": "- At night, choose a player and a town common role.\n    - If that player has a town common role, you change their role to the role you chose.\n    - At the start of obituary, your targets role is revealed to you, even if they did not have a town common role.\n    - If you don't choose a role, you do not visit.",
+    "wiki.article.role.tailor.guide": "- At night, choose a player and a town common role.\n    - If that player has a town common role, you change their role to the role you chose.\n    - At the start of obituary, your targets role is revealed to you.\n    - If you don't choose a role, you do not visit.",
     "wiki.article.role.tailor.abilities": "",
     "wiki.article.role.tailor.attributes": "",
     "wiki.article.role.tailor.extra": "",
