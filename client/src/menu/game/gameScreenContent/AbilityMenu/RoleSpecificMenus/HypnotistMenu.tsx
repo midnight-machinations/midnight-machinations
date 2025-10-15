@@ -146,14 +146,6 @@ export default function HypnotistMenu(props: {roleState: RoleState & {type: "hyp
             <ChatElement message={{
                 variant: {
                     type: "youWerePossessed",
-                    immune: false,
-                },
-                chatGroup:null
-            }}/>
-            <ChatElement message={{
-                variant: {
-                    type: "youWerePossessed",
-                    immune: true,
                 },
                 chatGroup:null
             }}/>

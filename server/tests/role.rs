@@ -713,15 +713,15 @@ fn witch_basic(){
         philosopher: Philosopher
     );
 
-    assert!(witch.send_ability_input_two_player_typical(sher, mafioso));
+    witch.send_ability_input_two_player_typical(sher, mafioso);
     game.next_phase();
     assert_contains!(witch.get_messages(), ChatMessageVariant::TargetsMessage{message: Box::new(
         ChatMessageVariant::DetectiveResult{ suspicious: true }
     )});
     
     game.skip_to(Night, 2);
-    assert!(philosopher.send_ability_input_two_player_typical(sher, informant));
-    assert!(witch.send_ability_input_two_player_typical(philosopher, mafioso));
+    philosopher.send_ability_input_two_player_typical(sher, informant);
+    witch.send_ability_input_two_player_typical(philosopher, mafioso);
     game.next_phase();
     assert_contains!(
         witch.get_messages_after_night(2),

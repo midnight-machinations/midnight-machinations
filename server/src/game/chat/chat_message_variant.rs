@@ -204,8 +204,7 @@ pub enum ChatMessageVariant {
     #[serde(rename_all = "camelCase")]
     AmbusherCaught{ambusher: PlayerReference},
 
-    TargetIsPossessionImmune,
-    YouWerePossessed { immune: bool },
+    YouWerePossessed,
     TargetsMessage{message: Box<ChatMessageVariant>},
     PlayerForwardedMessage{forwarder: PlayerReference, message: Box<ChatMessageVariant>},
     TargetHasRole { role: Role },

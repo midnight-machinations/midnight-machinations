@@ -83,7 +83,6 @@
     "trapStateEndOfNight": "result",
     "playerForwardedMessage": "special",
     "targetsMessage": "result",
-    "targetIsPossessionImmune": "result",
     "youWerePossessed": "result",
     "targetHasRole": "result",
     "targetHasWinCondition": "result",

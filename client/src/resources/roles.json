@@ -520,9 +520,7 @@
             {"type": "targetsMessage", "message": 
                 {"type": "detectiveResult","suspicious":true}
             },
-            {"type": "youWerePossessed", "immune": false},
-            {"type": "youWerePossessed", "immune": true},
-            {"type": "targetIsPossessionImmune"}
+            {"type": "youWerePossessed"}
         ]
     },
     "polymath": {
@@ -651,8 +649,7 @@
             {"type": "youSurvivedAttack"},
             {"type": "youWereGuarded"},
             {"type": "transported"},
-            {"type": "youWerePossessed", "immune": false},
-            {"type": "youWerePossessed", "immune": true},
+            {"type": "youWerePossessed"},
             {"type": "wardblocked"}
         ]
     },
@@ -792,9 +789,7 @@
             {"type": "targetsMessage", "message": 
                 {"type": "detectiveResult","suspicious":true}
             },
-            {"type": "targetIsPossessionImmune"},
-            {"type": "youWerePossessed", "immune": false},
-            {"type": "youWerePossessed", "immune": true}
+            {"type": "youWerePossessed"}
         ]
     },
     "ambusher": {
@@ -984,9 +979,7 @@
                 {"type": "detectiveResult","suspicious":true}
             },
             {"type": "targetHasRole", "role":"detective"},
-            {"type": "targetIsPossessionImmune"},
-            {"type": "youWerePossessed", "immune": false},
-            {"type": "youWerePossessed", "immune": true}
+            {"type": "youWerePossessed"}
         ]
     },
     "scarecrow":{

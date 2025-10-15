@@ -776,7 +776,7 @@ export function translateChatMessage(
         case "mediumSeance":
             return translate("chatMessage.mediumSeance", encodeString(playerNames[message.medium]), encodeString(playerNames[message.player]));
         case "youWerePossessed":
-            return translate("chatMessage.youWerePossessed" + (message.immune ? ".immune" : ""));
+            return translate("chatMessage.youWerePossessed");
         case "targetHasRole":
             return translate("chatMessage.targetHasRole", translate("role."+message.role+".name"));
         case "targetHasWinCondition":
@@ -841,7 +841,6 @@ export function translateChatMessage(
         case "yourConvertFailed":
         case "someoneSurvivedYourAttack":
         case "transported":
-        case "targetIsPossessionImmune":
         case "youSurvivedAttack":
         case "youArePoisoned":
         case "silenced":
@@ -1132,10 +1131,7 @@ export type ChatMessageVariant = {
     type: "ambusherCaught",
     ambusher: PlayerIndex
 } | {
-    type: "targetIsPossessionImmune"
-} | {
-    type: "youWerePossessed",
-    immune: boolean
+    type: "youWerePossessed"
 } | {
     type: "targetHasRole",
     role: Role

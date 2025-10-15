@@ -4,6 +4,7 @@ use crate::game::abilities_component::ability_id::AbilityID;
 use crate::game::components::graves::grave_reference::GraveReference;
 use crate::game::event::on_ability_creation::{OnAbilityCreation, OnAbilityCreationFold, OnAbilityCreationPriority};
 use crate::game::event::on_ability_deletion::{OnAbilityDeletion, OnAbilityDeletionPriority};
+use crate::game::event::on_player_possessed::OnPlayerPossessed;
 use crate::game::event::on_role_switch::OnRoleSwitch;
 use crate::game::role_list_generation::criteria::GenerationCriterion;
 use crate::vec_set::{vec_set, VecSet};
@@ -74,12 +75,15 @@ pub trait RoleStateTrait: Clone + std::fmt::Debug + Default + GetClientAbilitySt
     fn on_any_death(self, _game: &mut Game, _actor_ref: PlayerReference, _dead_player_ref: PlayerReference) {}
     fn on_grave_added(self, _game: &mut Game, _actor_ref: PlayerReference, _grave: GraveReference) {}
     fn on_conceal_role(self, _game: &mut Game, _actor_ref: PlayerReference, _player: PlayerReference, _concealed_player: PlayerReference) {}
+    
     fn on_player_roleblocked(self, _game: &mut Game, midnight_variables: &mut MidnightVariables, actor_ref: PlayerReference, player: PlayerReference, _invisible: bool) {
         common_role::on_player_roleblocked(midnight_variables, actor_ref, player);
     }
     fn on_visit_wardblocked(self, _game: &mut Game, midnight_variables: &mut MidnightVariables, actor_ref: PlayerReference, visit: Visit) {
         common_role::on_visit_wardblocked(midnight_variables, actor_ref, visit);
     }
+    fn on_player_possessed(self, _game: &mut Game, _id: &AbilityID, _event: &OnPlayerPossessed, _fold: &mut MidnightVariables, _priority: ()) {}
+   
     fn on_whisper(self, _game: &mut Game, _actor_ref: PlayerReference, _event: &OnWhisper, _fold: &mut WhisperFold, _priority: WhisperPriority) {}
 
     fn role_list_generation_criteria() -> Vec<GenerationCriterion> {
@@ -268,6 +272,11 @@ mod macros {
                         $(Self::$name(role_struct) => role_struct.on_visit_wardblocked(game, midnight_variables, actor_ref, visit)),*
                     }
                 }
+                pub fn on_player_possessed(self, game: &mut Game, id: &AbilityID, event: &OnPlayerPossessed, fold: &mut MidnightVariables, priority: ()){
+                    match self {
+                        $(Self::$name(role_struct) => role_struct.on_player_possessed(game, id, event, fold, priority)),*
+                    }
+                }
                 pub fn on_midnight(self, game: &mut Game, id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut MidnightVariables, priority: OnMidnightPriority){
                     match self {
                         $(Self::$name(role_struct) => role_struct.on_midnight(game, id, actor_ref, midnight_variables, priority)),*
@@ -369,15 +378,4 @@ mod macros {
         }
     }
     pub(super) use roles;
-}
-impl Role{
-    pub fn possession_immune(&self)->bool{
-        matches!(self, 
-            | Role::Bouncer
-            | Role::Veteran | Role::Medium
-            | Role::Transporter | Role::Retributionist
-            | Role::Witch | Role::Scarecrow | Role::Warper | Role::Porter
-            | Role::Necromancer 
-        )
-    }
 }

@@ -1,6 +1,5 @@
 use crate::game::{
-    components::player_component::PlayerComponent, event::on_phase_start::OnPhaseStart, phase::PhaseType,
-    player::PlayerReference, Game
+    components::{night_visits::Visits, player_component::PlayerComponent}, event::{on_midnight::{MidnightVariables, OnMidnightPriority}, on_phase_start::OnPhaseStart, on_player_roleblocked::OnPlayerRoleblocked, on_visit_wardblocked::OnVisitWardblocked}, phase::PhaseType, player::PlayerReference, role::Role, visit::VisitTag, Game
 };
 
 
@@ -33,5 +32,56 @@ impl BlockedComponent{
 
     pub fn set_blocked(game: &mut Game, player: PlayerReference){
         game.blocked.get_mut(player).blocked = true;
+    }
+}
+
+impl PlayerReference {
+    pub fn roleblock(&self, game: &mut Game, midnight_variables: &mut MidnightVariables, send_messages: bool) {
+        OnPlayerRoleblocked::new(*self, !send_messages).invoke(game, midnight_variables);
+    }
+
+    pub fn ward_night_action(&self, game: &mut Game, midnight_variables: &mut MidnightVariables, priority: OnMidnightPriority) -> Vec<PlayerReference> {
+        match priority {
+            OnMidnightPriority::PreWard => self.pre_ward(game, midnight_variables),
+            OnMidnightPriority::Ward => self.ward(game, midnight_variables),
+            _ => vec![]
+        }
+    }
+
+    fn pre_ward(&self, game: &mut Game, midnight_variables: &mut MidnightVariables) -> Vec<PlayerReference> {
+        let mut out = Vec::new();
+        for visit in Visits::into_iter(midnight_variables) {
+            if visit.wardblock_immune {
+                continue;
+            }
+            if !matches!(visit.tag,
+                VisitTag::Role { role: Role::Transporter, .. } |
+                VisitTag::Role { role: Role::Warper, .. } |
+                VisitTag::Role { role: Role::Porter, .. } |
+                VisitTag::Role { role: Role::Polymath, id: 3 } |
+
+                VisitTag::Role { role: Role::Witch, .. } |
+                VisitTag::Role { role: Role::Retributionist, .. } |
+                VisitTag::Role { role: Role::Necromancer, .. }
+            ) {
+                continue;
+            }
+            if visit.target != *self {continue;}
+            OnVisitWardblocked::new(visit).invoke(game, midnight_variables);
+            out.push(visit.visitor);
+        }
+        out
+    }
+    fn ward(&self, game: &mut Game, midnight_variables: &mut MidnightVariables) -> Vec<PlayerReference> {
+        let mut out = Vec::new();
+        for visit in Visits::into_iter(midnight_variables) {
+            if visit.wardblock_immune {
+                continue;
+            }
+            if visit.target != *self {continue;}
+            OnVisitWardblocked::new(visit).invoke(game, midnight_variables);
+            out.push(visit.visitor);
+        }
+        out
     }
 }

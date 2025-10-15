@@ -81,11 +81,7 @@ impl RoleStateTrait for Hypnotist {
                         target_ref.push_night_message(midnight_variables, ChatMessageVariant::Transported);
                     }
                     if self.you_were_possessed_message {
-                        if target_ref.role(game).possession_immune() {
-                            target_ref.push_night_message(midnight_variables, ChatMessageVariant::YouWerePossessed { immune: true });
-                        } else {
-                            target_ref.push_night_message(midnight_variables, ChatMessageVariant::YouWerePossessed { immune: false });
-                        }
+                        target_ref.push_night_message(midnight_variables, ChatMessageVariant::YouWerePossessed);
                     }
                     if self.you_were_wardblocked_message {
                         target_ref.push_night_message(midnight_variables, ChatMessageVariant::Wardblocked);
