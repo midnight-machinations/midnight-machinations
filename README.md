@@ -9,19 +9,21 @@ cd mafia
 ```
 From here it's recommended to split terminals (If you're using VSCode), or open up a second terminal - one for client and one for server.
 ## Client setup
-Enter the client directory and install the required dependencies using [pnpm](https://pnpm.io/).
+The client uses [Vite](https://vite.dev/) as the build tool and [pnpm](https://pnpm.io/) for package management (pnpm offers better performance and more efficient disk space usage compared to npm).
 
 First, enable pnpm via corepack:
 ```bash
 corepack enable
 ```
 
-Then install dependencies and start the dev server:
+Then enter the client directory, install dependencies, and start the dev server:
 ```bash
 cd client
 pnpm install
-pnpm start
+pnpm dev
 ```
+
+Alternatively, you can use `pnpm start` which is an alias for `pnpm dev`.
 
 To build for production:
 ```bash
