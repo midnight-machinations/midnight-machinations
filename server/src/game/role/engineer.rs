@@ -124,8 +124,8 @@ impl RoleStateTrait for Engineer {
                         Visits::into_iter(midnight_variables)
                             .with_target(target)
                             .with_direct()
-                            .map_visitor()
-                            .any(|p|p!=actor_ref)
+                            .filter(|v|v.tag != VisitTag::Role { role: Role::Engineer, id: 0 } || v.visitor != actor_ref)
+                            .count() > 0
                     )
                 {
                     actor_ref.edit_role_ability_helper(game, RoleState::Engineer(Engineer {trap: Trap::Dismantled}));

@@ -60,7 +60,7 @@ impl Abilities{
         OnAbilityEdit::new(id.clone(), Some(ability)).invoke(game);
     }
 
-    pub fn current_used_ids(game: &Game)->Box<[AbilityID]>{
+    pub fn ids(game: &Game)->Box<[AbilityID]>{
         game.abilities.abilities.iter().map(|(id,_)|id).cloned().collect()
     }
 }

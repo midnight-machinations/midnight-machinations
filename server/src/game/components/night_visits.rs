@@ -79,6 +79,7 @@ pub trait NightVisitsIterator: Sized {
     type Item;
 
     fn with_visitor(self, player: PlayerReference) -> impl Iterator<Item = Self::Item>;
+    fn without_visitor(self, player: PlayerReference) -> impl Iterator<Item = Self::Item>;
     fn with_target(self, player: PlayerReference) -> impl Iterator<Item = Self::Item>;
     fn without_visit(self, visit: Visit) -> impl Iterator<Item = Self::Item>;
     fn with_alive_visitor(self, game: &Game) -> impl Iterator<Item = Self::Item>;
@@ -88,6 +89,7 @@ pub trait NightVisitsIterator: Sized {
     fn with_investigatable(self) -> impl Iterator<Item = Self::Item>;
     fn with_direct(self) -> impl Iterator<Item = Self::Item>;
     fn with_tag(self, visit_tag: VisitTag) -> impl Iterator<Item = Self::Item>;
+    fn without_tag(self, visit_tag: VisitTag) -> impl Iterator<Item = Self::Item>;
 
     fn map_visitor(self) -> impl Iterator<Item = PlayerReference>;
     fn map_target(self) -> impl Iterator<Item = PlayerReference>;
@@ -108,6 +110,9 @@ where
     type Item = T::Item;
     fn with_visitor(self, player: PlayerReference) -> impl Iterator<Item = Self::Item>{
         self.filter(move |v|v.borrow().visitor == player)
+    }
+    fn without_visitor(self, player: PlayerReference) -> impl Iterator<Item = Self::Item>{
+        self.filter(move |v|v.borrow().visitor != player)
     }
     fn with_target(self, player: PlayerReference) -> impl Iterator<Item = Self::Item>{
         self.filter(move |v|v.borrow().target == player)
@@ -135,6 +140,9 @@ where
     }
     fn with_tag(self, visit_tag: VisitTag) -> impl Iterator<Item = Self::Item>{
         self.filter(move |v|v.borrow().tag == visit_tag)
+    }
+    fn without_tag(self, visit_tag: VisitTag) -> impl Iterator<Item = Self::Item>{
+        self.filter(move |v|v.borrow().tag != visit_tag)
     }
 
     fn map_visitor(self) -> impl Iterator<Item = PlayerReference>{
