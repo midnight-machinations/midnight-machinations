@@ -59,6 +59,10 @@ impl Abilities{
         game.abilities.abilities.insert(id.clone(), ability.clone());
         OnAbilityEdit::new(id.clone(), Some(ability)).invoke(game);
     }
+
+    pub fn ids(game: &Game)->Box<[AbilityID]>{
+        game.abilities.abilities.iter().map(|(id,_)|id).cloned().collect()
+    }
 }
 impl AbilityID{
     fn new_state(&self, game: &Game)->Ability{

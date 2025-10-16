@@ -34,7 +34,7 @@ impl RoleStateTrait for Werewolf {
     fn on_midnight(self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut MidnightVariables, priority: OnMidnightPriority) {
         match priority {
             OnMidnightPriority::Deception => {
-                let Some(target) = Visits::default_target(game, midnight_variables, actor_ref) else {return};
+                let Some(target) = Visits::default_target(midnight_variables, actor_ref, Role::Werewolf) else {return};
 
                 let enraged = 
                     Tags::tagged(game, TagSetID::WerewolfTracked(actor_ref))
@@ -52,13 +52,13 @@ impl RoleStateTrait for Werewolf {
                     .is_empty()
                 {
                     Visits::iter_mut(midnight_variables)
-                        .default_visit(game, actor_ref)
+                        .default_visit(actor_ref, Role::Werewolf)
                         .into_iter()
                         .for_each(|v|v.attack = true);
                 }
             }
             OnMidnightPriority::Kill => {
-                let Some(my_visit) = Visits::default_visit(game, midnight_variables, actor_ref) else {return};
+                let Some(my_visit) = Visits::default_visit(midnight_variables, actor_ref, Role::Werewolf) else {return};
 
                 //If player is untracked, track them
                 if !Tags::has_tag(game, TagSetID::WerewolfTracked(actor_ref), my_visit.target) {

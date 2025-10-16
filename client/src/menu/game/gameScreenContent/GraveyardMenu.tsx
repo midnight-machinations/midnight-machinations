@@ -13,7 +13,7 @@ import { ModifierSettingsDisplay } from "../../../components/gameModeSettings/Mo
 
 export default function GraveyardMenu(): ReactElement {
     return <div className="graveyard-menu graveyard-menu-colors">
-        <ContentTab close={ContentMenu.GraveyardMenu} helpMenu={"standard/gameMode"}>{translate("menu.gameMode.title")}</ContentTab>
+        <ContentTab close={ContentMenu.GraveyardMenu}>{translate("menu.gameMode.title")}</ContentTab>
             
         <DetailsSummary
             summary={translate("menu.lobby.roleList")}

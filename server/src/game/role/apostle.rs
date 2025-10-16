@@ -25,7 +25,7 @@ impl RoleStateTrait for Apostle {
     type ClientAbilityState = Apostle;
     fn on_midnight(self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut MidnightVariables, priority: OnMidnightPriority) {
         if !matches!(priority, OnMidnightPriority::Convert) {return}
-        let Some(target) = Visits::default_target(game, midnight_variables, actor_ref) else {return};
+        let Some(target) = Visits::default_target(midnight_variables, actor_ref, Role::Apostle) else {return};
         if !Cult::enough_sacrifices(game) {return}
         
         if !AttackPower::Basic.can_pierce(target.night_defense(game, midnight_variables)) {

@@ -351,7 +351,7 @@ export default function messageListener(packet: ToClientPacket){
                 GAME_MANAGER.state.dayNumber = packet.dayNumber;
         
                 if(packet.phase.type === "briefing" && GAME_MANAGER.state.clientState.type === "player"){
-                    const role = GAME_MANAGER.state.clientState.roleState?.type;
+                    const role = GAME_MANAGER.state.clientState.myRole;
                     if(role !== undefined){
                         ANCHOR_CONTROLLER?.setCoverCard(<WikiArticle article={"role/"+role as WikiArticleLink}/>);
                     }
@@ -455,9 +455,14 @@ export default function messageListener(packet: ToClientPacket){
             if(GAME_MANAGER.state.stateType === "game" && GAME_MANAGER.state.clientState.type === "player")
                 GAME_MANAGER.state.clientState.deathNote = packet.deathNote ?? "";
         break;
+        case "yourRole":
+            if(GAME_MANAGER.state.stateType === "game" && GAME_MANAGER.state.clientState.type === "player"){
+                GAME_MANAGER.state.clientState.myRole = packet.role;
+            }
+        break;
         case "yourRoleState":
             if(GAME_MANAGER.state.stateType === "game" && GAME_MANAGER.state.clientState.type === "player"){
-                GAME_MANAGER.state.clientState.roleState = packet.roleState;
+                GAME_MANAGER.state.clientState.roleStates.insert(packet.roleState.type, packet.roleState);
             }
         break;
         case "yourVoteFastForwardPhase":

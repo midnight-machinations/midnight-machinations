@@ -1,4 +1,5 @@
 use serde::{Deserialize, Serialize};
+use crate::game::components::night_visits::{NightVisitsIterator as _, Visits};
 use crate::game::controllers::AvailablePlayerListSelection;
 use crate::game::chat::ChatMessageVariant;
 use crate::game::event::on_midnight::{MidnightVariables, OnMidnightPriority};
@@ -37,10 +38,7 @@ impl RoleStateTrait for SantaClaus {
 
         match self.get_next_santa_ability() {
             SantaListKind::Nice => {
-                let actor_visits = actor_ref.role_night_visits_cloned(midnight_variables).into_iter();
-                let targets = actor_visits.map(|v| v.target);
-
-                for target_ref in targets {
+                for target_ref in Visits::into_iter(midnight_variables).default_targets(actor_ref, Role::SantaClaus) {
                     let WinCondition::GameConclusionReached { mut win_if_any } = target_ref.win_condition(game).clone() else {
                         actor_ref.push_night_message(midnight_variables, ChatMessageVariant::YourConvertFailed);
                         continue
@@ -64,10 +62,7 @@ impl RoleStateTrait for SantaClaus {
                 }
             }
             SantaListKind::Naughty => {
-                let actor_visits = actor_ref.role_night_visits_cloned(midnight_variables).into_iter();
-                let targets = actor_visits.map(|v| v.target);
-
-                for target_ref in targets {
+                for target_ref in Visits::into_iter(midnight_variables).default_targets(actor_ref, Role::SantaClaus) {
                     let WinCondition::GameConclusionReached { mut win_if_any } = target_ref.win_condition(game).clone() else {
                         actor_ref.push_night_message(midnight_variables, ChatMessageVariant::YourConvertFailed);
                         continue

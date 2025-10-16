@@ -1,13 +1,6 @@
 use crate::game::{
     abilities_component::ability_id::AbilityID, controllers::ControllerParametersMap, event::{
-        before_phase_end::BeforePhaseEnd,
-        on_ability_creation::{OnAbilityCreation, OnAbilityCreationFold, OnAbilityCreationPriority},
-        on_ability_deletion::{OnAbilityDeletion, OnAbilityDeletionPriority}, on_add_insider::OnAddInsider, on_any_death::OnAnyDeath,
-        on_conceal_role::OnConcealRole,
-        on_controller_selection_changed::OnControllerSelectionChanged, on_grave_added::OnGraveAdded,
-        on_midnight::{MidnightVariables, OnMidnight, OnMidnightPriority}, on_phase_start::OnPhaseStart, on_remove_insider::OnRemoveInsider,
-        on_role_switch::OnRoleSwitch, on_validated_ability_input_received::OnValidatedControllerInputReceived,
-        on_whisper::{OnWhisper, WhisperFold, WhisperPriority}
+        before_phase_end::BeforePhaseEnd, on_ability_creation::{OnAbilityCreation, OnAbilityCreationFold, OnAbilityCreationPriority}, on_ability_deletion::{OnAbilityDeletion, OnAbilityDeletionPriority}, on_add_insider::OnAddInsider, on_any_death::OnAnyDeath, on_conceal_role::OnConcealRole, on_controller_selection_changed::OnControllerSelectionChanged, on_grave_added::OnGraveAdded, on_midnight::{MidnightVariables, OnMidnight, OnMidnightPriority}, on_phase_start::OnPhaseStart, on_player_possessed::OnPlayerPossessed, on_remove_insider::OnRemoveInsider, on_role_switch::OnRoleSwitch, on_validated_ability_input_received::OnValidatedControllerInputReceived, on_whisper::{OnWhisper, WhisperFold, WhisperPriority}
     }, Game
 };
 
@@ -26,5 +19,9 @@ pub trait AbilityTrait {
     fn on_ability_creation(&self, _game: &mut Game, _id: &AbilityID, _event: &OnAbilityCreation, _fold: &mut OnAbilityCreationFold, _priority: OnAbilityCreationPriority) {}
     fn on_ability_deletion(&self, _game: &mut Game, _id: &AbilityID, _event: &OnAbilityDeletion, _fold: &mut (), _priority: OnAbilityDeletionPriority) {}
     fn on_role_switch(&self, _game: &mut Game, _id: &AbilityID, _event: &OnRoleSwitch, _fold: &mut (), _priority: ()) {}
+
+    //midnight events
+    fn on_player_possessed(&self, _game: &mut Game, _id: &AbilityID, _event: &OnPlayerPossessed, _fold: &mut MidnightVariables, _priority: ()) {}
+
     fn controller_parameters_map(&self, _game: &Game, _id: &AbilityID)  -> ControllerParametersMap {ControllerParametersMap::default()}
 }

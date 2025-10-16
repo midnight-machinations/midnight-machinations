@@ -5,9 +5,8 @@ pub struct DeadCanStillPlayMessage;
 impl DeadCanStillPlayMessage {
     pub fn on_any_death(game: &mut Game, event: &OnAnyDeath, _fold: &mut (), _priority: ()) {
         if
-            PlayerReference::all_players(game).any(|player|
-                matches!(player.role(game), Role::Medium | Role::Puppeteer)
-            )
+            PlayerReference::all_players(game)
+                .any(|player|matches!(player.role(game), Role::Medium))
         {
             event.dead_player.add_private_chat_message(
                 game,

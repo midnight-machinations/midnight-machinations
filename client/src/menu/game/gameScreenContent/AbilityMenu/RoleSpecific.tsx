@@ -1,7 +1,6 @@
 import { useGameState, usePlayerNames, usePlayerState } from "../../../../components/useHooks";
 import React, { ReactElement } from "react";
 import AuditorMenu from "./RoleSpecificMenus/AuditorMenu";
-import LargeDoomsayerMenu from "./RoleSpecificMenus/LargeDoomsayerMenu";
 import Counter from "../../../../components/Counter";
 import StyledText from "../../../../components/StyledText";
 import translate from "../../../../game/lang";
@@ -17,10 +16,19 @@ import ChatElement, { encodeString } from "../../../../components/ChatMessage";
     
 
 export default function RoleSpecificSection(): ReactElement{
-    const roleState = usePlayerState(
-        playerState => playerState.roleState,
-        ["yourRoleState"]
+    const roleStates = usePlayerState(
+        playerState => [...playerState.roleStates.values()],
+        ["yourRoleState", "tick"]
     )!;
+
+    return <>{
+        roleStates.map((roleState)=><OneRoleSpecificSection roleState={roleState}/>)
+    }</>;
+}
+function OneRoleSpecificSection(props: Readonly<{
+    roleState: RoleState,
+}>): ReactElement | null{
+    
     const phaseState = useGameState(
         gameState => gameState.phaseState,
         ["phase"]
@@ -34,19 +42,17 @@ export default function RoleSpecificSection(): ReactElement{
         gameState => gameState.players.length,
         ["gamePlayers"]
     )!;
-
     const playerNames = usePlayerNames();
 
-    const inner = roleSpecificSectionInner(phaseState, dayNumber, roleState, numPlayers, playerNames);
+    let inner = roleSpecificSectionInner(phaseState, dayNumber, props.roleState, numPlayers, playerNames);
 
-    return <>{inner===null ? null : 
-        <DetailsSummary
-            summary={<StyledText>{translate("role."+roleState?.type+".name")}</StyledText>}
-            defaultOpen={true}
-        >
-            {inner}
-        </DetailsSummary>
-    }</>;
+    return inner!==null?<DetailsSummary
+        key={props.roleState.type}
+        summary={<StyledText>{translate("role."+props.roleState?.type+".name")}</StyledText>}
+        defaultOpen={true}
+    >
+        {inner}
+    </DetailsSummary>:null;
 }
 
 function abilityChargesCounter(numPlayers: number): number{
@@ -67,8 +73,6 @@ function roleSpecificSectionInner(
             return <AuditorMenu roleState={roleState}/>;
         case "hypnotist":
             return <HypnotistMenu roleState={roleState}/>;
-        case "doomsayer":
-            return <LargeDoomsayerMenu/>;
         case "jailor": 
             return <Counter 
                 max={maxChargesCounter} 

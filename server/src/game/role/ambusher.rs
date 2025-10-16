@@ -36,7 +36,7 @@ impl RoleStateTrait for Ambusher {
     fn on_midnight(self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut MidnightVariables, priority: OnMidnightPriority) {
         if game.day_number() <= 1 {return}
         if !matches!(priority, OnMidnightPriority::Kill) {return};
-        let Some(ambush_visit) = Visits::default_visit(game, midnight_variables, actor_ref) else {return};
+        let Some(ambush_visit) = Visits::default_visit(midnight_variables, actor_ref, Role::Ambusher) else {return};
                 
         let Some(player_to_attack) = Visits::into_iter(midnight_variables)
             .without_visit(ambush_visit)

@@ -90,7 +90,7 @@
 
         //on role creation needs to be called after all players roles are known
         for player_ref in PlayerReference::all_players(&game){
-            player_ref.initial_role_creation(&mut game);
+            player_ref.initial_set_role_insider_wincondition(&mut game);
         }
 
         OnGameStart::new().invoke(&mut game);

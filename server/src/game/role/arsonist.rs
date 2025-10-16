@@ -1,6 +1,7 @@
 use serde::Serialize;
 
 use crate::game::abilities_component::ability_id::AbilityID;
+use crate::game::components::night_visits::Visits;
 use crate::game::controllers::AvailableBooleanSelection;
 use crate::game::event::on_ability_creation::{OnAbilityCreation, OnAbilityCreationFold, OnAbilityCreationPriority};
 use crate::game::event::on_ability_deletion::{OnAbilityDeletion, OnAbilityDeletionPriority};
@@ -30,9 +31,7 @@ impl RoleStateTrait for Arsonist {
         match priority {
             OnMidnightPriority::Deception => {
                 //douse target
-                let actor_visits = actor_ref.role_night_visits_cloned(midnight_variables);
-                if let Some(visit) = actor_visits.first(){
-                    let target_ref = visit.target;
+                if let Some(target_ref) = Visits::default_target(midnight_variables, actor_ref, Role::Arsonist){
                     Self::douse(game, target_ref);
                 }
                 
@@ -123,7 +122,7 @@ impl Arsonist{
         Tags::has_tag(game, TagSetID::ArsonistDoused, player) &&
         PlayerReference::all_players(game).any(|player_ref|
             !player_ref.ability_deactivated_from_death(game) &&
-            player_ref.role(game) == Role::Arsonist
+            AbilityID::Role { role: Role::Arsonist, player: player_ref }.exists(game)
         )
     }
     fn chose_to_ignite(game: &Game, actor: PlayerReference)->bool{

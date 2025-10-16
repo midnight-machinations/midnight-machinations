@@ -1,5 +1,6 @@
 use serde::Serialize;
-
+use crate::game::components::night_visits::NightVisitsIterator as _;
+use crate::game::components::night_visits::Visits;
 use crate::game::controllers::AvailablePlayerListSelection;
 use crate::game::attack_power::AttackPower;
 use crate::game::attack_power::DefensePower;
@@ -45,10 +46,8 @@ impl RoleStateTrait for Marksman {
     fn on_midnight(mut self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut MidnightVariables, priority: OnMidnightPriority) {
         if priority != OnMidnightPriority::Kill {return};
 
-        let visiting_players: Vec<_> = actor_ref
-            .role_night_visits_cloned(midnight_variables)
-            .into_iter()
-            .flat_map(|p|p.target.all_direct_night_visitors_cloned(midnight_variables))
+        let visiting_players: Vec<_> = Visits::into_iter(midnight_variables).default_visits(actor_ref, Role::Marksman)
+            .flat_map(|v|v.target.all_direct_night_visitors_cloned(midnight_variables))
             .collect();
 
         let Some(PlayerListSelection(marks)) = ControllerID::role(actor_ref, Role::Marksman, 0)

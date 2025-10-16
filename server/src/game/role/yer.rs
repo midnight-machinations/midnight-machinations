@@ -52,7 +52,7 @@ impl RoleStateTrait for Yer {
             .map(|selection| selection.0)
             .unwrap_or(false);
 
-        if let Some(visit) = Visits::default_visit(game, midnight_variables, actor_ref) {
+        if let Some(visit) = Visits::default_visit(midnight_variables, actor_ref, Role::Yer) {
             let target_ref = visit.target;
 
             if !chose_to_convert {

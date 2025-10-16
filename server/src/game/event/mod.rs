@@ -22,6 +22,7 @@ pub(super) mod on_remove_insider;
 pub(super) mod on_controller_changed;
 pub(super) mod on_ability_creation;
 pub(super) mod on_ability_edit;
+pub(super) mod on_player_possessed;
 
 pub trait EventPriority: Sized + Copy {
     fn values() -> Vec<Self>;

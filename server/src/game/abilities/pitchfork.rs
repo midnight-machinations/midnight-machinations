@@ -9,7 +9,7 @@ use crate::{
     vec_map::VecMap
 };
 
-#[derive(Clone, Default)]
+#[derive(Clone, Default, Debug)]
 pub struct PitchforkAbility{
     charges: u8,
     angry_mobbed_player: Option<PlayerReference>,

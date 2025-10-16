@@ -55,8 +55,8 @@ export function getGroupNameFromControllerID(id: ControllerID): GroupName {
     switch (id.type){
         case "role":
             return "role/"+id.player+"/"+id.role as `${PlayerIndex}/${Role}`
-        case "syndicateGunItemGive":
-        case "syndicateGunItemShoot":
+        case "syndicateGunGive":
+        case "syndicateGunShoot":
         case "syndicateBackupAttack":
         case "syndicateChooseBackup":
             return "syndicate";
@@ -81,8 +81,8 @@ function translateGroupName(id: ControllerID): string {
     switch (id.type){
         case "role":
             return translate("role."+id.role+".name");
-        case "syndicateGunItemGive":
-        case "syndicateGunItemShoot":
+        case "syndicateGunGive":
+        case "syndicateGunShoot":
         case "syndicateBackupAttack":
         case "syndicateChooseBackup":
             return translate("mafia");

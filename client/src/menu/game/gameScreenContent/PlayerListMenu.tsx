@@ -30,7 +30,7 @@ export default function PlayerListMenu(): ReactElement {
 
 
     return <div className="player-list-menu player-list-menu-colors">
-        <ContentTab close={ContentMenu.PlayerListMenu} helpMenu={"standard/playerList"}>{translate("menu.playerList.title")}</ContentTab>
+        <ContentTab close={ContentMenu.PlayerListMenu}>{translate("menu.playerList.title")}</ContentTab>
 
         <div className="player-list">
             {players
@@ -70,11 +70,6 @@ function PlayerCard(props: Readonly<{
     graveIndex?: number,
     playerIndex: number
 }>): ReactElement{
-    const isPlayerSelf = usePlayerState(
-        playerState => playerState.myIndex === props.playerIndex,
-        ["yourPlayerIndex"],
-        false
-    )!;
     const chatFilter = useGameState(
         gameState => gameState.chatFilter,
         ["filterUpdate"],
@@ -152,9 +147,7 @@ function PlayerCard(props: Readonly<{
 
     const whisperNotification = usePlayerState(
         gameState =>
-            gameState.missedWhispers.some(player => player === props.playerIndex) &&
-            !isPlayerSelf &&
-            !whisperChatOpen,
+            gameState.missedWhispers.some(player => player === props.playerIndex) && !whisperChatOpen,
         ["addChatMessages", "whisperChatOpenOrClose"],
         false
     );

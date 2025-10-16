@@ -305,10 +305,6 @@
     "controllerId.role.medium.0.name": "Seance",
     "controllerId.role.medium.1.name": "Haunt",
 
-    "role.retributionist.name": "Retributionist",
-    "role.retributionist.name:var.0": "Retributionists",
-    "controllerId.role.retributionist.0.name": "Possess",
-
     "role.reporter.name": "Reporter",
     "role.reporter.name:var.0": "Reporters",
     "role.reporter.menu.public": "Public",
@@ -425,7 +421,7 @@
 
     "role.necromancer.name": "Necromancer",
     "role.necromancer.name:var.0": "Necromancers",
-    "controllerId.role.necromancer.0.name": "Possess",
+    "controllerId.role.necromancer.0.name": "Attack",
     
     "role.mortician.name": "Mortician",
     "role.mortician.name:var.0": "Morticians",
@@ -471,9 +467,6 @@
 
     "role.revolutionary.name": "Revolutionary",
     "role.revolutionary.name:var.0": "Revolutionaries",
-    
-    "role.doomsayer.name": "Doomsayer",
-    "role.doomsayer.name:var.0": "Doomsayers",
 
     "role.mercenary.name": "Mercenary",
     "role.mercenary.name:var.0": "Mercenaries",
@@ -569,6 +562,10 @@
     "controllerId.role.yer.0.name": "Shapeshift",
     "controllerId.role.yer.1.name": "Choose Target",
     "controllerId.role.yer.2.name": "Disguise as Role",
+
+    "role.solorebel.name": "Solorebel",
+    "role.solorebel.name:var.0": "Solorebels",
+    "controllerId.role.solorebel.0.name": "Attack",
 
     "role.serialKiller.name": "Serial Killer",
     "role.serialKiller.name:var.0": "Serial Killers",
@@ -715,7 +712,10 @@
     "tag.disguise":"🥸",
     "tag.disguise.name":"Disguise",
     "tag.syndicateGun":"🔫",
-    "tag.syndicateGun.name":"Gun",
+    "tag.syndicateGun.name":"Syndicate Gun",
+    
+    "visitTag.syndicateGun.name": "Syndicate Gun",
+    "visitTag.appeared.name": "Appeared",
 
     "dead.icon":"💀",
     "trial.icon": "⚖️",
@@ -751,8 +751,8 @@
     "controllerId.whisperToPlayer.name": "Whisper To Player",
     "controllerId.sendWhisper.name": "Send Whisper",
     "controllerId.forfeitNominationVote.name": "Forfeit Nomination Vote",
-    "controllerId.syndicateGunItemShoot.name": "Shoot Gun",
-    "controllerId.syndicateGunItemGive.name": "Give Gun",
+    "controllerId.syndicateGunShoot.name": "Shoot Gun",
+    "controllerId.syndicateGunGive.name": "Give Gun",
     "controllerId.syndicateChooseBackup.name": "Choose Backup",
     "controllerId.syndicateBackupAttack.name": "Backup Attack",
     "controllerId.forwardMessage.name": "Forward Message",
@@ -850,7 +850,7 @@
     "randomPlayerNames": "Random Player Names",
     "customRoleLimits": "Custom Role Limits",
 
-    "syndicateGunItem": "Syndicate Gun",
+    "syndicateGun": "Syndicate Gun",
     "nightMessages": "Night Messages",
     
     "simplify":"Simplify",
@@ -1069,12 +1069,12 @@
 
     "chatMessage.detectiveResult.suspicious":"Your target is enemies with the town.",
     "chatMessage.detectiveResult.innocent":"Your target is friends with the town.",
-    "chatMessage.lookoutResult":"Your target was visited by \\0.",
+    "chatMessage.lookoutResult":"Your target was visited by these players: \\0.",
     "chatMessage.trackerResult":"Your target visited \\0.",
     "chatMessage.seerResult.friends":"Your targets are friends.",
     "chatMessage.seerResult.enemies":"Your targets are enemies.",
     "chatMessage.spyMafiaVisit":"The syndicate visited \\0.",
-    "chatMessage.spyBug":"Your target was visited by these roles: \\0.",
+    "chatMessage.spyBug":"Your target was visited by these abilities: \\0.",
     "chatMessage.psychicGood":"Between your target, and \\0, at least one player is a town loyalist.",
     "chatMessage.psychicEvil":"Between your target, \\0, and \\1, at least one player is not a town loyalist.",
     "chatMessage.psychicFailed":"This vision is impossible.",
@@ -1086,16 +1086,13 @@
     "chatMessage.tallyClerkResult": "\\0 town enemies voted guilty during any of the selected trials.",
     "chatMessage.playerForwardedMessage":"\\0 forwarded:",
     "chatMessage.targetsMessage":"Your target got the following message:",
-    "chatMessage.youWerePossessed":"You were possessed.",
-    "chatMessage.youWerePossessed.immune":"Someone tried to possess you but you are immune.",
+    "chatMessage.youWerePossessed":"You were possessed. Some of your choices may have been secretly changed.",
     "chatMessage.targetHasRole":"Your target has the role \\0.",
     "chatMessage.targetHasWinCondition":"Your target has the win condition \\0.",
-    "chatMessage.targetIsPossessionImmune":"Your target was immune to possession.",
     "chatMessage.werewolfTrackingResult":"\\0 visited \\1.",
     "chatMessage.werewolfTracked":"A werewolf has caught your scent! They are tracking you.",
     "chatMessage.cultSacrificeCount":"The cult has \\0 sacrifices.",
     "chatMessage.fragileVestBreak": "The \\0 fragile vest that \\1 had just broke.",
-    "chatMessage.engineerVisitorsRole": "A \\0 visited the trapped player.",
     "chatMessage.trapState.dismantled": "Your trap is currently dismantled. You can't set it yet.",
     "chatMessage.trapState.ready": "Your trap is currently ready. It can be set and potentially triggered tonight.",
     "chatMessage.trapState.set": "Your trap is currently set. You can dismantle it or wait for it to trigger.",
@@ -1126,8 +1123,6 @@
     "chatMessage.nextKrampusAbility.doNothing": "Tonight you will investigate someone.",
     "chatMessage.santaAddedPlayerToNaughtyList": "Santa added \\0 to the naughty list.",
     "chatMessage.phaseFastForwarded": "The phase has been fast forwarded.",
-    "chatMessage.doomsayerFailed": "At least one of your guesses was incorrect or invalid.",
-    "chatMessage.doomsayerWon": "Your guesses were correct. You win!",
     "chatMessage.mercenaryHits": "Your hits are: \\0.",
     "chatMessage.mercenaryResult.hit": "Your target is a hit.",
     "chatMessage.mercenaryResult.notHit": "Your target is not a hit.",
@@ -1151,7 +1146,7 @@
     "wiki.category.mafia": "Syndicate",
     "wiki.category.mafia.text": "These are the roles in the Syndicate role set. By default, most people with these roles are syndicate loyalists, syndicate insiders, and are part of the Syndicate hierarchy.",
     "wiki.category.neutral": "Neutral",
-    "wiki.category.neutral.text": "Neutrals are not all on the same team. Each neutral role has special win conditions. Most of them are against both the town and the syndicate. Some neutral roles can win before the game ends like the Jester, Revolutionary, and Doomsayer.\nThese are the roles in the Neutral role set. By default, most people with these roles are not insiders and don't win based on the game's conclusion. For example, the Jester wins when it dies.",
+    "wiki.category.neutral.text": "Neutrals are not all on the same team. Each neutral role has special win conditions. Most of them are against both the town and the syndicate. Some neutral roles can win before the game ends like the Jester, Revolutionary, and Mercenary.\nThese are the roles in the Neutral role set. By default, most people with these roles are not insiders and don't win based on the game's conclusion. For example, the Jester wins when it dies.",
     "wiki.category.minions": "Minion",
     "wiki.category.minions.text": "Minions is a Role Set that contains roles which win only if town loses. They are not loyal to any conclusion. They leave the game if all their enemies are dead. They aren't insiders to any group, so they don't communicate at night.\n\nThese are the roles in the Minion role set. By default, most people with these roles win when town loses, and are not insiders. If the only players left alive are friends with a minion player, that player leaves town and wins.",
     "wiki.category.cult": "Cult",
@@ -1279,7 +1274,7 @@
     "wiki.article.standard.block.title:var.0": "Blocked",
     "wiki.article.standard.block.title:var.1": "Blocking",
     "wiki.article.standard.block.title:var.2": "Blocks",
-    "wiki.article.standard.block.text": "A player who is blocked was either roleblocked, wardblocked, or both. A player isn't blocked if they're immune",
+    "wiki.article.standard.block.text": "A player who is blocked was either roleblocked, wardblocked, or both. A player isn't blocked if they're immune.",
     "wiki.article.standard.detain.title": "Detain",
     "wiki.article.standard.detain.title:var.0": "Detains",
     "wiki.article.standard.detain.title:var.1": "Detained",
@@ -1413,7 +1408,7 @@
     "wiki.article.standard.appearedVisit.title": "Appeared Visit",
     "wiki.article.standard.appearedVisit.text": "Some roles get fooled by appeared visits created by other roles.\n - A framer can make a player to appear to visit other players.\n - If a framer makes you appear to visit players, then you only appear to visit those players (and not the players you are actually visiting)",
     "wiki.article.standard.roleOutline.title": "Role Outline",
-    "wiki.article.standard.roleOutline.text": "A role outline defines a group of roles.\n\nOutlines can either be a predefined role set, an exact role, or a union of multiple.\n\n_Examples_\n\n\"Any\" It could be any role\n\n\"Neutral\" Could be any possible neutral role.\n\n\"Town Support\" Could be an Escort, Retributionist, Transporter, or Medium\n\n\"Godfather\" Could only be a Godfather.\n\n\"Wildcard ∪ Psychic\" Could either be an Wildcard or Psychic.\n\n- When roles are generated randomly from a role outline, each possible role is equally likely to generate.\n- Role outlines are used in the outline list to show what roles could be in the game.",
+    "wiki.article.standard.roleOutline.text": "A role outline defines a group of roles.\n\nOutlines can either be a predefined role set, an exact role, or a union of multiple.\n\n_Examples_\n\n\"Any\" It could be any role\n\n\"Neutral\" Could be any possible neutral role.\n\n\"Town Support\" Could be an Escort, Medium, Transporter, etc.\n\n\"Godfather\" Could only be a Godfather.\n\n\"Wildcard or Psychic\" Could either be an Wildcard or Psychic.\n\n- When roles are generated randomly from a role outline, each possible role is equally likely to generate.\n- Role outlines are used in the outline list to show what roles could be in the game.",
     "wiki.article.standard.outlineList.title":"Outline List",
     "wiki.article.standard.outlineList.title:var.0":"Role List",
     "wiki.article.standard.outlineList.title:var.1":"Rolelist",
@@ -1523,7 +1518,7 @@
     
     "wiki.article.standard.priority.title":"Priority",
     "wiki.article.standard.priority.title:var.0":"Priorities",
-    "wiki.article.standard.priority.text":"At the end of night many abilities happen at nearly the same time. They happen in a specific order called priority. Knowing the order of some things can help understanding of some game mechanics.\nThis is the general priority order, with some additional notes:\n- PreWard\n    - Bouncer and Scarecrow wardblock the following roles here: Transporter, Porter, Warper, Witch, Retributionist, and Necromancer\n- Transporter\n- Warper\n- Possess\n- Ward\n    - Bouncer, and Scarecrow wardblock everything here\n- Roleblock\n    - Hypnotist and Escort go here\n- Deception\n    - Forger, Framer, Blackmailer go here\n    - Syndicate backup visit is erased if the killing is blocked\n- Heal\n    - Protective roles like Doctor and Armorsmith go here\n- Bodyguard\n    - Bodyguard moves the attacking visit to be towards themself\n- Kill\n- Convert\n    - Win condition changes go here\n- Poison\n- Investigative\n    - Roles like Detective, Snoop, Lookout, and Spy go here\n- DeleteMessages\n    - Steward deletes messages\n- StealMessages\n    - Witch steals messages\n",
+    "wiki.article.standard.priority.text":"At the end of night many abilities happen at nearly the same time. They happen in a specific order called priority. Knowing the order of some things can help understanding of some game mechanics.\nThis is the general priority order, with some additional notes:\n- PreWard\n    - Bouncer and Scarecrow wardblock the following roles here: Transporter, Porter, Warper, and Witch\n- Transporter\n- Warper\n- Possess\n- Ward\n    - Bouncer, and Scarecrow wardblock everything here\n- Roleblock\n    - Hypnotist and Escort go here\n- Deception\n    - Forger, Framer, Blackmailer go here\n    - Syndicate backup visit is erased if the killing is blocked\n- Heal\n    - Protective roles like Doctor and Armorsmith go here\n- Bodyguard\n    - Bodyguard moves the attacking visit to be towards themself\n- Kill\n- Convert\n    - Win condition changes go here\n- Poison\n- Investigative\n    - Roles like Detective, Snoop, Lookout, and Spy go here\n- DeleteMessages\n    - Steward deletes messages\n- StealMessages\n    - Witch steals messages\n",
 
     "wiki.article.standard.chat.title:var.0":"Chat Messages",
     "wiki.article.standard.chat.title":"Chat",
@@ -1587,10 +1582,10 @@
     "wiki.article.modifier.customRoleLimits.title": "Custom Role Limits",
     "wiki.article.modifier.customRoleLimits.text": "Custom Role Limits is a modifier that allows the host to set custom limits for each role. For example, the host could allow for infinite Jailors or restrict the number of Detectives to 1.",
     
-    "wiki.article.standard.syndicateGunItem.title":"Syndicate Gun",
-    "wiki.article.standard.syndicateGunItem.text":"Syndicate Gun is an ability a syndicate member gets when theres no syndicate killing role present\n- A syndicate member is given a gun they can use to kill a player with a basic attack at night\n- The gun can't be used on the first night\n- The gun can be passed around between syndicate members, so a different syndicate member can shoot it every night\n- The gun still uses visits, so getting roleblocked still erases that visit, and transports still move it\n- The killer appears to be syndicate on the grave of the player who died to the gun\n- When the game starts, the player with the gun is given an armored fragile vest, and that player is told if it breaks.\n    - The vest does not move when the gun moves, so the player who starts with the vest keeps it.",
-    "syndicateGunItem.description":"Choose a player to shoot with the syndicate gun. Or choose to give it to another syndicate insider.",
-    "syndicateGunItem.give":"Pass gun",
+    "wiki.article.standard.syndicateGun.title":"Syndicate Gun",
+    "wiki.article.standard.syndicateGun.text":"Syndicate Gun is an ability a syndicate member gets when theres no syndicate killing role present\n- A syndicate member is given a gun they can use to kill a player with a basic attack at night\n- The gun can't be used on the first night\n- The gun can be passed around between syndicate members, so a different syndicate member can shoot it every night\n- The gun still uses visits, so getting roleblocked still erases that visit, and transports still move it\n- The killer appears to be syndicate on the grave of the player who died to the gun\n- When the game starts, the player with the gun is given an armored fragile vest, and that player is told if it breaks.\n    - The vest does not move when the gun moves, so the player who starts with the vest keeps it.",
+    "syndicateGun.description":"Choose a player to shoot with the syndicate gun. Or choose to give it to another syndicate insider.",
+    "syndicateGun.give":"Pass gun",
 
 
     "wiki.article.standard.nobody.title":"Nobody",
@@ -1611,7 +1606,7 @@
     "wiki.article.standard.claimswap.title:var.0":"Claimswap",
     "wiki.article.standard.claimswap.title:var.2":"Claim swapped",
     "wiki.article.standard.claimswap.title:var.3":"Claim swapping",
-    "wiki.article.standard.claimswap.text":"When 2 players do a claim swap, they are both claiming each others roles. John Proctor is claiming engineer even though Deodat Lawson is engineer, and Deodat Lawson is claiming detective even thought John Proctor is detective. This is in order to hide information from evil players while still giving information to town. A doomsayer or kira can easily kill a lot of townies if they know the exact roles of townies. Claim swap might help a veteran kill evil players.",
+    "wiki.article.standard.claimswap.text":"When 2 players do a claim swap, they are both claiming each others roles. John Proctor is claiming engineer even though Deodat Lawson is engineer, and Deodat Lawson is claiming detective even thought John Proctor is detective. This is in order to hide information from evil players while still giving information to town. Kira can easily kill a lot of townies if they know the exact roles of townies. Claim swap might help a veteran kill evil players.",
     "wiki.article.standard.passcode.title":"Passcode",
     "wiki.article.standard.passcode.title:var.0":"Passcodes",
     "wiki.article.standard.passcode.title:var.1":"Passcode",
@@ -1826,11 +1821,6 @@
     "wiki.article.role.medium.exampleAlibi":"Medium\nN1: n/a\nN2: @2 (Detective)\n@2 said they got @5 as enemies with town\n @2 told me to say \"17253\".",
     "wiki.article.role.medium.exampleAlibi.description":"Here is an example of an alibi from a Medium who, on night 2, used their ability to give @2, a player who claims to be detective, their ability back, and then talked to them at night and wrote some important ntoes from what @2 said.",
 
-    "wiki.article.role.retributionist.guide": "- At night, Select a dead town role to possess them, forcing them to use their ability on a living player\n- You can only possess dead players who's grave has a town role on it\n- You can possess the same player up to 2 times",
-    "wiki.article.role.retributionist.abilities":"- Visit 2 players\n    - The first player has their first visit changed to the second player you visit\n- You can only select certain players\n    - The first player you select must be a dead player with a town role on their grave\n    - The second player you select must be any living player",
-    "wiki.article.role.retributionist.attributes":"* The first player you visit is told that they were possessed or immune to possession\n* You are told all night information messages that your target gets told\n* You can't select a dead player who you have previously possessed more than once",
-    "wiki.article.role.retributionist.extra":"* You are immune to getting roleblocked or possessed\n* You can force your target to visit any living player\n* If you don't successfully possess the player you select, you can select them again\n* Your second target is investigate immune, indirect, and wardblock immune",
-
     "wiki.article.role.reporter.reminder": "Each day, choose a player to interview and speak with at night, when obituary starts, your report is posted to everyone." ,
     "wiki.article.role.reporter.guide": "- Each day, choose a player to interview that night\n    - You can speak with your interviewee at night, and they aren't told who you are\n- You make a report that is posted at the start of each day\n    - The report is anonymous, so if you don't write who you are, nobody would know who you are\n    - Your report won't be posted if you are silenced or blocked\n\n You should ask what peoples roles are during an interview, they should tell you because they know you're a reporter. If they don't tell you their role, they are likely evil. You should write who you think is evil in your report so it is posted and everyone knows.",
     "wiki.article.role.reporter.abilities":"* Your report is posted publicly every obituary while you alive if it is set to public\n* During the day you may choose a player to interview that night",
@@ -1848,6 +1838,8 @@
     "wiki.article.role.vigilante.abilities":"* Visit a player to attack and spend a bullet\n* If you kill a town loyalist you will commit suicide on the following night\n* You have three bullets",
     "wiki.article.role.vigilante.attributes":"* If your attack overpowers a town loyalist's defense and they die, you commit suicide on the following night\n* When it is night one, when you have 0 bullets left, when you are going to commit suicide, or when you have already committed suicide, you can not select or attack anyone",
     "wiki.article.role.vigilante.extra": "* You only have a basic attack\n* Even while dead, killing someone requires and spends a bullet (such as when you get possessed)",
+    "wiki.article.role.vigilante.exampleAlibi":"Vigilante\nN1: n/a\nN2: [roleblocked]\nN3: @21 [attacked soemone but they had defense]\nN4: @21 [attack someone] (they died)",
+    "wiki.article.role.vigilante.exampleAlibi.description":"On night 1, they had to wait.\nOn night 2, they didnt try to shoot anyone, but got roleblocked anyway, so they wrote it down.\nOn night 3, they tried to kill @21 but couldn't because @21 had defense.\nOn night 4, they tried to kill @21 again and it worked this time.",
 
     "wiki.article.role.rabblerouser.reminder": "If 2/3rds of town vote to pitchfork someone, that player dies at night.",
     "wiki.article.role.rabblerouser.guide":"- If a Rabblerouser is in the game, everyone can vote using the pitchfork menu\n- If two-thirds of town loyalists vote the same player, that player is killed\n- This ability can be used up to X times (X = Total players ÷ 5 (round up))\n- This ability doesn't work on night 1\n- This ability only works if there is an alive rabblerouser who isn't blocked",
@@ -1879,13 +1871,13 @@
     "wiki.article.role.deputy.extra":"* You have an armor-piercing attack\n* You can not attack day 1",
 
     "wiki.article.role.godfather.reminder": "Each night*, select a player to attack. Each night, select a player to appeared visit. You have armor and innocent aura.",
-    "wiki.article.role.godfather.guide": "- At night, select a player to attack with a basic attack\n    - You can't attack night 1\n- Select a player to appeared visit",
+    "wiki.article.role.godfather.guide": "- Each night except the first, select a player to attack\n    - You can't attack night 1\n- Select a player to appear to visit\n - When you are blocked, you don't have innocent aura for the night.",
     "wiki.article.role.godfather.abilities":"* Visit a player to attack\n- Appeared visit any other player\n - You can appeared visit yourself, or other syndicate insiders",
     "wiki.article.role.godfather.attributes":"",
     "wiki.article.role.godfather.extra":"- Your appeared into visit is wardblock immune, investigate immune, and indirect",
     
     "wiki.article.role.impostor.reminder": "Each night, select a player to attack. If you die, your grave shows whatever role you chose to disguise as.",
-    "wiki.article.role.impostor.guide": "- At night, select a player to attack\n- You can't attack night 1\n- You can choose what role appears on your grave, giving false information to the town when you die",
+    "wiki.article.role.impostor.guide": "- Each night except the first, select a player to attack\n- You can't attack night 1\n- You can choose what role appears on your grave.",
     "wiki.article.role.impostor.abilities":"* Visit a player to attack\n- Choose a role, that role appears on your grave when you die instead of impostor",
     "wiki.article.role.impostor.attributes":"",
     "wiki.article.role.impostor.extra":"",
@@ -1895,6 +1887,12 @@
     "wiki.article.role.counterfeiter.abilities": "- Visit a player to basic attack them\n- If you chose to forge and you have uses left, you forge the player you visit, changing their role and alibi in their grave",
     "wiki.article.role.counterfeiter.attributes": "- You can copy paste chat messages\n- If you are blocked, it doesn't cost an ability use, but it does cost a use if the player you attack survives",
     "wiki.article.role.counterfeiter.extra": "",
+
+    "wiki.article.role.necromancer.reminder":"Each night, choose a player to attack. While you are alive, dead fellow insiders keep their abilities.",
+    "wiki.article.role.necromancer.guide":"- Each night except the first, choose a player to attack\n - All dead fellow insiders keep their abiltiies while you are alive.\n - If you are roleblocked, the all dead fellow insiders are also roleblocked.",
+    "wiki.article.role.necromancer.abilities":"",
+    "wiki.article.role.necromancer.attributes":"",
+    "wiki.article.role.necromancer.extra":"- Your attack is basic.",
 
     "wiki.article.role.recruiter.reminder": "Each night, either select a player to attack or recruit. Recruited players join the syndicate but die the next night. If a recruiter is generated randomly, there is one less syndicate member.",
     "wiki.article.role.recruiter.guide":"- You may choose to do one of the following\n    - Select and attack a player\n    - Select a player to recruit into the syndicate\n        - They are told they are recruited, and that they will win with syndicate, but their role doesn't change\n        - They are attacked the following night, and every night until they die\n        - You have 3 uses of this ability by default\n- For every time you successfully kill someone, you can gain one use to your recruit ability\n- If a recruiter is randomly generated, a non recruiter syndicate member has their role switched to a random town role before the game starts, they never know of this",
@@ -1925,6 +1923,12 @@
     "wiki.article.role.serialKiller.abilities":"* Visit a player to attack",
     "wiki.article.role.serialKiller.attributes":"- You have an armor-piercing attack",
     "wiki.article.role.serialKiller.extra":"",
+    
+    "wiki.article.role.solorebel.reminder": "Each night, select a player to attack. You are given 2 random syndicate abilities.",
+    "wiki.article.role.solorebel.guide": "- At night select a player to attack them with an armor piercing attack.\n    - You can't use your ability night 1.\n - When you becomes this role, You are given 2 different random syndicate support abilities.\n    - You can't be given reeducator",
+    "wiki.article.role.solorebel.abilities":"",
+    "wiki.article.role.solorebel.attributes":"",
+    "wiki.article.role.solorebel.extra":"- Your ability breaks role limits, you can be given an ability with role limite 1, even if there is a player with that ability in the game.",
     
     "wiki.article.role.mafiaKillingWildcard.reminder": "Choose a syndicate killing role to become that role when dusk starts.",
     "wiki.article.role.mafiaKillingWildcard.guide": "* Choose a syndicate killing role to become that role\n    * You become that role when dusk starts\n* You likely can't become a role if someone already has that role (You can't become a role that has exceeded its role limit)",
@@ -1969,11 +1973,6 @@
     "wiki.article.role.informant.attributes":"* None",
     "wiki.article.role.informant.extra":"* You can't select other syndicate members\n* Appeared visits can change information",
 
-    "wiki.article.role.necromancer.guide":"You can select a dead player to possess and force them to visit a player you select. You can only choose to possess dead townies. You can not possess the same player more than twice.",
-    "wiki.article.role.necromancer.abilities":"* Visit 2 players to make the first player visit the second player\n* The first player you select must appear as a dead player in the graveyard",
-    "wiki.article.role.necromancer.attributes":"* The first player you visit is told that they were possessed or immune to possession\n* You are told all night information messages that the player you possess gets told\n* You can't select a dead player who you have previously possessed",
-    "wiki.article.role.necromancer.extra":"* You are immune to getting roleblocked or possessed\n* You can force your target to visit any living player\n* If you don't successfully possess the player you select, you can select them again\n* Your second target is investigate immune, indirect, and wardblock immune",
-
     "wiki.article.role.mortician.reminder": "Each night, select a player to tag them for obscuring. If they die, their role and alibi are hidden.",
     "wiki.article.role.mortician.guide": "- At night, select a player to tag them for obscuring\n    - A player who is tagged for obscuring gets obscured when they die, erasing their role and alibi from their grave so nobody knows who they are\n    - You are told the obscured players role and alibi when they die\n- You can tag as many players as you want, but you can only obscure X players (X = Total players ÷ 5 (round up))\n- When you are roleblocked, your tags don't obscure players until the start of next night.",
     "wiki.article.role.mortician.abilities":"* Visit a player to tag them for obscuring\n* If a player is obscured, that player's role and alibi do not appear in the graveyard\n* You are told the role and alibi of the player you obscured when they die.",
@@ -1994,7 +1993,7 @@
 
     "wiki.article.role.disguiser.reminder": "Your grave shows whatever role you choose when you die. You have innocent aura. At night, give a fellow insider appeared visits.",
     "wiki.article.role.disguiser.lore": "The town did not approve of the costumes the disguiser made.",
-    "wiki.article.role.disguiser.guide": "- At night, select a fellow insider to make them appear to visit other players\n - You have your role appear to be what you chose on your grave\n - You have innocent aura\n - When you are roleblocked, until the start of next night, if you die, your grave shows disguiser on it.",
+    "wiki.article.role.disguiser.guide": "- At night, select a fellow insider to make them appear to visit other players\n - You have your role appear to be what you chose on your grave\n - You have innocent aura\n - When you are roleblocked, until the start of next night, if you die, your grave shows disguiser on it, and you don't have innocent aura.",
     "wiki.article.role.disguiser.abilities":"",
     "wiki.article.role.disguiser.attributes":"",
     "wiki.article.role.disguiser.extra":"- Your appeared into visit is wardblock immune, investigate immune, and indirect",
@@ -2030,12 +2029,6 @@
     "wiki.article.role.revolutionary.attributes":"* When your execution target is executed, you win\n* After you win, you leave town at the start of final words\n* You are armored",
     "wiki.article.role.revolutionary.extra":"* If your target dies by something other than execution, you convert to a jester immediately, even while dead\n* If there are no valid targets in the game when you become the Revolutionary, you convert to a Jester",
 
-    "wiki.article.role.doomsayer.reminder": "Guess the role of three different players correctly to win. When you win you attack the players you guessed.",
-    "wiki.article.role.doomsayer.guide": "- Guess the role of three different players correctly to win\n- If you get all your guesses correct and win, you attack all three players, and then leave town\n- You can't guess town investigative roles\n- If a player has a non town role, you don't need to guess their exact role, just that they are non town\n\n In order to counter a doomsayer, players often claimswap",
-    "wiki.article.role.doomsayer.abilities":"* Use the Doomsayer menu to guess the role of three different living players in one night, attacking them and winning",
-    "wiki.article.role.doomsayer.attributes":"* When you win, you leave town at the start of the next obituary\n* You have to guess the exact role of townies, but you only need to guess the faction of all other roles\n* You can't try to guess town investigative roles\n* When there are not enough players left for you to guess, you convert to a jester\n* You have a protection-piercing attack",
-    "wiki.article.role.doomsayer.extra":"* Your three guesses must be three different players\n* If the players you guessed correctly don't die, you still win\n* You do not visit when you attack\n* You can't try to guess a martyr\n* If you are blocked, your ability does nothing",
-    
     "wiki.article.role.mercenary.reminder": "You are told a hit list of roles, if at least one player with each of those roles is dead, you win.",
     "wiki.article.role.mercenary.lore":"Don't mind the mercenary doing what they are paid for.",
     "wiki.article.role.mercenary.guide": "- At the start of the game, you are told a hit list of X different roles (X = Total players ÷ 5 (round up))\n - While you are alive, if one of each of the players with roles on your hit list are dead, you win.\n - Each player on your hit list is told they are on a mercenaries hit list\n    - The role Mercenary can't be on your hit list\n    - For each role on your hit list, there is at least one player with that role\n    - If there are not enough roles available to fill your hit list, your hit list is smaller, filling with as many roles as possible up to X\n- Choose between Investigate or Attack\n    - Investigate: Choose a player to visit and learn if they have a role on your hit list\n    - Attack: Choose a player to visit and attack with a basic attack\n        - You can't choose to attack night 1\n        - You can only attack up to X times (X = Total players ÷ 5 (round up)), if you are roleblocked it doesn't use an ability charge",
@@ -2103,7 +2096,7 @@
     "wiki.article.role.pawn.extra": "",
     
     "wiki.article.role.tailor.reminder": "Each night, choose a player to change their role. You can only change players from town roles to town roles.",
-    "wiki.article.role.tailor.guide": "- At night, choose a player and a town common role.\n    - If that player has a town common role, you change their role to the role you chose.\n    - At the start of obituary, your targets role is revealed to you, even if they did not have a town common role.\n    - If you don't choose a role, you do not visit.",
+    "wiki.article.role.tailor.guide": "- At night, choose a player and a town common role.\n    - If that player has a town common role, you change their role to the role you chose.\n    - At the start of obituary, your targets role is revealed to you.\n    - If you don't choose a role, you do not visit.",
     "wiki.article.role.tailor.abilities": "",
     "wiki.article.role.tailor.attributes": "",
     "wiki.article.role.tailor.extra": "",

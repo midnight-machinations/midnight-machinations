@@ -27,7 +27,7 @@ impl RoleStateTrait for SerialKiller {
         if game.day_number() == 1 {return}
 
 
-        if let Some(visit) = Visits::default_visit(game, midnight_variables, actor_ref) {
+        if let Some(visit) = Visits::default_visit(midnight_variables, actor_ref, Role::SerialKiller) {
 
             let target_ref = visit.target;
             

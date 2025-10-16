@@ -1,8 +1,9 @@
+use rand::seq::SliceRandom as _;
 use serde::{Deserialize, Serialize};
 
 use crate::game::controllers::AvailableBooleanSelection;
 use crate::game::attack_power::AttackPower;
-use crate::game::components::night_visits::Visits;
+use crate::game::components::night_visits::{NightVisitsIterator as _, Visits};
 use crate::game::event::on_midnight::{MidnightVariables, OnMidnightPriority};
 use crate::game::components::graves::grave::GraveKiller;
 use crate::game::{attack_power::DefensePower, chat::ChatMessageVariant};
@@ -10,7 +11,7 @@ use crate::game::phase::PhaseType;
 use crate::game::abilities_component::ability_id::AbilityID;
 use crate::game::player::PlayerReference;
 
-use crate::game::visit::Visit;
+use crate::game::visit::{Visit, VisitTag};
 
 use crate::game::Game;
 use super::{common_role, BooleanSelection, ControllerID, ControllerParametersMap, GetClientAbilityState, Role, RoleState, RoleStateTrait};
@@ -85,8 +86,8 @@ impl RoleStateTrait for Engineer {
                             actor_ref.edit_role_ability_helper(game, Engineer {trap: Trap::Ready});
                         },
                         Trap::Ready => {
-                            if let Some(visit) = actor_ref.role_night_visits_cloned(midnight_variables).first(){
-                                actor_ref.edit_role_ability_helper(game, Engineer {trap: Trap::Set{target: visit.target}});
+                            if let Some(target) = Visits::default_target(midnight_variables, actor_ref, Role::Engineer) {
+                                actor_ref.edit_role_ability_helper(game, Engineer {trap: Trap::Set{target}});
                             }
                         },
                         Trap::Set { .. } => {
@@ -116,26 +117,29 @@ impl RoleStateTrait for Engineer {
                 }
             }
             OnMidnightPriority::Investigative => {
-                if let Trap::Set { target, .. } = self.trap {
+                if
+                    let Trap::Set { target, .. } = self.trap &&
+                    (
+                        target.night_attacked(midnight_variables) ||
+                        Visits::into_iter(midnight_variables)
+                            .with_target(target)
+                            .with_direct()
+                            .filter(|v|v.tag != VisitTag::Role { role: Role::Engineer, id: 0 } || v.visitor != actor_ref)
+                            .count() > 0
+                    )
+                {
+                    actor_ref.edit_role_ability_helper(game, RoleState::Engineer(Engineer {trap: Trap::Dismantled}));
+                    let mut visit_tags: Vec<VisitTag> = Visits::into_iter(midnight_variables)
+                        .with_investigatable()
+                        .with_target(target)
+                        .filter(|v|v.tag != VisitTag::Role { role: Role::Engineer, id: 0 } || v.visitor != actor_ref)
+                        .map_tag()
+                        .collect();
+                    visit_tags.shuffle(&mut rand::rng());
 
-                    let mut should_dismantle = false;
-
-                    if target.night_attacked(midnight_variables){
-                        should_dismantle = true;
-                    }
-
-                    for visitor in target.all_direct_night_visitors_cloned(midnight_variables) {
-                        if visitor != actor_ref{
-                            actor_ref.push_night_message(midnight_variables, ChatMessageVariant::EngineerVisitorsRole { role: visitor.role(game) });
-                            should_dismantle = true;
-                        }
-                    }
-
-                    if should_dismantle {
-                        actor_ref.edit_role_ability_helper(game, RoleState::Engineer(Engineer {trap: Trap::Dismantled}));
-                    }
+                    actor_ref.push_night_message(midnight_variables, ChatMessageVariant::SpyBug { visit_tags } );
                 }
-
+                
                 if let RoleState::Engineer(Engineer { trap }) = actor_ref.role_state(game){
                     actor_ref.push_night_message(midnight_variables, ChatMessageVariant::TrapStateEndOfNight { state: trap.state() });
                 }

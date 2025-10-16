@@ -158,7 +158,7 @@ impl Game{
 
         //initial role creation calls "on role created". It acts as if your role was just switched but doesnt call on role switch
         for player_ref in PlayerReference::all_players(&game){
-            player_ref.initial_role_creation(&mut game);
+            player_ref.initial_set_role_insider_wincondition(&mut game);
         }
 
         for player_ref in PlayerReference::all_players(&game){

@@ -1,6 +1,7 @@
 use rand::prelude::SliceRandom;
 use serde::Serialize;
 use crate::game::components::blocked::BlockedComponent;
+use crate::game::components::night_visits::{NightVisitsIterator as _, Visits};
 use crate::game::event::on_midnight::{MidnightVariables, OnMidnightPriority};
 use crate::game::event::on_whisper::{OnWhisper, WhisperFold, WhisperPriority};
 use crate::game::{attack_power::DefensePower, chat::ChatMessageVariant};
@@ -23,13 +24,10 @@ impl RoleStateTrait for Informant {
     type ClientAbilityState = Informant;
     fn on_midnight(self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut MidnightVariables, priority: OnMidnightPriority) {
         if priority != OnMidnightPriority::Investigative {return}
-        
 
-        let actor_visits = actor_ref.role_night_visits_cloned(midnight_variables);
-        for visit in actor_visits{
+        for visit in Visits::into_iter(midnight_variables).default_visits(actor_ref, Role::Informant){
             let target_ref = visit.target;
-
-            let mut visited_by: Vec<PlayerReference> = visit.target.lookout_seen_players(midnight_variables, visit).collect();
+            let mut visited_by: Vec<PlayerReference> = target_ref.lookout_seen_players(midnight_variables, visit).collect();
             visited_by.shuffle(&mut rand::rng());
 
             let mut visited: Vec<PlayerReference> = target_ref.tracker_seen_players(midnight_variables).collect();

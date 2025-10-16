@@ -24,7 +24,7 @@ impl RoleStateTrait for Consort {
         if priority != OnMidnightPriority::Roleblock {return;}
         
 
-        if let Some(visit) = Visits::default_visit(game, midnight_variables, actor_ref) {
+        if let Some(visit) = Visits::default_visit(midnight_variables, actor_ref, Role::Consort) {
             let target_ref = visit.target;
 
             target_ref.roleblock(game, midnight_variables, true);

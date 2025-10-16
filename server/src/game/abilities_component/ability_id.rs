@@ -3,7 +3,7 @@ use crate::game::{
 };
 
 
-#[derive(Clone, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(Clone, PartialEq, Eq, PartialOrd, Ord, Debug)]
 pub enum AbilityID{
     Role{role: Role, player: PlayerReference},
     Pitchfork,
@@ -42,6 +42,13 @@ impl AbilityID{
     pub fn get_player_from_role_id(&self)->Option<PlayerReference>{
         if let Self::Role { player, .. } = self {
             Some(*player)
+        }else{
+            None
+        }
+    }
+    pub fn get_role_from_role_id(&self)->Option<Role>{
+        if let Self::Role { role, .. } = self {
+            Some(*role)
         }else{
             None
         }

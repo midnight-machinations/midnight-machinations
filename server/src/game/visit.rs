@@ -1,3 +1,5 @@
+use serde::Serialize;
+
 use super::{player::PlayerReference, role::Role};
 
 #[derive(Copy, Clone, Debug, PartialEq, Eq)]
@@ -30,18 +32,6 @@ impl Visit {
             indirect: false,
         }
     }
-    pub fn new_none(visitor: PlayerReference, target: PlayerReference)->Self{
-        Self {
-            visitor,
-            target,
-            tag: VisitTag::None,
-            attack: false,
-            wardblock_immune: false,
-            transport_immune: false,
-            investigate_immune: false,
-            indirect: false
-        }
-    }
     pub fn new_appeared(visitor: PlayerReference, target: PlayerReference)->Self{
         Self {
             visitor,
@@ -56,11 +46,11 @@ impl Visit {
     }
 }
 
-#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord, Serialize)]
+#[serde(tag = "type", rename_all = "camelCase")]
 pub enum VisitTag{
-    None,
     Role{role: Role, id: u8},
-    SyndicateGunItem,
+    SyndicateGun,
     SyndicateBackupAttack,
     Appeared
 }

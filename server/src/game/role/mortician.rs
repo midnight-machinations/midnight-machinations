@@ -1,6 +1,7 @@
 
 use serde::Serialize;
 use crate::game::components::blocked::BlockedComponent;
+use crate::game::components::night_visits::Visits;
 use crate::game::controllers::AvailablePlayerListSelection;
 use crate::game::attack_power::DefensePower;
 use crate::game::chat::ChatMessageVariant;
@@ -55,16 +56,13 @@ impl RoleStateTrait for Mortician {
         }
     }
     fn on_midnight(self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut MidnightVariables, priority: OnMidnightPriority) {
-        match priority {
-            OnMidnightPriority::Deception=>{
-                let actor_visits = actor_ref.role_night_visits_cloned(midnight_variables);
-                let Some(visit) = actor_visits.first() else{return};
-
-                Tags::add_tag(game, TagSetID::MorticianTag(actor_ref), visit.target);
-                
-            },
-            _ => {}
-        }
+        if priority != OnMidnightPriority::Deception {return;}
+        let Some(target) = Visits::default_target(midnight_variables, actor_ref, Role::Mortician) else {return};
+        Tags::add_tag(
+            game,
+            TagSetID::MorticianTag(actor_ref),
+            target
+        );
     }
     fn controller_parameters_map(self, game: &Game, actor_ref: PlayerReference) -> ControllerParametersMap {
         ControllerParametersMap::builder(game)

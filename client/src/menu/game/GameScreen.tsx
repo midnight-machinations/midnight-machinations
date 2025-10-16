@@ -11,7 +11,6 @@ import "./gameScreen.css";
 import AbilityMenu from "./gameScreenContent/AbilityMenu/AbilityMenu";
 import { addSwipeEventListener, MobileContext, removeSwipeEventListener } from "../Anchor";
 import StyledText from "../../components/StyledText";
-import { WikiArticleLink } from "../../components/WikiArticleLink";
 import Icon from "../../components/Icon";
 import { Button } from "../../components/Button";
 import translate from "../../game/lang";
@@ -311,7 +310,6 @@ export function GameScreenMenus(): ReactElement {
 }
 
 export function ContentTab(props: Readonly<{
-    helpMenu: WikiArticleLink | null
     close: ContentMenu | false, 
     children: string 
 }>): ReactElement {
@@ -333,15 +331,6 @@ export function ContentTab(props: Readonly<{
             onClick={()=>menuController.closeMenu(props.close as ContentMenu)}
         >
             <Icon size="small">close</Icon>
-        </Button>}
-        {props.helpMenu && !spectator && <Button className="help"
-            onClick={()=>{
-                menuController.openMenu(ContentMenu.WikiMenu, ()=>{
-                    props.helpMenu && GAME_MANAGER.setWikiArticle(props.helpMenu);
-                });
-            }}
-        >
-            <Icon size="small">question_mark</Icon>
         </Button>}
     </div>
 }

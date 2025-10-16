@@ -526,12 +526,6 @@ export function createGameManager(): GameManager {
                 controllerInput: input
             });
         },
-        sendSetDoomsayerGuess(guesses) {
-            this.server.sendPacket({
-                type: "setDoomsayerGuess",
-                guesses: guesses
-            });
-        },
         sendSetConsortOptions(
             roleblock: boolean,
             youWereRoleblockedMessage: boolean,

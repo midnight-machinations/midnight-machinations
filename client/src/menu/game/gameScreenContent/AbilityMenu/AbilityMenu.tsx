@@ -13,7 +13,7 @@ export default function AbilityMenu(): ReactElement {
     )!;
 
     return <div className="ability-menu role-specific-colors">
-        <ContentTab close={ContentMenu.RoleSpecificMenu} helpMenu={"standard/abilityMenu"}>
+        <ContentTab close={ContentMenu.RoleSpecificMenu}>
             {translate("menu.ability.title")}
         </ContentTab>
         {!mySpectator && <div>

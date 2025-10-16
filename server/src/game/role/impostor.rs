@@ -28,7 +28,7 @@ pub(super) const DEFENSE: DefensePower = DefensePower::None;
 impl RoleStateTrait for Impostor {
     type ClientAbilityState = Impostor;
     fn on_midnight(self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut MidnightVariables, priority: OnMidnightPriority) {
-        Godfather::night_kill_ability(game, midnight_variables, actor_ref, priority);
+        Godfather::night_kill_ability(game, midnight_variables, actor_ref, priority, Role::Impostor);
     }
     fn convert_selection_to_visits(self, game: &Game, actor_ref: PlayerReference) -> Vec<Visit> {
         crate::game::role::common_role::convert_controller_selection_to_visits(

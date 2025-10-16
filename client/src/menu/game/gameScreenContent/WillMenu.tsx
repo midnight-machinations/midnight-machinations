@@ -29,9 +29,9 @@ export default function WillMenu(): ReactElement {
         ["yourSendChatGroups"]
     )!;
 
-    const role = usePlayerState(
-        playerState => playerState.roleState.type,
-        ["yourRoleState"]
+    const myRole = usePlayerState(
+        playerState => playerState.myRole,
+        ["yourRole"]
     )!;
 
     const savedAbilities = usePlayerState(
@@ -67,9 +67,8 @@ export default function WillMenu(): ReactElement {
     return <div className="will-menu will-menu-colors">
         <ContentTab
             close={ContentMenu.WillMenu}
-            helpMenu={"standard/alibi"}
         >
-                {translate("menu.will.title")}
+            {translate("menu.will.title")}
         </ContentTab>
         <section>
             <TextDropdownArea
@@ -81,7 +80,7 @@ export default function WillMenu(): ReactElement {
                     GAME_MANAGER.sendSaveWillPacket(text);
                 }}
             />
-            {getSingleRoleJsonData(role).canWriteDeathNote===true ? <TextDropdownArea
+            {getSingleRoleJsonData(myRole).canWriteDeathNote===true ? <TextDropdownArea
                 titleString={translate("menu.will.deathNote")}
                 savedText={deathNote}
                 cantPost={cantPost}

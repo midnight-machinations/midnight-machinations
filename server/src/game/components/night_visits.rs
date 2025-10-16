@@ -1,7 +1,7 @@
 use std::borrow::Borrow;
 
 use crate::game::{
-    components::insider_group::InsiderGroupID, event::on_midnight::MidnightVariables, game_conclusion::GameConclusion, player::PlayerReference, visit::{Visit, VisitTag}, Game
+    components::insider_group::InsiderGroupID, event::on_midnight::MidnightVariables, game_conclusion::GameConclusion, player::PlayerReference, role::Role, visit::{Visit, VisitTag}, Game
 };
 
 #[derive(Default)]
@@ -9,10 +9,6 @@ pub struct Visits;
 
 
 impl Visits{
-    // mutators
-    fn clear_visits_from_visitor(midnight_variables: &mut MidnightVariables, visitor: PlayerReference){
-        Self::retain(midnight_variables, |visit| visit.visitor != visitor);
-    }
     pub fn add_visit(midnight_variables: &mut MidnightVariables, visits: Visit){
         midnight_variables.visits_mut().push(visits);
     }
@@ -27,10 +23,10 @@ impl Visits{
 }
 
 impl PlayerReference{
-    pub fn role_night_visits_cloned(&self, midnight_variables: &MidnightVariables) -> Vec<Visit>{
+    pub fn role_night_visits_cloned(&self, midnight_variables: &MidnightVariables, role: Role) -> Vec<Visit>{
         Visits::iter(midnight_variables)
             .with_visitor(*self)
-            .filter(|visit| matches!(visit.tag, VisitTag::Role{..}))
+            .filter(|visit| if let VisitTag::Role { role: r, id: _ } = visit.tag { r == role } else { false })
             .copied()
             .collect()
     }
@@ -41,11 +37,6 @@ impl PlayerReference{
             .with_direct()
             .map_visitor()
     }
-    pub fn set_night_visits(&self, midnight_variables: &mut MidnightVariables, visits: Vec<Visit>){
-        Visits::clear_visits_from_visitor(midnight_variables, *self);
-        Visits::add_visits(midnight_variables, visits);
-    }
-
 
     pub fn tracker_seen_players(self, midnight_variables: &MidnightVariables) -> impl Iterator<Item = PlayerReference> {
         Visits::into_iter(midnight_variables)
@@ -75,19 +66,20 @@ impl Visits{
     }
 
 
-    pub fn default_target(game: &Game, midnight_variables: &MidnightVariables, actor: PlayerReference) -> Option<PlayerReference>{
+    pub fn default_target(midnight_variables: &MidnightVariables, actor: PlayerReference, role: Role) -> Option<PlayerReference>{
         Self::into_iter(midnight_variables)
-            .default_target(game, actor)
+            .default_target(actor, role)
     }
-    pub fn default_visit(game: &Game, midnight_variables: &MidnightVariables, actor: PlayerReference) -> Option<Visit>{
+    pub fn default_visit(midnight_variables: &MidnightVariables, actor: PlayerReference, role: Role) -> Option<Visit>{
         Self::into_iter(midnight_variables)
-            .default_visit(game, actor)
+            .default_visit(actor, role)
     }
 }
 pub trait NightVisitsIterator: Sized {
     type Item;
 
     fn with_visitor(self, player: PlayerReference) -> impl Iterator<Item = Self::Item>;
+    fn without_visitor(self, player: PlayerReference) -> impl Iterator<Item = Self::Item>;
     fn with_target(self, player: PlayerReference) -> impl Iterator<Item = Self::Item>;
     fn without_visit(self, visit: Visit) -> impl Iterator<Item = Self::Item>;
     fn with_alive_visitor(self, game: &Game) -> impl Iterator<Item = Self::Item>;
@@ -97,12 +89,16 @@ pub trait NightVisitsIterator: Sized {
     fn with_investigatable(self) -> impl Iterator<Item = Self::Item>;
     fn with_direct(self) -> impl Iterator<Item = Self::Item>;
     fn with_tag(self, visit_tag: VisitTag) -> impl Iterator<Item = Self::Item>;
+    fn without_tag(self, visit_tag: VisitTag) -> impl Iterator<Item = Self::Item>;
 
     fn map_visitor(self) -> impl Iterator<Item = PlayerReference>;
     fn map_target(self) -> impl Iterator<Item = PlayerReference>;
+    fn map_tag(self) -> impl Iterator<Item = VisitTag>;
 
-    fn default_visit(self, game: &Game, actor: PlayerReference) -> Option<Self::Item>;
-    fn default_target(self, game: &Game, actor: PlayerReference) -> Option<PlayerReference>;
+    fn default_visit(self, actor: PlayerReference, role: Role) -> Option<Self::Item>;
+    fn default_visits(self, actor: PlayerReference, role: Role) -> impl Iterator<Item = Self::Item>;
+    fn default_target(self, actor: PlayerReference, role: Role) -> Option<PlayerReference>;
+    fn default_targets(self, actor: PlayerReference, role: Role) -> impl Iterator<Item = PlayerReference>;
 
     fn with_appeared(self, midnight_variables: &MidnightVariables) -> impl Iterator<Item = Self::Item>;
 }
@@ -114,6 +110,9 @@ where
     type Item = T::Item;
     fn with_visitor(self, player: PlayerReference) -> impl Iterator<Item = Self::Item>{
         self.filter(move |v|v.borrow().visitor == player)
+    }
+    fn without_visitor(self, player: PlayerReference) -> impl Iterator<Item = Self::Item>{
+        self.filter(move |v|v.borrow().visitor != player)
     }
     fn with_target(self, player: PlayerReference) -> impl Iterator<Item = Self::Item>{
         self.filter(move |v|v.borrow().target == player)
@@ -142,24 +141,39 @@ where
     fn with_tag(self, visit_tag: VisitTag) -> impl Iterator<Item = Self::Item>{
         self.filter(move |v|v.borrow().tag == visit_tag)
     }
+    fn without_tag(self, visit_tag: VisitTag) -> impl Iterator<Item = Self::Item>{
+        self.filter(move |v|v.borrow().tag != visit_tag)
+    }
 
     fn map_visitor(self) -> impl Iterator<Item = PlayerReference>{
         self.map(|v|v.borrow().visitor)
+    }
+    fn map_tag(self) -> impl Iterator<Item = VisitTag> {
+        self.map(|v|v.borrow().tag)
     }
     fn map_target(self) -> impl Iterator<Item = PlayerReference> {
         self.map(|v|v.borrow().target)
     }
 
-    fn default_visit(self, game: &Game, actor: PlayerReference) -> Option<Self::Item>{
+    fn default_visit(self, actor: PlayerReference, role: Role) -> Option<Self::Item>{
         self
-            .with_visitor(actor)
-            .with_tag(VisitTag::Role { role: actor.role(game), id: 0 })
+            .default_visits(actor, role)
             .next()
 
     }
-    fn default_target(self, game: &Game, actor: PlayerReference) -> Option<PlayerReference>{
+    fn default_visits(self, actor: PlayerReference, role: Role) -> impl Iterator<Item = Self::Item>{
         self
-            .default_visit(game, actor)
+            .with_visitor(actor)
+            .filter(move |v|if let VisitTag::Role{role: r, .. } = v.borrow().tag {r == role} else {false})
+    }
+    fn default_target(self, actor: PlayerReference, role: Role) -> Option<PlayerReference>{
+        self
+            .default_targets(actor, role)
+            .next()
+    }
+    fn default_targets(self, actor: PlayerReference, role: Role) -> impl Iterator<Item = PlayerReference>{
+        self
+            .default_visits(actor, role)
             .map(|v|v.borrow().target)
     }
 

@@ -4,6 +4,7 @@ use crate::game::attack_power::{AttackPower, DefensePower};
 use crate::game::chat::ChatMessageVariant;
 use crate::game::components::graves::grave::{GraveInformation, GraveKiller};
 use crate::game::components::graves::grave_reference::GraveReference;
+use crate::game::components::night_visits::Visits;
 use crate::game::event::on_midnight::{MidnightVariables, OnMidnightPriority};
 use crate::game::player::PlayerReference;
 use crate::game::abilities_component::ability_id::AbilityID;
@@ -42,22 +43,18 @@ impl RoleStateTrait for Pyrolisk {
                         *other_player_ref != actor_ref
                     ).collect::<Vec<PlayerReference>>()
                 {
-                    let attack_success = other_player_ref.try_night_kill_single_attacker(actor_ref, game, midnight_variables, GraveKiller::Role(Role::Pyrolisk), AttackPower::ArmorPiercing, true);
-                    if attack_success {
+                    if other_player_ref.try_night_kill_single_attacker(actor_ref, game, midnight_variables, GraveKiller::Role(Role::Pyrolisk), AttackPower::ArmorPiercing, true) {
                         tagged_for_obscure.insert(other_player_ref);
                         killed_at_least_once = true;
                     }
-                    
                 }
 
-                if !killed_at_least_once {
-                    let actor_visits = actor_ref.role_night_visits_cloned(midnight_variables);
-                    if let Some(visit) = actor_visits.first(){
-                        let attack_success = visit.target.try_night_kill_single_attacker(actor_ref, game, midnight_variables, GraveKiller::Role(Role::Pyrolisk), AttackPower::ArmorPiercing, true);
-                        if attack_success {
-                            tagged_for_obscure.insert(visit.target);
-                        }
-                    }
+                if
+                    !killed_at_least_once &&
+                    let Some(target_ref) = Visits::default_target(midnight_variables, actor_ref, Role::Pyrolisk) &&
+                    target_ref.try_night_kill_single_attacker(actor_ref, game, midnight_variables, GraveKiller::Role(Role::Pyrolisk), AttackPower::ArmorPiercing, true)
+                {
+                    tagged_for_obscure.insert(target_ref);
                 }
                 
                 actor_ref.edit_role_ability_helper(game, Pyrolisk{tagged_for_obscure});
