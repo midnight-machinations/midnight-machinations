@@ -1,6 +1,7 @@
 
 use serde::Serialize;
 
+use crate::game::components::night_visits::Visits;
 use crate::game::controllers::AvailableIntegerSelection;
 use crate::game::attack_power::{AttackPower, DefensePower};
 use crate::game::components::mafia_recruits::MafiaRecruits;
@@ -57,8 +58,10 @@ impl RoleStateTrait for Recruiter {
 
         match priority {
             OnMidnightPriority::Kill => {
-                let actor_visits = actor_ref.role_night_visits_cloned(midnight_variables);
-                if let Some(visit) = actor_visits.first() && Recruiter::night_ability(self.clone(), game, midnight_variables, actor_ref, visit.target) {
+                if
+                    let Some(target_ref) = Visits::default_target(midnight_variables, actor_ref, Role::Recruiter) &&
+                    Recruiter::night_ability(self.clone(), game, midnight_variables, actor_ref, target_ref)
+                {
                     if choose_attack {
                         actor_ref.edit_role_ability_helper(game, Recruiter{recruits_remaining: self.recruits_remaining.saturating_add(1)})
                     }else{

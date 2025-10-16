@@ -566,6 +566,10 @@
     "controllerId.role.yer.1.name": "Choose Target",
     "controllerId.role.yer.2.name": "Disguise as Role",
 
+    "role.solorebel.name": "Solorebel",
+    "role.solorebel.name:var.0": "Solorebels",
+    "controllerId.role.solorebel.0.name": "Attack",
+
     "role.serialKiller.name": "Serial Killer",
     "role.serialKiller.name:var.0": "Serial Killers",
     "controllerId.role.serialKiller.0.name": "Attack",
@@ -1919,6 +1923,12 @@
     "wiki.article.role.serialKiller.abilities":"* Visit a player to attack",
     "wiki.article.role.serialKiller.attributes":"- You have an armor-piercing attack",
     "wiki.article.role.serialKiller.extra":"",
+    
+    "wiki.article.role.solorebel.reminder": "Each night, select a player to attack. You are given 2 random syndicate abilities.",
+    "wiki.article.role.solorebel.guide": "- At night select a player to attack them with an armor piercing attack.\n    - You can't use your ability night 1.\n - When you becomes this role, You are given 2 different random syndicate support abilities.\n    - You can't be given reeducator",
+    "wiki.article.role.solorebel.abilities":"",
+    "wiki.article.role.solorebel.attributes":"",
+    "wiki.article.role.solorebel.extra":"- Your ability breaks role limits, you can be given an ability with role limite 1, even if there is a player with that ability in the game.",
     
     "wiki.article.role.mafiaKillingWildcard.reminder": "Choose a syndicate killing role to become that role when dusk starts.",
     "wiki.article.role.mafiaKillingWildcard.guide": "* Choose a syndicate killing role to become that role\n    * You become that role when dusk starts\n* You likely can't become a role if someone already has that role (You can't become a role that has exceeded its role limit)",

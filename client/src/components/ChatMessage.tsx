@@ -18,12 +18,19 @@ import ListMap from "../ListMap";
 import { Button } from "./Button";
 
 
-function canCopyPasteChatMessages(roleState?: RoleState): boolean{
-    return roleState?.type === "forger" || roleState?.type === "counterfeiter" || roleState?.type === "cerenovous";
+function canCopyPasteChatMessages(roleStates?: ListMap<Role, RoleState>): boolean{
+    if(roleStates===undefined) return false;
+    for(const roleState of roleStates.values()){
+        if(roleState.type === "forger" || roleState.type === "counterfeiter" || roleState.type === "cerenovous"){
+            return true;
+        }
+    }
+    return false;
 }
 
 const ChatElement = React.memo((
     props: {
+        canCopyPaste?: boolean,
         messageIndex?: ChatMessageIndex,
         message: ChatMessage,
         playerNames?: string[],
@@ -33,10 +40,11 @@ const ChatElement = React.memo((
         roleListKeywordData?: KeywordDataMap,
     }, 
 ) => {
-    const roleState = usePlayerState(
-        playerState => playerState.roleState,
+    const roleStates = usePlayerState(
+        playerState => playerState.roleStates,
         ["yourRoleState"]
     );
+    const canCopyPaste = props.canCopyPaste ?? canCopyPasteChatMessages(roleStates);
     const forwardButton = usePlayerState(
         playerState => {
             let controller = new ListMap(playerState.savedControllers, (a,b)=>a.type===b.type)
@@ -100,7 +108,7 @@ const ChatElement = React.memo((
                 style={style}
                 chatGroupIcon={chatGroupIcon!}
                 playerNames={playerNames}
-                roleState={roleState}
+                canCopyPaste={canCopyPaste}
                 playerKeywordData={props.playerKeywordData}
                 playerSenderKeywordData={props.playerSenderKeywordData}
                 roleListKeywordData={props.roleListKeywordData}
@@ -194,7 +202,7 @@ const ChatElement = React.memo((
             className="chat-message-div-small-button-div"
         >
             {
-                canCopyPasteChatMessages(roleState)
+                canCopyPaste
                 && <CopyButton
                     className="chat-message-div-small-button"
                     text={translateChatMessage(message.variant, playerNames, roleList)}
@@ -289,7 +297,7 @@ function NormalChatMessage(props: Readonly<{
     style: string,
     chatGroupIcon: string,
     playerNames: UnsafeString[],
-    roleState: RoleState | undefined,
+    canCopyPaste: boolean,
     playerKeywordData: KeywordDataMap | undefined,
     playerSenderKeywordData: KeywordDataMap | undefined,
     roleListKeywordData?: KeywordDataMap,
@@ -353,7 +361,7 @@ function NormalChatMessage(props: Readonly<{
             className="chat-message-div-small-button-div"
         >
             {
-                canCopyPasteChatMessages(props.roleState)
+                props.canCopyPaste
                 && <CopyButton
                     className="chat-message-div-small-button"
                     text={translateChatMessage(props.message.variant, props.playerNames, props.roleList)}

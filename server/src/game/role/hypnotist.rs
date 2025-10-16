@@ -1,5 +1,6 @@
 use serde::Serialize;
 
+use crate::game::components::night_visits::Visits;
 use crate::game::event::on_midnight::{MidnightVariables, OnMidnightPriority};
 use crate::game::{attack_power::DefensePower, chat::ChatMessageVariant};
 use crate::game::player::PlayerReference;
@@ -43,13 +44,7 @@ pub(super) const DEFENSE: DefensePower = DefensePower::None;
 impl RoleStateTrait for Hypnotist {
     type ClientAbilityState = Hypnotist;
     fn on_midnight(self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut MidnightVariables, priority: OnMidnightPriority) {
-
-        let actor_visits = actor_ref.role_night_visits_cloned(midnight_variables);
-        let Some(visit) = actor_visits.first() else {
-            return;
-        };
-        let target_ref = visit.target;
-        
+        let Some(target_ref) = Visits::default_target(midnight_variables, actor_ref, Role::Hypnotist) else {return};
 
         match priority {
             OnMidnightPriority::TopPriority => {

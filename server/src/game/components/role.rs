@@ -31,10 +31,13 @@ impl RoleComponent{
         let Ability::Role(RoleAbility(new_role_data)) = new_ability else {return};
 
         if !new_role_data.role().should_inform_player_of_assignment() {return}
-        if player.role(game) != new_role_data.role() {return} 
-
         player.send_packet(game, ToClientPacket::YourRoleState {
             role_state: new_role_data.clone().get_client_ability_state(game, player)
+        });
+
+        if player.role(game) != new_role_data.role() {return}
+        player.send_packet(game, ToClientPacket::YourRole {
+            role: new_role_data.role()
         });
     }
 }

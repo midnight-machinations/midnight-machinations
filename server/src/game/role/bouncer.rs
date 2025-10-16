@@ -21,7 +21,7 @@ pub(super) const DEFENSE: DefensePower = DefensePower::None;
 impl RoleStateTrait for Bouncer {
     type ClientAbilityState = Bouncer;
     fn on_midnight(self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut MidnightVariables, priority: OnMidnightPriority) {
-        if let Some(target) = Visits::default_target(game, midnight_variables, actor_ref) {
+        if let Some(target) = Visits::default_target(midnight_variables, actor_ref, Role::Bouncer) {
             target.ward_night_action(game, midnight_variables, priority);
         }
     }

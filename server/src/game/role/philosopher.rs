@@ -1,6 +1,7 @@
 use serde::Serialize;
 use crate::game::abilities_component::ability_id::AbilityID;
 
+use crate::game::components::night_visits::{NightVisitsIterator as _, Visits};
 use crate::game::controllers::AvailableTwoPlayerOptionSelection;
 use crate::game::components::aura::Aura;
 use crate::game::components::confused::Confused;
@@ -27,9 +28,9 @@ impl RoleStateTrait for Philosopher {
     fn on_midnight(self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut MidnightVariables, priority: OnMidnightPriority) {
         if priority != OnMidnightPriority::Investigative {return;}
 
-        let actor_visits = actor_ref.role_night_visits_cloned(midnight_variables);
-        let Some(first_visit) = actor_visits.get(0) else {return;};
-        let Some(second_visit) = actor_visits.get(1) else {return;};
+        let mut actor_visits = Visits::into_iter(midnight_variables).default_visits(actor_ref, Role::Philosopher);
+        let Some(first_visit) = actor_visits.next() else {return;};
+        let Some(second_visit) = actor_visits.next() else {return;};
 
         let enemies = if Confused::is_confused(game, actor_ref) {
             false

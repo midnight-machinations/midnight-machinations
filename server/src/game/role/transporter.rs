@@ -1,5 +1,6 @@
 use serde::Serialize;
 use crate::game::abilities_component::ability_id::AbilityID;
+use crate::game::components::night_visits::{NightVisitsIterator as _, Visits};
 use crate::game::controllers::AvailableTwoPlayerOptionSelection;
 use crate::game::event::on_midnight::{MidnightVariables, OnMidnightPriority};
 use crate::game::attack_power::DefensePower;
@@ -26,9 +27,9 @@ impl RoleStateTrait for Transporter {
     fn on_midnight(self, _game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut MidnightVariables, priority: OnMidnightPriority) {
         if priority != OnMidnightPriority::Transporter {return;}
     
-        let transporter_visits = actor_ref.role_night_visits_cloned(midnight_variables);
-        let Some(first_visit) = transporter_visits.get(0).map(|v| v.target) else {return};
-        let Some(second_visit) = transporter_visits.get(1).map(|v| v.target) else {return};
+        let mut transporter_visits = Visits::into_iter(midnight_variables).default_visits(actor_ref, Role::Transporter);
+        let Some(first_visit) = transporter_visits.next().map(|v| v.target) else {return};
+        let Some(second_visit) = transporter_visits.next().map(|v| v.target) else {return};
         
         Transport::transport(
             midnight_variables, TransportPriority::Transporter, 

@@ -28,7 +28,7 @@ impl RoleStateTrait for Snoop {
 
         let buddy = ControllerID::role(actor_ref, Role::Snoop, 1).get_role_list_selection_first(game).copied();
 
-        if let Some(visit) = Visits::default_visit(game, midnight_variables, actor_ref) {
+        if let Some(visit) = Visits::default_visit(midnight_variables, actor_ref, Role::Snoop) {
 
             let townie = if Confused::is_confused(game, actor_ref) {
                 Snoop::confused_result()

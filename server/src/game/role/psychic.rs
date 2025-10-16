@@ -4,6 +4,7 @@ use serde::Serialize;
 use crate::game::abilities_component::ability_id::AbilityID;
 use crate::game::components::aura::Aura;
 use crate::game::components::confused::Confused;
+use crate::game::components::night_visits::Visits;
 use crate::game::event::on_midnight::{MidnightVariables, OnMidnightPriority};
 use crate::game::visit::Visit;
 use crate::game::{attack_power::DefensePower, chat::ChatMessageVariant};
@@ -25,16 +26,13 @@ impl RoleStateTrait for Psychic {
     type ClientAbilityState = Psychic;
     fn on_midnight(self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut MidnightVariables, priority: OnMidnightPriority) {
         if priority != OnMidnightPriority::Investigative {return}
-
-        
-                let actor_visits = actor_ref.role_night_visits_cloned(midnight_variables);
-                let Some(visit) = actor_visits.first() else {return};
+        let Some(target_ref) = Visits::default_target(midnight_variables, actor_ref, Role::Psychic) else {return};
 
         actor_ref.push_night_message(midnight_variables, 
             if game.day_number() % 2 == 1 {
-                Psychic::get_result_evil(game, midnight_variables, actor_ref, visit.target, Confused::is_confused(game, actor_ref))
+                Psychic::get_result_evil(game, midnight_variables, actor_ref, target_ref, Confused::is_confused(game, actor_ref))
             }else{
-                Psychic::get_result_good(game, midnight_variables, actor_ref, visit.target, Confused::is_confused(game, actor_ref))
+                Psychic::get_result_good(game, midnight_variables, actor_ref, target_ref, Confused::is_confused(game, actor_ref))
             }
         );
     }

@@ -141,6 +141,9 @@ export type ToClientPacket = {
     type: "yourDeathNote", 
     deathNote: UnsafeString | null
 } | {
+    type: "yourRole",
+    role: Role    
+} | {
     type: "yourRoleState",
     roleState: RoleState
 } | {

@@ -42,7 +42,7 @@ impl RoleStateTrait for Reeducator {
     type ClientAbilityState = Reeducator;
     fn on_midnight(mut self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut MidnightVariables, priority: OnMidnightPriority) {
         if !matches!(priority, OnMidnightPriority::Convert) {return}
-        let Some(target) = Visits::default_target(game, midnight_variables, actor_ref) else {return};
+        let Some(target) = Visits::default_target(midnight_variables, actor_ref, Role::Reeducator) else {return};
         let Some(role) = ControllerID::role(actor_ref, Role::Reeducator, 1).get_role_list_selection_first(game) else {return};
         if !self.convert_charges_remaining {return}
         

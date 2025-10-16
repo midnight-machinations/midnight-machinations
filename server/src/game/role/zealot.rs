@@ -23,7 +23,7 @@ impl RoleStateTrait for Zealot {
     type ClientAbilityState = Zealot;
     fn on_midnight(self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut MidnightVariables, priority: OnMidnightPriority) {
         if !matches!(priority, OnMidnightPriority::Kill) {return}
-        let Some(target) = Visits::default_target(game, midnight_variables, actor_ref) else {return};
+        let Some(target) = Visits::default_target(midnight_variables, actor_ref, Role::Zealot) else {return};
         if !Cult::can_kill_tonight(game) {return}
 
         target.try_night_kill_single_attacker(

@@ -1220,6 +1220,20 @@
             {"type": "youAttackedSomeone"}
         ]
     },
+    "solorebel": {
+        "mainRoleSet": "fiends",
+        "roleSets": ["fiends"],
+        "armor": true,
+        "aura": null,
+        "maxCount": null,
+        "canWriteDeathNote": true,
+        "canBeConvertedTo": [],
+        "chatMessages":[
+            {"type": "someoneSurvivedYourAttack"},
+            {"type": "youSurvivedAttack"},
+            {"type": "youAttackedSomeone"}
+        ]
+    },
     "kira": {
         "mainRoleSet": "fiends",
         "roleSets": ["fiends"],

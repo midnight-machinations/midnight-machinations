@@ -44,7 +44,7 @@ impl RoleStateTrait for Armorsmith {
     type ClientAbilityState = ClientRoleState;
     fn on_midnight(mut self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut MidnightVariables, priority: OnMidnightPriority) {
         if priority != OnMidnightPriority::Heal {return;}
-        let Some(target) = Visits::default_target(game, midnight_variables, actor_ref) else {return};
+        let Some(target) = Visits::default_target(midnight_variables, actor_ref, Role::Armorsmith) else {return};
         if self.open_shops_remaining == 0 {return}
 
         self.night_open_shop = true;

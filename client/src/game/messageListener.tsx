@@ -455,9 +455,15 @@ export default function messageListener(packet: ToClientPacket){
             if(GAME_MANAGER.state.stateType === "game" && GAME_MANAGER.state.clientState.type === "player")
                 GAME_MANAGER.state.clientState.deathNote = packet.deathNote ?? "";
         break;
+        case "yourRole":
+            if(GAME_MANAGER.state.stateType === "game" && GAME_MANAGER.state.clientState.type === "player"){
+                GAME_MANAGER.state.clientState.myRole = packet.role;
+            }
+        break;
         case "yourRoleState":
             if(GAME_MANAGER.state.stateType === "game" && GAME_MANAGER.state.clientState.type === "player"){
                 GAME_MANAGER.state.clientState.roleState = packet.roleState;
+                GAME_MANAGER.state.clientState.roleStates.insert(packet.roleState.type, packet.roleState);
             }
         break;
         case "yourVoteFastForwardPhase":

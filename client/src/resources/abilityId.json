@@ -230,6 +230,9 @@
     "role/serialKiller/0": {
         "midnight": true
     },
+    "role/solorebel/0": {
+        "midnight": true
+    },
     "role/arsonist/0": {
         "midnight": true
     },

@@ -1,6 +1,7 @@
 use serde::Serialize;
 
 use crate::game::abilities_component::ability_id::AbilityID;
+use crate::game::components::night_visits::Visits;
 use crate::game::controllers::{AvailableIntegerSelection, AvailableStringSelection, RoleListSelection};
 use crate::game::attack_power::{AttackPower, DefensePower};
 use crate::game::chat::ChatMessageVariant;
@@ -59,11 +60,7 @@ impl RoleStateTrait for Counterfeiter {
         match priority {
             OnMidnightPriority::Deception => {
                 if self.forges_remaining == 0 || chose_no_forge(game, actor_ref) {return}
-                
-                let actor_visits = actor_ref.role_night_visits_cloned(midnight_variables);
-                let Some(visit) = actor_visits.first() else{return};
-
-                let target_ref = visit.target;
+                let Some(target_ref) = Visits::default_target(midnight_variables, actor_ref, Role::Counterfeiter) else {return};
 
                 let fake_role = ControllerID::role(actor_ref, Role::Counterfeiter, 1)
                     .get_role_list_selection(game)
@@ -83,14 +80,10 @@ impl RoleStateTrait for Counterfeiter {
                 });
             },
             OnMidnightPriority::Kill => {
-                let actor_visits = actor_ref.role_night_visits_cloned(midnight_variables);
-                if let Some(visit) = actor_visits.first(){
-                    let target_ref = visit.target;
-            
-                    target_ref.try_night_kill_single_attacker(
-                        actor_ref, game, midnight_variables, GraveKiller::RoleSet(RoleSet::Mafia), AttackPower::Basic, false
-                    );
-                }
+                let Some(target_ref) = Visits::default_target(midnight_variables, actor_ref, Role::Counterfeiter) else {return};
+                target_ref.try_night_kill_single_attacker(
+                    actor_ref, game, midnight_variables, GraveKiller::RoleSet(RoleSet::Mafia), AttackPower::Basic, false
+                );
             },
             OnMidnightPriority::Investigative => {
                 if let Some(forged_ref) = self.forged_ref && forged_ref.night_died(midnight_variables) {

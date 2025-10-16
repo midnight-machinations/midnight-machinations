@@ -185,6 +185,7 @@ macros::roles! {
     Kira : kira,
     Warden : warden,
     Yer : yer,
+    Solorebel : solorebel,
     FiendsWildcard : fiends_wildcard,
     SerialKiller : serial_killer,
 

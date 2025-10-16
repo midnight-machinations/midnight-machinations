@@ -70,11 +70,6 @@ function PlayerCard(props: Readonly<{
     graveIndex?: number,
     playerIndex: number
 }>): ReactElement{
-    const isPlayerSelf = usePlayerState(
-        playerState => playerState.myIndex === props.playerIndex,
-        ["yourPlayerIndex"],
-        false
-    )!;
     const chatFilter = useGameState(
         gameState => gameState.chatFilter,
         ["filterUpdate"],
@@ -152,9 +147,7 @@ function PlayerCard(props: Readonly<{
 
     const whisperNotification = usePlayerState(
         gameState =>
-            gameState.missedWhispers.some(player => player === props.playerIndex) &&
-            !isPlayerSelf &&
-            !whisperChatOpen,
+            gameState.missedWhispers.some(player => player === props.playerIndex) && !whisperChatOpen,
         ["addChatMessages", "whisperChatOpenOrClose"],
         false
     );

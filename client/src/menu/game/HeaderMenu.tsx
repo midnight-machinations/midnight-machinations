@@ -91,10 +91,10 @@ function Information(): ReactElement {
         gameState => gameState.myIndex,
         ["yourPlayerIndex"]
     )
-    const roleState = usePlayerState(
-        clientState => clientState.roleState,
-        ["yourRoleState"]
-    )
+    const myRole = usePlayerState(
+        clientState => clientState.myRole,
+        ["yourRole"]
+    )!
     const myName = useMemo(() => {
         return myIndex === undefined ? undefined : players[myIndex]?.toString()
     }, [myIndex, players])
@@ -128,7 +128,7 @@ function Information(): ReactElement {
                     </div>
                 </h3>
                 {spectator || <StyledText>
-                    {encodeString(myName ?? "undefined") + " (" + translate("role."+(roleState!.type)+".name") + ")"}
+                    {encodeString(myName ?? "undefined") + " (" + translate("role."+myRole+".name") + ")"}
                 </StyledText>}
             </div>
         </div>

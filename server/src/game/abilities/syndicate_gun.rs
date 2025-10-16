@@ -10,7 +10,7 @@ use crate::{game::{
     phase::PhaseType, player::PlayerReference, role_list::RoleSet, visit::{Visit, VisitTag}, Game
 }, vec_set};
 
-#[derive(Default, Clone)]
+#[derive(Default, Clone, Debug)]
 pub struct SyndicateGun {
     player_with_gun: Option<PlayerReference>
 }

@@ -19,7 +19,7 @@ pub(super) const DEFENSE: DefensePower = DefensePower::None;
 impl RoleStateTrait for Scarecrow {
     type ClientAbilityState = Scarecrow;
     fn on_midnight(self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut MidnightVariables, priority: OnMidnightPriority) {
-        let Some(target) = Visits::default_target(game, midnight_variables, actor_ref) else {return};
+        let Some(target) = Visits::default_target(midnight_variables, actor_ref, Role::Scarecrow) else {return};
 
         if matches!(priority, OnMidnightPriority::PreWard | OnMidnightPriority::Ward) {
             target.ward_night_action(game, midnight_variables, priority);

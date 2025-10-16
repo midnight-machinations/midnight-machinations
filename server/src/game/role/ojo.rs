@@ -32,19 +32,16 @@ impl RoleStateTrait for Ojo {
         match priority {
             OnMidnightPriority::Kill => {
                 if game.day_number() == 1 {return}
-                let actor_visits = actor_ref.role_night_visits_cloned(midnight_variables);
-                if let Some(visit) = actor_visits.first(){
-                    let target_ref = visit.target;
-            
-                    target_ref.try_night_kill_single_attacker(
-                        actor_ref,
-                        game,
-                        midnight_variables,
-                        GraveKiller::Role(Role::Ojo),
-                        AttackPower::Basic,
-                        true
-                    );
-                }
+                let Some(target_ref) = Visits::default_target(midnight_variables, actor_ref, Role::Ojo) else {return};
+        
+                target_ref.try_night_kill_single_attacker(
+                    actor_ref,
+                    game,
+                    midnight_variables,
+                    GraveKiller::Role(Role::Ojo),
+                    AttackPower::Basic,
+                    true
+                );
             },
             OnMidnightPriority::Investigative => {
                 PlayerReference::all_players(game)

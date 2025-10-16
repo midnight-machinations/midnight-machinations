@@ -25,7 +25,8 @@ pub fn on_visit_wardblocked(midnight_variables: &mut MidnightVariables, actor_re
 /// This function uses defaults. When using this function, consider if you need to override the defaults.
 /// Defaults to VisitTag::Role { role: actor_ref.role(game), id: 0 }
 pub(super) fn convert_controller_selection_to_visits(game: &Game, actor_ref: PlayerReference, controller_id: ControllerID, attack: bool) -> Vec<Visit> {
-    convert_controller_selection_to_visits_visit_tag(game, actor_ref, controller_id, attack, VisitTag::Role { role: actor_ref.role(game), id: 0 })
+    let ControllerID::Role { role, .. } = controller_id else {unreachable!("Only call this function for role controllers")};
+    convert_controller_selection_to_visits_visit_tag(game, actor_ref, controller_id, attack, VisitTag::Role { role, id: 0 })
 }
 
 pub(super) fn convert_controller_selection_to_visits_visit_tag(game: &Game, actor_ref: PlayerReference, controller_id: ControllerID, attack: bool, tag: VisitTag) -> Vec<Visit> {
@@ -189,16 +190,17 @@ pub(super) fn convert_controller_selection_to_visits_visit_tag(game: &Game, acto
 }
 
 pub(super) fn convert_controller_selection_to_visits_possession(game: &Game, actor_ref: PlayerReference, controller_id: ControllerID) -> Vec<Visit> {
+    let ControllerID::Role { role, .. } = controller_id else {unreachable!("Only call this function for role controllers")};
     let Some(selection) = controller_id.get_selection(game) else {return Vec::new()};
 
     if let ControllerSelection::TwoPlayerOption(selection) = selection {
         if let Some((target_1, target_2)) = selection.0 {
             vec![
-                Visit::new_role(actor_ref, target_1, false, actor_ref.role(game), 0 ),
+                Visit::new_role(actor_ref, target_1, false, role, 0 ),
                 Visit{
                     visitor: actor_ref,
                     target: target_2,
-                    tag: VisitTag::Role { role: actor_ref.role(game), id: 1 },
+                    tag: VisitTag::Role { role, id: 1 },
                     attack: false,
                     wardblock_immune: true,
                     transport_immune: true,

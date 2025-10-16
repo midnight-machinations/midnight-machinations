@@ -45,7 +45,7 @@ impl RoleStateTrait for Puppeteer {
         if priority != OnMidnightPriority::Kill {return;}
         if game.day_number() <= 1 {return;}
 
-        if let Some(visit) = Visits::default_visit(game, midnight_variables, actor_ref) {
+        if let Some(visit) = Visits::default_visit(midnight_variables, actor_ref, Role::Puppeteer) {
             let target = visit.target;
             
             if 

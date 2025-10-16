@@ -20,7 +20,7 @@ impl RoleStateTrait for Escort {
     type ClientAbilityState = Escort;
     fn on_midnight(self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut MidnightVariables, priority: OnMidnightPriority) {
         if priority != OnMidnightPriority::Roleblock {return;}
-        if let Some(visit) = Visits::default_visit(game, midnight_variables, actor_ref) {
+        if let Some(visit) = Visits::default_visit(midnight_variables, actor_ref, Role::Escort) {
             let target_ref = visit.target;
 
             target_ref.roleblock(game, midnight_variables, true);

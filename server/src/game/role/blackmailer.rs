@@ -25,9 +25,7 @@ impl RoleStateTrait for Blackmailer {
     type ClientAbilityState = Blackmailer;
     fn on_midnight(mut self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut MidnightVariables, priority: OnMidnightPriority) {
         if priority != OnMidnightPriority::Deception {return}
-        
-
-        if let Some(visit) = Visits::default_visit(game, midnight_variables, actor_ref) {
+        if let Some(visit) = Visits::default_visit(midnight_variables, actor_ref, Role::Blackmailer) {
             let target_ref = visit.target;
     
             Silenced::silence_night(game, midnight_variables, target_ref);

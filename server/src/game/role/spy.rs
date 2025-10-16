@@ -26,7 +26,7 @@ impl RoleStateTrait for Spy {
     fn on_midnight(self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut MidnightVariables, priority: OnMidnightPriority) {
         if priority != OnMidnightPriority::Investigative {return;}
 
-        let Some(bugged) = Visits::default_target(game, midnight_variables, actor_ref) else {return};
+        let Some(bugged) = Visits::default_target(midnight_variables, actor_ref, Role::Spy) else {return};
 
         let mut visit_tags: Vec<VisitTag> = Visits::into_iter(midnight_variables)
             .with_insider_visitor(game, InsiderGroupID::Mafia)

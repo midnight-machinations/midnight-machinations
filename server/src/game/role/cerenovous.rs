@@ -1,4 +1,5 @@
 use serde::Serialize;
+use crate::game::components::night_visits::Visits;
 use crate::game::controllers::AvailablePlayerListSelection;
 use crate::game::chat::ChatMessageVariant;
 use crate::game::components::insider_group::InsiderGroupID;
@@ -38,11 +39,8 @@ impl RoleStateTrait for Cerenovous {
     fn on_midnight(mut self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut MidnightVariables, priority: OnMidnightPriority) {
         if priority != OnMidnightPriority::Deception {return}
 
-        let actor_visits = actor_ref.role_night_visits_cloned(midnight_variables);
-        if let Some(visit) = actor_visits.first() {
+        if let Some(target_ref) = Visits::default_target(midnight_variables, actor_ref, Role::Cerenovous) {
             if self.charges != 0 {
-                let target_ref = visit.target;
-                
                 target_ref.push_night_message(midnight_variables, ChatMessageVariant::Brained);
                 self.currently_brained = Some(target_ref);
                 self.previous = Some(target_ref);

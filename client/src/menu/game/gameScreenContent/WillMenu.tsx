@@ -24,9 +24,9 @@ export default function WillMenu(): ReactElement {
         ["yourSendChatGroups"]
     )!;
 
-    const role = usePlayerState(
-        playerState => playerState.roleState.type,
-        ["yourRoleState"]
+    const myRole = usePlayerState(
+        playerState => playerState.myRole,
+        ["yourRole"]
     )!;
 
     const savedAbilities = usePlayerState(
@@ -107,7 +107,7 @@ export default function WillMenu(): ReactElement {
                     }}
                 />
             })}
-            {getSingleRoleJsonData(role).canWriteDeathNote===true ? <TextDropdownArea
+            {getSingleRoleJsonData(myRole).canWriteDeathNote===true ? <TextDropdownArea
                 titleString={translate("menu.will.deathNote")}
                 savedText={deathNote}
                 cantPost={cantPost}

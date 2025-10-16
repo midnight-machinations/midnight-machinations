@@ -1,4 +1,5 @@
 use serde::Serialize;
+use crate::game::components::night_visits::Visits;
 use crate::game::controllers::{AvailableIntegerSelection, IntegerSelection};
 use crate::game::chat::ChatMessageVariant;
 use crate::game::components::graves::grave::GraveKiller;
@@ -53,9 +54,7 @@ impl RoleStateTrait for Mercenary {
         Self { won: false, roles, attacks_remaining }
     }
     fn on_midnight(self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut MidnightVariables, priority: OnMidnightPriority) {
-        
-        let visits = actor_ref.role_night_visits_cloned(midnight_variables);
-        let Some(visit) = visits.first() else {return};
+        let Some(visit) = Visits::default_visit(midnight_variables, actor_ref, Role::Mercenary) else {return};
 
         match (priority, visit.tag) {
             (OnMidnightPriority::Kill, VisitTag::Role { role: Role::Mercenary, id: 2 }) => {

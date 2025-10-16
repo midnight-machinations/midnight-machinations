@@ -133,6 +133,8 @@ pub enum ToClientPacket{
     #[serde(rename_all = "camelCase")]
     YourDeathNote{death_note: Option<String>},
     #[serde(rename_all = "camelCase")]
+    YourRole{role: Role},
+    #[serde(rename_all = "camelCase")]
     YourRoleState{role_state: ClientRoleStateEnum},
     #[serde(rename_all = "camelCase")]
     YourVoteFastForwardPhase{fast_forward: FastForwardSetting},

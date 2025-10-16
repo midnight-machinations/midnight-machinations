@@ -31,7 +31,7 @@ pub struct ClientRoleState;
 impl RoleStateTrait for Necromancer {
     type ClientAbilityState = ClientRoleState;
     fn on_midnight(self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut MidnightVariables, priority: OnMidnightPriority) {
-        if let Some(currently_used_player) = Possession::possess_night_action(actor_ref, game, midnight_variables, priority, self.currently_used_player){
+        if let Some(currently_used_player) = Possession::possess_night_action(actor_ref, game, midnight_variables, priority, self.currently_used_player, Role::Necromancer){
             let mut used_bodies = self.used_bodies;
             used_bodies.push(currently_used_player);
 

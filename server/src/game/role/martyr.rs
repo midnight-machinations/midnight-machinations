@@ -1,4 +1,5 @@
 use serde::Serialize;
+use crate::game::components::night_visits::Visits;
 use crate::game::controllers::AvailableBooleanSelection;
 use crate::game::attack_power::{AttackPower, DefensePower};
 use crate::game::chat::{ChatGroup, ChatMessageVariant};
@@ -59,9 +60,7 @@ impl RoleStateTrait for Martyr {
         if priority != OnMidnightPriority::Kill {return}
         let MartyrState::StillPlaying { bullets } = self.state else {return};
         if bullets == 0 {return}
-        let actor_visits = actor_ref.role_night_visits_cloned(midnight_variables);
-        if let Some(visit) = actor_visits.first() {
-            let target_ref = visit.target;
+        if let Some(target_ref) = Visits::default_target(midnight_variables, actor_ref, Role::Martyr) {
 
             self.state = MartyrState::StillPlaying { bullets: bullets.saturating_sub(1) };
 

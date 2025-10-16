@@ -85,13 +85,15 @@ impl PlayerReference{
         self.add_private_chat_message(game, ChatMessageVariant::YouDied);
         OnAnyDeath::new(*self).invoke(game)
     }
-    pub fn initial_role_creation(&self, game: &mut Game){
+    pub fn initial_set_role_insider_wincondition(&self, game: &mut Game){
         self.set_win_condition(game, self.win_condition(game).clone());
         InsiderGroupID::set_player_insider_groups(
             InsiderGroupID::all_groups_with_player(game, *self), 
             game, *self
         );
-        RoleComponent::set_role_without_ability(*self, game, self.role(game));
+        if self.chat_messages(game).iter().all(|m|*m.variant() != ChatMessageVariant::RoleAssignment { role: self.role(game) }) {
+            RoleComponent::set_role_without_ability(*self, game, self.role(game));
+        }
     }
     /// Swaps this persons role, sends them the role chat message, and makes associated changes
     pub fn set_role_win_con_insider_group(&self, game: &mut Game, new_role_data: impl Into<RoleState>){
@@ -177,9 +179,6 @@ impl PlayerReference{
             midnight_variables.get_mut(*self).died = true;
             midnight_variables.get_mut(*self).grave_killers = vec![GraveKiller::Quit]
         }
-    }
-    pub fn convert_selection_to_visits(&self, game: &Game) -> Vec<Visit> {
-        self.role_state(game).clone().convert_selection_to_visits(game, *self)
     }
 }
 

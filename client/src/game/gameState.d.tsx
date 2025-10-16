@@ -107,6 +107,8 @@ export type PlayerGameState = {
 
     myIndex: PlayerIndex,
     
+    myRole: Role,
+    roleStates: ListMap<Role, RoleState>,
     roleState: RoleState,
 
     notes: UnsafeString[],
