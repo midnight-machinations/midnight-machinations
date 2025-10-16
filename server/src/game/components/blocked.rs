@@ -60,9 +60,7 @@ impl PlayerReference {
                 VisitTag::Role { role: Role::Porter, .. } |
                 VisitTag::Role { role: Role::Polymath, id: 3 } |
 
-                VisitTag::Role { role: Role::Witch, .. } |
-                VisitTag::Role { role: Role::Retributionist, .. } |
-                VisitTag::Role { role: Role::Necromancer, .. }
+                VisitTag::Role { role: Role::Witch, .. }
             ) {
                 continue;
             }

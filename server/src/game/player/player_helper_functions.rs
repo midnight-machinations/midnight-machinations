@@ -1,14 +1,14 @@
 use rand::seq::SliceRandom;
 use crate::{
     game::{
-        abilities::role_abilities::RoleAbility, abilities_component::{ability::Ability, ability_id::AbilityID}, attack_power::{AttackPower, DefensePower},
+        attack_power::{AttackPower, DefensePower},
         chat::{ChatMessage, ChatMessageVariant}, components::{
             attack::night_attack::NightAttack, fragile_vest::FragileVests, graves::{grave::{Grave, GraveKiller}, Graves},
             insider_group::InsiderGroupID, night_visits::{NightVisitsIterator, Visits}, player_component::PlayerComponent,
             role::RoleComponent,
         }, controllers::{ControllerID, PlayerListSelection}, event::{
             on_any_death::OnAnyDeath, on_midnight::{MidnightVariables, OnMidnightPriority}, Event
-        }, role::{medium::Medium, Role, RoleState}, visit::Visit, Game
+        }, role::{medium::Medium, necromancer::Necromancer, RoleState}, visit::Visit, Game
     },
     packet::ToClientPacket, vec_set::VecSet
 };
@@ -152,17 +152,12 @@ impl PlayerReference{
     pub fn ability_deactivated_from_death(&self, game: &Game) -> bool {
         !(
             self.alive(game) ||
-            (
-                PlayerReference::all_players(game)
-                    .any(|medium_player|
-                        if
-                            let Some(Ability::Role(RoleAbility(RoleState::Medium(Medium{seanced_target: Some(seanced_target), ..})))) = 
-                                (AbilityID::Role { role: Role::Medium, player: medium_player }).get_ability(game) &&
-                            *seanced_target == *self &&
-                            medium_player.alive(game)
-                        {true} else {false}
-                    )
-            )
+            PlayerReference::all_players(game)
+                .any(|medium_player|
+                    Medium::get_seanced_targets(game, medium_player).contains(self) ||
+                    Necromancer::get_seanced_targets(game, medium_player).contains(self)
+                )
+            
         )
     }
     

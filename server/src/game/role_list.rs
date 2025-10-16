@@ -266,7 +266,7 @@ impl RoleSet{
                 ],
             RoleSet::TownSupport => 
                 vec_set![
-                    Role::Medium, Role::Retributionist,
+                    Role::Medium,
                     Role::Transporter, Role::Porter,
                     Role::Mayor, Role::Nepotist, Role::Reporter,
                     Role::Courtesan, Role::Escort,
@@ -282,7 +282,7 @@ impl RoleSet{
                 ).collect(),
             RoleSet::MafiaKilling => 
                 vec_set![
-                    Role::Godfather, Role::Counterfeiter,
+                    Role::Godfather, Role::Counterfeiter, Role::Necromancer,
                     Role::Impostor, Role::Recruiter,
                     Role::Mafioso
                 ],
@@ -290,8 +290,7 @@ impl RoleSet{
                 vec_set![
                     Role::Blackmailer, Role::Cerenovous, Role::Informant, Role::Hypnotist, Role::Consort,
                     Role::Forger, Role::Framer, Role::Mortician, Role::Disguiser,
-                    Role::Necromancer, Role::Reeducator,
-                    Role::Ambusher
+                    Role::Reeducator, Role::Ambusher
                 ],
             RoleSet::Minions => 
                 vec_set![

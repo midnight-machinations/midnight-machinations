@@ -25,7 +25,7 @@ pub(super) const DEFENSE: DefensePower = DefensePower::Armored;
 impl RoleStateTrait for Godfather {
     type ClientAbilityState = Godfather;
     fn on_midnight(self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut MidnightVariables, priority: OnMidnightPriority) {
-        Self::night_kill_ability(game, midnight_variables, actor_ref, priority);
+        Self::night_kill_ability(game, midnight_variables, actor_ref, priority, Role::Godfather);
 
         if priority != OnMidnightPriority::Deception {return};
 
@@ -84,13 +84,13 @@ impl RoleStateTrait for Godfather {
 }
 
 impl Godfather{
-    pub(super) fn night_kill_ability(game: &mut Game, midnight_variables: &mut MidnightVariables, actor_ref: PlayerReference, priority: OnMidnightPriority) {
+    pub(super) fn night_kill_ability(game: &mut Game, midnight_variables: &mut MidnightVariables, actor_ref: PlayerReference, priority: OnMidnightPriority, role: Role) {
         if game.day_number() == 1 {return}
 
         match priority {
             //kill the target
             OnMidnightPriority::Kill => {
-                let Some(target_ref) = Visits::default_target(midnight_variables, actor_ref, Role::Godfather) else {return};
+                let Some(target_ref) = Visits::default_target(midnight_variables, actor_ref, role) else {return};
                 target_ref.clone().try_night_kill_single_attacker(
                     actor_ref, game, midnight_variables, GraveKiller::RoleSet(RoleSet::Mafia),
                     AttackPower::Basic, false

@@ -75,9 +75,6 @@
     "role/porter/0": {
         "midnight": true
     },
-    "role/retributionist/0": {
-        "midnight": true
-    },
     "role/reporter/0": {
         "midnight": false
     },

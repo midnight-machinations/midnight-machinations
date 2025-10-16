@@ -304,10 +304,6 @@
     "controllerId.role.medium.0.name": "Seance",
     "controllerId.role.medium.1.name": "Haunt",
 
-    "role.retributionist.name": "Retributionist",
-    "role.retributionist.name:var.0": "Retributionists",
-    "controllerId.role.retributionist.0.name": "Possess",
-
     "role.reporter.name": "Reporter",
     "role.reporter.name:var.0": "Reporters",
     "role.reporter.menu.public": "Public",
@@ -424,7 +420,7 @@
 
     "role.necromancer.name": "Necromancer",
     "role.necromancer.name:var.0": "Necromancers",
-    "controllerId.role.necromancer.0.name": "Possess",
+    "controllerId.role.necromancer.0.name": "Attack",
     
     "role.mortician.name": "Mortician",
     "role.mortician.name:var.0": "Morticians",
@@ -1411,7 +1407,7 @@
     "wiki.article.standard.appearedVisit.title": "Appeared Visit",
     "wiki.article.standard.appearedVisit.text": "Some roles get fooled by appeared visits created by other roles.\n - A framer can make a player to appear to visit other players.\n - If a framer makes you appear to visit players, then you only appear to visit those players (and not the players you are actually visiting)",
     "wiki.article.standard.roleOutline.title": "Role Outline",
-    "wiki.article.standard.roleOutline.text": "A role outline defines a group of roles.\n\nOutlines can either be a predefined role set, an exact role, or a union of multiple.\n\n_Examples_\n\n\"Any\" It could be any role\n\n\"Neutral\" Could be any possible neutral role.\n\n\"Town Support\" Could be an Escort, Retributionist, Transporter, or Medium\n\n\"Godfather\" Could only be a Godfather.\n\n\"Wildcard ∪ Psychic\" Could either be an Wildcard or Psychic.\n\n- When roles are generated randomly from a role outline, each possible role is equally likely to generate.\n- Role outlines are used in the outline list to show what roles could be in the game.",
+    "wiki.article.standard.roleOutline.text": "A role outline defines a group of roles.\n\nOutlines can either be a predefined role set, an exact role, or a union of multiple.\n\n_Examples_\n\n\"Any\" It could be any role\n\n\"Neutral\" Could be any possible neutral role.\n\n\"Town Support\" Could be an Escort, Medium, Transporter, etc.\n\n\"Godfather\" Could only be a Godfather.\n\n\"Wildcard or Psychic\" Could either be an Wildcard or Psychic.\n\n- When roles are generated randomly from a role outline, each possible role is equally likely to generate.\n- Role outlines are used in the outline list to show what roles could be in the game.",
     "wiki.article.standard.outlineList.title":"Outline List",
     "wiki.article.standard.outlineList.title:var.0":"Role List",
     "wiki.article.standard.outlineList.title:var.1":"Rolelist",
@@ -1521,7 +1517,7 @@
     
     "wiki.article.standard.priority.title":"Priority",
     "wiki.article.standard.priority.title:var.0":"Priorities",
-    "wiki.article.standard.priority.text":"At the end of night many abilities happen at nearly the same time. They happen in a specific order called priority. Knowing the order of some things can help understanding of some game mechanics.\nThis is the general priority order, with some additional notes:\n- PreWard\n    - Bouncer and Scarecrow wardblock the following roles here: Transporter, Porter, Warper, Witch, Retributionist, and Necromancer\n- Transporter\n- Warper\n- Possess\n- Ward\n    - Bouncer, and Scarecrow wardblock everything here\n- Roleblock\n    - Hypnotist and Escort go here\n- Deception\n    - Forger, Framer, Blackmailer go here\n    - Syndicate backup visit is erased if the killing is blocked\n- Heal\n    - Protective roles like Doctor and Armorsmith go here\n- Bodyguard\n    - Bodyguard moves the attacking visit to be towards themself\n- Kill\n- Convert\n    - Win condition changes go here\n- Poison\n- Investigative\n    - Roles like Detective, Snoop, Lookout, and Spy go here\n- DeleteMessages\n    - Steward deletes messages\n- StealMessages\n    - Witch steals messages\n",
+    "wiki.article.standard.priority.text":"At the end of night many abilities happen at nearly the same time. They happen in a specific order called priority. Knowing the order of some things can help understanding of some game mechanics.\nThis is the general priority order, with some additional notes:\n- PreWard\n    - Bouncer and Scarecrow wardblock the following roles here: Transporter, Porter, Warper, and Witch\n- Transporter\n- Warper\n- Possess\n- Ward\n    - Bouncer, and Scarecrow wardblock everything here\n- Roleblock\n    - Hypnotist and Escort go here\n- Deception\n    - Forger, Framer, Blackmailer go here\n    - Syndicate backup visit is erased if the killing is blocked\n- Heal\n    - Protective roles like Doctor and Armorsmith go here\n- Bodyguard\n    - Bodyguard moves the attacking visit to be towards themself\n- Kill\n- Convert\n    - Win condition changes go here\n- Poison\n- Investigative\n    - Roles like Detective, Snoop, Lookout, and Spy go here\n- DeleteMessages\n    - Steward deletes messages\n- StealMessages\n    - Witch steals messages\n",
 
     "wiki.article.standard.chat.title:var.0":"Chat Messages",
     "wiki.article.standard.chat.title":"Chat",
@@ -1824,11 +1820,6 @@
     "wiki.article.role.medium.exampleAlibi":"Medium\nN1: n/a\nN2: @2 (Detective)\n@2 said they got @5 as enemies with town\n @2 told me to say \"17253\".",
     "wiki.article.role.medium.exampleAlibi.description":"Here is an example of an alibi from a Medium who, on night 2, used their ability to give @2, a player who claims to be detective, their ability back, and then talked to them at night and wrote some important ntoes from what @2 said.",
 
-    "wiki.article.role.retributionist.guide": "- At night, Select a dead town role to possess them, forcing them to use their ability on a living player\n- You can only possess dead players who's grave has a town role on it\n- You can possess the same player up to 2 times",
-    "wiki.article.role.retributionist.abilities":"- Visit 2 players\n    - The first player has their first visit changed to the second player you visit\n- You can only select certain players\n    - The first player you select must be a dead player with a town role on their grave\n    - The second player you select must be any living player",
-    "wiki.article.role.retributionist.attributes":"* The first player you visit is told that they were possessed or immune to possession\n* You are told all night information messages that your target gets told\n* You can't select a dead player who you have previously possessed more than once",
-    "wiki.article.role.retributionist.extra":"* You are immune to getting roleblocked or possessed\n* You can force your target to visit any living player\n* If you don't successfully possess the player you select, you can select them again\n* Your second target is investigate immune, indirect, and wardblock immune",
-
     "wiki.article.role.reporter.reminder": "Each day, choose a player to interview and speak with at night, when obituary starts, your report is posted to everyone." ,
     "wiki.article.role.reporter.guide": "- Each day, choose a player to interview that night\n    - You can speak with your interviewee at night, and they aren't told who you are\n- You make a report that is posted at the start of each day\n    - The report is anonymous, so if you don't write who you are, nobody would know who you are\n    - Your report won't be posted if you are silenced or blocked\n\n You should ask what peoples roles are during an interview, they should tell you because they know you're a reporter. If they don't tell you their role, they are likely evil. You should write who you think is evil in your report so it is posted and everyone knows.",
     "wiki.article.role.reporter.abilities":"* Your report is posted publicly every obituary while you alive if it is set to public\n* During the day you may choose a player to interview that night",
@@ -1846,6 +1837,8 @@
     "wiki.article.role.vigilante.abilities":"* Visit a player to attack and spend a bullet\n* If you kill a town loyalist you will commit suicide on the following night\n* You have three bullets",
     "wiki.article.role.vigilante.attributes":"* If your attack overpowers a town loyalist's defense and they die, you commit suicide on the following night\n* When it is night one, when you have 0 bullets left, when you are going to commit suicide, or when you have already committed suicide, you can not select or attack anyone",
     "wiki.article.role.vigilante.extra": "* You only have a basic attack\n* Even while dead, killing someone requires and spends a bullet (such as when you get possessed)",
+    "wiki.article.role.vigilante.exampleAlibi":"Vigilante\nN1: n/a\nN2: [roleblocked]\nN3: @21 [attacked soemone but they had defense]\nN4: @21 [attack someone] (they died)",
+    "wiki.article.role.vigilante.exampleAlibi.description":"On night 1, they had to wait.\nOn night 2, they didnt try to shoot anyone, but got roleblocked anyway, so they wrote it down.\nOn night 3, they tried to kill @21 but couldn't because @21 had defense.\nOn night 4, they tried to kill @21 again and it worked this time.",
 
     "wiki.article.role.rabblerouser.reminder": "If 2/3rds of town vote to pitchfork someone, that player dies at night.",
     "wiki.article.role.rabblerouser.guide":"- If a Rabblerouser is in the game, everyone can vote using the pitchfork menu\n- If two-thirds of town loyalists vote the same player, that player is killed\n- This ability can be used up to X times (X = Total players ÷ 5 (round up))\n- This ability doesn't work on night 1\n- This ability only works if there is an alive rabblerouser who isn't blocked",
@@ -1877,13 +1870,13 @@
     "wiki.article.role.deputy.extra":"* You have an armor-piercing attack\n* You can not attack day 1",
 
     "wiki.article.role.godfather.reminder": "Each night*, select a player to attack. Each night, select a player to appeared visit. You have armor and innocent aura.",
-    "wiki.article.role.godfather.guide": "- At night, select a player to attack with a basic attack\n    - You can't attack night 1\n- Select a player to appear to visit\n - When you are blocked, you don't have innocent aura for the night.",
+    "wiki.article.role.godfather.guide": "- Each night except the first, select a player to attack\n    - You can't attack night 1\n- Select a player to appear to visit\n - When you are blocked, you don't have innocent aura for the night.",
     "wiki.article.role.godfather.abilities":"* Visit a player to attack\n- Appeared visit any other player\n - You can appeared visit yourself, or other syndicate insiders",
     "wiki.article.role.godfather.attributes":"",
     "wiki.article.role.godfather.extra":"- Your appeared into visit is wardblock immune, investigate immune, and indirect",
     
     "wiki.article.role.impostor.reminder": "Each night, select a player to attack. If you die, your grave shows whatever role you chose to disguise as.",
-    "wiki.article.role.impostor.guide": "- At night, select a player to attack\n- You can't attack night 1\n- You can choose what role appears on your grave, giving false information to the town when you die",
+    "wiki.article.role.impostor.guide": "- Each night except the first, select a player to attack\n- You can't attack night 1\n- You can choose what role appears on your grave.",
     "wiki.article.role.impostor.abilities":"* Visit a player to attack\n- Choose a role, that role appears on your grave when you die instead of impostor",
     "wiki.article.role.impostor.attributes":"",
     "wiki.article.role.impostor.extra":"",
@@ -1893,6 +1886,12 @@
     "wiki.article.role.counterfeiter.abilities": "- Visit a player to basic attack them\n- If you chose to forge and you have uses left, you forge the player you visit, changing their role and alibi in their grave",
     "wiki.article.role.counterfeiter.attributes": "- You can copy paste chat messages\n- If you are blocked, it doesn't cost an ability use, but it does cost a use if the player you attack survives",
     "wiki.article.role.counterfeiter.extra": "",
+
+    "wiki.article.role.necromancer.reminder":"Each night, choose a player to attack. While you are alive, dead fellow insiders keep their abilities.",
+    "wiki.article.role.necromancer.guide":"- Each night except the first, choose a player to attack\n - All dead fellow insiders keep their abiltiies while you are alive.\n - If you are roleblocked, the all dead fellow insiders are also roleblocked.",
+    "wiki.article.role.necromancer.abilities":"",
+    "wiki.article.role.necromancer.attributes":"",
+    "wiki.article.role.necromancer.extra":"- Your attack is basic.",
 
     "wiki.article.role.recruiter.reminder": "Each night, either select a player to attack or recruit. Recruited players join the syndicate but die the next night. If a recruiter is generated randomly, there is one less syndicate member.",
     "wiki.article.role.recruiter.guide":"- You may choose to do one of the following\n    - Select and attack a player\n    - Select a player to recruit into the syndicate\n        - They are told they are recruited, and that they will win with syndicate, but their role doesn't change\n        - They are attacked the following night, and every night until they die\n        - You have 3 uses of this ability by default\n- For every time you successfully kill someone, you can gain one use to your recruit ability\n- If a recruiter is randomly generated, a non recruiter syndicate member has their role switched to a random town role before the game starts, they never know of this",
@@ -1972,11 +1971,6 @@
     "wiki.article.role.informant.abilities":"* Visit up to 2 players to\n    * Be told their role (Their role is revealed to you)\n    * Be told who visited them\n    * Be told who they visited\n* All whispers can be read regardless of whether or not they were sent to you\n* Appeared visits can change information",
     "wiki.article.role.informant.attributes":"* None",
     "wiki.article.role.informant.extra":"* You can't select other syndicate members\n* Appeared visits can change information",
-
-    "wiki.article.role.necromancer.guide":"You can select a dead player to possess and force them to visit a player you select. You can only choose to possess dead townies. You can not possess the same player more than twice.",
-    "wiki.article.role.necromancer.abilities":"* Visit 2 players to make the first player visit the second player\n* The first player you select must appear as a dead player in the graveyard",
-    "wiki.article.role.necromancer.attributes":"* The first player you visit is told that they were possessed or immune to possession\n* You are told all night information messages that the player you possess gets told\n* You can't select a dead player who you have previously possessed",
-    "wiki.article.role.necromancer.extra":"* You are immune to getting roleblocked or possessed\n* You can force your target to visit any living player\n* If you don't successfully possess the player you select, you can select them again\n* Your second target is investigate immune, indirect, and wardblock immune",
 
     "wiki.article.role.mortician.reminder": "Each night, select a player to tag them for obscuring. If they die, their role and alibi are hidden.",
     "wiki.article.role.mortician.guide": "- At night, select a player to tag them for obscuring\n    - A player who is tagged for obscuring gets obscured when they die, erasing their role and alibi from their grave so nobody knows who they are\n    - You are told the obscured players role and alibi when they die\n- You can tag as many players as you want, but you can only obscure X players (X = Total players ÷ 5 (round up))\n- When you are roleblocked, your tags don't obscure players until the start of next night.",

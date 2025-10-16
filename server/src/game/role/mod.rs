@@ -124,7 +124,6 @@ macros::roles! {
 
     Escort : escort,
     Medium : medium,
-    Retributionist : retributionist,
     Reporter : reporter,
     Mayor : mayor,
     Transporter : transporter,
@@ -137,6 +136,7 @@ macros::roles! {
     Godfather : godfather,
     Counterfeiter : counterfeiter,
     Impostor : impostor,
+    Necromancer : necromancer,
     Recruiter : recruiter,
     Mafioso : mafioso,
     MafiaKillingWildcard : mafia_killing_wildcard,
@@ -148,7 +148,6 @@ macros::roles! {
     Blackmailer : blackmailer,
     Cerenovous : cerenovous,
     Informant: informant,
-    Necromancer : necromancer,
     Mortician : mortician,
     Framer : framer,
     Disguiser : disguiser,

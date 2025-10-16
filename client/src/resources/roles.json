@@ -508,21 +508,6 @@
             {"type": "transported"}
         ]
     },
-    "retributionist": {
-        "mainRoleSet": "town",
-        "roleSets": ["town", "townCommon", "townSupport"],
-        "armor": false,
-        "aura": null,
-        "maxCount": 1,
-        "canWriteDeathNote": false,
-        "canBeConvertedTo": [],
-        "chatMessages":[
-            {"type": "targetsMessage", "message": 
-                {"type": "detectiveResult","suspicious":true}
-            },
-            {"type": "youWerePossessed"}
-        ]
-    },
     "polymath": {
         "mainRoleSet": "town",
         "roleSets": ["town", "townCommon", "townSupport"],
@@ -582,6 +567,29 @@
         "chatMessages":[
             {"type": "godfatherBackup", "backup": null},
             {"type": "godfatherBackup", "backup": 26},
+            {"type": "godfatherBackupKilled", "backup": 26},
+            {"type": "someoneSurvivedYourAttack"},
+            {"type": "youSurvivedAttack"},
+            {
+                "type": "playerRoleAndAlibi",
+                "player": 13,
+                "role": "jailor",
+                "will": "I am very confident in my doctors ability to protect me, especially because he knows there could be a forger in the game."
+            }
+        ]
+    },
+    "necromancer": {
+        "mainRoleSet": "mafia",
+        "roleSets": ["mafia", "mafiaKilling"],
+        "armor": false,
+        "aura": null,
+        "maxCount": 1,
+        "canWriteDeathNote": false,
+        "canBeConvertedTo": ["godfather"],
+        "chatMessages":[
+            {"type": "godfatherBackup", "backup": null},
+            {"type": "godfatherBackup", "backup": 26},
+            {"type": "godfatherBackupKilled", "backup": 26},
             {"type": "someoneSurvivedYourAttack"},
             {"type": "youSurvivedAttack"}
         ]
@@ -775,21 +783,6 @@
                 "role": "jailor",
                 "will": "I am very confident in my doctors ability to protect me, especially because he knows there could be a forger in the game."
             }
-        ]
-    },
-    "necromancer": {
-        "mainRoleSet": "mafia",
-        "roleSets": ["mafia", "mafiaSupport"],
-        "armor": false,
-        "aura": null,
-        "maxCount": 1,
-        "canWriteDeathNote": false,
-        "canBeConvertedTo": ["godfather"],
-        "chatMessages":[
-            {"type": "targetsMessage", "message": 
-                {"type": "detectiveResult","suspicious":true}
-            },
-            {"type": "youWerePossessed"}
         ]
     },
     "ambusher": {

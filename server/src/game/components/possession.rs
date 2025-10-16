@@ -18,7 +18,7 @@ impl Possession {
                     Role::Veteran | Role::Medium
                     | Role::Bouncer | Role::Scarecrow
                     | Role::Transporter  | Role::Warper | Role::Porter
-                    | Role::Necromancer | Role::Retributionist | Role::Witch
+                    | Role::Witch
                 )
             },
             ControllerID::SyndicateGunShoot => false,

@@ -89,8 +89,6 @@ export type RoleState = {
     seancedTarget: PlayerIndex | null
     hauntedTarget: PlayerIndex | null
 } | {
-    type: "retributionist"
-} | {
     type: "reporter",
     public: boolean,
     report: UnsafeString,
