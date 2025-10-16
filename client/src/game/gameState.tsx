@@ -80,7 +80,6 @@ export function createPlayerGameState(): PlayerGameState {
         myIndex: 0,
         
         myRole: "detective" as Role,
-        roleState: { type: "detective" },
         roleStates: new ListMap<Role, RoleState>(),
 
         savedControllers: [],

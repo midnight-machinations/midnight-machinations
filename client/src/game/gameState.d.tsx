@@ -109,7 +109,6 @@ export type PlayerGameState = {
     
     myRole: Role,
     roleStates: ListMap<Role, RoleState>,
-    roleState: RoleState,
 
     notes: UnsafeString[],
     crossedOutOutlines: number[],
