@@ -21,8 +21,9 @@
     /* Additional options */
     "resolveJsonModule": true,
     "allowJs": false,
+    "allowSyntheticDefaultImports": true, /* For React */
     "esModuleInterop": true,
-    "forceConsistentCasingInFileNames": true
+    "forceConsistentCasingInFileNames": true,
   },
   "include": ["src"]
 }

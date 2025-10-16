@@ -16,7 +16,7 @@ import { ControllerID, ControllerSelection, translateControllerID, controllerIdT
 import DetailsSummary from "./DetailsSummary";
 import ListMap from "../ListMap";
 import { Button } from "./Button";
-import chatMessageStylesImport from "../resources/styling/chatMessage.json";
+import chatMessageStylesImport from "../resources/styling/chatMessage.json" assert { type: "json" };
 
 const chatMessageStyles = chatMessageStylesImport as Record<string, string>;
 

@@ -14,9 +14,9 @@ import { setWikiSearchPage } from "./Wiki";
 import { getRoleSetsFromRole, RoleList, translateRoleOutline } from "../game/roleListState.d";
 import { encodeString } from "./ChatMessage";
 import DUMMY_ROLE_LIST from "../resources/dummyRoleList.json";
-import KEYWORD_DATA_JSON_IMPORT from "../resources/keywords.json";
+import KEYWORD_DATA_JSON_IMPORT from "../resources/keywords.json" assert { type: "json" };
 
-const KEYWORD_DATA_JSON = KEYWORD_DATA_JSON_IMPORT as any;
+const KEYWORD_DATA_JSON = KEYWORD_DATA_JSON_IMPORT as { [key: string]: TokenData };
 
 export type TokenData = {
     style?: string, 
@@ -151,7 +151,7 @@ export function computeKeywordData() {
     //add role keywords
     for(const role of Object.keys(roleJsonData())) {
 
-        let data: KeywordData | undefined = undefined;
+        let data: TokenData | undefined = undefined;
 
         const roleSets = getRoleSetsFromRole(role as Role);
         if (roleSets.length === 1) {
