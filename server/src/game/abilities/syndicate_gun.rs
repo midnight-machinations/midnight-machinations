@@ -60,12 +60,8 @@ impl AbilityTrait for SyndicateGun {
             return;
         }
 
-        for id in game.controllers.all_controller_ids() {
-            if ControllerID::SyndicateGunShoot == id {
-                if Possession::possession_immune(&id) { continue; }
-                Possession::possess_controller(game, id.clone(), event.possessed, event.possessed_into)
-            }
-        }
+        if Possession::possession_immune(&ControllerID::SyndicateGunShoot) { return; }
+        Possession::possess_controller(game, ControllerID::SyndicateGunShoot, event.possessed, event.possessed_into);
 
         Visits::retain(fold, |v|v.tag != VisitTag::SyndicateGun || Some(v.visitor) != self.player_with_gun);
 

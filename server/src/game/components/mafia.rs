@@ -40,12 +40,8 @@ impl Mafia{
             return;
         }
 
-        for id in game.controllers.all_controller_ids() {
-            if ControllerID::SyndicateBackupAttack == id {
-                if Possession::possession_immune(&id) { continue; }
-                Possession::possess_controller(game, id.clone(), event.possessed, event.possessed_into)
-            }
-        }
+        if Possession::possession_immune(&ControllerID::SyndicateBackupAttack) { return; }
+        Possession::possess_controller(game, ControllerID::SyndicateBackupAttack.clone(), event.possessed, event.possessed_into);
 
         Visits::retain(fold, |v|v.tag != VisitTag::SyndicateBackupAttack || v.visitor != backup);
 
