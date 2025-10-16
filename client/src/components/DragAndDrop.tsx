@@ -1,6 +1,5 @@
-import React, { useContext, useMemo, useState } from "react";
+import React, { useMemo, useState } from "react";
 import "./dragAndDrop.css"
-import { MobileContext } from "../menu/Anchor";
 
 export type DragHandleProps = {
     className: string;
@@ -68,7 +67,7 @@ function DragAndDropItem<T>(props: Readonly<{
             setDraggedItem(null);
             setTemporaryItems(null);
         },
-    }), [disabled, item, draggedItem, setDraggedItem, renderedItems, setTemporaryItems, onDragEnd]);
+    }), [disabled, item, setDraggedItem, renderedItems, setTemporaryItems, onDragEnd]);
 
     const children = useMemo(() => {
         return render(item, index, dragHandleProps);
