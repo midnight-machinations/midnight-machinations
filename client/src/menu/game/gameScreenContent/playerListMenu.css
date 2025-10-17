@@ -85,3 +85,10 @@
     top: 0;
     right: 0;
 }
+.player-card-holder .open-alibi {
+    margin: .25rem;
+}
+.player-card .grave-button {
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+}
