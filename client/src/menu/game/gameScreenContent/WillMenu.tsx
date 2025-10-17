@@ -101,7 +101,7 @@ export default function WillMenu(): ReactElement {
                     return <TextDropdownArea
                         canPostAs={canPostAsPlayers}
 
-                        key={note as string + i}
+                        key={i}
                         titleString={title}
                         savedText={note}
                         cantPost={cantPost}
