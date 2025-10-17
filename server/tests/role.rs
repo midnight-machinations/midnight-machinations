@@ -36,7 +36,7 @@ pub use mafia_server::{
         role_list::{
             RoleList, RoleOutline, RoleOutlineOption, RoleOutlineOptionInsiderGroups, RoleOutlineOptionRoles,
             RoleOutlineOptionWinCondition, RoleSet
-        }, 
+        },
     },
 };
 
