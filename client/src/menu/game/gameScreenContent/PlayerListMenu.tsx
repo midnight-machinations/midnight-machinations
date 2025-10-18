@@ -225,7 +225,7 @@ function PlayerCard(props: Readonly<{
             </Button>
         })()}
     </div>
-    {alibiOpen && mostRecentBlockMessage !== undefined ? <div className="open-alibi will-menu-colors" onClick={()=>setAlibiOpen(false)}>
+    {alibiOpen && mostRecentBlockMessage !== undefined ? <div className="open-alibi" onClick={()=>setAlibiOpen(false)}>
         <ChatMessage message={mostRecentBlockMessage[1]} messageIndex={mostRecentBlockMessage[0]}/>
     </div> : null}
     {graveOpen && grave !== undefined ? <div onClick={()=>setGraveOpen(false)}>

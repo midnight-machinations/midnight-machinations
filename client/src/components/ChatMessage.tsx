@@ -344,7 +344,7 @@ function NormalChatMessage(props: Readonly<{
         onMouseOver={() => props.setMouseHovering(true)}
         onMouseOut={() => props.setMouseHovering(false)}
     >
-        <span className={`chat-message ${style}`}>
+        <span className={`chat-message ${style} will-menu-colors`}>
             <StyledText
                 playerKeywordData={props.playerSenderKeywordData ?? PLAYER_SENDER_KEYWORD_DATA}
                 roleListKeywordData={props.roleListKeywordData}
