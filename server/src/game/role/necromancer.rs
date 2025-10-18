@@ -5,6 +5,7 @@ use crate::game::event::on_midnight::{MidnightVariables, OnMidnightPriority};
 use crate::game::role::godfather::Godfather;
 use crate::game::attack_power::DefensePower;
 use crate::game::player::PlayerReference;
+use crate::game::role_list::RoleSet;
 use crate::game::visit::Visit;
 use crate::game::Game;
 use super::{
@@ -65,7 +66,11 @@ impl Necromancer {
         if !(AbilityID::Role { role: Role::Necromancer, player: actor_ref }.exists(game)) {return vec![];}
         PlayerReference::all_players(game)
             .filter(|player|
-                !player.alive(game) && InsiderGroupID::in_same_group(game, actor_ref, *player)
+                !player.alive(game) &&
+                InsiderGroupID::in_same_group(game, actor_ref, *player) &&
+                !RoleSet::MafiaKilling.get_roles().contains(&player.role(game)) &&
+                !RoleSet::Fiends.get_roles().contains(&player.role(game)) &&
+                !RoleSet::Cult.get_roles().contains(&player.role(game))
             )
             .collect()
     }
