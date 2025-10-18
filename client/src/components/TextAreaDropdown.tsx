@@ -10,6 +10,7 @@ import DetailsSummary from "./DetailsSummary";
 import { useLobbyOrGameState, usePlayerNames, usePlayerState } from "./useHooks";
 import { PlayerIndex, UnsafeString } from "../game/gameState.d";
 import PlayerOptionDropdown from "./PlayerOptionDropdown";
+import { DragHandleProps } from "./DragAndDrop";
 
 export function TextDropdownArea(props: Readonly<{
     titleString: UnsafeString,
@@ -17,6 +18,7 @@ export function TextDropdownArea(props: Readonly<{
     defaultOpen?: boolean,
     open?: boolean,
     dropdownArrow?: boolean,
+    dragHandleProps?: DragHandleProps,
     onAdd?: () => void,
     onSubtract?: () => void,
     onSave: (text: string) => void,
@@ -73,7 +75,7 @@ export function TextDropdownArea(props: Readonly<{
                 titleString={props.titleString}
                 savedText={props.savedText}
                 field={field}
-                onAdd={props.onAdd}
+                dragHandleProps={props.dragHandleProps}
                 onSubtract={props.onSubtract}
                 onSave={save}
                 onSend={()=>send(field)}
@@ -101,7 +103,7 @@ function TextDropdownLabel(
         savedText: UnsafeString,
         field: UnsafeString,
         open?: boolean,
-        onAdd?: () => void,
+        dragHandleProps?: DragHandleProps,
         onSubtract?: () => void,
         onSave: (text: UnsafeString) => void,
         onSend: ()=>void,
@@ -134,7 +136,8 @@ function TextDropdownLabel(
     }
 
     return <div>
-        <StyledText>{encodeString(replaceMentions(props.titleString, playerNames, roleList))}</StyledText>
+        {props.dragHandleProps !== undefined && <Icon {...props.dragHandleProps}>drag_handle</Icon>}
+        <StyledText className="label-text">{encodeString(replaceMentions(props.titleString, playerNames, roleList))}</StyledText>
         <span>
             {props.onSubtract ? <Button
                 onClick={(e) => {
@@ -145,18 +148,7 @@ function TextDropdownLabel(
                 pressedChildren={() => <Icon size="small">done</Icon>}
                 aria-label={translate("menu.will.subtract")}
             >
-                <Icon size="small">remove</Icon>
-            </Button> : null}
-            {props.onAdd ? <Button
-                onClick={(e) => {
-                    if(props.onAdd)
-                        props.onAdd();
-                    stopBubblingUpDomEvent(e);
-                }}
-                pressedChildren={() => <Icon size="small">done</Icon>}
-                aria-label={translate("menu.will.add")}
-            >
-                <Icon size="small">add</Icon>
+                <Icon size="small">delete</Icon>
             </Button> : null}
             <Button
                 highlighted={unsaved}
