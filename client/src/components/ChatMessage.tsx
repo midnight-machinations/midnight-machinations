@@ -16,6 +16,9 @@ import { ControllerID, ControllerSelection, translateControllerID, controllerIdT
 import DetailsSummary from "./DetailsSummary";
 import ListMap from "../ListMap";
 import { Button } from "./Button";
+import chatMessageStylesImport from "../resources/styling/chatMessage.json" with { type: "json" };
+
+const chatMessageStyles = chatMessageStylesImport as Record<string, string>;
 
 
 function canCopyPasteChatMessages(roleStates?: ListMap<Role, RoleState>): boolean{
@@ -70,7 +73,6 @@ const ChatElement = React.memo((
     const realPlayerNames = usePlayerNames();
     const playerNames = props.playerNames ?? realPlayerNames;
     const roleList = props.roleList ?? realRoleList ?? [];
-    const chatMessageStyles = require("../resources/styling/chatMessage.json");
     if(message.variant === undefined){
         console.error("ChatElement message with undefined variant:");
         console.error(message);

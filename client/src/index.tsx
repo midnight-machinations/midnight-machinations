@@ -8,7 +8,7 @@ import route from './routing';
 import { UnsafeString } from './game/gameState.d';
 import { RoleList, RoleOutline, translateRoleOutline } from './game/roleListState.d';
 
-export const DEV_ENV = process.env.NODE_ENV !== 'production';
+export const DEV_ENV = import.meta.env.MODE !== 'production';
 
 export type Theme = "chat-menu-colors" | "player-list-menu-colors" | "will-menu-colors" | "role-specific-colors" | "graveyard-menu-colors" | "wiki-menu-colors"
 

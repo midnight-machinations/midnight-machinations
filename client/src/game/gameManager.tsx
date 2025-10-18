@@ -612,9 +612,9 @@ function createServer(){
         ws: null,
 
         open : () => {
-            let address = process.env.REACT_APP_WS_ADDRESS;
+            let address = import.meta.env.VITE_WS_ADDRESS;
             if(!address){
-                throw new Error("Missing env var REACT_APP_WS_ADDRES, make sure you defined it in .env");
+                throw new Error("Missing env var VITE_WS_ADDRESS, make sure you defined it in .env");
             }
             try {
                 Server.ws = new WebSocket(address);

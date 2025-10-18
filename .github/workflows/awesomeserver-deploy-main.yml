@@ -43,7 +43,7 @@ jobs:
           tags: |
             ${{ secrets.DOCKERHUB_USERNAME }}/dev-midnightmachinations-client:latest
           build-args: |
-            REACT_APP_WS_ADDRESS=wss://wssdev.midnightmachinations.net
+            VITE_WS_ADDRESS=wss://wssdev.midnightmachinations.net
 
       # 5. Deploy to server via SSH
       - name: Deploy to server via SSH
