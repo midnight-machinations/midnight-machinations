@@ -75,6 +75,7 @@ export function createGameManager(): GameManager {
             if (lobbyState !== null && GAME_MANAGER.state.stateType === "game") {
                 GAME_MANAGER.state.roomCode = lobbyState.roomCode;
                 GAME_MANAGER.state.lobbyName = lobbyState.lobbyName;
+                GAME_MANAGER.state.randomSeed = lobbyState.randomSeed;
                 GAME_MANAGER.state.roleList = lobbyState.roleList;
                 GAME_MANAGER.state.phaseTimes = lobbyState.phaseTimes;
                 GAME_MANAGER.state.enabledRoles = lobbyState.enabledRoles;
@@ -347,6 +348,12 @@ export function createGameManager(): GameManager {
             this.server.sendPacket({
                 type: "setRoleList",
                 roleList: roleListEntries
+            });
+        },
+        sendSetRandomSeedPacket(randomSeed: number | null) {
+            this.server.sendPacket({
+                type: "setRandomSeed",
+                randomSeed: randomSeed
             });
         },
         sendSetRoleOutlinePacket(index: number, roleOutline: RoleOutline) {

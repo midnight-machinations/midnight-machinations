@@ -28,6 +28,7 @@ export function createLobbyState(): LobbyState {
         myId: null,
 
         roleList: [],
+        randomSeed: null,
         phaseTimes: defaultPhaseTimes(),
         enabledRoles: [],
         modifierSettings: new ListMap<ModifierID, ModifierState>(),
@@ -60,6 +61,7 @@ export function createGameState(): GameState {
         fastForward: {type:"none"},
         
         roleList: [],
+        randomSeed: null,
         enabledRoles: [],
         phaseTimes: defaultPhaseTimes(),
         modifierSettings: new ListMap<ModifierID, ModifierState>(),

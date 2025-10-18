@@ -20,7 +20,7 @@ impl From<PitchforkAbility> for Ability where PitchforkAbility: AbilityTrait {
     }
 }
 impl PitchforkAbility{
-    pub fn new_state(game: &Game)->Self{
+    pub fn new_state(game: &mut Game)->Self{
         Self { charges: common_role::standard_charges(game), angry_mobbed_player: None }
     }
 

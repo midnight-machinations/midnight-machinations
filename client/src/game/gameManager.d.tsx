@@ -76,6 +76,7 @@ export type GameManager = {
     sendSetPhaseTimePacket(phase: PhaseType, time: number): void;
     sendSetPhaseTimesPacket(phaseTimeSettings: PhaseTimes): void;
     sendSetRoleListPacket(roleListEntries: RoleList): void;
+    sendSetRandomSeedPacket(randomSeed: number | null): void;
     sendSetRoleOutlinePacket(index: number, roleOutline: RoleOutline): void;
     sendSimplifyRoleListPacket(): void;
     

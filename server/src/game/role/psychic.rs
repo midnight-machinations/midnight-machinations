@@ -55,14 +55,14 @@ impl RoleStateTrait for Psychic {
 }
 
 impl Psychic {
-    fn get_result_evil(game: &Game, midnight_variables: &MidnightVariables, actor_ref: PlayerReference, target: PlayerReference, confused: bool)->ChatMessageVariant{
+    fn get_result_evil(game: &mut Game, midnight_variables: &MidnightVariables, actor_ref: PlayerReference, target: PlayerReference, confused: bool)->ChatMessageVariant{
         
         let mut valid_players: Vec<_> = Self::get_valid_players(game, actor_ref, target)
             .into_iter()
             .filter(|p|!Aura::innocent(game, midnight_variables, *p))
             .collect();
 
-        valid_players.shuffle(&mut rand::rng());
+        valid_players.shuffle(&mut game.rng);
 
         #[expect(clippy::indexing_slicing, reason = "We're iterating over indexes, so it's safe")]
         for i in 0..valid_players.len(){
@@ -76,13 +76,13 @@ impl Psychic {
 
         ChatMessageVariant::PsychicFailed
     }
-    fn get_result_good(game: &Game, midnight_variables: &MidnightVariables, actor_ref: PlayerReference, target: PlayerReference, confused: bool)->ChatMessageVariant{
+    fn get_result_good(game: &mut Game, midnight_variables: &MidnightVariables, actor_ref: PlayerReference, target: PlayerReference, confused: bool)->ChatMessageVariant{
         let mut valid_players: Vec<_> = Self::get_valid_players(game, actor_ref, target)
             .into_iter()
             .filter(|p|!Aura::suspicious(game, midnight_variables, *p))
             .collect();
 
-        valid_players.shuffle(&mut rand::rng());
+        valid_players.shuffle(&mut game.rng);
 
         for player in valid_players{
             if confused || Self::contains_good(game, target, player){

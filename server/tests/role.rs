@@ -2993,6 +2993,7 @@ fn enraged_werewolf_kills() {
 fn recruiter_role_list_is_correct() {
     let (game, _assignments) = mock_game(
         Settings {
+            random_seed: None,
             role_list: RoleList(vec![
                 RoleOutline {options: vec1::vec1![RoleOutlineOption {
                     roles: RoleOutlineOptionRoles::Role { role: Role::Recruiter },

@@ -180,7 +180,7 @@ impl Mafia{
                 .filter(|p| InsiderGroupID::Mafia.contains_player(game, *p))
                 .collect::<Vec<_>>();
 
-            let Some(insider) = insiders.choose(&mut rand::rng()) else {return};
+            let Some(insider) = insiders.choose(&mut game.rng) else {return};
 
             SyndicateGun::give_gun_to_player(game, *insider);
             PlayerComponent::<FragileVests>::add_defense_item(game, *insider, DefensePower::Armored, vec_set![*insider]);
@@ -235,7 +235,7 @@ impl Mafia{
         ) {return;}
         
         //choose random mafia to be mafia killing
-        let random_mafia = living_players_to_convert.choose(&mut rand::rng());
+        let random_mafia = living_players_to_convert.choose(&mut game.rng);
         
         if let Some(random_mafia) = random_mafia {
             random_mafia.set_new_role(game, role, true);

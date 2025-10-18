@@ -78,7 +78,7 @@ impl RoleStateTrait for Revolutionary {
                                 .contains(&p.role(game)) &&
                                 !Self::CANT_CHOOSE_ROLES.contains(&p.role(game))
                         ).collect::<Vec<PlayerReference>>()
-                        .choose(&mut rand::rng())
+                        .choose(&mut game.rng)
                     {
                         fold.ability = Ability::Role(RoleAbility(RoleState::Revolutionary(
                             Revolutionary{target: RevolutionaryTarget::Target(*target)}

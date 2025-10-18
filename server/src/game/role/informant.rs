@@ -28,10 +28,10 @@ impl RoleStateTrait for Informant {
         for visit in Visits::into_iter(midnight_variables).default_visits(actor_ref, Role::Informant){
             let target_ref = visit.target;
             let mut visited_by: Vec<PlayerReference> = target_ref.lookout_seen_players(midnight_variables, visit).collect();
-            visited_by.shuffle(&mut rand::rng());
+            visited_by.shuffle(&mut game.rng);
 
             let mut visited: Vec<PlayerReference> = target_ref.tracker_seen_players(midnight_variables).collect();
-            visited.shuffle(&mut rand::rng());
+            visited.shuffle(&mut game.rng);
 
             let message = ChatMessageVariant::InformantResult{
                 player: target_ref,

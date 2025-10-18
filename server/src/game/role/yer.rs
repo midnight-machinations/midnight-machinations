@@ -38,7 +38,7 @@ pub(super) const DEFENSE: DefensePower = DefensePower::Armored;
 
 impl RoleStateTrait for Yer {
     type ClientAbilityState = Yer;
-    fn new_state(game: &Game) -> Self {
+    fn new_state(game: &mut Game) -> Self {
         Self{
             star_passes_remaining: crate::game::role::common_role::standard_charges(game),
             ..Self::default()

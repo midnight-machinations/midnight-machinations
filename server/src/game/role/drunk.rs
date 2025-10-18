@@ -37,8 +37,9 @@ impl RoleStateTrait for Drunk {
             ))
             .collect::<Vec<_>>();
 
-        if let Some(new_role) = possible_roles.choose(&mut rand::rng()) {
-            actor_ref.set_new_role(game, new_role.new_state(game), false);
+        if let Some(new_role) = possible_roles.choose(&mut game.rng) {
+            let new_state = new_role.new_state(game);
+            actor_ref.set_new_role(game, new_state, false);
         }
     }
     fn on_ability_deletion(self, game: &mut Game, actor_ref: PlayerReference, event: &crate::game::event::on_ability_deletion::OnAbilityDeletion, _fold: &mut (), priority: crate::game::event::on_ability_deletion::OnAbilityDeletionPriority) {
