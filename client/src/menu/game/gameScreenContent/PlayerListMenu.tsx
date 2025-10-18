@@ -161,7 +161,7 @@ function PlayerCard(props: Readonly<{
         <PlayerNamePlate playerIndex={props.playerIndex}/>
         
         {mostRecentBlockMessage !== undefined ? 
-            <Button onClick={()=>setAlibiOpen(!alibiOpen)}>
+            <Button className="alibi-button will-menu-colors" onClick={()=>setAlibiOpen(!alibiOpen)}>
                 <StyledText noLinks={true}>
                     {
                         translateChatMessage(mostRecentBlockMessage[1].variant, playerNames, roleList)
@@ -174,7 +174,7 @@ function PlayerCard(props: Readonly<{
             </Button>
         : null}
         {grave !== undefined ? 
-            <Button onClick={()=>setGraveOpen(!graveOpen)}>
+            <Button className="grave-button graveyard-menu-colors" onClick={()=>setGraveOpen(!graveOpen)}>
                 <StyledText noLinks={true}>
                     {translateGraveRole(grave)} {translate(grave.diedPhase+".icon")}{grave.dayNumber.toString()}
                 </StyledText>
@@ -225,7 +225,7 @@ function PlayerCard(props: Readonly<{
             </Button>
         })()}
     </div>
-    {alibiOpen && mostRecentBlockMessage !== undefined ? <div onClick={()=>setAlibiOpen(false)}>
+    {alibiOpen && mostRecentBlockMessage !== undefined ? <div className="open-alibi" onClick={()=>setAlibiOpen(false)}>
         <ChatMessage message={mostRecentBlockMessage[1]} messageIndex={mostRecentBlockMessage[0]}/>
     </div> : null}
     {graveOpen && grave !== undefined ? <div onClick={()=>setGraveOpen(false)}>
