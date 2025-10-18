@@ -70,10 +70,11 @@ impl RoleStateTrait for Solorebel {
         roles
             .elements()
             .collect::<Vec<_>>()
-            .choose_multiple(&mut rand::rng(), 2)
-            .for_each(|r|
-                AbilityID::Role { role: **r, player: actor_ref }.new_role_ability(game, r.new_state(game))
-            );
+            .choose_multiple(&mut game.rng, 2)
+            .for_each(|r|{
+                let new_state = r.new_state(game);
+                AbilityID::Role { role: **r, player: actor_ref }.new_role_ability(game, new_state)
+            });
 
         AbilityID::Role { role: Role::Solorebel, player: actor_ref }.edit_role_ability(game, Solorebel{
             other_roles: roles

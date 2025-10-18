@@ -50,6 +50,7 @@ use components::silenced::Silenced;
 use components::synopsis::SynopsisTracker;
 use components::tags::Tags;
 use components::verdicts_today::VerdictsToday;
+use rand::rngs::SmallRng;
 use serde::Serialize;
 use crate::client_connection::ClientConnection;
 use crate::game::chat::ChatComponent;
@@ -106,6 +107,7 @@ pub struct Game {
     
     /// Whether the game is still updating phase times
     pub ticking: bool,
+    pub rng: SmallRng,
     
     
     //components with data

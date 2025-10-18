@@ -5,7 +5,6 @@
 }
 .text-area-dropdown .textarea, .text-area-dropdown textarea {
     text-align: left;
-    /* height: 20rem; */
     height: fit-content;
     min-height: 2rem;
     margin: .13rem;
@@ -23,7 +22,14 @@
     padding-left: .25rem;
     justify-content: space-between;
     text-align: left;
-    align-items: baseline;
+    align-items: center;
+}
+.text-area-dropdown .details-summary-summary-container > div > .icon {
+    padding-right: 0.5rem;
+}
+.text-area-dropdown .details-summary-summary-container > div > .label-text {
+    flex-grow: 1;
+    text-align: left;
 }
 .text-area-dropdown .details-summary-summary-container > div > div {
     display:flex;

@@ -32,6 +32,7 @@ export type LobbyState = {
     myId: number | null,
 
     roleList: RoleList,
+    randomSeed: number | null,
     phaseTimes: PhaseTimes,
     enabledRoles: Role[],
     modifierSettings: ListMap<ModifierID, ModifierState>,
@@ -87,6 +88,7 @@ type GameState = {
     fastForward: FastForwardSetting,
     
     roleList: RoleList,
+    randomSeed: number | null,
     enabledRoles: Role[],
     phaseTimes: PhaseTimes,
     modifierSettings: ListMap<ModifierID, ModifierState>,

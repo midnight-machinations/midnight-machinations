@@ -54,7 +54,8 @@ impl Wildcard {
                     .collect::<Vec<Role>>()
             )
         {
-            actor_ref.set_role_win_con_insider_group(game, role.new_state(game));
+            let new_state = role.new_state(game);
+            actor_ref.set_role_win_con_insider_group(game, new_state);
         }else{
             actor_ref.add_private_chat_message(game, ChatMessageVariant::WildcardConvertFailed{role})
         }

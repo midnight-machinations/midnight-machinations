@@ -57,7 +57,7 @@ impl RoleStateTrait for Armorsmith {
         if let Some(player) = if visitors.contains(&target){
             Some(target)
         }else { 
-            visitors.choose(&mut rand::rng()).copied() 
+            visitors.choose(&mut game.rng).copied() 
         }{
             PlayerComponent::<FragileVests>::add_defense_item_midnight(
                 game,
@@ -98,7 +98,7 @@ impl RoleStateTrait for Armorsmith {
                 ..self
             });
     }
-    fn new_state(game: &Game) -> Self {
+    fn new_state(game: &mut Game) -> Self {
         Self{
             open_shops_remaining: crate::game::role::common_role::standard_charges(game),
             ..Self::default()

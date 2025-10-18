@@ -1,3 +1,5 @@
+use rand::{rngs::SmallRng, SeedableRng};
+
 use crate::{
     client_connection::ClientConnection,
     game::{
@@ -29,7 +31,7 @@ impl Game{
         if settings.phase_times.game_ends_instantly() {
             return Err(RejectStartReason::ZeroTimeGame);
         }
-        
+        let mut rng = SmallRng::seed_from_u64(settings.random_seed.unwrap_or_else(rand::random));
 
         let mut role_generation_tries = 0u8;
         const MAX_ROLE_GENERATION_TRIES: u8 = 250;
@@ -41,7 +43,7 @@ impl Game{
 
             let settings = settings.clone();
 
-            let mut role_list_generator = RoleListGenerator::new(settings.clone());
+            let mut role_list_generator = RoleListGenerator::new(settings.clone(), &mut rng);
 
             let outline_list_assignment = match role_list_generator.generate_role_list() {
                 Some(assignment) => {assignment},
@@ -88,13 +90,14 @@ impl Game{
             #[expect(clippy::cast_possible_truncation, reason = "Explained in doc comment")]
             let num_players = new_players.len() as u8;
 
-            let mut game = Self{
+            let mut game = Self {
                 room_name: room_name.clone(),
                 clients: clients.clone(),
                 // pitchfork: Pitchfork::new(num_players),
 
                 assignments: assignments.clone(),
                 ticking: true,
+                rng: rng.clone(),
                 spectators: spectators.clone().into_iter().map(Spectator::new).collect(),
                 spectator_chat_messages: Vec::new(),
                 players: new_players.into_boxed_slice(),

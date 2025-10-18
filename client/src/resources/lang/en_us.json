@@ -103,6 +103,7 @@
     "menu.will.icon": "📜",
     "menu.will.will": "Alibi",
     "menu.will.notes": "Notes",
+    "menu.will.notes.icon": "📝",
     "menu.will.deathNote": "Death Note",
     "menu.will.deathNote:var.0": "DeathNote",
     "menu.will.deathNote:var.1": "DeathNotes",
@@ -1325,6 +1326,8 @@
 
     "wiki.article.standard.dead.title": "Dead",
     "wiki.article.standard.dead.text": "When a player dies:\n- Their grave is added to the graveyard\n\nWhile a player is dead:\n- Most of their abilities don't work\n- They can't vote\n- They can't chat in all chat\n- They can chat in dead chat.",
+    "wiki.article.standard.randomSeed.title": "Random Seed",
+    "wiki.article.standard.randomSeed.text": "Seed for random number generator. If independent games of midnight machinations have the same seed, and settings, and all players make the same decisions in the same order, the games will play out identically. If no seed is specified, a random seed is chosen at the start of the game.",
     "wiki.article.standard.silenced.title": "Silence",
     "wiki.article.standard.silenced.title:var.0": "Silences",
     "wiki.article.standard.silenced.title:var.1": "Silencer",

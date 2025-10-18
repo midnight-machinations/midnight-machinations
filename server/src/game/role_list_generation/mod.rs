@@ -1,12 +1,13 @@
 use std::collections::VecDeque;
 
-use rand::seq::SliceRandom;
+use rand::{rngs::SmallRng, seq::SliceRandom};
 
 use crate::{game::{components::{insider_group::InsiderGroupID, win_condition::WinCondition}, player::PlayerReference, role::Role, role_list::RoleOutlineOption, role_list_generation::criteria::{GenerationCriterion, GenerationCriterionResult}, role_outline_reference::RoleOutlineReference, settings::Settings}, vec_set::VecSet};
 
 pub mod criteria;
 
 pub struct RoleListGenerator {
+    rng: SmallRng,
     settings: Settings,
     new_to_original_role_outline_indices_map: Vec<usize>,
     nodes: Vec<PartialOutlineListAssignmentNode>,
@@ -16,14 +17,15 @@ pub struct RoleListGenerator {
 impl RoleListGenerator {
 
     #[expect(clippy::indexing_slicing, reason = "Indices are guaranteed to be in-bounds")]
-    pub fn new(mut settings: Settings) -> RoleListGenerator {
+    pub fn new(mut settings: Settings, rng: &mut SmallRng) -> RoleListGenerator {
         let mut new_to_original_role_outline_indices_map: Vec<usize> = (0..settings.role_list.0.len()).collect();
-        new_to_original_role_outline_indices_map.shuffle(&mut rand::rng());
+        new_to_original_role_outline_indices_map.shuffle(rng);
         // Reorder according to the shuffled indices.
         settings.role_list.0 = new_to_original_role_outline_indices_map.iter().map(|&i| settings.role_list.0[i].clone()).collect();
 
         RoleListGenerator {
             settings,
+            rng: rng.clone(),
             new_to_original_role_outline_indices_map,
             nodes: Vec::new(),
             criteria: vec![
@@ -133,7 +135,7 @@ impl RoleListGenerator {
         {
             let mut out = Vec::new();
 
-            neighbors_to_add.shuffle(&mut rand::rng());
+            neighbors_to_add.shuffle(&mut self.rng);
             for neighbor in neighbors_to_add {
                 out.push(self.nodes.len());
                 self.nodes.push(neighbor);

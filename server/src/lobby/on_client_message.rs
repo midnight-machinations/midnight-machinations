@@ -216,6 +216,11 @@ impl Lobby {
 
                 self.send_to_all(ToClientPacket::RoleList { role_list });
             }
+            ToServerPacket::SetRandomSeed { random_seed } => {
+                if let Some(player) = self.clients.get(&room_client_id) && !player.is_host() {break 'packet_match}
+                self.settings.random_seed = random_seed;
+                self.send_to_all(ToClientPacket::RandomSeed { random_seed });
+            }
             ToServerPacket::SetRoleOutline { index, role_outline } => {
                 if let Some(player) = self.clients.get(&room_client_id) && !player.is_host() {break 'packet_match}
 

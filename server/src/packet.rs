@@ -82,6 +82,8 @@ pub enum ToClientPacket{
     #[serde(rename_all = "camelCase")]
     RoleList{role_list: RoleList},
     #[serde(rename_all = "camelCase")]
+    RandomSeed{random_seed: Option<u64>},
+    #[serde(rename_all = "camelCase")]
     RoleOutline{index: u8, role_outline: RoleOutline},
     #[serde(rename_all = "camelCase")]
     PhaseTime{phase: PhaseType, time: u16},
@@ -193,6 +195,8 @@ pub enum ToServerPacket{
     // Settings
     #[serde(rename_all = "camelCase")]
     SetRoleList{role_list: RoleList},
+    #[serde(rename_all = "camelCase")]
+    SetRandomSeed{random_seed: Option<u64>},
     #[serde(rename_all = "camelCase")]
     SetRoleOutline{index: u8, role_outline: RoleOutline},
     #[serde(rename_all = "camelCase")]

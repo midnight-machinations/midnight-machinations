@@ -21,12 +21,12 @@ pub(super) const DEFENSE: DefensePower = DefensePower::None;
 
 impl RoleStateTrait for Lookout {
     type ClientAbilityState = Lookout;
-    fn on_midnight(self, _game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut MidnightVariables, priority: OnMidnightPriority) {
+    fn on_midnight(self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut MidnightVariables, priority: OnMidnightPriority) {
         if priority != OnMidnightPriority::Investigative {return;}
         let Some(visit) = Visits::default_visit(midnight_variables, actor_ref, Role::Lookout) else {return};
             
         let mut players: Vec<PlayerReference> = visit.target.lookout_seen_players(midnight_variables, visit).collect();
-        players.shuffle(&mut rand::rng());
+        players.shuffle(&mut game.rng);
         
         actor_ref.push_night_message(midnight_variables, ChatMessageVariant::LookoutResult { players });
     }

@@ -57,7 +57,7 @@ pub trait RoleStateTrait: Clone + std::fmt::Debug + Default + GetClientAbilitySt
     fn receive_player_chat_group_map(self, _game: &Game, _actor_ref: PlayerReference) -> PlayerChatGroupMap {
         PlayerChatGroupMap::new()
     }
-    fn new_state(_game: &Game) -> Self {
+    fn new_state(_game: &mut Game) -> Self {
         Self::default()
     }
     fn default_revealed_groups(self) -> VecSet<InsiderGroupID> {
@@ -217,7 +217,7 @@ mod macros {
                         $(Self::$name => RoleState::$name($file::$name::default())),*
                     }
                 }
-                pub fn new_state(&self, game: &Game) -> RoleState {
+                pub fn new_state(&self, game: &mut Game) -> RoleState {
                     match self {
                         $(Self::$name => RoleState::$name($file::$name::new_state(game))),*
                     }

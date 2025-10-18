@@ -51,7 +51,7 @@ impl RoleStateTrait for Martyr {
     // More information is being sent than needed by the client.
     // This should be fixed later
     type ClientAbilityState = Martyr;
-    fn new_state(game: &Game) -> Self {
+    fn new_state(game: &mut Game) -> Self {
         Self{
             state: MartyrState::StillPlaying { bullets: crate::game::role::common_role::standard_charges(game) }
         }
