@@ -21,13 +21,13 @@ pub(super) const DEFENSE: DefensePower = DefensePower::None;
 
 impl RoleStateTrait for Tracker {
     type ClientAbilityState = Tracker;
-    fn on_midnight(self, _game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut MidnightVariables, priority: OnMidnightPriority) {
+    fn on_midnight(self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut MidnightVariables, priority: OnMidnightPriority) {
         if priority != OnMidnightPriority::Investigative {return;}
 
         let Some(target) = Visits::default_target(midnight_variables, actor_ref, Role::Tracker) else {return};
             
         let mut players: Vec<PlayerReference> = target.tracker_seen_players(midnight_variables).collect();
-        players.shuffle(&mut rand::rng());
+        players.shuffle(&mut game.rng);
         
         actor_ref.push_night_message(midnight_variables, ChatMessageVariant::TrackerResult { players });
         

@@ -49,7 +49,7 @@ pub(super) const DEFENSE: DefensePower = DefensePower::None;
 
 impl RoleStateTrait for Mortician {
     type ClientAbilityState = Mortician;
-    fn new_state(game: &Game) -> Self {
+    fn new_state(game: &mut Game) -> Self {
         Self{
             cremations_remaining: crate::game::role::common_role::standard_charges(game),
             blocked: false

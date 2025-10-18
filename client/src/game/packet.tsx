@@ -79,6 +79,9 @@ export type ToClientPacket = {
     type: "roleList",
     roleList: RoleList,
 } | {
+    type: "randomSeed", 
+    randomSeed: number | null,
+} | {
     type: "roleOutline",
     index: number,
     roleOutline: RoleOutline
@@ -212,6 +215,9 @@ export type ToServerPacket = {
 } | {
     type: "setRoleList", 
     roleList: RoleList,
+} | {
+    type: "setRandomSeed", 
+    randomSeed: number | null,
 } | {
     type: "setRoleOutline", 
     index: number,

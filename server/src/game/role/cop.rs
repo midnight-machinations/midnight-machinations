@@ -50,7 +50,7 @@ impl RoleStateTrait for Cop {
                     .with_direct()
                     .map_visitor()
                     .collect::<Box<[PlayerReference]>>()
-                    .choose(&mut rand::rng())
+                    .choose(&mut game.rng)
                     .copied()
                     .or_else(||Visits::into_iter(midnight_variables)
                         .without_visit(ambush_visit)
@@ -59,7 +59,7 @@ impl RoleStateTrait for Cop {
                         .with_direct()
                         .map_visitor()
                         .collect::<Box<[PlayerReference]>>()
-                        .choose(&mut rand::rng())
+                        .choose(&mut game.rng)
                         .copied()
                     )
                 {

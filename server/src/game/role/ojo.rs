@@ -52,7 +52,7 @@ impl RoleStateTrait for Ojo {
                         .with_investigatable()
                         .map_target()
                         .collect();
-                    players.shuffle(&mut rand::rng());
+                    players.shuffle(&mut game.rng);
 
                     actor_ref.push_night_message(midnight_variables, 
                         ChatMessageVariant::WerewolfTrackingResult{

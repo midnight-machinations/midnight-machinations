@@ -46,7 +46,7 @@ impl RoleStateTrait for Ambusher {
             .with_loyalist_visitor(game, GameConclusion::Town)
             .map_visitor()
             .collect::<Box<[PlayerReference]>>()
-            .choose(&mut rand::rng())
+            .choose(&mut game.rng)
             .copied()
             .or_else(||Visits::into_iter(midnight_variables)
                 .without_visit(ambush_visit)
@@ -55,7 +55,7 @@ impl RoleStateTrait for Ambusher {
                 .with_direct()
                 .map_visitor()
                 .collect::<Box<[PlayerReference]>>()
-                .choose(&mut rand::rng())
+                .choose(&mut game.rng)
                 .copied()
             ) else {return};
 

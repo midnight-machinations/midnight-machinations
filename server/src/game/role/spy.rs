@@ -34,14 +34,14 @@ impl RoleStateTrait for Spy {
             .with_target(bugged)
             .map_tag()
             .collect();
-        visit_tags.shuffle(&mut rand::rng());
+        visit_tags.shuffle(&mut game.rng);
 
         let mut syndicate_visited_players: Vec<PlayerReference> = Visits::into_iter(midnight_variables)
             .with_insider_visitor(game, InsiderGroupID::Mafia)
             .with_investigatable()
             .map_target()
             .collect();
-        syndicate_visited_players.shuffle(&mut rand::rng());
+        syndicate_visited_players.shuffle(&mut game.rng);
         
         actor_ref.push_night_message(midnight_variables, ChatMessageVariant::SpyMafiaVisit { players: syndicate_visited_players });
         actor_ref.push_night_message(midnight_variables, ChatMessageVariant::SpyBug { visit_tags } );

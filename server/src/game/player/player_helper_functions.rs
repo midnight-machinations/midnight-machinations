@@ -133,7 +133,7 @@ impl PlayerReference{
 
     pub fn push_night_messages_to_player(&self, game: &mut Game, midnight_variables: &mut MidnightVariables){
         let mut messages = self.night_messages(midnight_variables).to_vec();
-        messages.shuffle(&mut rand::rng());
+        messages.shuffle(&mut game.rng);
         messages.sort();
         self.send_packet(game, ToClientPacket::NightMessages { chat_messages: 
             messages.iter().map(|msg|ChatMessage::new_private(msg.clone())).collect()

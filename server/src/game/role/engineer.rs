@@ -135,7 +135,7 @@ impl RoleStateTrait for Engineer {
                         .filter(|v|v.tag != VisitTag::Role { role: Role::Engineer, id: 0 } || v.visitor != actor_ref)
                         .map_tag()
                         .collect();
-                    visit_tags.shuffle(&mut rand::rng());
+                    visit_tags.shuffle(&mut game.rng);
 
                     actor_ref.push_night_message(midnight_variables, ChatMessageVariant::SpyBug { visit_tags } );
                 }

@@ -53,7 +53,7 @@ impl RoleStateTrait for Jester {
                 .collect();
 
             let Some(target_ref) = all_killable_players
-                .choose(&mut rand::rng()) else {return};
+                .choose(&mut game.rng) else {return};
             
             *target_ref
         };

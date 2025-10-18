@@ -100,7 +100,7 @@ impl RoleStateTrait for Werewolf {
                     .for_each(|player_ref|{
 
                     let mut players: Vec<PlayerReference> = player_ref.tracker_seen_players(midnight_variables).collect();
-                    players.shuffle(&mut rand::rng());
+                    players.shuffle(&mut game.rng);
 
                     actor_ref.push_night_message(midnight_variables, 
                         ChatMessageVariant::WerewolfTrackingResult{

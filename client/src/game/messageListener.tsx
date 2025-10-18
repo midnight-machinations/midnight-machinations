@@ -311,6 +311,11 @@ export default function messageListener(packet: ToClientPacket){
                 }
             }
         break;
+        case "randomSeed":
+            if(GAME_MANAGER.state.stateType === "lobby" || GAME_MANAGER.state.stateType === "game") {
+                GAME_MANAGER.state.randomSeed = packet.randomSeed;
+            }
+        break;
         case "roleOutline":
             //role list entriy
             if(GAME_MANAGER.state.stateType === "lobby" || GAME_MANAGER.state.stateType === "game") {

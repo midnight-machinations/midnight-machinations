@@ -31,7 +31,7 @@ pub struct Mercenary{
 
 impl RoleStateTrait for Mercenary {
     type ClientAbilityState = Mercenary;
-    fn new_state(game: &Game) -> Self {
+    fn new_state(game: &mut Game) -> Self {
         let mut available_roles = PlayerReference::all_players(game)
             .map(|p|p.role(game))
             .filter(|r|*r != Role::Mercenary)
@@ -39,7 +39,7 @@ impl RoleStateTrait for Mercenary {
             .into_iter()
             .collect::<Vec<Role>>();
 
-        available_roles.shuffle(&mut rand::rng());
+        available_roles.shuffle(&mut game.rng);
         
         let attacks_remaining = crate::game::role::common_role::standard_charges(game);
         let mut roles = VecSet::new();
