@@ -38,7 +38,7 @@ pub(super) const DEFENSE: DefensePower = DefensePower::Armored;
 
 impl RoleStateTrait for Yer {
     type ClientAbilityState = Yer;
-    fn new_state(game: &Game) -> Self {
+    fn new_state(game: &mut Game) -> Self {
         Self{
             star_passes_remaining: crate::game::role::common_role::standard_charges(game),
             ..Self::default()
@@ -52,7 +52,7 @@ impl RoleStateTrait for Yer {
             .map(|selection| selection.0)
             .unwrap_or(false);
 
-        if let Some(visit) = Visits::default_visit(game, midnight_variables, actor_ref) {
+        if let Some(visit) = Visits::default_visit(midnight_variables, actor_ref, Role::Yer) {
             let target_ref = visit.target;
 
             if !chose_to_convert {

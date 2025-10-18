@@ -35,12 +35,12 @@ impl RoleStateTrait for Cop {
 
         match priority {
             OnMidnightPriority::Heal => {
-                let Some(target_ref) = Visits::default_target(game, midnight_variables, actor_ref) else {return};
+                let Some(target_ref) = Visits::default_target(midnight_variables, actor_ref, Role::Cop) else {return};
 
                 actor_ref.guard_player(game, midnight_variables, target_ref);
             }
             OnMidnightPriority::Kill => {
-                let Some(ambush_visit) = Visits::default_visit(game, midnight_variables, actor_ref) else {return};
+                let Some(ambush_visit) = Visits::default_visit(midnight_variables, actor_ref, Role::Cop) else {return};
 
                 if let Some(player_to_attack) = Visits::into_iter(midnight_variables)
                     .without_visit(ambush_visit)
@@ -50,7 +50,7 @@ impl RoleStateTrait for Cop {
                     .with_direct()
                     .map_visitor()
                     .collect::<Box<[PlayerReference]>>()
-                    .choose(&mut rand::rng())
+                    .choose(&mut game.rng)
                     .copied()
                     .or_else(||Visits::into_iter(midnight_variables)
                         .without_visit(ambush_visit)
@@ -59,7 +59,7 @@ impl RoleStateTrait for Cop {
                         .with_direct()
                         .map_visitor()
                         .collect::<Box<[PlayerReference]>>()
-                        .choose(&mut rand::rng())
+                        .choose(&mut game.rng)
                         .copied()
                     )
                 {

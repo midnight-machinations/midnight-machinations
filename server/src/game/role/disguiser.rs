@@ -32,7 +32,7 @@ impl RoleStateTrait for Disguiser {
     fn on_midnight(mut self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut MidnightVariables, priority: OnMidnightPriority) {
         if priority != OnMidnightPriority::Deception {return}
 
-        let Some(appeared_visit_player) = Visits::default_target(game, midnight_variables, actor_ref) else {return};
+        let Some(appeared_visit_player) = Visits::default_target(midnight_variables, actor_ref, Role::Disguiser) else {return};
         
         self.last_role_selection = Self::disguised_role(&self, game, actor_ref);
 

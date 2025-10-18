@@ -30,7 +30,7 @@ export default function PlayerListMenu(): ReactElement {
 
 
     return <div className="player-list-menu player-list-menu-colors">
-        <ContentTab close={ContentMenu.PlayerListMenu} helpMenu={"standard/playerList"}>{translate("menu.playerList.title")}</ContentTab>
+        <ContentTab close={ContentMenu.PlayerListMenu}>{translate("menu.playerList.title")}</ContentTab>
 
         <div className="player-list">
             {players
@@ -70,11 +70,6 @@ function PlayerCard(props: Readonly<{
     graveIndex?: number,
     playerIndex: number
 }>): ReactElement{
-    const isPlayerSelf = usePlayerState(
-        playerState => playerState.myIndex === props.playerIndex,
-        ["yourPlayerIndex"],
-        false
-    )!;
     const chatFilter = useGameState(
         gameState => gameState.chatFilter,
         ["filterUpdate"],
@@ -152,9 +147,7 @@ function PlayerCard(props: Readonly<{
 
     const whisperNotification = usePlayerState(
         gameState =>
-            gameState.missedWhispers.some(player => player === props.playerIndex) &&
-            !isPlayerSelf &&
-            !whisperChatOpen,
+            gameState.missedWhispers.some(player => player === props.playerIndex) && !whisperChatOpen,
         ["addChatMessages", "whisperChatOpenOrClose"],
         false
     );
@@ -168,7 +161,7 @@ function PlayerCard(props: Readonly<{
         <PlayerNamePlate playerIndex={props.playerIndex}/>
         
         {mostRecentBlockMessage !== undefined ? 
-            <Button onClick={()=>setAlibiOpen(!alibiOpen)}>
+            <Button className="alibi-button will-menu-colors" onClick={()=>setAlibiOpen(!alibiOpen)}>
                 <StyledText noLinks={true}>
                     {
                         translateChatMessage(mostRecentBlockMessage[1].variant, playerNames, roleList)
@@ -181,7 +174,7 @@ function PlayerCard(props: Readonly<{
             </Button>
         : null}
         {grave !== undefined ? 
-            <Button onClick={()=>setGraveOpen(!graveOpen)}>
+            <Button className="grave-button graveyard-menu-colors" onClick={()=>setGraveOpen(!graveOpen)}>
                 <StyledText noLinks={true}>
                     {translateGraveRole(grave)} {translate(grave.diedPhase+".icon")}{grave.dayNumber.toString()}
                 </StyledText>
@@ -232,7 +225,7 @@ function PlayerCard(props: Readonly<{
             </Button>
         })()}
     </div>
-    {alibiOpen && mostRecentBlockMessage !== undefined ? <div onClick={()=>setAlibiOpen(false)}>
+    {alibiOpen && mostRecentBlockMessage !== undefined ? <div className="open-alibi" onClick={()=>setAlibiOpen(false)}>
         <ChatMessage message={mostRecentBlockMessage[1]} messageIndex={mostRecentBlockMessage[0]}/>
     </div> : null}
     {graveOpen && grave !== undefined ? <div onClick={()=>setGraveOpen(false)}>

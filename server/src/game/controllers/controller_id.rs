@@ -41,8 +41,8 @@ pub enum ControllerID{
     ForwardMessage{player: PlayerReference},
 
 
-    SyndicateGunItemShoot,
-    SyndicateGunItemGive,
+    SyndicateGunShoot,
+    SyndicateGunGive,
     SyndicateChooseBackup,
     SyndicateBackupAttack,
 
@@ -80,10 +80,10 @@ impl ControllerID{
         Self::PitchforkVote{player}
     }
     pub fn syndicate_gun_item_shoot()->Self{
-        Self::SyndicateGunItemShoot
+        Self::SyndicateGunShoot
     }
     pub fn syndicate_gun_item_give()->Self{
-        Self::SyndicateGunItemGive
+        Self::SyndicateGunGive
     }
     pub fn syndicate_choose_backup()->Self{
         Self::SyndicateChooseBackup

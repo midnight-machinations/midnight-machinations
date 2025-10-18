@@ -23,7 +23,7 @@ impl Cult{
         let apostle_exists = cult_insiders.iter()
             .any(|p|matches!(p.role(game), Role::Apostle));
         
-        if !apostle_exists && let Some(p) = cult_insiders.choose(&mut rand::rng()){
+        if !apostle_exists && let Some(p) = cult_insiders.choose(&mut game.rng){
             p.set_new_role(game, Role::Apostle.default_state(), true);
         }
 
@@ -32,7 +32,7 @@ impl Cult{
         let zealot_exists = cult_insiders.iter()
             .any(|p|matches!(p.role(game), Role::Zealot));
 
-        if !zealot_exists && let Some(p) = cult_insiders.choose(&mut rand::rng()){
+        if !zealot_exists && let Some(p) = cult_insiders.choose(&mut game.rng){
             p.set_new_role(game, Role::Zealot.default_state(), true);
         }
     }

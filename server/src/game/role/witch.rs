@@ -5,7 +5,7 @@ use crate::game::abilities_component::ability_id::AbilityID;
 use crate::game::attack_power::DefensePower;
 use crate::game::phase::PhaseType;
 use crate::game::player::PlayerReference;
-
+use crate::game::components::possession::Possession;
 use crate::game::visit::Visit;
 use crate::game::Game;
 use super::{
@@ -31,7 +31,7 @@ pub(super) const DEFENSE: DefensePower = DefensePower::None;
 impl RoleStateTrait for Witch {
     type ClientAbilityState = ClientRoleState;
     fn on_midnight(self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut MidnightVariables, priority: OnMidnightPriority) {
-        if let Some(currently_used_player) = actor_ref.possess_night_action(game, midnight_variables, priority, self.currently_used_player){
+        if let Some(currently_used_player) = Possession::possess_night_action(actor_ref, game, midnight_variables, priority, self.currently_used_player, Role::Witch){
             actor_ref.edit_role_ability_helper(game, Witch{
                 currently_used_player: Some(currently_used_player)
             })

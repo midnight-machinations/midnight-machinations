@@ -44,7 +44,7 @@ impl RoleStateTrait for Armorsmith {
     type ClientAbilityState = ClientRoleState;
     fn on_midnight(mut self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut MidnightVariables, priority: OnMidnightPriority) {
         if priority != OnMidnightPriority::Heal {return;}
-        let Some(target) = Visits::default_target(game, midnight_variables, actor_ref) else {return};
+        let Some(target) = Visits::default_target(midnight_variables, actor_ref, Role::Armorsmith) else {return};
         if self.open_shops_remaining == 0 {return}
 
         self.night_open_shop = true;
@@ -57,7 +57,7 @@ impl RoleStateTrait for Armorsmith {
         if let Some(player) = if visitors.contains(&target){
             Some(target)
         }else { 
-            visitors.choose(&mut rand::rng()).copied() 
+            visitors.choose(&mut game.rng).copied() 
         }{
             PlayerComponent::<FragileVests>::add_defense_item_midnight(
                 game,
@@ -98,7 +98,7 @@ impl RoleStateTrait for Armorsmith {
                 ..self
             });
     }
-    fn new_state(game: &Game) -> Self {
+    fn new_state(game: &mut Game) -> Self {
         Self{
             open_shops_remaining: crate::game::role::common_role::standard_charges(game),
             ..Self::default()

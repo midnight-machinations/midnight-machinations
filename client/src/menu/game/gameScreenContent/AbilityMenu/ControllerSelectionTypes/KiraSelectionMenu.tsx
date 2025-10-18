@@ -9,21 +9,14 @@ import ListMap, { ListMapData } from "../../../../../ListMap";
 import { AvailableKiraSelection } from "../../../../../game/controllerInput";
 import { useGameState, usePlayerState } from "../../../../../components/useHooks";
 import { encodeString } from "../../../../../components/ChatMessage";
+import { Role } from "../../../../../game/roleState.d";
+import { getRolesFromRoleSet } from "../../../../../game/roleListState.d";
 
-export const KIRA_GUESSES = [
-    "none",
-    "nonTown",
-    "jailor", "villager",
-    "detective", "lookout", "spy", "tracker", "philosopher", "psychic", "auditor", "snoop", "gossip", "tallyClerk",
-    "doctor",  "bodyguard",  "cop", "bouncer", "engineer", "armorsmith", "steward",
-    "vigilante",  "veteran", "marksman", "deputy", "rabblerouser",
-    "escort",  "medium",  "retributionist", "reporter", "mayor",  "transporter", "porter", "polymath"
-];
 export type KiraGuessResult = "correct" | "notInGame" | "wrongSpot";
 export type KiraSelection = ListMapData<PlayerIndex, KiraGuess>;
 export type KiraResult = ListMapData<PlayerIndex, [KiraGuess, KiraGuessResult]>;
 
-export type KiraGuess = typeof KIRA_GUESSES[number];
+export type KiraGuess = "none" | "nonTown" | Role;
 export function kiraGuessTranslate(kiraGuess: KiraGuess): string{
     let outString = translateChecked("role."+kiraGuess+".name");
     if(outString===null){
@@ -122,14 +115,15 @@ export default function KiraSelectionMenu(props: Readonly<{
         props.onChange(guesses);
     }
 
-    let currentGuessesMap = new ListMap(props.selection);    
+    let currentGuessesMap = new ListMap(props.selection);
 
     return <div className="large-kira-menu">
         {guessable.map((playerIndex)=>{
             return <KiraGuessPicker 
                 key={playerIndex} 
                 playerIndex={playerIndex} 
-                guess={currentGuessesMap.get(playerIndex) ?? "none"} 
+                guess={currentGuessesMap.get(playerIndex) ?? "none"}
+                availableGuesses={["none", "nonTown", ...getRolesFromRoleSet("town")]}
                 onChange={(guess: KiraGuess) => {
                     let newGuesses = new ListMap<PlayerIndex, KiraGuess>([...props.selection]);
                     newGuesses.insert(playerIndex, guess);
@@ -143,6 +137,7 @@ export default function KiraSelectionMenu(props: Readonly<{
 function KiraGuessPicker(props: {
     playerIndex: PlayerIndex,
     guess: KiraGuess,
+    availableGuesses: KiraGuess[]
     onChange: (guess: KiraGuess) => void
 }): ReactElement {
 
@@ -164,7 +159,7 @@ function KiraGuessPicker(props: {
     }, [setPlayers]);
 
     const guessOptions: SelectOptionsSearch<KiraGuess> = new Map();
-    for(let guess of KIRA_GUESSES){
+    for(let guess of props.availableGuesses){
         guessOptions.set(guess, [
             <StyledText noLinks={true}>{kiraGuessTranslate(guess)}</StyledText>,
             kiraGuessTranslate(guess)

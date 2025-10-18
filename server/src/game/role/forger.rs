@@ -1,6 +1,7 @@
 
 use serde::Serialize;
 
+use crate::game::components::night_visits::Visits;
 use crate::game::controllers::{AvailableRoleListSelection, AvailableStringSelection, RoleListSelection};
 use crate::game::attack_power::DefensePower;
 use crate::game::chat::ChatMessageVariant;
@@ -43,7 +44,7 @@ pub(super) const DEFENSE: DefensePower = DefensePower::None;
 
 impl RoleStateTrait for Forger {
     type ClientAbilityState = ClientRoleState;
-    fn new_state(game: &Game) -> Self {
+    fn new_state(game: &mut Game) -> Self {
         Self{
             forges_remaining: crate::game::role::common_role::standard_charges(game),
             ..Self::default()
@@ -54,10 +55,7 @@ impl RoleStateTrait for Forger {
 
         match priority {
             OnMidnightPriority::Deception=>{
-                let actor_visits = actor_ref.role_night_visits_cloned(midnight_variables);
-                let Some(visit) = actor_visits.first() else{return};
-
-                let target_ref = visit.target;
+                let Some(target_ref) = Visits::default_target(midnight_variables, actor_ref, Role::Forger) else {return};
 
                 let fake_role = ControllerID::role(actor_ref, Role::Forger, 1)
                     .get_role_list_selection(game)

@@ -48,7 +48,7 @@ export default function ChatMenu(): ReactElement {
     );
 
     return <div className="chat-menu chat-menu-colors">
-        <ContentTab close={ContentMenu.ChatMenu} helpMenu={"standard/chat"}>{translate("menu.chat.title")}</ContentTab>
+        <ContentTab close={ContentMenu.ChatMenu}>{translate("menu.chat.title")}</ContentTab>
         {filter === undefined || filter === null || <div className="chat-filter-zone highlighted">
             <StyledText>{translate("menu.chat.playerFilter", filterString)}</StyledText>
             <Button 

@@ -299,7 +299,7 @@ export function partitionWikiPages(
             "standard/frame", "standard/haunt", "standard/hypnotize", "standard/interview", "standard/detain",
             "standard/marionette", "standard/obscured", "standard/possess", 
             "standard/guard", "standard/fragileVest", "standard/rampage", "standard/report", "standard/roleblock", "standard/silenced",
-            "standard/spiral", "standard/syndicateGunItem", "standard/transport", "standard/ward",
+            "standard/spiral", "standard/syndicateGun", "standard/transport", "standard/ward",
             "standard/forfeitNominationVote", "standard/aura", "standard/fastForward", "standard/appearedVisit", 
             "standard/defense", "standard/confused", "standard/trial",
         ].includes(wikiPage)) {

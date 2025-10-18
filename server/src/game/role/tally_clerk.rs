@@ -30,7 +30,7 @@ impl RoleStateTrait for TallyClerk {
         if priority != OnMidnightPriority::Investigative {return;}
         let target = 
         if 
-            let Some(target) = Visits::default_target(game, midnight_variables, actor_ref) &&
+            let Some(target) = Visits::default_target(midnight_variables, actor_ref, Role::TallyClerk) &&
             VerdictsToday::player_was_on_trial(game, target)
         {
             Some(target)

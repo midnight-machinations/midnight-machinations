@@ -9,7 +9,7 @@ use crate::{
     vec_map::VecMap
 };
 
-#[derive(Clone, Default)]
+#[derive(Clone, Default, Debug)]
 pub struct PitchforkAbility{
     charges: u8,
     angry_mobbed_player: Option<PlayerReference>,
@@ -20,7 +20,7 @@ impl From<PitchforkAbility> for Ability where PitchforkAbility: AbilityTrait {
     }
 }
 impl PitchforkAbility{
-    pub fn new_state(game: &Game)->Self{
+    pub fn new_state(game: &mut Game)->Self{
         Self { charges: common_role::standard_charges(game), angry_mobbed_player: None }
     }
 

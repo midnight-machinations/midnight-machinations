@@ -9,7 +9,7 @@ use crate::game::chat::ChatMessageVariant;
 use crate::game::components::insider_group::InsiderGroupID;
 use crate::game::player::PlayerReference;
 
-use crate::game::visit::Visit;
+use crate::game::visit::{Visit, VisitTag};
 use crate::game::Game;
 
 use super::{ControllerID, ControllerParametersMap, Role, RoleStateTrait};
@@ -26,26 +26,25 @@ impl RoleStateTrait for Spy {
     fn on_midnight(self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut MidnightVariables, priority: OnMidnightPriority) {
         if priority != OnMidnightPriority::Investigative {return;}
 
-        let Some(bugged) = Visits::default_target(game, midnight_variables, actor_ref) else {return};
+        let Some(bugged) = Visits::default_target(midnight_variables, actor_ref, Role::Spy) else {return};
 
-        let mut roles: Vec<Role> = Visits::into_iter(midnight_variables)
+        let mut visit_tags: Vec<VisitTag> = Visits::into_iter(midnight_variables)
             .with_insider_visitor(game, InsiderGroupID::Mafia)
             .with_investigatable()
             .with_target(bugged)
-            .map_visitor()
-            .map(|p|p.role(game))
+            .map_tag()
             .collect();
-        roles.shuffle(&mut rand::rng());
+        visit_tags.shuffle(&mut game.rng);
 
         let mut syndicate_visited_players: Vec<PlayerReference> = Visits::into_iter(midnight_variables)
             .with_insider_visitor(game, InsiderGroupID::Mafia)
             .with_investigatable()
             .map_target()
             .collect();
-        syndicate_visited_players.shuffle(&mut rand::rng());
+        syndicate_visited_players.shuffle(&mut game.rng);
         
         actor_ref.push_night_message(midnight_variables, ChatMessageVariant::SpyMafiaVisit { players: syndicate_visited_players });
-        actor_ref.push_night_message(midnight_variables, ChatMessageVariant::SpyBug { roles } );
+        actor_ref.push_night_message(midnight_variables, ChatMessageVariant::SpyBug { visit_tags } );
     }
     fn controller_parameters_map(self, game: &Game, actor_ref: PlayerReference) -> ControllerParametersMap {
         ControllerParametersMap::builder(game)

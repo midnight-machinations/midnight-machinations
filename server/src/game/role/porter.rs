@@ -1,6 +1,7 @@
 use serde::Serialize;
 
 use crate::game::abilities_component::ability_id::AbilityID;
+use crate::game::components::night_visits::{NightVisitsIterator, Visits};
 use crate::game::controllers::AvailableTwoPlayerOptionSelection;
 use crate::game::components::transport::{Transport, TransportPriority};
 use crate::game::event::on_midnight::{MidnightVariables, OnMidnightPriority};
@@ -24,13 +25,13 @@ impl RoleStateTrait for Porter {
     fn on_midnight(self, _game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut MidnightVariables, priority: OnMidnightPriority) {
         if priority != OnMidnightPriority::Warper {return;}
     
-        let transporter_visits = actor_ref.role_night_visits_cloned(midnight_variables);
-        let Some(first_visit) = transporter_visits.get(0).map(|v| v.target) else {return};
-        let Some(second_visit) = transporter_visits.get(1).map(|v| v.target) else {return};
+        let mut targets = Visits::into_iter(midnight_variables).default_targets(actor_ref, Role::Porter);
+        let Some(from) = targets.next() else {return};
+        let Some(to) = targets.next() else {return};
         
         Transport::transport(
             midnight_variables, TransportPriority::Warper, 
-            &vec_map![(first_visit, second_visit)], |_| true, true
+            &vec_map![(from, to)], |_| true, true
         );
     }
     fn controller_parameters_map(self, game: &Game, actor_ref: PlayerReference) -> super::ControllerParametersMap {

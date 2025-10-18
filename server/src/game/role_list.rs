@@ -266,7 +266,7 @@ impl RoleSet{
                 ],
             RoleSet::TownSupport => 
                 vec_set![
-                    Role::Medium, Role::Retributionist,
+                    Role::Medium,
                     Role::Transporter, Role::Porter,
                     Role::Mayor, Role::Nepotist, Role::Reporter,
                     Role::Courtesan, Role::Escort,
@@ -282,7 +282,7 @@ impl RoleSet{
                 ).collect(),
             RoleSet::MafiaKilling => 
                 vec_set![
-                    Role::Godfather, Role::Counterfeiter,
+                    Role::Godfather, Role::Counterfeiter, Role::Necromancer,
                     Role::Impostor, Role::Recruiter,
                     Role::Mafioso
                 ],
@@ -290,8 +290,7 @@ impl RoleSet{
                 vec_set![
                     Role::Blackmailer, Role::Cerenovous, Role::Informant, Role::Hypnotist, Role::Consort,
                     Role::Forger, Role::Framer, Role::Mortician, Role::Disguiser,
-                    Role::Necromancer, Role::Reeducator,
-                    Role::Ambusher
+                    Role::Reeducator, Role::Ambusher
                 ],
             RoleSet::Minions => 
                 vec_set![
@@ -299,7 +298,7 @@ impl RoleSet{
                 ],
             RoleSet::Neutral =>
                 vec_set![
-                    Role::Jester, Role::Revolutionary, Role::Politician, Role::Doomsayer, Role::Mercenary,
+                    Role::Jester, Role::Revolutionary, Role::Politician, Role::Mercenary,
                     Role::Martyr, Role::Chronokaiser, Role::SantaClaus, Role::Krampus
                 ],
             RoleSet::Fiends =>
@@ -307,7 +306,7 @@ impl RoleSet{
                     Role::Arsonist, Role::Werewolf, Role::Ojo,
                     Role::Puppeteer, Role::Pyrolisk, Role::Kira,
                     Role::SerialKiller, Role::FiendsWildcard,
-                    Role::Spiral, Role::Warden, Role::Yer
+                    Role::Spiral, Role::Warden, Role::Solorebel, Role::Yer
                 ],
             RoleSet::Cult =>
                 vec_set![

@@ -128,9 +128,9 @@
         "canWriteDeathNote": false,
         "canBeConvertedTo": [],
         "chatMessages":[
-            {"type": "spyBug", "roles": []},
-            {"type": "spyBug", "roles": ["framer"]},
-            {"type": "spyBug", "roles": ["informant", "hypnotist"]},
+            {"type": "spyBug", "visitTags": []},
+            {"type": "spyBug", "visitTags": [{"type":"role", "role":"framer", "id":0}]},
+            {"type": "spyBug", "visitTags": [{"type":"role", "role":"hypnotist", "id":0},{"type":"syndicateGun"}]},
             {"type": "spyMafiaVisit", "players": [16,17,18,16]},
             {"type": "spyMafiaVisit", "players": []}
         ]
@@ -246,7 +246,9 @@
             {"type": "trapStateEndOfNight", "state":{"type":"dismantled"}},
             {"type": "trapStateEndOfNight", "state":{"type":"ready"}},
             {"type": "trapStateEndOfNight", "state":{"type":"set"}},
-            {"type": "engineerVisitorsRole", "role": "framer"},
+            {"type": "spyBug", "visitTags": []},
+            {"type": "spyBug", "visitTags": [{"type":"syndicateGun"}]},
+            {"type": "spyBug", "visitTags": [{"type":"role", "role":"gossip", "id":0},{"type":"role", "role":"tracker", "id":0}]},
             {"type": "youAttackedSomeone"},
             {"type": "youGuardedSomeone"},
             {"type": "youWereGuarded"},
@@ -506,23 +508,6 @@
             {"type": "transported"}
         ]
     },
-    "retributionist": {
-        "mainRoleSet": "town",
-        "roleSets": ["town", "townCommon", "townSupport"],
-        "armor": false,
-        "aura": null,
-        "maxCount": 1,
-        "canWriteDeathNote": false,
-        "canBeConvertedTo": [],
-        "chatMessages":[
-            {"type": "targetsMessage", "message": 
-                {"type": "detectiveResult","suspicious":true}
-            },
-            {"type": "youWerePossessed", "immune": false},
-            {"type": "youWerePossessed", "immune": true},
-            {"type": "targetIsPossessionImmune"}
-        ]
-    },
     "polymath": {
         "mainRoleSet": "town",
         "roleSets": ["town", "townCommon", "townSupport"],
@@ -582,6 +567,29 @@
         "chatMessages":[
             {"type": "godfatherBackup", "backup": null},
             {"type": "godfatherBackup", "backup": 26},
+            {"type": "godfatherBackupKilled", "backup": 26},
+            {"type": "someoneSurvivedYourAttack"},
+            {"type": "youSurvivedAttack"},
+            {
+                "type": "playerRoleAndAlibi",
+                "player": 13,
+                "role": "jailor",
+                "will": "I am very confident in my doctors ability to protect me, especially because he knows there could be a forger in the game."
+            }
+        ]
+    },
+    "necromancer": {
+        "mainRoleSet": "mafia",
+        "roleSets": ["mafia", "mafiaKilling"],
+        "armor": false,
+        "aura": null,
+        "maxCount": 1,
+        "canWriteDeathNote": false,
+        "canBeConvertedTo": ["godfather"],
+        "chatMessages":[
+            {"type": "godfatherBackup", "backup": null},
+            {"type": "godfatherBackup", "backup": 26},
+            {"type": "godfatherBackupKilled", "backup": 26},
             {"type": "someoneSurvivedYourAttack"},
             {"type": "youSurvivedAttack"}
         ]
@@ -649,8 +657,7 @@
             {"type": "youSurvivedAttack"},
             {"type": "youWereGuarded"},
             {"type": "transported"},
-            {"type": "youWerePossessed", "immune": false},
-            {"type": "youWerePossessed", "immune": true},
+            {"type": "youWerePossessed"},
             {"type": "wardblocked"}
         ]
     },
@@ -778,23 +785,6 @@
             }
         ]
     },
-    "necromancer": {
-        "mainRoleSet": "mafia",
-        "roleSets": ["mafia", "mafiaSupport"],
-        "armor": false,
-        "aura": null,
-        "maxCount": 1,
-        "canWriteDeathNote": false,
-        "canBeConvertedTo": ["godfather"],
-        "chatMessages":[
-            {"type": "targetsMessage", "message": 
-                {"type": "detectiveResult","suspicious":true}
-            },
-            {"type": "targetIsPossessionImmune"},
-            {"type": "youWerePossessed", "immune": false},
-            {"type": "youWerePossessed", "immune": true}
-        ]
-    },
     "ambusher": {
         "mainRoleSet": "mafia",
         "roleSets": ["mafia", "mafiaSupport"],
@@ -860,19 +850,6 @@
             {"type": "playerEnfranchised","playerIndex": 1},
             {"type": "invalidWhisper"},
             {"type": "youSurvivedAttack"}
-        ]
-    },
-    "doomsayer":{
-        "mainRoleSet": "neutral",
-        "roleSets": ["neutral"],
-        "armor": false,
-        "aura": null,
-        "maxCount": 1,
-        "canWriteDeathNote": true,
-        "canBeConvertedTo": ["jester"],
-        "chatMessages":[
-            {"type": "doomsayerWon"},
-            {"type": "doomsayerFailed"}
         ]
     },
     "mercenary":{
@@ -995,9 +972,7 @@
                 {"type": "detectiveResult","suspicious":true}
             },
             {"type": "targetHasRole", "role":"detective"},
-            {"type": "targetIsPossessionImmune"},
-            {"type": "youWerePossessed", "immune": false},
-            {"type": "youWerePossessed", "immune": true}
+            {"type": "youWerePossessed"}
         ]
     },
     "scarecrow":{
@@ -1238,6 +1213,20 @@
             {"type": "youAttackedSomeone"}
         ]
     },
+    "solorebel": {
+        "mainRoleSet": "fiends",
+        "roleSets": ["fiends"],
+        "armor": true,
+        "aura": null,
+        "maxCount": null,
+        "canWriteDeathNote": true,
+        "canBeConvertedTo": [],
+        "chatMessages":[
+            {"type": "someoneSurvivedYourAttack"},
+            {"type": "youSurvivedAttack"},
+            {"type": "youAttackedSomeone"}
+        ]
+    },
     "kira": {
         "mainRoleSet": "fiends",
         "roleSets": ["fiends"],
@@ -1287,8 +1276,7 @@
             {"type": "wardenPlayersImprisoned", "players": [5,2,10]},
             {"type": "youAttackedSomeone"},
             {"type": "someoneSurvivedYourAttack"},
-            {"type": "roleBlocked"},
-            {"type": "wardblocked"}
+            {"type": "roleBlocked"}
         ]
     },
     "yer": {

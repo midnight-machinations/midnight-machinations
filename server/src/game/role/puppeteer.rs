@@ -35,7 +35,7 @@ pub(super) const DEFENSE: DefensePower = DefensePower::Armored;
 
 impl RoleStateTrait for Puppeteer {
     type ClientAbilityState = Puppeteer;
-    fn new_state(game: &Game) -> Self {
+    fn new_state(game: &mut Game) -> Self {
         Self{
             marionettes_remaining: crate::game::role::common_role::standard_charges(game),
         }
@@ -45,7 +45,7 @@ impl RoleStateTrait for Puppeteer {
         if priority != OnMidnightPriority::Kill {return;}
         if game.day_number() <= 1 {return;}
 
-        if let Some(visit) = Visits::default_visit(game, midnight_variables, actor_ref) {
+        if let Some(visit) = Visits::default_visit(midnight_variables, actor_ref, Role::Puppeteer) {
             let target = visit.target;
             
             if 

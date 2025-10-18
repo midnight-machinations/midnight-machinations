@@ -14,9 +14,9 @@ export default function PlayerNamePlate(props: Readonly<{
             (gameState) => gameState.phaseState,
             ["phase"]
         )!;
-        const myRoleState = usePlayerState(
-            (playerState) => playerState.roleState,
-            ["yourRoleState"]
+        const myRole = usePlayerState(
+            (playerState) => playerState.myRole,
+            ["yourRole"]
         );
         const myIndex = usePlayerState(
             (gameState) => gameState.myIndex,
@@ -45,7 +45,7 @@ export default function PlayerNamePlate(props: Readonly<{
 
         const roleString = useMemo(()=>{
             if(props.playerIndex === myIndex){
-                return ("("+translate("role."+myRoleState?.type+".name")+")");
+                return ("("+translate("role."+myRole+".name")+")");
             }
     
             if(playerAlive && playerRoleLabel !== null){
@@ -53,7 +53,7 @@ export default function PlayerNamePlate(props: Readonly<{
             }
 
             return "";
-        }, [props.playerIndex, myIndex, myRoleState, playerAlive, playerRoleLabel]);
+        }, [props.playerIndex, myIndex, myRole, playerAlive, playerRoleLabel]);
 
 
 

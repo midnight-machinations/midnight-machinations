@@ -97,7 +97,6 @@ impl WinCondition{
     pub fn won_with_role_state(game: &Game, player: PlayerReference)->bool{
         match player.role_state(game) {
             RoleState::Jester(r) => r.won(),
-            RoleState::Doomsayer(r) => r.won(),
             RoleState::Mercenary(r) => r.won(),
             RoleState::Revolutionary(r) => r.won(),
             RoleState::Chronokaiser(_) => Chronokaiser::won(game, player),

@@ -40,7 +40,7 @@ pub(super) const DEFENSE: DefensePower = DefensePower::None;
 
 impl RoleStateTrait for Veteran {
     type ClientAbilityState = ClientRoleState;
-    fn new_state(game: &Game) -> Self {
+    fn new_state(game: &mut Game) -> Self {
         Self{
             alerts_remaining: crate::game::role::common_role::standard_charges(game),
             ..Self::default()

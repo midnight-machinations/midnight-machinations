@@ -30,7 +30,8 @@ impl Abilities{
     }
     pub fn set_default_abilties(game: &mut Game){
         for (id, _) in game.abilities.abilities.clone() {
-            Abilities::new_ability(game, &id, id.new_state(game));
+            let new_state = id.new_state(game);
+            Abilities::new_ability(game, &id, new_state);
         }
     }
     pub fn set_ability(game: &mut Game, id: &AbilityID, new: Option<impl Into<Ability>>){
@@ -59,9 +60,13 @@ impl Abilities{
         game.abilities.abilities.insert(id.clone(), ability.clone());
         OnAbilityEdit::new(id.clone(), Some(ability)).invoke(game);
     }
+
+    pub fn ids(game: &Game)->Box<[AbilityID]>{
+        game.abilities.abilities.iter().map(|(id,_)|id).cloned().collect()
+    }
 }
 impl AbilityID{
-    fn new_state(&self, game: &Game)->Ability{
+    fn new_state(&self, game: &mut Game)->Ability{
         match self {
             AbilityID::Role { role, .. } => {RoleAbility(role.new_state(game)).into()},
             AbilityID::Pitchfork => {PitchforkAbility::new_state(game).into()},

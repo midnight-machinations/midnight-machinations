@@ -90,7 +90,7 @@ impl RoleStateTrait for Auditor {
 
 impl Auditor{
     const MAX_RESULT_COUNT: usize = 4;
-    pub fn get_result(game: &Game, chosen_outline: RoleOutlineReference, confused: bool) -> AuditorResult {
+    pub fn get_result(game: &mut Game, chosen_outline: RoleOutlineReference, confused: bool) -> AuditorResult {
         let outline = chosen_outline.deref(game);
 
         let mut all_possible_fake_roles = outline
@@ -98,7 +98,7 @@ impl Auditor{
             .into_iter()
             .filter(|x|game.settings.enabled_roles.contains(x))
             .collect::<Vec<Role>>();
-        all_possible_fake_roles.shuffle(&mut rand::rng());
+        all_possible_fake_roles.shuffle(&mut game.rng);
 
         let role = chosen_outline.deref_as_role_and_player_originally_generated(game).0;
         let mut out = VecSet::new();
@@ -113,7 +113,7 @@ impl Auditor{
             if out.count() >= Auditor::MAX_RESULT_COUNT || out.count() >= all_possible_fake_roles.len().saturating_sub(1) {break}
             out.insert(*role);
         }
-        out.shuffle(&mut rand::rng());
+        out.shuffle(&mut game.rng);
 
         AuditorResult(out)
     }

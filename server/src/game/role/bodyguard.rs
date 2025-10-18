@@ -3,6 +3,7 @@ use serde::Serialize;
 use crate::game::abilities_component::ability_id::AbilityID;
 use crate::game::attack_power::AttackPower;
 use crate::game::attack_power::DefensePower;
+use crate::game::components::night_visits::Visits;
 use crate::game::components::transport::Transport;
 use crate::game::components::transport::TransportPriority;
 use crate::game::event::on_midnight::{MidnightVariables, OnMidnightPriority};
@@ -55,9 +56,7 @@ impl RoleStateTrait for Bodyguard {
         
         match priority {
             OnMidnightPriority::Bodyguard => {
-                let actor_visits = actor_ref.role_night_visits_cloned(midnight_variables);
-                let Some(target_ref) = actor_visits.get(0).map(|v| v.target) else {return};
-                
+                let Some(target_ref) = Visits::default_target(midnight_variables, actor_ref, Role::Bodyguard) else {return};
                 if actor_ref == target_ref {return}
                 
                 let redirected_player_refs = Transport::transport(
@@ -72,9 +71,7 @@ impl RoleStateTrait for Bodyguard {
                 
             },
             OnMidnightPriority::Heal => {
-                let actors_visits = actor_ref.role_night_visits_cloned(midnight_variables);
-                let Some(visit) = actors_visits.first() else {return};
-                let target_ref = visit.target;
+                let Some(target_ref) = Visits::default_target(midnight_variables, actor_ref, Role::Bodyguard) else {return};
     
                 if actor_ref == target_ref {
                     let self_shields_remaining = self.self_shields_remaining.saturating_sub(1);

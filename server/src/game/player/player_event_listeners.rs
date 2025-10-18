@@ -14,8 +14,6 @@ impl PlayerReference {
             match priority {
                 OnMidnightPriority::InitializeNight => {
                     player.set_night_grave_will(midnight_variables, player.alibi(game).to_owned());
-                    let visits = player.convert_selection_to_visits(game);
-                    player.set_night_visits(midnight_variables, visits.clone());
                 },
                 OnMidnightPriority::FinalizeNight => {
                     player.push_night_messages_to_player(game, midnight_variables);

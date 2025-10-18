@@ -9,6 +9,7 @@ use super::{phase::PhaseType, role::Role, role_list::RoleList};
 #[derive(Debug, Default, Clone, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct Settings{
+    pub random_seed: Option<u64>,
     pub role_list: RoleList,
     pub phase_times: PhaseTimeSettings,
     pub enabled_roles: VecSet<Role>,

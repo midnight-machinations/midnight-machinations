@@ -40,15 +40,16 @@ impl RoleStateTrait for Pawn {
             ))
             .collect::<Vec<_>>();
 
-        if let Some(new_role) = possible_roles.choose(&mut rand::rng()) {
-            actor_ref.set_new_role(game, new_role.new_state(game), false);
+        if let Some(new_role) = possible_roles.choose(&mut game.rng).copied() {
+            let new_state = new_role.new_state(game);
+            actor_ref.set_new_role(game, new_state, false);
 
             for player in PlayerReference::all_players(game){
                 if
                     !player.win_condition(game).friends_with_conclusion(GameConclusion::Town) &&
                     player != actor_ref
                 {
-                    player.add_private_chat_message(game, ChatMessageVariant::PawnRole{role: *new_role});
+                    player.add_private_chat_message(game, ChatMessageVariant::PawnRole{role: new_role});
                 }
             }
         }

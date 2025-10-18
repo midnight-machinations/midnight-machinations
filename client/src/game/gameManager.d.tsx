@@ -1,6 +1,5 @@
 import { WikiArticleLink } from "../components/WikiArticleLink";
 import ListMap from "../ListMap";
-import { DoomsayerGuess } from "../menu/game/gameScreenContent/AbilityMenu/RoleSpecificMenus/LargeDoomsayerMenu";
 import { ControllerInput } from "./controllerInput";
 import { PhaseType, PhaseTimes, PlayerIndex, State, Verdict, FastForwardSetting } from "./gameState.d";
 import { ToClientPacket, ToServerPacket } from "./packet";
@@ -77,6 +76,7 @@ export type GameManager = {
     sendSetPhaseTimePacket(phase: PhaseType, time: number): void;
     sendSetPhaseTimesPacket(phaseTimeSettings: PhaseTimes): void;
     sendSetRoleListPacket(roleListEntries: RoleList): void;
+    sendSetRandomSeedPacket(randomSeed: number | null): void;
     sendSetRoleOutlinePacket(index: number, roleOutline: RoleOutline): void;
     sendSimplifyRoleListPacket(): void;
     
@@ -91,11 +91,6 @@ export type GameManager = {
     sendModifierSettingsPacket(modifiers: ListMap<ModifierID, ModifierState>): void;
 
     sendControllerInput(input: ControllerInput): void;
-    sendSetDoomsayerGuess(guesses: [
-        [number, DoomsayerGuess],
-        [number, DoomsayerGuess],
-        [number, DoomsayerGuess]
-    ]): void;
     sendSetConsortOptions(
         roleblock: boolean, 
         youWereRoleblockedMessage: boolean, 
