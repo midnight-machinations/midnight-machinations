@@ -1894,7 +1894,7 @@
     "wiki.article.role.necromancer.guide":"- Each night except the first, choose a player to attack\n - All dead fellow insiders keep their abiltiies while you are alive.\n - If you are roleblocked, the all dead fellow insiders are also roleblocked.",
     "wiki.article.role.necromancer.abilities":"",
     "wiki.article.role.necromancer.attributes":"",
-    "wiki.article.role.necromancer.extra":"- Your attack is basic.",
+    "wiki.article.role.necromancer.extra":"- Your attack is basic.\n - Fellow insiders who have cult, fiends, or syndicate killing roles do not keep their abilities due to your ability.",
 
     "wiki.article.role.recruiter.reminder": "Each night, either select a player to attack or recruit. Recruited players join the syndicate but die the next night. If a recruiter is generated randomly, there is one less syndicate member.",
     "wiki.article.role.recruiter.guide":"- You may choose to do one of the following\n    - Select and attack a player\n    - Select a player to recruit into the syndicate\n        - They are told they are recruited, and that they will win with syndicate, but their role doesn't change\n        - They are attacked the following night, and every night until they die\n        - You have 3 uses of this ability by default\n- For every time you successfully kill someone, you can gain one use to your recruit ability\n- If a recruiter is randomly generated, a non recruiter syndicate member has their role switched to a random town role before the game starts, they never know of this",
