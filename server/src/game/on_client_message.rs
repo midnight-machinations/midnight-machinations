@@ -1,7 +1,6 @@
 use crate::{
     game::{
-        abilities::role_abilities::RoleAbility, abilities_component::{ability::Ability, ability_id::AbilityID},
-        components::fast_forward::FastForwardComponent, event::Event, role::Role
+        abilities::role_abilities::RoleAbility, abilities_component::{ability::Ability, ability_id::AbilityID}, chat::ChatMessageVariant, components::{fast_forward::FastForwardComponent, synopsis::SynopsisTracker}, event::Event, role::Role
     }, lobby::{lobby_client::LobbyClient, Lobby}, log, packet::{ToClientPacket, ToServerPacket},
     room::{RemoveRoomClientResult, RoomClientID, RoomState}, vec_map::VecMap, websocket_connections::connection::ClientSender
 };
@@ -70,7 +69,13 @@ impl Game {
 
                 self.send_to_all(ToClientPacket::BackToLobby);
 
-                let lobby = Lobby::new_from_game(self.room_name.clone(), self.settings.clone(), new_clients);
+                if !self.game_is_over() {
+                    self.add_message_to_chat_group(super::chat::ChatGroup::All, ChatMessageVariant::GameOver {
+                        synopsis: SynopsisTracker::get(self, GameConclusion::get_premature_conclusion(self))
+                    });
+                }
+
+                let lobby = Lobby::new_from_game(self, self.room_name.clone(), new_clients);
 
                 return GameClientMessageResult::BackToLobby(lobby);
             }

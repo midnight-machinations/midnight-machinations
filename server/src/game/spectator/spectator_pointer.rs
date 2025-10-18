@@ -1,9 +1,9 @@
-use std::time::Duration;
+use std::{collections::VecDeque, time::Duration};
 
 use serde::Serialize;
 
 use crate::{
-    client_connection::ClientConnection, game::{chat::{ChatGroup, ChatMessage}, components::graves::grave_reference::GraveReference, player::PlayerReference, Game, GameOverReason}, packet::ToClientPacket
+    client_connection::ClientConnection, game::{chat::{ChatGroup, ChatMessage, ChatMessageVariant}, components::graves::grave_reference::GraveReference, player::PlayerReference, Game, GameOverReason}, packet::ToClientPacket
 };
 
 use super::Spectator;
@@ -126,6 +126,15 @@ impl SpectatorPointer {
         for (idx, msg) in msgs.into_iter().enumerate() {
             s.queued_chat_messages.push_back((idx, msg));
         }
+    }
+
+    pub fn queued_chat_messages(&self, game: &Game) -> VecDeque<(usize, ChatMessageVariant)> {
+        let s = match self.deref(game){
+            Some(s)=>s,
+            None=> return VecDeque::new()
+        };
+
+        s.queued_chat_messages.clone()
     }
 
     pub fn send_chat_messages(&self, game: &mut Game){
