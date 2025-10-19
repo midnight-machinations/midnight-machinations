@@ -644,6 +644,20 @@
         "canBeConvertedTo": ["godfather"],
         "chatMessages":[]
     },
+    "maverick": {
+        "mainRoleSet": "mafia",
+        "roleSets": ["mafia"],
+        "armor": false,
+        "aura": null,
+        "maxCount": null,
+        "canWriteDeathNote": false,
+        "canBeConvertedTo": [],
+        "chatMessages":[
+            {"type": "someoneSurvivedYourAttack"},
+            {"type": "youSurvivedAttack"},
+            {"type": "youAttackedSomeone"}
+        ]
+    },
     "hypnotist": {
         "mainRoleSet": "mafia",
         "roleSets": ["mafia", "mafiaSupport"],
@@ -1213,7 +1227,7 @@
             {"type": "youAttackedSomeone"}
         ]
     },
-    "solorebel": {
+    "juggernaut": {
         "mainRoleSet": "fiends",
         "roleSets": ["fiends"],
         "armor": true,

@@ -27,13 +27,13 @@ impl RoleStateTrait for Transporter {
     fn on_midnight(self, _game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut MidnightVariables, priority: OnMidnightPriority) {
         if priority != OnMidnightPriority::Transporter {return;}
     
-        let mut transporter_visits = Visits::into_iter(midnight_variables).default_visits(actor_ref, Role::Transporter);
-        let Some(first_visit) = transporter_visits.next().map(|v| v.target) else {return};
-        let Some(second_visit) = transporter_visits.next().map(|v| v.target) else {return};
+        let mut targets = Visits::into_iter(midnight_variables).default_targets(actor_ref, Role::Transporter);
+        let Some(a) = targets.next() else {return};
+        let Some(b) = targets.next() else {return};
         
         Transport::transport(
             midnight_variables, TransportPriority::Transporter, 
-            &vec_map![(first_visit, second_visit), (second_visit, first_visit)], |_| true, true
+            &vec_map![(a, b), (b, a)], |_| true, true
         );
     }
     fn controller_parameters_map(self, game: &Game, actor_ref: PlayerReference) -> ControllerParametersMap {

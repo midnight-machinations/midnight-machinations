@@ -395,7 +395,10 @@
     "controllerId.role.mafiaKillingWildcard.0.name": "Choose Role",
     
     "role.goon.name": "Goon",
-    "role.goon.name:var.0": "Made Men",
+    "role.goon.name:var.0": "Goons",
+
+    "role.maverick.name": "Maverick",
+    "role.maverick.name:var.0": "Mavericks",
 
     "role.hypnotist.name": "Hypnotist",
     "role.hypnotist.name:var.0": "Hypnotists",
@@ -563,9 +566,9 @@
     "controllerId.role.yer.1.name": "Choose Target",
     "controllerId.role.yer.2.name": "Disguise as Role",
 
-    "role.solorebel.name": "Solorebel",
-    "role.solorebel.name:var.0": "Solorebels",
-    "controllerId.role.solorebel.0.name": "Attack",
+    "role.juggernaut.name": "Juggernaut",
+    "role.juggernaut.name:var.0": "Juggernauts",
+    "controllerId.role.juggernaut.0.name": "Attack",
 
     "role.serialKiller.name": "Serial Killer",
     "role.serialKiller.name:var.0": "Serial Killers",
@@ -1926,11 +1929,11 @@
     "wiki.article.role.serialKiller.attributes":"- You have an armor-piercing attack",
     "wiki.article.role.serialKiller.extra":"",
     
-    "wiki.article.role.solorebel.reminder": "Each night, select a player to attack. You are given 2 random syndicate abilities.",
-    "wiki.article.role.solorebel.guide": "- At night select a player to attack them with an armor piercing attack.\n    - You can't use your ability night 1.\n - When you becomes this role, You are given 2 different random syndicate support abilities.\n    - You can't be given reeducator",
-    "wiki.article.role.solorebel.abilities":"",
-    "wiki.article.role.solorebel.attributes":"",
-    "wiki.article.role.solorebel.extra":"- Your ability breaks role limits, you can be given an ability with role limite 1, even if there is a player with that ability in the game.",
+    "wiki.article.role.juggernaut.reminder": "Each night, select a player to attack. You are given 2 random syndicate support abilities.",
+    "wiki.article.role.juggernaut.guide": "- At night select a player to attack them with an armor piercing attack.\n    - You can't use your ability night 1.\n - When you becomes this role, You are given 2 different random syndicate support abilities.\n    - You can't be given reeducator",
+    "wiki.article.role.juggernaut.abilities":"",
+    "wiki.article.role.juggernaut.attributes":"",
+    "wiki.article.role.juggernaut.extra":"- Your ability breaks role limits, you can be given an ability with role limit 1, even if there is a player with that ability in the game.",
     
     "wiki.article.role.mafiaKillingWildcard.reminder": "Choose a syndicate killing role to become that role when dusk starts.",
     "wiki.article.role.mafiaKillingWildcard.guide": "* Choose a syndicate killing role to become that role\n    * You become that role when dusk starts\n* You likely can't become a role if someone already has that role (You can't become a role that has exceeded its role limit)",
@@ -1944,6 +1947,12 @@
     "wiki.article.role.goon.attributes":"None",
     "wiki.article.role.goon.extra":"None",
 
+    "wiki.article.role.maverick.reminder": "You are given 2 random syndicate support abilities.",
+    "wiki.article.role.maverick.guide": " - When you becomes this role, You are given 2 different random syndicate support abilities.\n    - You can't be given reeducator",
+    "wiki.article.role.maverick.abilities":"",
+    "wiki.article.role.maverick.attributes":"",
+    "wiki.article.role.maverick.extra":"- Your ability breaks role limits, you can be given an ability with role limit 1, even if there is a player with that ability in the game.",
+    
     "wiki.article.role.hypnotist.reminder": "Each night, select a player to roleblock and/or send false messages.",
     "wiki.article.role.hypnotist.lore": "A hypnotherapist who used their \"uncanny\" abilities to help townsfolk with mental troubles. When the town decided the hypnotherapists methods were too mysterious, they drove the hypnotist out of town. The patients had nowhere left to turn, so the hypnotist resorted to using their powers of suggestion underground, the rest was history.",
     "wiki.article.role.hypnotist.guide": "- Each night choose a player\n    - You may choose to roleblock them\n    - You must send one or more of the following chat messages to your target\n        - You were roleblocked. (Your choice to send this message is independent of your choice to roleblock your target)\n        - You were guarded.\n        - You were attacked but had defense.\n        - You were transported.\n        - You were possessed.\n        - A visit of yours was wardblocked.",

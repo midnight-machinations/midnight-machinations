@@ -143,6 +143,7 @@ macros::roles! {
 
     Goon : made_man,
     Consort : consort,
+    Maverick : maverick,
     
     Hypnotist : hypnotist,
     Blackmailer : blackmailer,
@@ -184,7 +185,7 @@ macros::roles! {
     Kira : kira,
     Warden : warden,
     Yer : yer,
-    Solorebel : solorebel,
+    Juggernaut : juggernaut,
     FiendsWildcard : fiends_wildcard,
     SerialKiller : serial_killer,
 

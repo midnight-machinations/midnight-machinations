@@ -54,6 +54,7 @@ impl RoleStateTrait for Steward {
 
                 self.target_healed_refs = vec![];
                 
+                //increase defense
                 for &role in roles.iter(){
                     for player in PlayerReference::all_players(game){
                         if role != player.role(game) {continue;}
@@ -63,11 +64,13 @@ impl RoleStateTrait for Steward {
                     }
                 }
 
+                //use charges
                 self.self_heals_remaining = self.self_heals_remaining
                     .saturating_sub(
                         if roles.contains(&Role::Steward){1}else{0}
                     );
                 
+                //set ability
                 actor_ref.edit_role_ability_helper(game, Steward{
                     previous_input: RoleListSelection(
                         vec![roles.first(), roles.get(1)]

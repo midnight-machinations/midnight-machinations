@@ -3041,13 +3041,13 @@ fn recruiter_role_list_is_correct() {
 }
 
 #[test]
-fn solorebel_wardblock() {
+fn juggernaut_wardblock() {
     let (mut game, mut _assignments) = mock_game(
         Settings {
             random_seed: None,
             role_list: RoleList(vec![
                 RoleOutline {options: vec1::vec1![RoleOutlineOption {
-                    roles: RoleOutlineOptionRoles::Role { role: Role::Solorebel },
+                    roles: RoleOutlineOptionRoles::Role { role: Role::Juggernaut },
                     win_condition: RoleOutlineOptionWinCondition::RoleDefault,
                     insider_groups: RoleOutlineOptionInsiderGroups::RoleDefault,
                     player_pool: vec_set![0]
@@ -3066,25 +3066,25 @@ fn solorebel_wardblock() {
                 }]}
             ]),
             phase_times: PhaseTimeSettings::default(),
-            enabled_roles: vec_set![Role::Solorebel, Role::Bouncer, Role::Villager, Role::Blackmailer, Role::Mortician],
+            enabled_roles: vec_set![Role::Juggernaut, Role::Bouncer, Role::Villager, Role::Blackmailer, Role::Mortician],
             modifiers: ModifierSettings::default(),
         },
         3
     ).unwrap();
-    let [solorebel, villager, bouncer] = [0, 1, 2].map(|i| unsafe { PlayerReference::new_unchecked(i) } );
+    let [juggernaut, villager, bouncer] = [0, 1, 2].map(|i| unsafe { PlayerReference::new_unchecked(i) } );
     
-    let solorebel = TestPlayer::new(solorebel, &game);
+    let juggernaut = TestPlayer::new(juggernaut, &game);
     let villager = TestPlayer::new(villager, &game);
     let bouncer = TestPlayer::new(bouncer, &game);
     let mut game = TestGame::new(&mut game);
     game.skip_to(Night, 1);
 
-    solorebel.send_ability_input(ControllerInput { id: ControllerID::Role { player: solorebel.player_ref(), role: Role::Blackmailer, id: 0 }, selection: ControllerSelection::PlayerList(PlayerListSelection(vec![villager.player_ref()])) });
-    solorebel.send_ability_input(ControllerInput { id: ControllerID::Role { player: solorebel.player_ref(), role: Role::Mortician, id: 0 }, selection: ControllerSelection::PlayerList(PlayerListSelection(vec![bouncer.player_ref()])) });
+    juggernaut.send_ability_input(ControllerInput { id: ControllerID::Role { player: juggernaut.player_ref(), role: Role::Blackmailer, id: 0 }, selection: ControllerSelection::PlayerList(PlayerListSelection(vec![villager.player_ref()])) });
+    juggernaut.send_ability_input(ControllerInput { id: ControllerID::Role { player: juggernaut.player_ref(), role: Role::Mortician, id: 0 }, selection: ControllerSelection::PlayerList(PlayerListSelection(vec![bouncer.player_ref()])) });
     bouncer.send_ability_input_player_list_typical(vec![villager]);
 
     game.skip_to(Obituary, 2);
 
     assert!(!Silenced::silenced(&game, villager.player_ref()));
-    assert!(Tags::has_tag(&game, TagSetID::MorticianTag(solorebel.player_ref()), bouncer.player_ref()))
+    assert!(Tags::has_tag(&game, TagSetID::MorticianTag(juggernaut.player_ref()), bouncer.player_ref()))
 }
