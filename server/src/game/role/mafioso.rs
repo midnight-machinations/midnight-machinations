@@ -28,11 +28,8 @@ impl RoleStateTrait for Mafioso {
     fn on_midnight(self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut MidnightVariables, priority: OnMidnightPriority) {
         if priority != OnMidnightPriority::Kill {return}
         if game.day_number() == 1 {return}
-        if let Some(visit) = Visits::default_visit(midnight_variables, actor_ref, Role::Mafioso) {
-            let target_ref = visit.target;
-    
-            target_ref.try_night_kill_single_attacker(actor_ref, game, midnight_variables, GraveKiller::RoleSet(RoleSet::Mafia), AttackPower::Basic, false);
-        }
+        let Some(target_ref) = Visits::default_target(midnight_variables, actor_ref, Role::Mafioso) else {return};
+        target_ref.try_night_kill_single_attacker(actor_ref, game, midnight_variables, GraveKiller::RoleSet(RoleSet::Mafia), AttackPower::Basic, false);
     }
     fn controller_parameters_map(self, game: &Game, actor_ref: PlayerReference) -> super::ControllerParametersMap {
         ControllerParametersMap::builder(game)

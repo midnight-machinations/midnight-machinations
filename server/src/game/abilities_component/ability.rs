@@ -6,4 +6,3 @@ pub enum Ability{
     Pitchfork(PitchforkAbility),
     SyndicateGun(SyndicateGun),
 }
-

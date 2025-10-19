@@ -6,18 +6,33 @@ use super::Role;
 pub fn standard_charges(game: &Game)->u8{
     game.num_players().div_ceil(5)
 }
-pub fn on_player_roleblocked(midnight_variables: &mut MidnightVariables, actor_ref: PlayerReference, player: PlayerReference){
+pub fn on_player_roleblocked(role: Role, midnight_variables: &mut MidnightVariables, actor_ref: PlayerReference, player: PlayerReference){
     if player != actor_ref {return}
 
     Visits::retain(midnight_variables, |v|
-        !matches!(v.tag, VisitTag::Role{..}) || v.visitor != actor_ref
+        if let VisitTag::Role { role: visit_role, .. } = v.tag {
+            visit_role != role || v.visitor != actor_ref
+        }else{
+            true
+        }
     );
 }
-pub fn on_visit_wardblocked(midnight_variables: &mut MidnightVariables, actor_ref: PlayerReference, visit: Visit){
+pub fn on_visit_wardblocked(role: Role, midnight_variables: &mut MidnightVariables, actor_ref: PlayerReference, visit: Visit){
     if actor_ref != visit.visitor {return};
+    if let VisitTag::Role { role: visit_role, .. } = visit.tag {
+        if visit_role != role {
+            return;
+        }
+    }else{
+        return;
+    }
 
     Visits::retain(midnight_variables, |v|
-        !matches!(v.tag, VisitTag::Role{..}) || v.visitor != actor_ref
+        if let VisitTag::Role { role: visit_role, .. } = v.tag {
+            visit_role != role || v.visitor != actor_ref
+        }else{
+            true
+        }
     );
 }
 

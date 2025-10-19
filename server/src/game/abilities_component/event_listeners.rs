@@ -2,7 +2,7 @@ use crate::game::{
     abilities_component::{ability::Ability, ability_id::AbilityID, ability_trait::AbilityTrait, Abilities},
     controllers::ControllerParametersMap,
     event::{
-        before_phase_end::BeforePhaseEnd, on_ability_creation::{OnAbilityCreation, OnAbilityCreationFold, OnAbilityCreationPriority}, on_ability_deletion::{OnAbilityDeletion, OnAbilityDeletionPriority}, on_ability_edit::OnAbilityEdit, on_add_insider::OnAddInsider, on_any_death::OnAnyDeath, on_conceal_role::OnConcealRole, on_controller_selection_changed::OnControllerSelectionChanged, on_grave_added::OnGraveAdded, on_midnight::{MidnightVariables, OnMidnight, OnMidnightPriority}, on_phase_start::OnPhaseStart, on_player_possessed::OnPlayerPossessed, on_remove_insider::OnRemoveInsider, on_role_switch::OnRoleSwitch, on_validated_ability_input_received::OnValidatedControllerInputReceived, on_whisper::{OnWhisper, WhisperFold, WhisperPriority}, Event as _
+        before_phase_end::BeforePhaseEnd, on_ability_creation::{OnAbilityCreation, OnAbilityCreationFold, OnAbilityCreationPriority}, on_ability_deletion::{OnAbilityDeletion, OnAbilityDeletionPriority}, on_ability_edit::OnAbilityEdit, on_add_insider::OnAddInsider, on_any_death::OnAnyDeath, on_conceal_role::OnConcealRole, on_controller_selection_changed::OnControllerSelectionChanged, on_grave_added::OnGraveAdded, on_midnight::{MidnightVariables, OnMidnight, OnMidnightPriority}, on_phase_start::OnPhaseStart, on_player_possessed::OnPlayerPossessed, on_player_roleblocked::OnPlayerRoleblocked, on_remove_insider::OnRemoveInsider, on_role_switch::OnRoleSwitch, on_validated_ability_input_received::OnValidatedControllerInputReceived, on_visit_wardblocked::OnVisitWardblocked, on_whisper::{OnWhisper, WhisperFold, WhisperPriority}, Event as _
     },
     Game
 };
@@ -102,6 +102,18 @@ impl Abilities{
         }
     }
 
+    
+    pub fn on_player_roleblocked(game: &mut Game, event: &OnPlayerRoleblocked, fold: &mut MidnightVariables, priority: ()) {
+        for (id, _ability) in game.abilities.abilities.clone() {
+            id.on_player_roleblocked(game, event, fold, priority)
+        }
+    }
+    pub fn on_visit_wardblocked(game: &mut Game, event: &OnVisitWardblocked, fold: &mut MidnightVariables, priority: ()) {
+        for (id, _ability) in game.abilities.abilities.clone() {
+            id.on_visit_wardblocked(game, event, fold, priority)
+        }
+    }
+
 
     pub fn controller_parameters_map(game: &Game) -> ControllerParametersMap {
         ControllerParametersMap::combine(
@@ -155,10 +167,16 @@ impl AbilityID{
     fn on_role_switch(&self, game: &mut Game, event: &OnRoleSwitch, fold: &mut (), priority: ()){
         self.get_dyn_cloned_ability_expect(game).on_role_switch(game, self, event, fold, priority);
     }
+
     fn on_player_possessed(&self, game: &mut Game, event: &OnPlayerPossessed, fold: &mut MidnightVariables, priority: ()){
         self.get_dyn_cloned_ability_expect(game).on_player_possessed(game, self, event, fold, priority);
     }
-
+    pub fn on_player_roleblocked(&self, game: &mut Game, event: &OnPlayerRoleblocked, fold: &mut MidnightVariables, priority: ()) {
+        self.get_dyn_cloned_ability_expect(game).on_player_roleblocked(game, self, event, fold, priority);
+    }
+    pub fn on_visit_wardblocked(&self, game: &mut Game, event: &OnVisitWardblocked, fold: &mut MidnightVariables, priority: ()) {
+        self.get_dyn_cloned_ability_expect(game).on_visit_wardblocked(game, self, event, fold, priority);
+    }
 
     fn controller_parameters_map(&self, game: &Game) -> ControllerParametersMap {
         self.get_dyn_cloned_ability_expect(game).controller_parameters_map(game, self)

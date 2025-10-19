@@ -63,7 +63,7 @@ impl RoleStateTrait for Nepotist {
             let Some(successor) = self.successor &&
             successor.alive(game)
         {
-            EnfranchiseComponent::enfranchise(game, successor, 1);
+            EnfranchiseComponent::enfranchise(game, successor, 2);
         }
     }
     fn on_whisper(self, game: &mut Game, actor_ref: PlayerReference, event: &OnWhisper, fold: &mut WhisperFold, priority: WhisperPriority) {

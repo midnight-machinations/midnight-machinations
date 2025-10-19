@@ -1,13 +1,13 @@
 use crate::game::{ 
-    abilities::syndicate_gun::SyndicateGun, chat::ChatMessageVariant,
-    components::{blocked::BlockedComponent, mafia::Mafia}, player::PlayerReference, visit::Visit, Game
+    abilities::syndicate_gun::SyndicateGun, abilities_component::Abilities, chat::ChatMessageVariant,
+    components::{blocked::BlockedComponent, mafia::Mafia}, visit::Visit, Game
 };
 
 use super::on_midnight::MidnightVariables;
 
 #[must_use = "Event must be invoked"]
 pub struct OnVisitWardblocked{
-    visit: Visit
+    pub visit: Visit
 }
 impl OnVisitWardblocked{
     pub fn new(visit: Visit) -> Self{
@@ -17,9 +17,7 @@ impl OnVisitWardblocked{
         self.visit.visitor.set_night_blocked(midnight_variables, true);
         self.visit.visitor.push_night_message(midnight_variables, ChatMessageVariant::Wardblocked);
 
-        for player_ref in PlayerReference::all_players(game){
-            player_ref.on_visit_wardblocked(game, midnight_variables, self.visit);
-        }
+        Abilities::on_visit_wardblocked(game, &self, midnight_variables, ());
         Mafia::on_visit_wardblocked(game, midnight_variables, self.visit);
         SyndicateGun::on_visit_wardblocked(game, midnight_variables, self.visit);
         BlockedComponent::set_blocked(game, self.visit.visitor);

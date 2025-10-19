@@ -98,7 +98,7 @@ impl RoleStateTrait for Arsonist {
 }
 impl Arsonist{
     fn douse(game: &mut Game, player: PlayerReference){
-        if player.role(game) == Role::Arsonist {
+        if (AbilityID::Role { role: Role::Arsonist, player }).exists(game) {
             return
         }
 
@@ -106,7 +106,7 @@ impl Arsonist{
     }
     pub fn ignite(game: &mut Game, igniter: PlayerReference, midnight_variables: &mut MidnightVariables) {
         for player in Tags::tagged(game, TagSetID::ArsonistDoused) {
-            if player.role(game) == Role::Arsonist {continue;}
+            if (AbilityID::Role { role: Role::Arsonist, player }).exists(game) {continue;}
             if !player.alive(game) {continue;}
             player.try_night_kill_single_attacker(
                 igniter,

@@ -2,11 +2,10 @@ mod kit;
 use std::{time::Duration, vec};
 
 pub(crate) use kit::{assert_contains, assert_not_contains};
-
-use mafia_server::{game::{controllers::{BooleanSelection, ControllerSelection, StringSelection, UnitSelection}, visit::VisitTag}, room::RoomState};
 pub use mafia_server::{
     vec_set,
     packet::ToServerPacket,
+    room::RoomState,
     game::{
         abilities::syndicate_gun::SyndicateGun, attack_power::DefensePower,
         role_outline_reference::RoleOutlineReference,
@@ -14,11 +13,14 @@ pub use mafia_server::{
         game_conclusion::GameConclusion, modifiers::ModifierSettings,
         player::PlayerReference,
         chat::{ChatGroup, ChatMessageVariant, MessageSender},
+        visit::VisitTag,
         components::{
                 graves::{
                     grave::{Grave, GraveDeathCause, GraveInformation, GraveKiller, GravePhase},
                     grave_reference::GraveReference
                 },
+                tags::{TagSetID, Tags},
+                silenced::Silenced,
                 insider_group::InsiderGroupID
         },
         controllers::{
@@ -26,6 +28,7 @@ pub use mafia_server::{
                 two_role_option_selection::TwoRoleOptionSelection,
                 two_role_outline_option_selection::TwoRoleOutlineOptionSelection
             },
+            BooleanSelection, ControllerSelection, StringSelection, UnitSelection,
             ControllerID, ControllerInput, IntegerSelection, PlayerListSelection, RoleListSelection
         },
         phase::{
@@ -39,6 +42,8 @@ pub use mafia_server::{
         },
     },
 };
+
+use crate::kit::{game::TestGame, player::TestPlayer};
 
 
 #[test]
@@ -3033,4 +3038,53 @@ fn recruiter_role_list_is_correct() {
     assert!(goon.role(&game) != Role::Goon);
     assert!(detective1.role(&game) == Role::Detective);
     assert!(detective2.role(&game) == Role::Detective);
+}
+
+#[test]
+fn solorebel_wardblock() {
+    let (mut game, mut _assignments) = mock_game(
+        Settings {
+            random_seed: None,
+            role_list: RoleList(vec![
+                RoleOutline {options: vec1::vec1![RoleOutlineOption {
+                    roles: RoleOutlineOptionRoles::Role { role: Role::Solorebel },
+                    win_condition: RoleOutlineOptionWinCondition::RoleDefault,
+                    insider_groups: RoleOutlineOptionInsiderGroups::RoleDefault,
+                    player_pool: vec_set![0]
+                }]},
+                RoleOutline {options: vec1::vec1![RoleOutlineOption {
+                    roles: RoleOutlineOptionRoles::Role { role: Role::Villager },
+                    win_condition: RoleOutlineOptionWinCondition::RoleDefault,
+                    insider_groups: RoleOutlineOptionInsiderGroups::RoleDefault,
+                    player_pool: vec_set![1]
+                }]},
+                RoleOutline {options: vec1::vec1![RoleOutlineOption {
+                    roles: RoleOutlineOptionRoles::Role { role: Role::Bouncer },
+                    win_condition: RoleOutlineOptionWinCondition::RoleDefault,
+                    insider_groups: RoleOutlineOptionInsiderGroups::RoleDefault,
+                    player_pool: vec_set![2]
+                }]}
+            ]),
+            phase_times: PhaseTimeSettings::default(),
+            enabled_roles: vec_set![Role::Solorebel, Role::Bouncer, Role::Villager, Role::Blackmailer, Role::Mortician],
+            modifiers: ModifierSettings::default(),
+        },
+        3
+    ).unwrap();
+    let [solorebel, villager, bouncer] = [0, 1, 2].map(|i| unsafe { PlayerReference::new_unchecked(i) } );
+    
+    let solorebel = TestPlayer::new(solorebel, &game);
+    let villager = TestPlayer::new(villager, &game);
+    let bouncer = TestPlayer::new(bouncer, &game);
+    let mut game = TestGame::new(&mut game);
+    game.skip_to(Night, 1);
+
+    solorebel.send_ability_input(ControllerInput { id: ControllerID::Role { player: solorebel.player_ref(), role: Role::Blackmailer, id: 0 }, selection: ControllerSelection::PlayerList(PlayerListSelection(vec![villager.player_ref()])) });
+    solorebel.send_ability_input(ControllerInput { id: ControllerID::Role { player: solorebel.player_ref(), role: Role::Mortician, id: 0 }, selection: ControllerSelection::PlayerList(PlayerListSelection(vec![bouncer.player_ref()])) });
+    bouncer.send_ability_input_player_list_typical(vec![villager]);
+
+    game.skip_to(Obituary, 2);
+
+    assert!(!Silenced::silenced(&game, villager.player_ref()));
+    assert!(Tags::has_tag(&game, TagSetID::MorticianTag(solorebel.player_ref()), bouncer.player_ref()))
 }

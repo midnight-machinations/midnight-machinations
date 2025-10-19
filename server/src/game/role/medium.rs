@@ -159,7 +159,7 @@ impl RoleStateTrait for Medium {
         }
     }
     fn on_player_roleblocked(self, game: &mut Game, midnight_variables: &mut MidnightVariables, actor_ref: PlayerReference, player: PlayerReference, invisible: bool) {
-        common_role::on_player_roleblocked(midnight_variables, actor_ref, player);
+        common_role::on_player_roleblocked(Role::Medium, midnight_variables, actor_ref, player);
         if player != actor_ref {return}
         if let Some(seanced) = self.seanced_target {
             seanced.roleblock(game, midnight_variables, invisible);

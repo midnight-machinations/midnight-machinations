@@ -3,7 +3,7 @@ use crate::game::{
             ability::Ability,
             ability_id::AbilityID,
             ability_trait::AbilityTrait
-        }, components::{night_visits::Visits, possession::Possession}, controllers::ControllerID, event::{on_conceal_role::OnConcealRole, on_midnight::{MidnightVariables, OnMidnightPriority}, on_player_possessed::OnPlayerPossessed}, player::PlayerReference, role::RoleState, visit::VisitTag, Game
+        }, components::{night_visits::Visits, possession::Possession}, controllers::ControllerID, event::{on_conceal_role::OnConcealRole, on_midnight::{MidnightVariables, OnMidnightPriority}, on_player_possessed::OnPlayerPossessed, on_player_roleblocked::OnPlayerRoleblocked, on_visit_wardblocked::OnVisitWardblocked}, player::PlayerReference, role::RoleState, visit::VisitTag, Game
     };
 
 #[derive(Clone, Debug)]
@@ -71,6 +71,14 @@ impl AbilityTrait for RoleAbility {
         }
 
         self.0.clone().on_player_possessed(game, id, event, fold, priority);
+    }
+
+
+    fn on_player_roleblocked(&self, game: &mut Game, id: &AbilityID, event: &OnPlayerRoleblocked, fold: &mut MidnightVariables, _priority: ()) {
+        self.0.clone().on_player_roleblocked(game, fold, id.get_role_actor_expect(), event.player, event.invisible)
+    }
+    fn on_visit_wardblocked(&self, game: &mut Game, id: &AbilityID, event: &OnVisitWardblocked, fold: &mut MidnightVariables, _priority: ()) {
+        self.0.clone().on_visit_wardblocked(game, fold, id.get_role_actor_expect(), event.visit)
     }
 
     fn controller_parameters_map(&self, game: &Game, id: &AbilityID)  -> crate::game::controllers::ControllerParametersMap {
