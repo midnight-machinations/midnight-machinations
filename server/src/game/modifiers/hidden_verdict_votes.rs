@@ -1,7 +1,7 @@
 
 use serde::{Deserialize, Serialize};
 
-use crate::game::{player::PlayerReference, role::Role, Game};
+use crate::game::{abilities_component::ability_id::AbilityID, components::blocked::BlockedComponent, player::PlayerReference, role::Role, Game};
 
 use super::{ModifierStateImpl, ModifierID};
 
@@ -19,7 +19,12 @@ impl HiddenVerdictVotes {
     pub fn verdict_votes_are_hidden(game: &Game)->bool{
         game.modifier_settings().is_enabled(ModifierID::HiddenVerdictVotes) ||
         PlayerReference::all_players(game)
-            .filter(|p|p.alive(game))
-            .any(|p|matches!(p.role(game), Role::Blackmailer | Role::Cerenovous))
+            .filter(|p|!p.ability_deactivated_from_death(game))
+            .any(|p|
+                !BlockedComponent::blocked(game, p) && (
+                    AbilityID::Role { role: Role::Blackmailer, player: p }.exists(game) ||
+                    AbilityID::Role { role: Role::Cerenovous, player: p }.exists(game)
+                )
+            )
     }
 }
