@@ -1,18 +1,20 @@
 pub mod lobby_client;
 pub mod on_client_message;
+mod lobby_chat;
+
 
 use std::{collections::VecDeque, time::{Duration, Instant}};
 
 use lobby_client::{LobbyClient, LobbyClientType, Ready};
 
-use crate::{client_connection::ClientConnection, game::{role_list::RoleOutline, settings::Settings}, packet::{RejectJoinReason, RoomPreviewData, ToClientPacket}, room::{name_validation, JoinRoomClientResult, RemoveRoomClientResult, RoomClientID, RoomState, RoomTickResult}, vec_map::VecMap, websocket_connections::connection::ClientSender};
+use crate::{client_connection::ClientConnection, game::{role_list::RoleOutline, settings::Settings, Game}, lobby::lobby_chat::LobbyChatComponent, packet::{RejectJoinReason, RoomPreviewData, ToClientPacket}, room::{name_validation, JoinRoomClientResult, RemoveRoomClientResult, RoomClientID, RoomState, RoomTickResult}, vec_map::VecMap, websocket_connections::connection::ClientSender};
 
 pub struct Lobby {
     pub name: String,
     pub settings: Settings,
     pub clients: VecMap<RoomClientID, LobbyClient>,
 
-    pub chat_message_index: usize
+    pub chat: LobbyChatComponent,
 }
 
 impl Lobby {
@@ -23,7 +25,7 @@ impl Lobby {
             name: name_validation::DEFAULT_SERVER_NAME.to_string(),
             settings: Settings::default(),
             clients: VecMap::new(),
-            chat_message_index: 0,
+            chat: LobbyChatComponent::new(),
         }
     }
 
@@ -124,9 +126,14 @@ impl Lobby {
             None
         }
     }
-    
-    pub fn new_from_game(name: String, settings: Settings, clients: VecMap<RoomClientID, LobbyClient>) -> Self {
-        let new = Self { name, settings, clients, chat_message_index: 0 };
+
+    pub fn new_from_game(game: &Game, name: String, clients: VecMap<RoomClientID, LobbyClient>) -> Self {
+        let mut new = Self {
+            name,
+            settings: game.settings.clone(),
+            clients,
+            chat: LobbyChatComponent::from_game(game)
+        };
 
         for (id, client) in new.clients.iter() {
             client.send(ToClientPacket::YourId { player_id: *id });
@@ -136,6 +143,11 @@ impl Lobby {
         }
 
         new.send_players();
+
+        for client in new.clients.keys() {
+            new.chat.requeue_chat_messages(*client);
+        }
+        LobbyChatComponent::send_queued_messages(&mut new);
 
         new
     }
@@ -272,6 +284,8 @@ impl RoomState for Lobby {
                 return RoomTickResult { close_room: true };
             }
         }
+
+        LobbyChatComponent::send_queued_messages(self);
 
         RoomTickResult { close_room: false }
     }

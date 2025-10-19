@@ -16,8 +16,8 @@ pub type ChatComponent = PlayerComponent<ChatPlayerComponent>;
 pub type ChatMessageIndex = usize;
 #[derive(Default)]
 pub struct ChatPlayerComponent{
-    messages: Vec<ChatMessage>,
-    not_sent_messages: VecDeque<(ChatMessageIndex, ChatMessage)>
+    pub messages: Vec<ChatMessage>,
+    pub not_sent_messages: VecDeque<(ChatMessageIndex, ChatMessage)>
 }
 impl ChatPlayerComponent{
     fn new()->Self{

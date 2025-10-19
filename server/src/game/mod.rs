@@ -90,8 +90,8 @@ use self::verdict::Verdict;
 
 
 pub struct Game {
-    room_name: String,
-    clients: VecMap<RoomClientID, GameClient>,
+    pub room_name: String,
+    pub clients: VecMap<RoomClientID, GameClient>,
     pub settings : Settings,
 
     pub spectators: Vec<Spectator>,

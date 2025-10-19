@@ -7,11 +7,8 @@ use crate::{
         phase::PhaseType, player::{PlayerIndex, PlayerInitializeParameters, PlayerReference},
         spectator::{spectator_pointer::{SpectatorIndex, SpectatorPointer},
         SpectatorInitializeParameters}, Game, RejectStartReason
-    }, 
-    log, packet::{ToClientPacket, ToServerPacket}, 
-    room::{name_validation::{self, sanitize_server_name}, RemoveRoomClientResult,
-    RoomClientID, RoomState}, strings::TidyableString, vec_map::{vec_map, VecMap},
-    websocket_connections::connection::ClientSender
+    }, lobby::lobby_chat::LobbyChatComponent, log, packet::{ToClientPacket, ToServerPacket}, room::{name_validation::{self, sanitize_server_name}, RemoveRoomClientResult,
+    RoomClientID, RoomState}, strings::TidyableString, vec_map::VecMap, websocket_connections::connection::ClientSender
 };
 
 use super::{lobby_client::{LobbyClient, LobbyClientType, Ready}, Lobby};
@@ -37,14 +34,17 @@ impl Lobby {
                     break 'packet_match
                 };
 
-                self.send_to_all(ToClientPacket::AddChatMessages { chat_messages: vec_map![(
-                    self.chat_message_index,
-                    ChatMessage::new_non_private(
-                        ChatMessageVariant::LobbyMessage { sender: name, text }, 
+                for client in self.clients.keys() {
+                    self.chat.add_chat_message(*client, ChatMessage::new_non_private(
+                        ChatMessageVariant::LobbyMessage {
+                            sender: name.clone(),
+                            text: text.clone()
+                        },
                         crate::game::chat::ChatGroup::All
-                    )
-                )]});
-                self.chat_message_index = self.chat_message_index.saturating_add(1);
+                    ))
+                }
+
+                LobbyChatComponent::send_queued_messages(self);
             }
             ToServerPacket::SetSpectator { spectator } => {
                 let player_names = self.clients.values().filter_map(|p| {
