@@ -2,14 +2,9 @@
 
 use crate::{
     game::{
-        controllers::{
-            AvailableBooleanSelection,
-            AvailableStringSelection, AvailableUnitSelection, BooleanSelection,
-            ControllerID, ControllerParametersMap, PlayerListSelection, StringSelection
-        },
-        chat::{ChatComponent, ChatGroup, ChatMessageVariant, MessageSender},
-        event::{on_validated_ability_input_received::OnValidatedControllerInputReceived, on_whisper::OnWhisper, Event}, player::PlayerReference,
-        role::{Role, RoleState}, Game
+        abilities::role_abilities::RoleAbility, abilities_component::{ability::Ability, ability_id::AbilityID, Abilities}, chat::{ChatComponent, ChatGroup, ChatMessageVariant, MessageSender}, controllers::{
+            AvailableBooleanSelection, AvailablePlayerListSelection, AvailableStringSelection, AvailableUnitSelection, BooleanSelection, ControllerID, ControllerParametersMap, PlayerListSelection, StringSelection
+        }, event::{on_validated_ability_input_received::OnValidatedControllerInputReceived, on_whisper::OnWhisper, Event}, player::PlayerReference, role::{Role, RoleState}, Game
     },
     strings::TidyableString, vec_set::VecSet
 };
@@ -87,11 +82,18 @@ impl ChatComponent{
     }
 
     fn one_player_controller_paraemeters_map(game: &mut Game, player: PlayerReference)->ControllerParametersMap{
-        let mut allowed_players: VecSet<PlayerReference> = PlayerReference::all_players(game)
-            .filter(|p|
-                if let RoleState::Cerenovous(cerenovous) = p.role_state(game){
+        let mut allowed_players: VecSet<PlayerReference> = Abilities::ids(game)
+            .into_iter()
+            .filter_map(|id|
+                if 
+                    let Some(Ability::Role(RoleAbility(RoleState::Cerenovous(cerenovous)))) = id.get_ability(game) &&
+                    let AbilityID::Role{role: Role::Cerenovous, player} = id &&
                     cerenovous.currently_brained == Some(player)
-                }else{false}
+                {
+                    Some(player)
+                }else{
+                    None
+                }
             )
             .collect();
         if allowed_players.is_empty() {
@@ -129,7 +131,8 @@ impl ChatComponent{
 
         let whisper_to_player = ControllerParametersMap::builder(game)
             .id(ControllerID::WhisperToPlayer { player })
-            .single_player_selection_typical(player, true, true)
+            // .single_player_selection_typical(player, true, true) //you should be allowed to try, but then it shouldnt work
+            .available_selection(AvailablePlayerListSelection{available_players: PlayerReference::all_players(game).collect(), can_choose_duplicates: false, max_players: Some(1)})
             .allow_players(allowed_players.clone())
             .build_map();
 
