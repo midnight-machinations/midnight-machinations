@@ -2,7 +2,7 @@ use serde::Serialize;
 use crate::game::components::night_visits::{NightVisitsIterator as _, Visits};
 use crate::game::controllers::AvailableTwoPlayerOptionSelection;
 use crate::game::components::transport::{Transport, TransportPriority};
-use crate::game::event::on_midnight::{MidnightVariables, OnMidnightPriority};
+use crate::game::event::on_midnight::{OnMidnightFold, OnMidnightPriority};
 use crate::game::abilities_component::ability_id::AbilityID;
 use crate::game::{attack_power::DefensePower, chat::ChatMessageVariant};
 use crate::game::player::PlayerReference;
@@ -21,7 +21,7 @@ pub(super) const DEFENSE: DefensePower = DefensePower::None;
 
 impl RoleStateTrait for Warper {
     type ClientAbilityState = Warper;
-    fn on_midnight(self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut MidnightVariables, priority: OnMidnightPriority) {
+    fn on_midnight(self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut OnMidnightFold, priority: OnMidnightPriority) {
         if priority != OnMidnightPriority::Warper {return;}
     
         let mut transporter_visits = Visits::into_iter(midnight_variables).default_visits(actor_ref, Role::Warper);
@@ -63,5 +63,5 @@ impl RoleStateTrait for Warper {
             false
         )
     }
-    fn on_player_roleblocked(self, _game: &mut Game, _midnight_variables: &mut MidnightVariables, _actor_ref: PlayerReference, _player: PlayerReference, _invisible: bool) {}
+    fn on_player_roleblocked(self, _game: &mut Game, _midnight_variables: &mut OnMidnightFold, _actor_ref: PlayerReference, _player: PlayerReference, _invisible: bool) {}
 }

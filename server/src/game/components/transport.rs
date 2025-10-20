@@ -1,7 +1,7 @@
 use crate::game::visit::VisitTag;
 use crate::game::{
     chat::ChatMessageVariant,
-    event::on_midnight::MidnightVariables,
+    event::on_midnight::OnMidnightFold,
     player::PlayerReference,
     role::Role,
     visit::Visit,
@@ -43,7 +43,7 @@ impl TransportPriority{
 pub struct Transport;
 impl Transport{
     pub fn transport(
-        midnight_variables: &mut MidnightVariables, transport_priority: TransportPriority, 
+        midnight_variables: &mut OnMidnightFold, transport_priority: TransportPriority, 
         player_map: &VecMap<PlayerReference, PlayerReference>, filter: impl Fn(&Visit) -> bool, send_message: bool, 
     ) -> Vec<Visit> {
 

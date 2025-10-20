@@ -3,7 +3,7 @@ use crate::{
         abilities_component::{ability::Ability, ability_id::AbilityID, ability_trait::AbilityTrait},
         attack_power::AttackPower, components::{graves::grave::GraveKiller, pitchfork_item::PitchforkItemComponent},
         controllers::{AvailablePlayerListSelection, ControllerID, ControllerParametersMap, PlayerListSelection},
-        event::{before_phase_end::BeforePhaseEnd, on_midnight::{MidnightVariables, OnMidnight, OnMidnightPriority}},
+        event::{before_phase_end::BeforePhaseEnd, on_midnight::{OnMidnightFold, OnMidnight, OnMidnightPriority}},
         game_conclusion::GameConclusion, phase::PhaseType, player::PlayerReference, role::{common_role, Role}, role_list::RoleSet, Game
     },
     vec_map::VecMap
@@ -71,7 +71,7 @@ impl PitchforkAbility{
     }
 }
 impl AbilityTrait for PitchforkAbility{
-    fn on_midnight(&self, game: &mut Game, _id: &AbilityID, _event: &OnMidnight, midnight_variables: &mut MidnightVariables, priority: OnMidnightPriority){
+    fn on_midnight(&self, game: &mut Game, _id: &AbilityID, _event: &OnMidnight, midnight_variables: &mut OnMidnightFold, priority: OnMidnightPriority){
         if priority != OnMidnightPriority::Kill {return;}
         if game.day_number() <= 1 {return;}
         let pitchfork_players = PitchforkItemComponent::players_with_pitchfork(game, midnight_variables);

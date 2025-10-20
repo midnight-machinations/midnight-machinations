@@ -6,7 +6,7 @@ use crate::game::controllers::AvailableTwoPlayerOptionSelection;
 use crate::game::components::aura::Aura;
 use crate::game::components::confused::Confused;
 use crate::game::components::win_condition::WinCondition;
-use crate::game::event::on_midnight::{MidnightVariables, OnMidnightPriority};
+use crate::game::event::on_midnight::{OnMidnightFold, OnMidnightPriority};
 use crate::game::{attack_power::DefensePower, chat::ChatMessageVariant};
 use crate::game::player::PlayerReference;
 
@@ -25,7 +25,7 @@ pub(super) const DEFENSE: DefensePower = DefensePower::None;
 
 impl RoleStateTrait for Philosopher {
     type ClientAbilityState = Philosopher;
-    fn on_midnight(self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut MidnightVariables, priority: OnMidnightPriority) {
+    fn on_midnight(self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut OnMidnightFold, priority: OnMidnightPriority) {
         if priority != OnMidnightPriority::Investigative {return;}
 
         let mut actor_visits = Visits::into_iter(midnight_variables).default_visits(actor_ref, Role::Philosopher);
@@ -69,7 +69,7 @@ impl RoleStateTrait for Philosopher {
     }
 }
 impl Philosopher{
-    pub fn players_are_enemies_night(game: &Game, midnight_variables: &MidnightVariables, a: PlayerReference, b: PlayerReference) -> bool {
+    pub fn players_are_enemies_night(game: &Game, midnight_variables: &OnMidnightFold, a: PlayerReference, b: PlayerReference) -> bool {
         if Aura::suspicious(game, midnight_variables, a) || Aura::suspicious(game, midnight_variables, b){
             true
         }else if Aura::innocent(game, midnight_variables, a) || Aura::innocent(game, midnight_variables, b){

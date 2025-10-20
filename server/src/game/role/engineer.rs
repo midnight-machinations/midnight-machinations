@@ -4,7 +4,7 @@ use serde::{Deserialize, Serialize};
 use crate::game::controllers::AvailableBooleanSelection;
 use crate::game::attack_power::AttackPower;
 use crate::game::components::night_visits::{NightVisitsIterator as _, Visits};
-use crate::game::event::on_midnight::{MidnightVariables, OnMidnightPriority};
+use crate::game::event::on_midnight::{OnMidnightFold, OnMidnightPriority};
 use crate::game::components::graves::grave::GraveKiller;
 use crate::game::{attack_power::DefensePower, chat::ChatMessageVariant};
 use crate::game::phase::PhaseType;
@@ -75,7 +75,7 @@ pub(super) const DEFENSE: DefensePower = DefensePower::None;
 
 impl RoleStateTrait for Engineer {
     type ClientAbilityState = ClientRoleState;
-    fn on_midnight(self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut MidnightVariables, priority: OnMidnightPriority) {
+    fn on_midnight(self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut OnMidnightFold, priority: OnMidnightPriority) {
         match priority {
             OnMidnightPriority::Heal => {
                 //upgrade state

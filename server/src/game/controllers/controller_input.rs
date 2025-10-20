@@ -1,6 +1,12 @@
 use serde::{Deserialize, Serialize};
 
-use crate::game::{controllers::{ControllerID, ControllerSelection}, event::{on_controller_input_received::OnControllerInputReceived, Event}, player::PlayerReference, Game};
+use crate::game::{controllers::{ControllerID, ControllerSelection},
+    event::{
+        on_controller_input_received::OnControllerInputReceived, AsInvokable as _,
+        Invokable as _
+    },
+    player::PlayerReference, Game
+};
 
 #[derive(Clone, Serialize, Deserialize, Debug, PartialEq, Eq)]
 pub struct ControllerInput{
@@ -23,6 +29,6 @@ impl ControllerInput{
 }
 impl ControllerInput{
     pub fn on_client_message(self, game: &mut Game, actor_ref: PlayerReference){
-        OnControllerInputReceived::new(actor_ref, self.clone()).invoke(game);
+        OnControllerInputReceived::new(actor_ref, self.clone()).as_invokable().invoke(game);
     }
 }

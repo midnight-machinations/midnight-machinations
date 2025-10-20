@@ -6,7 +6,7 @@ use crate::game::attack_power::DefensePower;
 use crate::game::chat::{ChatGroup, ChatMessageVariant, PlayerChatGroupMap};
 use crate::game::components::detained::Detained;
 use crate::game::controllers::AvailablePlayerListSelection;
-use crate::game::event::on_midnight::MidnightVariables;
+use crate::game::event::on_midnight::OnMidnightFold;
 use crate::game::phase::PhaseType;
 use crate::game::player::PlayerReference;
 use crate::game::role::{common_role, RoleState};
@@ -158,7 +158,7 @@ impl RoleStateTrait for Medium {
             _=>{}
         }
     }
-    fn on_player_roleblocked(self, game: &mut Game, midnight_variables: &mut MidnightVariables, actor_ref: PlayerReference, player: PlayerReference, invisible: bool) {
+    fn on_player_roleblocked(self, game: &mut Game, midnight_variables: &mut OnMidnightFold, actor_ref: PlayerReference, player: PlayerReference, invisible: bool) {
         common_role::on_player_roleblocked(Role::Medium, midnight_variables, actor_ref, player);
         if player != actor_ref {return}
         if let Some(seanced) = self.seanced_target {

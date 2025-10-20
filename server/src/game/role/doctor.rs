@@ -1,7 +1,7 @@
 
 use serde::Serialize;
 use crate::game::components::night_visits::Visits;
-use crate::game::event::on_midnight::{MidnightVariables, OnMidnightPriority};
+use crate::game::event::on_midnight::{OnMidnightFold, OnMidnightPriority};
 use crate::game::attack_power::DefensePower;
 use crate::game::player::PlayerReference;
 use crate::game::abilities_component::ability_id::AbilityID;
@@ -30,7 +30,7 @@ pub(super) const DEFENSE: DefensePower = DefensePower::None;
 
 impl RoleStateTrait for Doctor {
     type ClientAbilityState = Self;
-    fn on_midnight(self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut MidnightVariables, priority: OnMidnightPriority) {
+    fn on_midnight(self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut OnMidnightFold, priority: OnMidnightPriority) {
         match priority {
             OnMidnightPriority::Heal => {
                 let Some(target_ref) = Visits::default_target(midnight_variables, actor_ref, Role::Doctor) else {return};

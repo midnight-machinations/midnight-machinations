@@ -1,7 +1,7 @@
 use serde::Serialize;
 use crate::game::controllers::{AvailableBooleanSelection, AvailablePlayerListSelection, BooleanSelection};
 use crate::game::components::insider_group::InsiderGroupID;
-use crate::game::event::on_midnight::{MidnightVariables, OnMidnightPriority};
+use crate::game::event::on_midnight::{OnMidnightFold, OnMidnightPriority};
 use crate::vec_map::VecMap;
 use crate::{game::attack_power::AttackPower, vec_set::VecSet};
 use crate::game::chat::{ChatGroup, ChatMessageVariant, PlayerChatGroupMap};
@@ -27,7 +27,7 @@ pub(super) const DEFENSE: DefensePower = DefensePower::Armored;
 
 impl RoleStateTrait for Warden {
     type ClientAbilityState = Warden;
-    fn on_midnight(mut self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut MidnightVariables, priority: OnMidnightPriority) {
+    fn on_midnight(mut self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut OnMidnightFold, priority: OnMidnightPriority) {
         if game.day_number() == 1 {return}
 
         match priority {
@@ -167,7 +167,7 @@ impl Warden {
             .try_into()
             .unwrap_or(u8::MAX);
     }
-    fn kill_players(game: &mut Game, midnight_variables: &mut MidnightVariables, actor_ref: PlayerReference, players: &VecSet<PlayerReference>){
+    fn kill_players(game: &mut Game, midnight_variables: &mut OnMidnightFold, actor_ref: PlayerReference, players: &VecSet<PlayerReference>){
         for player in players.iter() {
             player.try_night_kill_single_attacker(
                 actor_ref,

@@ -5,7 +5,7 @@ use crate::game::attack_power::{AttackPower, DefensePower};
 use crate::game::components::poison::{Poison, PoisonAlert};
 use crate::game::event::on_ability_creation::{OnAbilityCreation, OnAbilityCreationFold, OnAbilityCreationPriority};
 use crate::game::event::on_ability_deletion::{OnAbilityDeletion, OnAbilityDeletionPriority};
-use crate::game::event::on_midnight::{MidnightVariables, OnMidnightPriority};
+use crate::game::event::on_midnight::{OnMidnightFold, OnMidnightPriority};
 use crate::game::components::tags::{TagSetID, Tags};
 use crate::game::components::graves::grave::GraveKiller;
 use crate::game::player::PlayerReference;
@@ -26,7 +26,7 @@ pub(super) const DEFENSE: DefensePower = DefensePower::Armored;
 
 impl RoleStateTrait for Spiral {
     type ClientAbilityState = ClientRoleState;
-    fn on_midnight(self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut MidnightVariables, priority: OnMidnightPriority) {
+    fn on_midnight(self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut OnMidnightFold, priority: OnMidnightPriority) {
         if priority != OnMidnightPriority::Poison { return };
         
         if Tags::tagged(game, TagSetID::UzumakiSpiral(actor_ref)).is_empty() && game.day_number() > 1 {
@@ -75,7 +75,7 @@ impl RoleStateTrait for Spiral {
 }
 
 impl Spiral {
-    fn start_player_spiraling(game: &mut Game, midnight_variables: &mut MidnightVariables, actor_ref: PlayerReference, target_ref: PlayerReference) {
+    fn start_player_spiraling(game: &mut Game, midnight_variables: &mut OnMidnightFold, actor_ref: PlayerReference, target_ref: PlayerReference) {
         if target_ref == actor_ref {return}
         let attackers = vec![actor_ref].into_iter().collect();
         Poison::poison_player(game,
@@ -95,7 +95,7 @@ impl Spiral {
         Tags::remove_tag(game, TagSetID::UzumakiSpiral(actor_ref), target_ref);
     }
 
-    fn spiral_visitors(game: &mut Game, midnight_variables: &mut MidnightVariables, actor_ref: PlayerReference, target: PlayerReference) {
+    fn spiral_visitors(game: &mut Game, midnight_variables: &mut OnMidnightFold, actor_ref: PlayerReference, target: PlayerReference) {
         for visitor_to_spiraling in target.all_direct_night_visitors_cloned(midnight_variables)
             .filter(|other_player_ref|
                 other_player_ref.alive(game) &&

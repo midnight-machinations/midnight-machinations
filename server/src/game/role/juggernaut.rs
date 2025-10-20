@@ -5,7 +5,7 @@ use crate::game::components::graves::grave::GraveKiller;
 use crate::game::components::night_visits::Visits;
 use crate::game::event::on_ability_creation::OnAbilityCreationPriority;
 use crate::game::event::on_ability_deletion::OnAbilityDeletionPriority;
-use crate::game::event::on_midnight::{MidnightVariables, OnMidnightPriority};
+use crate::game::event::on_midnight::{OnMidnightFold, OnMidnightPriority};
 use crate::game::player::PlayerReference;
 use crate::game::abilities_component::ability_id::AbilityID;
 use crate::game::role_list::RoleSet;
@@ -28,7 +28,7 @@ pub(super) const DEFENSE: DefensePower = DefensePower::Armored;
 
 impl RoleStateTrait for Juggernaut {
     type ClientAbilityState = Juggernaut;
-    fn on_midnight(self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut MidnightVariables, priority: OnMidnightPriority) {
+    fn on_midnight(self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut OnMidnightFold, priority: OnMidnightPriority) {
         if priority != OnMidnightPriority::Kill {return}
         if game.day_number() == 1 {return}
         let Some(target_ref) = Visits::default_target(midnight_variables, actor_ref, Role::Juggernaut) else {return};

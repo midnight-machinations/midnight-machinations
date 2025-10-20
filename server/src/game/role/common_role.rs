@@ -1,4 +1,4 @@
-use crate::game::{components::{night_visits::Visits, win_condition::WinCondition}, controllers::{ControllerID, ControllerSelection}, event::on_midnight::MidnightVariables, game_conclusion::GameConclusion, player::PlayerReference, role_list::RoleSet, visit::{Visit, VisitTag}, Game};
+use crate::game::{components::{night_visits::Visits, win_condition::WinCondition}, controllers::{ControllerID, ControllerSelection}, event::on_midnight::OnMidnightFold, game_conclusion::GameConclusion, player::PlayerReference, role_list::RoleSet, visit::{Visit, VisitTag}, Game};
 
 use super::Role;
 
@@ -6,7 +6,7 @@ use super::Role;
 pub fn standard_charges(game: &Game)->u8{
     game.num_players().div_ceil(5)
 }
-pub fn on_player_roleblocked(role: Role, midnight_variables: &mut MidnightVariables, actor_ref: PlayerReference, player: PlayerReference){
+pub fn on_player_roleblocked(role: Role, midnight_variables: &mut OnMidnightFold, actor_ref: PlayerReference, player: PlayerReference){
     if player != actor_ref {return}
 
     Visits::retain(midnight_variables, |v|
@@ -17,7 +17,7 @@ pub fn on_player_roleblocked(role: Role, midnight_variables: &mut MidnightVariab
         }
     );
 }
-pub fn on_visit_wardblocked(role: Role, midnight_variables: &mut MidnightVariables, actor_ref: PlayerReference, visit: Visit){
+pub fn on_visit_wardblocked(role: Role, midnight_variables: &mut OnMidnightFold, actor_ref: PlayerReference, visit: Visit){
     if actor_ref != visit.visitor {return};
     if let VisitTag::Role { role: visit_role, .. } = visit.tag {
         if visit_role != role {

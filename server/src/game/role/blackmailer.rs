@@ -4,7 +4,7 @@ use crate::game::components::night_visits::Visits;
 use crate::game::controllers::AvailablePlayerListSelection;
 use crate::game::components::insider_group::InsiderGroupID;
 use crate::game::components::silenced::Silenced;
-use crate::game::event::on_midnight::{MidnightVariables, OnMidnightPriority};
+use crate::game::event::on_midnight::{OnMidnightFold, OnMidnightPriority};
 use crate::game::{attack_power::DefensePower, player::PlayerReference};
 use crate::game::visit::Visit;
 
@@ -23,7 +23,7 @@ pub(super) const DEFENSE: DefensePower = DefensePower::None;
 
 impl RoleStateTrait for Blackmailer {
     type ClientAbilityState = Blackmailer;
-    fn on_midnight(mut self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut MidnightVariables, priority: OnMidnightPriority) {
+    fn on_midnight(mut self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut OnMidnightFold, priority: OnMidnightPriority) {
         if priority != OnMidnightPriority::Deception {return}
         if let Some(visit) = Visits::default_visit(midnight_variables, actor_ref, Role::Blackmailer) {
             let target_ref = visit.target;

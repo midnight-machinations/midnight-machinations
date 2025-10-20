@@ -7,7 +7,7 @@ use crate::{
             insider_group::InsiderGroupID, night_visits::{NightVisitsIterator, Visits}, player_component::PlayerComponent,
             role::RoleComponent,
         }, controllers::{ControllerID, PlayerListSelection}, event::{
-            on_any_death::OnAnyDeath, on_midnight::{MidnightVariables, OnMidnightPriority}, Event
+            on_any_death::OnAnyDeath, on_midnight::{OnMidnightFold, OnMidnightPriority}, AsInvokable as _, Invokable as _,
         }, role::{medium::Medium, necromancer::Necromancer, RoleState}, visit::Visit, Game
     },
     packet::ToClientPacket, vec_set::VecSet
@@ -19,7 +19,7 @@ impl PlayerReference{
     #[expect(clippy::too_many_arguments, reason="this function is goated tho")]
     pub fn rampage(
         &self, game: &mut Game,
-        midnight_variables: &mut MidnightVariables,
+        midnight_variables: &mut OnMidnightFold,
         attacker: PlayerReference,
         grave_killer: GraveKiller,
         attack: AttackPower,
@@ -45,7 +45,7 @@ impl PlayerReference{
 
 
     /// Returns true if attack overpowered defense
-    pub fn try_night_kill_single_attacker(&self, attacker_ref: PlayerReference, game: &mut Game, midnight_variables: &mut MidnightVariables, grave_killer: GraveKiller, attack: AttackPower, should_leave_death_note: bool) -> bool {
+    pub fn try_night_kill_single_attacker(&self, attacker_ref: PlayerReference, game: &mut Game, midnight_variables: &mut OnMidnightFold, grave_killer: GraveKiller, attack: AttackPower, should_leave_death_note: bool) -> bool {
         self.try_night_kill(
             vec![attacker_ref].into_iter().collect(),
             game,
@@ -55,10 +55,10 @@ impl PlayerReference{
             should_leave_death_note
         )
     }
-    pub fn try_night_kill(&self, attackers: VecSet<PlayerReference>, game: &mut Game, midnight_variables: &mut MidnightVariables, grave_killer: GraveKiller, attack_power: AttackPower, leave_death_note: bool) -> bool {
+    pub fn try_night_kill(&self, attackers: VecSet<PlayerReference>, game: &mut Game, midnight_variables: &mut OnMidnightFold, grave_killer: GraveKiller, attack_power: AttackPower, leave_death_note: bool) -> bool {
         NightAttack::new_attack(game, midnight_variables, true, *self, attackers, attack_power, leave_death_note, grave_killer)
     }
-    pub fn try_night_kill_no_attacker(&self, game: &mut Game, midnight_variables: &mut MidnightVariables, grave_killer: GraveKiller, attack: AttackPower) -> bool {
+    pub fn try_night_kill_no_attacker(&self, game: &mut Game, midnight_variables: &mut OnMidnightFold, grave_killer: GraveKiller, attack: AttackPower) -> bool {
         self.try_night_kill(
             VecSet::new(),
             game,
@@ -79,7 +79,7 @@ impl PlayerReference{
         if !self.alive(game) { return }
         self.set_alive(game, false);
         self.add_private_chat_message(game, ChatMessageVariant::YouDied);
-        OnAnyDeath::new(*self).invoke(game)
+        OnAnyDeath::new(*self).as_invokable().invoke(game);
     }
     pub fn initial_set_role_insider_wincondition(&self, game: &mut Game){
         self.set_win_condition(game, self.win_condition(game).clone());
@@ -105,7 +105,7 @@ impl PlayerReference{
         );
     }
     /// Swaps this persons role, sends them the role chat message, and makes associated changes
-    pub fn set_role_win_con_insider_group_midnight(&self, game: &mut Game, midnight_variables: &mut MidnightVariables, new_role_data: impl Into<RoleState>){
+    pub fn set_role_win_con_insider_group_midnight(&self, game: &mut Game, midnight_variables: &mut OnMidnightFold, new_role_data: impl Into<RoleState>){
         let new_role_data = new_role_data.into();
         
         self.set_night_convert_role_to(midnight_variables, Some(new_role_data.clone()));
@@ -125,13 +125,13 @@ impl PlayerReference{
             PlayerComponent::<FragileVests>::get_defense_from_items(game, *self)
         )
     }
-    pub fn increase_defense_to(&self, game: &mut Game, midnight_variables: &mut MidnightVariables, defense: DefensePower){
+    pub fn increase_defense_to(&self, game: &mut Game, midnight_variables: &mut OnMidnightFold, defense: DefensePower){
         if defense.is_stronger(self.night_defense(game, midnight_variables)) {
             self.set_night_upgraded_defense(midnight_variables, Some(defense));
         }
     }
 
-    pub fn push_night_messages_to_player(&self, game: &mut Game, midnight_variables: &mut MidnightVariables){
+    pub fn push_night_messages_to_player(&self, game: &mut Game, midnight_variables: &mut OnMidnightFold){
         let mut messages = self.night_messages(midnight_variables).to_vec();
         messages.shuffle(&mut game.rng);
         messages.sort();
@@ -167,7 +167,7 @@ impl PlayerReference{
     */
 
     
-    pub fn on_midnight_one_player(&self, game: &mut Game, midnight_variables: &mut MidnightVariables, _priority: OnMidnightPriority) {
+    pub fn on_midnight_one_player(&self, game: &mut Game, midnight_variables: &mut OnMidnightFold, _priority: OnMidnightPriority) {
         if self.is_disconnected(game) && self.alive(game) {
             midnight_variables.get_mut(*self).died = true;
             midnight_variables.get_mut(*self).grave_killers = vec![GraveKiller::Quit]

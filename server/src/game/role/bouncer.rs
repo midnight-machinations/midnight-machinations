@@ -2,7 +2,7 @@ use serde::Serialize;
 
 use crate::game::abilities_component::ability_id::AbilityID;
 use crate::game::components::night_visits::Visits;
-use crate::game::event::on_midnight::{MidnightVariables, OnMidnightPriority};
+use crate::game::event::on_midnight::{OnMidnightFold, OnMidnightPriority};
 use crate::game::{attack_power::DefensePower, player::PlayerReference};
 
 
@@ -20,7 +20,7 @@ pub(super) const DEFENSE: DefensePower = DefensePower::None;
 
 impl RoleStateTrait for Bouncer {
     type ClientAbilityState = Bouncer;
-    fn on_midnight(self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut MidnightVariables, priority: OnMidnightPriority) {
+    fn on_midnight(self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut OnMidnightFold, priority: OnMidnightPriority) {
         if let Some(target) = Visits::default_target(midnight_variables, actor_ref, Role::Bouncer) {
             target.ward_night_action(game, midnight_variables, priority);
         }
@@ -41,6 +41,6 @@ impl RoleStateTrait for Bouncer {
             false
         ).into_iter().map(|mut v|{v.wardblock_immune = true; v}).collect()
     }
-    fn on_visit_wardblocked(self, _game: &mut Game, _midnight_variables: &mut MidnightVariables, _actor_ref: PlayerReference, _visit: Visit) {}
-    fn on_player_roleblocked(self, _game: &mut Game, _midnight_variables: &mut MidnightVariables, _actor_ref: PlayerReference, _player: PlayerReference, _invisible: bool) {}
+    fn on_visit_wardblocked(self, _game: &mut Game, _midnight_variables: &mut OnMidnightFold, _actor_ref: PlayerReference, _visit: Visit) {}
+    fn on_player_roleblocked(self, _game: &mut Game, _midnight_variables: &mut OnMidnightFold, _actor_ref: PlayerReference, _player: PlayerReference, _invisible: bool) {}
 }

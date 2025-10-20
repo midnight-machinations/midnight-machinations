@@ -1,7 +1,7 @@
 use serde::Serialize;
 use crate::game::abilities_component::ability_id::AbilityID;
 use crate::game::components::insider_group::InsiderGroupID;
-use crate::game::event::on_midnight::{MidnightVariables, OnMidnightPriority};
+use crate::game::event::on_midnight::{OnMidnightFold, OnMidnightPriority};
 use crate::game::role::godfather::Godfather;
 use crate::game::attack_power::DefensePower;
 use crate::game::player::PlayerReference;
@@ -25,7 +25,7 @@ pub struct ClientRoleState;
 
 impl RoleStateTrait for Necromancer {
     type ClientAbilityState = Necromancer;
-    fn on_midnight(self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut MidnightVariables, priority: OnMidnightPriority) {
+    fn on_midnight(self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut OnMidnightFold, priority: OnMidnightPriority) {
         Godfather::night_kill_ability(game, midnight_variables, actor_ref, priority, Role::Necromancer);
     }
     fn controller_parameters_map(self, game: &Game, actor_ref: PlayerReference) -> super::ControllerParametersMap {
@@ -44,7 +44,7 @@ impl RoleStateTrait for Necromancer {
             true
         )
     }
-    fn on_player_roleblocked(self, game: &mut Game, midnight_variables: &mut MidnightVariables, actor_ref: PlayerReference, player: PlayerReference, invisible: bool) {
+    fn on_player_roleblocked(self, game: &mut Game, midnight_variables: &mut OnMidnightFold, actor_ref: PlayerReference, player: PlayerReference, invisible: bool) {
         common_role::on_player_roleblocked(Role::Necromancer, midnight_variables, actor_ref, player);
         if player != actor_ref {return}
         for seanced in Necromancer::get_seanced_targets(game, actor_ref) {

@@ -6,7 +6,7 @@ use crate::game::chat::{ChatGroup, ChatMessageVariant};
 use crate::game::components::graves::grave::{Grave, GraveDeathCause, GraveInformation, GraveKiller};
 use crate::game::components::graves::grave_reference::GraveReference;
 use crate::game::event::on_ability_creation::{OnAbilityCreation, OnAbilityCreationFold, OnAbilityCreationPriority};
-use crate::game::event::on_midnight::{MidnightVariables, OnMidnightPriority};
+use crate::game::event::on_midnight::{OnMidnightFold, OnMidnightPriority};
 use crate::game::phase::PhaseType;
 use crate::game::player::PlayerReference;
 use crate::game::abilities_component::ability_id::AbilityID;
@@ -56,7 +56,7 @@ impl RoleStateTrait for Martyr {
             state: MartyrState::StillPlaying { bullets: crate::game::role::common_role::standard_charges(game) }
         }
     }
-    fn on_midnight(mut self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut MidnightVariables, priority: OnMidnightPriority) {
+    fn on_midnight(mut self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut OnMidnightFold, priority: OnMidnightPriority) {
         if priority != OnMidnightPriority::Kill {return}
         let MartyrState::StillPlaying { bullets } = self.state else {return};
         if bullets == 0 {return}

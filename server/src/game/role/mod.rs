@@ -24,7 +24,7 @@ use super::components::win_condition::WinCondition;
 use super::{
     controllers::*, components::insider_group::InsiderGroupID,
     event::{
-        on_midnight::{MidnightVariables, OnMidnightPriority},
+        on_midnight::{OnMidnightFold, OnMidnightPriority},
         on_whisper::{OnWhisper, WhisperFold, WhisperPriority}
     },
 };
@@ -39,7 +39,7 @@ impl<T: RoleStateTrait> GetClientAbilityState<T> for T {
 
 pub trait RoleStateTrait: Clone + std::fmt::Debug + Default + Into<RoleState> + GetClientAbilityState<<Self as RoleStateTrait>::ClientAbilityState> {
     type ClientAbilityState: Clone + std::fmt::Debug + Serialize;
-    fn on_midnight(self, _game: &mut Game, _id: &AbilityID, _actor_ref: PlayerReference, _midnight_variables: &mut MidnightVariables, _priority: OnMidnightPriority) {}
+    fn on_midnight(self, _game: &mut Game, _id: &AbilityID, _actor_ref: PlayerReference, _midnight_variables: &mut OnMidnightFold, _priority: OnMidnightPriority) {}
 
     fn controller_parameters_map(self, _game: &Game, _actor_ref: PlayerReference) -> ControllerParametersMap {
         ControllerParametersMap::default()
@@ -76,13 +76,13 @@ pub trait RoleStateTrait: Clone + std::fmt::Debug + Default + Into<RoleState> + 
     fn on_grave_added(self, _game: &mut Game, _actor_ref: PlayerReference, _grave: GraveReference) {}
     fn on_conceal_role(self, _game: &mut Game, _actor_ref: PlayerReference, _player: PlayerReference, _concealed_player: PlayerReference) {}
     
-    fn on_player_roleblocked(self, _game: &mut Game, midnight_variables: &mut MidnightVariables, actor_ref: PlayerReference, player: PlayerReference, _invisible: bool) {
+    fn on_player_roleblocked(self, _game: &mut Game, midnight_variables: &mut OnMidnightFold, actor_ref: PlayerReference, player: PlayerReference, _invisible: bool) {
         common_role::on_player_roleblocked(self.into().role(), midnight_variables, actor_ref, player);
     }
-    fn on_visit_wardblocked(self, _game: &mut Game, midnight_variables: &mut MidnightVariables, actor_ref: PlayerReference, visit: Visit) {
+    fn on_visit_wardblocked(self, _game: &mut Game, midnight_variables: &mut OnMidnightFold, actor_ref: PlayerReference, visit: Visit) {
         common_role::on_visit_wardblocked(self.into().role(), midnight_variables, actor_ref, visit);
     }
-    fn on_player_possessed(self, _game: &mut Game, _id: &AbilityID, _event: &OnPlayerPossessed, _fold: &mut MidnightVariables, _priority: ()) {}
+    fn on_player_possessed(self, _game: &mut Game, _id: &AbilityID, _event: &OnPlayerPossessed, _fold: &mut OnMidnightFold, _priority: ()) {}
    
     fn on_whisper(self, _game: &mut Game, _actor_ref: PlayerReference, _event: &OnWhisper, _fold: &mut WhisperFold, _priority: WhisperPriority) {}
 
@@ -263,22 +263,22 @@ mod macros {
                     }
                 }
                 
-                pub fn on_player_roleblocked(self, game: &mut Game, midnight_variables: &mut MidnightVariables, actor_ref: PlayerReference, player: PlayerReference, invisible: bool){
+                pub fn on_player_roleblocked(self, game: &mut Game, midnight_variables: &mut OnMidnightFold, actor_ref: PlayerReference, player: PlayerReference, invisible: bool){
                     match self {
                         $(Self::$name(role_struct) => role_struct.on_player_roleblocked(game, midnight_variables, actor_ref, player, invisible)),*
                     }
                 }
-                pub fn on_visit_wardblocked(self, game: &mut Game, midnight_variables: &mut MidnightVariables, actor_ref: PlayerReference, visit: Visit) {
+                pub fn on_visit_wardblocked(self, game: &mut Game, midnight_variables: &mut OnMidnightFold, actor_ref: PlayerReference, visit: Visit) {
                     match self {
                         $(Self::$name(role_struct) => role_struct.on_visit_wardblocked(game, midnight_variables, actor_ref, visit)),*
                     }
                 }
-                pub fn on_player_possessed(self, game: &mut Game, id: &AbilityID, event: &OnPlayerPossessed, fold: &mut MidnightVariables, priority: ()){
+                pub fn on_player_possessed(self, game: &mut Game, id: &AbilityID, event: &OnPlayerPossessed, fold: &mut OnMidnightFold, priority: ()){
                     match self {
                         $(Self::$name(role_struct) => role_struct.on_player_possessed(game, id, event, fold, priority)),*
                     }
                 }
-                pub fn on_midnight(self, game: &mut Game, id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut MidnightVariables, priority: OnMidnightPriority){
+                pub fn on_midnight(self, game: &mut Game, id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut OnMidnightFold, priority: OnMidnightPriority){
                     match self {
                         $(Self::$name(role_struct) => role_struct.on_midnight(game, id, actor_ref, midnight_variables, priority)),*
                     }

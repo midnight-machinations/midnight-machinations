@@ -1,5 +1,5 @@
 use crate::game::{
-    components::{graves::grave::Grave, win_condition::WinCondition}, event::on_phase_start::OnPhaseStart,
+    components::{graves::grave::Grave, win_condition::WinCondition}, event::{on_phase_start::OnPhaseStart, on_tick::OnTick},
     game_conclusion::GameOverCheckPlayer, player::PlayerReference, Game
 };
 
@@ -40,7 +40,7 @@ impl Ascend{
     }
     
 
-    pub fn on_tick(game: &mut Game){
+    pub fn on_tick(game: &mut Game, _event: &OnTick, _fold: &mut (), _priority: ()){
         Self::ascend_players(game);
     }
     pub fn on_phase_start(game: &mut Game, _event: &OnPhaseStart, _fold: &mut (), _priority: ()){

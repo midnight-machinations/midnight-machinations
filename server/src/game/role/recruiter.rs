@@ -5,7 +5,7 @@ use crate::game::components::night_visits::Visits;
 use crate::game::controllers::AvailableIntegerSelection;
 use crate::game::attack_power::{AttackPower, DefensePower};
 use crate::game::components::mafia_recruits::MafiaRecruits;
-use crate::game::event::on_midnight::{MidnightVariables, OnMidnightPriority};
+use crate::game::event::on_midnight::{OnMidnightFold, OnMidnightPriority};
 use crate::game::components::graves::grave::GraveKiller;
 use crate::game::player::PlayerReference;
 use crate::game::role_list::RoleSet;
@@ -48,7 +48,7 @@ impl RoleStateTrait for Recruiter {
             recruits_remaining: crate::game::role::common_role::standard_charges(game),
         }
     }
-    fn on_midnight(self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut MidnightVariables, priority: OnMidnightPriority) {
+    fn on_midnight(self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut OnMidnightFold, priority: OnMidnightPriority) {
 
         let choose_attack = Self::choose_attack(game, actor_ref);
 
@@ -122,7 +122,7 @@ impl RoleStateTrait for Recruiter {
 impl Recruiter {
     /// returns true if target_ref is killed when trying to kill
     /// returns true if target_ref is recruited when trying to recruit
-    pub fn night_ability(self, game: &mut Game, midnight_variables: &mut MidnightVariables, actor_ref: PlayerReference, target_ref: PlayerReference) -> bool {
+    pub fn night_ability(self, game: &mut Game, midnight_variables: &mut OnMidnightFold, actor_ref: PlayerReference, target_ref: PlayerReference) -> bool {
         let choose_attack = Self::choose_attack(game, actor_ref);
 
         if choose_attack {

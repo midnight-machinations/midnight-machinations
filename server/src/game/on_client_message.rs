@@ -1,7 +1,6 @@
 use crate::{
     game::{
-        abilities::role_abilities::RoleAbility, abilities_component::{ability::Ability, ability_id::AbilityID},
-        components::fast_forward::FastForwardComponent, event::Event, role::Role
+        abilities::role_abilities::RoleAbility, abilities_component::{ability::Ability, ability_id::AbilityID}, components::fast_forward::FastForwardComponent, event::{AsInvokable as _, Invokable as _}, role::Role
     }, lobby::{lobby_client::LobbyClient, Lobby}, log, packet::{ToClientPacket, ToServerPacket},
     room::{RemoveRoomClientResult, RoomClientID, RoomState}, vec_map::VecMap, websocket_connections::connection::ClientSender
 };
@@ -80,7 +79,7 @@ impl Game {
 
                 let conclusion = GameConclusion::get_premature_conclusion(self);
 
-                OnGameEnding::new(conclusion).invoke(self);
+                OnGameEnding::new(conclusion).as_invokable().invoke(self);
             }
             ToServerPacket::HostForceSkipPhase => {
                 if let Some(player) = self.clients.get(&room_client_id)

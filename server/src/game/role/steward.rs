@@ -1,6 +1,6 @@
 use serde::Serialize;
 use crate::game::controllers::{AvailableRoleListSelection, ControllerID, RoleListSelection};
-use crate::game::event::on_midnight::{MidnightVariables, OnMidnightPriority};
+use crate::game::event::on_midnight::{OnMidnightFold, OnMidnightPriority};
 use crate::game::role::common_role;
 use crate::game::visit::Visit;
 use crate::game::{attack_power::DefensePower, chat::ChatMessageVariant};
@@ -40,7 +40,7 @@ pub(super) const DEFENSE: DefensePower = DefensePower::None;
 
 impl RoleStateTrait for Steward {
     type ClientAbilityState = ClientRoleState;
-    fn on_midnight(mut self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut MidnightVariables, priority: OnMidnightPriority) {
+    fn on_midnight(mut self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut OnMidnightFold, priority: OnMidnightPriority) {
 
         if actor_ref.night_blocked(midnight_variables) {return}
         if actor_ref.ability_deactivated_from_death(game) {return}

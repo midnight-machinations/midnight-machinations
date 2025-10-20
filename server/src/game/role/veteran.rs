@@ -4,7 +4,7 @@ use crate::game::abilities_component::ability_id::AbilityID;
 use crate::game::controllers::{AvailableBooleanSelection, ControllerParametersMap};
 use crate::game::attack_power::AttackPower;
 use crate::game::components::graves::grave::GraveKiller;
-use crate::game::event::on_midnight::{MidnightVariables, OnMidnightPriority};
+use crate::game::event::on_midnight::{OnMidnightFold, OnMidnightPriority};
 use crate::game::attack_power::DefensePower;
 use crate::game::phase::PhaseType;
 use crate::game::player::PlayerReference;
@@ -46,7 +46,7 @@ impl RoleStateTrait for Veteran {
             ..Self::default()
         }
     }
-    fn on_midnight(self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut MidnightVariables, priority: OnMidnightPriority) {
+    fn on_midnight(self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut OnMidnightFold, priority: OnMidnightPriority) {
         match priority {
             OnMidnightPriority::TopPriority => {
                 let can_alert = self.alerts_remaining > 0 && game.day_number() > 1;
@@ -91,7 +91,7 @@ impl RoleStateTrait for Veteran {
             game,
             Veteran { alerts_remaining: self.alerts_remaining, alerting_tonight: false });   
     }
-    fn on_player_roleblocked(self, _game: &mut Game, _midnight_variables: &mut MidnightVariables, _actor_ref: PlayerReference, _player: PlayerReference, _invisible: bool) {}
+    fn on_player_roleblocked(self, _game: &mut Game, _midnight_variables: &mut OnMidnightFold, _actor_ref: PlayerReference, _player: PlayerReference, _invisible: bool) {}
 }
 impl GetClientAbilityState<ClientRoleState> for Veteran {
     fn get_client_ability_state(self, _game: &Game, _actor_ref: PlayerReference) -> ClientRoleState {

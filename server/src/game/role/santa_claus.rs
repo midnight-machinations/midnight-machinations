@@ -2,7 +2,7 @@ use serde::{Deserialize, Serialize};
 use crate::game::components::night_visits::{NightVisitsIterator as _, Visits};
 use crate::game::controllers::AvailablePlayerListSelection;
 use crate::game::chat::ChatMessageVariant;
-use crate::game::event::on_midnight::{MidnightVariables, OnMidnightPriority};
+use crate::game::event::on_midnight::{OnMidnightFold, OnMidnightPriority};
 use crate::game::game_conclusion::GameConclusion;
 use crate::game::phase::PhaseType;
 use crate::game::abilities_component::ability_id::AbilityID;
@@ -33,7 +33,7 @@ pub(super) const DEFENSE: DefensePower = DefensePower::None;
 
 impl RoleStateTrait for SantaClaus {
     type ClientAbilityState = SantaClaus;
-    fn on_midnight(self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut MidnightVariables, priority: OnMidnightPriority) {
+    fn on_midnight(self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut OnMidnightFold, priority: OnMidnightPriority) {
         if priority != OnMidnightPriority::Convert { return }
 
         match self.get_next_santa_ability() {

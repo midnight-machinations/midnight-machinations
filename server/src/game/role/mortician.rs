@@ -12,7 +12,7 @@ use crate::game::event::on_ability_creation::OnAbilityCreationFold;
 use crate::game::event::on_ability_creation::OnAbilityCreationPriority;
 use crate::game::event::on_ability_deletion::OnAbilityDeletion;
 use crate::game::event::on_ability_deletion::OnAbilityDeletionPriority;
-use crate::game::event::on_midnight::MidnightVariables;
+use crate::game::event::on_midnight::OnMidnightFold;
 use crate::game::event::on_midnight::OnMidnightPriority;
 use crate::game::components::tags::TagSetID;
 use crate::game::components::tags::Tags;
@@ -55,7 +55,7 @@ impl RoleStateTrait for Mortician {
             blocked: false
         }
     }
-    fn on_midnight(self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut MidnightVariables, priority: OnMidnightPriority) {
+    fn on_midnight(self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut OnMidnightFold, priority: OnMidnightPriority) {
         if priority != OnMidnightPriority::Deception {return;}
         let Some(target) = Visits::default_target(midnight_variables, actor_ref, Role::Mortician) else {return};
         Tags::add_tag(

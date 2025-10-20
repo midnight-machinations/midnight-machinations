@@ -12,7 +12,7 @@ use crate::vec_map::VecMap;
 use crate::vec_set::VecSet;
 use rand::prelude::SliceRandom;
 use super::{common_role, Role, RoleStateTrait};
-use crate::game::event::on_midnight::{MidnightVariables, OnMidnightPriority};
+use crate::game::event::on_midnight::{OnMidnightFold, OnMidnightPriority};
 
 
 #[derive(Clone, Debug, Serialize, Default)]
@@ -30,7 +30,7 @@ pub(super) const DEFENSE: DefensePower = DefensePower::None;
 
 impl RoleStateTrait for Auditor {
     type ClientAbilityState = Auditor;
-    fn on_midnight(mut self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut MidnightVariables, priority: OnMidnightPriority) {
+    fn on_midnight(mut self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut OnMidnightFold, priority: OnMidnightPriority) {
 
         if priority != OnMidnightPriority::Investigative {return;}
         if actor_ref.night_blocked(midnight_variables) {return;}

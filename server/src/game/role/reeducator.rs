@@ -4,7 +4,7 @@ use crate::game::components::night_visits::Visits;
 use crate::game::controllers::{ControllerID, PlayerListSelection};
 use crate::game::attack_power::AttackPower;
 use crate::game::chat::ChatMessageVariant;
-use crate::game::event::on_midnight::{MidnightVariables, OnMidnightPriority};
+use crate::game::event::on_midnight::{OnMidnightFold, OnMidnightPriority};
 use crate::game::phase::PhaseType;
 use crate::game::role_list::RoleSet;
 use crate::game::role_list_generation::criteria::{GenerationCriterion, GenerationCriterionResult};
@@ -40,7 +40,7 @@ pub(super) const DEFENSE: DefensePower = DefensePower::None;
 
 impl RoleStateTrait for Reeducator {
     type ClientAbilityState = Reeducator;
-    fn on_midnight(mut self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut MidnightVariables, priority: OnMidnightPriority) {
+    fn on_midnight(mut self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut OnMidnightFold, priority: OnMidnightPriority) {
         if !matches!(priority, OnMidnightPriority::Convert) {return}
         let Some(target) = Visits::default_target(midnight_variables, actor_ref, Role::Reeducator) else {return};
         let Some(role) = ControllerID::role(actor_ref, Role::Reeducator, 1).get_role_list_selection_first(game) else {return};

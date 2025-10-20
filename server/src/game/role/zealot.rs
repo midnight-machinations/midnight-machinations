@@ -3,7 +3,7 @@ use serde::Serialize;
 use crate::game::attack_power::{AttackPower, DefensePower};
 use crate::game::components::cult::Cult;
 use crate::game::components::night_visits::Visits;
-use crate::game::event::on_midnight::{MidnightVariables, OnMidnightPriority};
+use crate::game::event::on_midnight::{OnMidnightFold, OnMidnightPriority};
 use crate::game::components::graves::grave::GraveKiller;
 use crate::game::player::PlayerReference;
 use crate::game::visit::Visit;
@@ -21,7 +21,7 @@ pub(super) const DEFENSE: DefensePower = DefensePower::None;
 
 impl RoleStateTrait for Zealot {
     type ClientAbilityState = Zealot;
-    fn on_midnight(self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut MidnightVariables, priority: OnMidnightPriority) {
+    fn on_midnight(self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut OnMidnightFold, priority: OnMidnightPriority) {
         if !matches!(priority, OnMidnightPriority::Kill) {return}
         let Some(target) = Visits::default_target(midnight_variables, actor_ref, Role::Zealot) else {return};
         if !Cult::can_kill_tonight(game) {return}

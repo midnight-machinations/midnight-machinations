@@ -5,7 +5,7 @@ use crate::game::components::night_visits::Visits;
 use crate::game::controllers::{AvailableIntegerSelection, AvailableStringSelection, RoleListSelection};
 use crate::game::attack_power::{AttackPower, DefensePower};
 use crate::game::chat::ChatMessageVariant;
-use crate::game::event::on_midnight::{MidnightVariables, OnMidnightPriority};
+use crate::game::event::on_midnight::{OnMidnightFold, OnMidnightPriority};
 use crate::game::components::graves::grave::GraveKiller;
 use crate::game::phase::PhaseType;
 use crate::game::player::PlayerReference;
@@ -54,7 +54,7 @@ impl RoleStateTrait for Counterfeiter {
             ..Self::default()
         }
     }
-    fn on_midnight(self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut MidnightVariables, priority: OnMidnightPriority) {
+    fn on_midnight(self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut OnMidnightFold, priority: OnMidnightPriority) {
         if game.day_number() <= 1 {return}
 
         match priority {

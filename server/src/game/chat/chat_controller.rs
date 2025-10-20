@@ -4,7 +4,7 @@ use crate::{
     game::{
         abilities::role_abilities::RoleAbility, abilities_component::{ability::Ability, ability_id::AbilityID, Abilities}, chat::{ChatComponent, ChatGroup, ChatMessageVariant, MessageSender}, controllers::{
             AvailableBooleanSelection, AvailablePlayerListSelection, AvailableStringSelection, AvailableUnitSelection, BooleanSelection, ControllerID, ControllerParametersMap, PlayerListSelection, StringSelection
-        }, event::{on_validated_ability_input_received::OnValidatedControllerInputReceived, on_whisper::OnWhisper, Event}, player::PlayerReference, role::{Role, RoleState}, Game
+        }, event::{on_validated_ability_input_received::OnValidatedControllerInputReceived, on_whisper::OnWhisper, AsInvokable as _, Invokable as _}, player::PlayerReference, role::{Role, RoleState}, Game
     },
     strings::TidyableString, vec_set::VecSet
 };
@@ -71,7 +71,7 @@ impl ChatComponent{
             return
         };
 
-        OnWhisper::new(sender_player, *whispered_to_player, text.clone()).invoke(game);
+        OnWhisper::new(sender_player, *whispered_to_player, text.clone()).as_invokable().invoke(game);
     }
 
     pub fn controller_parameters_map(game: &mut Game)->ControllerParametersMap{

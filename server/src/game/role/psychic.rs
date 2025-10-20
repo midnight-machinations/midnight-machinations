@@ -5,7 +5,7 @@ use crate::game::abilities_component::ability_id::AbilityID;
 use crate::game::components::aura::Aura;
 use crate::game::components::confused::Confused;
 use crate::game::components::night_visits::Visits;
-use crate::game::event::on_midnight::{MidnightVariables, OnMidnightPriority};
+use crate::game::event::on_midnight::{OnMidnightFold, OnMidnightPriority};
 use crate::game::visit::Visit;
 use crate::game::{attack_power::DefensePower, chat::ChatMessageVariant};
 use crate::game::game_conclusion::GameConclusion;
@@ -24,7 +24,7 @@ pub(super) const DEFENSE: DefensePower = DefensePower::None;
 
 impl RoleStateTrait for Psychic {
     type ClientAbilityState = Psychic;
-    fn on_midnight(self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut MidnightVariables, priority: OnMidnightPriority) {
+    fn on_midnight(self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut OnMidnightFold, priority: OnMidnightPriority) {
         if priority != OnMidnightPriority::Investigative {return}
         let Some(target_ref) = Visits::default_target(midnight_variables, actor_ref, Role::Psychic) else {return};
 
@@ -55,7 +55,7 @@ impl RoleStateTrait for Psychic {
 }
 
 impl Psychic {
-    fn get_result_evil(game: &mut Game, midnight_variables: &MidnightVariables, actor_ref: PlayerReference, target: PlayerReference, confused: bool)->ChatMessageVariant{
+    fn get_result_evil(game: &mut Game, midnight_variables: &OnMidnightFold, actor_ref: PlayerReference, target: PlayerReference, confused: bool)->ChatMessageVariant{
         
         let mut valid_players: Vec<_> = Self::get_valid_players(game, actor_ref, target)
             .into_iter()
@@ -76,7 +76,7 @@ impl Psychic {
 
         ChatMessageVariant::PsychicFailed
     }
-    fn get_result_good(game: &mut Game, midnight_variables: &MidnightVariables, actor_ref: PlayerReference, target: PlayerReference, confused: bool)->ChatMessageVariant{
+    fn get_result_good(game: &mut Game, midnight_variables: &OnMidnightFold, actor_ref: PlayerReference, target: PlayerReference, confused: bool)->ChatMessageVariant{
         let mut valid_players: Vec<_> = Self::get_valid_players(game, actor_ref, target)
             .into_iter()
             .filter(|p|!Aura::suspicious(game, midnight_variables, *p))

@@ -6,7 +6,7 @@ use crate::game::chat::ChatMessageVariant;
 use crate::game::components::graves::grave::{Grave, GraveKiller};
 use crate::game::components::night_visits::{NightVisitsIterator as _, Visits};
 use crate::game::components::win_condition::WinCondition;
-use crate::game::event::on_midnight::{MidnightVariables, OnMidnightPriority};
+use crate::game::event::on_midnight::{OnMidnightFold, OnMidnightPriority};
 use crate::game::game_conclusion::GameConclusion;
 use crate::game::phase::PhaseType;
 use crate::game::attack_power::DefensePower;
@@ -37,7 +37,7 @@ pub(super) const DEFENSE: DefensePower = DefensePower::Armored;
 
 impl RoleStateTrait for Krampus {
     type ClientAbilityState = ();
-    fn on_midnight(self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut MidnightVariables, priority: OnMidnightPriority) {
+    fn on_midnight(self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut OnMidnightFold, priority: OnMidnightPriority) {
         let actor_visits = Visits::into_iter(midnight_variables).default_visits(actor_ref, Role::Krampus).collect::<Vec<_>>();
 
         match (priority, self.ability) {

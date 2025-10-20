@@ -4,7 +4,7 @@ use crate::game::controllers::{AvailableIntegerSelection, IntegerSelection};
 use crate::game::chat::ChatMessageVariant;
 use crate::game::components::graves::grave::GraveKiller;
 use crate::game::event::on_ability_creation::{OnAbilityCreation, OnAbilityCreationFold, OnAbilityCreationPriority};
-use crate::game::event::on_midnight::{MidnightVariables, OnMidnightPriority};
+use crate::game::event::on_midnight::{OnMidnightFold, OnMidnightPriority};
 use crate::game::attack_power::{AttackPower, DefensePower};
 use crate::game::event::on_role_switch::OnRoleSwitch;
 use rand::seq::SliceRandom;
@@ -53,7 +53,7 @@ impl RoleStateTrait for Mercenary {
         
         Self { won: false, roles, attacks_remaining }
     }
-    fn on_midnight(self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut MidnightVariables, priority: OnMidnightPriority) {
+    fn on_midnight(self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut OnMidnightFold, priority: OnMidnightPriority) {
         let Some(visit) = Visits::default_visit(midnight_variables, actor_ref, Role::Mercenary) else {return};
 
         match (priority, visit.tag) {

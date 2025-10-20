@@ -4,8 +4,8 @@ use crate::game::{
         BooleanSelection, ControllerID, ControllerSelection, Controllers, PlayerListSelection,
         TwoPlayerOptionSelection
     },
-    event::{on_midnight::{MidnightVariables, OnMidnightPriority},
-    on_player_possessed::OnPlayerPossessed},
+    event::{on_midnight::{OnMidnightFold, OnMidnightPriority},
+    on_player_possessed::OnPlayerPossessed, Invokable as _},
     player::PlayerReference, role::Role, Game
 };
 
@@ -40,7 +40,7 @@ impl Possession {
     pub fn possess_night_action(
         possessor: PlayerReference,
         game: &mut Game,
-        midnight_variables: &mut MidnightVariables,
+        midnight_variables: &mut OnMidnightFold,
         priority: OnMidnightPriority,
         currently_used_player: Option<PlayerReference>,
         role: Role,
@@ -52,10 +52,13 @@ impl Possession {
                 let possessed_into_visit = untagged_possessor_visits.get(1)?;
                 
                 possessed_visit.target.push_night_message(midnight_variables, ChatMessageVariant::YouWerePossessed);
-                OnPlayerPossessed::new(
-                    possessed_visit.target,
-                    possessed_into_visit.target
-                ).invoke(game, midnight_variables);
+                (
+                    &OnPlayerPossessed::new(
+                        possessed_visit.target,
+                        possessed_into_visit.target
+                    ),
+                    midnight_variables
+                ).invoke(game);
 
                 Some(possessed_visit.target)
             },

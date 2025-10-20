@@ -6,7 +6,7 @@ use crate::game::components::night_visits::Visits;
 use crate::game::controllers::ControllerParametersMap;
 use crate::game::components::fragile_vest::FragileVests;
 use crate::game::components::player_component::PlayerComponent;
-use crate::game::event::on_midnight::{MidnightVariables, OnMidnightPriority};
+use crate::game::event::on_midnight::{OnMidnightFold, OnMidnightPriority};
 use crate::game::attack_power::DefensePower;
 use crate::game::phase::PhaseType;
 use crate::game::player::PlayerReference;
@@ -42,7 +42,7 @@ pub(super) const DEFENSE: DefensePower = DefensePower::None;
 
 impl RoleStateTrait for Armorsmith {
     type ClientAbilityState = ClientRoleState;
-    fn on_midnight(mut self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut MidnightVariables, priority: OnMidnightPriority) {
+    fn on_midnight(mut self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut OnMidnightFold, priority: OnMidnightPriority) {
         if priority != OnMidnightPriority::Heal {return;}
         let Some(target) = Visits::default_target(midnight_variables, actor_ref, Role::Armorsmith) else {return};
         if self.open_shops_remaining == 0 {return}

@@ -1,6 +1,6 @@
 use crate::game::{
     event::{
-        on_midnight::{MidnightVariables, OnMidnight, OnMidnightPriority},
+        on_midnight::{OnMidnightFold, OnMidnight, OnMidnightPriority},
     },
     Game
 };
@@ -9,7 +9,7 @@ use super::PlayerReference;
 
 impl PlayerReference {
 
-    pub fn on_midnight(game: &mut Game, _event: &OnMidnight, midnight_variables: &mut MidnightVariables, priority: OnMidnightPriority){
+    pub fn on_midnight(game: &mut Game, _event: &OnMidnight, midnight_variables: &mut OnMidnightFold, priority: OnMidnightPriority){
         for player in PlayerReference::all_players(game){
             match priority {
                 OnMidnightPriority::InitializeNight => {

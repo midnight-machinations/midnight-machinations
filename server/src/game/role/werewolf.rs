@@ -5,7 +5,7 @@ use crate::game::chat::ChatMessageVariant;
 use crate::game::components::night_visits::{NightVisitsIterator, Visits};
 use crate::game::event::on_ability_creation::{OnAbilityCreation, OnAbilityCreationFold, OnAbilityCreationPriority};
 use crate::game::event::on_ability_deletion::{OnAbilityDeletion, OnAbilityDeletionPriority};
-use crate::game::event::on_midnight::{MidnightVariables, OnMidnightPriority};
+use crate::game::event::on_midnight::{OnMidnightFold, OnMidnightPriority};
 use crate::game::components::tags::{TagSetID, Tags};
 use crate::game::components::graves::grave::GraveKiller;
 use crate::game::player::PlayerReference;
@@ -31,7 +31,7 @@ const ENRAGED_DENOMINATOR: usize = 3;
 
 impl RoleStateTrait for Werewolf {
     type ClientAbilityState = ClientRoleState;
-    fn on_midnight(self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut MidnightVariables, priority: OnMidnightPriority) {
+    fn on_midnight(self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut OnMidnightFold, priority: OnMidnightPriority) {
         match priority {
             OnMidnightPriority::Deception => {
                 let Some(target) = Visits::default_target(midnight_variables, actor_ref, Role::Werewolf) else {return};

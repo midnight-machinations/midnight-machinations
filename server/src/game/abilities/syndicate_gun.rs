@@ -5,7 +5,7 @@ use crate::{game::{
     },
     controllers::*,
     event::{
-        on_add_insider::OnAddInsider, on_any_death::OnAnyDeath, on_midnight::{MidnightVariables, OnMidnight, OnMidnightPriority}, on_player_possessed::OnPlayerPossessed, on_remove_insider::OnRemoveInsider, on_validated_ability_input_received::OnValidatedControllerInputReceived
+        on_add_insider::OnAddInsider, on_any_death::OnAnyDeath, on_midnight::{OnMidnight, OnMidnightFold, OnMidnightPriority}, on_player_possessed::OnPlayerPossessed, on_player_roleblocked::OnPlayerRoleblocked, on_remove_insider::OnRemoveInsider, on_validated_ability_input_received::OnValidatedControllerInputReceived, on_visit_wardblocked::OnVisitWardblocked
     },
     phase::PhaseType, player::PlayerReference, role_list::RoleSet, visit::{Visit, VisitTag}, Game
 }, vec_set};
@@ -16,17 +16,6 @@ pub struct SyndicateGun {
 }
 
 impl SyndicateGun {
-    pub fn on_visit_wardblocked(_game: &mut Game, midnight_variables: &mut MidnightVariables, visit: Visit){
-        Visits::retain(midnight_variables, |v|
-            v.tag != VisitTag::SyndicateGun || v.visitor != visit.visitor
-        );
-    }
-    pub fn on_player_roleblocked(_game: &mut Game, midnight_variables: &mut MidnightVariables, player: PlayerReference){
-        Visits::retain(midnight_variables, |v|
-            v.tag != VisitTag::SyndicateGun || v.visitor != player
-        );
-    }
-
     pub fn give_gun_to_player(game: &mut Game, player: PlayerReference) {
         AbilityID::SyndicateGun.set_ability(game, Some(Self{
             player_with_gun: Some(player)
@@ -55,7 +44,7 @@ impl SyndicateGun {
 
 }
 impl AbilityTrait for SyndicateGun {
-    fn on_player_possessed(&self, game: &mut Game, _id: &AbilityID, event: &OnPlayerPossessed, fold: &mut MidnightVariables, _priority: ()){
+    fn on_player_possessed(&self, game: &mut Game, _id: &AbilityID, event: &OnPlayerPossessed, fold: &mut OnMidnightFold, _priority: ()){
         if Some(event.possessed) != self.player_with_gun {
             return;
         }
@@ -85,6 +74,17 @@ impl AbilityTrait for SyndicateGun {
         );
     }
     
+    fn on_visit_wardblocked(&self, _game: &mut Game, _id: &AbilityID, event: &OnVisitWardblocked, midnight_variables: &mut OnMidnightFold, _priority: ()){
+        Visits::retain(midnight_variables, |v|
+            v.tag != VisitTag::SyndicateGun || v.visitor != event.visit.visitor
+        );
+    }
+    fn on_player_roleblocked(&self, _game: &mut Game, _id: &AbilityID, event: &OnPlayerRoleblocked, midnight_variables: &mut OnMidnightFold, _priority: ()){
+        Visits::retain(midnight_variables, |v|
+            v.tag != VisitTag::SyndicateGun || v.visitor != event.player
+        );
+    }
+    
     fn on_add_insider(&self, game: &mut Game, _id: &AbilityID, _event: &OnAddInsider, _fold: &mut (), _priority: ()){
         Tags::set_viewers(game, TagSetID::SyndicateGun, &InsiderGroupID::Mafia.players(game).clone());
     }
@@ -101,7 +101,7 @@ impl AbilityTrait for SyndicateGun {
             }
         }
     }
-    fn on_midnight(&self, game: &mut Game, _id: &AbilityID, _event: &OnMidnight, midnight_variables: &mut MidnightVariables, priority: OnMidnightPriority) {
+    fn on_midnight(&self, game: &mut Game, _id: &AbilityID, _event: &OnMidnight, midnight_variables: &mut OnMidnightFold, priority: OnMidnightPriority) {
         if game.day_number() <= 1 {return}
         match priority {
             OnMidnightPriority::TopPriority => {

@@ -3,7 +3,7 @@ use crate::game::components::night_visits::Visits;
 use crate::game::controllers::AvailablePlayerListSelection;
 use crate::game::chat::ChatMessageVariant;
 use crate::game::components::insider_group::InsiderGroupID;
-use crate::game::event::on_midnight::{MidnightVariables, OnMidnightPriority};
+use crate::game::event::on_midnight::{OnMidnightFold, OnMidnightPriority};
 use crate::game::event::on_whisper::{OnWhisper, WhisperFold, WhisperPriority};
 use crate::game::phase::PhaseType;
 use crate::game::role::informant::Informant;
@@ -36,7 +36,7 @@ impl RoleStateTrait for Cerenovous {
             ..Self::default()
         }
     }
-    fn on_midnight(mut self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut MidnightVariables, priority: OnMidnightPriority) {
+    fn on_midnight(mut self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut OnMidnightFold, priority: OnMidnightPriority) {
         if priority != OnMidnightPriority::Deception {return}
 
         if let Some(target_ref) = Visits::default_target(midnight_variables, actor_ref, Role::Cerenovous) {

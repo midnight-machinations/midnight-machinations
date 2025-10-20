@@ -2,7 +2,7 @@ use kira_selection::{AvailableKiraSelection, KiraSelection};
 use serde::{Serialize, Deserialize};
 
 use crate::game::attack_power::AttackPower;
-use crate::game::event::on_midnight::{MidnightVariables, OnMidnightPriority};
+use crate::game::event::on_midnight::{OnMidnightFold, OnMidnightPriority};
 use crate::game::role_list::RoleSet;
 use crate::game::{attack_power::DefensePower, chat::ChatMessageVariant};
 use crate::game::components::graves::grave::GraveKiller;
@@ -97,7 +97,7 @@ pub(super) const DEFENSE: DefensePower = DefensePower::Armored;
 
 impl RoleStateTrait for Kira {
     type ClientAbilityState = Kira;
-    fn on_midnight(self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut MidnightVariables, priority: OnMidnightPriority) {
+    fn on_midnight(self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut OnMidnightFold, priority: OnMidnightPriority) {
         if actor_ref.night_blocked(midnight_variables) {return;}
         if actor_ref.ability_deactivated_from_death(game) {return;}
 

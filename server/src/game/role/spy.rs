@@ -3,7 +3,7 @@ use serde::Serialize;
 
 use crate::game::abilities_component::ability_id::AbilityID;
 use crate::game::components::night_visits::{NightVisitsIterator, Visits};
-use crate::game::event::on_midnight::MidnightVariables;
+use crate::game::event::on_midnight::OnMidnightFold;
 use crate::game::{attack_power::DefensePower, event::on_midnight::OnMidnightPriority};
 use crate::game::chat::ChatMessageVariant;
 use crate::game::components::insider_group::InsiderGroupID;
@@ -23,7 +23,7 @@ pub(super) const DEFENSE: DefensePower = DefensePower::None;
 
 impl RoleStateTrait for Spy {
     type ClientAbilityState = Spy;
-    fn on_midnight(self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut MidnightVariables, priority: OnMidnightPriority) {
+    fn on_midnight(self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut OnMidnightFold, priority: OnMidnightPriority) {
         if priority != OnMidnightPriority::Investigative {return;}
 
         let Some(bugged) = Visits::default_target(midnight_variables, actor_ref, Role::Spy) else {return};

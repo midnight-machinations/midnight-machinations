@@ -5,7 +5,7 @@ use crate::game::components::night_visits::Visits;
 use crate::game::controllers::AvailableBooleanSelection;
 use crate::game::event::on_ability_creation::{OnAbilityCreation, OnAbilityCreationFold, OnAbilityCreationPriority};
 use crate::game::event::on_ability_deletion::{OnAbilityDeletion, OnAbilityDeletionPriority};
-use crate::game::event::on_midnight::{MidnightVariables, OnMidnightPriority};
+use crate::game::event::on_midnight::{OnMidnightFold, OnMidnightPriority};
 use crate::game::attack_power::AttackPower;
 use crate::game::components::tags::{TagSetID, Tags};
 use crate::game::components::graves::grave::GraveKiller;
@@ -27,7 +27,7 @@ pub(super) const DEFENSE: DefensePower = DefensePower::Armored;
 
 impl RoleStateTrait for Arsonist {
     type ClientAbilityState = Arsonist;
-    fn on_midnight(self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut MidnightVariables, priority: OnMidnightPriority) {
+    fn on_midnight(self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut OnMidnightFold, priority: OnMidnightPriority) {
         match priority {
             OnMidnightPriority::Deception => {
                 //douse target
@@ -104,7 +104,7 @@ impl Arsonist{
 
         Tags::add_tag(game, TagSetID::ArsonistDoused, player);
     }
-    pub fn ignite(game: &mut Game, igniter: PlayerReference, midnight_variables: &mut MidnightVariables) {
+    pub fn ignite(game: &mut Game, igniter: PlayerReference, midnight_variables: &mut OnMidnightFold) {
         for player in Tags::tagged(game, TagSetID::ArsonistDoused) {
             if (AbilityID::Role { role: Role::Arsonist, player }).exists(game) {continue;}
             if !player.alive(game) {continue;}

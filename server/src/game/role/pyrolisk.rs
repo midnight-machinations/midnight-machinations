@@ -5,7 +5,7 @@ use crate::game::chat::ChatMessageVariant;
 use crate::game::components::graves::grave::{GraveInformation, GraveKiller};
 use crate::game::components::graves::grave_reference::GraveReference;
 use crate::game::components::night_visits::Visits;
-use crate::game::event::on_midnight::{MidnightVariables, OnMidnightPriority};
+use crate::game::event::on_midnight::{OnMidnightFold, OnMidnightPriority};
 use crate::game::player::PlayerReference;
 use crate::game::abilities_component::ability_id::AbilityID;
 
@@ -29,7 +29,7 @@ pub(super) const DEFENSE: DefensePower = DefensePower::Armored;
 
 impl RoleStateTrait for Pyrolisk {
     type ClientAbilityState = ClientRoleState;
-    fn on_midnight(self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut MidnightVariables, priority: OnMidnightPriority) {
+    fn on_midnight(self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut OnMidnightFold, priority: OnMidnightPriority) {
         if game.day_number() <= 1 {return;}
 
         match priority {

@@ -6,7 +6,7 @@ use crate::game::controllers::{AvailableIntegerSelection, AvailablePlayerListSel
 use crate::game::attack_power::AttackPower;
 use crate::game::components::detained::Detained;
 use crate::game::components::graves::grave::GraveKiller;
-use crate::game::event::on_midnight::{MidnightVariables, OnMidnightPriority};
+use crate::game::event::on_midnight::{OnMidnightFold, OnMidnightPriority};
 use crate::game::{
     attack_power::DefensePower,
     components::puppeteer_marionette::PuppeteerMarionette
@@ -40,7 +40,7 @@ impl RoleStateTrait for Puppeteer {
             marionettes_remaining: crate::game::role::common_role::standard_charges(game),
         }
     }
-    fn on_midnight(mut self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut MidnightVariables, priority: OnMidnightPriority) {
+    fn on_midnight(mut self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut OnMidnightFold, priority: OnMidnightPriority) {
 
         if priority != OnMidnightPriority::Kill {return;}
         if game.day_number() <= 1 {return;}

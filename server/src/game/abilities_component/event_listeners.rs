@@ -2,13 +2,19 @@ use crate::game::{
     abilities_component::{ability::Ability, ability_id::AbilityID, ability_trait::AbilityTrait, Abilities},
     controllers::ControllerParametersMap,
     event::{
-        before_phase_end::BeforePhaseEnd, on_ability_creation::{OnAbilityCreation, OnAbilityCreationFold, OnAbilityCreationPriority}, on_ability_deletion::{OnAbilityDeletion, OnAbilityDeletionPriority}, on_ability_edit::OnAbilityEdit, on_add_insider::OnAddInsider, on_any_death::OnAnyDeath, on_conceal_role::OnConcealRole, on_controller_selection_changed::OnControllerSelectionChanged, on_grave_added::OnGraveAdded, on_midnight::{MidnightVariables, OnMidnight, OnMidnightPriority}, on_phase_start::OnPhaseStart, on_player_possessed::OnPlayerPossessed, on_player_roleblocked::OnPlayerRoleblocked, on_remove_insider::OnRemoveInsider, on_role_switch::OnRoleSwitch, on_validated_ability_input_received::OnValidatedControllerInputReceived, on_visit_wardblocked::OnVisitWardblocked, on_whisper::{OnWhisper, WhisperFold, WhisperPriority}, Event as _
+        before_phase_end::BeforePhaseEnd, on_ability_creation::{OnAbilityCreation, OnAbilityCreationFold, OnAbilityCreationPriority},
+        on_ability_deletion::{OnAbilityDeletion, OnAbilityDeletionPriority}, on_ability_edit::OnAbilityEdit, on_add_insider::OnAddInsider,
+        on_any_death::OnAnyDeath, on_conceal_role::OnConcealRole, on_controller_selection_changed::OnControllerSelectionChanged,
+        on_grave_added::OnGraveAdded, on_midnight::{OnMidnightFold, OnMidnight, OnMidnightPriority}, on_phase_start::OnPhaseStart,
+        on_player_possessed::OnPlayerPossessed, on_player_roleblocked::OnPlayerRoleblocked, on_remove_insider::OnRemoveInsider,
+        on_role_switch::OnRoleSwitch, on_validated_ability_input_received::OnValidatedControllerInputReceived, on_visit_wardblocked::OnVisitWardblocked,
+        on_whisper::{OnWhisper, WhisperFold, WhisperPriority}, AsInvokable as _, Invokable as _,
     },
     Game
 };
 
 impl Abilities{
-    pub fn on_midnight(game: &mut Game, _event: &OnMidnight, midnight_variables: &mut MidnightVariables, priority: OnMidnightPriority){
+    pub fn on_midnight(game: &mut Game, _event: &OnMidnight, midnight_variables: &mut OnMidnightFold, priority: OnMidnightPriority){
         for (id, _ability) in game.abilities.abilities.clone() {
             id.on_midnight(game, _event, midnight_variables, priority)
         }
@@ -72,7 +78,7 @@ impl Abilities{
                 game.abilities.abilities.remove(&event.id);
             }else{
                 game.abilities.abilities.insert(event.id.clone(), fold.ability.clone());
-                OnAbilityEdit::new(event.id.clone(), Some(fold.ability.clone())).invoke(game);
+                OnAbilityEdit::new(event.id.clone(), Some(fold.ability.clone())).as_invokable().invoke(game);
             }
         }
 
@@ -87,7 +93,7 @@ impl Abilities{
 
         if priority == OnAbilityDeletionPriority::DeleteAbility {
             game.abilities.abilities.remove(&event.id);
-            OnAbilityEdit::new(event.id.clone(), None).invoke(game);
+            OnAbilityEdit::new(event.id.clone(), None).as_invokable().invoke(game);
         }   
     }
     pub fn on_role_switch(game: &mut Game, event: &OnRoleSwitch, fold: &mut (), priority: ()){
@@ -96,19 +102,19 @@ impl Abilities{
         }
     }
 
-    pub fn on_player_possessed(game: &mut Game, event: &OnPlayerPossessed, fold: &mut MidnightVariables, priority: ()){
+    pub fn on_player_possessed(game: &mut Game, event: &OnPlayerPossessed, fold: &mut OnMidnightFold, priority: ()){
         for (id, _ability) in game.abilities.abilities.clone() {
             id.on_player_possessed(game, event, fold, priority);
         }
     }
 
     
-    pub fn on_player_roleblocked(game: &mut Game, event: &OnPlayerRoleblocked, fold: &mut MidnightVariables, priority: ()) {
+    pub fn on_player_roleblocked(game: &mut Game, event: &OnPlayerRoleblocked, fold: &mut OnMidnightFold, priority: ()) {
         for (id, _ability) in game.abilities.abilities.clone() {
             id.on_player_roleblocked(game, event, fold, priority)
         }
     }
-    pub fn on_visit_wardblocked(game: &mut Game, event: &OnVisitWardblocked, fold: &mut MidnightVariables, priority: ()) {
+    pub fn on_visit_wardblocked(game: &mut Game, event: &OnVisitWardblocked, fold: &mut OnMidnightFold, priority: ()) {
         for (id, _ability) in game.abilities.abilities.clone() {
             id.on_visit_wardblocked(game, event, fold, priority)
         }
@@ -125,7 +131,7 @@ impl Abilities{
     }
 }
 impl AbilityID{
-    fn on_midnight(&self, game: &mut Game, _event: &OnMidnight, midnight_variables: &mut MidnightVariables, priority: OnMidnightPriority){
+    fn on_midnight(&self, game: &mut Game, _event: &OnMidnight, midnight_variables: &mut OnMidnightFold, priority: OnMidnightPriority){
         self.get_dyn_cloned_ability_expect(game).on_midnight(game, self, _event, midnight_variables, priority);
     }
     fn on_whisper(&self, game: &mut Game, event: &OnWhisper, fold: &mut WhisperFold, priority: WhisperPriority){
@@ -168,13 +174,13 @@ impl AbilityID{
         self.get_dyn_cloned_ability_expect(game).on_role_switch(game, self, event, fold, priority);
     }
 
-    fn on_player_possessed(&self, game: &mut Game, event: &OnPlayerPossessed, fold: &mut MidnightVariables, priority: ()){
+    fn on_player_possessed(&self, game: &mut Game, event: &OnPlayerPossessed, fold: &mut OnMidnightFold, priority: ()){
         self.get_dyn_cloned_ability_expect(game).on_player_possessed(game, self, event, fold, priority);
     }
-    pub fn on_player_roleblocked(&self, game: &mut Game, event: &OnPlayerRoleblocked, fold: &mut MidnightVariables, priority: ()) {
+    pub fn on_player_roleblocked(&self, game: &mut Game, event: &OnPlayerRoleblocked, fold: &mut OnMidnightFold, priority: ()) {
         self.get_dyn_cloned_ability_expect(game).on_player_roleblocked(game, self, event, fold, priority);
     }
-    pub fn on_visit_wardblocked(&self, game: &mut Game, event: &OnVisitWardblocked, fold: &mut MidnightVariables, priority: ()) {
+    pub fn on_visit_wardblocked(&self, game: &mut Game, event: &OnVisitWardblocked, fold: &mut OnMidnightFold, priority: ()) {
         self.get_dyn_cloned_ability_expect(game).on_visit_wardblocked(game, self, event, fold, priority);
     }
 

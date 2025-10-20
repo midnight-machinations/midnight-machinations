@@ -5,7 +5,8 @@ use crate::game::chat::ChatGroup;
 use crate::game::chat::ChatMessageVariant;
 use crate::game::components::synopsis::SynopsisTracker;
 use crate::game::event::on_game_ending::OnGameEnding;
-use crate::game::event::Event;
+use crate::game::event::AsInvokable as _;
+use crate::game::event::Invokable as _;
 use crate::game::game_client::GameClient;
 use crate::game::game_client::GameClientLocation;
 use crate::game::game_conclusion::GameConclusion;
@@ -32,7 +33,7 @@ impl RoomState for Game {
         }
 
         if let Some(conclusion) = GameConclusion::game_is_over_game(self) {
-            OnGameEnding::new(conclusion).invoke(self);
+            OnGameEnding::new(conclusion).as_invokable().invoke(self);
         }
 
         if self.phase_machine.day_number == u8::MAX {
@@ -52,7 +53,7 @@ impl RoomState for Game {
 
         self.phase_machine.time_remaining = self.phase_machine.time_remaining.map(|d|d.saturating_sub(time_passed));
 
-        OnTick::new().invoke(self);
+        OnTick::new().as_invokable().invoke(self);
 
         RoomTickResult {
             close_room: !self.is_any_client_connected()

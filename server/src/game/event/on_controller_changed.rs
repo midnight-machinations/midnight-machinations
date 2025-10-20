@@ -1,6 +1,6 @@
 use crate::game::{
     controllers::{ControllerID, Controller, Controllers},
-    event::{on_controller_selection_changed::OnControllerSelectionChanged, Event}
+    event::{on_controller_selection_changed::OnControllerSelectionChanged, EventData}
 };
 
 pub struct OnControllerChanged{
@@ -8,7 +8,7 @@ pub struct OnControllerChanged{
     pub new: Option<Controller>,
     pub id: ControllerID
 }
-impl Event for OnControllerChanged {
+impl EventData for OnControllerChanged {
     type FoldValue = ();
     type Priority = ();
 
@@ -18,10 +18,9 @@ impl Event for OnControllerChanged {
             OnControllerSelectionChanged::on_controller_changed
         ]
     }
-    fn initial_fold_value(&self, _game: &crate::game::Game) -> Self::FoldValue {}
 }
 impl OnControllerChanged{
-    pub fn new(id: ControllerID, old: Option<Controller>, new: Option<Controller>)->Self{
-        Self{id, old, new}
+    pub fn new(id: ControllerID, old: Option<Controller>, new: Option<Controller>)->(Self, ()){
+        (Self{id, old, new}, ())
     }
 }

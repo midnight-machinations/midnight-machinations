@@ -2,7 +2,7 @@ use rand::seq::IndexedRandom;
 
 use crate::{game::{
     abilities::syndicate_gun::SyndicateGun, attack_power::{AttackPower, DefensePower}, chat::{ChatGroup, ChatMessageVariant}, components::{graves::grave::GraveKiller, night_visits::NightVisitsIterator, possession::Possession}, controllers::{AvailablePlayerListSelection, ControllerParametersMap}, event::{
-        on_add_insider::OnAddInsider, on_any_death::OnAnyDeath, on_controller_selection_changed::OnControllerSelectionChanged, on_game_start::OnGameStart, on_midnight::{MidnightVariables, OnMidnight, OnMidnightPriority}, on_player_possessed::OnPlayerPossessed, on_remove_insider::OnRemoveInsider, on_role_switch::OnRoleSwitch
+        on_add_insider::OnAddInsider, on_any_death::OnAnyDeath, on_controller_selection_changed::OnControllerSelectionChanged, on_game_start::OnGameStart, on_midnight::{OnMidnight, OnMidnightFold, OnMidnightPriority}, on_player_possessed::OnPlayerPossessed, on_player_roleblocked::OnPlayerRoleblocked, on_remove_insider::OnRemoveInsider, on_role_switch::OnRoleSwitch, on_visit_wardblocked::OnVisitWardblocked
     }, phase::PhaseType, player::PlayerReference, role::RoleState, role_list::RoleSet, visit::{Visit, VisitTag}, ControllerID, Game, PlayerListSelection
 }, vec_set::{vec_set, VecSet}};
 
@@ -22,17 +22,17 @@ impl Game{
     }
 }
 impl Mafia{
-    pub fn on_visit_wardblocked(_game: &mut Game, midnight_variables: &mut MidnightVariables, visit: Visit){
+    pub fn on_visit_wardblocked(_game: &mut Game, event: &OnVisitWardblocked, midnight_variables: &mut OnMidnightFold, _priority: ()){
         Visits::retain(midnight_variables, |v|
-            v.tag != VisitTag::SyndicateBackupAttack || v.visitor != visit.visitor
+            v.tag != VisitTag::SyndicateBackupAttack || v.visitor != event.visit.visitor
         );
     }
-    pub fn on_player_roleblocked(_game: &mut Game, midnight_variables: &mut MidnightVariables, player: PlayerReference){
+    pub fn on_player_roleblocked(_game: &mut Game, event: &OnPlayerRoleblocked, midnight_variables: &mut OnMidnightFold, _priority: ()){
         Visits::retain(midnight_variables, |v|
-            v.tag != VisitTag::SyndicateBackupAttack || v.visitor != player
+            v.tag != VisitTag::SyndicateBackupAttack || v.visitor != event.player
         );
     }
-    pub fn on_player_possessed(game: &mut Game, event: &OnPlayerPossessed, fold: &mut MidnightVariables, _priority: ()){
+    pub fn on_player_possessed(game: &mut Game, event: &OnPlayerPossessed, fold: &mut OnMidnightFold, _priority: ()){
         let Some(PlayerListSelection(backup)) = ControllerID::syndicate_choose_backup().get_player_list_selection(game) else {return};
         let Some(backup) = backup.first().copied() else {return};
 
@@ -124,7 +124,7 @@ impl Mafia{
             )
             .collect::<VecSet<_>>()
     }
-    pub fn on_midnight(game: &mut Game, _event: &OnMidnight, midnight_variables: &mut MidnightVariables, priority: OnMidnightPriority){
+    pub fn on_midnight(game: &mut Game, _event: &OnMidnight, midnight_variables: &mut OnMidnightFold, priority: OnMidnightPriority){
         if game.day_number() <= 1 {return}
         match priority {
             OnMidnightPriority::TopPriority => {

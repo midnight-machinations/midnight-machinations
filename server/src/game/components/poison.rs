@@ -1,5 +1,5 @@
 use crate::{game::{
-    attack_power::AttackPower, chat::ChatMessageVariant, components::graves::grave::GraveKiller, event::on_midnight::{MidnightVariables, OnMidnight, OnMidnightPriority}, player::PlayerReference, Game
+    attack_power::AttackPower, chat::ChatMessageVariant, components::graves::grave::GraveKiller, event::on_midnight::{OnMidnightFold, OnMidnight, OnMidnightPriority}, player::PlayerReference, Game
 }, vec_set::VecSet};
 
 impl Game {
@@ -53,7 +53,7 @@ impl Poison{
     #[expect(clippy::too_many_arguments, reason = "This will be addressed in a future PR")]
     pub fn poison_player(
         game: &mut Game,
-        midnight_variables: &mut MidnightVariables,
+        midnight_variables: &mut OnMidnightFold,
         player: PlayerReference,
         attack_power: AttackPower,
         grave_killer: GraveKiller,
@@ -74,7 +74,7 @@ impl Poison{
 
         game.set_poison(poison);
     }
-    pub fn on_midnight(game: &mut Game, _event: &OnMidnight, midnight_variables: &mut MidnightVariables, priority: OnMidnightPriority){
+    pub fn on_midnight(game: &mut Game, _event: &OnMidnight, midnight_variables: &mut OnMidnightFold, priority: OnMidnightPriority){
         if priority != OnMidnightPriority::Kill{ return; }
 
         let mut poison = game.poison().clone();
@@ -86,7 +86,7 @@ impl Poison{
         
         game.set_poison(poison);
     }
-    fn attack_poisoned_player(game: &mut Game, midnight_variables: &mut MidnightVariables, poison: PlayerPoison){
+    fn attack_poisoned_player(game: &mut Game, midnight_variables: &mut OnMidnightFold, poison: PlayerPoison){
         poison.player.try_night_kill(
             poison.attackers.clone(),
             game,

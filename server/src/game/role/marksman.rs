@@ -4,7 +4,7 @@ use crate::game::components::night_visits::Visits;
 use crate::game::controllers::AvailablePlayerListSelection;
 use crate::game::attack_power::AttackPower;
 use crate::game::attack_power::DefensePower;
-use crate::game::event::on_midnight::MidnightVariables;
+use crate::game::event::on_midnight::OnMidnightFold;
 use crate::game::event::on_midnight::OnMidnightPriority;
 use crate::game::game_conclusion::GameConclusion;
 use crate::game::components::graves::grave::GraveKiller;
@@ -43,7 +43,7 @@ pub(super) const DEFENSE: DefensePower = DefensePower::None;
 
 impl RoleStateTrait for Marksman {
     type ClientAbilityState = Marksman;
-    fn on_midnight(mut self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut MidnightVariables, priority: OnMidnightPriority) {
+    fn on_midnight(mut self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut OnMidnightFold, priority: OnMidnightPriority) {
         if priority != OnMidnightPriority::Kill {return};
 
         let visiting_players: Vec<_> = Visits::into_iter(midnight_variables).default_visits(actor_ref, Role::Marksman)
