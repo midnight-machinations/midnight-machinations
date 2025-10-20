@@ -1,20 +1,7 @@
 use rand::seq::SliceRandom as _;
 use serde::{Deserialize, Serialize};
-
-use crate::game::controllers::AvailableBooleanSelection;
-use crate::game::attack_power::AttackPower;
-use crate::game::components::night_visits::{NightVisitsIterator as _, Visits};
-use crate::game::event::on_midnight::{OnMidnightFold, OnMidnightPriority};
-use crate::game::components::graves::grave::GraveKiller;
-use crate::game::{attack_power::DefensePower, chat::ChatMessageVariant};
-use crate::game::phase::PhaseType;
-use crate::game::abilities_component::ability_id::AbilityID;
-use crate::game::player::PlayerReference;
-
-use crate::game::visit::{Visit, VisitTag};
-
-use crate::game::Game;
-use super::{common_role, BooleanSelection, ControllerID, ControllerParametersMap, GetClientAbilityState, Role, RoleState, RoleStateTrait};
+use crate::game::prelude::*;
+use super::common_role;
 
 #[derive(Default, Clone, Debug)]
 pub struct Engineer {
@@ -179,11 +166,8 @@ impl RoleStateTrait for Engineer {
         )
     }
     fn on_phase_start(self, game: &mut Game, actor_ref: PlayerReference, phase: PhaseType){
-        match phase {
-            PhaseType::Night => {
-                actor_ref.add_private_chat_message(game, ChatMessageVariant::TrapState { state: self.trap.state() });
-            }
-            _ => {}
+        if phase == PhaseType::Night {
+            actor_ref.add_private_chat_message(game, ChatMessageVariant::TrapState { state: self.trap.state() });
         }
     }
 

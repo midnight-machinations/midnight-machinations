@@ -1,19 +1,5 @@
 use serde::Serialize;
-use crate::game::controllers::AvailableTwoPlayerOptionSelection;
-use crate::game::event::on_midnight::{OnMidnightFold, OnMidnightPriority};
-use crate::game::abilities_component::ability_id::AbilityID;
-use crate::game::attack_power::DefensePower;
-use crate::game::phase::PhaseType;
-use crate::game::player::PlayerReference;
-use crate::game::components::possession::Possession;
-use crate::game::visit::Visit;
-use crate::game::Game;
-use super::{
-    common_role,
-    ControllerID,
-    ControllerParametersMap, GetClientAbilityState,
-    Role, RoleStateTrait
-};
+use crate::game::prelude::*;
 
 
 #[derive(Clone, Debug, Default)]

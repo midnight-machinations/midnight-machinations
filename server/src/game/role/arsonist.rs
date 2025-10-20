@@ -1,22 +1,6 @@
 use serde::Serialize;
-
-use crate::game::abilities_component::ability_id::AbilityID;
-use crate::game::components::night_visits::Visits;
-use crate::game::controllers::AvailableBooleanSelection;
-use crate::game::event::on_ability_creation::{OnAbilityCreation, OnAbilityCreationFold, OnAbilityCreationPriority};
-use crate::game::event::on_ability_deletion::{OnAbilityDeletion, OnAbilityDeletionPriority};
-use crate::game::event::on_midnight::{OnMidnightFold, OnMidnightPriority};
-use crate::game::attack_power::AttackPower;
-use crate::game::components::tags::{TagSetID, Tags};
-use crate::game::components::graves::grave::GraveKiller;
-use crate::game::attack_power::DefensePower;
-use crate::game::player::PlayerReference;
-
-use crate::game::visit::Visit;
-
+use crate::game::prelude::*;
 use crate::game::Game;
-use super::{ControllerID, ControllerParametersMap, Role, RoleStateTrait};
-
 
 #[derive(Clone, Debug, Serialize, Default)]
 pub struct Arsonist;

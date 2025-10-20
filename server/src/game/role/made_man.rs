@@ -1,16 +1,10 @@
 use serde::Serialize;
-
 use crate::game::attack_power::DefensePower;
-
-
 use super::RoleStateTrait;
 
 
 #[derive(Debug, Clone, Serialize, Default)]
 pub struct Goon;
-
-pub type ClientRoleState = Goon;
-
 
 pub(super) const MAXIMUM_COUNT: Option<u8> = None;
 pub(super) const DEFENSE: DefensePower = DefensePower::None;

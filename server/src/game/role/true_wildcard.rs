@@ -20,12 +20,9 @@ pub(super) const DEFENSE: DefensePower = DefensePower::None;
 impl RoleStateTrait for TrueWildcard {
     type ClientAbilityState = TrueWildcard;
     fn on_phase_start(self, game: &mut Game, actor_ref: PlayerReference, phase: PhaseType) {
-        match phase {
-            PhaseType::Dusk => {
-                if actor_ref.ability_deactivated_from_death(game) {return;}
-                self.become_role(game, actor_ref);
-            },
-            _ => {}
+        if phase == PhaseType::Dusk {
+            if actor_ref.ability_deactivated_from_death(game) {return;}
+            self.become_role(game, actor_ref);
         }
     }
     fn controller_parameters_map(self, game: &Game, actor_ref: PlayerReference) -> super::ControllerParametersMap {

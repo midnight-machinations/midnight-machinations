@@ -1,14 +1,7 @@
 use rand::seq::IndexedRandom;
 use serde::Serialize;
-use crate::game::attack_power::DefensePower;
-use crate::game::event::on_ability_creation::OnAbilityCreationPriority;
-use crate::game::event::on_ability_deletion::OnAbilityDeletionPriority;
-use crate::game::player::PlayerReference;
-use crate::game::abilities_component::ability_id::AbilityID;
-use crate::game::role_list::RoleSet;
-use crate::game::Game;
+use crate::game::prelude::*;
 use crate::vec_set::VecSet;
-use super::{Role, RoleStateTrait};
 
 #[derive(Debug, Clone, Default, Serialize)]
 pub struct Maverick{

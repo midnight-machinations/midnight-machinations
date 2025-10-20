@@ -1,26 +1,5 @@
 use serde::Serialize;
-use crate::game::components::detained::Detained;
-use crate::game::components::night_visits::Visits;
-use crate::game::controllers::{ControllerID, PlayerListSelection};
-use crate::game::attack_power::AttackPower;
-use crate::game::chat::ChatMessageVariant;
-use crate::game::event::on_midnight::{OnMidnightFold, OnMidnightPriority};
-use crate::game::phase::PhaseType;
-use crate::game::role_list::RoleSet;
-use crate::game::role_list_generation::criteria::{GenerationCriterion, GenerationCriterionResult};
-use crate::game::role_list_generation::PartialOutlineListAssignmentNode;
-use crate::game::settings::Settings;
-use crate::game::{attack_power::DefensePower, player::PlayerReference};
-use crate::game::abilities_component::ability_id::AbilityID;
-
-use crate::game::visit::Visit;
-
-use crate::game::Game;
-use super::{
-    common_role, ControllerParametersMap, Role,
-    RoleStateTrait
-};
-
+use crate::game::{prelude::*, role_list_generation::*};
 
 #[derive(Clone, Debug, Serialize)]
 #[serde(rename_all = "camelCase")]

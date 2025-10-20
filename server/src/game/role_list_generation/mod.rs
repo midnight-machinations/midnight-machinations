@@ -2,9 +2,12 @@ use std::collections::VecDeque;
 
 use rand::{rngs::SmallRng, seq::SliceRandom};
 
-use crate::{game::{components::{insider_group::InsiderGroupID, win_condition::WinCondition}, player::PlayerReference, role::Role, role_list::RoleOutlineOption, role_list_generation::criteria::{GenerationCriterion, GenerationCriterionResult}, role_outline_reference::RoleOutlineReference, settings::Settings}, vec_set::VecSet};
-
+use crate::{game::{prelude::*, role_list::RoleOutlineOption, role_outline_reference::RoleOutlineReference}, vec_set::VecSet};
 pub mod criteria;
+pub use criteria::{
+    GenerationCriterion,
+    GenerationCriterionResult
+};
 
 pub struct RoleListGenerator {
     rng: SmallRng,

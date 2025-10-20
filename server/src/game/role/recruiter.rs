@@ -1,26 +1,7 @@
 
 use serde::Serialize;
+use crate::game::{prelude::*, role::godfather::Godfather, role_list_generation::*};
 
-use crate::game::components::night_visits::Visits;
-use crate::game::controllers::AvailableIntegerSelection;
-use crate::game::attack_power::{AttackPower, DefensePower};
-use crate::game::components::mafia_recruits::MafiaRecruits;
-use crate::game::event::on_midnight::{OnMidnightFold, OnMidnightPriority};
-use crate::game::components::graves::grave::GraveKiller;
-use crate::game::player::PlayerReference;
-use crate::game::role_list::RoleSet;
-use crate::game::role_list_generation::criteria::{GenerationCriterion, GenerationCriterionResult};
-use crate::game::role_list_generation::PartialOutlineListAssignmentNode;
-use crate::game::settings::Settings;
-use crate::game::visit::Visit;
-use crate::game::abilities_component::ability_id::AbilityID;
-
-use crate::game::Game;
-use super::godfather::Godfather;
-use super::{
-    ControllerID,
-    ControllerParametersMap, IntegerSelection, Role, RoleStateTrait
-};
 
 #[derive(Debug, Clone, Serialize)]
 #[serde(rename_all = "camelCase")]
@@ -56,20 +37,16 @@ impl RoleStateTrait for Recruiter {
             if game.day_number() <= 1 {return}
         } else if self.recruits_remaining == 0 {return}
 
-        match priority {
-            OnMidnightPriority::Kill => {
-                if
-                    let Some(target_ref) = Visits::default_target(midnight_variables, actor_ref, Role::Recruiter) &&
-                    Recruiter::night_ability(self.clone(), game, midnight_variables, actor_ref, target_ref)
-                {
-                    if choose_attack {
-                        actor_ref.edit_role_ability_helper(game, Recruiter{recruits_remaining: self.recruits_remaining.saturating_add(1)})
-                    }else{
-                        actor_ref.edit_role_ability_helper(game, Recruiter{recruits_remaining: self.recruits_remaining.saturating_sub(1)});
-                    }
-                }
-            },
-            _ => {}
+        if 
+            priority == OnMidnightPriority::Kill &&
+            let Some(target_ref) = Visits::default_target(midnight_variables, actor_ref, Role::Recruiter) &&
+            Recruiter::night_ability(self.clone(), game, midnight_variables, actor_ref, target_ref)
+        {
+            if choose_attack {
+                actor_ref.edit_role_ability_helper(game, Recruiter{recruits_remaining: self.recruits_remaining.saturating_add(1)})
+            }else{
+                actor_ref.edit_role_ability_helper(game, Recruiter{recruits_remaining: self.recruits_remaining.saturating_sub(1)});
+            }
         }
     }
     fn controller_parameters_map(self, game: &Game, actor_ref: PlayerReference) -> super::ControllerParametersMap {

@@ -1,18 +1,6 @@
 use serde::{Deserialize, Serialize};
-use crate::game::components::night_visits::{NightVisitsIterator as _, Visits};
-use crate::game::controllers::AvailablePlayerListSelection;
-use crate::game::chat::ChatMessageVariant;
-use crate::game::event::on_midnight::{OnMidnightFold, OnMidnightPriority};
-use crate::game::game_conclusion::GameConclusion;
-use crate::game::phase::PhaseType;
-use crate::game::abilities_component::ability_id::AbilityID;
-use crate::game::components::win_condition::WinCondition;
-use crate::game::attack_power::{AttackPower, DefensePower};
-use crate::game::player::PlayerReference;
-use crate::game::visit::Visit;
-use crate::game::Game;
+use crate::game::prelude::*;
 use crate::vec_set::VecSet;
-use super::{ControllerID, ControllerParametersMap, Role, RoleStateTrait};
 
 #[derive(Clone, Debug, Default, Serialize)]
 #[serde(rename_all = "camelCase")]
@@ -142,13 +130,10 @@ impl RoleStateTrait for SantaClaus {
         }
     }
     fn on_phase_start(self, game: &mut Game, actor_ref: PlayerReference, phase: PhaseType){
-        match phase {
-            PhaseType::Night => {
-                actor_ref.add_private_chat_message(game,
-                    ChatMessageVariant::NextSantaAbility { ability: self.get_next_santa_ability() }
-                );
-            },
-            _ => {}
+        if phase == PhaseType::Night {
+            actor_ref.add_private_chat_message(game,
+                ChatMessageVariant::NextSantaAbility { ability: self.get_next_santa_ability() }
+            );
         }
     }
     fn default_win_condition(self) -> WinCondition where super::RoleState: From<Self> {

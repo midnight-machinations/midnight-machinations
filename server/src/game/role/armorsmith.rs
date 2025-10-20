@@ -1,19 +1,7 @@
 use rand::seq::IndexedRandom;
 use serde::Serialize;
-
-use crate::game::abilities_component::ability_id::AbilityID;
-use crate::game::components::night_visits::Visits;
-use crate::game::controllers::ControllerParametersMap;
-use crate::game::components::fragile_vest::FragileVests;
-use crate::game::components::player_component::PlayerComponent;
-use crate::game::event::on_midnight::{OnMidnightFold, OnMidnightPriority};
-use crate::game::attack_power::DefensePower;
-use crate::game::phase::PhaseType;
-use crate::game::player::PlayerReference;
-
-use crate::game::Game;
+use crate::game::prelude::*;
 use crate::vec_set;
-use super::{common_role, ControllerID, GetClientAbilityState, Role, RoleStateTrait};
 
 #[derive(Clone, Debug)]
 pub struct Armorsmith {
@@ -59,7 +47,7 @@ impl RoleStateTrait for Armorsmith {
         }else { 
             visitors.choose(&mut game.rng).copied() 
         }{
-            PlayerComponent::<FragileVests>::add_defense_item_midnight(
+            FragileVestsComponent::add_defense_item_midnight(
                 game,
                 midnight_variables,
                 player,
@@ -83,7 +71,7 @@ impl RoleStateTrait for Armorsmith {
             .add_grayed_out_condition(self.open_shops_remaining == 0)
             .build_map()
     }
-    fn convert_selection_to_visits(self, game: &Game, actor_ref: PlayerReference) -> Vec<crate::game::visit::Visit> {
+    fn convert_selection_to_visits(self, game: &Game, actor_ref: PlayerReference) -> Vec<Visit> {
         common_role::convert_controller_selection_to_visits(
             game,
             actor_ref,

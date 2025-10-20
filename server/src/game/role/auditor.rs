@@ -1,18 +1,10 @@
 use std::iter::once;
-use crate::game::abilities_component::ability_id::AbilityID;
-use serde::{Deserialize, Serialize};
-use crate::game::components::confused::Confused;
+use crate::game::prelude::*;
 use crate::game::role_outline_reference::RoleOutlineReference;
-use crate::game::controllers::*;
-use crate::game::{attack_power::DefensePower, chat::ChatMessageVariant};
-use crate::game::player::PlayerReference;
-use crate::game::visit::Visit;
-use crate::game::Game;
 use crate::vec_map::VecMap;
 use crate::vec_set::VecSet;
 use rand::prelude::SliceRandom;
-use super::{common_role, Role, RoleStateTrait};
-use crate::game::event::on_midnight::{OnMidnightFold, OnMidnightPriority};
+use serde::{Deserialize, Serialize};
 
 
 #[derive(Clone, Debug, Serialize, Default)]

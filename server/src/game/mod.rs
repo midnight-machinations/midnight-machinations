@@ -5,7 +5,6 @@ pub mod phase;
 pub mod player;
 pub mod chat;
 pub mod role;
-pub mod visit;
 pub mod verdict;
 pub mod role_list;
 pub mod role_list_generation;
@@ -24,6 +23,7 @@ pub mod room_state;
 pub mod new_game;
 pub mod abilities_component;
 pub mod abilities;
+pub mod prelude;
 
 use std::collections::VecDeque;
 use std::time::Instant;

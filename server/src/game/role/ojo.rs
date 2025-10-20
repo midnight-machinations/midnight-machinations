@@ -1,22 +1,7 @@
 use rand::seq::SliceRandom;
 use serde::Serialize;
-use crate::game::abilities_component::ability_id::AbilityID;
-use crate::game::components::night_visits::{NightVisitsIterator, Visits};
-use crate::game::controllers::ControllerParametersMap;
-use crate::game::attack_power::AttackPower;
-use crate::game::chat::ChatMessageVariant;
-use crate::game::components::graves::grave::GraveKiller;
-use crate::game::event::on_ability_creation::{OnAbilityCreation, OnAbilityCreationFold, OnAbilityCreationPriority};
-use crate::game::event::on_midnight::{OnMidnightFold, OnMidnightPriority};
-use crate::game::event::on_whisper::{OnWhisper, WhisperFold, WhisperPriority};
-use crate::game::attack_power::DefensePower;
-use crate::game::player::PlayerReference;
-
-use crate::game::role::informant::Informant;
-use crate::game::visit::Visit;
-
-use crate::game::Game;
-use super::{common_role, ControllerID, Role, RoleStateTrait};
+use crate::game::{prelude::*, role::informant::Informant};
+use super::common_role;
 
 
 #[derive(Debug, Clone, Serialize, Default)]

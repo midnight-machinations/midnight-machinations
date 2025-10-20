@@ -1,19 +1,5 @@
 use serde::Serialize;
-
-use crate::game::components::night_visits::Visits;
-use crate::game::controllers::ControllerParametersMap;
-use crate::game::attack_power::AttackPower;
-use crate::game::components::graves::grave::GraveKiller;
-use crate::game::event::on_midnight::{OnMidnightFold, OnMidnightPriority};
-use crate::game::role_list::RoleSet;
-use crate::game::attack_power::DefensePower;
-use crate::game::player::PlayerReference;
-use crate::game::abilities_component::ability_id::AbilityID;
-
-use crate::game::visit::Visit;
-
-use crate::game::Game;
-use super::{common_role, ControllerID, Role, RoleStateTrait};
+use crate::game::prelude::*;
 
 
 #[derive(Debug, Clone, Serialize, Default)]

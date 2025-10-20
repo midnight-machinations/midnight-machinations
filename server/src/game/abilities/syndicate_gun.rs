@@ -1,14 +1,7 @@
-use crate::{game::{
-    abilities_component::{ability::Ability, ability_id::AbilityID, ability_trait::AbilityTrait}, attack_power::AttackPower,
-    components::{
-        detained::Detained, graves::grave::GraveKiller, insider_group::InsiderGroupID, night_visits::{NightVisitsIterator, Visits}, possession::Possession, tags::{TagSetID, Tags}
-    },
-    controllers::*,
-    event::{
-        on_add_insider::OnAddInsider, on_any_death::OnAnyDeath, on_midnight::{OnMidnight, OnMidnightFold, OnMidnightPriority}, on_player_possessed::OnPlayerPossessed, on_player_roleblocked::OnPlayerRoleblocked, on_remove_insider::OnRemoveInsider, on_validated_ability_input_received::OnValidatedControllerInputReceived, on_visit_wardblocked::OnVisitWardblocked
-    },
-    phase::PhaseType, player::PlayerReference, role_list::RoleSet, visit::{Visit, VisitTag}, Game
-}, vec_set};
+use crate::game::abilities_component::ability::Ability;
+use crate::game::abilities_component::ability_trait::AbilityTrait;
+use crate::vec_set;
+use crate::game::prelude::*;
 
 #[derive(Default, Clone, Debug)]
 pub struct SyndicateGun {

@@ -1,10 +1,4 @@
-use crate::game::{
-        abilities_component::{
-            ability::Ability,
-            ability_id::AbilityID,
-            ability_trait::AbilityTrait
-        }, components::{night_visits::Visits, possession::Possession}, controllers::ControllerID, event::{on_conceal_role::OnConcealRole, on_midnight::{OnMidnightFold, OnMidnightPriority}, on_player_possessed::OnPlayerPossessed, on_player_roleblocked::OnPlayerRoleblocked, on_visit_wardblocked::OnVisitWardblocked}, player::PlayerReference, role::RoleState, visit::VisitTag, Game
-    };
+use crate::game::{abilities_component::{ability::Ability, ability_trait::AbilityTrait}, prelude::*};
 
 #[derive(Clone, Debug)]
 pub struct RoleAbility(pub RoleState);

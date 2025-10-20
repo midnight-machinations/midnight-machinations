@@ -1,17 +1,6 @@
 use serde::Serialize;
-
-use crate::game::components::confused::Confused;
-use crate::game::components::night_visits::{NightVisitsIterator as _, Visits};
-use crate::game::event::on_midnight::{OnMidnightFold, OnMidnightPriority};
-use crate::game::{attack_power::DefensePower, chat::ChatMessageVariant};
-use crate::game::player::PlayerReference;
-
-use crate::game::visit::Visit;
-use crate::game::Game;
-
-use crate::game::abilities_component::ability_id::AbilityID;
+use crate::game::prelude::*;
 use super::detective::Detective;
-use super::{ControllerID, ControllerParametersMap, Role, RoleStateTrait};
 
 
 pub(super) const MAXIMUM_COUNT: Option<u8> = None;

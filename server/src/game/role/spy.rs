@@ -1,18 +1,6 @@
 use rand::seq::SliceRandom;
 use serde::Serialize;
-
-use crate::game::abilities_component::ability_id::AbilityID;
-use crate::game::components::night_visits::{NightVisitsIterator, Visits};
-use crate::game::event::on_midnight::OnMidnightFold;
-use crate::game::{attack_power::DefensePower, event::on_midnight::OnMidnightPriority};
-use crate::game::chat::ChatMessageVariant;
-use crate::game::components::insider_group::InsiderGroupID;
-use crate::game::player::PlayerReference;
-
-use crate::game::visit::{Visit, VisitTag};
-use crate::game::Game;
-
-use super::{ControllerID, ControllerParametersMap, Role, RoleStateTrait};
+use crate::game::prelude::*;
 
 #[derive(Clone, Debug, Serialize, Default)]
 pub struct Spy;

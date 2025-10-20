@@ -1,18 +1,5 @@
-
 use serde::Serialize;
-
-use crate::game::components::blocked::BlockedComponent;
-use crate::game::components::night_visits::{NightVisitsIterator, Visits};
-use crate::game::controllers::*;
-use crate::game::components::graves::grave::GraveInformation;
-use crate::game::components::graves::grave_reference::GraveReference;
-use crate::game::event::on_midnight::{OnMidnightFold, OnMidnightPriority};
-use crate::game::{attack_power::DefensePower, player::PlayerReference};
-use crate::game::visit::{Visit, VisitTag};
-use crate::game::abilities_component::ability_id::AbilityID;
-use crate::game::Game;
-use super::{InsiderGroupID, Role, RoleStateTrait};
-
+use crate::game::prelude::*;
 
 #[derive(Clone, Debug, Serialize)]
 #[serde(rename_all = "camelCase")]

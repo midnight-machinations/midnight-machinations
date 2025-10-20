@@ -1,14 +1,6 @@
 
 use serde::Serialize;
-use crate::game::attack_power::DefensePower;
-use crate::game::components::blocked::BlockedComponent;
-use crate::game::event::on_ability_deletion::{OnAbilityDeletion, OnAbilityDeletionPriority};
-use crate::game::event::on_whisper::{OnWhisper, WhisperFold, WhisperPriority};
-use crate::game::components::enfranchise::EnfranchiseComponent;
-use crate::game::phase::PhaseType;
-use crate::game::player::PlayerReference;
-use crate::game::Game;
-use super::{ControllerID, ControllerParametersMap, GetClientAbilityState, Role, RoleStateTrait};
+use crate::game::prelude::*;
 
 #[derive(Clone, Debug, Default)]
 pub struct Nepotist{

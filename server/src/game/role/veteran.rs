@@ -1,17 +1,5 @@
 use serde::Serialize;
-use crate::game::abilities_component::ability_id::AbilityID;
-
-use crate::game::controllers::{AvailableBooleanSelection, ControllerParametersMap};
-use crate::game::attack_power::AttackPower;
-use crate::game::components::graves::grave::GraveKiller;
-use crate::game::event::on_midnight::{OnMidnightFold, OnMidnightPriority};
-use crate::game::attack_power::DefensePower;
-use crate::game::phase::PhaseType;
-use crate::game::player::PlayerReference;
-
-use crate::game::Game;
-
-use super::{BooleanSelection, ControllerID, GetClientAbilityState, Role, RoleStateTrait};
+use crate::game::prelude::*;
 
 #[derive(Debug, Clone)]
 pub struct Veteran { 

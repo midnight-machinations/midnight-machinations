@@ -1,21 +1,6 @@
-use serde::Serialize;
-use crate::game::components::night_visits::Visits;
-use crate::game::controllers::{AvailableIntegerSelection, IntegerSelection};
-use crate::game::chat::ChatMessageVariant;
-use crate::game::components::graves::grave::GraveKiller;
-use crate::game::event::on_ability_creation::{OnAbilityCreation, OnAbilityCreationFold, OnAbilityCreationPriority};
-use crate::game::event::on_midnight::{OnMidnightFold, OnMidnightPriority};
-use crate::game::attack_power::{AttackPower, DefensePower};
-use crate::game::event::on_role_switch::OnRoleSwitch;
 use rand::seq::SliceRandom;
-use crate::game::player::PlayerReference;
-use crate::game::abilities_component::ability_id::AbilityID;
-
-use crate::game::visit::{Visit, VisitTag};
-use crate::game::Game;
-use crate::vec_set::VecSet;
-
-use super::{ControllerID, ControllerParametersMap, Role, RoleStateTrait};
+use serde::Serialize;
+use crate::{game::prelude::*, vec_set::VecSet};
 
 
 pub(super) const MAXIMUM_COUNT: Option<u8> = None;

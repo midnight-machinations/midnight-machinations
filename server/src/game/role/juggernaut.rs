@@ -1,18 +1,6 @@
 use rand::seq::IndexedRandom;
 use serde::Serialize;
-use crate::game::attack_power::{AttackPower, DefensePower};
-use crate::game::components::graves::grave::GraveKiller;
-use crate::game::components::night_visits::Visits;
-use crate::game::event::on_ability_creation::OnAbilityCreationPriority;
-use crate::game::event::on_ability_deletion::OnAbilityDeletionPriority;
-use crate::game::event::on_midnight::{OnMidnightFold, OnMidnightPriority};
-use crate::game::player::PlayerReference;
-use crate::game::abilities_component::ability_id::AbilityID;
-use crate::game::role_list::RoleSet;
-use crate::game::visit::Visit;
-use crate::game::Game;
-use crate::vec_set::VecSet;
-use super::{ControllerID, ControllerParametersMap, Role, RoleStateTrait};
+use crate::{game::prelude::*, vec_set::VecSet};
 
 #[derive(Debug, Clone, Default, Serialize)]
 pub struct Juggernaut{

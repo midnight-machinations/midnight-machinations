@@ -1,7 +1,7 @@
-use crate::{game::{attack_power::AttackPower, components::{attack::night_attack::NightAttack, graves::grave::GraveKiller, night_visits::{NightVisitsIterator as _, Visits}}, event::on_midnight::OnMidnightFold, player::PlayerReference, visit::Visit, Game}, vec_set::VecSet};
-
 pub mod normal_attack;
 pub mod night_attack;
+
+use crate::{game::{components::attack::night_attack::NightAttack, prelude::*}, vec_set::VecSet};
 
 impl PlayerReference{
     #[expect(clippy::too_many_arguments, reason="this function is goated tho")]

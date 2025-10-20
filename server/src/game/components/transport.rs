@@ -1,14 +1,5 @@
-use crate::game::visit::VisitTag;
-use crate::game::{
-    chat::ChatMessageVariant,
-    event::on_midnight::OnMidnightFold,
-    player::PlayerReference,
-    role::Role,
-    visit::Visit,
-};
 use crate::vec_map::VecMap;
-
-use super::night_visits::Visits;
+use crate::game::prelude::*;
 
 
 #[derive(PartialOrd, Ord, PartialEq, Eq)]

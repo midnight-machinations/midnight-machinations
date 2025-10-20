@@ -1,7 +1,4 @@
-use crate::game::{ 
-    abilities_component::Abilities, components::{blocked::BlockedComponent, mafia::Mafia}, event::EventData, visit::Visit,
-};
-
+use crate::game::{event::EventData, prelude::*};
 use super::on_midnight::OnMidnightFold;
 
 #[must_use = "Event must be invoked"]

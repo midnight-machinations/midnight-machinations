@@ -1,13 +1,6 @@
 use serde::{Serialize, Deserialize};
-
-use crate::game::attack_power::DefensePower;
-use crate::game::phase::PhaseType;
-use crate::game::player::PlayerReference;
-use crate::game::role_list::RoleSet;
-use crate::game::Game;
-
+use crate::game::prelude::*;
 use super::wild_card::Wildcard;
-use super::{ControllerID, ControllerParametersMap, Role, RoleStateTrait};
 
 #[derive(Clone, Debug, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
@@ -20,12 +13,9 @@ pub(super) const DEFENSE: DefensePower = DefensePower::None;
 impl RoleStateTrait for FiendsWildcard {
     type ClientAbilityState = FiendsWildcard;
     fn on_phase_start(self, game: &mut Game, actor_ref: PlayerReference, phase: PhaseType) {
-        match phase {
-            PhaseType::Dusk => {
-                if actor_ref.ability_deactivated_from_death(game) {return;}
-                Wildcard::become_role(game, actor_ref, Role::FiendsWildcard);
-            },
-            _ => {}
+        if phase == PhaseType::Dusk {
+            if actor_ref.ability_deactivated_from_death(game) {return;}
+            Wildcard::become_role(game, actor_ref, Role::FiendsWildcard);
         }
     }
     fn controller_parameters_map(self, game: &Game, actor_ref: PlayerReference) -> super::ControllerParametersMap {

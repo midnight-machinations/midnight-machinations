@@ -1,22 +1,7 @@
-#![allow(clippy::single_match, reason = "May add more cases for more priorities later")]
-
-use crate::game::abilities_component::ability_id::AbilityID;
-use crate::game::components::graves::grave_reference::GraveReference;
-use crate::game::event::on_ability_creation::{OnAbilityCreation, OnAbilityCreationFold, OnAbilityCreationPriority};
-use crate::game::event::on_ability_deletion::{OnAbilityDeletion, OnAbilityDeletionPriority};
-use crate::game::event::on_player_possessed::OnPlayerPossessed;
-use crate::game::event::on_role_switch::OnRoleSwitch;
+// #![allow(clippy::single_match, reason = "May add more cases for more priorities later")]
 use crate::game::role_list_generation::criteria::GenerationCriterion;
 use crate::vec_set::{vec_set, VecSet};
-use crate::game::player::PlayerReference;
-use crate::game::visit::Visit;
-use crate::game::Game;
-use crate::game::Settings;
-use crate::game::ModifierID;
-use crate::game::modifiers::ModifierState;
-use crate::game::chat::PlayerChatGroupMap;
-use crate::game::phase::PhaseType;
-use crate::game::attack_power::DefensePower;
+use crate::game::prelude::*;
 
 use serde::{Serialize, Deserialize};
 

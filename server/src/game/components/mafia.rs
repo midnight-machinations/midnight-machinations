@@ -1,10 +1,8 @@
 use rand::seq::IndexedRandom;
 
-use crate::{game::{
-    abilities::syndicate_gun::SyndicateGun, attack_power::{AttackPower, DefensePower}, chat::{ChatGroup, ChatMessageVariant}, components::{graves::grave::GraveKiller, night_visits::NightVisitsIterator, possession::Possession}, controllers::{AvailablePlayerListSelection, ControllerParametersMap}, event::{
-        on_add_insider::OnAddInsider, on_any_death::OnAnyDeath, on_controller_selection_changed::OnControllerSelectionChanged, on_game_start::OnGameStart, on_midnight::{OnMidnight, OnMidnightFold, OnMidnightPriority}, on_player_possessed::OnPlayerPossessed, on_player_roleblocked::OnPlayerRoleblocked, on_remove_insider::OnRemoveInsider, on_role_switch::OnRoleSwitch, on_visit_wardblocked::OnVisitWardblocked
-    }, phase::PhaseType, player::PlayerReference, role::RoleState, role_list::RoleSet, visit::{Visit, VisitTag}, ControllerID, Game, PlayerListSelection
-}, vec_set::{vec_set, VecSet}};
+use crate::game::abilities::syndicate_gun::SyndicateGun;
+use crate::game::prelude::*;
+use crate::vec_set::{vec_set, VecSet};
 
 use super::{
     detained::Detained, fragile_vest::FragileVests, insider_group::InsiderGroupID, night_visits::Visits,

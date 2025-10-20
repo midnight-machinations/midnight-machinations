@@ -1,19 +1,6 @@
 use rand::seq::SliceRandom;
 use serde::Serialize;
-use crate::game::attack_power::{AttackPower, DefensePower};
-use crate::game::chat::ChatMessageVariant;
-use crate::game::components::night_visits::{NightVisitsIterator, Visits};
-use crate::game::event::on_ability_creation::{OnAbilityCreation, OnAbilityCreationFold, OnAbilityCreationPriority};
-use crate::game::event::on_ability_deletion::{OnAbilityDeletion, OnAbilityDeletionPriority};
-use crate::game::event::on_midnight::{OnMidnightFold, OnMidnightPriority};
-use crate::game::components::tags::{TagSetID, Tags};
-use crate::game::components::graves::grave::GraveKiller;
-use crate::game::player::PlayerReference;
-use crate::game::visit::Visit;
-use crate::game::phase::PhaseType;
-use crate::game::Game;
-use crate::game::abilities_component::ability_id::AbilityID;
-use super::{ControllerID, ControllerParametersMap, PlayerListSelection, GetClientAbilityState, Role, RoleStateTrait};
+use crate::game::prelude::*;
 
 
 #[derive(Clone, Debug, Default)]
@@ -139,23 +126,20 @@ impl RoleStateTrait for Werewolf {
     }
 
     fn on_phase_start(self, game: &mut Game, actor_ref: PlayerReference, phase: PhaseType){
-        match phase {
-            PhaseType::Night => {
+        if phase == PhaseType::Night {
 
-                //Mark chosen player as tracked on phase start: night
-                if 
-                    let Some(PlayerListSelection(target)) = ControllerID::role(actor_ref, Role::Werewolf, 1)
-                        .get_player_list_selection(game) &&
-                    let Some(target) = target.first()
-                {
-                        self.track_player(game, actor_ref, *target);
-                };
+            //Mark chosen player as tracked on phase start: night
+            if 
+                let Some(PlayerListSelection(target)) = ControllerID::role(actor_ref, Role::Werewolf, 1)
+                    .get_player_list_selection(game) &&
+                let Some(target) = target.first()
+            {
+                    self.track_player(game, actor_ref, *target);
+            };
 
-                for player in Tags::tagged(game, TagSetID::WerewolfTracked(actor_ref)).iter() {
-                    player.add_private_chat_message(game, ChatMessageVariant::WerewolfTracked);
-                }
-            },
-            _ => {}
+            for player in Tags::tagged(game, TagSetID::WerewolfTracked(actor_ref)).iter() {
+                player.add_private_chat_message(game, ChatMessageVariant::WerewolfTracked);
+            }
         }
     }
 

@@ -1,8 +1,8 @@
+pub mod visit;
 use std::borrow::Borrow;
+use crate::game::prelude::*;
+use visit::*;
 
-use crate::game::{
-    components::insider_group::InsiderGroupID, event::on_midnight::OnMidnightFold, game_conclusion::GameConclusion, player::PlayerReference, role::Role, visit::{Visit, VisitTag}, Game
-};
 
 #[derive(Default)]
 pub struct Visits;

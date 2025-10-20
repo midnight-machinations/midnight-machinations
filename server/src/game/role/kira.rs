@@ -1,18 +1,7 @@
 use kira_selection::{AvailableKiraSelection, KiraSelection};
 use serde::{Serialize, Deserialize};
-
-use crate::game::attack_power::AttackPower;
-use crate::game::event::on_midnight::{OnMidnightFold, OnMidnightPriority};
-use crate::game::role_list::RoleSet;
-use crate::game::{attack_power::DefensePower, chat::ChatMessageVariant};
-use crate::game::components::graves::grave::GraveKiller;
-use crate::game::player::PlayerReference;
-
-use crate::game::abilities_component::ability_id::AbilityID;
-use crate::game::Game;
+use crate::game::prelude::*;
 use crate::vec_map::VecMap;
-use crate::game::controllers::*;
-use super::{Role, RoleStateTrait};
 
 #[derive(Clone, Debug, Serialize, Default)]
 pub struct Kira;

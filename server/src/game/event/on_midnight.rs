@@ -1,12 +1,5 @@
-use crate::{event_priority, game::{
-    abilities_component::Abilities, attack_power::DefensePower, chat::ChatMessageVariant,
-    components::{
-        detained::Detained, fragile_vest::FragileVests, graves::grave::GraveKiller, guard::Guard,
-        mafia::Mafia, mafia_recruits::MafiaRecruits, player_component::PlayerComponent, poison::Poison,
-        puppeteer_marionette::PuppeteerMarionette,
-    },
-    modifiers::ModifierSettings, player::PlayerReference, role::{Role, RoleState}, visit::Visit, Game
-}};
+use crate::event_priority;
+use crate::game::prelude::*;
 use super::EventData;
 
 ///runs before all players' night actions
@@ -59,7 +52,7 @@ impl EventData for OnMidnight {
             Mafia::on_midnight,
             PlayerReference::on_midnight,
             Abilities::on_midnight,
-            PlayerComponent::<FragileVests>::on_midnight,
+            FragileVestsComponent::on_midnight,
             Guard::on_midnight,
         ]
     }

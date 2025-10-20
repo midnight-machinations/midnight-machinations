@@ -1,15 +1,6 @@
 
 use serde::Serialize;
-use crate::game::components::night_visits::Visits;
-use crate::game::event::on_midnight::{OnMidnightFold, OnMidnightPriority};
-use crate::game::attack_power::DefensePower;
-use crate::game::player::PlayerReference;
-use crate::game::abilities_component::ability_id::AbilityID;
-
-use crate::game::visit::Visit;
-
-use crate::game::Game;
-use super::{ControllerID, ControllerParametersMap, Role, RoleStateTrait};
+use crate::game::prelude::*;
 
 #[derive(Clone, Debug, Serialize)]
 #[serde(rename_all = "camelCase")]
@@ -31,20 +22,15 @@ pub(super) const DEFENSE: DefensePower = DefensePower::None;
 impl RoleStateTrait for Doctor {
     type ClientAbilityState = Self;
     fn on_midnight(self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut OnMidnightFold, priority: OnMidnightPriority) {
-        match priority {
-            OnMidnightPriority::Heal => {
-                let Some(target_ref) = Visits::default_target(midnight_variables, actor_ref, Role::Doctor) else {return};
+        if priority != OnMidnightPriority::Heal {return}
+        let Some(target_ref) = Visits::default_target(midnight_variables, actor_ref, Role::Doctor) else {return};
 
-                actor_ref.guard_player(game, midnight_variables, target_ref);
+        actor_ref.guard_player(game, midnight_variables, target_ref);
 
-                if actor_ref == target_ref{
-                    actor_ref.edit_role_ability_helper(game, Doctor{
-                        self_heals_remaining: self.self_heals_remaining.saturating_sub(1), 
-                    });
-                }
-
-            }
-            _ => {}
+        if actor_ref == target_ref{
+            actor_ref.edit_role_ability_helper(game, Doctor{
+                self_heals_remaining: self.self_heals_remaining.saturating_sub(1), 
+            });
         }
     }
     fn controller_parameters_map(self, game: &Game, actor_ref: PlayerReference) -> ControllerParametersMap {

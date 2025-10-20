@@ -1,12 +1,5 @@
 use serde::Serialize;
-
-use crate::{game::{
-    attack_power::DefensePower, components::{graves::grave::Grave, synopsis::Synopsis, tags::Tag, win_condition::WinCondition}, controllers::*, phase::PhaseState, player::PlayerReference, role::{
-        auditor::AuditorResult, engineer::TrapState, kira::KiraResult, krampus::KrampusAbility,
-        santa_claus::SantaListKind, Role
-    }, role_outline_reference::OutlineIndex, verdict::Verdict, visit::VisitTag
-}, vec_set::VecSet};
-
+use crate::{game::{components::synopsis::Synopsis, prelude::*, role::{auditor::AuditorResult, engineer::TrapState, kira::KiraResult, krampus::KrampusAbility, santa_claus::SantaListKind}, role_outline_reference::OutlineIndex, verdict::Verdict}, vec_set::VecSet};
 
 #[derive(Clone, Debug, Serialize, PartialEq, Eq, PartialOrd, Ord)]
 #[serde(rename_all = "camelCase")]

@@ -1,19 +1,6 @@
 use rand::seq::SliceRandom;
 use serde::Serialize;
-
-use crate::game::abilities_component::ability_id::AbilityID;
-use crate::game::components::aura::Aura;
-use crate::game::components::confused::Confused;
-use crate::game::components::night_visits::Visits;
-use crate::game::event::on_midnight::{OnMidnightFold, OnMidnightPriority};
-use crate::game::visit::Visit;
-use crate::game::{attack_power::DefensePower, chat::ChatMessageVariant};
-use crate::game::game_conclusion::GameConclusion;
-use crate::game::player::PlayerReference;
-
-
-use crate::game::Game;
-use super::{ControllerID, ControllerParametersMap, Role, RoleStateTrait};
+use crate::game::prelude::*;
 
 #[derive(Debug, Clone, Serialize, Default)]
 pub struct Psychic;
