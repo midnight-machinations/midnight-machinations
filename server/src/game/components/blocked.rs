@@ -93,9 +93,8 @@ impl PlayerReference {
             if visit.wardblock_immune {
                 continue;
             }
-            if visit.target != *self {continue;}
-            let event_data = OnVisitWardblocked::new(visit);
-            midnight_variables = (&event_data, midnight_variables).invoke(game).1;
+            if visit.target != *self {continue};
+            midnight_variables = (&OnVisitWardblocked::new(visit), midnight_variables).invoke(game).1;
             out.push(visit.visitor);
         }
         out

@@ -19,10 +19,7 @@ pub trait AbilityTrait {
     fn on_ability_creation(&self, _game: &mut Game, _id: &AbilityID, _event: &OnAbilityCreation, _fold: &mut OnAbilityCreationFold, _priority: OnAbilityCreationPriority) {}
     fn on_ability_deletion(&self, _game: &mut Game, _id: &AbilityID, _event: &OnAbilityDeletion, _fold: &mut (), _priority: OnAbilityDeletionPriority) {}
     fn on_role_switch(&self, _game: &mut Game, _id: &AbilityID, _event: &OnRoleSwitch, _fold: &mut (), _priority: ()) {}
-
-    //midnight events
     fn on_player_possessed(&self, _game: &mut Game, _id: &AbilityID, _event: &OnPlayerPossessed, _fold: &mut OnMidnightFold, _priority: ()) {}
-
     fn on_player_roleblocked(&self, _game: &mut Game, _id: &AbilityID, _event: &OnPlayerRoleblocked, _fold: &mut OnMidnightFold, _priority: ()) {}
     fn on_visit_wardblocked(&self, _game: &mut Game, _id: &AbilityID, _event: &OnVisitWardblocked, _fold: &mut OnMidnightFold, _priority: ()) {}
 

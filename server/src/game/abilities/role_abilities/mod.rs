@@ -50,8 +50,6 @@ impl AbilityTrait for RoleAbility {
     fn on_role_switch(&self, game: &mut Game, id: &AbilityID, event: &crate::game::event::on_role_switch::OnRoleSwitch, fold: &mut (), priority: ()) {
         self.0.clone().on_role_switch(game, id.get_role_actor_expect(), event, fold, priority)
     }
-
-
     fn on_player_possessed(&self, game: &mut Game, id: &AbilityID, event: &OnPlayerPossessed, fold: &mut OnMidnightFold, priority: ()){
         if id.get_role_actor_expect() == event.possessed {
             for id in game.controllers.all_controller_ids() {
@@ -72,8 +70,6 @@ impl AbilityTrait for RoleAbility {
 
         self.0.clone().on_player_possessed(game, id, event, fold, priority);
     }
-
-
     fn on_player_roleblocked(&self, game: &mut Game, id: &AbilityID, event: &OnPlayerRoleblocked, fold: &mut OnMidnightFold, _priority: ()) {
         self.0.clone().on_player_roleblocked(game, fold, id.get_role_actor_expect(), event.player, event.invisible)
     }
