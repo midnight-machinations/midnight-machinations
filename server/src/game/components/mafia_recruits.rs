@@ -3,7 +3,7 @@ use std::collections::HashSet;
 use crate::{game::{
     attack_power::AttackPower, chat::ChatMessageVariant, components::{graves::grave::GraveKiller, insider_group::InsiderGroupID},
     event::{
-        on_add_insider::OnAddInsider, on_midnight::{MidnightVariables, OnMidnight, OnMidnightPriority},
+        on_add_insider::OnAddInsider, on_midnight::{OnMidnightFold, OnMidnight, OnMidnightPriority},
         on_remove_insider::OnRemoveInsider
     }, game_conclusion::GameConclusion, player::PlayerReference, role::Role, role_list::RoleSet, Game
 }, vec_set::VecSet};
@@ -24,7 +24,7 @@ pub struct MafiaRecruits{
     recruits: HashSet<PlayerReference>,
 }
 impl MafiaRecruits{
-    pub fn recruit(game: &mut Game, midnight_variables: &mut MidnightVariables, player: PlayerReference)->bool{
+    pub fn recruit(game: &mut Game, midnight_variables: &mut OnMidnightFold, player: PlayerReference)->bool{
         let mut recruiter_recruits = game.mafia_recruits().clone();
 
         if InsiderGroupID::Mafia.contains_player(game, player) {return false;}
@@ -43,7 +43,7 @@ impl MafiaRecruits{
         true
     }
 
-    pub fn kill_recruits(game: &mut Game, midnight_variables: &mut MidnightVariables){
+    pub fn kill_recruits(game: &mut Game, midnight_variables: &mut OnMidnightFold){
         let marionettes = 
             game.mafia_recruits()
                 .recruits
@@ -54,7 +54,7 @@ impl MafiaRecruits{
 
                 MafiaRecruits::attack_players(game, midnight_variables, marionettes, AttackPower::ProtectionPiercing);
     }
-    fn attack_players(game: &mut Game, midnight_variables: &mut MidnightVariables, players: Vec<PlayerReference>, attack_power: AttackPower){
+    fn attack_players(game: &mut Game, midnight_variables: &mut OnMidnightFold, players: Vec<PlayerReference>, attack_power: AttackPower){
         
         let recruiters: VecSet<_> = PlayerReference::all_players(game)
             .filter(|p|p.role(game)==Role::Recruiter)
@@ -95,7 +95,7 @@ impl MafiaRecruits{
     pub fn on_remove_insider(game: &mut Game, _event: &OnRemoveInsider, _fold: &mut (), _priority: ()){
         Tags::set_viewers(game, super::tags::TagSetID::SyndicateRecruit, &InsiderGroupID::Mafia.players(game).clone());
     }
-    pub fn on_midnight(game: &mut Game, _event: &OnMidnight, midnight_variables: &mut MidnightVariables, priority: OnMidnightPriority){
+    pub fn on_midnight(game: &mut Game, _event: &OnMidnight, midnight_variables: &mut OnMidnightFold, priority: OnMidnightPriority){
         if priority == OnMidnightPriority::Kill{
             MafiaRecruits::kill_recruits(game, midnight_variables);
         }

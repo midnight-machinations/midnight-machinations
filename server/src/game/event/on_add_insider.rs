@@ -2,9 +2,9 @@ use crate::game::{
     abilities_component::Abilities, components::{
         insider_group::InsiderGroupID, mafia::Mafia,
         mafia_recruits::MafiaRecruits, puppeteer_marionette::PuppeteerMarionette
-    }, player::PlayerReference, Game
+    }, player::PlayerReference
 };
-use super::Event;
+use super::EventData;
 
 #[derive(Clone)]
 pub struct OnAddInsider {
@@ -13,15 +13,15 @@ pub struct OnAddInsider {
 }
 
 impl OnAddInsider {
-    pub fn new(player: PlayerReference, group: InsiderGroupID) -> Self {
-        Self {
+    pub fn new(player: PlayerReference, group: InsiderGroupID) -> (Self, ()) {
+        (Self {
             player,
             group
-        }
+        }, ())
     }
 }
 
-impl Event for OnAddInsider {
+impl EventData for OnAddInsider {
     type FoldValue = ();
     type Priority = ();
 
@@ -33,6 +33,4 @@ impl Event for OnAddInsider {
             MafiaRecruits::on_add_insider,
         ]
     }
-    
-    fn initial_fold_value(&self, _game: &Game) -> Self::FoldValue {}
 }

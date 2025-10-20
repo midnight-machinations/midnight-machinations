@@ -1,21 +1,5 @@
 use serde::Serialize;
-use crate::game::components::night_visits::Visits;
-use crate::game::controllers::AvailableBooleanSelection;
-use crate::game::attack_power::{AttackPower, DefensePower};
-use crate::game::chat::{ChatGroup, ChatMessageVariant};
-use crate::game::components::graves::grave::{Grave, GraveDeathCause, GraveInformation, GraveKiller};
-use crate::game::components::graves::grave_reference::GraveReference;
-use crate::game::event::on_ability_creation::{OnAbilityCreation, OnAbilityCreationFold, OnAbilityCreationPriority};
-use crate::game::event::on_midnight::{MidnightVariables, OnMidnightPriority};
-use crate::game::phase::PhaseType;
-use crate::game::player::PlayerReference;
-use crate::game::abilities_component::ability_id::AbilityID;
-
-use crate::game::role::BooleanSelection;
-use crate::game::visit::Visit;
-use crate::game::Game;
-
-use super::{ControllerID, ControllerParametersMap, Role, RoleState, RoleStateTrait};
+use crate::game::prelude::*;
 
 #[derive(PartialEq, Eq, Clone, Debug, Serialize)]
 #[serde(rename_all = "camelCase")]
@@ -56,7 +40,7 @@ impl RoleStateTrait for Martyr {
             state: MartyrState::StillPlaying { bullets: crate::game::role::common_role::standard_charges(game) }
         }
     }
-    fn on_midnight(mut self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut MidnightVariables, priority: OnMidnightPriority) {
+    fn on_midnight(mut self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut OnMidnightFold, priority: OnMidnightPriority) {
         if priority != OnMidnightPriority::Kill {return}
         let MartyrState::StillPlaying { bullets } = self.state else {return};
         if bullets == 0 {return}

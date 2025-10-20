@@ -1,18 +1,10 @@
 use std::iter::once;
-use crate::game::abilities_component::ability_id::AbilityID;
-use serde::{Deserialize, Serialize};
-use crate::game::components::confused::Confused;
+use crate::game::prelude::*;
 use crate::game::role_outline_reference::RoleOutlineReference;
-use crate::game::controllers::*;
-use crate::game::{attack_power::DefensePower, chat::ChatMessageVariant};
-use crate::game::player::PlayerReference;
-use crate::game::visit::Visit;
-use crate::game::Game;
 use crate::vec_map::VecMap;
 use crate::vec_set::VecSet;
 use rand::prelude::SliceRandom;
-use super::{common_role, Role, RoleStateTrait};
-use crate::game::event::on_midnight::{MidnightVariables, OnMidnightPriority};
+use serde::{Deserialize, Serialize};
 
 
 #[derive(Clone, Debug, Serialize, Default)]
@@ -30,7 +22,7 @@ pub(super) const DEFENSE: DefensePower = DefensePower::None;
 
 impl RoleStateTrait for Auditor {
     type ClientAbilityState = Auditor;
-    fn on_midnight(mut self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut MidnightVariables, priority: OnMidnightPriority) {
+    fn on_midnight(mut self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut OnMidnightFold, priority: OnMidnightPriority) {
 
         if priority != OnMidnightPriority::Investigative {return;}
         if actor_ref.night_blocked(midnight_variables) {return;}

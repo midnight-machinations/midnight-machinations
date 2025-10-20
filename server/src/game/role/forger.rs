@@ -1,20 +1,5 @@
-
 use serde::Serialize;
-
-use crate::game::components::night_visits::Visits;
-use crate::game::controllers::{AvailableRoleListSelection, AvailableStringSelection, RoleListSelection};
-use crate::game::attack_power::DefensePower;
-use crate::game::chat::ChatMessageVariant;
-use crate::game::event::on_midnight::{MidnightVariables, OnMidnightPriority};
-use crate::game::phase::PhaseType;
-use crate::game::player::PlayerReference;
-use crate::game::visit::Visit;
-use crate::game::abilities_component::ability_id::AbilityID;
-
-use crate::game::Game;
-use super::{ControllerID, ControllerParametersMap, GetClientAbilityState, Role};
-use super::{RoleState, RoleStateTrait};
-
+use crate::game::prelude::*;
 
 #[derive(Clone, Debug, Serialize)]
 #[serde(rename_all = "camelCase")]
@@ -50,7 +35,7 @@ impl RoleStateTrait for Forger {
             ..Self::default()
         }
     }
-    fn on_midnight(self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut MidnightVariables, priority: OnMidnightPriority) {
+    fn on_midnight(self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut OnMidnightFold, priority: OnMidnightPriority) {
         if self.forges_remaining == 0 {return}
 
         match priority {

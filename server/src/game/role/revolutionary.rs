@@ -1,20 +1,7 @@
 
 use rand::seq::IndexedRandom;
 use serde::Serialize;
-use crate::game::abilities::role_abilities::RoleAbility;
-use crate::game::abilities_component::ability::Ability;
-use crate::game::attack_power::DefensePower;
-use crate::game::chat::{ChatGroup, ChatMessageVariant};
-use crate::game::components::tags::{TagSetID, Tags};
-use crate::game::event::on_ability_creation::{OnAbilityCreation, OnAbilityCreationFold, OnAbilityCreationPriority};
-use crate::game::event::on_ability_deletion::{OnAbilityDeletion, OnAbilityDeletionPriority};
-use crate::game::phase::{PhaseState, PhaseType};
-use crate::game::player::PlayerReference;
-use crate::game::role::RoleState;
-use crate::game::role_list::RoleSet;
-use crate::game::Game;
-use super::jester::Jester;
-use super::{GetClientAbilityState, Role, RoleStateTrait};
+use crate::game::{abilities::role_abilities::RoleAbility, abilities_component::ability::Ability, prelude::*, role::jester::Jester};
 
 
 #[derive(Clone, Debug, Default)]
@@ -56,14 +43,12 @@ impl RoleStateTrait for Revolutionary {
             return;
         }
 
-        match *game.current_phase() {
-            PhaseState::FinalWords { player_on_trial } => {
-                if Some(player_on_trial) == self.target.get_target() {
-                    game.add_message_to_chat_group(ChatGroup::All, ChatMessageVariant::RevolutionaryWon);
-                    actor_ref.edit_role_ability_helper(game, RoleState::Revolutionary(Revolutionary { target: RevolutionaryTarget::Won }));
-                }
-            }
-            _=>{}
+        if 
+            let PhaseState::FinalWords { player_on_trial } = *game.current_phase()
+            && Some(player_on_trial) == self.target.get_target()
+        {
+            game.add_message_to_chat_group(ChatGroup::All, ChatMessageVariant::RevolutionaryWon);
+            actor_ref.edit_role_ability_helper(game, RoleState::Revolutionary(Revolutionary { target: RevolutionaryTarget::Won }));
         }
     }
     fn on_ability_creation(self, game: &mut Game, actor_ref: PlayerReference, event: &OnAbilityCreation, fold: &mut OnAbilityCreationFold, priority: OnAbilityCreationPriority){

@@ -1,15 +1,20 @@
 use crate::game::{
-    components::ascend::Ascend, controllers::Controllers, Game
+    components::ascend::Ascend, controllers::Controllers, event::EventData,
 };
 
 pub struct OnTick;
 
 impl OnTick{
-    pub fn new()->Self{
-        Self{}
+    pub fn new()->(Self, ()){
+        (Self{}, ())
     }
-    pub fn invoke(&self, game: &mut Game){
-        Controllers::on_tick(game);
-        Ascend::on_tick(game);
-    }
+}
+impl EventData for OnTick{
+    type FoldValue = ();
+    type Priority = ();
+
+    fn listeners() -> Vec<super::EventListenerFunction<Self>> {vec![
+        Controllers::on_tick,
+        Ascend::on_tick
+    ]}
 }

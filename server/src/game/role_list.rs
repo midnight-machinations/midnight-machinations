@@ -274,7 +274,7 @@ impl RoleSet{
                 ],
             RoleSet::Mafia =>
                 vec_set![
-                    Role::Goon, Role::MafiaSupportWildcard, Role::MafiaKillingWildcard
+                    Role::Goon, Role::Maverick, Role::MafiaSupportWildcard, Role::MafiaKillingWildcard
                 ].into_iter().chain(
                     RoleSet::MafiaKilling.get_roles()
                 ).chain(
@@ -306,7 +306,7 @@ impl RoleSet{
                     Role::Arsonist, Role::Werewolf, Role::Ojo,
                     Role::Puppeteer, Role::Pyrolisk, Role::Kira,
                     Role::SerialKiller, Role::FiendsWildcard,
-                    Role::Spiral, Role::Warden, Role::Solorebel, Role::Yer
+                    Role::Spiral, Role::Warden, Role::Juggernaut, Role::Yer
                 ],
             RoleSet::Cult =>
                 vec_set![

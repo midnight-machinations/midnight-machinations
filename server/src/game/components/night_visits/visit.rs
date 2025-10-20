@@ -1,6 +1,6 @@
 use serde::Serialize;
-
-use super::{player::PlayerReference, role::Role};
+use crate::game::prelude::PlayerReference;
+use crate::game::prelude::Role;
 
 #[derive(Copy, Clone, Debug, PartialEq, Eq)]
 pub struct Visit {

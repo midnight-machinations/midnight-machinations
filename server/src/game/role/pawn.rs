@@ -1,18 +1,7 @@
 use rand::seq::IndexedRandom;
 use serde::Serialize;
-use crate::game::abilities_component::ability_id::AbilityID;
-use crate::game::chat::ChatMessageVariant;
-use crate::game::event::on_ability_creation::{OnAbilityCreation, OnAbilityCreationFold, OnAbilityCreationPriority};
-use crate::game::event::on_role_switch::OnRoleSwitch;
-use crate::game::game_conclusion::GameConclusion;
-use crate::game::role::Role;
 use crate::game::role_list::role_enabled_and_not_taken;
-use crate::game::{attack_power::DefensePower, role_list::RoleSet};
-use crate::game::player::PlayerReference;
-use crate::game::Game;
-
-use super::RoleStateTrait;
-
+use crate::game::prelude::*;
 
 pub(super) const MAXIMUM_COUNT: Option<u8> = Some(1);
 pub(super) const DEFENSE: DefensePower = DefensePower::None;

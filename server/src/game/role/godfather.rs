@@ -1,19 +1,6 @@
 use serde::Serialize;
-
-use crate::game::components::night_visits::{NightVisitsIterator, Visits};
-use crate::game::controllers::{AvailablePlayerListSelection, ControllerParametersMap};
-use crate::game::attack_power::{AttackPower, DefensePower};
-use crate::game::event::on_midnight::{MidnightVariables, OnMidnightPriority};
-use crate::game::components::graves::grave::GraveKiller;
-use crate::game::player::PlayerReference;
-use crate::game::abilities_component::ability_id::AbilityID;
-
-use crate::game::role_list::RoleSet;
-use crate::game::visit::{Visit, VisitTag};
-
+use crate::game::prelude::*;
 use crate::game::Game;
-use super::{ControllerID, PlayerListSelection, Role, RoleState, RoleStateTrait};
-
 
 #[derive(Debug, Clone, Serialize, Default)]
 pub struct Godfather;
@@ -24,7 +11,7 @@ pub(super) const DEFENSE: DefensePower = DefensePower::Armored;
 
 impl RoleStateTrait for Godfather {
     type ClientAbilityState = Godfather;
-    fn on_midnight(self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut MidnightVariables, priority: OnMidnightPriority) {
+    fn on_midnight(self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut OnMidnightFold, priority: OnMidnightPriority) {
         Self::night_kill_ability(game, midnight_variables, actor_ref, priority, Role::Godfather);
 
         if priority != OnMidnightPriority::Deception {return};
@@ -84,20 +71,14 @@ impl RoleStateTrait for Godfather {
 }
 
 impl Godfather{
-    pub(super) fn night_kill_ability(game: &mut Game, midnight_variables: &mut MidnightVariables, actor_ref: PlayerReference, priority: OnMidnightPriority, role: Role) {
+    pub(super) fn night_kill_ability(game: &mut Game, midnight_variables: &mut OnMidnightFold, actor_ref: PlayerReference, priority: OnMidnightPriority, role: Role) {
         if game.day_number() == 1 {return}
-
-        match priority {
-            //kill the target
-            OnMidnightPriority::Kill => {
-                let Some(target_ref) = Visits::default_target(midnight_variables, actor_ref, role) else {return};
-                target_ref.clone().try_night_kill_single_attacker(
-                    actor_ref, game, midnight_variables, GraveKiller::RoleSet(RoleSet::Mafia),
-                    AttackPower::Basic, false
-                );
-            },
-            _ => {}
-        }
+        if priority != OnMidnightPriority::Kill {return}
+        let Some(target_ref) = Visits::default_target(midnight_variables, actor_ref, role) else {return};
+        target_ref.clone().try_night_kill_single_attacker(
+            actor_ref, game, midnight_variables, GraveKiller::RoleSet(RoleSet::Mafia),
+            AttackPower::Basic, false
+        );
     }
     pub (super) fn pass_role_state_down(
         game: &mut Game,

@@ -1,31 +1,26 @@
 use crate::game::{ 
-    abilities::syndicate_gun::SyndicateGun, chat::ChatMessageVariant, components::{blocked::BlockedComponent, mafia::Mafia}, player::PlayerReference, Game
+    abilities_component::Abilities, components::{blocked::BlockedComponent, mafia::Mafia}, event::EventData, player::PlayerReference,
 };
 
-use super::on_midnight::MidnightVariables;
+use super::on_midnight::OnMidnightFold;
 
 #[must_use = "Event must be invoked"]
 pub struct OnPlayerRoleblocked{
-    player: PlayerReference,
-    invisible: bool,
+    pub player: PlayerReference,
+    pub invisible: bool,
 }
 impl OnPlayerRoleblocked{
     pub fn new(player: PlayerReference, invisible: bool) -> Self{
         Self{player, invisible}
     }
-    pub fn invoke(self, game: &mut Game, midnight_variables: &mut MidnightVariables){
-        self.player.set_night_blocked(midnight_variables, true);
-        if !self.invisible {
-            self.player.push_night_message(midnight_variables,
-                ChatMessageVariant::RoleBlocked
-            );
-        }
-        
-        for player_ref in PlayerReference::all_players(game){
-            player_ref.on_player_roleblocked(game, midnight_variables, self.player, self.invisible);
-        }
-        Mafia::on_player_roleblocked(game, midnight_variables, self.player);
-        SyndicateGun::on_player_roleblocked(game, midnight_variables, self.player);
-        BlockedComponent::set_blocked(game, self.player);
-    }
+}
+impl EventData for OnPlayerRoleblocked{
+    type FoldValue = OnMidnightFold;
+    type Priority = ();
+
+    fn listeners() -> Vec<super::EventListenerFunction<Self>> {vec![
+        Abilities::on_player_roleblocked,
+        Mafia::on_player_roleblocked,
+        BlockedComponent::on_player_roleblocked,
+    ]}
 }

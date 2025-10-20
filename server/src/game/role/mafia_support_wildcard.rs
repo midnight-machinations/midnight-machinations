@@ -17,12 +17,9 @@ pub(super) const DEFENSE: DefensePower = DefensePower::None;
 impl RoleStateTrait for MafiaSupportWildcard {
     type ClientAbilityState = MafiaSupportWildcard;
     fn on_phase_start(self, game: &mut Game, actor_ref: PlayerReference, phase: PhaseType) {
-        match phase {
-            PhaseType::Dusk => {
-                if actor_ref.ability_deactivated_from_death(game) {return;}
-                Wildcard::become_role(game, actor_ref, Role::MafiaSupportWildcard);
-            },
-            _ => {}
+        if phase == PhaseType::Dusk {
+            if actor_ref.ability_deactivated_from_death(game) {return;}
+            Wildcard::become_role(game, actor_ref, Role::MafiaSupportWildcard);
         }
     }
      fn default_revealed_groups(self) -> crate::vec_set::VecSet<crate::game::components::insider_group::InsiderGroupID> {

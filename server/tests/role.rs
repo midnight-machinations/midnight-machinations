@@ -2,43 +2,28 @@ mod kit;
 use std::{time::Duration, vec};
 
 pub(crate) use kit::{assert_contains, assert_not_contains};
-
-use mafia_server::{game::{controllers::{BooleanSelection, ControllerSelection, StringSelection, UnitSelection}, visit::VisitTag}, room::RoomState};
+use mafia_server::game::prelude::*;
 pub use mafia_server::{
     vec_set,
-    packet::ToServerPacket,
+    room::RoomState,
     game::{
-        abilities::syndicate_gun::SyndicateGun, attack_power::DefensePower,
-        role_outline_reference::RoleOutlineReference,
-        settings::{PhaseTimeSettings, Settings}, test::mock_game, verdict::Verdict,
-        game_conclusion::GameConclusion, modifiers::ModifierSettings,
-        player::PlayerReference,
-        chat::{ChatGroup, ChatMessageVariant, MessageSender},
-        components::{
-                graves::{
-                    grave::{Grave, GraveDeathCause, GraveInformation, GraveKiller, GravePhase},
-                    grave_reference::GraveReference
-                },
-                insider_group::InsiderGroupID
-        },
-        controllers::{
-            selection_type::{
-                two_role_option_selection::TwoRoleOptionSelection,
-                two_role_outline_option_selection::TwoRoleOutlineOptionSelection
-            },
-            ControllerID, ControllerInput, IntegerSelection, PlayerListSelection, RoleListSelection
-        },
+        abilities::syndicate_gun::SyndicateGun,
+        settings::{PhaseTimeSettings, Settings},
+        test::mock_game,
+        verdict::Verdict,
         phase::{
             PhaseState, 
             PhaseType::{self, *}
         },
-        role::{ambusher::Ambusher, apostle::Apostle, armorsmith::Armorsmith, arsonist::Arsonist, auditor::{Auditor, AuditorResult}, blackmailer::Blackmailer, bodyguard::Bodyguard, bouncer::Bouncer, cop::Cop, counterfeiter::Counterfeiter, deputy::Deputy, detective::Detective, doctor::Doctor, drunk::Drunk, engineer::{Engineer, Trap}, escort::Escort, fiends_wildcard::FiendsWildcard, framer::Framer, godfather::Godfather, gossip::Gossip, hypnotist::Hypnotist, impostor::Impostor, informant::Informant, jailor::Jailor, jester::Jester, krampus::Krampus, lookout::Lookout, mafia_support_wildcard::MafiaSupportWildcard, mafioso::Mafioso, marksman::Marksman, martyr::Martyr, mayor::Mayor, medium::Medium, mortician::Mortician, necromancer::Necromancer, ojo::Ojo, philosopher::Philosopher, politician::Politician, polymath::Polymath, psychic::Psychic, puppeteer::Puppeteer, pyrolisk::Pyrolisk, rabblerouser::Rabblerouser, recruiter::Recruiter, revolutionary::Revolutionary, santa_claus::SantaClaus, scarecrow::Scarecrow, snoop::Snoop, spiral::Spiral, tally_clerk::TallyClerk, tracker::Tracker, transporter::Transporter, veteran::Veteran, vigilante::Vigilante, villager::Villager, warden::Warden, warper::Warper, werewolf::Werewolf, wild_card::Wildcard, witch::Witch, yer::Yer, zealot::Zealot, Role, RoleState},
+        role::engineer::{Engineer, Trap},
         role_list::{
             RoleList, RoleOutline, RoleOutlineOption, RoleOutlineOptionInsiderGroups, RoleOutlineOptionRoles,
             RoleOutlineOptionWinCondition, RoleSet
         },
     },
 };
+
+use crate::kit::{game::TestGame, player::TestPlayer};
 
 
 #[test]
@@ -3033,4 +3018,53 @@ fn recruiter_role_list_is_correct() {
     assert!(goon.role(&game) != Role::Goon);
     assert!(detective1.role(&game) == Role::Detective);
     assert!(detective2.role(&game) == Role::Detective);
+}
+
+#[test]
+fn juggernaut_wardblock() {
+    let (mut game, mut _assignments) = mock_game(
+        Settings {
+            random_seed: None,
+            role_list: RoleList(vec![
+                RoleOutline {options: vec1::vec1![RoleOutlineOption {
+                    roles: RoleOutlineOptionRoles::Role { role: Role::Juggernaut },
+                    win_condition: RoleOutlineOptionWinCondition::RoleDefault,
+                    insider_groups: RoleOutlineOptionInsiderGroups::RoleDefault,
+                    player_pool: vec_set![0]
+                }]},
+                RoleOutline {options: vec1::vec1![RoleOutlineOption {
+                    roles: RoleOutlineOptionRoles::Role { role: Role::Villager },
+                    win_condition: RoleOutlineOptionWinCondition::RoleDefault,
+                    insider_groups: RoleOutlineOptionInsiderGroups::RoleDefault,
+                    player_pool: vec_set![1]
+                }]},
+                RoleOutline {options: vec1::vec1![RoleOutlineOption {
+                    roles: RoleOutlineOptionRoles::Role { role: Role::Bouncer },
+                    win_condition: RoleOutlineOptionWinCondition::RoleDefault,
+                    insider_groups: RoleOutlineOptionInsiderGroups::RoleDefault,
+                    player_pool: vec_set![2]
+                }]}
+            ]),
+            phase_times: PhaseTimeSettings::default(),
+            enabled_roles: vec_set![Role::Juggernaut, Role::Bouncer, Role::Villager, Role::Blackmailer, Role::Mortician],
+            modifiers: ModifierSettings::default(),
+        },
+        3
+    ).unwrap();
+    let [juggernaut, villager, bouncer] = [0, 1, 2].map(|i| unsafe { PlayerReference::new_unchecked(i) } );
+    
+    let juggernaut = TestPlayer::new(juggernaut, &game);
+    let villager = TestPlayer::new(villager, &game);
+    let bouncer = TestPlayer::new(bouncer, &game);
+    let mut game = TestGame::new(&mut game);
+    game.skip_to(Night, 1);
+
+    juggernaut.send_ability_input(ControllerInput { id: ControllerID::Role { player: juggernaut.player_ref(), role: Role::Blackmailer, id: 0 }, selection: ControllerSelection::PlayerList(PlayerListSelection(vec![villager.player_ref()])) });
+    juggernaut.send_ability_input(ControllerInput { id: ControllerID::Role { player: juggernaut.player_ref(), role: Role::Mortician, id: 0 }, selection: ControllerSelection::PlayerList(PlayerListSelection(vec![bouncer.player_ref()])) });
+    bouncer.send_ability_input_player_list_typical(vec![villager]);
+
+    game.skip_to(Obituary, 2);
+
+    assert!(!Silenced::silenced(&game, villager.player_ref()));
+    assert!(Tags::has_tag(&game, TagSetID::MorticianTag(juggernaut.player_ref()), bouncer.player_ref()))
 }

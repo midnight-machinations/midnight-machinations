@@ -1,5 +1,5 @@
 use crate::game::{
-    abilities_component::Abilities, components::insider_group::InsiderGroups, event::Event, player::PlayerReference, Game
+    abilities_component::Abilities, components::insider_group::InsiderGroups, event::EventData, player::PlayerReference
 };
 
 #[must_use = "Event must be invoked"]
@@ -8,11 +8,11 @@ pub struct OnConcealRole{
     pub concealed_player: PlayerReference
 }
 impl OnConcealRole{
-    pub fn new(player: PlayerReference, concealed_player: PlayerReference) -> Self{
-        Self{ player, concealed_player }
+    pub fn new(player: PlayerReference, concealed_player: PlayerReference) -> (Self, ()){
+        (Self{ player, concealed_player }, ())
     }
 }
-impl Event for OnConcealRole{
+impl EventData for OnConcealRole{
     type FoldValue = ();
     type Priority = ();
 
@@ -22,6 +22,4 @@ impl Event for OnConcealRole{
             InsiderGroups::on_conceal_role
         ]
     }
-
-    fn initial_fold_value(&self, _game: &Game) -> Self::FoldValue {}
 }

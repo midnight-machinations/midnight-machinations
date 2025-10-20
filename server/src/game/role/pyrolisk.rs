@@ -1,19 +1,6 @@
 use serde::Serialize;
+use crate::{game::prelude::*, vec_set::VecSet};
 
-use crate::game::attack_power::{AttackPower, DefensePower};
-use crate::game::chat::ChatMessageVariant;
-use crate::game::components::graves::grave::{GraveInformation, GraveKiller};
-use crate::game::components::graves::grave_reference::GraveReference;
-use crate::game::components::night_visits::Visits;
-use crate::game::event::on_midnight::{MidnightVariables, OnMidnightPriority};
-use crate::game::player::PlayerReference;
-use crate::game::abilities_component::ability_id::AbilityID;
-
-use crate::game::visit::Visit;
-use crate::game::Game;
-use crate::vec_set::VecSet;
-
-use super::{ControllerID, ControllerParametersMap, GetClientAbilityState, Role, RoleStateTrait};
 
 #[derive(Debug, Clone, Default)]
 pub struct Pyrolisk{
@@ -29,38 +16,33 @@ pub(super) const DEFENSE: DefensePower = DefensePower::Armored;
 
 impl RoleStateTrait for Pyrolisk {
     type ClientAbilityState = ClientRoleState;
-    fn on_midnight(self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut MidnightVariables, priority: OnMidnightPriority) {
+    fn on_midnight(self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut OnMidnightFold, priority: OnMidnightPriority) {
         if game.day_number() <= 1 {return;}
+        if priority != OnMidnightPriority::Kill {return}
+        let mut tagged_for_obscure = self.tagged_for_obscure.clone();
 
-        match priority {
-            OnMidnightPriority::Kill => {
-                let mut tagged_for_obscure = self.tagged_for_obscure.clone();
+        let mut killed_at_least_once = false;
 
-                let mut killed_at_least_once = false;
-
-                for other_player_ref in actor_ref.all_direct_night_visitors_cloned(midnight_variables).filter(|other_player_ref|
-                        other_player_ref.alive(game) &&
-                        *other_player_ref != actor_ref
-                    ).collect::<Vec<PlayerReference>>()
-                {
-                    if other_player_ref.try_night_kill_single_attacker(actor_ref, game, midnight_variables, GraveKiller::Role(Role::Pyrolisk), AttackPower::ArmorPiercing, true) {
-                        tagged_for_obscure.insert(other_player_ref);
-                        killed_at_least_once = true;
-                    }
-                }
-
-                if
-                    !killed_at_least_once &&
-                    let Some(target_ref) = Visits::default_target(midnight_variables, actor_ref, Role::Pyrolisk) &&
-                    target_ref.try_night_kill_single_attacker(actor_ref, game, midnight_variables, GraveKiller::Role(Role::Pyrolisk), AttackPower::ArmorPiercing, true)
-                {
-                    tagged_for_obscure.insert(target_ref);
-                }
-                
-                actor_ref.edit_role_ability_helper(game, Pyrolisk{tagged_for_obscure});
+        for other_player_ref in actor_ref.all_direct_night_visitors_cloned(midnight_variables).filter(|other_player_ref|
+                other_player_ref.alive(game) &&
+                *other_player_ref != actor_ref
+            ).collect::<Vec<PlayerReference>>()
+        {
+            if other_player_ref.try_night_kill_single_attacker(actor_ref, game, midnight_variables, GraveKiller::Role(Role::Pyrolisk), AttackPower::ArmorPiercing, true) {
+                tagged_for_obscure.insert(other_player_ref);
+                killed_at_least_once = true;
             }
-            _ => {}
         }
+
+        if
+            !killed_at_least_once &&
+            let Some(target_ref) = Visits::default_target(midnight_variables, actor_ref, Role::Pyrolisk) &&
+            target_ref.try_night_kill_single_attacker(actor_ref, game, midnight_variables, GraveKiller::Role(Role::Pyrolisk), AttackPower::ArmorPiercing, true)
+        {
+            tagged_for_obscure.insert(target_ref);
+        }
+        
+        actor_ref.edit_role_ability_helper(game, Pyrolisk{tagged_for_obscure});
     }
     
     fn controller_parameters_map(self, game: &Game, actor_ref: PlayerReference) -> ControllerParametersMap {

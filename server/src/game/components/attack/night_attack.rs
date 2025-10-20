@@ -1,4 +1,4 @@
-use crate::{game::{attack_power::AttackPower, chat::ChatMessageVariant, components::graves::grave::GraveKiller, event::on_midnight::MidnightVariables, player::PlayerReference, Game}, vec_set::VecSet};
+use crate::{game::{attack_power::AttackPower, chat::ChatMessageVariant, components::graves::grave::GraveKiller, event::on_midnight::OnMidnightFold, player::PlayerReference, Game}, vec_set::VecSet};
 
 pub struct NightAttack{
     send_messages: bool,
@@ -12,7 +12,7 @@ impl NightAttack{
     #[expect(clippy::too_many_arguments, reason="this function is goated tho")]
     pub fn new_attack(
         game: &mut Game,
-        fold: &mut MidnightVariables,
+        fold: &mut OnMidnightFold,
         send_messages: bool,
         defender: PlayerReference,
         attackers: VecSet<PlayerReference>,
@@ -37,7 +37,7 @@ impl NightAttack{
         leave_death_note,
         grave_killer,
     }}
-    fn attack(self, game: &mut Game, fold: &mut MidnightVariables)->bool{
+    fn attack(self, game: &mut Game, fold: &mut OnMidnightFold)->bool{
 
         self.defender.set_night_attacked(fold, true);
         if self.defense_check(game, fold) {return false;}
@@ -62,7 +62,7 @@ impl NightAttack{
     fn defense_check(
         &self,
         game: &mut Game,
-        fold: &mut MidnightVariables,
+        fold: &mut OnMidnightFold,
     )->bool{
         let blocked = self.defender.night_defense(game, fold).can_block(self.attack_power);
         if !self.send_messages {return blocked};

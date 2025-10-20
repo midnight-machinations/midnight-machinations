@@ -1,5 +1,5 @@
 use crate::{event_priority, game::{abilities_component::Abilities, modifiers::ModifierSettings, player::PlayerReference, Game}};
-use super::Event;
+use super::EventData;
 
 #[derive(Clone)]
 pub struct OnWhisper {
@@ -14,16 +14,22 @@ pub struct WhisperFold {
 event_priority!(WhisperPriority{Cancel, Broadcast, Send});
 
 impl OnWhisper {
-    pub fn new(sender: PlayerReference, receiver: PlayerReference, message: String) -> Self {
-        Self {
-            sender,
-            receiver,
-            message,
-        }
+    pub fn new(sender: PlayerReference, receiver: PlayerReference, message: String) -> (Self, WhisperFold) {
+        (
+            Self {
+                sender,
+                receiver,
+                message,
+            },
+            WhisperFold {
+                cancelled: false,
+                hide_broadcast: false,
+            }
+        )
     }
 }
 
-impl Event for OnWhisper {
+impl EventData for OnWhisper {
     type FoldValue = WhisperFold;
     type Priority = WhisperPriority;
 
@@ -33,12 +39,5 @@ impl Event for OnWhisper {
             ModifierSettings::on_whisper,
             Abilities::on_whisper,
         ]
-    }
-
-    fn initial_fold_value(&self, _game: &Game) -> Self::FoldValue {
-        WhisperFold {
-            cancelled: false,
-            hide_broadcast: false,
-        }
     }
 }

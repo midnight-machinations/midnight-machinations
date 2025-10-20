@@ -3,7 +3,7 @@ use crate::game::{
     components::{
         call_witness::CallWitness, forward_messages::ForwardMessages, nomination_controller::NominationController,
     },
-    controllers::ControllerInput, event::Event, player::PlayerReference, Game
+    controllers::ControllerInput, event::EventData, player::PlayerReference,
 };
 
 #[must_use = "Event must be invoked"]
@@ -12,11 +12,11 @@ pub struct OnValidatedControllerInputReceived{
     pub input: ControllerInput,
 }
 impl OnValidatedControllerInputReceived{
-    pub fn new(actor_ref: PlayerReference, input: ControllerInput) -> Self{
-        Self{actor_ref, input}
+    pub fn new(actor_ref: PlayerReference, input: ControllerInput) -> (Self, ()) {
+        (Self{actor_ref, input}, ())
     }
 }
-impl Event for OnValidatedControllerInputReceived{
+impl EventData for OnValidatedControllerInputReceived{
     type FoldValue = ();
     type Priority = ();
 
@@ -29,6 +29,4 @@ impl Event for OnValidatedControllerInputReceived{
             CallWitness::on_validated_ability_input_received
         ]
     }
-
-    fn initial_fold_value(&self, _game: &Game) -> Self::FoldValue {}
 }

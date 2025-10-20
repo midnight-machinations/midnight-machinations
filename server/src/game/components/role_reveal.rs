@@ -1,6 +1,7 @@
 use crate::{
     game::{
-        chat::ChatMessageVariant, components::player_component::PlayerComponent, event::{on_conceal_role::OnConcealRole, on_role_switch::OnRoleSwitch, Event}, player::PlayerReference, role::Role, Game
+        chat::ChatMessageVariant, components::player_component::PlayerComponent, event::{on_conceal_role::OnConcealRole, on_role_switch::OnRoleSwitch, AsInvokable as _, Invokable as _},
+        player::PlayerReference, role::Role, Game
     }, packet::ToClientPacket, vec_map::VecMap, vec_set::VecSet
 };
 
@@ -62,6 +63,6 @@ impl PlayerReference{
             role_labels: self.revealed_players_map(game)
         });
 
-        OnConcealRole::new(*self, concealed_player).invoke(game);
+        OnConcealRole::new(*self, concealed_player).as_invokable().invoke(game);
     }
 }

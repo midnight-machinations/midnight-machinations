@@ -1,25 +1,6 @@
-
 use rand::seq::IndexedRandom;
 use serde::Serialize;
-
-use crate::game::abilities_component::ability_id::AbilityID;
-use crate::game::attack_power::AttackPower;
-use crate::game::attack_power::DefensePower;
-use crate::game::components::night_visits::Visits;
-use crate::game::components::night_visits::NightVisitsIterator;
-use crate::game::event::on_midnight::{MidnightVariables, OnMidnightPriority};
-use crate::game::game_conclusion::GameConclusion;
-use crate::game::components::graves::grave::GraveKiller;
-use crate::game::player::PlayerReference;
-
-use crate::game::visit::Visit;
-
-use crate::game::Game;
-use super::{
-    ControllerID, ControllerParametersMap,
-    Role, RoleStateTrait
-};
-
+use crate::game::prelude::*;
 
 
 #[derive(Clone, Debug, Default, Serialize)]
@@ -30,7 +11,7 @@ pub(super) const DEFENSE: DefensePower = DefensePower::None;
 
 impl RoleStateTrait for Cop {
     type ClientAbilityState = Self;
-    fn on_midnight(self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut MidnightVariables, priority: OnMidnightPriority) {
+    fn on_midnight(self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut OnMidnightFold, priority: OnMidnightPriority) {
         if game.day_number() <= 1 {return}
 
         match priority {

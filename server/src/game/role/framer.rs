@@ -1,16 +1,6 @@
 use serde::Serialize;
-use crate::game::components::night_visits::{NightVisitsIterator, Visits};
-use crate::game::components::tags::{TagSetID, Tags};
-use crate::game::controllers::AvailablePlayerListSelection;
-use crate::game::event::on_ability_creation::{OnAbilityCreation, OnAbilityCreationFold, OnAbilityCreationPriority};
-use crate::game::event::on_ability_deletion::{OnAbilityDeletion, OnAbilityDeletionPriority};
-use crate::game::event::on_midnight::{MidnightVariables, OnMidnightPriority};
-use crate::game::{attack_power::DefensePower, player::PlayerReference};
-use crate::game::visit::{Visit, VisitTag};
-use crate::game::Game;
 use crate::vec_set::vec_set;
-use crate::game::abilities_component::ability_id::AbilityID;
-use super::{ControllerID, ControllerParametersMap, Role, RoleStateTrait};
+use crate::game::prelude::*;
 
 
 #[derive(Clone, Debug, Default, Serialize)]
@@ -21,7 +11,7 @@ pub(super) const DEFENSE: DefensePower = DefensePower::None;
 
 impl RoleStateTrait for Framer {
     type ClientAbilityState = Framer;
-    fn on_midnight(self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut MidnightVariables, priority: OnMidnightPriority) {
+    fn on_midnight(self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut OnMidnightFold, priority: OnMidnightPriority) {
         if priority != OnMidnightPriority::Deception {return}
 
         let Some(framed) = Visits::default_target(midnight_variables, actor_ref, Role::Framer) else {return};

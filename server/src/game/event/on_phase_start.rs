@@ -3,7 +3,7 @@ use crate::game::{
     components::{
         ascend::Ascend, blocked::BlockedComponent, call_witness::CallWitness, detained::Detained, fast_forward::FastForwardComponent, forfeit_vote::ForfeitNominationVote, silenced::Silenced, verdicts_today::VerdictsToday
     },
-    controllers::Controllers, event::Event, modifiers::ModifierSettings, phase::PhaseState,
+    controllers::Controllers, event::EventData, modifiers::ModifierSettings, phase::PhaseState,
     Game
 };
 
@@ -13,11 +13,11 @@ pub struct OnPhaseStart{
     pub phase: PhaseState
 }
 impl OnPhaseStart{
-    pub fn new(phase: PhaseState) -> Self{
-        Self{ phase }
+    pub fn new(phase: PhaseState) -> (Self, ()){
+        (Self{ phase }, ())
     }
 }
-impl Event for OnPhaseStart{
+impl EventData for OnPhaseStart{
     type FoldValue = ();
     type Priority = ();
 
@@ -35,6 +35,4 @@ impl Event for OnPhaseStart{
         FastForwardComponent::on_phase_start,
         Ascend::on_phase_start,
     ]}
-
-    fn initial_fold_value(&self, _game: &Game) -> Self::FoldValue {}
 }

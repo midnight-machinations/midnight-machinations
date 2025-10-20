@@ -1,4 +1,4 @@
-use crate::{game::{attack_power::DefensePower, chat::ChatMessageVariant, event::on_midnight::{MidnightVariables, OnMidnight, OnMidnightPriority}, player::PlayerReference, Game}, vec_set::VecSet};
+use crate::{game::{attack_power::DefensePower, chat::ChatMessageVariant, event::on_midnight::{OnMidnightFold, OnMidnight, OnMidnightPriority}, player::PlayerReference, Game}, vec_set::VecSet};
 
 use super::player_component::PlayerComponent;
 
@@ -20,7 +20,7 @@ impl FragileVestsComponent{
     }
     pub fn add_defense_item_midnight(
         game: &mut Game,
-        midnight_variables: &mut MidnightVariables, 
+        midnight_variables: &mut OnMidnightFold, 
         player: PlayerReference,
         power: DefensePower,
         informed_players: VecSet<PlayerReference>
@@ -31,7 +31,7 @@ impl FragileVestsComponent{
     fn break_defense_items(
         game: &mut Game,
         player: PlayerReference,
-        midnight_variables: &mut MidnightVariables
+        midnight_variables: &mut OnMidnightFold
     ){
         Self::get_mut(&mut game.fragile_vests, player).break_defense_items(midnight_variables, player);
     }
@@ -42,7 +42,7 @@ impl FragileVestsComponent{
         Self::get(&game.fragile_vests, player).max_defense()
     }
 
-    pub fn on_midnight(game: &mut Game, _event: &OnMidnight, midnight_variables: &mut MidnightVariables, priority: OnMidnightPriority){
+    pub fn on_midnight(game: &mut Game, _event: &OnMidnight, midnight_variables: &mut OnMidnightFold, priority: OnMidnightPriority){
         match priority {
             OnMidnightPriority::Heal => {
                 for player in PlayerReference::all_players(game){
@@ -71,7 +71,7 @@ impl FragileVests{
     fn add_defense_item(&mut self, power: DefensePower, informed_players: VecSet<PlayerReference>){
         self.items.push(PlayerVest { power, informed_players })
     }
-    fn break_defense_items(&mut self, midnight_variables: &mut MidnightVariables, player: PlayerReference){
+    fn break_defense_items(&mut self, midnight_variables: &mut OnMidnightFold, player: PlayerReference){
         for item in self.items.iter_mut() {
             for infomed_player in item.informed_players.iter() {
                 infomed_player.push_night_message(midnight_variables, ChatMessageVariant::FragileVestBreak{defense: item.power, player_with_vest: player});

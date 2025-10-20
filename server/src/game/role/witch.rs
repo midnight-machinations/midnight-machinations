@@ -1,19 +1,5 @@
 use serde::Serialize;
-use crate::game::controllers::AvailableTwoPlayerOptionSelection;
-use crate::game::event::on_midnight::{MidnightVariables, OnMidnightPriority};
-use crate::game::abilities_component::ability_id::AbilityID;
-use crate::game::attack_power::DefensePower;
-use crate::game::phase::PhaseType;
-use crate::game::player::PlayerReference;
-use crate::game::components::possession::Possession;
-use crate::game::visit::Visit;
-use crate::game::Game;
-use super::{
-    common_role,
-    ControllerID,
-    ControllerParametersMap, GetClientAbilityState,
-    Role, RoleStateTrait
-};
+use crate::game::prelude::*;
 
 
 #[derive(Clone, Debug, Default)]
@@ -30,7 +16,7 @@ pub(super) const DEFENSE: DefensePower = DefensePower::None;
 
 impl RoleStateTrait for Witch {
     type ClientAbilityState = ClientRoleState;
-    fn on_midnight(self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut MidnightVariables, priority: OnMidnightPriority) {
+    fn on_midnight(self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut OnMidnightFold, priority: OnMidnightPriority) {
         if let Some(currently_used_player) = Possession::possess_night_action(actor_ref, game, midnight_variables, priority, self.currently_used_player, Role::Witch){
             actor_ref.edit_role_ability_helper(game, Witch{
                 currently_used_player: Some(currently_used_player)
@@ -63,7 +49,7 @@ impl RoleStateTrait for Witch {
         if phase != PhaseType::Night {return}
         actor_ref.edit_role_ability_helper(game, Witch { currently_used_player: None });
     }
-    fn on_player_roleblocked(self, _game: &mut Game, _midnight_variables: &mut MidnightVariables, _actor_ref: PlayerReference, _player: PlayerReference, _invisible: bool) {}
+    fn on_player_roleblocked(self, _game: &mut Game, _midnight_variables: &mut OnMidnightFold, _actor_ref: PlayerReference, _player: PlayerReference, _invisible: bool) {}
 }
 impl GetClientAbilityState<ClientRoleState> for Witch {
     fn get_client_ability_state(self, _game: &Game, _actor_ref: PlayerReference) -> ClientRoleState {

@@ -1,6 +1,6 @@
 use crate::game::{
     abilities_component::Abilities, components::graves::grave_reference::GraveReference,
-    event::Event, modifiers::ModifierSettings, Game
+    event::EventData, modifiers::ModifierSettings, Game
 };
 
 
@@ -9,11 +9,11 @@ pub struct OnGraveAdded{
     pub grave: GraveReference,
 }
 impl OnGraveAdded{
-    pub fn new(grave: GraveReference) -> Self{
-        Self{grave}
+    pub fn new(grave: GraveReference) -> (Self, ()) {
+        (Self{grave}, ())
     }
 }
-impl Event for OnGraveAdded{
+impl EventData for OnGraveAdded{
     type FoldValue = ();
 
     type Priority = ();
@@ -23,6 +23,4 @@ impl Event for OnGraveAdded{
         ModifierSettings::on_grave_added,
         Game::on_grave_added
     ]}
-
-    fn initial_fold_value(&self, _game: &Game) -> Self::FoldValue {}
 }

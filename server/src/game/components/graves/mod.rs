@@ -1,4 +1,4 @@
-use crate::game::{components::graves::{grave::Grave, grave_reference::GraveReference}, event::{on_grave_added::OnGraveAdded, Event as _}, Game};
+use crate::game::{components::graves::{grave::Grave, grave_reference::GraveReference}, event::{on_grave_added::OnGraveAdded, AsInvokable as _, Invokable as _}, Game};
 
 pub mod grave;
 pub mod grave_reference;
@@ -13,7 +13,7 @@ impl Graves{
             game.graves.graves.push(grave.clone());
 
             if let Some(grave_ref) = GraveReference::new(game, grave_index) {
-                OnGraveAdded::new(grave_ref).invoke(game);
+                OnGraveAdded::new(grave_ref).as_invokable().invoke(game);
             }
         }
     }

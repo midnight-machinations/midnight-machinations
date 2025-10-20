@@ -1,18 +1,5 @@
 use serde::Serialize;
-
-use crate::game::components::night_visits::Visits;
-use crate::game::controllers::ControllerID;
-use crate::game::components::aura::Aura;
-use crate::game::components::confused::Confused;
-use crate::game::event::on_midnight::{MidnightVariables, OnMidnightPriority};
-use crate::game::{attack_power::DefensePower, chat::ChatMessageVariant};
-use crate::game::game_conclusion::GameConclusion;
-use crate::game::player::PlayerReference;
-use crate::game::abilities_component::ability_id::AbilityID;
-
-use crate::game::visit::Visit;
-use crate::game::Game;
-use super::{ControllerParametersMap, Role, RoleStateTrait};
+use crate::game::{components::{aura::Aura, confused::Confused}, game_conclusion::GameConclusion, prelude::*};
 
 
 pub(super) const MAXIMUM_COUNT: Option<u8> = None;
@@ -23,7 +10,7 @@ pub struct Detective;
 
 impl RoleStateTrait for Detective {
     type ClientAbilityState = Detective;
-    fn on_midnight(self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut MidnightVariables, priority: OnMidnightPriority) {
+    fn on_midnight(self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut OnMidnightFold, priority: OnMidnightPriority) {
         if priority != OnMidnightPriority::Investigative {return;}
         
         let Some(target) = Visits::default_target(midnight_variables, actor_ref, Role::Detective) else {return};
@@ -57,7 +44,7 @@ impl RoleStateTrait for Detective {
 }
 
 impl Detective {
-    pub fn player_is_suspicious(game: &Game, midnight_variables: &MidnightVariables, player_ref: PlayerReference) -> bool {
+    pub fn player_is_suspicious(game: &Game, midnight_variables: &OnMidnightFold, player_ref: PlayerReference) -> bool {
         if Aura::suspicious(game, midnight_variables, player_ref){
             true
         }else if Aura::innocent(game, midnight_variables, player_ref){

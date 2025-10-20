@@ -1,22 +1,6 @@
 use std::collections::HashSet;
 use serde::{Deserialize, Serialize};
-use crate::game::abilities_component::ability_id::AbilityID;
-use crate::game::attack_power::AttackPower;
-use crate::game::chat::ChatMessageVariant;
-use crate::game::components::graves::grave::{Grave, GraveKiller};
-use crate::game::components::night_visits::{NightVisitsIterator as _, Visits};
-use crate::game::components::win_condition::WinCondition;
-use crate::game::event::on_midnight::{MidnightVariables, OnMidnightPriority};
-use crate::game::game_conclusion::GameConclusion;
-use crate::game::phase::PhaseType;
-use crate::game::attack_power::DefensePower;
-use crate::game::player::PlayerReference;
-
-use crate::game::visit::Visit;
-
-use crate::game::Game;
-use super::{GetClientAbilityState, Role, RoleStateTrait};
-use crate::game::controllers::*;
+use crate::game::prelude::*;
 
 #[derive(Debug, Clone, Serialize, Default)]
 #[serde(rename_all = "camelCase")]
@@ -37,7 +21,7 @@ pub(super) const DEFENSE: DefensePower = DefensePower::Armored;
 
 impl RoleStateTrait for Krampus {
     type ClientAbilityState = ();
-    fn on_midnight(self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut MidnightVariables, priority: OnMidnightPriority) {
+    fn on_midnight(self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut OnMidnightFold, priority: OnMidnightPriority) {
         let actor_visits = Visits::into_iter(midnight_variables).default_visits(actor_ref, Role::Krampus).collect::<Vec<_>>();
 
         match (priority, self.ability) {

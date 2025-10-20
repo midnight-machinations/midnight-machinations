@@ -30,7 +30,7 @@ use serde::{Serialize, Deserialize};
 
 use super::{
     event::{
-        on_midnight::{MidnightVariables, OnMidnight, OnMidnightPriority},
+        on_midnight::{OnMidnightFold, OnMidnight, OnMidnightPriority},
         on_whisper::{OnWhisper, WhisperFold, WhisperPriority}
     },
     player::PlayerReference, Game
@@ -98,7 +98,7 @@ impl ModifierSettings{
             state
         );
     }
-    pub fn on_midnight(game: &mut Game, _event: &OnMidnight, _fold: &mut MidnightVariables, priority: OnMidnightPriority){
+    pub fn on_midnight(game: &mut Game, _event: &OnMidnight, _fold: &mut OnMidnightFold, priority: OnMidnightPriority){
         for modifier in game.modifier_settings().modifiers.clone(){
             modifier.1.on_midnight(game, priority);
         }

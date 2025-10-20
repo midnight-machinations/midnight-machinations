@@ -1,19 +1,5 @@
 use serde::Serialize;
-
-use crate::game::components::night_visits::Visits;
-use crate::game::controllers::ControllerParametersMap;
-use crate::game::attack_power::AttackPower;
-use crate::game::components::graves::grave::GraveKiller;
-use crate::game::event::on_midnight::{MidnightVariables, OnMidnightPriority};
-use crate::game::role_list::RoleSet;
-use crate::game::attack_power::DefensePower;
-use crate::game::player::PlayerReference;
-use crate::game::abilities_component::ability_id::AbilityID;
-
-use crate::game::visit::Visit;
-
-use crate::game::Game;
-use super::{common_role, ControllerID, Role, RoleStateTrait};
+use crate::game::prelude::*;
 
 
 #[derive(Debug, Clone, Serialize, Default)]
@@ -25,14 +11,11 @@ pub(super) const DEFENSE: DefensePower = DefensePower::None;
 
 impl RoleStateTrait for Mafioso {
     type ClientAbilityState = Mafioso;
-    fn on_midnight(self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut MidnightVariables, priority: OnMidnightPriority) {
+    fn on_midnight(self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut OnMidnightFold, priority: OnMidnightPriority) {
         if priority != OnMidnightPriority::Kill {return}
         if game.day_number() == 1 {return}
-        if let Some(visit) = Visits::default_visit(midnight_variables, actor_ref, Role::Mafioso) {
-            let target_ref = visit.target;
-    
-            target_ref.try_night_kill_single_attacker(actor_ref, game, midnight_variables, GraveKiller::RoleSet(RoleSet::Mafia), AttackPower::Basic, false);
-        }
+        let Some(target_ref) = Visits::default_target(midnight_variables, actor_ref, Role::Mafioso) else {return};
+        target_ref.try_night_kill_single_attacker(actor_ref, game, midnight_variables, GraveKiller::RoleSet(RoleSet::Mafia), AttackPower::Basic, false);
     }
     fn controller_parameters_map(self, game: &Game, actor_ref: PlayerReference) -> super::ControllerParametersMap {
         ControllerParametersMap::builder(game)

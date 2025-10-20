@@ -5,9 +5,18 @@ pub mod event_listeners;
 
 use crate::{
     game::{
-        abilities::{pitchfork::PitchforkAbility, role_abilities::RoleAbility, syndicate_gun::SyndicateGun}, abilities_component::{
+        abilities::{pitchfork::PitchforkAbility, role_abilities::RoleAbility, syndicate_gun::SyndicateGun},
+        abilities_component::{
             ability::Ability, ability_id::AbilityID
-        }, event::{on_ability_creation::OnAbilityCreation, on_ability_deletion::OnAbilityDeletion, on_ability_edit::OnAbilityEdit, Event}, Assignments, Game
+        },
+        event::{
+            on_ability_creation::OnAbilityCreation,
+            on_ability_deletion::OnAbilityDeletion,
+            on_ability_edit::OnAbilityEdit,
+            Invokable as _, AsInvokable
+        },
+        Assignments,
+        Game
     },
     vec_map::{vec_map, VecMap}
 };
@@ -47,18 +56,18 @@ impl Abilities{
     }
     pub fn new_ability(game: &mut Game, id: &AbilityID, new: impl Into<Ability>){
         Self::delete_ability(game, id);
-        OnAbilityCreation::new(id.clone(), new.into()).invoke(game);
+        OnAbilityCreation::new(id.clone(), new.into()).as_invokable().invoke(game);
         game.abilities.abilities.sort();
     }
     pub fn delete_ability(game: &mut Game, id: &AbilityID){
         if game.abilities.abilities.contains(id) {
-            OnAbilityDeletion::new(id.clone()).invoke(game);
+            OnAbilityDeletion::new(id.clone()).as_invokable().invoke(game);
         }
     }
     pub fn edit_ability(game: &mut Game, id: &AbilityID, new: impl Into<Ability>){
         let ability = new.into();
         game.abilities.abilities.insert(id.clone(), ability.clone());
-        OnAbilityEdit::new(id.clone(), Some(ability)).invoke(game);
+        OnAbilityEdit::new(id.clone(), Some(ability)).as_invokable().invoke(game);
     }
 
     pub fn ids(game: &Game)->Box<[AbilityID]>{

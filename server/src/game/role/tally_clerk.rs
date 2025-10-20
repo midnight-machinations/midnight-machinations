@@ -1,20 +1,7 @@
 use serde::Serialize;
-use crate::game::attack_power::DefensePower;
-use crate::game::components::confused::Confused;
-use crate::game::components::night_visits::Visits;
-use crate::game::controllers::{ControllerID, ControllerParametersMap};
-use crate::game::event::on_midnight::{MidnightVariables, OnMidnightPriority};
+use crate::game::prelude::*;
 use crate::game::role::detective::Detective;
-use crate::game::role::Role;
-use crate::game::visit::Visit;
-use crate::game::{chat::ChatMessageVariant, components::verdicts_today::VerdictsToday};
-use crate::game::player::PlayerReference;
-use crate::game::abilities_component::ability_id::AbilityID;
-
-use crate::game::Game;
 use crate::vec_set::VecSet;
-
-use super::RoleStateTrait;
 
 
 pub(super) const MAXIMUM_COUNT: Option<u8> = None;
@@ -26,7 +13,7 @@ pub struct TallyClerk;
 
 impl RoleStateTrait for TallyClerk {
     type ClientAbilityState = TallyClerk;
-    fn on_midnight(self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut MidnightVariables, priority: OnMidnightPriority) {
+    fn on_midnight(self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut OnMidnightFold, priority: OnMidnightPriority) {
         if priority != OnMidnightPriority::Investigative {return;}
         let target = 
         if 
@@ -72,7 +59,7 @@ impl TallyClerk {
             VerdictsToday::guilties_during_any_trial(game)
         }
     }
-    fn result(game: &Game, midnight_variables: &MidnightVariables, target: Option<PlayerReference>)->u8{
+    fn result(game: &Game, midnight_variables: &OnMidnightFold, target: Option<PlayerReference>)->u8{
         let guilties = Self::get_guilties(game, target);
         PlayerReference::all_players(game)
             .filter(|player|guilties.contains(player))
@@ -81,7 +68,7 @@ impl TallyClerk {
             .try_into()
             .unwrap_or(u8::MAX)
     }
-    fn confused_result(game: &Game, midnight_variables: &MidnightVariables, target: Option<PlayerReference>)->u8{
+    fn confused_result(game: &Game, midnight_variables: &OnMidnightFold, target: Option<PlayerReference>)->u8{
         let guilties = Self::get_guilties(game, target);
         let total_guilties = guilties.count();
 
@@ -89,7 +76,7 @@ impl TallyClerk {
         
         evil_count.min(total_guilties.try_into().unwrap_or(u8::MAX))
     }
-    fn player_is_suspicious(game: &Game, midnight_variables: &MidnightVariables, target: PlayerReference) -> bool {
+    fn player_is_suspicious(game: &Game, midnight_variables: &OnMidnightFold, target: PlayerReference) -> bool {
         Detective::player_is_suspicious(game, midnight_variables, target)
     }
 }

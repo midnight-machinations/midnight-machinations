@@ -1,5 +1,6 @@
 use crate::{game::{
-    abilities::role_abilities::RoleAbility, abilities_component::{ability::Ability, ability_id::AbilityID}, chat::ChatMessageVariant, components::player_component::PlayerComponent, event::{on_ability_edit::OnAbilityEdit, on_role_switch::OnRoleSwitch, Event}, player::PlayerReference, role::{Role, RoleState}, Assignments, Game
+    abilities::role_abilities::RoleAbility, abilities_component::{ability::Ability, ability_id::AbilityID}, chat::ChatMessageVariant,
+    components::player_component::PlayerComponent, event::{on_ability_edit::OnAbilityEdit, on_role_switch::OnRoleSwitch, AsInvokable as _, Invokable as _}, player::PlayerReference, role::{Role, RoleState}, Assignments, Game
 }, packet::ToClientPacket};
 
 pub type RoleComponent = PlayerComponent::<Role>;
@@ -57,7 +58,7 @@ impl PlayerReference{
     
         RoleComponent::set_role_without_ability(*self, game, new_role_data.role());
 
-        OnRoleSwitch::new(*self, old, self.role_state(game).clone()).invoke(game);
+        OnRoleSwitch::new(*self, old, self.role_state(game).clone()).as_invokable().invoke(game);
     }
 
     pub fn role_state_ability<'a>(&self, game: &'a Game) -> &'a Ability {

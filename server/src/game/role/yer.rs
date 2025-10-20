@@ -1,21 +1,5 @@
 use serde::Serialize;
-
-use crate::game::attack_power::AttackPower;
-use crate::game::chat::ChatMessageVariant;
-use crate::game::components::graves::grave::GraveKiller;
-use crate::game::components::night_visits::Visits;
-use crate::game::event::on_midnight::{MidnightVariables, OnMidnightPriority};
-use crate::game::abilities_component::ability_id::AbilityID;
-
-use crate::game::components::win_condition::WinCondition;
-use crate::game::attack_power::DefensePower;
-use crate::game::player::PlayerReference;
-
-use crate::game::visit::Visit;
-
-use crate::game::Game;
-use super::{Role, RoleState, RoleStateTrait};
-use crate::game::controllers::*;
+use crate::game::prelude::*;
 
 #[derive(Debug, Clone, Serialize)]
 #[serde(rename_all = "camelCase")]
@@ -44,7 +28,7 @@ impl RoleStateTrait for Yer {
             ..Self::default()
         }
     }
-    fn on_midnight(mut self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut MidnightVariables, priority: OnMidnightPriority) {
+    fn on_midnight(mut self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut OnMidnightFold, priority: OnMidnightPriority) {
         if game.day_number() == 1 {return}
 
         let chose_to_convert = ControllerID::role(actor_ref, Role::Yer, 0)

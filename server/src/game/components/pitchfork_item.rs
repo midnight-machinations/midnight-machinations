@@ -1,4 +1,4 @@
-use crate::{game::{components::player_component::PlayerComponent, event::on_midnight::MidnightVariables, player::PlayerReference, Game}, vec_set::VecSet};
+use crate::{game::{components::player_component::PlayerComponent, event::on_midnight::OnMidnightFold, player::PlayerReference, Game}, vec_set::VecSet};
 
 pub type PitchforkItemComponent = PlayerComponent<PitchforkItem>;
 
@@ -17,7 +17,7 @@ impl PitchforkItemComponent{
             )
         }
     }
-    pub fn players_with_pitchfork(game: &Game, midnight_variables: &MidnightVariables) -> VecSet<PlayerReference>{
+    pub fn players_with_pitchfork(game: &Game, midnight_variables: &OnMidnightFold) -> VecSet<PlayerReference>{
         PlayerReference::all_players(game)
             .filter(|p|game.pitchfork_item.get(*p).has_item)
             .filter(|p|!p.ability_deactivated_from_death(game))

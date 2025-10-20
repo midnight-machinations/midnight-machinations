@@ -1,7 +1,7 @@
 use std::collections::HashSet;
 
 use crate::{game::{
-    attack_power::AttackPower, chat::ChatMessageVariant, components::graves::grave::GraveKiller, event::{on_add_insider::OnAddInsider, on_midnight::{MidnightVariables, OnMidnight, OnMidnightPriority}, on_remove_insider::OnRemoveInsider}, game_conclusion::GameConclusion, player::PlayerReference, role::Role, Game
+    attack_power::AttackPower, chat::ChatMessageVariant, components::graves::grave::GraveKiller, event::{on_add_insider::OnAddInsider, on_midnight::{OnMidnightFold, OnMidnight, OnMidnightPriority}, on_remove_insider::OnRemoveInsider}, game_conclusion::GameConclusion, player::PlayerReference, role::Role, Game
 }, vec_set::VecSet};
 
 use super::{insider_group::InsiderGroupID, tags::Tags, win_condition::WinCondition};
@@ -20,7 +20,7 @@ pub struct PuppeteerMarionette{
     marionettes: HashSet<PlayerReference>,
 }
 impl PuppeteerMarionette{
-    pub fn string(game: &mut Game, midnight_variables: &mut MidnightVariables, player: PlayerReference)->bool{
+    pub fn string(game: &mut Game, midnight_variables: &mut OnMidnightFold, player: PlayerReference)->bool{
         let mut puppeteer_marionette = game.puppeteer_marionette().clone();
 
         if player.role(game) == Role::Puppeteer {return false;}
@@ -38,7 +38,7 @@ impl PuppeteerMarionette{
         true
     }
 
-    pub fn kill_marionettes(game: &mut Game, midnight_variables: &mut MidnightVariables){
+    pub fn kill_marionettes(game: &mut Game, midnight_variables: &mut OnMidnightFold){
         let marionettes = 
             game.puppeteer_marionette()
                 .marionettes
@@ -49,7 +49,7 @@ impl PuppeteerMarionette{
 
         PuppeteerMarionette::attack_players(game, midnight_variables, marionettes, AttackPower::ProtectionPiercing);
     }
-    fn attack_players(game: &mut Game, midnight_variables: &mut MidnightVariables, players: Vec<PlayerReference>, attack_power: AttackPower){
+    fn attack_players(game: &mut Game, midnight_variables: &mut OnMidnightFold, players: Vec<PlayerReference>, attack_power: AttackPower){
         
         let puppeteers: VecSet<_> = PlayerReference::all_players(game)
             .filter(|p|p.role(game)==Role::Puppeteer)
@@ -90,7 +90,7 @@ impl PuppeteerMarionette{
     pub fn on_remove_insider(game: &mut Game, _event: &OnRemoveInsider, _fold: &mut (), _priority: ()){
         Tags::set_viewers(game, super::tags::TagSetID::PuppeteerMarionette, &InsiderGroupID::Puppeteer.players(game).clone());
     }
-    pub fn on_midnight(game: &mut Game, _event: &OnMidnight, midnight_variables: &mut MidnightVariables, priority: OnMidnightPriority){
+    pub fn on_midnight(game: &mut Game, _event: &OnMidnight, midnight_variables: &mut OnMidnightFold, priority: OnMidnightPriority){
         if priority == OnMidnightPriority::Kill{
             PuppeteerMarionette::kill_marionettes(game, midnight_variables);
         }

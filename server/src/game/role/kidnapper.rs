@@ -1,20 +1,5 @@
 use serde::Serialize;
-use crate::game::controllers::{AvailableBooleanSelection, BooleanSelection};
-use crate::game::attack_power::{AttackPower, DefensePower};
-use crate::game::chat::{ChatGroup, ChatMessageVariant, PlayerChatGroupMap};
-use crate::game::components::detained::Detained;
-use crate::game::components::graves::grave::GraveKiller;
-use crate::game::event::on_midnight::{MidnightVariables, OnMidnightPriority};
-use crate::game::phase::PhaseType;
-use crate::game::player::PlayerReference;
-use crate::game::Game;
-use crate::game::abilities_component::ability_id::AbilityID;
-
-use super::{
-    ControllerID,
-    ControllerParametersMap, Role,
-    RoleStateTrait
-};
+use crate::game::prelude::*;
 
 
 #[derive(Serialize, Clone, Debug)]
@@ -38,30 +23,23 @@ pub(super) const DEFENSE: DefensePower = DefensePower::None;
 
 impl RoleStateTrait for Kidnapper {
     type ClientAbilityState = Kidnapper;
-    fn on_midnight(mut self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut MidnightVariables, priority: OnMidnightPriority) {
+    fn on_midnight(mut self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut OnMidnightFold, priority: OnMidnightPriority) {
+        if priority != OnMidnightPriority::Kill {return}
+        let Some(BooleanSelection(true)) = ControllerID::role(actor_ref, Role::Kidnapper, 1).get_boolean_selection(game) else {return};
+        let Some(target) = self.jailed_target_ref else {return};
+        if !Detained::is_detained(game, target){return}
+        target.try_night_kill_single_attacker(
+            actor_ref, 
+            game, 
+            midnight_variables,
+            GraveKiller::Role(Role::Jailor),
+            AttackPower::ProtectionPiercing, 
+            false
+        );
 
-
-        match priority {
-            OnMidnightPriority::Kill => {
-                let Some(BooleanSelection(true)) = ControllerID::role(actor_ref, Role::Kidnapper, 1).get_boolean_selection(game) else {return};
-                let Some(target) = self.jailed_target_ref else {return};
-                
-                if Detained::is_detained(game, target){
-                    target.try_night_kill_single_attacker(
-                        actor_ref, 
-                        game, 
-                        midnight_variables,
-                        GraveKiller::Role(Role::Jailor),
-                        AttackPower::ProtectionPiercing, 
-                        false
-                    );
-    
-                    self.executions_remaining = self.executions_remaining.saturating_sub(1);
-                    actor_ref.edit_role_ability_helper(game, self);
-                }
-            },
-            _ => {}
-        }
+        self.executions_remaining = self.executions_remaining.saturating_sub(1);
+        actor_ref.edit_role_ability_helper(game, self);
+        
     }
     fn controller_parameters_map(self, game: &Game, actor_ref: PlayerReference) -> super::ControllerParametersMap {
         ControllerParametersMap::combine([

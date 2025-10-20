@@ -2,13 +2,13 @@ use std::{ops::Div, time::Duration};
 
 use serde::{Serialize, Deserialize};
 
-use crate::game::{components::graves::{grave::Grave, Graves}, modifiers::{hidden_nomination_votes::HiddenNominationVotes, hidden_verdict_votes::HiddenVerdictVotes, ModifierID}};
+use crate::game::{components::graves::{grave::Grave, Graves}, event::{AsInvokable as _, Invokable as _}, modifiers::{hidden_nomination_votes::HiddenNominationVotes, hidden_verdict_votes::HiddenVerdictVotes, ModifierID}};
 
 use super::{
     chat::{ChatGroup, ChatMessageVariant},
     event::{
         before_phase_end::BeforePhaseEnd,
-        on_midnight::{OnMidnight, MidnightVariables}, on_phase_start::OnPhaseStart, Event
+        on_midnight::{OnMidnight, OnMidnightFold}, on_phase_start::OnPhaseStart,
     },
     player::PlayerReference, settings::PhaseTimeSettings, Game
 };
@@ -36,7 +36,7 @@ pub enum PhaseState {
     Briefing,
     Obituary { 
         #[serde(skip)]
-        last_night: MidnightVariables
+        last_night: OnMidnightFold
     },
     Discussion,
     #[serde(rename_all = "camelCase")]
@@ -90,7 +90,7 @@ impl PhaseStateMachine {
     }
 
     pub fn next_phase(game: &mut Game, force_next_phase: Option<PhaseState>) {
-        BeforePhaseEnd::new(game.current_phase().phase()).invoke(game);
+        BeforePhaseEnd::new(game.current_phase().phase()).as_invokable().invoke(game);
         let mut new_phase = PhaseState::end(game);
 
         if let Some(forced_new_phase) = force_next_phase {
@@ -101,7 +101,7 @@ impl PhaseStateMachine {
         game.phase_machine.time_remaining = PhaseStateMachine::get_phase_time_length(game, game.current_phase().phase());
 
         PhaseState::start(game);
-        OnPhaseStart::new(game.current_phase().clone()).invoke(game);
+        OnPhaseStart::new(game.current_phase().clone()).as_invokable().invoke(game);
     }
 
     pub fn get_phase_time_length(game: &Game, phase: PhaseType) -> Option<Duration> {
@@ -307,7 +307,10 @@ impl PhaseState {
                 Self::Night
             },
             PhaseState::Night => {
-                Self::Obituary { last_night: OnMidnight::new().invoke(game) }
+                let mut event = OnMidnight::new(game);
+                let borrow = event.as_invokable();
+                borrow.invoke(game);
+                Self::Obituary { last_night: event.1 }
             },
             PhaseState::Recess => Self::Recess
         }

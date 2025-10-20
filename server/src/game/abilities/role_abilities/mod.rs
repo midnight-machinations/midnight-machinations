@@ -1,15 +1,9 @@
-use crate::game::{
-        abilities_component::{
-            ability::Ability,
-            ability_id::AbilityID,
-            ability_trait::AbilityTrait
-        }, components::{night_visits::Visits, possession::Possession}, controllers::ControllerID, event::{on_conceal_role::OnConcealRole, on_midnight::{MidnightVariables, OnMidnightPriority}, on_player_possessed::OnPlayerPossessed}, player::PlayerReference, role::RoleState, visit::VisitTag, Game
-    };
+use crate::game::{abilities_component::{ability::Ability, ability_trait::AbilityTrait}, prelude::*};
 
 #[derive(Clone, Debug)]
 pub struct RoleAbility(pub RoleState);
 impl AbilityTrait for RoleAbility {
-    fn on_midnight(&self, game: &mut Game, id: &AbilityID, _event: &crate::game::event::on_midnight::OnMidnight, midnight_variables: &mut crate::game::event::on_midnight::MidnightVariables, priority: crate::game::event::on_midnight::OnMidnightPriority) {
+    fn on_midnight(&self, game: &mut Game, id: &AbilityID, _event: &crate::game::event::on_midnight::OnMidnight, midnight_variables: &mut crate::game::event::on_midnight::OnMidnightFold, priority: crate::game::event::on_midnight::OnMidnightPriority) {
         if priority == OnMidnightPriority::InitializeNight { 
             Visits::add_visits(
                 midnight_variables,
@@ -50,9 +44,7 @@ impl AbilityTrait for RoleAbility {
     fn on_role_switch(&self, game: &mut Game, id: &AbilityID, event: &crate::game::event::on_role_switch::OnRoleSwitch, fold: &mut (), priority: ()) {
         self.0.clone().on_role_switch(game, id.get_role_actor_expect(), event, fold, priority)
     }
-
-
-    fn on_player_possessed(&self, game: &mut Game, id: &AbilityID, event: &OnPlayerPossessed, fold: &mut MidnightVariables, priority: ()){
+    fn on_player_possessed(&self, game: &mut Game, id: &AbilityID, event: &OnPlayerPossessed, fold: &mut OnMidnightFold, priority: ()){
         if id.get_role_actor_expect() == event.possessed {
             for id in game.controllers.all_controller_ids() {
                 if let ControllerID::Role { role, .. } = id && role == self.0.role() {
@@ -71,6 +63,12 @@ impl AbilityTrait for RoleAbility {
         }
 
         self.0.clone().on_player_possessed(game, id, event, fold, priority);
+    }
+    fn on_player_roleblocked(&self, game: &mut Game, id: &AbilityID, event: &OnPlayerRoleblocked, fold: &mut OnMidnightFold, _priority: ()) {
+        self.0.clone().on_player_roleblocked(game, fold, id.get_role_actor_expect(), event.player, event.invisible)
+    }
+    fn on_visit_wardblocked(&self, game: &mut Game, id: &AbilityID, event: &OnVisitWardblocked, fold: &mut OnMidnightFold, _priority: ()) {
+        self.0.clone().on_visit_wardblocked(game, fold, id.get_role_actor_expect(), event.visit)
     }
 
     fn controller_parameters_map(&self, game: &Game, id: &AbilityID)  -> crate::game::controllers::ControllerParametersMap {

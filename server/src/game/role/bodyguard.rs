@@ -1,27 +1,8 @@
 
 use serde::Serialize;
-use crate::game::abilities_component::ability_id::AbilityID;
-use crate::game::attack_power::AttackPower;
-use crate::game::attack_power::DefensePower;
-use crate::game::components::night_visits::Visits;
-use crate::game::components::transport::Transport;
-use crate::game::components::transport::TransportPriority;
-use crate::game::event::on_midnight::{MidnightVariables, OnMidnightPriority};
-use crate::game::components::graves::grave::GraveKiller;
-use crate::game::phase::PhaseType;
-use crate::game::player::PlayerReference;
-
-use crate::game::visit::Visit;
-
-use crate::game::Game;
-
+use crate::game::components::transport::{Transport, TransportPriority};
+use crate::game::prelude::*;
 use crate::vec_map::vec_map;
-
-use super::{
-    ControllerID, ControllerParametersMap,
-    GetClientAbilityState, Role,
-    RoleStateTrait
-};
 
 #[derive(Clone, Debug, Serialize)]
 #[serde(rename_all = "camelCase")]
@@ -51,7 +32,7 @@ pub(super) const DEFENSE: DefensePower = DefensePower::None;
 
 impl RoleStateTrait for Bodyguard {
     type ClientAbilityState = ClientRoleState;
-    fn on_midnight(self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut MidnightVariables, priority: OnMidnightPriority) {
+    fn on_midnight(self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut OnMidnightFold, priority: OnMidnightPriority) {
         if game.day_number() <= 1 {return};
         
         match priority {
