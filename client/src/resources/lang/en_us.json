@@ -58,6 +58,7 @@
     "menu.settings.menus": "Menus",
     "menu.settings.maxMenus": "Max Menus Open",
     "menu.settings.menuOrder": "Menu Order",
+    "menu.settings.enableHeader": "Enable Header",
     "menu.settings.dangerZone": "Danger zone",
     "menu.settings.volume": "Volume",
     "menu.settings.font": "Font",

@@ -19,6 +19,7 @@ export default function SettingsMenu(): ReactElement {
     const [fontSizeState, setFontSize] = useState<number>(loadSettingsParsed().fontSize);
     const [defaultName, setDefaultName] = useState<UnsafeString | null>(loadSettingsParsed().defaultName);
     const [accessibilityFontEnabled, setAccessibilityFontEnabled] = useState(loadSettingsParsed().accessibilityFont);
+    const [headerEnabled, setHeaderEnabled] = useState(loadSettingsParsed().headerEnabled ?? true);
     const [menuOrder, setMenuOrder] = useState(loadSettingsParsed().menuOrder);
     const [maxMenus, setMaxMenus] = useState(loadSettingsParsed().maxMenus);
     const anchorController = useContext(AnchorControllerContext)!;
@@ -145,6 +146,13 @@ export default function SettingsMenu(): ReactElement {
                             />
                         </div>
                     </div>
+                    <label>
+                        {translate("menu.settings.enableHeader")}
+                        <CheckBox checked={headerEnabled} onChange={(checked: boolean) => {
+                            setHeaderEnabled(checked);
+                            saveSettings({headerEnabled: checked});
+                        }}></CheckBox>
+                    </label>
                 </section>
                 <section>
                     <h2>{translate("menu.settings.defaultName")}</h2>
