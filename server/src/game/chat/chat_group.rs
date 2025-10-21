@@ -115,12 +115,24 @@ impl ChatGroup{
 }
 impl PlayerReference{
     fn receive_player_chat_group_map(&self, game: &Game)->PlayerChatGroupMap{
+        if game.current_phase().phase() == PhaseType::Recess {
+            let mut out = PlayerChatGroupMap::new();
+            out.insert(*self, ChatGroup::All);
+            return out;
+        }
+
         let mut out = self.role_state(game).clone().receive_player_chat_group_map(game, *self);
         out.insert(*self, ChatGroup::All);
         if !self.alive(game) {out.insert(*self, ChatGroup::Dead);}
         out
     }
     fn send_player_chat_group_map(&self, game: &Game)->PlayerChatGroupMap{
+        if game.current_phase().phase() == PhaseType::Recess {
+            let mut out = PlayerChatGroupMap::new();
+            out.insert(*self, ChatGroup::All);
+            return out;
+        }
+
         if Silenced::silenced(game, *self) {
             return PlayerChatGroupMap::new();
         }
@@ -128,11 +140,8 @@ impl PlayerReference{
         let mut out = self.role_state(game).clone().send_player_chat_group_map(game, *self);
 
         if 
-            (
-                !matches!(game.current_phase().phase(), PhaseType::Night|PhaseType::Obituary|PhaseType::Testimony|PhaseType::Briefing|PhaseType::Recess) && 
-                self.alive(game)
-            ) || 
-            game.current_phase().phase()==PhaseType::Recess
+            !matches!(game.current_phase().phase(), PhaseType::Night|PhaseType::Obituary|PhaseType::Testimony|PhaseType::Briefing|PhaseType::Recess) && 
+            self.alive(game)
         {
             out.insert(*self, ChatGroup::All);
         }
