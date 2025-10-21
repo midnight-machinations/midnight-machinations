@@ -11,6 +11,7 @@ import { useGameState, usePlayerState, useSpectator } from "../../components/use
 import { MobileContext } from "../Anchor";
 import { encodeString } from "../../components/ChatMessage";
 import Select from "../../components/Select";
+import { loadSettingsParsed } from "../../game/localStorage";
 
 
 export default function HeaderMenu(props: Readonly<{
@@ -35,10 +36,11 @@ export default function HeaderMenu(props: Readonly<{
 
     const spectator = useSpectator()!;
 
+    const reducedHeader = loadSettingsParsed().headerEnabled === false;
 
-    return <div className={"header-menu " + backgroundStyle}>
+    return <div className={"header-menu " + backgroundStyle + (reducedHeader ? " reduced-header" : "")}>
         {!(spectator && !host) && <FastForwardButton spectatorAndHost={spectator && host}/>}
-        <Information />
+        {reducedHeader || <Information />}
         {!mobile && <MenuButtons chatMenuNotification={props.chatMenuNotification}/>}
         <Timer />
     </div>
