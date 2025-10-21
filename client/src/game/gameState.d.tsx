@@ -132,9 +132,9 @@ export type LobbyClientID = number;
 export type Verdict = "innocent"|"guilty"|"abstain";
 export const PHASES = ["obituary", "discussion", "nomination", "adjournment", "testimony", "judgement", "finalWords", "briefing", "dusk", "night", "recess"] as const;
 export type PhaseType = (typeof PHASES)[number];
-export type PhaseState = {type: "briefing"} | {type: "dusk"} | {type: "night"} | {type: "obituary"} | {type: "adjournment"} | {type: "discussion"} | 
+export type PhaseState = {type: "briefing"} | {type: "dusk"} | {type: "night"} | {type: "obituary"} | {type: "discussion"} | 
 {
-    type: "nomination",
+    type: "nomination" | "adjournment",
     trialsLeft: number
 } | {
     type: "testimony",
