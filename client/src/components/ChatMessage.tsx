@@ -400,11 +400,22 @@ function useContainsMention(message: ChatMessageVariant & { text: string | Unsaf
         ["lobbyClients", "yourId", "yourPlayerIndex", "gamePlayers"]
     );
 
-    if (myName === undefined) {
-        return false;
-    }
+    const myRole = useLobbyOrGameState(
+        state => {
+            if (state.stateType === "game" && state.clientState.type === "player") {
+                return state.clientState.myRole
+            } else {
+                return undefined
+            }
+        },
+        ["yourPlayerIndex", "yourRole", "yourRoleState"]
+    );
+
+    const text = encodeString(replaceMentions(message.text, playerNames, roleList));
+
     return (
-        find(encodeString(myName)).test(encodeString(replaceMentions(message.text, playerNames, roleList)))
+        (myName !== undefined && find(encodeString(myName)).test(text)) ||
+        (myRole !== undefined && find('@' + translate('role.' + myRole + '.name')).test(text))
     )
 }
 
