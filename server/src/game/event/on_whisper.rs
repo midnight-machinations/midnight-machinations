@@ -1,4 +1,4 @@
-use crate::{event_priority, game::{abilities_component::Abilities, modifiers::ModifierSettings, player::PlayerReference, Game}};
+use crate::{event_priority, game::{abilities_component::Abilities, chat::ChatComponent, modifiers::ModifierSettings, player::PlayerReference}};
 use super::EventData;
 
 #[derive(Clone)]
@@ -35,7 +35,7 @@ impl EventData for OnWhisper {
 
     fn listeners() -> Vec<super::EventListenerFunction<Self>> {
         vec![
-            Game::on_whisper,
+            ChatComponent::on_whisper,
             ModifierSettings::on_whisper,
             Abilities::on_whisper,
         ]

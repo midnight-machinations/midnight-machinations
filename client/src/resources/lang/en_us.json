@@ -58,6 +58,7 @@
     "menu.settings.menus": "Menus",
     "menu.settings.maxMenus": "Max Menus Open",
     "menu.settings.menuOrder": "Menu Order",
+    "menu.settings.enableHeader": "Enable Header",
     "menu.settings.dangerZone": "Danger zone",
     "menu.settings.volume": "Volume",
     "menu.settings.font": "Font",
@@ -941,7 +942,7 @@
     "votesRequired": "\\0 votes required to nominate.",
     "votesRequired.1": "1 vote required to nominate.",
     "trialsRemaining": "\\0 trials remaining.",
-    "trialsRemaining.1": "1 trial remaining.",
+    "trialsRemaining.1": "Last Trial.",
     
     "phase.adjournment": "Adjournment",
     "phase.adjournment.var.0": "Adjournment",

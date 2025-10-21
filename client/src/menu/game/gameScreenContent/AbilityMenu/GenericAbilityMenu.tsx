@@ -37,7 +37,8 @@ import PlayerListSelectionMenu from "./ControllerSelectionTypes/PlayerListSelect
 import IntegerSelectionMenu from "./ControllerSelectionTypes/IntegerSelectionMenu";
 import BooleanSelectionMenu from "./ControllerSelectionTypes/BooleanSelectionMenu";
 import "./ControllerSelectionTypes/genericListController.css"
-import { usePlayerState } from "../../../../components/useHooks";
+import { useGameState, usePlayerState } from "../../../../components/useHooks";
+import { loadSettingsParsed } from "../../../../game/localStorage";
 
 type GroupName = `${PlayerIndex}/${Role}` | 
     "syndicate" | 
@@ -106,10 +107,33 @@ export default function GenericAbilityMenu(): ReactElement {
         ["yourAllowedControllers", "yourAllowedController"]
     )!;
 
+    const myIndex = usePlayerState(
+        playerState => playerState.myIndex,
+        ["yourPlayerIndex"]
+    )!;
+
+    const alive = usePlayerState(
+        (playerState, gameState) => gameState.players[playerState.myIndex].alive,
+        ["playerAlive", "yourPlayerIndex"]
+    )!;
+
+    const phaseState = useGameState(
+        gameState => gameState.phaseState,
+        ["phase"]
+    )!;
+
     let controllerGroupsMap: ControllerGroupsMap = new ListMap();
     //build this map ^
     for(let [controllerID, controller] of savedAbilities) {
-        if(!controllerIsVisible(controllerID, controller)){continue;}
+        if (
+            !controllerIsVisible(controllerID, controller) && 
+            !( // Special case: hide judge abilities unless on trial, the backend doesn't do this for us.
+                controllerID.type === "judge" && loadSettingsParsed().headerEnabled === false &&
+                phaseState.type === "judgement" && phaseState.playerOnTrial !== myIndex && alive
+            )
+        ) {
+            continue;
+        }
         let groupName = getGroupNameFromControllerID(controllerID);
         
         let controllers = controllerGroupsMap.get(groupName);
