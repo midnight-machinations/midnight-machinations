@@ -1,4 +1,4 @@
-import React, { ReactElement } from "react";
+import React, { ReactElement, useEffect, useState } from "react";
 import GAME_MANAGER from "../..";
 import translate from "../../game/lang";
 import Icon from "../../components/Icon";
@@ -19,6 +19,22 @@ export default function LobbyNamePane(): ReactElement {
         ["lobbyClients", "playersHost", "playersReady", "yourId"]
     )!;
 
+    const otherPlayersReady = useLobbyState(
+        lobbyState => lobbyState.players.values().map(p => p.ready),
+        ["lobbyClients", "playersHost", "playersReady"]
+    )!;
+
+    // This is an integer so that multiple flashes can overlap
+    const [readyFlashing, setReadyFlashing] = useState(0);
+
+    useEffect(() => {
+        if (ready === "notReady" && !isSpectator) {
+            setReadyFlashing(state => state + 1);
+            const flashTimeout = setTimeout(() => setReadyFlashing(state => Math.max(state - 1, 0)), 3000);
+            return () => clearTimeout(flashTimeout);
+        }
+    }, [otherPlayersReady])
+
     return <section className="player-list-menu-colors selector-section lobby-name-pane">
         {!isSpectator && <NameSelector/>}
         <div className="name-pane-buttons">
@@ -31,6 +47,7 @@ export default function LobbyNamePane(): ReactElement {
                 onClick={() => GAME_MANAGER.sendRelinquishHostPacket()}
             ><Icon>remove_moderator</Icon> {translate("menu.lobby.button.relinquishHost")}</button>}
             {ready !== "host" && <Button
+                className={readyFlashing > 0 ? "flashing" : undefined}
                 onClick={() => {GAME_MANAGER.sendReadyUpPacket(ready === "notReady")}}
             >
                 {ready === "ready"
