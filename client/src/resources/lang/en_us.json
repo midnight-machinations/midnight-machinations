@@ -941,7 +941,7 @@
     "votesRequired": "\\0 votes required to nominate.",
     "votesRequired.1": "1 vote required to nominate.",
     "trialsRemaining": "\\0 trials remaining.",
-    "trialsRemaining.1": "1 trial remaining.",
+    "trialsRemaining.1": "Last Trial.",
     
     "phase.adjournment": "Adjournment",
     "phase.adjournment.var.0": "Adjournment",
