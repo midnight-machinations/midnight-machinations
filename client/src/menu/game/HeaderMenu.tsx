@@ -150,14 +150,26 @@ export function PhaseSpecificInformation(props: Readonly<{
 
     const spectator = useSpectator();
 
-    if(
-        props.phaseState.type !== "testimony" &&
-        props.phaseState.type !== "judgement" &&
-        props.phaseState.type !== "finalWords"
-    ){
-        return null;
+    switch (props.phaseState.type) {
+        case "nomination":
+        case "adjournment": {
+            const trials = props.phaseState.trialsLeft;
+
+            return <div className="phase-specific">
+                <div className="highlighted">
+                    <StyledText>{translate(trials === 1 ? "trialsRemaining.1" : "trialsRemaining", trials)}</StyledText>
+                </div>
+            </div>
+        }
+        case "testimony":
+        case "judgement":
+        case "finalWords":
+            break;
+        default:
+            return null;
     }
 
+    // Trial
     return <div className="phase-specific">
         <div className="highlighted">
             <StyledText>
