@@ -144,3 +144,13 @@
     border-radius: .25rem;
     min-width: min-content;
 }
+
+.lobby-name-pane .flashing {
+    animation: ready-flash 0.5s infinite;
+}
+
+@keyframes ready-flash {
+    0% { outline: none; }
+    50% { outline: .13rem solid yellow; }
+    100% { outline: none; }
+}
