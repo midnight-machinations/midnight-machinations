@@ -2,12 +2,11 @@ pub mod chat_group;
 pub mod chat_message;
 pub mod chat_message_variant;
 pub mod chat_controller;
-
 use std::collections::VecDeque;
-
 pub use chat_group::*;
 pub use chat_message::*;
 pub use chat_message_variant::*;
+use crate::game::prelude::*;
 
 use crate::game::{components::player_component::PlayerComponent, player::PlayerReference, Game};
 
@@ -57,5 +56,48 @@ impl ChatComponent{
             .collect();
 
         game.chat_messages.get_mut(player).not_sent_messages.append(&mut messages);
+    }
+
+
+
+    
+    pub fn on_whisper(game: &mut Game, event: &OnWhisper, fold: &mut WhisperFold, priority: WhisperPriority) {
+        match priority {
+            WhisperPriority::Cancel => {
+                if 
+                    game.current_phase().phase() == PhaseType::Night || 
+                    !event.receiver.alive(game) ||
+                    !event.sender.alive(game) ||
+                    event.receiver == event.sender || 
+                    !event.sender.get_current_send_chat_groups(game).contains(&ChatGroup::All) ||
+                    event.message.replace(['\n', '\r'], "").trim().is_empty()
+                {
+                    fold.cancelled = true;
+                    fold.hide_broadcast = true;
+                }
+            },
+            WhisperPriority::Broadcast => {
+                if !fold.hide_broadcast {
+                    game.add_message_to_chat_group(ChatGroup::All, ChatMessageVariant::BroadcastWhisper {
+                        whisperer: event.sender,
+                        whisperee: event.receiver
+                    });
+                }
+            },
+            WhisperPriority::Send => {
+                if fold.cancelled {
+                    event.sender.add_private_chat_message(game, ChatMessageVariant::InvalidWhisper);
+                } else {
+                    let message = ChatMessageVariant::Whisper { 
+                        from_player_index: event.sender, 
+                        to_player_index: event.receiver, 
+                        text: event.message.clone()
+                    };
+
+                    event.sender.add_private_chat_message(game, message.clone());
+                    event.receiver.add_private_chat_message(game, message);
+                }
+            },
+        }
     }
 }

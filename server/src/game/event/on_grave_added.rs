@@ -1,8 +1,7 @@
 use crate::game::{
-    abilities_component::Abilities, components::graves::grave_reference::GraveReference,
-    event::EventData, modifiers::ModifierSettings, Game
+    abilities_component::Abilities, components::graves::{grave_reference::GraveReference, Graves},
+    event::EventData, modifiers::ModifierSettings
 };
-
 
 #[must_use = "Event must be invoked"]
 pub struct OnGraveAdded{
@@ -21,6 +20,6 @@ impl EventData for OnGraveAdded{
     fn listeners() -> Vec<super::EventListenerFunction<Self>> {vec![
         Abilities::on_grave_added,
         ModifierSettings::on_grave_added,
-        Game::on_grave_added
+        Graves::on_grave_added
     ]}
 }
