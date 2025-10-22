@@ -107,28 +107,29 @@
 
 
 :root{
-    --background-color: #0d0d0f;
+    /* Analog Horror Terminal Color Scheme */
+    --background-color: #000000;
+    --fade-color: #0a0a0a;
 
-    --fade-color: #0e101b;
+    --primary-color: #001100;
+    --secondary-color: #001a00;
+    --text-color: #00ff41;
 
-    --primary-color: #272b3b;
-    --secondary-color: #232754;
-    --text-color: #ffffff;
+    --primary-border-color: #00ff41;
+    --primary-border-shadow-color: #003300;
+    --background-border-color: #00aa00;
+    --background-border-shadow-color: #000000;
 
-    --primary-border-color: #545b78;
-    --primary-border-shadow-color: #1c1f2d;
-    --background-border-color: #33323d;
-    --background-border-shadow-color: #0a0a0f;
-
-    --hover-color: #30375a;
-    --focus-outline-color: #929ccc;
+    --hover-color: #002200;
+    --focus-outline-color: #00ff41;
 
     font-size: 1em;
     
-    --game-font: game-base-font;
-    --kira-font: game-kira-font;
-    --spiral-font: game-spiral-font;
-    --title-font: game-title-font;
+    /* Terminal font as primary */
+    --game-font: computer-font;
+    --kira-font: computer-font;
+    --spiral-font: computer-font;
+    --title-font: computer-font;
 }
 
 s {
@@ -148,9 +149,10 @@ s {
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
 
-    color: white;
+    color: var(--text-color);
 
     font-family: var(--game-font, Arial);
+    text-shadow: 0 0 5px var(--text-color);
 }
 .timer-box{
     width: 100%;
@@ -167,15 +169,16 @@ s {
 }
 
 button, .button, input, select, option, textarea, .textarea, summary {
-    border-radius: 0.4rem;
+    border-radius: 0;
     margin: .13rem;
     background-color: var(--secondary-color);
     border-color: var(--primary-border-color);
     border-style: solid;
     border-width: .13rem;
-    color: white;
+    color: var(--text-color);
     font-size: 1em;
     padding: 0.13rem 0.25rem;
+    box-shadow: 0 0 10px rgba(0, 255, 65, 0.3);
 }
 
 /*
@@ -291,17 +294,17 @@ code, .code {
 }
 /* Track */
 ::-webkit-scrollbar-track {
-    background: #2b2b2b;
-    border-radius: .4rem;
+    background: #000000;
+    border: 1px solid #00aa00;
 }
 /* Handle */
 ::-webkit-scrollbar-thumb {
-    background: #616161;
-    border-radius: .4rem;
+    background: #00ff41;
+    box-shadow: 0 0 5px #00ff41;
 }
 /* Handle on hover */
 ::-webkit-scrollbar-thumb:hover {
-    background: #a1a1a1;
+    background: #00ff88;
 }
 
 ::-webkit-scrollbar-corner {
@@ -309,96 +312,87 @@ code, .code {
 }
 
 .chat-menu-colors {
-
-    --fade-color: #161b34;
-
-    --primary-color: #1c244e;
-    --secondary-color: #232754;
-    --text-color: #ffffff;
-
-    --primary-border-color: #3c4675;
-    --primary-border-shadow-color: #111836;
-
-    --hover-color: #232c57;
-    --focus-outline-color: #929ccc;
-
-
-    --background-color: #151a41;
-    --background-border-color: #2b3162;
-    --background-border-shadow-color: #0e1024;
-
-    --primary-color: #1c244e;
-    --secondary-color: #232754;
+    --fade-color: #0a0a0a;
+    --primary-color: #001100;
+    --secondary-color: #001a00;
+    --text-color: #00ff41;
+    --primary-border-color: #00ff41;
+    --primary-border-shadow-color: #003300;
+    --background-color: #000000;
+    --background-border-color: #00aa00;
+    --background-border-shadow-color: #000000;
+    --hover-color: #002200;
+    --focus-outline-color: #00ff41;
 }
 
 .player-list-menu-colors {
-    --background-color: #182c28;
-    --fade-color: #0b1511;
-    --primary-color: #1a3531;
-    --secondary-color: #1f3a35;
-    --text-color: #ffffff;
-    --primary-border-color: #2e5952;
-    --primary-border-shadow-color: #142523;
-    --background-border-color: #2c4d46;
-    --background-border-shadow-color: #121f1c;
-    --hover-color: #1f403b;
-    --focus-outline-color: #84a997;
+    --background-color: #000000;
+    --fade-color: #0a0a0a;
+    --primary-color: #001100;
+    --secondary-color: #001a00;
+    --text-color: #00ff41;
+    --primary-border-color: #00ff41;
+    --primary-border-shadow-color: #003300;
+    --background-border-color: #00aa00;
+    --background-border-shadow-color: #000000;
+    --hover-color: #002200;
+    --focus-outline-color: #00ff41;
 }
 
 .will-menu-colors {
-    --background-color: #251737;
-    --fade-color: #100b15;
-    --primary-color: #2c1c40;
-    --secondary-color: #332142;
-    --text-color: #ffffff;
-    --primary-border-color: #4c3558;
-    --primary-border-shadow-color: #250d2b;
-    --background-border-color: #352d56;
-    --background-border-shadow-color: #110d18;
-    --hover-color: #38254e;
-    --focus-outline-color: #9c84a9;
+    --background-color: #000000;
+    --fade-color: #0a0a0a;
+    --primary-color: #001100;
+    --secondary-color: #001a00;
+    --text-color: #00ff41;
+    --primary-border-color: #00ff41;
+    --primary-border-shadow-color: #003300;
+    --background-border-color: #00aa00;
+    --background-border-shadow-color: #000000;
+    --hover-color: #002200;
+    --focus-outline-color: #00ff41;
 }
 
 .role-specific-colors {
-    --background-color: #331c26;
-    --fade-color: #150b12;
-    --primary-color: #422031;
-    --secondary-color: #422137;
-    --text-color: #ffffff;
-    --primary-border-color: #5a3246;
-    --primary-border-shadow-color: #25141d;
-    --background-border-color: #50303e;
-    --background-border-shadow-color: #25131c;
-    --hover-color: #4c2337;
-    --focus-outline-color: #a9849c;
+    --background-color: #000000;
+    --fade-color: #0a0a0a;
+    --primary-color: #001100;
+    --secondary-color: #001a00;
+    --text-color: #00ff41;
+    --primary-border-color: #00ff41;
+    --primary-border-shadow-color: #003300;
+    --background-border-color: #00aa00;
+    --background-border-shadow-color: #000000;
+    --hover-color: #002200;
+    --focus-outline-color: #00ff41;
 }
 
 .graveyard-menu-colors {
-    --background-color: #2c2b3b;
-    --fade-color: #1d1b29;
-    --primary-color: #323142;
-    --secondary-color: #373647;
-    --text-color: #ffffff;
-    --primary-border-color: #49485b;
-    --primary-border-shadow-color: #202027;
-    --background-border-color: #3d3c4d;
-    --background-border-shadow-color: #19181f;
-    --hover-color: #3c3b4d;
-    --focus-outline-color: #9896ae;
+    --background-color: #000000;
+    --fade-color: #0a0a0a;
+    --primary-color: #001100;
+    --secondary-color: #001a00;
+    --text-color: #00ff41;
+    --primary-border-color: #00ff41;
+    --primary-border-shadow-color: #003300;
+    --background-border-color: #00aa00;
+    --background-border-shadow-color: #000000;
+    --hover-color: #002200;
+    --focus-outline-color: #00ff41;
 }
 
 .wiki-menu-colors {
-    --background-color: #2C2124;
-    --fade-color: #0F0D15;
-    --primary-color: #3A2A31;
-    --secondary-color: #3A2A31;
-    --text-color: #ffffff;
-    --primary-border-color: #533C44;
-    --primary-border-shadow-color: #261C26;
-    --background-border-color: #493942;
-    --background-border-shadow-color: #201924;
-    --hover-color: #442F35;
-    --focus-outline-color: #A18E99;
+    --background-color: #000000;
+    --fade-color: #0a0a0a;
+    --primary-color: #001100;
+    --secondary-color: #001a00;
+    --text-color: #00ff41;
+    --primary-border-color: #00ff41;
+    --primary-border-shadow-color: #003300;
+    --background-border-color: #00aa00;
+    --background-border-shadow-color: #000000;
+    --hover-color: #002200;
+    --focus-outline-color: #00ff41;
 }
 
 
@@ -415,6 +409,51 @@ code, .code {
         }
         to {
             background-position: 100% 100%;
+        }
+    }
+
+    @keyframes scanline {
+        0% {
+            transform: translateY(-100%);
+        }
+        100% {
+            transform: translateY(100vh);
+        }
+    }
+
+    @keyframes flicker {
+        0% {
+            opacity: 0.97;
+        }
+        2% {
+            opacity: 0.95;
+        }
+        4% {
+            opacity: 0.97;
+        }
+        19% {
+            opacity: 0.97;
+        }
+        21% {
+            opacity: 0.93;
+        }
+        23% {
+            opacity: 0.97;
+        }
+        80% {
+            opacity: 0.95;
+        }
+        83% {
+            opacity: 0.97;
+        }
+    }
+
+    @keyframes vignette-pulse {
+        0%, 100% {
+            box-shadow: inset 0 0 200px rgba(0, 0, 0, 0.8);
+        }
+        50% {
+            box-shadow: inset 0 0 250px rgba(0, 0, 0, 0.9);
         }
     }
 
@@ -611,6 +650,63 @@ code, .code {
         animation: glitch-anim2 5s infinite linear alternate-reverse;
     }
 }
+@media (prefers-reduced-motion: no-preference) {
+    /* CRT Scanline Effect */
+    body::before {
+        content: " ";
+        display: block;
+        position: fixed;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        right: 0;
+        background: linear-gradient(
+            rgba(18, 16, 16, 0) 50%, 
+            rgba(0, 0, 0, 0.25) 50%
+        );
+        background-size: 100% 4px;
+        z-index: 999999;
+        pointer-events: none;
+        animation: flicker 0.15s infinite;
+    }
+
+    /* Moving scanline */
+    body::after {
+        content: " ";
+        display: block;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 2px;
+        background: rgba(0, 255, 65, 0.1);
+        z-index: 999999;
+        pointer-events: none;
+        animation: scanline 6s linear infinite;
+    }
+
+    /* Screen flicker on root */
+    html {
+        animation: flicker 0.15s infinite;
+    }
+}
+
+/* CRT Screen curvature and vignette */
+body {
+    background: radial-gradient(ellipse at center, #000000 0%, #000000 70%, #000 100%);
+    animation: vignette-pulse 3s ease-in-out infinite;
+}
+
+/* Terminal phosphor glow for all elements */
+.chat-message,
+button,
+.button,
+input,
+select,
+textarea {
+    text-shadow: 0 0 5px var(--text-color), 0 0 10px var(--text-color);
+}
+
 .highlighted.highlighted {
     border-color: yellow;
 }
