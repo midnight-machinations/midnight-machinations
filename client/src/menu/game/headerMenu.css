@@ -23,6 +23,12 @@
     position: relative;
     background-size:auto;
 }
+.header-menu.reduced-header {
+    height: 3rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: end;
+}
 .header-menu.background-day{
     background-position: center;
     background-repeat: repeat;

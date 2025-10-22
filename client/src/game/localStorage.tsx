@@ -54,7 +54,8 @@ export type Settings = {
     defaultName: UnsafeString | null;
     language: Language;
     maxMenus: number;
-    menuOrder: ListMapData<ContentMenu, boolean>
+    menuOrder: ListMapData<ContentMenu, boolean>,
+    headerEnabled?: boolean,
 };
 
 export type RoleSpecificMenuType = "playerList" | "standalone";
