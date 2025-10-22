@@ -52,8 +52,9 @@
     padding: 0.12rem;
     margin: .25rem 0;
     border: .13rem solid var(--primary-border-color);
-    border-radius: 0.5rem;
+    border-radius: 0;
     text-align: center;
+    box-shadow: 0 0 10px rgba(0, 255, 65, 0.2);
 }
 .wiki-article blockquote {
     width: 100%;
@@ -92,8 +93,10 @@
 .wiki-search-divider {
     margin: 0.5rem;
     padding: 0.3rem;
-    border-radius: 1rem;
+    border-radius: 0;
     background-color: var(--secondary-color);
+    border: 1px solid var(--primary-border-color);
+    box-shadow: 0 0 10px rgba(0, 255, 65, 0.2);
 }
 .wiki-article-standard {
     text-align: left;

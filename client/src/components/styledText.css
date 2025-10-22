@@ -6,10 +6,10 @@
     text-decoration: underline;
 }
 .keyword-player-number {
-	border-radius: 1em;
+	border-radius: 0;
     border: solid .13rem;
-    border-bottom-color: darkgray;
-    border-right-color: darkgray;
+    border-bottom-color: #00aa00;
+    border-right-color: #00aa00;
     background-color: var(--primary-color);
     display: inline-block;
     height: 1em;
@@ -17,12 +17,13 @@
     font-size: 0.8em;
     text-indent: 0;
     text-align: center !important;
+    box-shadow: 0 0 5px rgba(0, 255, 65, 0.3);
 }
 .keyword-outline-number {
-	border-radius: 0.5em;
+	border-radius: 0;
     border: solid .13rem;
-    border-bottom-color: darkgray;
-    border-right-color: darkgray;
+    border-bottom-color: #00aa00;
+    border-right-color: #00aa00;
     background-color: var(--primary-color);
     display: inline-block;
     height: 1em;
@@ -30,58 +31,72 @@
     font-size: 0.8em;
     text-indent: 0;
     text-align: center !important;
-    margin: 0 0 0 0
+    margin: 0 0 0 0;
+    box-shadow: 0 0 5px rgba(0, 255, 65, 0.3);
 }
 .keyword-player-sender {
-    color: rgb(168, 168, 168);
+    color: #00ff41;
     font-style: italic; 
     font-weight: bold;
+    text-shadow: 0 0 5px #00ff41;
 }
 .keyword-player-important {
-    border-bottom-color: darkgoldenrod;
-    border-right-color: darkgoldenrod;
-    color: yellow;
+    border-bottom-color: #ffaa00;
+    border-right-color: #ffaa00;
+    color: #ffff00;
+    text-shadow: 0 0 5px #ffff00;
 }
 .keyword-player {
-    color: whitesmoke;
+    color: #00ff41;
     font-style: italic; 
     font-weight: bold;
+    text-shadow: 0 0 5px #00ff41;
 }
 .keyword-outline.keyword-outline {
     display: inline;
 }
 .keyword-evil {
-    color: red;
+    color: #ff0000;
+    text-shadow: 0 0 5px #ff0000;
 }
 .keyword-good {
-    color: lime;
+    color: #00ff00;
+    text-shadow: 0 0 5px #00ff00;
 }
 .keyword-neutral {
-    color: rgb(255, 200, 252);
+    color: #ff00ff;
+    text-shadow: 0 0 5px #ff00ff;
 }
 .keyword-minions {
-    color: rgb(163, 71, 255);
+    color: #aa00ff;
+    text-shadow: 0 0 5px #aa00ff;
 }
 .keyword-fiends {
-    color: orange;
+    color: #ff8800;
+    text-shadow: 0 0 5px #ff8800;
 }
 .keyword-cult {
-    color: rgb(255, 64, 128);
+    color: #ff0088;
+    text-shadow: 0 0 5px #ff0088;
 }
 .keyword-info {
-    color: lightblue;
+    color: #00ffff;
+    text-shadow: 0 0 5px #00ffff;
 }
 .keyword-hiddenRole {
-    color: whitesmoke;
+    color: #00ff41;
     font-style: italic;
     font-weight: bold;
+    text-shadow: 0 0 5px #00ff41;
 }
 .keyword-abstain {
-    color: cyan;
+    color: #00ffff;
+    text-shadow: 0 0 5px #00ffff;
 }
 .keyword-dead {
     font-style: italic;
-    color: gray;
+    color: #00aa00;
+    text-shadow: 0 0 5px #00aa00;
 }
 .keyword-pride, .keyword-trans, .keyword-christmas {
     background-clip: text;

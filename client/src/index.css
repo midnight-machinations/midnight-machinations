@@ -691,6 +691,28 @@ code, .code {
     html {
         animation: flicker 0.15s infinite;
     }
+    
+    /* Chromatic aberration effect */
+    @keyframes rgb-shift {
+        0% {
+            text-shadow: 
+                0.5px 0 0 rgba(255, 0, 0, 0.7),
+                -0.5px 0 0 rgba(0, 255, 255, 0.7),
+                0 0 5px var(--text-color);
+        }
+        50% {
+            text-shadow: 
+                -0.5px 0 0 rgba(255, 0, 0, 0.7),
+                0.5px 0 0 rgba(0, 255, 255, 0.7),
+                0 0 5px var(--text-color);
+        }
+        100% {
+            text-shadow: 
+                0.5px 0 0 rgba(255, 0, 0, 0.7),
+                -0.5px 0 0 rgba(0, 255, 255, 0.7),
+                0 0 5px var(--text-color);
+        }
+    }
 }
 
 /* CRT Screen curvature and vignette */
