@@ -41,7 +41,7 @@
     border-bottom-color: var(--primary-border-shadow-color);
     border-right-color: var(--primary-border-shadow-color);
     border-radius: 0;
-    box-shadow: 0 0 15px rgba(0, 255, 65, 0.3);
+    box-shadow: 0 0 15px rgba(from var(--text-color) / 0.3);
 }
 .settings-menu > div > section {
     display: flex;
@@ -53,7 +53,7 @@
     padding: 0.5rem;
     background-color: var(--secondary-color);
     align-items: center;
-    box-shadow: 0 0 10px rgba(0, 255, 65, 0.2);
+    box-shadow: 0 0 10px rgba(from var(--text-color) / 0.2);
 }
 
 .settings-menu .menu-list {

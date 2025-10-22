@@ -8,7 +8,7 @@
     border: .13rem solid var(--primary-border-color);
     border-bottom-left-radius: 0;
     border-bottom-right-radius: 0;
-    box-shadow: 0 0 10px rgba(0, 255, 65, 0.3);
+    box-shadow: 0 0 10px rgba(from var(--text-color) / 0.3);
 }
 .grave .note-area {
     background-color: var(--secondary-color);

@@ -15,7 +15,7 @@
     background-color: var(--secondary-color);
     border-radius: 0;
     border: .13rem solid var(--primary-border-color);
-    box-shadow: 0 0 15px rgba(0, 255, 65, 0.4);
+    box-shadow: 0 0 15px rgba(from var(--text-color) / 0.4);
 }
 .custom-select-options-popover > div > .button {
     width: 100%;

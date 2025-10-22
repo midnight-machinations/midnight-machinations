@@ -111,17 +111,17 @@
     --background-color: #000000;
     --fade-color: #0a0a0a;
 
-    --primary-color: #001100;
-    --secondary-color: #001a00;
-    --text-color: #00ff41;
+    --primary-color: #111111;
+    --secondary-color: #1a1a1a;
+    --text-color: white;
 
-    --primary-border-color: #00ff41;
-    --primary-border-shadow-color: #003300;
-    --background-border-color: #00aa00;
+    --primary-border-color: #ffffff;
+    --primary-border-shadow-color: #333333;
+    --background-border-color: #aaaaaa;
     --background-border-shadow-color: #000000;
 
-    --hover-color: #002200;
-    --focus-outline-color: #00ff41;
+    --hover-color: #222222;
+    --focus-outline-color: #ffffff;
 
     font-size: 1em;
     
@@ -130,6 +130,8 @@
     --kira-font: computer-font;
     --spiral-font: computer-font;
     --title-font: computer-font;
+
+    font-family: var(--game-font);
 }
 
 s {
@@ -160,8 +162,7 @@ s {
     margin: 0%;
     padding: 0%;
     background-color: #000000;
-    border: 1px solid #00aa00;
-    box-shadow: inset 0 0 10px rgba(0, 255, 65, 0.3);
+    box-shadow: inset 0 0 10px rgba(255, 0, 65, 0.3);
 }
 
 .centered-label {
@@ -180,7 +181,7 @@ button, .button, input, select, option, textarea, .textarea, summary {
     color: var(--text-color);
     font-size: 1em;
     padding: 0.13rem 0.25rem;
-    box-shadow: 0 0 10px rgba(0, 255, 65, 0.3);
+    box-shadow: 0 0 10px rgba(from var(--text-color) / 0.3);
 }
 
 /*
@@ -297,16 +298,16 @@ code, .code {
 /* Track */
 ::-webkit-scrollbar-track {
     background: #000000;
-    border: 1px solid #00aa00;
+    border: 1px solid #888888;
 }
 /* Handle */
 ::-webkit-scrollbar-thumb {
-    background: #00ff41;
-    box-shadow: 0 0 5px #00ff41;
+    background: #aaaaaa;
+    box-shadow: 0 0 5px #aaaaaa;
 }
 /* Handle on hover */
 ::-webkit-scrollbar-thumb:hover {
-    background: #00ff88;
+    background: #ffffff;
 }
 
 ::-webkit-scrollbar-corner {
@@ -314,25 +315,25 @@ code, .code {
 }
 
 .chat-menu-colors {
+    --background-color: #000011;
     --fade-color: #0a0a0a;
-    --primary-color: #001100;
-    --secondary-color: #001a00;
-    --text-color: #00ff41;
-    --primary-border-color: #00ff41;
-    --primary-border-shadow-color: #003300;
-    --background-color: #000000;
-    --background-border-color: #00aa00;
+    --primary-color: #00001a;
+    --secondary-color: #000022;
+    --text-color: white;
+    --primary-border-color: #0041ff;
+    --primary-border-shadow-color: #000033;
+    --background-border-color: #0000aa;
     --background-border-shadow-color: #000000;
-    --hover-color: #002200;
-    --focus-outline-color: #00ff41;
+    --hover-color: #000022;
+    --focus-outline-color: #0041ff;
 }
 
 .player-list-menu-colors {
-    --background-color: #000000;
+    --background-color: #001100;
     --fade-color: #0a0a0a;
     --primary-color: #001100;
     --secondary-color: #001a00;
-    --text-color: #00ff41;
+    --text-color: white;
     --primary-border-color: #00ff41;
     --primary-border-shadow-color: #003300;
     --background-border-color: #00aa00;
@@ -342,59 +343,59 @@ code, .code {
 }
 
 .will-menu-colors {
-    --background-color: #000000;
+    --background-color: #110011;
     --fade-color: #0a0a0a;
-    --primary-color: #001100;
-    --secondary-color: #001a00;
-    --text-color: #00ff41;
-    --primary-border-color: #00ff41;
-    --primary-border-shadow-color: #003300;
-    --background-border-color: #00aa00;
+    --primary-color: #110011;
+    --secondary-color: #1a001a;
+    --text-color: white;
+    --primary-border-color: #ff41ff;
+    --primary-border-shadow-color: #330033;
+    --background-border-color: #aa00aa;
     --background-border-shadow-color: #000000;
-    --hover-color: #002200;
-    --focus-outline-color: #00ff41;
+    --hover-color: #220022;
+    --focus-outline-color: #ff41ff;
 }
 
 .role-specific-colors {
-    --background-color: #000000;
+    --background-color: #110000;
     --fade-color: #0a0a0a;
-    --primary-color: #001100;
-    --secondary-color: #001a00;
-    --text-color: #00ff41;
-    --primary-border-color: #00ff41;
-    --primary-border-shadow-color: #003300;
-    --background-border-color: #00aa00;
+    --primary-color: #110000;
+    --secondary-color: #1a0000;
+    --text-color: white;
+    --primary-border-color: #ff0041;
+    --primary-border-shadow-color: #330000;
+    --background-border-color: #aa0000;
     --background-border-shadow-color: #000000;
-    --hover-color: #002200;
-    --focus-outline-color: #00ff41;
+    --hover-color: #220000;
+    --focus-outline-color: #ff0041;
 }
 
 .graveyard-menu-colors {
-    --background-color: #000000;
+    --background-color: #111111;
     --fade-color: #0a0a0a;
-    --primary-color: #001100;
-    --secondary-color: #001a00;
-    --text-color: #00ff41;
-    --primary-border-color: #00ff41;
-    --primary-border-shadow-color: #003300;
-    --background-border-color: #00aa00;
+    --primary-color: #1a1a1a;
+    --secondary-color: #222222;
+    --text-color: white;
+    --primary-border-color: #ffffff;
+    --primary-border-shadow-color: #333333;
+    --background-border-color: #aaaaaa;
     --background-border-shadow-color: #000000;
-    --hover-color: #002200;
-    --focus-outline-color: #00ff41;
+    --hover-color: #222222;
+    --focus-outline-color: #ffffff;
 }
 
 .wiki-menu-colors {
-    --background-color: #000000;
+    --background-color: #110000;
     --fade-color: #0a0a0a;
-    --primary-color: #001100;
-    --secondary-color: #001a00;
-    --text-color: #00ff41;
-    --primary-border-color: #00ff41;
-    --primary-border-shadow-color: #003300;
-    --background-border-color: #00aa00;
+    --primary-color: #110000;
+    --secondary-color: #1a0000;
+    --text-color: white;
+    --primary-border-color: #ff4100;
+    --primary-border-shadow-color: #330000;
+    --background-border-color: #aa0000;
     --background-border-shadow-color: #000000;
-    --hover-color: #002200;
-    --focus-outline-color: #00ff41;
+    --hover-color: #220000;
+    --focus-outline-color: #ff4100;
 }
 
 
@@ -425,28 +426,28 @@ code, .code {
 
     @keyframes flicker {
         0% {
-            opacity: 0.97;
+            opacity: 0.99;
         }
         2% {
-            opacity: 0.95;
+            opacity: 0.98;
         }
         4% {
-            opacity: 0.97;
+            opacity: 0.99;
         }
         19% {
-            opacity: 0.97;
+            opacity: 0.99;
         }
         21% {
-            opacity: 0.93;
+            opacity: 0.97;
         }
         23% {
-            opacity: 0.97;
+            opacity: 0.99;
         }
         80% {
-            opacity: 0.95;
+            opacity: 0.98;
         }
         83% {
-            opacity: 0.97;
+            opacity: 0.99;
         }
     }
 
@@ -653,45 +654,6 @@ code, .code {
     }
 }
 @media (prefers-reduced-motion: no-preference) {
-    /* CRT Scanline Effect */
-    body::before {
-        content: " ";
-        display: block;
-        position: fixed;
-        top: 0;
-        left: 0;
-        bottom: 0;
-        right: 0;
-        background: linear-gradient(
-            rgba(18, 16, 16, 0) 50%, 
-            rgba(0, 0, 0, 0.25) 50%
-        );
-        background-size: 100% 4px;
-        z-index: 999999;
-        pointer-events: none;
-        animation: flicker 0.15s infinite;
-    }
-
-    /* Moving scanline */
-    body::after {
-        content: " ";
-        display: block;
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 2px;
-        background: rgba(0, 255, 65, 0.1);
-        z-index: 999999;
-        pointer-events: none;
-        animation: scanline 6s linear infinite;
-    }
-
-    /* Screen flicker on root */
-    html {
-        animation: flicker 0.15s infinite;
-    }
-    
     /* Chromatic aberration effect */
     @keyframes rgb-shift {
         0% {

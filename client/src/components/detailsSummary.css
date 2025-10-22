@@ -23,7 +23,7 @@
     border-bottom-color: var(--primary-border-shadow-color);
     border-right-color: var(--primary-border-shadow-color);
     border-radius: 0;
-    box-shadow: 0 0 10px rgba(0, 255, 65, 0.2);
+    box-shadow: 0 0 10px rgba(from var(--text-color) / 0.2);
     /* justify-content: left;
     align-items: center; */
 }

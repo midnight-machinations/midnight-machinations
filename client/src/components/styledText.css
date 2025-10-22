@@ -8,8 +8,8 @@
 .keyword-player-number {
 	border-radius: 0;
     border: solid .13rem;
-    border-bottom-color: #00aa00;
-    border-right-color: #00aa00;
+    border-bottom-color: #aaaaaa;
+    border-right-color: #aaaaaa;
     background-color: var(--primary-color);
     display: inline-block;
     height: 1em;
@@ -17,13 +17,13 @@
     font-size: 0.8em;
     text-indent: 0;
     text-align: center !important;
-    box-shadow: 0 0 5px rgba(0, 255, 65, 0.3);
+    box-shadow: 0 0 5px rgba(from var(--text-color) / 0.3);
 }
 .keyword-outline-number {
 	border-radius: 0;
     border: solid .13rem;
-    border-bottom-color: #00aa00;
-    border-right-color: #00aa00;
+    border-bottom-color: #aaaaaa;
+    border-right-color: #aaaaaa;
     background-color: var(--primary-color);
     display: inline-block;
     height: 1em;
@@ -32,13 +32,13 @@
     text-indent: 0;
     text-align: center !important;
     margin: 0 0 0 0;
-    box-shadow: 0 0 5px rgba(0, 255, 65, 0.3);
+    box-shadow: 0 0 5px rgba(from var(--text-color) / 0.3);
 }
 .keyword-player-sender {
-    color: #00ff41;
+    color: #aaaaaa;
     font-style: italic; 
     font-weight: bold;
-    text-shadow: 0 0 5px #00ff41;
+    text-shadow: 0 0 5px #aaaaaa;
 }
 .keyword-player-important {
     border-bottom-color: #ffaa00;
@@ -47,10 +47,10 @@
     text-shadow: 0 0 5px #ffff00;
 }
 .keyword-player {
-    color: #00ff41;
+    color: #ffffff;
     font-style: italic; 
     font-weight: bold;
-    text-shadow: 0 0 5px #00ff41;
+    text-shadow: 0 0 5px #ffffff;
 }
 .keyword-outline.keyword-outline {
     display: inline;
@@ -84,10 +84,10 @@
     text-shadow: 0 0 5px #00ffff;
 }
 .keyword-hiddenRole {
-    color: #00ff41;
+    color: #ffffff;
     font-style: italic;
     font-weight: bold;
-    text-shadow: 0 0 5px #00ff41;
+    text-shadow: 0 0 5px #ffffff;
 }
 .keyword-abstain {
     color: #00ffff;
@@ -95,8 +95,8 @@
 }
 .keyword-dead {
     font-style: italic;
-    color: #00aa00;
-    text-shadow: 0 0 5px #00aa00;
+    color: #aaaaaa;
+    text-shadow: 0 0 5px #aaaaaa;
 }
 .keyword-pride, .keyword-trans, .keyword-christmas {
     background-clip: text;

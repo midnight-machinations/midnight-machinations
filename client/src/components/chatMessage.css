@@ -23,7 +23,7 @@
     border: .13rem solid var(--primary-border-color);
     border-radius: 0;
     padding: .25rem;
-    box-shadow: 0 0 10px rgba(0, 255, 65, 0.2);
+    box-shadow: 0 0 10px rgba(from var(--primary-color) r g b / 0.2);
 }
 .chat-message {
     width: 100%;
@@ -58,9 +58,8 @@
 }
 .chat-message.dead {
     background-color: #000000;
-    border: 1px solid #003300;
     border-radius: 0;
-    color: #00aa00;
+    color: #aaaaaa;
 }
 .chat-message.phase-change {
     text-align: center;
@@ -106,9 +105,9 @@
 }
 .chat-message.result {
     background-color: #001100;
-    color: #00ff41;
-    border: 1px solid #00aa00;
-    text-shadow: 0 0 5px #00ff41;
+    color: #ffffff;
+    border: 1px solid #aaaaaa;
+    text-shadow: 0 0 5px #ffffff;
 }
 .chat-message.warning {
     background-color: #220000;
@@ -128,7 +127,6 @@
     flex-direction: row;
     padding-left: 0.5rem;
     padding-right: 0.5rem;
-    border-radius: 0.4rem;
     border-width: .07rem;
     border-style: solid;
     border-color: black;

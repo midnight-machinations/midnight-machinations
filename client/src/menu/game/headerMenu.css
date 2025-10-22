@@ -12,7 +12,7 @@
     border-radius: 0;
     background-color: var(--primary-color);
     overflow-x: hidden;
-    box-shadow: 0 0 10px rgba(0, 255, 65, 0.3);
+    box-shadow: 0 0 10px rgba(from var(--text-color) / 0.3);
 }
 .menu-buttons button{
     position: relative;
@@ -58,7 +58,7 @@
     border-style: solid;
     border-radius: 0;
     padding: .13rem .25rem;
-    box-shadow: 0 0 10px rgba(0, 255, 65, 0.3);
+    box-shadow: 0 0 10px rgba(from var(--text-color) / 0.3);
 }
 
 .header-menu .phase-specific {
@@ -73,7 +73,7 @@
     border-style: solid;
     border-radius: 0;
     padding: .13rem .25rem;
-    box-shadow: 0 0 10px rgba(0, 255, 65, 0.3);
+    box-shadow: 0 0 10px rgba(from var(--text-color) / 0.3);
 }
 .header-menu .judgement-info > button{
     width: max-content;

@@ -7,7 +7,7 @@
     top: 2.75rem;
     height: fit-content;
     min-width: fit-content;
-    box-shadow: 0 0 20px rgba(0, 255, 65, 0.5);
+    box-shadow: 0 0 20px rgba(from var(--text-color) / 0.5);
 
     border: solid .13rem var(--primary-border-color);
     border-bottom-color: var(--primary-border-shadow-color);
@@ -34,7 +34,7 @@
     border-radius: 0;
     padding: 0.25rem;
     background-color: var(--secondary-color);
-    box-shadow: 0 0 10px rgba(0, 255, 65, 0.3);
+    box-shadow: 0 0 10px rgba(from var(--text-color) / 0.3);
 }
 
 .global-menu button {

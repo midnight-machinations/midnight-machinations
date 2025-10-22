@@ -54,7 +54,7 @@
     border: .13rem solid var(--primary-border-color);
     border-radius: 0;
     text-align: center;
-    box-shadow: 0 0 10px rgba(0, 255, 65, 0.2);
+    box-shadow: 0 0 10px rgba(from var(--text-color) / 0.2);
 }
 .wiki-article blockquote {
     width: 100%;
@@ -96,7 +96,7 @@
     border-radius: 0;
     background-color: var(--secondary-color);
     border: 1px solid var(--primary-border-color);
-    box-shadow: 0 0 10px rgba(0, 255, 65, 0.2);
+    box-shadow: 0 0 10px rgba(from var(--text-color) / 0.2);
 }
 .wiki-article-standard {
     text-align: left;
