@@ -10,8 +10,3 @@
     border: .13rem solid var(--primary-border-color);
     box-shadow: 0 0 15px rgba(from var(--text-color) / 0.5);
 }
-
-button {
-    /* margin: 0;
-    padding: .13rem .13rem; */
-}

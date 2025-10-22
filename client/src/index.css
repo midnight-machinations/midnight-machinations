@@ -276,14 +276,6 @@ button:hover:not([disabled]):not(:active), .button:hover:not([disabled]):not(:ac
     background-color: var(--hover-color);
 }
 
-.hero {
-    height: 100vh;
-    background-position: center;
-    background-repeat: no-repeat;
-    background-size: cover;
-    position: relative;
-}
-
 code, .code {
     font-family: 'Courier New', Courier, monospace;
     font-weight: bold;
@@ -320,12 +312,12 @@ code, .code {
     --primary-color: #00001a;
     --secondary-color: #000022;
     --text-color: white;
-    --primary-border-color: #0041ff;
+    --primary-border-color: #0031c4;
     --primary-border-shadow-color: #000033;
-    --background-border-color: #0000aa;
+    --background-border-color: #000081;
     --background-border-shadow-color: #000000;
     --hover-color: #000022;
-    --focus-outline-color: #0041ff;
+    --focus-outline-color: #0031c4;
 }
 
 .player-list-menu-colors {
@@ -334,12 +326,12 @@ code, .code {
     --primary-color: #001100;
     --secondary-color: #001a00;
     --text-color: white;
-    --primary-border-color: #00ff41;
+    --primary-border-color: #00c030;
     --primary-border-shadow-color: #003300;
-    --background-border-color: #00aa00;
+    --background-border-color: #007200;
     --background-border-shadow-color: #000000;
     --hover-color: #002200;
-    --focus-outline-color: #00ff41;
+    --focus-outline-color: #00c030;
 }
 
 .will-menu-colors {
@@ -348,12 +340,12 @@ code, .code {
     --primary-color: #110011;
     --secondary-color: #1a001a;
     --text-color: white;
-    --primary-border-color: #ff41ff;
+    --primary-border-color: #c731c7;
     --primary-border-shadow-color: #330033;
     --background-border-color: #aa00aa;
     --background-border-shadow-color: #000000;
     --hover-color: #220022;
-    --focus-outline-color: #ff41ff;
+    --focus-outline-color: #c731c7;
 }
 
 .role-specific-colors {
@@ -362,12 +354,12 @@ code, .code {
     --primary-color: #110000;
     --secondary-color: #1a0000;
     --text-color: white;
-    --primary-border-color: #ff0041;
+    --primary-border-color: #8d0000;
     --primary-border-shadow-color: #330000;
-    --background-border-color: #aa0000;
+    --background-border-color: #4b0000;
     --background-border-shadow-color: #000000;
     --hover-color: #220000;
-    --focus-outline-color: #ff0041;
+    --focus-outline-color: #8d0000;
 }
 
 .graveyard-menu-colors {
@@ -376,12 +368,12 @@ code, .code {
     --primary-color: #1a1a1a;
     --secondary-color: #222222;
     --text-color: white;
-    --primary-border-color: #ffffff;
+    --primary-border-color: #eeeeee;
     --primary-border-shadow-color: #333333;
     --background-border-color: #aaaaaa;
     --background-border-shadow-color: #000000;
     --hover-color: #222222;
-    --focus-outline-color: #ffffff;
+    --focus-outline-color: #eeeeee;
 }
 
 .wiki-menu-colors {
@@ -390,12 +382,12 @@ code, .code {
     --primary-color: #110000;
     --secondary-color: #1a0000;
     --text-color: white;
-    --primary-border-color: #ff4100;
+    --primary-border-color: #aa5200;
     --primary-border-shadow-color: #330000;
-    --background-border-color: #aa0000;
+    --background-border-color: #773a00;
     --background-border-shadow-color: #000000;
     --hover-color: #220000;
-    --focus-outline-color: #ff4100;
+    --focus-outline-color: #aa5200;
 }
 
 
@@ -421,33 +413,6 @@ code, .code {
         }
         100% {
             transform: translateY(100vh);
-        }
-    }
-
-    @keyframes flicker {
-        0% {
-            opacity: 0.99;
-        }
-        2% {
-            opacity: 0.98;
-        }
-        4% {
-            opacity: 0.99;
-        }
-        19% {
-            opacity: 0.99;
-        }
-        21% {
-            opacity: 0.97;
-        }
-        23% {
-            opacity: 0.99;
-        }
-        80% {
-            opacity: 0.98;
-        }
-        83% {
-            opacity: 0.99;
         }
     }
 
@@ -654,32 +619,27 @@ code, .code {
     }
 }
 @media (prefers-reduced-motion: no-preference) {
-    /* Chromatic aberration effect */
-    @keyframes rgb-shift {
-        0% {
-            text-shadow: 
-                0.5px 0 0 rgba(255, 0, 0, 0.7),
-                -0.5px 0 0 rgba(0, 255, 255, 0.7),
-                0 0 5px var(--text-color);
-        }
-        50% {
-            text-shadow: 
-                -0.5px 0 0 rgba(255, 0, 0, 0.7),
-                0.5px 0 0 rgba(0, 255, 255, 0.7),
-                0 0 5px var(--text-color);
-        }
-        100% {
-            text-shadow: 
-                0.5px 0 0 rgba(255, 0, 0, 0.7),
-                -0.5px 0 0 rgba(0, 255, 255, 0.7),
-                0 0 5px var(--text-color);
-        }
+    body::before {
+        content: " ";
+        display: block;
+        position: fixed;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        right: 0;
+        background: linear-gradient(
+            rgba(0, 0, 0, 0) 50%, 
+            rgba(0, 0, 0, 0.1) 50%
+        );
+        background-size: 100% 4px;
+        z-index: 999999;
+        pointer-events: none;
     }
 }
 
 /* CRT Screen curvature and vignette */
 body {
-    background: radial-gradient(ellipse at center, #000000 0%, #000000 70%, #000 100%);
+    background: radial-gradient(ellipse at center, #000000 0%, #000000 70%, #00000000 100%);
     animation: vignette-pulse 3s ease-in-out infinite;
     position: relative;
 }
@@ -712,7 +672,7 @@ button,
 input,
 select,
 textarea {
-    text-shadow: 0 0 5px var(--text-color), 0 0 10px var(--text-color);
+    text-shadow: 0 0 1px var(--text-color), 0 0 2px var(--text-color);
 }
 
 .highlighted.highlighted {

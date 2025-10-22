@@ -104,9 +104,7 @@
     text-shadow: 0 0 5px #ff8800;
 }
 .chat-message.result {
-    background-color: #001100;
-    color: #ffffff;
-    border: 1px solid #aaaaaa;
+    background-color: #001d00;
     text-shadow: 0 0 5px #ffffff;
 }
 .chat-message.warning {

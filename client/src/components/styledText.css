@@ -89,10 +89,6 @@
     font-weight: bold;
     text-shadow: 0 0 5px #ffffff;
 }
-.keyword-abstain {
-    color: #00ffff;
-    text-shadow: 0 0 5px #00ffff;
-}
 .keyword-dead {
     font-style: italic;
     color: #aaaaaa;
