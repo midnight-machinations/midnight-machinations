@@ -1,4 +1,4 @@
-import React, { ReactElement } from "react";
+import React, { ReactElement, useMemo } from "react";
 import translate from "../../../game/lang";
 import GAME_MANAGER from "../../../index";
 import "./playerListMenu.css"
@@ -16,6 +16,7 @@ import { ChatMessageSection, ChatTextInput } from "./ChatMenu";
 import ListMap from "../../../ListMap";
 import { controllerIdToLinkWithPlayer } from "../../../game/controllerInput";
 import Counter from "../../../components/Counter";
+import { GraveIndex } from "../../../game/graveState";
 
 export default function PlayerListMenu(): ReactElement {
     const players = useGameState(
@@ -28,40 +29,36 @@ export default function PlayerListMenu(): ReactElement {
         ["addGrave"]
     )!
 
+    const livingPlayers = useMemo(() => {
+        return players.filter(player => player.alive);
+    }, [players])
+
+    const deadPlayers: [PlayerIndex, GraveIndex | undefined][] = useMemo(() => {
+        return players.filter(player => !player.alive).map(player => {
+            const graveIndex = graves.values()
+                .map((grave, index) => ({grave, index}))
+                .find((entry) => entry.grave.player === player.index)?.index;
+            return [player.index, graveIndex];
+        });
+    }, [players, graves])
 
     return <div className="player-list-menu player-list-menu-colors">
         <ContentTab close={ContentMenu.PlayerListMenu}>{translate("menu.playerList.title")}</ContentTab>
 
         <div className="player-list">
-            {players
-                .filter(player => player.alive)
-                .map(player => <div key={player.index} className="player-card-holder"><PlayerCard playerIndex={player.index}/></div>)
+            {livingPlayers.map(player => <div key={player.index} className="player-card-holder">
+                <PlayerCard playerIndex={player.index}/>
+            </div>)}
+
+            {deadPlayers.length === 0 ? null : 
+                <div className="dead-players-separator">
+                    <StyledText>{translate("grave.icon")} {translate("graveyard")}</StyledText>
+                </div>
             }
 
-            {graves.entries().length === 0 || 
-                <>
-                    <div className="dead-players-separator">
-                        <StyledText>{translate("grave.icon")} {translate("graveyard")}</StyledText>
-                    </div>
-                    {graves.entries().map(([index, grave]) => <div key={grave.player} className="player-card-holder"><PlayerCard graveIndex={index} playerIndex={grave.player}/></div>)}
-                </>
-            }
-
-            {players
-                .filter(
-                    player => !player.alive && 
-                    graves.values().find((grave) => grave.player === player.index) === undefined
-                ).length === 0 || 
-                <>
-                    <div className="dead-players-separator">
-                        <StyledText>{translate("grave.icon")} {translate("graveyard")}</StyledText>
-                    </div>
-                    {players
-                        .filter(player => !player.alive)
-                        .map(player => <div key={player.index} className="player-card-holder"><PlayerCard playerIndex={player.index}/></div>)
-                    }
-                </>
-            }
+            {deadPlayers.map(([playerIndex, graveIndex]) => <div key={playerIndex} className="player-card-holder">
+                <PlayerCard graveIndex={graveIndex} playerIndex={playerIndex}/>
+            </div>)}
         </div>
     </div>
 }
