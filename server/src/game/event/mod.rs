@@ -25,6 +25,7 @@ pub(super) mod on_ability_edit;
 pub(super) mod on_player_possessed;
 
 pub mod prelude;
+pub mod propagate;
 
 pub trait EventPriority: Sized + Copy {
     fn values() -> Vec<Self>;
