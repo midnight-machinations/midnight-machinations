@@ -295,14 +295,14 @@ export function GameScreenMenus(): ReactElement {
                     className="panel"
                     minSize={minSize}
                     defaultSize={mobile===false?defaultSizes[menu]:undefined}
-                    key={menu+".panel"}
+                    key={`${menu}.panel`}
                 >
                     <MenuElement />
                 </Panel>];
 
                 if(!mobile && visibleMenus.length > index + 1){
                     const nextMenu = visibleMenus[index + 1];
-                    out.push(<PanelResizeHandle key={menu+".and."+nextMenu+".handle"} className="panel-handle"/>)
+                    out.push(<PanelResizeHandle key={`${menu}.and.${nextMenu}.handle`} className="panel-handle"/>)
                 }
                 return out;
 
