@@ -37,27 +37,27 @@ When you need to add a new migration (e.g., changing the data structure):
 1. **Choose the appropriate file** based on what data type you're migrating
 2. **Add a new migration** using `registerMigration()`:
 
-```typescript
-registerMigration("GameModeStorage", {
-    id: "YYYY-MM-DD-description",  // Use today's date
-    description: "Brief description of what this migration does",
-    matches: (json) => {
-        // Return true if this migration should run on this data
-        // Match the format field from the PREVIOUS migration
-        return json.format === "2024-01-07-v5-to-v6";
-    },
-    transform: (json) => {
-        // Transform the data to the next version
-        // ... your transformation logic ...
-        
-        return Success({
-            ...json,
-            format: "YYYY-MM-DD-description",  // Set to THIS migration's ID
-            // ... other changes ...
-        });
-    }
-});
-```
+    ```typescript
+    registerMigration("GameModeStorage", {
+        id: "YYYY-MM-DD-description",  // Use today's date
+        description: "Brief description of what this migration does",
+        matches: (json) => {
+            // Return true if this migration should run on this data
+            // Match the format field from the PREVIOUS migration
+            return json.format === "2024-01-07-v5-to-v6";
+        },
+        transform: (json) => {
+            // Transform the data to the next version
+            // ... your transformation logic ...
+            
+            return Success({
+                ...json,
+                format: "YYYY-MM-DD-description",  // Set to THIS migration's ID
+                // ... other changes ...
+            });
+        }
+    });
+    ```
 
 3. **No need to update version constants** - The system automatically uses the last registered migration as the current format
 
@@ -118,21 +118,12 @@ registerMigration("GameModeStorage", {
 5. **Use type safety**: TypeScript will help catch errors in your transformations
 6. **Match the previous format**: Always match against the format ID of the immediately previous migration
 
-## Migration History
-
-- `2024-01-01-initial-to-v0`: Restructure flat game mode structure
-- `2024-01-02-v0-to-v1`: Convert disabledRoles to enabledRoles
-- `2024-01-03-v1-to-v2`: Add enabledModifiers field
-- `2024-01-04-v2-to-v3`: Convert faction to roleSet in role outlines
-- `2024-01-05-v3-to-v4`: Simplify role outline structure
-- `2024-01-06-v4-to-v5`: Convert enabledModifiers to modifierSettings
-- `2024-01-07-v5-to-v6`: Add adjournment phase time
-
 ## How Format Tracking Works
 
 Instead of using version strings like "v6", the format field now contains the migration ID:
 
 **Before:**
+
 ```json
 {
   "format": "v6",
@@ -141,6 +132,7 @@ Instead of using version strings like "v6", the format field now contains the mi
 ```
 
 **After:**
+
 ```json
 {
   "format": "2024-01-07-v5-to-v6",
@@ -149,8 +141,8 @@ Instead of using version strings like "v6", the format field now contains the mi
 ```
 
 This means:
+
 - You can tell exactly which migration was last applied
 - No need to maintain a separate version constant
 - New migrations just reference the previous migration's ID
 - The system automatically knows the latest format by looking at the last registered migration
-

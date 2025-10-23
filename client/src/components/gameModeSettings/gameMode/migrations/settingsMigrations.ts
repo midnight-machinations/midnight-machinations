@@ -6,38 +6,12 @@ import { registerMigration } from "./registry";
 import { Success } from "../parse";
 import { getDefaultSettings } from "../../../../game/localStorage";
 
-// Migration: initial -> v3
-// Adds format field and converts from initial settings structure
 registerMigration("Settings", {
-    id: "2024-01-01-initial-to-settings-v3",
-    description: "Add format field and validate settings structure",
-    matches: (json) => {
-        return typeof json === "object" && 
-               !Array.isArray(json) && 
-               json.format === undefined &&
-               "volume" in json &&
-               "defaultName" in json;
-    },
-    transform: (json) => {
-        return Success({
-            format: "2024-01-01-initial-to-settings-v3",
-            ...json
-        });
-    }
-});
-
-// Migration: v3 -> v6
-// Adds maxMenus and menuOrder fields, removes roleSpecificMenus
-registerMigration("Settings", {
-    id: "2024-01-02-settings-v3-to-v6",
+    id: "2024-12-28-new-menu-settings",
     description: "Add maxMenus and menuOrder, remove roleSpecificMenus",
-    matches: (json) => {
-        return typeof json === "object" && 
-               !Array.isArray(json) && 
-               json.format === "2024-01-01-initial-to-settings-v3";
-    },
+    matches: (json) => json.format === "v3",
     transform: (json) => {
-        const result: any = { ...json, format: "2024-01-02-settings-v3-to-v6" };
+        const result: any = { ...json, format: "v6" };
 
         // Add missing fields from default settings
         if (!("maxMenus" in result)) {
@@ -61,5 +35,17 @@ registerMigration("Settings", {
         }
 
         return Success(result);
+    }
+});
+
+registerMigration("Settings", {
+    id: "2025-10-23-change-to-migration-id-format",
+    description: "Change to migration ID format",
+    matches: (json) => json.format === "v6",
+    transform: (json) => {
+        return Success({
+            ...json,
+            format: "2025-10-23-change-to-migration-id-format",
+        });
     }
 });

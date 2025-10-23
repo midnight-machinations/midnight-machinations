@@ -53,6 +53,7 @@ export function applyMigrations<T extends keyof ConverterMap>(
             return Failure("unsupportedFormat", currentJson);
         }
 
+        console.log(`Applying migration to ${type}: ${migration.id}`);
         // Apply the migration
         const result = migration.transform(currentJson);
         if (isFailure(result)) {
