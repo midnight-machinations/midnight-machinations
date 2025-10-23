@@ -272,19 +272,23 @@ export function GameScreenMenus(): ReactElement {
         [ContentMenu.WikiMenu]: 15,
     }
 
+    // Filter out menus that shouldn't be shown
+    const visibleMenus = menuController
+        .menusOpen()
+        .filter((menu) => {
+            if(
+                GAME_MANAGER.state.stateType === "game" &&
+                GAME_MANAGER.state.clientState.type === "spectator" &&
+                (menu === ContentMenu.WillMenu || menu === ContentMenu.RoleSpecificMenu)
+            ){
+                return false;
+            }
+            return true;
+        });
+
     return <PanelGroup direction="horizontal" className="content">
-        {menuController
-            .menusOpen()
-            .flatMap((menu, index, menusOpen) => {
-
-                if(
-                    GAME_MANAGER.state.stateType === "game" &&
-                    GAME_MANAGER.state.clientState.type === "spectator" &&
-                    (menu === ContentMenu.WillMenu || menu === ContentMenu.RoleSpecificMenu)
-                ){
-                    return null;
-                }
-
+        {visibleMenus
+            .flatMap((menu, index) => {
                 const MenuElement = MENU_ELEMENTS[menu];
 
                 const out = [<Panel
@@ -296,14 +300,15 @@ export function GameScreenMenus(): ReactElement {
                     <MenuElement />
                 </Panel>];
 
-                if(!mobile && menusOpen.length > index + 1){
-                    out.push(<PanelResizeHandle key={menu+".handle"} className="panel-handle"/>)
+                if(!mobile && visibleMenus.length > index + 1){
+                    const nextMenu = visibleMenus[index + 1];
+                    out.push(<PanelResizeHandle key={menu+".and."+nextMenu+".handle"} className="panel-handle"/>)
                 }
                 return out;
 
             })
         }
-        {menuController.menusOpen().length === 0 && <Panel><div className="no-content">
+        {visibleMenus.length === 0 && <Panel><div className="no-content">
             {translate("menu.gameScreen.noContent")}
         </div></Panel>}
     </PanelGroup>
