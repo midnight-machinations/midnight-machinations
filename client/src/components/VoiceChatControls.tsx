@@ -1,10 +1,9 @@
 import React, { ReactElement, useEffect, useState } from "react";
-import { voiceChatManager } from "../../game/voiceChat";
-import { useLobbyState } from "../useHooks";
-import translate from "../../game/lang";
-import { Button } from "../Button";
-import Icon from "../Icon";
-import type { LobbyClientID, LobbyClient, LobbyState } from "../../game/gameState.d.tsx";
+import translate from "../game/lang";
+import { Button } from "./Button";
+import Icon from "./Icon";
+import { useLobbyState } from "./useHooks";
+import { LobbyState } from "../game/gameState.d";
 import "./voiceChatControls.css";
 
 export function VoiceChatControls(): ReactElement | null {
@@ -30,45 +29,59 @@ export function VoiceChatControls(): ReactElement | null {
     // Initialize voice chat when enabled
     useEffect(() => {
         if (voiceChatEnabled && !initialized) {
-            const playerIds = Array.from(players?.keys() ?? []);
-            voiceChatManager.enable(playerIds).then(() => {
+            const initVoiceChat = async () => {
+                const { voiceChatManager } = await import("../game/voiceChat");
+                const playerIds = players ? Array.from(players.keys()) : [];
+                await voiceChatManager.enable(playerIds);
                 setInitialized(true);
-            });
+            };
+            initVoiceChat();
         } else if (!voiceChatEnabled && initialized) {
-            voiceChatManager.disable();
-            setInitialized(false);
-            setMicEnabled(false);
+            const disableVoiceChat = async () => {
+                const { voiceChatManager } = await import("../game/voiceChat");
+                voiceChatManager.disable();
+                setInitialized(false);
+                setMicEnabled(false);
+            };
+            disableVoiceChat();
         }
     }, [voiceChatEnabled, initialized, players]);
 
     // Handle player joins/leaves
     useEffect(() => {
-        if (!voiceChatEnabled || !initialized) return;
+        if (!voiceChatEnabled || !initialized || !players) return;
 
-        const currentPlayerIds = Array.from(players?.keys() ?? []);
-        const managedPlayerIds = new Set(voiceChatManager["peerConnections"].keys());
+        const updatePlayers = async () => {
+            const { voiceChatManager } = await import("../game/voiceChat");
+            const currentPlayerIds = Array.from(players.keys());
+            const managedPlayerIds = new Set(voiceChatManager["peerConnections"].keys());
 
-        // Add new players
-        for (const playerId of currentPlayerIds) {
-            if (playerId !== myId && !managedPlayerIds.has(playerId)) {
-                voiceChatManager.addPlayer(playerId);
+            // Add new players
+            for (const playerId of currentPlayerIds) {
+                if (playerId !== myId && !managedPlayerIds.has(playerId)) {
+                    voiceChatManager.addPlayer(playerId);
+                }
             }
-        }
 
-        // Remove disconnected players
-        for (const playerId of managedPlayerIds) {
-            if (!currentPlayerIds.includes(playerId)) {
-                voiceChatManager.removePlayer(playerId);
+            // Remove disconnected players
+            for (const playerId of managedPlayerIds) {
+                if (!currentPlayerIds.includes(playerId)) {
+                    voiceChatManager.removePlayer(playerId);
+                }
             }
-        }
+        };
+
+        updatePlayers();
     }, [players, voiceChatEnabled, initialized, myId]);
 
-    const toggleMicrophone = () => {
+    const toggleMicrophone = async () => {
+        const { voiceChatManager } = await import("../game/voiceChat");
         const newState = voiceChatManager.toggleMicrophone();
         setMicEnabled(newState);
     };
 
-    const setPlayerVolume = (playerId: number, volume: number) => {
+    const setPlayerVolume = async (playerId: number, volume: number) => {
+        const { voiceChatManager } = await import("../game/voiceChat");
         voiceChatManager.setPlayerVolume(playerId, volume);
         setVolumeLevels(prev => {
             const newMap = new Map(prev);
@@ -77,14 +90,18 @@ export function VoiceChatControls(): ReactElement | null {
         });
     };
 
+    const getPlayerVolume = async (playerId: number): Promise<number> => {
+        const { voiceChatManager } = await import("../game/voiceChat");
+        return voiceChatManager.getPlayerVolume(playerId);
+    };
+
     if (!voiceChatEnabled) {
         return null;
     }
 
-    const playerEntries = players ? Array.from(players.entries()) : [];
-    const otherPlayers = playerEntries.filter(
+    const otherPlayers = players ? Array.from(players.entries()).filter(
         ([id, _player]) => id !== myId
-    ) as Array<[LobbyClientID, LobbyClient]>;
+    ) : [];
 
     return <div className="voice-chat-controls">
         <div className="voice-chat-header">
@@ -101,11 +118,11 @@ export function VoiceChatControls(): ReactElement | null {
         {otherPlayers.length > 0 && (
             <div className="voice-chat-players">
                 <h4>{translate("voiceChat.playerVolumes")}</h4>
-                {otherPlayers.map(([playerId, player]: [LobbyClientID, LobbyClient]) => {
+                {otherPlayers.map(([playerId, player]: [number, any]) => {
                     const playerName = player.clientType.type === "player" 
                         ? player.clientType.name 
                         : `Spectator ${playerId}`;
-                    const volume = volumeLevels.get(playerId) ?? voiceChatManager.getPlayerVolume(playerId);
+                    const volume = volumeLevels.get(playerId) ?? 1.0;
 
                     return (
                         <div key={playerId} className="voice-chat-player">
