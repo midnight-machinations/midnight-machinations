@@ -225,11 +225,18 @@ class VoiceChatManager {
             case "iceCandidate":
                 if (pc) {
                     try {
-                        await pc.addIceCandidate(new RTCIceCandidate({
-                            candidate: signal.candidate,
-                            sdpMid: signal.sdpMid ?? undefined,
-                            sdpMLineIndex: signal.sdpMLineIndex ?? undefined
-                        }));
+                        // Build ICE candidate init object, only including non-null values
+                        const candidateInit: RTCIceCandidateInit = {
+                            candidate: signal.candidate
+                        };
+                        if (signal.sdpMid !== null) {
+                            candidateInit.sdpMid = signal.sdpMid;
+                        }
+                        if (signal.sdpMLineIndex !== null) {
+                            candidateInit.sdpMLineIndex = signal.sdpMLineIndex;
+                        }
+                        
+                        await pc.addIceCandidate(new RTCIceCandidate(candidateInit));
                         console.log(`Added ICE candidate from player ${fromPlayerId}`);
                     } catch (error) {
                         console.error(`Error adding ICE candidate from player ${fromPlayerId}:`, error);
