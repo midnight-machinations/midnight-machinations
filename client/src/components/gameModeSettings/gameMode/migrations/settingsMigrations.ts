@@ -2,7 +2,7 @@
  * Migrations for Settings data structure.
  */
 
-import { registerMigration } from "./index";
+import { registerMigration } from "./registry";
 import { Success } from "../parse";
 import { getDefaultSettings } from "../../../../game/localStorage";
 

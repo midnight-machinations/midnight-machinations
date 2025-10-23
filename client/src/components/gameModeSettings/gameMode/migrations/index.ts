@@ -1,56 +1,17 @@
 import { CurrentFormat, GameModeStorage, ShareableGameMode } from "..";
 import { Settings } from "../../../../game/localStorage";
 import { ParseResult, Success, Failure, isFailure } from "../parse";
+import { MIGRATIONS, registerMigration } from "./registry";
 
-/**
- * A migration transforms data from one format to another.
- * Migrations are applied sequentially in the order they are registered.
- * 
- * Each migration should:
- * - Have a unique ID (timestamp-based to avoid collisions)
- * - Include a matcher to identify if it should run
- * - Include a transform function to modify the data
- * - Set the format field to the next version
- */
-export type Migration<T = any> = {
-    id: string;
-    description: string;
-    
-    // Check if this migration applies to the given data
-    matches: (json: NonNullable<any>) => boolean;
-    
-    // Transform the data to the next version
-    transform: (json: NonNullable<any>) => ParseResult<T>;
-};
-
-type MigrationRegistry = {
-    GameModeStorage: Migration<GameModeStorage>[];
-    ShareableGameMode: Migration<ShareableGameMode>[];
-    Settings: Migration<Settings>[];
-};
+// Re-export for convenience
+export type { Migration } from "./registry";
+export { registerMigration } from "./registry";
 
 type ConverterMap = {
     GameModeStorage: GameModeStorage;
     ShareableGameMode: ShareableGameMode;
     Settings: Settings;
 };
-
-// Registry of all migrations
-const MIGRATIONS: MigrationRegistry = {
-    GameModeStorage: [],
-    ShareableGameMode: [],
-    Settings: []
-};
-
-/**
- * Register a migration for a specific data type.
- */
-export function registerMigration<T extends keyof MigrationRegistry>(
-    type: T,
-    migration: Migration
-): void {
-    MIGRATIONS[type].push(migration);
-}
 
 /**
  * Apply all necessary migrations to bring data to the current format.
@@ -114,6 +75,7 @@ export default function parseFromJson<T extends keyof ConverterMap>(
 export const LATEST_VERSION_STRING: CurrentFormat = "v6";
 
 // Import all migrations to register them
+// These imports are at the end of the file to ensure MIGRATIONS is initialized first
 import "./gameModeStorageMigrations";
 import "./shareableGameModeMigrations";
 import "./settingsMigrations";

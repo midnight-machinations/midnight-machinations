@@ -5,7 +5,7 @@
  * that are shared between users.
  */
 
-import { registerMigration } from "./index";
+import { registerMigration } from "./registry";
 import { Success, Failure } from "../parse";
 import { getRolesComplement } from "../../../../game/roleListState.d";
 import { defaultPhaseTimes } from "../../../../game/gameState";

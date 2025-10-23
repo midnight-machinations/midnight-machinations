@@ -5,7 +5,7 @@
  * Migrations are applied sequentially in registration order.
  */
 
-import { registerMigration } from "./index";
+import { registerMigration } from "./registry";
 import { Success, Failure, isFailure, ParseResult, ParseSuccess } from "../parse";
 import { getRolesComplement } from "../../../../game/roleListState.d";
 import { PHASES, PhaseTimes } from "../../../../game/gameState.d";
