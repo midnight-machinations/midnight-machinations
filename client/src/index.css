@@ -343,7 +343,7 @@ code, .code {
     --primary-border-color: #c731c7;
     --primary-border-shadow-color: #330033;
     --background-border-color: #aa00aa;
-    --background-border-shadow-color: #000000;
+    --background-border-shadow-color: #330033;
     --hover-color: #220022;
     --focus-outline-color: #c731c7;
 }
@@ -371,7 +371,7 @@ code, .code {
     --primary-border-color: #eeeeee;
     --primary-border-shadow-color: #333333;
     --background-border-color: #aaaaaa;
-    --background-border-shadow-color: #000000;
+    --background-border-shadow-color: #333333;
     --hover-color: #222222;
     --focus-outline-color: #eeeeee;
 }
