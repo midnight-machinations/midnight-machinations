@@ -137,18 +137,27 @@ class VoiceChatManager {
 
         // Handle ICE candidates
         pc.onicecandidate = (event) => {
+            // Send all ICE candidates, including the end-of-candidates signal (when event.candidate is null)
             if (event.candidate) {
-                console.log(`Sending ICE candidate to player ${playerId}`);
+                console.log(`Sending ICE candidate to player ${playerId}`, {
+                    candidate: event.candidate.candidate,
+                    sdpMid: event.candidate.sdpMid,
+                    sdpMLineIndex: event.candidate.sdpMLineIndex
+                });
+                
                 GAME_MANAGER.server.sendPacket({
                     type: "webRtcSignal",
                     targetPlayerId: playerId,
                     signal: {
                         type: "iceCandidate",
                         candidate: event.candidate.candidate,
-                        sdpMid: event.candidate.sdpMid,
-                        sdpMLineIndex: event.candidate.sdpMLineIndex
+                        sdpMid: event.candidate.sdpMid ?? null,
+                        sdpMLineIndex: event.candidate.sdpMLineIndex ?? null
                     }
                 });
+            } else {
+                // End of candidates - this is normal
+                console.log(`ICE gathering complete for player ${playerId}`);
             }
         };
 
@@ -270,21 +279,37 @@ class VoiceChatManager {
             case "iceCandidate":
                 if (pc) {
                     try {
-                        // Build ICE candidate init object, only including non-null values
+                        console.log(`Received ICE candidate from player ${fromPlayerId}`, {
+                            candidate: signal.candidate,
+                            sdpMid: signal.sdpMid,
+                            sdpMLineIndex: signal.sdpMLineIndex
+                        });
+                        
+                        // Build ICE candidate init object
+                        // According to WebRTC spec, we need at least one of sdpMid or sdpMLineIndex
                         const candidateInit: RTCIceCandidateInit = {
                             candidate: signal.candidate
                         };
-                        if (signal.sdpMid !== null) {
+                        
+                        // Add sdpMid if it's a valid string (not null, undefined, or empty)
+                        if (signal.sdpMid && signal.sdpMid !== null && signal.sdpMid !== '') {
                             candidateInit.sdpMid = signal.sdpMid;
                         }
-                        if (signal.sdpMLineIndex !== null) {
+                        
+                        // Add sdpMLineIndex if it's a valid number (including 0)
+                        if (signal.sdpMLineIndex !== null && signal.sdpMLineIndex !== undefined) {
                             candidateInit.sdpMLineIndex = signal.sdpMLineIndex;
+                        }
+                        
+                        // Verify we have at least one identifier
+                        if (!candidateInit.sdpMid && candidateInit.sdpMLineIndex === undefined) {
+                            console.warn(`ICE candidate from player ${fromPlayerId} has neither sdpMid nor sdpMLineIndex, attempting to add anyway`);
                         }
                         
                         // Check if remote description is set
                         if (pc.remoteDescription) {
                             await pc.addIceCandidate(new RTCIceCandidate(candidateInit));
-                            console.log(`Added ICE candidate from player ${fromPlayerId}`);
+                            console.log(`Successfully added ICE candidate from player ${fromPlayerId}`);
                         } else {
                             // Queue the candidate to be added after remote description is set
                             console.log(`Queueing ICE candidate from player ${fromPlayerId} (no remote description yet)`);
@@ -294,7 +319,11 @@ class VoiceChatManager {
                             this.pendingIceCandidates.get(fromPlayerId)!.push(candidateInit);
                         }
                     } catch (error) {
-                        console.error(`Error adding ICE candidate from player ${fromPlayerId}:`, error);
+                        console.error(`Error adding ICE candidate from player ${fromPlayerId}:`, error, {
+                            candidate: signal.candidate,
+                            sdpMid: signal.sdpMid,
+                            sdpMLineIndex: signal.sdpMLineIndex
+                        });
                     }
                 }
                 break;
