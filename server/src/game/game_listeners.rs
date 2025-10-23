@@ -1,5 +1,5 @@
 use crate::{
-    game::event::{on_game_ending::OnGameEnding, on_phase_start::OnPhaseStart},
+    game::{event::{on_game_ending::OnGameEnding, on_phase_start::OnPhaseStart}},
     packet::ToClientPacket
 };
 

@@ -24,7 +24,7 @@ impl EventData for OnAnyDeath{
         Mafia::on_any_death,
         Cult::on_any_death,
         ModifierSettings::on_any_death,
-        Abilities::on_any_death,
+        Abilities::on_event,
         DeadCanStillPlayMessage::on_any_death
     ]}
 }

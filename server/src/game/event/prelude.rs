@@ -24,5 +24,8 @@ pub use super::{
     on_visit_wardblocked::*,
     on_whisper::*,
     
-    Invokable as _
+    EventData,
+    propagate::EventListener,
+    Invokable as _,
+    AsInvokable as _
 };

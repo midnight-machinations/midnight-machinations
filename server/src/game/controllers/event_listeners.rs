@@ -1,14 +1,9 @@
+use crate::game::event::propagate::EventListener;
+
 use crate::{
-    game::{
-        controllers::{ControllerID, ControllerInput, Controllers}, 
-        event::{
-            on_controller_changed::OnControllerChanged, on_controller_input_received::OnControllerInputReceived, on_phase_start::OnPhaseStart, on_tick::OnTick, on_validated_ability_input_received::OnValidatedControllerInputReceived, AsInvokable as _, Invokable as _
-        }, 
-        Game
-    }, 
+    game::prelude::*, 
     packet::ToClientPacket, vec_set::VecSet
 };
-
 impl Controllers{
     pub fn on_controller_input_received(
         game: &mut Game,
@@ -32,26 +27,18 @@ impl Controllers{
         OnValidatedControllerInputReceived::new(actor, event.input.clone()).as_invokable().invoke(game);
     }
 
-    pub fn on_phase_start(game: &mut Game, event: &OnPhaseStart, _fold: &mut (), _priority: ()){
-        Self::update_controllers_from_parameters(game);
-        
-        for id in ControllerID::current_used_ids(game){
-            let Some(controller) = game.controllers.controllers.get_mut(&id) else {continue};
-            let old = controller.clone();
-            controller.reset_on_phase_start(event.phase.phase());
-
-            if old != *controller {
-                OnControllerChanged::new(
-                    id.clone(),
-                    Some(old),
-                    Some(controller.clone())
-                ).as_invokable().invoke(game);
-            }
-        }
-    }
-
     pub fn on_tick(game: &mut Game, _event: &OnTick, _fold: &mut (), _priority: ()){
         Self::update_controllers_from_parameters(game);
+    }
+
+    pub fn on_phase_start(game: &mut Game, data: &OnPhaseStart, fold: &mut (), priority: ()){
+        Controllers::update_controllers_from_parameters(game);
+        game.controllers.controllers
+            .keys()
+            .cloned()
+            .collect::<Vec<ControllerID>>()
+            .into_iter()
+            .for_each(|id|id.on_event(game, data, fold, priority));
     }
 
     pub fn send_controller_to_client(game: &mut Game, event: &OnControllerChanged, _fold: &mut (), _priority: ()){
@@ -77,5 +64,12 @@ impl Controllers{
                 controller: event.new.clone()
             });
         }
+    }
+}
+impl EventListener<OnPhaseStart> for ControllerID {
+    fn on_event(&self, game: &mut Game, data: &OnPhaseStart, _fold: &mut <OnPhaseStart as crate::game::event::EventData>::FoldValue, _priority: <OnPhaseStart as crate::game::event::EventData>::Priority) {
+        let Some(mut controller) = game.controllers.controllers.get(self).cloned() else {return};
+        controller.reset_on_phase_start(data.phase.phase());
+        Controllers::set_controller(game, self.clone(), Some(controller));
     }
 }

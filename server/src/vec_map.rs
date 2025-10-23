@@ -131,6 +131,10 @@ impl<K, V> VecMap<K, V> where K: Eq {
         self.vec.iter_mut().map(|(_, v)| v)
     }
 
+    pub fn as_slice(&self)-> &[(K,V)] {
+        self.vec.as_slice()
+    }
+
     pub fn contains(&self, key: &K) -> bool {
         self.vec.iter().any(|(k, _)| k == key)
     }

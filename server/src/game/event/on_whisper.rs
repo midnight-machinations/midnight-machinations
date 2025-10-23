@@ -37,7 +37,7 @@ impl EventData for OnWhisper {
         vec![
             ChatComponent::on_whisper,
             ModifierSettings::on_whisper,
-            Abilities::on_whisper,
+            Abilities::on_event,
         ]
     }
 }

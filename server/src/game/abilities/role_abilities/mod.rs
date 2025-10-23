@@ -1,48 +1,13 @@
-use crate::game::{abilities_component::{ability::Ability, ability_trait::AbilityTrait}, prelude::*};
+use crate::{game::{abilities_component::{ability::Ability, ability_trait::{AbilityIDAndAbility, AbilityTrait, AbilityTraitOld}}, prelude::*}, impl_ability_events};
 
 #[derive(Clone, Debug)]
 pub struct RoleAbility(pub RoleState);
-impl AbilityTrait for RoleAbility {
-    fn on_midnight(&self, game: &mut Game, id: &AbilityID, _event: &crate::game::event::on_midnight::OnMidnight, midnight_variables: &mut crate::game::event::on_midnight::OnMidnightFold, priority: crate::game::event::on_midnight::OnMidnightPriority) {
-        if priority == OnMidnightPriority::InitializeNight { 
-            Visits::add_visits(
-                midnight_variables,
-                self.0.clone().convert_selection_to_visits(game, id.get_role_actor_expect())
-            );
-        }
-        
-        self.0.clone().on_midnight(game, id, id.get_role_actor_expect(), midnight_variables, priority)
-    }
-    fn on_whisper(&self, game: &mut Game, id: &AbilityID, event: &crate::game::event::on_whisper::OnWhisper, fold: &mut crate::game::event::on_whisper::WhisperFold, priority: crate::game::event::on_whisper::WhisperPriority) {
-        self.0.clone().on_whisper(game, id.get_role_actor_expect(), event, fold, priority);
-    }
-    fn on_grave_added(&self, game: &mut Game, id: &AbilityID, event: &crate::game::event::on_grave_added::OnGraveAdded, __fold: &mut (), __priority: ()) {
-        self.0.clone().on_grave_added(game, id.get_role_actor_expect(), event.grave);
-    }
-    fn on_validated_ability_input_received(&self, game: &mut Game, id: &AbilityID, event: &crate::game::event::on_validated_ability_input_received::OnValidatedControllerInputReceived, _fold: &mut (), _priority: ()) {
-        self.0.clone().on_validated_ability_input_received(game, id.get_role_actor_expect(), event.actor_ref, event.input.clone())
-    }
-    fn on_controller_selection_changed(&self, game: &mut Game, id: &AbilityID, event: &crate::game::event::on_controller_selection_changed::OnControllerSelectionChanged, _fold: &mut (), __priority: ()) {
-        self.0.clone().on_controller_selection_changed(game, id.get_role_actor_expect(), event.id.clone())
-    }
-    fn on_phase_start(&self, game: &mut Game, id: &AbilityID, event: &crate::game::event::on_phase_start::OnPhaseStart, __fold: &mut (), __priority: ()) {
-        self.0.clone().on_phase_start(game, id.get_role_actor_expect(), event.phase.phase())
-    }
-    fn on_conceal_role(&self, game: &mut Game, id: &AbilityID, event: &crate::game::event::on_conceal_role::OnConcealRole, __fold: &mut (), __priority: ()) {
-        let &OnConcealRole{player: event_player, concealed_player} = event;
-        self.0.clone().on_conceal_role(game, id.get_role_actor_expect(), event_player, concealed_player)
-    }
-    fn on_any_death(&self, game: &mut Game, id: &AbilityID, event: &crate::game::event::on_any_death::OnAnyDeath, _fold: &mut (), _priority: ()) {
-        self.0.clone().on_any_death(game, id.get_role_actor_expect(), event.dead_player);
-    }
+impl AbilityTraitOld for RoleAbility {
     fn on_ability_creation(&self, game: &mut Game, id: &AbilityID, event: &crate::game::event::on_ability_creation::OnAbilityCreation, fold: &mut crate::game::event::on_ability_creation::OnAbilityCreationFold, priority: crate::game::event::on_ability_creation::OnAbilityCreationPriority) {
         self.0.clone().on_ability_creation(game, id.get_role_actor_expect(), event, fold, priority)
     }
     fn on_ability_deletion(&self, game: &mut Game, id: &AbilityID, event: &crate::game::event::on_ability_deletion::OnAbilityDeletion, fold: &mut (), priority: crate::game::event::on_ability_deletion::OnAbilityDeletionPriority) {
         self.0.clone().on_ability_deletion(game, id.get_role_actor_expect(), event, fold, priority)
-    }
-    fn on_role_switch(&self, game: &mut Game, id: &AbilityID, event: &crate::game::event::on_role_switch::OnRoleSwitch, fold: &mut (), priority: ()) {
-        self.0.clone().on_role_switch(game, id.get_role_actor_expect(), event, fold, priority)
     }
     fn on_player_possessed(&self, game: &mut Game, id: &AbilityID, event: &OnPlayerPossessed, fold: &mut OnMidnightFold, priority: ()){
         if id.get_role_actor_expect() == event.possessed {
@@ -89,8 +54,63 @@ impl AbilityID {
         self.edit_ability(game, RoleAbility(new.into()));
     }
 }
+impl_ability_events!(AbilityIDAndAbility<RoleAbility>, BeforePhaseEnd, OnAddInsider, OnRemoveInsider);
+impl EventListener<OnMidnight> for AbilityIDAndAbility<RoleAbility> {
+    fn on_event(&self, game: &mut Game, _data: &OnMidnight, fold: &mut <OnMidnight as crate::game::event::EventData>::FoldValue, priority: <OnMidnight as crate::game::event::EventData>::Priority) {
+        if priority == OnMidnightPriority::InitializeNight { 
+            Visits::add_visits(
+                fold,
+                self.ability().0.clone().convert_selection_to_visits(game, self.id().get_role_actor_expect())
+            );
+        }
+        
+        self.ability().0.clone().on_midnight(game, self.id(), self.id().get_role_actor_expect(), fold, priority)
+    }
+}
+impl EventListener<OnWhisper> for AbilityIDAndAbility<RoleAbility> {
+    fn on_event(&self, game: &mut Game, data: &OnWhisper, fold: &mut <OnWhisper as crate::game::event::EventData>::FoldValue, priority: <OnWhisper as crate::game::event::EventData>::Priority) {
+        self.ability().0.clone().on_whisper(game, self.id().get_role_actor_expect(), data, fold, priority);
+    }
+}
+impl EventListener<OnGraveAdded> for AbilityIDAndAbility<RoleAbility> {
+    fn on_event(&self, game: &mut Game, data: &OnGraveAdded, _fold: &mut <OnGraveAdded as EventData>::FoldValue, _priority: <OnGraveAdded as EventData>::Priority) {
+        self.ability().0.clone().on_grave_added(game, self.id().get_role_actor_expect(), data.grave)
+    }
+}
+impl EventListener<OnValidatedControllerInputReceived> for AbilityIDAndAbility<RoleAbility> {
+    fn on_event(&self, game: &mut Game, data: &OnValidatedControllerInputReceived, _fold: &mut <OnValidatedControllerInputReceived as EventData>::FoldValue, _priority: <OnValidatedControllerInputReceived as EventData>::Priority) {
+        self.ability().0.clone().on_validated_ability_input_received(game, self.id().get_role_actor_expect(), data.actor_ref, data.input.clone())
+    }
+}
+impl EventListener<OnAnyDeath> for AbilityIDAndAbility<RoleAbility> {
+    fn on_event(&self, game: &mut Game, data: &OnAnyDeath, _fold: &mut <OnAnyDeath as EventData>::FoldValue, _priority: <OnAnyDeath as EventData>::Priority) {
+        self.ability().0.clone().on_any_death(game, self.id().get_role_actor_expect(), data.dead_player);
+    }
+}
+impl EventListener<OnControllerSelectionChanged> for AbilityIDAndAbility<RoleAbility> {
+    fn on_event(&self, game: &mut Game, data: &OnControllerSelectionChanged, _fold: &mut <OnControllerSelectionChanged as EventData>::FoldValue, _priority: <OnControllerSelectionChanged as EventData>::Priority) {
+        self.ability().0.clone().on_controller_selection_changed(game, self.id().get_role_actor_expect(), data.id.clone())
+    }
+}
+impl EventListener<OnPhaseStart> for AbilityIDAndAbility<RoleAbility> {
+    fn on_event(&self, game: &mut Game, data: &OnPhaseStart, _fold: &mut <OnPhaseStart as EventData>::FoldValue, _priority: <OnPhaseStart as EventData>::Priority) {
+        self.ability().0.clone().on_phase_start(game, self.id().get_role_actor_expect(), data.phase.phase())
+    }
+}
+impl EventListener<OnConcealRole> for AbilityIDAndAbility<RoleAbility> {
+    fn on_event(&self, game: &mut Game, data: &OnConcealRole, _fold: &mut <OnConcealRole as EventData>::FoldValue, _priority: <OnConcealRole as EventData>::Priority) {
+        let &OnConcealRole{player: event_player, concealed_player} = data;
+        self.ability().0.clone().on_conceal_role(game, self.id().get_role_actor_expect(), event_player, concealed_player)
+    }
+}
+impl EventListener<OnRoleSwitch> for AbilityIDAndAbility<RoleAbility> {
+    fn on_event(&self, game: &mut Game, data: &OnRoleSwitch, fold: &mut <OnRoleSwitch as EventData>::FoldValue, priority: <OnRoleSwitch as EventData>::Priority) {
+        self.ability().0.clone().on_role_switch(game, self.id().get_role_actor_expect(), data, fold, priority)
+    }
+}
 
-impl From<RoleAbility> for Ability where RoleAbility: AbilityTrait {
+
+impl From<RoleAbility> for Ability where RoleAbility: AbilityTraitOld {
     fn from(role_struct: RoleAbility) -> Self {
         Ability::Role(role_struct)
     }

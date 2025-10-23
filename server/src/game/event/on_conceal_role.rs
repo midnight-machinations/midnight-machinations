@@ -18,7 +18,7 @@ impl EventData for OnConcealRole{
 
     fn listeners() -> Vec<super::EventListenerFunction<Self>> {
         vec![
-            Abilities::on_conceal_role,
+            Abilities::on_event,
             InsiderGroups::on_conceal_role
         ]
     }

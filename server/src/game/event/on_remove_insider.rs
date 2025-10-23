@@ -29,7 +29,7 @@ impl EventData for OnRemoveInsider {
 
     fn listeners() -> Vec<super::EventListenerFunction<Self>> {
         vec![
-            Abilities::on_remove_insider,
+            Abilities::on_event,
             PuppeteerMarionette::on_remove_insider,
             Cult::on_remove_insider,
             Mafia::on_remove_insider,

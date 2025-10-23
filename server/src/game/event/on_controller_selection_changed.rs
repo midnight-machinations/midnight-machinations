@@ -25,6 +25,6 @@ impl EventData for OnControllerSelectionChanged{
 
     fn listeners() -> Vec<super::EventListenerFunction<Self>> {vec![
         Mafia::on_controller_selection_changed,
-        Abilities::on_controller_selection_changed
+        Abilities::on_event
     ]}
 }
