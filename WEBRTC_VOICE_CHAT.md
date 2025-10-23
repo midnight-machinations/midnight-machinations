@@ -84,8 +84,18 @@
 
 3. Clients exchange:
    - SDP offers and answers for session negotiation
-   - ICE candidates for NAT traversal
+   - ICE candidates for NAT traversal (queued if remote description not yet set)
    - Audio streams flow directly between peers
+
+4. ICE candidate handling:
+   - Candidates arriving before remote description is set are queued
+   - After setRemoteDescription, all queued candidates are processed
+   - This prevents "Either sdpMid or sdpMLineIndex must be specified" errors
+
+5. NAT Traversal:
+   - Uses STUN servers for direct peer-to-peer connections
+   - Falls back to TURN servers when direct connection fails (firewall/NAT restrictions)
+   - Free TURN server from openrelay.metered.ca included for testing
 
 ### Lobby Voice Chat (Implemented)
 
@@ -158,7 +168,7 @@
 
 1. **Mesh Topology**: Current implementation uses mesh topology where each client connects to every other client. This scales to ~10-15 players but may need SFU for larger games.
 
-2. **No TURN Server**: Only STUN servers are configured. Some restrictive networks may need TURN servers for relay when peer-to-peer fails.
+2. **TURN Server**: Free TURN server from openrelay.metered.ca is included for testing purposes only. For production use, you should set up your own TURN server or use a paid service with higher bandwidth limits.
 
 3. **No Persistence**: Volume settings are not saved between sessions.
 

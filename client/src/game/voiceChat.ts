@@ -11,14 +11,31 @@ class VoiceChatManager {
     private remoteStreams: Map<LobbyClientID, MediaStream> = new Map();
     private audioElements: Map<LobbyClientID, HTMLAudioElement> = new Map();
     private volumeSettings: Map<LobbyClientID, number> = new Map();
+    private pendingIceCandidates: Map<LobbyClientID, RTCIceCandidateInit[]> = new Map();
     private enabled: boolean = false;
     private micEnabled: boolean = false;
 
-    // ICE servers configuration (using free Google STUN servers)
+    // ICE servers configuration (using free Google STUN servers and a free TURN server)
     private iceServers: RTCConfiguration = {
         iceServers: [
             { urls: 'stun:stun.l.google.com:19302' },
             { urls: 'stun:stun1.l.google.com:19302' },
+            // Free TURN server from metered.ca (limited bandwidth, suitable for testing)
+            {
+                urls: 'turn:openrelay.metered.ca:80',
+                username: 'openrelayproject',
+                credential: 'openrelayproject',
+            },
+            {
+                urls: 'turn:openrelay.metered.ca:443',
+                username: 'openrelayproject',
+                credential: 'openrelayproject',
+            },
+            {
+                urls: 'turn:openrelay.metered.ca:443?transport=tcp',
+                username: 'openrelayproject',
+                credential: 'openrelayproject',
+            },
         ]
     };
 
@@ -190,6 +207,20 @@ class VoiceChatManager {
                             sdp: signal.sdp
                         }));
 
+                        // Process any pending ICE candidates
+                        const pending = this.pendingIceCandidates.get(fromPlayerId);
+                        if (pending && pending.length > 0) {
+                            console.log(`Processing ${pending.length} pending ICE candidates for player ${fromPlayerId}`);
+                            for (const candidate of pending) {
+                                try {
+                                    await pc.addIceCandidate(new RTCIceCandidate(candidate));
+                                } catch (error) {
+                                    console.error(`Error adding pending ICE candidate:`, error);
+                                }
+                            }
+                            this.pendingIceCandidates.delete(fromPlayerId);
+                        }
+
                         const answer = await pc.createAnswer();
                         await pc.setLocalDescription(answer);
 
@@ -216,6 +247,20 @@ class VoiceChatManager {
                             sdp: signal.sdp
                         }));
                         console.log(`Set remote description (answer) from player ${fromPlayerId}`);
+                        
+                        // Process any pending ICE candidates
+                        const pending = this.pendingIceCandidates.get(fromPlayerId);
+                        if (pending && pending.length > 0) {
+                            console.log(`Processing ${pending.length} pending ICE candidates for player ${fromPlayerId}`);
+                            for (const candidate of pending) {
+                                try {
+                                    await pc.addIceCandidate(new RTCIceCandidate(candidate));
+                                } catch (error) {
+                                    console.error(`Error adding pending ICE candidate:`, error);
+                                }
+                            }
+                            this.pendingIceCandidates.delete(fromPlayerId);
+                        }
                     } catch (error) {
                         console.error(`Error handling answer from player ${fromPlayerId}:`, error);
                     }
@@ -236,8 +281,18 @@ class VoiceChatManager {
                             candidateInit.sdpMLineIndex = signal.sdpMLineIndex;
                         }
                         
-                        await pc.addIceCandidate(new RTCIceCandidate(candidateInit));
-                        console.log(`Added ICE candidate from player ${fromPlayerId}`);
+                        // Check if remote description is set
+                        if (pc.remoteDescription) {
+                            await pc.addIceCandidate(new RTCIceCandidate(candidateInit));
+                            console.log(`Added ICE candidate from player ${fromPlayerId}`);
+                        } else {
+                            // Queue the candidate to be added after remote description is set
+                            console.log(`Queueing ICE candidate from player ${fromPlayerId} (no remote description yet)`);
+                            if (!this.pendingIceCandidates.has(fromPlayerId)) {
+                                this.pendingIceCandidates.set(fromPlayerId, []);
+                            }
+                            this.pendingIceCandidates.get(fromPlayerId)!.push(candidateInit);
+                        }
                     } catch (error) {
                         console.error(`Error adding ICE candidate from player ${fromPlayerId}:`, error);
                     }
@@ -294,6 +349,7 @@ class VoiceChatManager {
         }
 
         this.remoteStreams.delete(playerId);
+        this.pendingIceCandidates.delete(playerId);
     }
 
     /**
@@ -303,6 +359,7 @@ class VoiceChatManager {
         for (const playerId of this.peerConnections.keys()) {
             this.removePeerConnection(playerId);
         }
+        this.pendingIceCandidates.clear();
     }
 
     /**
