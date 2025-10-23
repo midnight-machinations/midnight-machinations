@@ -166,6 +166,7 @@ pub enum ToClientPacket{
 pub enum WebRtcSignalData {
     Offer { sdp: String },
     Answer { sdp: String },
+    #[serde(rename_all = "camelCase")]
     IceCandidate { candidate: String, sdp_mid: Option<String>, sdp_m_line_index: Option<u16> },
 }
 
