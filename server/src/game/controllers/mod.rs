@@ -87,9 +87,7 @@ impl Controllers{
             .collect::<Vec<_>>();
 
         for id in controller_ids_to_remove{
-            let old = game.controllers.controllers.remove(&id)
-                .map(|(_, c)|c); 
-            OnControllerChanged::new(id.clone(), old, None).as_invokable().invoke(game);
+            Self::set_controller(game, id.clone(), None);
         }
 
         for (id, controller_parameters) in new_controller_parameters_map.controller_parameters().iter(){
@@ -104,17 +102,10 @@ impl Controllers{
                 new_selection = old_selection.clone();
             }
 
-            let old = game.controllers.controllers.get(id).cloned();
-            let new = Controller::new(
-                    new_selection,
-                    controller_parameters.clone()
-                );
-            game.controllers.controllers.insert(id.clone(), new.clone());
-
-            let new = Some(new);
-            if old != new {
-                OnControllerChanged::new(id.clone(), old, new).as_invokable().invoke(game);
-            }
+            Self::set_controller(game, id.clone(), Some(Controller::new(
+                new_selection,
+                controller_parameters.clone()
+            )));
         }
     }
 
@@ -134,17 +125,11 @@ impl Controllers{
 
         if !Self::validate_input(game, &id, &new_selection, overwrite_gray_out, actor){return false}
 
-        let Some(controller) = game.controllers.controllers.get_mut(&id) else {return false};
-
-        let old = Some(controller.clone());
-
+        let Some(mut controller) = game.controllers.controllers.get(&id).cloned() else {return false};
 
         if !controller.parameters.dont_save() {
             controller.selection = new_selection;
-            let new = Some(controller.clone());
-            if old != new {
-                OnControllerChanged::new(id, old, new).as_invokable().invoke(game);
-            }
+            Self::set_controller(game, id, Some(controller));
         }
 
         true
@@ -162,5 +147,15 @@ impl Controllers{
         (overwrite_gray_out || !parameters.grayed_out()) && //not grayed out
         actor.is_none_or(|p|parameters.allowed_players().contains(&p)) &&   //actor is allowed
         (*saved_selection != *selection || *selection == ControllerSelection::Unit(UnitSelection))  //Something is actually changing (i think this can be removed?)
+    }
+
+    pub fn set_controller(game: &mut Game, id: ControllerID, new: Option<Controller>) {
+        let old = game.controllers.controllers.get(&id).cloned();
+        if let Some(controller) = new.clone() {
+            game.controllers.controllers.insert(id.clone(), controller);
+        }
+        if old != new {
+            OnControllerChanged::new(id, old, new).as_invokable().invoke(game);
+        }
     }
 }

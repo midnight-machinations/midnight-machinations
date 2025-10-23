@@ -21,7 +21,7 @@ impl EventData for BeforePhaseEnd{
 
     fn listeners() -> Vec<super::EventListenerFunction<Self>> {vec![
         VerdictsToday::before_phase_end,
-        Abilities::before_phase_end,
+        Abilities::on_event,
         ModifierSettings::before_phase_end,
     ]}
 }

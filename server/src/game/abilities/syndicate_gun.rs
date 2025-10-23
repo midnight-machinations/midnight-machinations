@@ -1,6 +1,6 @@
 use crate::game::abilities_component::ability::Ability;
-use crate::game::abilities_component::ability_trait::AbilityTrait;
-use crate::vec_set;
+use crate::game::abilities_component::ability_trait::{AbilityIDAndAbility, AbilityTraitOld, AbilityTrait};
+use crate::{impl_ability_events, vec_set};
 use crate::game::prelude::*;
 
 #[derive(Default, Clone, Debug)]
@@ -36,7 +36,7 @@ impl SyndicateGun {
     }
 
 }
-impl AbilityTrait for SyndicateGun {
+impl AbilityTraitOld for SyndicateGun {
     fn on_player_possessed(&self, game: &mut Game, _id: &AbilityID, event: &OnPlayerPossessed, fold: &mut OnMidnightFold, _priority: ()){
         if Some(event.possessed) != self.player_with_gun {
             return;
@@ -77,85 +77,6 @@ impl AbilityTrait for SyndicateGun {
             v.tag != VisitTag::SyndicateGun || v.visitor != event.player
         );
     }
-    
-    fn on_add_insider(&self, game: &mut Game, _id: &AbilityID, _event: &OnAddInsider, _fold: &mut (), _priority: ()){
-        Tags::set_viewers(game, TagSetID::SyndicateGun, &InsiderGroupID::Mafia.players(game).clone());
-    }
-    fn on_remove_insider(&self, game: &mut Game, _id: &AbilityID, _event: &OnRemoveInsider, _fold: &mut (), _priority: ()){
-        Tags::set_viewers(game, TagSetID::SyndicateGun, &InsiderGroupID::Mafia.players(game).clone());
-    }
-    fn on_any_death(&self, game: &mut Game, _id: &AbilityID, event: &OnAnyDeath, _fold: &mut (), _priority: ())  {
-        if self.player_with_gun.is_some_and(|p|p==event.dead_player) {
-            Self::remove_gun(game);
-
-            let player = InsiderGroupID::Mafia.players(game).iter().find(|p|p.alive(game));
-            if let Some(player) = player {
-                SyndicateGun::give_gun_to_player(game, *player);
-            }
-        }
-    }
-    fn on_midnight(&self, game: &mut Game, _id: &AbilityID, _event: &OnMidnight, midnight_variables: &mut OnMidnightFold, priority: OnMidnightPriority) {
-        if game.day_number() <= 1 {return}
-        match priority {
-            OnMidnightPriority::TopPriority => {
-                let Some(player_with_gun) = self.player_with_gun else {return}; 
-
-                let Some(PlayerListSelection(gun_target)) = ControllerID::syndicate_gun_item_shoot().get_player_list_selection(game) else {return};
-                let Some(gun_target) = gun_target.first() else {return};
-
-                Visits::add_visit(
-                    midnight_variables,
-                    Visit {
-                        visitor: player_with_gun,
-                        target: *gun_target,
-                        tag: VisitTag::SyndicateGun,
-                        attack: true,
-                        wardblock_immune: false,
-                        transport_immune: false,
-                        investigate_immune: false,
-                        indirect: false
-                    } 
-                );
-            }
-            OnMidnightPriority::Kill => {
-                for (attacker, target) in Visits::into_iter(midnight_variables)
-                    .with_tag(VisitTag::SyndicateGun)
-                    .map(|visit| (visit.visitor, visit.target))
-                {
-                    target.try_night_kill_single_attacker(
-                        attacker,
-                        game, midnight_variables,
-                        GraveKiller::RoleSet(RoleSet::Mafia),
-                        AttackPower::Basic,
-                        false
-                    );
-                }
-            }
-            _ => {}
-        }
-    }
-    fn on_validated_ability_input_received(&self, game: &mut Game, _id: &AbilityID, event: &OnValidatedControllerInputReceived, _fold: &mut (), _priority: ()) {
-        if let Some(player_with_gun) = self.player_with_gun {
-            if event.actor_ref != player_with_gun {
-                return;
-            }
-        }else{
-            return;
-        }
-
-        let Some(PlayerListSelection(target)) = event.input
-            .get_player_list_selection_if_id(ControllerID::SyndicateGunGive)
-        else {return};
-        let Some(target) = target.first() else {return};
-
-        if
-            event.actor_ref != *target &&
-            target.alive(game) &&
-            InsiderGroupID::Mafia.contains_player(game, *target) 
-        {
-            SyndicateGun::give_gun_to_player(game, *target);
-        }
-    }
 
     fn controller_parameters_map(&self, game: &Game, _id: &AbilityID) -> ControllerParametersMap {
         if let Some(player_with_gun) = self.player_with_gun {
@@ -192,6 +113,108 @@ impl AbilityTrait for SyndicateGun {
         }
     }
 }
+
+impl EventListener<OnMidnight> for AbilityIDAndAbility<SyndicateGun> {
+    fn on_event(&self, game: &mut Game, _data: &OnMidnight, fold: &mut <OnMidnight as crate::game::event::EventData>::FoldValue, priority: <OnMidnight as crate::game::event::EventData>::Priority) {
+        let ability = self.ability().clone();
+        if game.day_number() <= 1 {return}
+        match priority {
+            OnMidnightPriority::TopPriority => {
+                let Some(player_with_gun) = ability.player_with_gun else {return}; 
+
+                let Some(PlayerListSelection(gun_target)) = ControllerID::syndicate_gun_item_shoot().get_player_list_selection(game) else {return};
+                let Some(gun_target) = gun_target.first() else {return};
+
+                Visits::add_visit(
+                    fold,
+                    Visit {
+                        visitor: player_with_gun,
+                        target: *gun_target,
+                        tag: VisitTag::SyndicateGun,
+                        attack: true,
+                        wardblock_immune: false,
+                        transport_immune: false,
+                        investigate_immune: false,
+                        indirect: false
+                    } 
+                );
+            }
+            OnMidnightPriority::Kill => {
+                for (attacker, target) in Visits::into_iter(fold)
+                    .with_tag(VisitTag::SyndicateGun)
+                    .map(|visit| (visit.visitor, visit.target))
+                {
+                    target.try_night_kill_single_attacker(
+                        attacker,
+                        game, fold,
+                        GraveKiller::RoleSet(RoleSet::Mafia),
+                        AttackPower::Basic,
+                        false
+                    );
+                }
+            }
+            _ => {}
+        }
+    }
+}
+impl EventListener<OnAddInsider> for AbilityIDAndAbility<SyndicateGun> {
+    fn on_event(&self, game: &mut Game, _data: &OnAddInsider, _fold: &mut <OnAddInsider as EventData>::FoldValue, _priority: <OnAddInsider as EventData>::Priority) {
+        Tags::set_viewers(game, TagSetID::SyndicateGun, &InsiderGroupID::Mafia.players(game).clone());
+    }
+}
+impl EventListener<OnRemoveInsider> for AbilityIDAndAbility<SyndicateGun> {
+    fn on_event(&self, game: &mut Game, _data: &OnRemoveInsider, _fold: &mut <OnAddInsider as EventData>::FoldValue, _priority: <OnAddInsider as EventData>::Priority) {
+        Tags::set_viewers(game, TagSetID::SyndicateGun, &InsiderGroupID::Mafia.players(game).clone());
+    }
+}
+impl EventListener<OnAnyDeath> for AbilityIDAndAbility<SyndicateGun> {
+    fn on_event(&self, game: &mut Game, data: &OnAnyDeath, _fold: &mut <OnAnyDeath as EventData>::FoldValue, _priority: <OnAnyDeath as EventData>::Priority) {
+        let ability = self.ability().clone();
+        if ability.player_with_gun.is_some_and(|p|p==data.dead_player) {
+            SyndicateGun::remove_gun(game);
+
+            let player = InsiderGroupID::Mafia.players(game).iter().find(|p|p.alive(game));
+            if let Some(player) = player {
+                SyndicateGun::give_gun_to_player(game, *player);
+            }
+        }
+    }
+}
+impl EventListener<OnValidatedControllerInputReceived> for AbilityIDAndAbility<SyndicateGun> {
+    fn on_event(&self, game: &mut Game, data: &OnValidatedControllerInputReceived, _fold: &mut <OnValidatedControllerInputReceived as EventData>::FoldValue, _priority: <OnValidatedControllerInputReceived as EventData>::Priority) {
+        let ability = self.ability().clone();
+        if let Some(player_with_gun) = ability.player_with_gun {
+            if data.actor_ref != player_with_gun {
+                return;
+            }
+        }else{
+            return;
+        }
+
+        let Some(PlayerListSelection(target)) = data.input
+            .get_player_list_selection_if_id(ControllerID::SyndicateGunGive)
+        else {return};
+        let Some(target) = target.first() else {return};
+
+        if
+            data.actor_ref != *target &&
+            target.alive(game) &&
+            InsiderGroupID::Mafia.contains_player(game, *target) 
+        {
+            SyndicateGun::give_gun_to_player(game, *target);
+        }
+    }
+}
+
+impl_ability_events!(AbilityIDAndAbility<SyndicateGun>,
+    OnWhisper,
+    OnGraveAdded,
+    OnControllerSelectionChanged,
+    OnPhaseStart,
+    BeforePhaseEnd,
+    OnConcealRole
+);
+
 impl From<SyndicateGun> for Ability {
     fn from(role_struct: SyndicateGun) -> Self {
         Ability::SyndicateGun(role_struct)

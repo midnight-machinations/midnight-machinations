@@ -18,7 +18,7 @@ impl EventData for OnGraveAdded{
     type Priority = ();
 
     fn listeners() -> Vec<super::EventListenerFunction<Self>> {vec![
-        Abilities::on_grave_added,
+        Abilities::on_event,
         ModifierSettings::on_grave_added,
         Graves::on_grave_added
     ]}

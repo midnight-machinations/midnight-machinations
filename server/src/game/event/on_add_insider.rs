@@ -27,7 +27,7 @@ impl EventData for OnAddInsider {
 
     fn listeners() -> Vec<super::EventListenerFunction<Self>> {
         vec![
-            Abilities::on_add_insider,
+            Abilities::on_event,
             PuppeteerMarionette::on_add_insider,
             Mafia::on_add_insider,
             MafiaRecruits::on_add_insider,

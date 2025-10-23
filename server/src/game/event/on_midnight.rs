@@ -51,7 +51,7 @@ impl EventData for OnMidnight {
             ModifierSettings::on_midnight,
             Mafia::on_midnight,
             PlayerReference::on_midnight,
-            Abilities::on_midnight,
+            Abilities::on_event,
             FragileVestsComponent::on_midnight,
             Guard::on_midnight,
         ]

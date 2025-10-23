@@ -1,3 +1,5 @@
+use crate::game::event::propagate::EventListener;
+
 use crate::{
     game::prelude::*, 
     packet::ToClientPacket, vec_set::VecSet
@@ -29,6 +31,16 @@ impl Controllers{
         Self::update_controllers_from_parameters(game);
     }
 
+    pub fn on_phase_start(game: &mut Game, data: &OnPhaseStart, fold: &mut (), priority: ()){
+        Controllers::update_controllers_from_parameters(game);
+        game.controllers.controllers
+            .keys()
+            .cloned()
+            .collect::<Vec<ControllerID>>()
+            .into_iter()
+            .for_each(|id|id.on_event(game, data, fold, priority));
+    }
+
     pub fn send_controller_to_client(game: &mut Game, event: &OnControllerChanged, _fold: &mut (), _priority: ()){
         let mut players_to_remove = VecSet::new();
         let mut players_to_update = VecSet::new();
@@ -55,24 +67,9 @@ impl Controllers{
     }
 }
 impl EventListener<OnPhaseStart> for ControllerID {
-    fn on_event(self, game: &mut Game, data: &OnPhaseStart, _fold: &mut <OnPhaseStart as crate::game::event::EventData>::FoldValue, _priority: <OnPhaseStart as crate::game::event::EventData>::Priority) {
-        let Some(controller) = game.controllers.controllers.get_mut(&self) else {return};
-        let old = controller.clone();
+    fn on_event(&self, game: &mut Game, data: &OnPhaseStart, _fold: &mut <OnPhaseStart as crate::game::event::EventData>::FoldValue, _priority: <OnPhaseStart as crate::game::event::EventData>::Priority) {
+        let Some(mut controller) = game.controllers.controllers.get(self).cloned() else {return};
         controller.reset_on_phase_start(data.phase.phase());
-
-        if old != *controller {
-            OnControllerChanged::new(
-                self.clone(),
-                Some(old),
-                Some(controller.clone())
-            ).as_invokable().invoke(game);
-        }
-    }
-}
-pub struct ControllersEventListenerHandle;
-impl EventListener<OnPhaseStart> for ControllersEventListenerHandle {
-    fn on_event(self, game: &mut Game, data: &OnPhaseStart, fold: &mut <OnPhaseStart as crate::game::event::EventData>::FoldValue, priority: <OnPhaseStart as crate::game::event::EventData>::Priority) {
-        Controllers::update_controllers_from_parameters(game);
-        game.controllers.all_controller_ids().into_iter().on_event(game, data, fold, priority);
+        Controllers::set_controller(game, self.clone(), Some(controller));
     }
 }

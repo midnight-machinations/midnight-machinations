@@ -40,6 +40,10 @@ pub use crate::game::{
         possession::Possession,
         blocked::BlockedComponent,
         insider_group::*,
+        forfeit_vote::ForfeitNominationVote,
+        call_witness::CallWitness,
+        fast_forward::FastForwardComponent,
+        ascend::Ascend,
         night_visits::{
             NightVisitsIterator,
             Visits,

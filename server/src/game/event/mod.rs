@@ -42,6 +42,7 @@ pub trait EventData: Sized {
     type Priority: EventPriority;
 
     fn listeners() -> Vec<EventListenerFunction<Self>>;
+    fn on_event(_game: &mut Game, _data: &Self, _fold: &mut Self::FoldValue, _priority: Self::Priority) {}
 }
 pub trait Invokable{
     fn invoke(self, game: &mut Game)->Self;
@@ -52,6 +53,7 @@ impl<E: EventData> Invokable for (&E, &mut E::FoldValue) {
             for listener in E::listeners() {
                 listener(game, self.0, self.1, priority);
             }
+            E::on_event(game, self.0, self.1, priority);
         }
         self
     }

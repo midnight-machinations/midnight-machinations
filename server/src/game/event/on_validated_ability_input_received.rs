@@ -22,7 +22,7 @@ impl EventData for OnValidatedControllerInputReceived{
 
     fn listeners() -> Vec<super::EventListenerFunction<Self>> {
         vec![
-            Abilities::on_validated_ability_input_received,
+            Abilities::on_event,
             ForwardMessages::on_validated_ability_input_received,
             NominationController::on_validated_ability_input_received,
             ChatComponent::on_validated_ability_input_received,

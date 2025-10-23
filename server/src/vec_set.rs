@@ -42,6 +42,9 @@ impl <K> VecSet<K> where K: Eq {
     pub fn iter(&self) -> impl Iterator<Item = &K> {
         self.vec.iter().map(|(k, _)| k)
     }
+    pub fn as_vec(&self) -> Vec<&K> {
+        self.vec.as_slice().iter().map(|(k, _)| k).collect()
+    }
 
     pub fn count(&self) -> usize {
         self.vec.len()
