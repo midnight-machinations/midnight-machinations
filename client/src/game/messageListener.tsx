@@ -30,7 +30,7 @@ function sendDefaultName() {
     }
 } 
 
-export default function messageListener(packet: ToClientPacket){
+export default async function messageListener(packet: ToClientPacket){
     console.log(JSON.stringify(packet, null, 2));
 
     switch(packet.type) {
@@ -243,6 +243,10 @@ export default function messageListener(packet: ToClientPacket){
         break;
         case "startGame": 
             if (GAME_MANAGER.state.stateType === "lobby") {
+                // Clean up lobby voice chat when game starts
+                const { voiceChatManager: vcm } = await import("./voiceChat");
+                vcm.disable();
+                
                 const isSpectator = GAME_MANAGER.state.players.get(GAME_MANAGER.state.myId!)?.clientType.type === "spectator";
                 if(isSpectator){
                     GAME_MANAGER.setSpectatorGameState();
@@ -544,6 +548,11 @@ export default function messageListener(packet: ToClientPacket){
                     break;
                 }
             }
+        break;
+        case "webRtcSignal":
+            // Handle WebRTC signaling messages
+            const { voiceChatManager } = await import("./voiceChat");
+            voiceChatManager.handleSignal(packet.fromPlayerId, packet.signal);
         break;
         default:
             console.error(`incoming message response not implemented: ${(packet as any)?.type}`);
