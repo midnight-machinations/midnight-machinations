@@ -1,10 +1,10 @@
 # Migration System
 
-This directory contains the new migration-based system for transforming game mode storage, shareable game modes, and settings data structures.
+This directory contains the migration-based system for transforming game mode storage, shareable game modes, and settings data structures.
 
 ## Overview
 
-The migration system replaces the old "datafixer" approach with a simpler, more maintainable system based on sequential transformations.
+The migration system uses a simple, sequential approach where each migration transforms data from one format to the next. The format field in your data contains the ID of the last migration that was applied.
 
 ### Key Benefits
 
@@ -12,17 +12,20 @@ The migration system replaces the old "datafixer" approach with a simpler, more 
 2. **Simpler to Write**: Each migration is just a matcher and transform function
 3. **Sequential Application**: Migrations are applied in order until data reaches the current format
 4. **Easy to Maintain**: All migrations for a data type are in one file
+5. **Flexible Format Tracking**: The format field directly tells you which migration was last applied
 
 ## How It Works
 
 1. When data is loaded (e.g., from localStorage), it's passed to `parseFromJson()`
 2. The system finds the first migration that matches the data
-3. The migration transforms the data to the next version
-4. This repeats until the data reaches the current format (v6)
+3. The migration transforms the data and sets the format to its migration ID
+4. This repeats until the data reaches the latest migration ID
+5. The format field contains the ID of the last migration applied (e.g., `"2024-01-07-v5-to-v6"`)
 
 ## File Structure
 
 - `index.ts` - Core migration infrastructure and runner
+- `registry.ts` - Migration registry (separate to avoid circular dependencies)
 - `gameModeStorageMigrations.ts` - Migrations for GameModeStorage data
 - `shareableGameModeMigrations.ts` - Migrations for ShareableGameMode data
 - `settingsMigrations.ts` - Migrations for Settings data
@@ -40,7 +43,8 @@ registerMigration("GameModeStorage", {
     description: "Brief description of what this migration does",
     matches: (json) => {
         // Return true if this migration should run on this data
-        return json.format === "v6";  // Match the previous version
+        // Match the format field from the PREVIOUS migration
+        return json.format === "2024-01-07-v5-to-v6";
     },
     transform: (json) => {
         // Transform the data to the next version
@@ -48,16 +52,14 @@ registerMigration("GameModeStorage", {
         
         return Success({
             ...json,
-            format: "v7",  // Update to new version
+            format: "YYYY-MM-DD-description",  // Set to THIS migration's ID
             // ... other changes ...
         });
     }
 });
 ```
 
-3. **Update the current format** in `index.ts`:
-   - Change `LATEST_VERSION_STRING` to the new version (e.g., "v7")
-   - Update the `CurrentFormat` type in `../index.ts`
+3. **No need to update version constants** - The system automatically uses the last registered migration as the current format
 
 ## Examples
 
@@ -67,11 +69,11 @@ registerMigration("GameModeStorage", {
 registerMigration("Settings", {
     id: "2024-10-23-add-dark-mode",
     description: "Add dark mode setting",
-    matches: (json) => json.format === "v6",
+    matches: (json) => json.format === "2024-01-02-settings-v3-to-v6",
     transform: (json) => {
         return Success({
             ...json,
-            format: "v7",
+            format: "2024-10-23-add-dark-mode",
             darkMode: false  // Add new field with default value
         });
     }
@@ -84,7 +86,7 @@ registerMigration("Settings", {
 registerMigration("GameModeStorage", {
     id: "2024-10-23-restructure-roles",
     description: "Restructure role list format",
-    matches: (json) => json.format === "v6",
+    matches: (json) => json.format === "2024-01-07-v5-to-v6",
     transform: (json) => {
         const gameModes = json.gameModes.map((gameMode: any) => ({
             ...gameMode,
@@ -100,7 +102,7 @@ registerMigration("GameModeStorage", {
         }));
         
         return Success({
-            format: "v7",
+            format: "2024-10-23-restructure-roles",
             gameModes
         });
     }
@@ -114,13 +116,41 @@ registerMigration("GameModeStorage", {
 3. **Test thoroughly**: Test with real data from previous versions
 4. **Don't modify old migrations**: Once deployed, migrations are immutable
 5. **Use type safety**: TypeScript will help catch errors in your transformations
+6. **Match the previous format**: Always match against the format ID of the immediately previous migration
 
 ## Migration History
 
-- `initial -> v0`: Restructure flat game mode structure
-- `v0 -> v1`: Convert disabledRoles to enabledRoles
-- `v1 -> v2`: Add enabledModifiers field
-- `v2 -> v3`: Convert faction to roleSet in role outlines
-- `v3 -> v4`: Simplify role outline structure
-- `v4 -> v5`: Convert enabledModifiers to modifierSettings
-- `v5 -> v6`: Add adjournment phase time
+- `2024-01-01-initial-to-v0`: Restructure flat game mode structure
+- `2024-01-02-v0-to-v1`: Convert disabledRoles to enabledRoles
+- `2024-01-03-v1-to-v2`: Add enabledModifiers field
+- `2024-01-04-v2-to-v3`: Convert faction to roleSet in role outlines
+- `2024-01-05-v3-to-v4`: Simplify role outline structure
+- `2024-01-06-v4-to-v5`: Convert enabledModifiers to modifierSettings
+- `2024-01-07-v5-to-v6`: Add adjournment phase time
+
+## How Format Tracking Works
+
+Instead of using version strings like "v6", the format field now contains the migration ID:
+
+**Before:**
+```json
+{
+  "format": "v6",
+  "gameModes": [...]
+}
+```
+
+**After:**
+```json
+{
+  "format": "2024-01-07-v5-to-v6",
+  "gameModes": [...]
+}
+```
+
+This means:
+- You can tell exactly which migration was last applied
+- No need to maintain a separate version constant
+- New migrations just reference the previous migration's ID
+- The system automatically knows the latest format by looking at the last registered migration
+

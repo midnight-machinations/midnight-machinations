@@ -57,7 +57,7 @@ registerMigration("GameModeStorage", {
         }
 
         return Success({
-            format: "v0",
+            format: "2024-01-01-initial-to-v0",
             gameModes
         });
     }
@@ -71,7 +71,7 @@ registerMigration("GameModeStorage", {
     matches: (json) => {
         return typeof json === "object" && 
                !Array.isArray(json) && 
-               json.format === "v0";
+               json.format === "2024-01-01-initial-to-v0";
     },
     transform: (json) => {
         if (!json.gameModes || !Array.isArray(json.gameModes)) {
@@ -99,7 +99,7 @@ registerMigration("GameModeStorage", {
         });
 
         return Success({
-            format: "v1",
+            format: "2024-01-02-v0-to-v1",
             gameModes
         });
     }
@@ -113,7 +113,7 @@ registerMigration("GameModeStorage", {
     matches: (json) => {
         return typeof json === "object" && 
                !Array.isArray(json) && 
-               json.format === "v1";
+               json.format === "2024-01-02-v0-to-v1";
     },
     transform: (json) => {
         if (!json.gameModes || !Array.isArray(json.gameModes)) {
@@ -137,7 +137,7 @@ registerMigration("GameModeStorage", {
         });
 
         return Success({
-            format: "v2",
+            format: "2024-01-03-v1-to-v2",
             gameModes
         });
     }
@@ -151,7 +151,7 @@ registerMigration("GameModeStorage", {
     matches: (json) => {
         return typeof json === "object" && 
                !Array.isArray(json) && 
-               json.format === "v2";
+               json.format === "2024-01-03-v1-to-v2";
     },
     transform: (json) => {
         if (!json.gameModes || !Array.isArray(json.gameModes)) {
@@ -196,7 +196,7 @@ registerMigration("GameModeStorage", {
         });
 
         return Success({
-            format: "v3",
+            format: "2024-01-04-v2-to-v3",
             gameModes
         });
     }
@@ -210,7 +210,7 @@ registerMigration("GameModeStorage", {
     matches: (json) => {
         return typeof json === "object" && 
                !Array.isArray(json) && 
-               json.format === "v3";
+               json.format === "2024-01-04-v2-to-v3";
     },
     transform: (json) => {
         if (!json.gameModes || !Array.isArray(json.gameModes)) {
@@ -252,7 +252,7 @@ registerMigration("GameModeStorage", {
         });
 
         return Success({
-            format: "v4",
+            format: "2024-01-05-v3-to-v4",
             gameModes
         });
     }
@@ -266,7 +266,7 @@ registerMigration("GameModeStorage", {
     matches: (json) => {
         return typeof json === "object" && 
                !Array.isArray(json) && 
-               json.format === "v4";
+               json.format === "2024-01-05-v3-to-v4";
     },
     transform: (json) => {
         // Import defaultModifierState dynamically to avoid circular deps
@@ -300,7 +300,7 @@ registerMigration("GameModeStorage", {
         });
 
         return Success({
-            format: "v5",
+            format: "2024-01-06-v4-to-v5",
             gameModes
         });
     }
@@ -314,7 +314,7 @@ registerMigration("GameModeStorage", {
     matches: (json) => {
         return typeof json === "object" && 
                !Array.isArray(json) && 
-               json.format === "v5";
+               json.format === "2024-01-06-v4-to-v5";
     },
     transform: (json) => {
         if (!json.gameModes || !Array.isArray(json.gameModes)) {
@@ -343,7 +343,7 @@ registerMigration("GameModeStorage", {
         });
 
         return Success({
-            format: "v6",
+            format: "2024-01-07-v5-to-v6",
             gameModes
         });
     }

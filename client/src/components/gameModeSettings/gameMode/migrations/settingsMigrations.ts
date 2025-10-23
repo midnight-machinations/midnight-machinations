@@ -9,7 +9,7 @@ import { getDefaultSettings } from "../../../../game/localStorage";
 // Migration: initial -> v3
 // Adds format field and converts from initial settings structure
 registerMigration("Settings", {
-    id: "2024-01-01-initial-to-v3",
+    id: "2024-01-01-initial-to-settings-v3",
     description: "Add format field and validate settings structure",
     matches: (json) => {
         return typeof json === "object" && 
@@ -20,7 +20,7 @@ registerMigration("Settings", {
     },
     transform: (json) => {
         return Success({
-            format: "v3",
+            format: "2024-01-01-initial-to-settings-v3",
             ...json
         });
     }
@@ -29,15 +29,15 @@ registerMigration("Settings", {
 // Migration: v3 -> v6
 // Adds maxMenus and menuOrder fields, removes roleSpecificMenus
 registerMigration("Settings", {
-    id: "2024-01-02-v3-to-v6",
+    id: "2024-01-02-settings-v3-to-v6",
     description: "Add maxMenus and menuOrder, remove roleSpecificMenus",
     matches: (json) => {
         return typeof json === "object" && 
                !Array.isArray(json) && 
-               json.format === "v3";
+               json.format === "2024-01-01-initial-to-settings-v3";
     },
     transform: (json) => {
-        const result: any = { ...json, format: "v6" };
+        const result: any = { ...json, format: "2024-01-02-settings-v3-to-v6" };
 
         // Add missing fields from default settings
         if (!("maxMenus" in result)) {

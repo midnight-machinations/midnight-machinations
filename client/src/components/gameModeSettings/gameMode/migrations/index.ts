@@ -14,6 +14,18 @@ type ConverterMap = {
 };
 
 /**
+ * Get the ID of the last migration for a data type.
+ * This is used to check if data is at the latest format.
+ */
+function getLatestMigrationId<T extends keyof ConverterMap>(type: T): string {
+    const migrations = MIGRATIONS[type];
+    if (migrations.length === 0) {
+        throw new Error(`No migrations registered for type: ${type}`);
+    }
+    return migrations[migrations.length - 1].id;
+}
+
+/**
  * Apply all necessary migrations to bring data to the current format.
  * Migrations are applied sequentially until no more migrations match.
  */
@@ -33,7 +45,7 @@ export function applyMigrations<T extends keyof ConverterMap>(
             // No more migrations to apply - check if we're at the current format
             if (typeof currentJson === "object" && 
                 !Array.isArray(currentJson) && 
-                currentJson.format === getCurrentFormat(type)) {
+                currentJson.format === getLatestMigrationId(type)) {
                 return Success(currentJson as ConverterMap[T]);
             }
             
@@ -55,13 +67,6 @@ export function applyMigrations<T extends keyof ConverterMap>(
 }
 
 /**
- * Get the current format version for a data type.
- */
-function getCurrentFormat(type: keyof ConverterMap): CurrentFormat {
-    return "v6"; // This is the latest format
-}
-
-/**
  * Main entry point for parsing and migrating data.
  */
 export default function parseFromJson<T extends keyof ConverterMap>(
@@ -71,8 +76,13 @@ export default function parseFromJson<T extends keyof ConverterMap>(
     return applyMigrations(type, json);
 }
 
-// Export the current format for use by other modules
-export const LATEST_VERSION_STRING: CurrentFormat = "v6";
+/**
+ * Get the latest migration ID for a given data type.
+ * This can be used to check what format new data should have.
+ */
+export function getLatestFormat<T extends keyof ConverterMap>(type: T): string {
+    return getLatestMigrationId(type);
+}
 
 // Import all migrations to register them
 // These imports are at the end of the file to ensure MIGRATIONS is initialized first
