@@ -137,5 +137,6 @@ impl_ability_events!(AbilityIDAndAbility<PitchforkAbility>,
     OnConcealRole,
     OnAddInsider,
     OnRemoveInsider,
-    OnAnyDeath
+    OnAnyDeath,
+    OnRoleSwitch
 );

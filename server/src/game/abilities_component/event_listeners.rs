@@ -44,29 +44,6 @@ impl Abilities{
             OnAbilityEdit::new(event.id.clone(), None).as_invokable().invoke(game);
         }   
     }
-    pub fn on_role_switch(game: &mut Game, event: &OnRoleSwitch, fold: &mut (), priority: ()){
-        for (id, _ability) in game.abilities.abilities.clone() {
-            id.on_role_switch(game, event, fold, priority);
-        }
-    }
-
-    pub fn on_player_possessed(game: &mut Game, event: &OnPlayerPossessed, fold: &mut OnMidnightFold, priority: ()){
-        for (id, _ability) in game.abilities.abilities.clone() {
-            id.on_player_possessed(game, event, fold, priority);
-        }
-    }
-
-    
-    pub fn on_player_roleblocked(game: &mut Game, event: &OnPlayerRoleblocked, fold: &mut OnMidnightFold, priority: ()) {
-        for (id, _ability) in game.abilities.abilities.clone() {
-            id.on_player_roleblocked(game, event, fold, priority)
-        }
-    }
-    pub fn on_visit_wardblocked(game: &mut Game, event: &OnVisitWardblocked, fold: &mut OnMidnightFold, priority: ()) {
-        for (id, _ability) in game.abilities.abilities.clone() {
-            id.on_visit_wardblocked(game, event, fold, priority)
-        }
-    }
 
 
     pub fn controller_parameters_map(game: &Game) -> ControllerParametersMap {
@@ -85,19 +62,6 @@ impl AbilityID{
     }
     fn on_ability_deletion(&self, game: &mut Game, event: &OnAbilityDeletion, fold: &mut (), priority: OnAbilityDeletionPriority) {
         self.get_dyn_cloned_ability_expect(game).on_ability_deletion(game, self, event, fold, priority);
-    }
-    fn on_role_switch(&self, game: &mut Game, event: &OnRoleSwitch, fold: &mut (), priority: ()){
-        self.get_dyn_cloned_ability_expect(game).on_role_switch(game, self, event, fold, priority);
-    }
-
-    fn on_player_possessed(&self, game: &mut Game, event: &OnPlayerPossessed, fold: &mut OnMidnightFold, priority: ()){
-        self.get_dyn_cloned_ability_expect(game).on_player_possessed(game, self, event, fold, priority);
-    }
-    pub fn on_player_roleblocked(&self, game: &mut Game, event: &OnPlayerRoleblocked, fold: &mut OnMidnightFold, priority: ()) {
-        self.get_dyn_cloned_ability_expect(game).on_player_roleblocked(game, self, event, fold, priority);
-    }
-    pub fn on_visit_wardblocked(&self, game: &mut Game, event: &OnVisitWardblocked, fold: &mut OnMidnightFold, priority: ()) {
-        self.get_dyn_cloned_ability_expect(game).on_visit_wardblocked(game, self, event, fold, priority);
     }
 
     fn controller_parameters_map(&self, game: &Game) -> ControllerParametersMap {

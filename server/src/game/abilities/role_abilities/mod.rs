@@ -9,9 +9,6 @@ impl AbilityTraitOld for RoleAbility {
     fn on_ability_deletion(&self, game: &mut Game, id: &AbilityID, event: &crate::game::event::on_ability_deletion::OnAbilityDeletion, fold: &mut (), priority: crate::game::event::on_ability_deletion::OnAbilityDeletionPriority) {
         self.0.clone().on_ability_deletion(game, id.get_role_actor_expect(), event, fold, priority)
     }
-    fn on_role_switch(&self, game: &mut Game, id: &AbilityID, event: &crate::game::event::on_role_switch::OnRoleSwitch, fold: &mut (), priority: ()) {
-        self.0.clone().on_role_switch(game, id.get_role_actor_expect(), event, fold, priority)
-    }
     fn on_player_possessed(&self, game: &mut Game, id: &AbilityID, event: &OnPlayerPossessed, fold: &mut OnMidnightFold, priority: ()){
         if id.get_role_actor_expect() == event.possessed {
             for id in game.controllers.all_controller_ids() {
@@ -104,6 +101,11 @@ impl EventListener<OnConcealRole> for AbilityIDAndAbility<RoleAbility> {
     fn on_event(&self, game: &mut Game, data: &OnConcealRole, _fold: &mut <OnConcealRole as EventData>::FoldValue, _priority: <OnConcealRole as EventData>::Priority) {
         let &OnConcealRole{player: event_player, concealed_player} = data;
         self.ability().0.clone().on_conceal_role(game, self.id().get_role_actor_expect(), event_player, concealed_player)
+    }
+}
+impl EventListener<OnRoleSwitch> for AbilityIDAndAbility<RoleAbility> {
+    fn on_event(&self, game: &mut Game, data: &OnRoleSwitch, fold: &mut <OnRoleSwitch as EventData>::FoldValue, priority: <OnRoleSwitch as EventData>::Priority) {
+        self.ability().0.clone().on_role_switch(game, self.id().get_role_actor_expect(), data, fold, priority)
     }
 }
 

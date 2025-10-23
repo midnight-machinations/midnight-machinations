@@ -24,6 +24,7 @@ pub trait AbilityTrait:
     EventListener<OnAddInsider> +
     EventListener<OnRemoveInsider> +
     EventListener<OnAnyDeath> +
+    EventListener<OnRoleSwitch> +
 {}
 
 pub struct AbilityIDAndAbility<A>(AbilityID, A);

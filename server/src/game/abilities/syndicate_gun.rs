@@ -212,7 +212,8 @@ impl_ability_events!(AbilityIDAndAbility<SyndicateGun>,
     OnControllerSelectionChanged,
     OnPhaseStart,
     BeforePhaseEnd,
-    OnConcealRole
+    OnConcealRole,
+    OnRoleSwitch
 );
 
 impl From<SyndicateGun> for Ability {
