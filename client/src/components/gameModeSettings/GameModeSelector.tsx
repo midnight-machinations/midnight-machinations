@@ -8,7 +8,7 @@ import { DragAndDrop } from "../DragAndDrop";
 import { GameModeContext } from "./GameModesEditor";
 import translate from "../../game/lang";
 import "./gameModeSelector.css"
-import parseFromJson, { LATEST_VERSION_STRING } from "./gameMode/dataFixer";
+import parseFromJson, { LATEST_VERSION_STRING } from "./gameMode/migrations";
 import { GameMode, GameModeData, GameModeStorage } from "./gameMode";
 import { isFailure, parseJsonObject } from "./gameMode/parse";
 
