@@ -350,6 +350,10 @@ export default function messageListener(packet: ToClientPacket){
             if(GAME_MANAGER.state.stateType === "lobby" || GAME_MANAGER.state.stateType === "game")
                 GAME_MANAGER.state.modifierSettings = new ListMap(packet.modifierSettings.modifiers);
         break;
+        case "voiceChatEnabled":
+            if(GAME_MANAGER.state.stateType === "lobby")
+                GAME_MANAGER.state.voiceChatEnabled = packet.enabled;
+        break;
         case "phase":
             if(GAME_MANAGER.state.stateType === "game"){
                 GAME_MANAGER.state.phaseState = packet.phase;

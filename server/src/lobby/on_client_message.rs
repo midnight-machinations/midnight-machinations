@@ -247,6 +247,10 @@ impl Lobby {
                 self.settings.modifiers = modifier_settings.clone();
                 self.send_to_all(ToClientPacket::ModifierSettings { modifier_settings });
             }
+            ToServerPacket::SetVoiceChatEnabled { enabled } => {
+                self.settings.voice_chat_enabled = enabled;
+                self.send_to_all(ToClientPacket::VoiceChatEnabled { enabled });
+            }
             ToServerPacket::Leave => {
                 if let RemoveRoomClientResult::RoomShouldClose = self.remove_client(room_client_id) {
                     return LobbyClientMessageResult::Close;
@@ -272,6 +276,15 @@ impl Lobby {
                 }
                 self.ensure_host_exists(Some(room_client_id));
                 self.send_players();
+            }
+            ToServerPacket::WebRtcSignal { target_player_id, signal } => {
+                // Forward WebRTC signaling messages to the target player
+                if let Some(target_client) = self.clients.get(&target_player_id) {
+                    target_client.send(ToClientPacket::WebRtcSignal {
+                        from_player_id: room_client_id,
+                        signal,
+                    });
+                }
             }
             _ => {
                 log!(error "Lobby"; "{} {:?}", "ToServerPacket not implemented for lobby was sent during lobby: ", incoming_packet);
