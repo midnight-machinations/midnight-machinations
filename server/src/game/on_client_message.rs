@@ -155,6 +155,17 @@ impl Game {
             ToServerPacket::VoteFastForwardPhase { fast_forward } => {
                 sender_player_ref.set_fast_forward_vote(self, fast_forward);
             },
+            ToServerPacket::WebRtcSignal { target_player_id, signal } => {
+                // Forward WebRTC signaling messages to the target player - handle via game client map
+                if let Some(target_client) = self.clients.get(&target_player_id) {
+                    if let GameClientLocation::Player(target_player_ref) = target_client.client_location {
+                        target_player_ref.send_packet(self, ToClientPacket::WebRtcSignal {
+                            from_player_id: room_client_id,
+                            signal,
+                        });
+                    }
+                }
+            },
             _ => {
                 log!(error "Game"; "Recieved invalid packet for Game state: {incoming_packet:?}");
             }
