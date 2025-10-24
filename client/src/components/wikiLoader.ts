@@ -1,15 +1,13 @@
 /**
  * Wiki Content Loader
  * 
- * This module handles loading and parsing wiki content from MDX files.
+ * This module handles loading wiki content that has been pre-parsed at build time.
  * It supports:
- * - Frontmatter parsing for metadata
+ * - Frontmatter metadata (parsed at build time)
  * - Enhanced markdown with custom extensions
  * - Dynamic content with JavaScript
  * - Translation support
  */
-
-import matter from 'gray-matter';
 
 export interface WikiPageMetadata {
     title: string;
@@ -56,24 +54,9 @@ export function getAllWikiPages(): string[] {
 }
 
 /**
- * Parse MDX content with frontmatter
- * @param mdxContent - Raw MDX content with frontmatter
- * @returns Parsed wiki page content
- */
-export function parseMDXContent(mdxContent: string): WikiPageContent {
-    const { data, content } = matter(mdxContent);
-    
-    return {
-        metadata: data as WikiPageMetadata,
-        content: content,
-        rawContent: mdxContent
-    };
-}
-
-/**
- * Register a wiki page (called at build time)
+ * Register a wiki page (data comes pre-parsed from build time)
  * @param pagePath - The page path
- * @param content - The page content
+ * @param content - The pre-parsed page content
  */
 export function registerWikiPage(pagePath: string, content: WikiPageContent): void {
     wikiPages.set(pagePath, content);
@@ -133,10 +116,9 @@ export function processEnhancedMarkdown(content: string): string {
     return processed;
 }
 
-// Initialize with empty pages - these will be populated by the build system or at runtime
-export function initializeWikiPages(pages: Record<string, string>): void {
+// Initialize wiki pages - data comes pre-parsed from the build system
+export function initializeWikiPages(pages: Record<string, WikiPageContent>): void {
     for (const [path, content] of Object.entries(pages)) {
-        const parsed = parseMDXContent(content);
-        registerWikiPage(path, parsed);
+        registerWikiPage(path, content);
     }
 }

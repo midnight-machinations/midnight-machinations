@@ -13,10 +13,25 @@ import fs from 'fs';
 import path from 'path';
 import matter from 'gray-matter';
 
+interface WikiPageMetadata {
+    title: string;
+    titleVariants?: string[];
+    category: 'standard' | 'role' | 'modifier' | 'category' | 'generated';
+    translatable?: boolean;
+    dynamic?: boolean;
+    tags?: string[];
+}
+
+interface WikiPageContent {
+    metadata: WikiPageMetadata;
+    content: string;
+    rawContent: string;
+}
+
 interface WikiFileInfo {
     path: string;
     fullPath: string;
-    content: string;
+    parsedContent: WikiPageContent;
 }
 
 export default function wikiContentPlugin(): Plugin {
@@ -45,22 +60,29 @@ export default function wikiContentPlugin(): Plugin {
                     .replace(/\\/g, '/')
                     .replace(/\.(mdx|md)$/, '');
                 
-                const content = fs.readFileSync(fullPath, 'utf-8');
+                const rawContent = fs.readFileSync(fullPath, 'utf-8');
+                
+                // Parse the frontmatter at build time
+                const { data, content } = matter(rawContent);
                 
                 wikiFiles.set(wikiPath, {
                     path: wikiPath,
                     fullPath: fullPath,
-                    content: content
+                    parsedContent: {
+                        metadata: data as WikiPageMetadata,
+                        content: content,
+                        rawContent: rawContent
+                    }
                 });
             }
         }
     }
 
     function generateWikiModule(): string {
-        const pages: Record<string, string> = {};
+        const pages: Record<string, WikiPageContent> = {};
         
         for (const [wikiPath, fileInfo] of wikiFiles) {
-            pages[wikiPath] = fileInfo.content;
+            pages[wikiPath] = fileInfo.parsedContent;
         }
         
         return `
