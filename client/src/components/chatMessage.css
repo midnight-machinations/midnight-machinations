@@ -146,3 +146,10 @@
 .player-synopsis-table tr:last-child td {
     border-bottom: none;
 }
+.game-over-summary {
+    display: flex;
+    flex-direction: column;
+}
+.game-over-summary .details-summary-container table td:first-of-type {
+    width: 0;
+}

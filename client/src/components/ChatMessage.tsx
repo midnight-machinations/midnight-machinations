@@ -290,7 +290,7 @@ function GameOverChatMessage(props: Readonly<{
 
     const spectator = useSpectator();
 
-    return <div className={"chat-message-div"}>
+    return <div className={"chat-message-div game-over-summary"}>
         <StyledText className={"chat-message " + props.style}
             playerKeywordData={props.playerKeywordData}
             roleListKeywordData={props.roleListKeywordData}
@@ -340,63 +340,60 @@ function PlayerSynopsisDropdown(props: Readonly<{
 
     return <DetailsSummary
         summary={
-            <span className="chat-message">
-                {summaryText}
-            </span>
+            <StyledText className="chat-message">
+                {summaryText} {props.synopsis.crumbs.length > 0 ? translate("chatMessage.gameOver.player.converted") : ""}
+            </StyledText>
         }
         defaultOpen={props.defaultOpen}
     >
-        <div style={{ padding: "0.5rem" }}>
-            <table className="player-synopsis-table">
-                <tbody>
-                    {/* Role List Generation row */}
-                    <tr>
-                        <td>{translate("chatMessage.gameOver.time.roleListGeneration")}</td>
-                        <td></td>
-                        <td></td>
-                        <td>
-                            {props.synopsis.outlineAssignment + 1}: {translateRoleOutline(props.roleList[props.synopsis.outlineAssignment], props.playerNames)}
-                        </td>
-                    </tr>
-                    {/* Crumbs rows */}
-                    {props.synopsis.crumbs.map((crumb, crumbIndex) => {
-                        let timeText: string;
-                        if (crumbIndex === 0) {
-                            // First crumb is always "Game Start"
-                            timeText = translate("chatMessage.gameOver.time.gameStart");
-                        } else if (crumb.night !== null) {
-                            // If night is set, it happened during Night/Obituary phase
-                            timeText = translate("chatMessage.gameOver.time.night", crumb.night);
-                        } else {
-                            // If night is null, it happened during Day phase
-                            // Try to infer the day number from previous crumbs
-                            let dayNumber = 1; // Default to day 1
-                            
-                            // Look backwards to find the last crumb with a night value
-                            for (let i = crumbIndex - 1; i >= 0; i--) {
-                                if (props.synopsis.crumbs[i].night !== null) {
-                                    dayNumber = props.synopsis.crumbs[i].night!;
-                                    break;
-                                }
+        <table className="player-synopsis-table">
+            <tbody>
+                <tr>
+                    <td><StyledText>{translate("chatMessage.gameOver.time.roleListGeneration")}</StyledText></td>
+                    <td colSpan={3}>
+                        <StyledText>
+                            {(props.synopsis.outlineAssignment + 1).toString()}: {translateRoleOutline(props.roleList[props.synopsis.outlineAssignment], props.playerNames)}
+                        </StyledText>
+                    </td>
+                </tr>
+                {/* Crumbs rows */}
+                {props.synopsis.crumbs.map((crumb, crumbIndex) => {
+                    let timeText: string;
+                    if (crumbIndex === 0) {
+                        // First crumb is always "Game Start"
+                        timeText = translate("chatMessage.gameOver.time.gameStart");
+                    } else if (crumb.night !== null) {
+                        // If night is set, it happened during Night/Obituary phase
+                        timeText = translate("chatMessage.gameOver.time.night", crumb.night);
+                    } else {
+                        // If night is null, it happened during Day phase
+                        // Try to infer the day number from previous crumbs
+                        let dayNumber = 1; // Default to day 1
+                        
+                        // Look backwards to find the last crumb with a night value
+                        for (let i = crumbIndex - 1; i >= 0; i--) {
+                            if (props.synopsis.crumbs[i].night !== null) {
+                                dayNumber = props.synopsis.crumbs[i].night!;
+                                break;
                             }
-                            
-                            timeText = translate("chatMessage.gameOver.time.day", dayNumber);
                         }
+                        
+                        timeText = translate("chatMessage.gameOver.time.day", dayNumber);
+                    }
 
-                        const insiderGroupIcons = crumb.insiderGroups.map(group => 
-                            translate("chatGroup." + group + ".icon")
-                        ).join(" ") || translate("chatGroup.all.icon");
+                    const insiderGroupIcons = crumb.insiderGroups.map(group => 
+                        translate("chatGroup." + group + ".icon")
+                    ).join(translate("union")) || translate("chatGroup.all.icon");
 
-                        return <tr key={crumbIndex}>
-                            <td>{timeText}</td>
-                            <td>{insiderGroupIcons}</td>
-                            <td>{translateWinCondition(crumb.winCondition)}</td>
-                            <td>{translate("role." + crumb.role + ".name")}</td>
-                        </tr>;
-                    })}
-                </tbody>
-            </table>
-        </div>
+                    return <tr key={crumbIndex}>
+                        <td><StyledText>{timeText}</StyledText></td>
+                        <td>{insiderGroupIcons}</td>
+                        <td><StyledText>{translateWinCondition(crumb.winCondition)}</StyledText></td>
+                        <td><StyledText>{translate("role." + crumb.role + ".name")}</StyledText></td>
+                    </tr>;
+                })}
+            </tbody>
+        </table>
     </DetailsSummary>;
 }
 
