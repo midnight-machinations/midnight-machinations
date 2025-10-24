@@ -333,11 +333,15 @@ function PlayerSynopsisDropdown(props: Readonly<{
     const playerName = encodeString(props.playerNames[props.playerIndex]);
     const wonText = props.synopsis.won ? translate("chatMessage.gameOver.player.won.true", playerName) : translate("chatMessage.gameOver.player.won.false", playerName);
     const endingRoleText = endingRole ? translate("role." + endingRole + ".name") : "";
+    
+    const summaryText = endingRole 
+        ? `${wonText} (${endingRoleText})`
+        : wonText;
 
     return <DetailsSummary
         summary={
             <span className="chat-message">
-                {wonText} ({endingRoleText})
+                {summaryText}
             </span>
         }
         defaultOpen={props.defaultOpen}
