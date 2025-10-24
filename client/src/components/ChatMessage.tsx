@@ -315,7 +315,7 @@ function PlayerSynopsisDropdown(props: Readonly<{
     synopsis: {
         outlineAssignment: number,
         crumbs: {
-            night: number | null,
+            time: { type: "night", day: number } | { type: "day", day: number },
             role: Role,
             winCondition: WinCondition,
             insiderGroups: InsiderGroup[]
@@ -362,23 +362,12 @@ function PlayerSynopsisDropdown(props: Readonly<{
                     if (crumbIndex === 0) {
                         // First crumb is always "Game Start"
                         timeText = translate("chatMessage.gameOver.time.gameStart");
-                    } else if (crumb.night !== null) {
-                        // If night is set, it happened during Night/Obituary phase
-                        timeText = translate("chatMessage.gameOver.time.night", crumb.night);
+                    } else if (crumb.time.type === "night") {
+                        // Night phase
+                        timeText = translate("chatMessage.gameOver.time.night", crumb.time.day);
                     } else {
-                        // If night is null, it happened during Day phase
-                        // Try to infer the day number from previous crumbs
-                        let dayNumber = 1; // Default to day 1
-                        
-                        // Look backwards to find the last crumb with a night value
-                        for (let i = crumbIndex - 1; i >= 0; i--) {
-                            if (props.synopsis.crumbs[i].night !== null) {
-                                dayNumber = props.synopsis.crumbs[i].night!;
-                                break;
-                            }
-                        }
-                        
-                        timeText = translate("chatMessage.gameOver.time.day", dayNumber);
+                        // Day phase
+                        timeText = translate("chatMessage.gameOver.time.day", crumb.time.day);
                     }
 
                     const insiderGroupIcons = crumb.insiderGroups.map(group => 
@@ -1057,7 +1046,7 @@ export type ChatMessageVariant = {
         playerSynopses: {
             outlineAssignment: number // role outline index
             crumbs: {
-                night: number | null,
+                time: { type: "night", day: number } | { type: "day", day: number },
                 role: Role,
                 winCondition: WinCondition,
                 insiderGroups: InsiderGroup[]
