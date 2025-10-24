@@ -15,6 +15,7 @@ import { ShareableGameMode } from "./gameMode";
 import { ModifiersSelector } from "./ModifiersSelector";
 import { ListMapData } from "../../ListMap";
 import { ModifierID, ModifierState } from "../../game/modifiers";
+import { Button } from "../Button";
 
 const GameModeContext = createContext({
     roleList: [] as RoleList,
@@ -24,10 +25,14 @@ const GameModeContext = createContext({
 });
 export {GameModeContext};
 
+type SettingsTab = "gameMode" | "phaseTimes" | "modifiers" | "outlineList" | "enabledRoles";
+
 
 export default function GameModesEditor(props: Readonly<{
     initialGameMode?: ShareableGameMode
 }>): ReactElement {
+
+    const [activeTab, setActiveTab] = useState<SettingsTab>("gameMode");
 
     const [roleList, setRoleList] = useState<RoleList>(()=>{
         if(props.initialGameMode){
@@ -97,8 +102,40 @@ export default function GameModesEditor(props: Readonly<{
             <h1>{translate("menu.globalMenu.gameSettingsEditor")}</h1>
         </header>
         <GameModeContext.Provider value={{roleList, phaseTimes, enabledRoles, modifierSettings}}>
+            <div className="settings-tabs">
+                <Button 
+                    highlighted={activeTab === "gameMode"}
+                    onClick={() => setActiveTab("gameMode")}
+                >
+                    {translate("menu.lobby.gameModes")}
+                </Button>
+                <Button 
+                    highlighted={activeTab === "phaseTimes"}
+                    onClick={() => setActiveTab("phaseTimes")}
+                >
+                    {translate("menu.lobby.timeSettings")}
+                </Button>
+                <Button 
+                    highlighted={activeTab === "modifiers"}
+                    onClick={() => setActiveTab("modifiers")}
+                >
+                    {translate("modifiers")}
+                </Button>
+                <Button 
+                    highlighted={activeTab === "outlineList"}
+                    onClick={() => setActiveTab("outlineList")}
+                >
+                    {translate("menu.lobby.roleList")}
+                </Button>
+                <Button 
+                    highlighted={activeTab === "enabledRoles"}
+                    onClick={() => setActiveTab("enabledRoles")}
+                >
+                    {translate("menu.lobby.enabledRoles")}
+                </Button>
+            </div>
             <main>
-                <div>
+                {activeTab === "gameMode" && (
                     <GameModeSelector 
                         canModifySavedGameModes={true}
                         loadGameMode={gameMode => {
@@ -108,29 +145,35 @@ export default function GameModesEditor(props: Readonly<{
                             setModifierSettings(gameMode.modifierSettings);
                         }}
                     />
+                )}
+                {activeTab === "phaseTimes" && (
                     <PhaseTimesSelector 
                         onChange={(newPhaseTimes) => {
                             setPhaseTimes(newPhaseTimes);
                         }}            
                     />
-                </div>
-                <div>
+                )}
+                {activeTab === "modifiers" && (
                     <ModifiersSelector
                         disabled={false}
                         setModifiers={setModifiers}
                     />
+                )}
+                {activeTab === "outlineList" && (
                     <OutlineListSelector
                         onChangeRolePicker={onChangeRolePicker}
                         onAddNewOutline={addOutline}
                         onRemoveOutline={removeOutline}
                         setRoleList={setRoleList}
                     />
+                )}
+                {activeTab === "enabledRoles" && (
                     <EnabledRoleSelector
                         onDisableRoles={onDisableRoles}
                         onEnableRoles={onEnableRoles}
                         onIncludeAll={onEnableAll}         
                     />
-                </div>
+                )}
             </main>
         </GameModeContext.Provider>
     </div>
