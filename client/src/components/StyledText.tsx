@@ -1,5 +1,5 @@
 import { marked } from "marked";
-import React, { ReactElement, useContext, useEffect } from "react";
+import React, { ReactElement, useContext } from "react";
 import ReactDOMServer from "react-dom/server";
 import { find } from "..";
 import translate, { translateChecked } from "../game/lang";
@@ -64,12 +64,6 @@ export default function StyledText(props: Readonly<StyledTextProps>): ReactEleme
     const menuController = useContext(MenuControllerContext);
     const anchorController = useContext(AnchorControllerContext)!;
 
-    useEffect(() => {
-        (window as any).setWikiSearchPage = (page: WikiArticleLink) => {
-            setWikiSearchPage(page, anchorController, menuController)
-        };
-    })
-
     let tokens: Token[] = [{
         type: "raw",
         string: typeof props.children === "string" 
@@ -87,8 +81,21 @@ export default function StyledText(props: Readonly<StyledTextProps>): ReactEleme
 
     const jsxString = mapTokensToHtml(tokens, props.noLinks ?? false);
     
+    const handleClick = (event: React.MouseEvent<HTMLSpanElement>) => {
+        const target = event.target as HTMLElement;
+        const anchor = target.closest('a[data-wiki-page]');
+        if (anchor) {
+            event.preventDefault();
+            const wikiPage = anchor.getAttribute('data-wiki-page') as WikiArticleLink;
+            if (wikiPage) {
+                setWikiSearchPage(wikiPage, anchorController, menuController);
+            }
+        }
+    };
+    
     return <span
         className={props.className}
+        onClick={handleClick}
         dangerouslySetInnerHTML={{__html: jsxString}}>
     </span>
 }
@@ -108,7 +115,8 @@ function mapTokensToHtml(tokens: Token[], noLinks: boolean): string {
             return ReactDOMServer.renderToStaticMarkup(
                 // eslint-disable-next-line jsx-a11y/anchor-is-valid
                 <a
-                    href={`javascript: window.setWikiSearchPage("${token.link}")`}
+                    href="#"
+                    data-wiki-page={token.link}
                     className={token.style + " keyword-link"}
                     dangerouslySetInnerHTML={{ __html: token.string }}
                 />
