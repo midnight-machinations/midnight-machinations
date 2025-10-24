@@ -7,3 +7,8 @@ interface ImportMetaEnv {
 interface ImportMeta {
   readonly env: ImportMetaEnv
 }
+
+declare module 'virtual:wiki-content' {
+    const wikiPages: Record<string, string>;
+    export default wikiPages;
+}
