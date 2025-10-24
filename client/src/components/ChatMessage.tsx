@@ -343,18 +343,16 @@ function PlayerSynopsisDropdown(props: Readonly<{
         defaultOpen={props.defaultOpen}
     >
         <div style={{ padding: "0.5rem" }}>
-            <table style={{ width: "100%", borderCollapse: "collapse" }}>
+            <table className="player-synopsis-table">
                 <tbody>
                     {/* Role List Generation row */}
                     <tr>
-                        <td style={{ padding: "0.25rem" }}>
-                            {translate("chatMessage.gameOver.time.roleListGeneration")}
-                        </td>
-                        <td style={{ padding: "0.25rem" }}>
+                        <td>{translate("chatMessage.gameOver.time.roleListGeneration")}</td>
+                        <td></td>
+                        <td></td>
+                        <td>
                             {props.synopsis.outlineAssignment + 1}: {translateRoleOutline(props.roleList[props.synopsis.outlineAssignment], props.playerNames)}
                         </td>
-                        <td style={{ padding: "0.25rem" }}></td>
-                        <td style={{ padding: "0.25rem" }}></td>
                     </tr>
                     {/* Crumbs rows */}
                     {props.synopsis.crumbs.map((crumb, crumbIndex) => {
@@ -367,9 +365,17 @@ function PlayerSynopsisDropdown(props: Readonly<{
                             timeText = translate("chatMessage.gameOver.time.night", crumb.night);
                         } else {
                             // If night is null, it happened during Day phase
-                            // We need to get the day number from the previous crumb or estimate
-                            const prevCrumb = props.synopsis.crumbs[crumbIndex - 1];
-                            const dayNumber = prevCrumb.night !== null ? prevCrumb.night : 1;
+                            // Try to infer the day number from previous crumbs
+                            let dayNumber = 1; // Default to day 1
+                            
+                            // Look backwards to find the last crumb with a night value
+                            for (let i = crumbIndex - 1; i >= 0; i--) {
+                                if (props.synopsis.crumbs[i].night !== null) {
+                                    dayNumber = props.synopsis.crumbs[i].night!;
+                                    break;
+                                }
+                            }
+                            
                             timeText = translate("chatMessage.gameOver.time.day", dayNumber);
                         }
 
@@ -378,10 +384,10 @@ function PlayerSynopsisDropdown(props: Readonly<{
                         ).join(" ") || translate("chatGroup.all.icon");
 
                         return <tr key={crumbIndex}>
-                            <td style={{ padding: "0.25rem" }}>{timeText}</td>
-                            <td style={{ padding: "0.25rem" }}>{insiderGroupIcons}</td>
-                            <td style={{ padding: "0.25rem" }}>{translateWinCondition(crumb.winCondition)}</td>
-                            <td style={{ padding: "0.25rem" }}>{translate("role." + crumb.role + ".name")}</td>
+                            <td>{timeText}</td>
+                            <td>{insiderGroupIcons}</td>
+                            <td>{translateWinCondition(crumb.winCondition)}</td>
+                            <td>{translate("role." + crumb.role + ".name")}</td>
                         </tr>;
                     })}
                 </tbody>
