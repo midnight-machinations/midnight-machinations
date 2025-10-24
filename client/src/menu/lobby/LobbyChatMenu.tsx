@@ -10,6 +10,6 @@ export default function LobbyChatMenu(props: Readonly<{spectator: boolean}>): Re
         <div className="lobby-menu-chat">
             <ChatMessageSection/>
         </div>
-        <ChatTextInput disabled={props.spectator}/>
+        <ChatTextInput disabled={false}/>
     </section>
 }

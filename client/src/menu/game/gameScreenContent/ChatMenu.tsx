@@ -47,6 +47,11 @@ export default function ChatMenu(): ReactElement {
         (k1, k2)=>controllerIdToLinkWithPlayer(k1)===controllerIdToLinkWithPlayer(k2)
     );
 
+    const isSpectator = useGameState(
+        gameState => gameState.clientState.type === "spectator",
+        ["gameInitializationComplete"]
+    );
+
     return <div className="chat-menu chat-menu-colors">
         <ContentTab close={ContentMenu.ChatMenu}>{translate("menu.chat.title")}</ContentTab>
         {filter === undefined || filter === null || <div className="chat-filter-zone highlighted">
@@ -83,6 +88,13 @@ export default function ChatMenu(): ReactElement {
                 </div>
             })
         }
+        {isSpectator && <div>
+            <div className="chat-menu-icons">
+                {translate("chatGroup.spectator.icon")}
+                <StyledText>{translate("chatGroup.spectator.name")}</StyledText>
+            </div>
+            <ChatTextInput disabled={false} isSpectator={true}/>
+        </div>}
         
     </div>
 }
@@ -237,7 +249,8 @@ export function ChatMessageSection(props: Readonly<{
 export function ChatTextInput(props: Readonly<{
     disabled?: boolean,
     whispering?: PlayerIndex | null,
-    controllingPlayer?: PlayerIndex
+    controllingPlayer?: PlayerIndex,
+    isSpectator?: boolean
 }>): ReactElement {
     const [chatBoxText, setChatBoxText] = useState<string>("");
     const [drawAttentionSeconds, setDrawAttentionSeconds] = useState<number>(0);
@@ -314,7 +327,9 @@ export function ChatTextInput(props: Readonly<{
         history.push(text);
         historyPoller.reset();
         if (stateType === "game") {
-            if (whispering !== null) {
+            if (props.isSpectator) {
+                GAME_MANAGER.sendSendSpectatorMessagePacket(text);
+            } else if (whispering !== null) {
                 GAME_MANAGER.sendSendWhisperPacket(whispering, text, props.controllingPlayer);
             } else {
                 GAME_MANAGER.sendSendChatMessagePacket(text, false, props.controllingPlayer);
@@ -322,7 +337,7 @@ export function ChatTextInput(props: Readonly<{
         } else if (stateType === "lobby") {
             GAME_MANAGER.sendSendLobbyMessagePacket(text);
         }
-    }, [chatBoxText, history, historyPoller, stateType, whispering, props.controllingPlayer]);
+    }, [chatBoxText, history, historyPoller, stateType, whispering, props.controllingPlayer, props.isSpectator]);
 
     const handleInputChange = useCallback((event: React.ChangeEvent<HTMLTextAreaElement>) => {
         const text = event.target.value;
