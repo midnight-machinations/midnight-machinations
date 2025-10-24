@@ -42,7 +42,7 @@ impl PlayerChatGroups{
 
         if game.player_chat_groups.send != out {
             for player in PlayerReference::all_players(game){
-                player.send_packet(game, ToClientPacket::YourSendChatGroups { send_chat_groups: out.get_for_client(player)});
+                player.send_packet(game, ToClientPacket::YourSendChatGroups { send_chat_groups: ClientChatGroups::from(out.get(player)) });
             }
         }
 
@@ -94,16 +94,22 @@ impl PlayerChatGroupMap{
             VecSet::new()
         }
     }
-    
-    /// Get chat groups for a player, converted for client display.
-    /// This maps Kidnapped to Jail so clients cannot distinguish between them.
-    fn get_for_client(&self, player: PlayerReference)->VecSet<ChatGroup>{
-        let groups = self.get(player);
-        groups.into_iter().map(|g| g.to_client_chat_group()).collect()
-    }
     fn player_in_group(&self, player: PlayerReference, chat_group: ChatGroup)->bool{
         let Some(groups) = self.0.get(&player) else {return false};
         groups.contains(&chat_group)
+    }
+}
+
+#[derive(Serialize, Debug, Clone)]
+#[serde(transparent)]
+pub struct ClientChatGroups(VecSet<ChatGroup>);
+
+impl From<VecSet<ChatGroup>> for ClientChatGroups{
+    fn from(chat_groups: VecSet<ChatGroup>) -> Self {
+        Self(chat_groups.into_iter().map(|g| match g {
+            ChatGroup::Kidnapped => ChatGroup::Jail,
+            other => other
+        }).collect())
     }
 }
 
@@ -118,15 +124,6 @@ impl ChatGroup{
             }
         }
         out
-    }
-
-    /// Convert chat group for client display.
-    /// Maps Kidnapped to Jail so clients cannot distinguish between them.
-    pub fn to_client_chat_group(self) -> Self {
-        match self {
-            ChatGroup::Kidnapped => ChatGroup::Jail,
-            other => other
-        }
     }
 }
 impl PlayerReference{
@@ -170,31 +167,5 @@ impl PlayerReference{
 
     pub fn get_current_send_chat_groups(&self, game: &mut Game) -> VecSet<ChatGroup> {
         PlayerChatGroups::send_player_chat_group_map(game).get(*self)
-    }
-
-    pub fn get_current_send_chat_groups_for_client(&self, game: &mut Game) -> VecSet<ChatGroup> {
-        PlayerChatGroups::send_player_chat_group_map(game).get_for_client(*self)
-    }
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn test_to_client_chat_group_maps_kidnapped_to_jail() {
-        assert_eq!(ChatGroup::Kidnapped.to_client_chat_group(), ChatGroup::Jail);
-    }
-
-    #[test]
-    fn test_to_client_chat_group_preserves_other_groups() {
-        assert_eq!(ChatGroup::All.to_client_chat_group(), ChatGroup::All);
-        assert_eq!(ChatGroup::Dead.to_client_chat_group(), ChatGroup::Dead);
-        assert_eq!(ChatGroup::Mafia.to_client_chat_group(), ChatGroup::Mafia);
-        assert_eq!(ChatGroup::Cult.to_client_chat_group(), ChatGroup::Cult);
-        assert_eq!(ChatGroup::Jail.to_client_chat_group(), ChatGroup::Jail);
-        assert_eq!(ChatGroup::Interview.to_client_chat_group(), ChatGroup::Interview);
-        assert_eq!(ChatGroup::Puppeteer.to_client_chat_group(), ChatGroup::Puppeteer);
-        assert_eq!(ChatGroup::Warden.to_client_chat_group(), ChatGroup::Warden);
     }
 }
