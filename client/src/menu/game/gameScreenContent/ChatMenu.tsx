@@ -327,7 +327,7 @@ export function ChatTextInput(props: Readonly<{
         history.push(text);
         historyPoller.reset();
         if (stateType === "game") {
-            if (props.isSpectator) {
+            if (props.isSpectator === true) {
                 GAME_MANAGER.sendSendSpectatorMessagePacket(text);
             } else if (whispering !== null) {
                 GAME_MANAGER.sendSendWhisperPacket(whispering, text, props.controllingPlayer);
