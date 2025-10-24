@@ -5,7 +5,7 @@
     align-items: center;
 
     background-color: var(--primary-color);
-    border-radius: .5rem;
+    border-radius: 0;
     padding: .13rem;
 }
 .details-summary-summary-container.open {
@@ -22,7 +22,8 @@
     border: .13rem solid var(--primary-border-color);
     border-bottom-color: var(--primary-border-shadow-color);
     border-right-color: var(--primary-border-shadow-color);
-    border-radius: 0.5rem;
+    border-radius: 0;
+    box-shadow: 0 0 10px rgba(from var(--text-color) / 0.2);
     /* justify-content: left;
     align-items: center; */
 }
