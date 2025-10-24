@@ -21,6 +21,11 @@ function scanWikiFiles(dir, baseDir = dir, results = []) {
         if (entry.isDirectory()) {
             scanWikiFiles(fullPath, baseDir, results);
         } else if (entry.isFile() && (entry.name.endsWith('.mdx') || entry.name.endsWith('.md'))) {
+            // Skip README files (consistent with vite plugin)
+            if (entry.name.toUpperCase().startsWith('README')) {
+                continue;
+            }
+            
             const relativePath = path.relative(baseDir, fullPath);
             const wikiPath = relativePath
                 .replace(/\\/g, '/')
