@@ -326,22 +326,37 @@ function PlayerSynopsisDropdown(props: Readonly<{
     roleList: RoleList,
     defaultOpen: boolean
 }>): ReactElement {
-    const endingRole = props.synopsis.crumbs.length > 0 
-        ? props.synopsis.crumbs[props.synopsis.crumbs.length - 1].role 
-        : null;
-    
     const playerName = encodeString(props.playerNames[props.playerIndex]);
     const wonText = props.synopsis.won ? translate("chatMessage.gameOver.player.won.true", playerName) : translate("chatMessage.gameOver.player.won.false", playerName);
-    const endingRoleText = endingRole ? translate("role." + endingRole + ".name") : "";
     
-    const summaryText = endingRole 
-        ? `${wonText} (${endingRoleText})`
-        : wonText;
+    // Helper function to format a state (insider groups, win condition, role)
+    const formatState = (crumb: typeof props.synopsis.crumbs[0]): string => {
+        const insiderGroupIcons = crumb.insiderGroups.map(group => 
+            translate("chatGroup." + group + ".icon")
+        ).join(translate("union")) || translate("chatGroup.all.icon");
+        const winCondition = translateWinCondition(crumb.winCondition);
+        const role = translate("role." + crumb.role + ".name");
+        return `${insiderGroupIcons} ${winCondition}, ${role}`;
+    };
+    
+    let summaryText: string;
+    if (props.synopsis.crumbs.length === 0) {
+        // No crumbs - just show won/lost
+        summaryText = wonText;
+    } else if (props.synopsis.crumbs.length === 1) {
+        // Only one crumb (game start) - show (Starting State)
+        summaryText = `${wonText} (${formatState(props.synopsis.crumbs[0])})`;
+    } else {
+        // Multiple crumbs - show (Starting State -> Final State)
+        const startingState = formatState(props.synopsis.crumbs[0]);
+        const finalState = formatState(props.synopsis.crumbs[props.synopsis.crumbs.length - 1]);
+        summaryText = `${wonText} (${startingState} → ${finalState})`;
+    }
 
     return <DetailsSummary
         summary={
             <StyledText className="chat-message">
-                {summaryText} {props.synopsis.crumbs.length > 0 ? translate("chatMessage.gameOver.player.converted") : ""}
+                {summaryText}
             </StyledText>
         }
         defaultOpen={props.defaultOpen}
