@@ -1,10 +1,10 @@
-import React, { ReactElement, useState } from "react";
+import React, { ReactElement, ReactNode, useState } from "react";
 import { Button } from "./Button";
 import "./tabbedContent.css";
 
 export interface TabDefinition<T extends string> {
     id: T;
-    label: string;
+    label: ReactNode;
     content: ReactElement;
 }
 

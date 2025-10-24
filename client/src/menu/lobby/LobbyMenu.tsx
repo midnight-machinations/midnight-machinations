@@ -25,6 +25,7 @@ import { encodeString } from "../../components/ChatMessage";
 import ListMap from "../../ListMap";
 import RandomSeedSelector from "../../components/gameModeSettings/RandomSeedSelector";
 import { TabbedContent, TabDefinition } from "../../components/TabbedContent";
+import StyledText from "../../components/StyledText";
 
 export default function LobbyMenu(): ReactElement {
     const isSpectator = useLobbyState(
@@ -133,10 +134,10 @@ function LobbyMenuSettings(props: Readonly<{
         return {roleList, enabledRoles, phaseTimes, modifierSettings};
     }, [enabledRoles, phaseTimes, roleList, modifierSettings]);
 
-    const tabs: TabDefinition<"phaseTimes" | "modifiers" | "outlineList" | "enabledRoles">[] = useMemo(() => [
+    const tabs = useMemo(() => [
         {
             id: "phaseTimes",
-            label: translate("menu.lobby.timeSettings"),
+            label: <StyledText noLinks={true}>{translate("menu.lobby.timeSettings")}</StyledText>,
             content: <PhaseTimesSelector 
                 disabled={!props.isHost}
                 onChange={pts => GAME_MANAGER.sendSetPhaseTimesPacket(pts)}
@@ -144,7 +145,7 @@ function LobbyMenuSettings(props: Readonly<{
         },
         {
             id: "modifiers",
-            label: translate("modifiers"),
+            label: <StyledText noLinks={true}>{translate("modifiers")}</StyledText>,
             content: <ModifiersSelector
                 disabled={!props.isHost}
                 setModifiers={modifiers => GAME_MANAGER.sendModifierSettingsPacket(new ListMap(modifiers))}
@@ -152,7 +153,7 @@ function LobbyMenuSettings(props: Readonly<{
         },
         {
             id: "outlineList",
-            label: translate("menu.lobby.roleList"),
+            label: <StyledText noLinks={true}>{translate("menu.lobby.roleList")}</StyledText>,
             content: <OutlineListSelector
                 disabled={!props.isHost}
                 onChangeRolePicker={(value, index) => GAME_MANAGER.sendSetRoleOutlinePacket(index, value)}
@@ -163,7 +164,7 @@ function LobbyMenuSettings(props: Readonly<{
         },
         {
             id: "enabledRoles",
-            label: translate("menu.lobby.enabledRoles"),
+            label: <StyledText noLinks={true}>{translate("menu.lobby.enabledRoles")}</StyledText>,
             content: <EnabledRoleSelector
                 onEnableRoles={roles => GAME_MANAGER.sendEnabledRolesPacket([...enabledRoles, ...roles])}
                 onDisableRoles={roles => GAME_MANAGER.sendEnabledRolesPacket(enabledRoles.filter(role => !roles.includes(role)))}
