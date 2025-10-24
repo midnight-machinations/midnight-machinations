@@ -35,6 +35,11 @@ export default function wikiContentPlugin(): Plugin {
             if (entry.isDirectory()) {
                 scanWikiDirectory(fullPath, baseDir);
             } else if (entry.isFile() && (entry.name.endsWith('.mdx') || entry.name.endsWith('.md'))) {
+                // Skip README files
+                if (entry.name.toUpperCase().startsWith('README')) {
+                    continue;
+                }
+                
                 const relativePath = path.relative(baseDir, fullPath);
                 const wikiPath = relativePath
                     .replace(/\\/g, '/')
