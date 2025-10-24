@@ -18,17 +18,41 @@
     min-width: 3rem;
 }
 
+.game-modes-editor > main {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 1rem;
+    overflow-y: auto;
+    scrollbar-width: none;
+}
+
+.game-modes-editor .left-column {
+    display: flex;
+    flex-direction: column;
+    flex-basis: 47%;
+    flex-grow: 1;
+    gap: .5rem;
+    max-width: 100%;
+}
+
+.game-modes-editor .right-column {
+    display: flex;
+    flex-direction: column;
+    flex-basis: 47%;
+    flex-grow: 1;
+    gap: .5rem;
+    max-width: 100%;
+}
+
 .game-modes-editor .settings-tabs {
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
     gap: 0.5rem;
-    margin-bottom: 0.5rem;
 }
 
-.game-modes-editor > main {
+.game-modes-editor .tab-content {
     display: flex;
     flex-direction: column;
-    overflow-y: auto;
-    scrollbar-width: none;
 }
