@@ -176,3 +176,25 @@ impl PlayerReference{
         PlayerChatGroups::send_player_chat_group_map(game).get_for_client(*self)
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_to_client_chat_group_maps_kidnapped_to_jail() {
+        assert_eq!(ChatGroup::Kidnapped.to_client_chat_group(), ChatGroup::Jail);
+    }
+
+    #[test]
+    fn test_to_client_chat_group_preserves_other_groups() {
+        assert_eq!(ChatGroup::All.to_client_chat_group(), ChatGroup::All);
+        assert_eq!(ChatGroup::Dead.to_client_chat_group(), ChatGroup::Dead);
+        assert_eq!(ChatGroup::Mafia.to_client_chat_group(), ChatGroup::Mafia);
+        assert_eq!(ChatGroup::Cult.to_client_chat_group(), ChatGroup::Cult);
+        assert_eq!(ChatGroup::Jail.to_client_chat_group(), ChatGroup::Jail);
+        assert_eq!(ChatGroup::Interview.to_client_chat_group(), ChatGroup::Interview);
+        assert_eq!(ChatGroup::Puppeteer.to_client_chat_group(), ChatGroup::Puppeteer);
+        assert_eq!(ChatGroup::Warden.to_client_chat_group(), ChatGroup::Warden);
+    }
+}
