@@ -82,10 +82,10 @@ impl Lobby {
         other_players.remove(&room_client_id);
 
         let other_player_names = {
-            other_players.values().filter_map(|p| {
+            other_players.values().map(|p| {
                 match &p.client_type {
-                    LobbyClientType::Player { name } => Some(name.clone()),
-                    LobbyClientType::Spectator { name } => Some(name.clone()),
+                    LobbyClientType::Player { name } => name.clone(),
+                    LobbyClientType::Spectator { name } => name.clone(),
                 }
             }).collect::<Vec<_>>()
         };

@@ -24,27 +24,24 @@ pub enum GameClientMessageResult {
 
 impl Game {
     pub fn on_spectator_message(&mut self, sender_ref: SpectatorPointer, incoming_packet: ToServerPacket){
-        match incoming_packet {
-            ToServerPacket::SendSpectatorMessage { text } => {
-                let text = text.trim_newline().trim_whitespace().truncate(600).truncate_lines(35);
-                if text.is_empty() {
-                    return;
-                }
-                
-                let Some(name) = sender_ref.name(self) else {
-                    return;
-                };
-
-                self.add_message_to_chat_group(
-                    ChatGroup::Spectator,
-                    ChatMessageVariant::Normal {
-                        message_sender: MessageSender::Spectator { name },
-                        text,
-                        block: false,
-                    }
-                );
+        if let ToServerPacket::SendSpectatorMessage { text } = incoming_packet {
+            let text = text.trim_newline().trim_whitespace().truncate(600).truncate_lines(35);
+            if text.is_empty() {
+                return;
             }
-            _ => {}
+            
+            let Some(name) = sender_ref.name(self) else {
+                return;
+            };
+
+            self.add_message_to_chat_group(
+                ChatGroup::Spectator,
+                ChatMessageVariant::Normal {
+                    message_sender: MessageSender::Spectator { name },
+                    text,
+                    block: false,
+                }
+            );
         }
     }
     

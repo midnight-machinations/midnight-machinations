@@ -45,10 +45,10 @@ impl Lobby {
                 self.chat_message_index = self.chat_message_index.saturating_add(1);
             }
             ToServerPacket::SetSpectator { spectator } => {
-                let all_names = self.clients.values().filter_map(|p| {
+                let all_names = self.clients.values().map(|p| {
                     match &p.client_type {
-                        LobbyClientType::Player { name } => Some(name.clone()),
-                        LobbyClientType::Spectator { name } => Some(name.clone()),
+                        LobbyClientType::Player { name } => name.clone(),
+                        LobbyClientType::Spectator { name } => name.clone(),
                     }
                 }).collect::<Vec<_>>();
 

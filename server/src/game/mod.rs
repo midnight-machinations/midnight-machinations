@@ -297,9 +297,7 @@ impl Game {
             player_ref.send_chat_messages(self);
         }
 
-        if group == ChatGroup::All {
-            self.add_chat_message_to_spectators(variant);
-        } else if group == ChatGroup::Spectator {
+        if group == ChatGroup::All || group == ChatGroup::Spectator {
             self.add_chat_message_to_spectators(variant);
         }
     }
