@@ -83,21 +83,24 @@ impl Lobby {
 
         let other_player_names = {
             other_players.values().filter_map(|p| {
-                if let LobbyClientType::Player { name } = p.client_type.clone() {
-                    Some(name)
-                } else {
-                    None
+                match &p.client_type {
+                    LobbyClientType::Player { name } => Some(name.clone()),
+                    LobbyClientType::Spectator { name } => Some(name.clone()),
                 }
             }).collect::<Vec<_>>()
         };
         
         let new_name: String = name_validation::sanitize_name(name, &other_player_names);
 
-        if 
-            let Some(player) = self.clients.get_mut(&room_client_id) &&
-            let LobbyClientType::Player { name } = &mut player.client_type
-        {
-            *name = new_name;
+        if let Some(player) = self.clients.get_mut(&room_client_id) {
+            match &mut player.client_type {
+                LobbyClientType::Player { name } => {
+                    *name = new_name;
+                }
+                LobbyClientType::Spectator { name } => {
+                    *name = new_name;
+                }
+            }
         }
 
         self.send_players();

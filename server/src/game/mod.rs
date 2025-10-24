@@ -299,6 +299,8 @@ impl Game {
 
         if group == ChatGroup::All {
             self.add_chat_message_to_spectators(variant);
+        } else if group == ChatGroup::Spectator {
+            self.add_chat_message_to_spectators(variant);
         }
     }
     pub fn add_messages_to_chat_group(&mut self, group: ChatGroup, messages: Vec<ChatMessageVariant>){

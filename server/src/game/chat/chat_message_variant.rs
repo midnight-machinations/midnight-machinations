@@ -6,6 +6,7 @@ use crate::{game::{components::synopsis::Synopsis, prelude::*, role::{auditor::A
 #[serde(tag = "type")]
 pub enum MessageSender {
     Player{player: PlayerReference},
+    Spectator{name: String},
     Jailor,
     Reporter,
     LivingToDead{player: PlayerReference},
