@@ -336,7 +336,7 @@ function PlayerSynopsisDropdown(props: Readonly<{
         ).join(translate("union")) || translate("chatGroup.all.icon");
         const winCondition = translateWinCondition(crumb.winCondition);
         const role = translate("role." + crumb.role + ".name");
-        return `${insiderGroupIcons} ${winCondition}, ${role}`;
+        return `${insiderGroupIcons}, ${winCondition}, ${role}`;
     };
     
     let summaryText: string;
