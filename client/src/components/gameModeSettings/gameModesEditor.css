@@ -45,14 +45,3 @@
     max-width: 100%;
 }
 
-.game-modes-editor .settings-tabs {
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-}
-
-.game-modes-editor .tab-content {
-    display: flex;
-    flex-direction: column;
-}

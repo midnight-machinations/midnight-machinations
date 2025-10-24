@@ -160,15 +160,3 @@
     flex-direction: column;
     gap: 0.5rem;
 }
-
-.lobby-settings-container .settings-tabs {
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-}
-
-.lobby-settings-container .tab-content {
-    display: flex;
-    flex-direction: column;
-}

@@ -1,4 +1,4 @@
-import { ReactElement, createContext, useCallback, useState } from "react";
+import { ReactElement, createContext, useCallback, useMemo, useState } from "react";
 import React from "react";
 import { OutlineListSelector } from "./OutlineSelector";
 import { getAllRoles, RoleList, RoleOutline } from "../../game/roleListState.d";
@@ -15,7 +15,7 @@ import { ShareableGameMode } from "./gameMode";
 import { ModifiersSelector } from "./ModifiersSelector";
 import { ListMapData } from "../../ListMap";
 import { ModifierID, ModifierState } from "../../game/modifiers";
-import { Button } from "../Button";
+import { TabbedContent, TabDefinition } from "../TabbedContent";
 
 const GameModeContext = createContext({
     roleList: [] as RoleList,
@@ -31,8 +31,6 @@ type SettingsTab = "phaseTimes" | "modifiers" | "outlineList" | "enabledRoles";
 export default function GameModesEditor(props: Readonly<{
     initialGameMode?: ShareableGameMode
 }>): ReactElement {
-
-    const [activeTab, setActiveTab] = useState<SettingsTab>("phaseTimes");
 
     const [roleList, setRoleList] = useState<RoleList>(()=>{
         if(props.initialGameMode){
@@ -95,6 +93,45 @@ export default function GameModesEditor(props: Readonly<{
     const setModifiers = (modifiers: ListMapData<ModifierID, ModifierState>) => {
         setModifierSettings(modifiers);
     }
+
+    const tabs: TabDefinition<SettingsTab>[] = useMemo(() => [
+        {
+            id: "phaseTimes",
+            label: translate("menu.lobby.timeSettings"),
+            content: <PhaseTimesSelector 
+                onChange={(newPhaseTimes) => {
+                    setPhaseTimes(newPhaseTimes);
+                }}            
+            />
+        },
+        {
+            id: "modifiers",
+            label: translate("modifiers"),
+            content: <ModifiersSelector
+                disabled={false}
+                setModifiers={setModifiers}
+            />
+        },
+        {
+            id: "outlineList",
+            label: translate("menu.lobby.roleList"),
+            content: <OutlineListSelector
+                onChangeRolePicker={onChangeRolePicker}
+                onAddNewOutline={addOutline}
+                onRemoveOutline={removeOutline}
+                setRoleList={setRoleList}
+            />
+        },
+        {
+            id: "enabledRoles",
+            label: translate("menu.lobby.enabledRoles"),
+            content: <EnabledRoleSelector
+                onDisableRoles={onDisableRoles}
+                onEnableRoles={onEnableRoles}
+                onIncludeAll={onEnableAll}         
+            />
+        }
+    ], [onChangeRolePicker, onDisableRoles, onEnableRoles, onEnableAll, setModifiers, addOutline, removeOutline, setRoleList]);
     
     
     return <div className="game-modes-editor">
@@ -115,62 +152,10 @@ export default function GameModesEditor(props: Readonly<{
                     />
                 </div>
                 <div className="right-column">
-                    <div className="settings-tabs">
-                        <Button 
-                            highlighted={activeTab === "phaseTimes"}
-                            onClick={() => setActiveTab("phaseTimes")}
-                        >
-                            {translate("menu.lobby.timeSettings")}
-                        </Button>
-                        <Button 
-                            highlighted={activeTab === "modifiers"}
-                            onClick={() => setActiveTab("modifiers")}
-                        >
-                            {translate("modifiers")}
-                        </Button>
-                        <Button 
-                            highlighted={activeTab === "outlineList"}
-                            onClick={() => setActiveTab("outlineList")}
-                        >
-                            {translate("menu.lobby.roleList")}
-                        </Button>
-                        <Button 
-                            highlighted={activeTab === "enabledRoles"}
-                            onClick={() => setActiveTab("enabledRoles")}
-                        >
-                            {translate("menu.lobby.enabledRoles")}
-                        </Button>
-                    </div>
-                    <div className="tab-content">
-                        {activeTab === "phaseTimes" && (
-                            <PhaseTimesSelector 
-                                onChange={(newPhaseTimes) => {
-                                    setPhaseTimes(newPhaseTimes);
-                                }}            
-                            />
-                        )}
-                        {activeTab === "modifiers" && (
-                            <ModifiersSelector
-                                disabled={false}
-                                setModifiers={setModifiers}
-                            />
-                        )}
-                        {activeTab === "outlineList" && (
-                            <OutlineListSelector
-                                onChangeRolePicker={onChangeRolePicker}
-                                onAddNewOutline={addOutline}
-                                onRemoveOutline={removeOutline}
-                                setRoleList={setRoleList}
-                            />
-                        )}
-                        {activeTab === "enabledRoles" && (
-                            <EnabledRoleSelector
-                                onDisableRoles={onDisableRoles}
-                                onEnableRoles={onEnableRoles}
-                                onIncludeAll={onEnableAll}         
-                            />
-                        )}
-                    </div>
+                    <TabbedContent
+                        tabs={tabs}
+                        defaultTab="phaseTimes"
+                    />
                 </div>
             </main>
         </GameModeContext.Provider>

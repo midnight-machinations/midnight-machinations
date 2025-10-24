@@ -24,6 +24,7 @@ import { UnsafeString } from "../../game/gameState.d";
 import { encodeString } from "../../components/ChatMessage";
 import ListMap from "../../ListMap";
 import RandomSeedSelector from "../../components/gameModeSettings/RandomSeedSelector";
+import { TabbedContent, TabDefinition } from "../../components/TabbedContent";
 
 export default function LobbyMenu(): ReactElement {
     const isSpectator = useLobbyState(
@@ -86,8 +87,6 @@ export default function LobbyMenu(): ReactElement {
 function LobbyMenuSettings(props: Readonly<{
     isHost: boolean,
 }>): JSX.Element {
-    const [activeTab, setActiveTab] = useState<"phaseTimes" | "modifiers" | "outlineList" | "enabledRoles">("phaseTimes");
-    
     const roleList = useLobbyState(
         lobbyState => lobbyState.roleList,
         ["roleList", "roleOutline"]
@@ -134,6 +133,46 @@ function LobbyMenuSettings(props: Readonly<{
         return {roleList, enabledRoles, phaseTimes, modifierSettings};
     }, [enabledRoles, phaseTimes, roleList, modifierSettings]);
 
+    const tabs: TabDefinition<"phaseTimes" | "modifiers" | "outlineList" | "enabledRoles">[] = useMemo(() => [
+        {
+            id: "phaseTimes",
+            label: translate("menu.lobby.timeSettings"),
+            content: <PhaseTimesSelector 
+                disabled={!props.isHost}
+                onChange={pts => GAME_MANAGER.sendSetPhaseTimesPacket(pts)}
+            />
+        },
+        {
+            id: "modifiers",
+            label: translate("modifiers"),
+            content: <ModifiersSelector
+                disabled={!props.isHost}
+                setModifiers={modifiers => GAME_MANAGER.sendModifierSettingsPacket(new ListMap(modifiers))}
+            />
+        },
+        {
+            id: "outlineList",
+            label: translate("menu.lobby.roleList"),
+            content: <OutlineListSelector
+                disabled={!props.isHost}
+                onChangeRolePicker={(value, index) => GAME_MANAGER.sendSetRoleOutlinePacket(index, value)}
+                onAddNewOutline={undefined}
+                onRemoveOutline={undefined}
+                setRoleList={sendRoleList}
+            />
+        },
+        {
+            id: "enabledRoles",
+            label: translate("menu.lobby.enabledRoles"),
+            content: <EnabledRoleSelector
+                onEnableRoles={roles => GAME_MANAGER.sendEnabledRolesPacket([...enabledRoles, ...roles])}
+                onDisableRoles={roles => GAME_MANAGER.sendEnabledRolesPacket(enabledRoles.filter(role => !roles.includes(role)))}
+                onIncludeAll={() => GAME_MANAGER.sendEnabledRolesPacket(getAllRoles())}
+                disabled={!props.isHost}
+            />
+        }
+    ], [props.isHost, enabledRoles, sendRoleList]);
+
     return <GameModeContext.Provider value={context}>
         <div className="lobby-settings-container">
             {mobile && <h1>{translate("menu.lobby.settings")}</h1>}
@@ -150,63 +189,10 @@ function LobbyMenuSettings(props: Readonly<{
                 disabled={!props.isHost}
                 onChange={randomSeed => GAME_MANAGER.sendSetRandomSeedPacket(randomSeed)}
             />
-            <div className="settings-tabs">
-                <Button 
-                    highlighted={activeTab === "phaseTimes"}
-                    onClick={() => setActiveTab("phaseTimes")}
-                >
-                    {translate("menu.lobby.timeSettings")}
-                </Button>
-                <Button 
-                    highlighted={activeTab === "modifiers"}
-                    onClick={() => setActiveTab("modifiers")}
-                >
-                    {translate("modifiers")}
-                </Button>
-                <Button 
-                    highlighted={activeTab === "outlineList"}
-                    onClick={() => setActiveTab("outlineList")}
-                >
-                    {translate("menu.lobby.roleList")}
-                </Button>
-                <Button 
-                    highlighted={activeTab === "enabledRoles"}
-                    onClick={() => setActiveTab("enabledRoles")}
-                >
-                    {translate("menu.lobby.enabledRoles")}
-                </Button>
-            </div>
-            <div className="tab-content">
-                {activeTab === "phaseTimes" && (
-                    <PhaseTimesSelector 
-                        disabled={!props.isHost}
-                        onChange={pts => GAME_MANAGER.sendSetPhaseTimesPacket(pts)}
-                    />
-                )}
-                {activeTab === "modifiers" && (
-                    <ModifiersSelector
-                        disabled={!props.isHost}
-                        setModifiers={modifiers => GAME_MANAGER.sendModifierSettingsPacket(new ListMap(modifiers))}
-                    />
-                )}
-                {activeTab === "outlineList" && (
-                    <OutlineListSelector
-                        disabled={!props.isHost}
-                        onChangeRolePicker={(value, index) => GAME_MANAGER.sendSetRoleOutlinePacket(index, value)}
-                        onAddNewOutline={undefined}
-                        onRemoveOutline={undefined}
-                        setRoleList={sendRoleList}
-                    />
-                )}
-                {activeTab === "enabledRoles" && (
-                    <EnabledRoleSelector
-                        onEnableRoles={roles => GAME_MANAGER.sendEnabledRolesPacket([...enabledRoles, ...roles])}
-                        onDisableRoles={roles => GAME_MANAGER.sendEnabledRolesPacket(enabledRoles.filter(role => !roles.includes(role)))}
-                        onIncludeAll={() => GAME_MANAGER.sendEnabledRolesPacket(getAllRoles())}
-                        disabled={!props.isHost}
-                    />
-                )}
-            </div>
+            <TabbedContent
+                tabs={tabs}
+                defaultTab="phaseTimes"
+            />
         </div>
     </GameModeContext.Provider>
 }
