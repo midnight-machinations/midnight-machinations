@@ -16,6 +16,7 @@ use crate::game::spectator::spectator_pointer::SpectatorPointer;
 use crate::game::spectator::SpectatorInitializeParameters;
 use crate::game::Game;
 use crate::game::GameOverReason;
+use crate::log;
 use crate::packet::RejectJoinReason;
 use crate::packet::RoomPreviewData;
 use crate::packet::ToClientPacket;

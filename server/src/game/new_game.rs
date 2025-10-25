@@ -1,8 +1,7 @@
 use rand::{rngs::SmallRng, SeedableRng};
 
 use crate::{
-    client_connection::ClientConnection,
-    game::{
+    client_connection::ClientConnection, game::{
         abilities_component::Abilities, chat::{ChatComponent, PlayerChatGroups},
         components::{
             blocked::BlockedComponent, confused::Confused, cult::Cult, detained::Detained, enfranchise::EnfranchiseComponent, fast_forward::FastForwardComponent, fragile_vest::FragileVestsComponent, graves::Graves, insider_group::{InsiderGroupID, InsiderGroups}, mafia::Mafia, mafia_recruits::MafiaRecruits, pitchfork_item::PitchforkItemComponent, poison::Poison, puppeteer_marionette::PuppeteerMarionette, role::RoleComponent, role_reveal::RevealedPlayersComponent, silenced::Silenced, synopsis::SynopsisTracker, tags::Tags, verdicts_today::VerdictsToday, win_condition::WinConditionComponent
@@ -13,9 +12,7 @@ use crate::{
         role_list_generation::{OutlineListAssignment, RoleListGenerator}, settings::Settings,
         spectator::{spectator_pointer::SpectatorPointer, Spectator, SpectatorInitializeParameters}, Assignments,
         Game, RejectStartReason
-    },
-    packet::ToClientPacket, room::{name_validation::generate_random_name, RoomClientID},
-    vec_map::VecMap
+    }, log, packet::ToClientPacket, room::{name_validation::generate_random_name, RoomClientID}, vec_map::VecMap
 };
 
 impl Game{

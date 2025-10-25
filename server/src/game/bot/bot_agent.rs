@@ -12,10 +12,7 @@ use async_openai::{
 use serde_json::json;
 
 use crate::{
-    game::controllers::{Controller, ControllerID, ControllerInput},
-    packet::ToClientPacket,
-    room::RoomClientID,
-    vec_map::VecMap,
+    game::{controllers::{Controller, ControllerID, ControllerInput}, player::PlayerReference}, log, packet::ToClientPacket, room::RoomClientID, vec_map::VecMap
 };
 
 /// Bot agent that uses an LLM to make decisions in the game
@@ -97,7 +94,7 @@ impl BotAgent {
                 for (_, msg) in chat_messages.iter() {
                     let msg_str = format!("{:?}", msg);
                     state.recent_messages.push(msg_str);
-                    if state.recent_messages.len() > 20 {
+                    if state.recent_messages.len() > 100 {
                         state.recent_messages.remove(0);
                     }
                 }
@@ -141,15 +138,15 @@ impl BotAgent {
              Your name: {}\n\
              Your role: {}\n\
              Current phase: {}\n\
-             Alive players: {:?}\n\
-             Recent messages: {}\n\n\
+             Alive: {:?}\n\
+             Recent messages: {:?}\n\n\
              You have controllers available to send actions. Consider your role's objectives and make strategic decisions.\n\
              Use the send_ability_input tool to perform game actions, or send_chat_message to communicate with other players.",
             self.player_name,
             state.role.as_ref().unwrap_or(&"Unknown".to_string()),
             state.phase.as_ref().unwrap_or(&"Unknown".to_string()),
             state.alive_status,
-            state.recent_messages.last().unwrap_or(&"None".to_string())
+            state.recent_messages
         );
 
         // Serialize available controllers to show the bot what's available
@@ -255,15 +252,16 @@ impl BotAgent {
                                         if let Some(message) = args.get("message").and_then(|m| m.as_str()) {
                                             // Find the chat controller
                                             let state = self.game_state.lock().await;
-                                            for (id, _) in state.available_controllers.iter() {
-                                                if matches!(id, ControllerID::SendChat { .. }) {
-                                                    let input = ControllerInput::new(
-                                                        id.clone(),
-                                                        crate::game::controllers::StringSelection(message.to_string())
-                                                    );
-                                                    let _ = self.controller_sender.send(input);
-                                                    break;
-                                                }
+                                            if let Some(player_index) = state.player_index {
+                                                let player = unsafe { PlayerReference::new_unchecked(player_index) };
+                                                let _ = self.controller_sender.send(ControllerInput::new(
+                                                    ControllerID::Chat { player },
+                                                    crate::game::controllers::StringSelection(message.to_string())
+                                                ));
+                                                let _ = self.controller_sender.send(ControllerInput::new(
+                                                    ControllerID::SendChat { player },
+                                                    crate::game::controllers::UnitSelection
+                                                ));
                                             }
                                         }
                                     }
