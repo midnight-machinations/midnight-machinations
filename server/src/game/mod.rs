@@ -28,6 +28,7 @@ pub mod prelude;
 
 use std::collections::VecDeque;
 use std::time::Instant;
+use tokio::sync::mpsc;
 use crate::game::abilities_component::Abilities;
 use crate::game::chat::PlayerChatGroups;
 use crate::game::components::blocked::BlockedComponent;
@@ -38,6 +39,7 @@ use crate::game::components::role_reveal::RevealedPlayersComponent;
 use crate::game::controllers::Controllers;
 use crate::game::modifiers::ModifierID;
 use controllers::ControllerID;
+use controllers::ControllerInput;
 use controllers::PlayerListSelection;
 use components::confused::Confused;
 use components::enfranchise::EnfranchiseComponent;
@@ -109,6 +111,12 @@ pub struct Game {
     /// Whether the game is still updating phase times
     pub ticking: bool,
     pub rng: SmallRng,
+    
+    /// Bot controller input receiver
+    bot_controller_receiver: mpsc::UnboundedReceiver<(player::PlayerIndex, ControllerInput)>,
+    
+    /// Bot agent thread handles
+    bot_agent_handles: Vec<tokio::task::JoinHandle<()>>,
     
     
     //components with data

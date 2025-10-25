@@ -290,7 +290,7 @@ impl Lobby {
 
                 // Create bot connection
                 let (tx, rx) = tokio::sync::mpsc::unbounded_channel();
-                let bot_connection = crate::game::bot::BotConnection::new(tx);
+                let bot_connection = crate::game::bot::BotConnection::new_with_receiver(tx, rx);
 
                 // Create bot client
                 let bot_client = LobbyClient::new_bot(bot_name, bot_connection, false);
@@ -305,10 +305,6 @@ impl Lobby {
                         };
 
                 self.clients.insert(room_client_id, bot_client);
-
-                // TODO: Start bot agent thread with rx receiver
-                // For now, just drop rx since the bot isn't fully implemented yet
-                drop(rx);
 
                 self.set_rolelist_length();
                 self.send_players();

@@ -9,18 +9,18 @@ use async_openai::{
 };
 
 use crate::{
-    game::controllers::ControllerInput,
+    game::controllers::{Controller, ControllerID, ControllerInput},
     packet::ToClientPacket,
     room::RoomClientID,
+    vec_map::VecMap,
 };
 
 /// Bot agent that uses an LLM to make decisions in the game
 pub struct BotAgent {
-    #[allow(dead_code, reason = "Will be used for sending actions in future implementation")]
+    #[allow(dead_code, reason = "Used for logging and debugging")]
     player_id: RoomClientID,
     player_name: String,
     receiver: mpsc::UnboundedReceiver<ToClientPacket>,
-    #[allow(dead_code, reason = "Will be used for sending controller inputs in future implementation")]
     controller_sender: mpsc::UnboundedSender<ControllerInput>,
     openai_client: Client<async_openai::config::OpenAIConfig>,
     game_state: Arc<Mutex<BotGameState>>,
@@ -32,6 +32,8 @@ struct BotGameState {
     phase: Option<String>,
     alive_status: Vec<bool>,
     recent_messages: Vec<String>,
+    available_controllers: VecMap<ControllerID, Controller>,
+    player_index: Option<u8>,
 }
 
 impl BotAgent {
@@ -73,6 +75,9 @@ impl BotAgent {
         let mut state = self.game_state.lock().await;
 
         match packet {
+            ToClientPacket::YourPlayerIndex { player_index } => {
+                state.player_index = Some(player_index);
+            }
             ToClientPacket::YourRole { role } => {
                 state.role = Some(format!("{:?}", role));
             }
@@ -94,8 +99,18 @@ impl BotAgent {
                     }
                 }
             }
-            ToClientPacket::YourAllowedControllers { .. } => {
+            ToClientPacket::YourAllowedControllers { save } => {
+                state.available_controllers = save;
                 // When we get new controllers, we might want to use them
+                drop(state);
+                self.make_decision().await?;
+            }
+            ToClientPacket::YourAllowedController { id, controller } => {
+                if let Some(controller) = controller {
+                    state.available_controllers.insert(id, controller);
+                } else {
+                    state.available_controllers.remove(&id);
+                }
                 drop(state);
                 self.make_decision().await?;
             }
@@ -106,10 +121,24 @@ impl BotAgent {
     }
 
     async fn make_decision(&mut self) -> Result<(), Box<dyn std::error::Error>> {
-        // This is a simplified decision-making process
-        // In a real implementation, this would be more sophisticated
-        
         let state = self.game_state.lock().await;
+        
+        // Don't make decisions if we don't have basic info
+        if state.player_index.is_none() || state.role.is_none() {
+            return Ok(());
+        }
+
+        // Build a list of available actions
+        let available_actions: Vec<String> = state.available_controllers
+            .iter()
+            .map(|(id, controller)| {
+                format!("Controller: {:?}, Current selection: {:?}", id, controller.selection())
+            })
+            .collect();
+
+        if available_actions.is_empty() {
+            return Ok(());
+        }
         
         // Build context for the LLM
         let context = format!(
@@ -118,23 +147,32 @@ impl BotAgent {
              Your role: {}\n\
              Current phase: {}\n\
              Alive players: {:?}\n\
-             Recent messages: {:?}\n\n\
-             Based on this information, decide what action to take. \
-             Respond with a brief explanation of your reasoning.",
+             Recent messages: {}\n\
+             Available actions: {}\n\n\
+             Choose ONE action to take from the available actions. \
+             Respond with ONLY the controller index (0-{}) you want to use, or 'CHAT: <message>' to send a chat message. \
+             Be strategic and consider your role's objectives.",
             self.player_name,
             state.role.as_ref().unwrap_or(&"Unknown".to_string()),
             state.phase.as_ref().unwrap_or(&"Unknown".to_string()),
             state.alive_status,
-            state.recent_messages
+            state.recent_messages.last().unwrap_or(&"None".to_string()),
+            available_actions.join(", "),
+            available_actions.len().saturating_sub(1)
         );
+
+        let controllers_list: Vec<(ControllerID, Controller)> = state.available_controllers
+            .iter()
+            .map(|(id, c)| (id.clone(), c.clone()))
+            .collect();
 
         drop(state);
 
-        // Query the LLM (with error handling for API calls)
+        // Query the LLM
         let messages = vec![
             ChatCompletionRequestMessage::System(
                 ChatCompletionRequestSystemMessageArgs::default()
-                    .content("You are an AI playing a social deduction game. Make strategic decisions based on the game state.")
+                    .content("You are an AI playing a social deduction game. Make strategic decisions. Respond with only a number or 'CHAT: message'.")
                     .build()?
             ),
             ChatCompletionRequestMessage::User(
@@ -147,7 +185,8 @@ impl BotAgent {
         let request = CreateChatCompletionRequestArgs::default()
             .model("gpt-4o-mini")
             .messages(messages)
-            .max_tokens(150_u32)
+            .max_tokens(100_u32)
+            .temperature(0.7)
             .build()?;
 
         // Try to get a response from the LLM
@@ -155,16 +194,50 @@ impl BotAgent {
             Ok(response) => {
                 if let Some(choice) = response.choices.first()
                 && let Some(content) = &choice.message.content {
-                    println!("Bot {} thinking: {}", self.player_name, content);
+                    let content = content.trim();
+                    println!("Bot {} decided: {}", self.player_name, content);
+                    
+                    // Parse the response
+                    if content.starts_with("CHAT:") {
+                        // Bot wants to send a chat message
+                        if let Some(message) = content.strip_prefix("CHAT:") {
+                            let message = message.trim();
+                            if !message.is_empty() {
+                                // Find the chat controller
+                                for (id, _) in &controllers_list {
+                                    if matches!(id, ControllerID::SendChat { .. }) {
+                                        let input = ControllerInput::new(
+                                            id.clone(),
+                                            crate::game::controllers::StringSelection(message.to_string())
+                                        );
+                                        let _ = self.controller_sender.send(input);
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+                    } else if let Ok(index) = content.parse::<usize>() {
+                        // Bot chose a controller by index
+                        if index < controllers_list.len() {
+                            let (controller_id, controller) = &controllers_list[index];
+                            
+                            // Use the current selection (bots keep existing selections for simplicity)
+                            // In a more sophisticated implementation, we'd have the LLM choose specific targets
+                            let input = ControllerInput::new(
+                                controller_id.clone(),
+                                controller.selection().clone()
+                            );
+                            
+                            let _ = self.controller_sender.send(input);
+                            println!("Bot {} sent controller input: {:?}", self.player_name, controller_id);
+                        }
+                    }
                 }
             }
             Err(e) => {
                 eprintln!("Bot {} LLM error: {}", self.player_name, e);
             }
         }
-
-        // TODO: Parse LLM response and generate ControllerInput
-        // For now, bots will just observe without acting
 
         Ok(())
     }

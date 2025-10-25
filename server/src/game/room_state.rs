@@ -32,6 +32,13 @@ impl RoomState for Game {
             return RoomTickResult { close_room: false }
         }
 
+        // Process bot controller inputs
+        while let Ok((player_index, controller_input)) = self.bot_controller_receiver.try_recv() {
+            if let Ok(player_ref) = PlayerReference::new(self, player_index) {
+                controller_input.on_client_message(self, player_ref);
+            }
+        }
+
         if let Some(conclusion) = GameConclusion::game_is_over_game(self) {
             OnGameEnding::new(conclusion).as_invokable().invoke(self);
         }
