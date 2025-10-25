@@ -459,4 +459,12 @@ impl Game {
     }
 }
 
+impl Drop for Game {
+    fn drop(&mut self) {
+        for handle in self.bot_agent_handles.drain(..) {
+            handle.abort();
+        }
+    }
+}
+
 pub mod test;

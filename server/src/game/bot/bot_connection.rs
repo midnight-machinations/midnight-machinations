@@ -29,6 +29,7 @@ impl BotConnection {
     }
     
     pub fn take_receiver(&self) -> Option<mpsc::UnboundedReceiver<ToClientPacket>> {
+        #[expect(clippy::unwrap_used, reason = "Mutex lock cannot fail, probably")]
         self.receiver.lock().unwrap().take()
     }
 }

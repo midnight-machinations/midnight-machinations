@@ -12,7 +12,7 @@ use crate::{
         role_list_generation::{OutlineListAssignment, RoleListGenerator}, settings::Settings,
         spectator::{spectator_pointer::SpectatorPointer, Spectator, SpectatorInitializeParameters}, Assignments,
         Game, RejectStartReason
-    }, log, packet::ToClientPacket, room::{name_validation::generate_random_name, RoomClientID}, vec_map::VecMap
+    }, packet::ToClientPacket, room::{name_validation::generate_random_name, RoomClientID}, vec_map::VecMap
 };
 
 impl Game{

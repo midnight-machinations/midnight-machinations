@@ -16,7 +16,6 @@ use crate::game::spectator::spectator_pointer::SpectatorPointer;
 use crate::game::spectator::SpectatorInitializeParameters;
 use crate::game::Game;
 use crate::game::GameOverReason;
-use crate::log;
 use crate::packet::RejectJoinReason;
 use crate::packet::RoomPreviewData;
 use crate::packet::ToClientPacket;
@@ -29,15 +28,16 @@ use crate::websocket_connections::connection::ClientSender;
 
 impl RoomState for Game {
     fn tick(&mut self, time_passed: Duration) -> RoomTickResult {
-        if !self.ticking { 
-            return RoomTickResult { close_room: false }
-        }
-
         // Process bot controller inputs
+        // This needs to happen even when the game is over / frozen.
         while let Ok((player_index, controller_input)) = self.bot_controller_receiver.try_recv() {
             if let Ok(player_ref) = PlayerReference::new(self, player_index) {
                 controller_input.on_client_message(self, player_ref);
             }
+        }
+
+        if !self.ticking { 
+            return RoomTickResult { close_room: false }
         }
 
         if let Some(conclusion) = GameConclusion::game_is_over_game(self) {
