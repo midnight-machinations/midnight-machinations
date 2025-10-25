@@ -6,17 +6,114 @@
  */
 
 import { Tutorial, TutorialStep, TutorialProgress } from "./tutorialTypes.d";
+import GAME_MANAGER from "../index";
+import { createGameState, createPlayer, createPlayerGameState } from "../game/gameState";
+import GameState from "../game/gameState.d";
 
 class TutorialManager {
     private currentTutorial: Tutorial | null = null;
     private currentStepIndex: number = 0;
     private listeners: Array<() => void> = [];
     private active: boolean = false;
+    private originalState: any = null;
+
+    /**
+     * Create a simulated game state for the tutorial
+     */
+    private createTutorialGameState(tutorial: Tutorial): GameState {
+        const gameState = createGameState();
+        const setup = tutorial.initialSetup;
+        
+        // Set up basic game info
+        gameState.roomCode = 99999;
+        gameState.lobbyName = `Tutorial: ${tutorial.name}`;
+        gameState.initialized = true;
+        gameState.myId = 0;
+        
+        // Create simulated players
+        gameState.players = [];
+        const playerNames = [
+            "You",
+            "Alice",
+            "Bob", 
+            "Charlie",
+            "Diana",
+            "Eve",
+            "Frank",
+            "Grace",
+            "Henry",
+            "Ivy",
+            "Jack",
+            "Kate",
+            "Leo",
+            "Maya",
+            "Noah"
+        ];
+        
+        for (let i = 0; i < setup.playerCount; i++) {
+            gameState.players.push(createPlayer(playerNames[i], i));
+        }
+        
+        // Set phase state - handle different phase types properly
+        switch (setup.startPhase) {
+            case "briefing":
+                gameState.phaseState = { type: "briefing" };
+                break;
+            case "dusk":
+                gameState.phaseState = { type: "dusk" };
+                break;
+            case "night":
+                gameState.phaseState = { type: "night" };
+                break;
+            case "obituary":
+                gameState.phaseState = { type: "obituary" };
+                break;
+            case "discussion":
+                gameState.phaseState = { type: "discussion" };
+                break;
+            case "nomination":
+                gameState.phaseState = { type: "nomination", trialsLeft: 3 };
+                break;
+            case "adjournment":
+                gameState.phaseState = { type: "adjournment", trialsLeft: 3 };
+                break;
+            case "testimony":
+                gameState.phaseState = { type: "testimony", playerOnTrial: 1, trialsLeft: 3 };
+                break;
+            case "judgement":
+                gameState.phaseState = { type: "judgement", playerOnTrial: 1, trialsLeft: 3 };
+                break;
+            case "finalWords":
+                gameState.phaseState = { type: "finalWords", playerOnTrial: 1 };
+                break;
+            default:
+                gameState.phaseState = { type: "briefing" };
+        }
+        
+        gameState.dayNumber = setup.startDay;
+        gameState.timeLeftMs = null;
+        gameState.ticking = false;
+        
+        // Set up player state
+        const playerState = createPlayerGameState();
+        playerState.myIndex = 0;
+        playerState.myRole = setup.playerRole;
+        gameState.clientState = playerState;
+        
+        return gameState;
+    }
 
     /**
      * Start a tutorial
      */
     startTutorial(tutorial: Tutorial): void {
+        // Save the original game manager state
+        this.originalState = GAME_MANAGER.state;
+        
+        // Create and set the tutorial game state
+        const tutorialState = this.createTutorialGameState(tutorial);
+        GAME_MANAGER.state = tutorialState;
+        
         this.currentTutorial = tutorial;
         this.currentStepIndex = 0;
         this.active = true;
@@ -93,6 +190,12 @@ class TutorialManager {
      * End the current tutorial
      */
     endTutorial(): void {
+        // Restore the original game manager state
+        if (this.originalState !== null) {
+            GAME_MANAGER.state = this.originalState;
+            this.originalState = null;
+        }
+        
         this.currentTutorial = null;
         this.currentStepIndex = 0;
         this.active = false;
