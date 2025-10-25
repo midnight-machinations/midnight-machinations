@@ -24,7 +24,7 @@ export default function TutorialMenu(): ReactElement {
         if (!tutorial) return;
 
         if (tutorial.serverBased) {
-            // For server-based tutorials, connect to server and create a tutorial game
+            // For server-based tutorials, connect to server and automatically start the game
             setContent(<LoadingScreen type="default"/>);
             
             if (!await GAME_MANAGER.setOutsideLobbyState()) {
@@ -33,18 +33,40 @@ export default function TutorialMenu(): ReactElement {
             }
 
             // Host a tutorial game
-            const success = await GAME_MANAGER.sendHostPacket();
-            if (!success) {
+            const hostSuccess = await GAME_MANAGER.sendHostPacket();
+            if (!hostSuccess) {
                 setContent(<StartMenu/>);
                 return;
             }
 
-            // Wait for lobby state, then configure tutorial settings
-            // Note: The game manager will handle the lobby setup
-            // We just need to mark this as a tutorial
+            // Wait a moment for lobby state to initialize
+            await new Promise(resolve => setTimeout(resolve, 100));
+
+            // Configure the lobby for the tutorial
+            if (GAME_MANAGER.state.stateType === "lobby") {
+                // Set up the tutorial game configuration
+                const setup = tutorial.initialSetup;
+                
+                // Configure role list, phase times, etc.
+                // Set tutorial mode and fixed seed
+                GAME_MANAGER.server.sendPacket({
+                    type: "setRandomSeed",
+                    randomSeed: 12345 // Fixed seed for reproducible tutorials
+                });
+
+                // Set tutorial mode in settings (sent via modifiers or custom packet)
+                // For now, we'll start the game and the server will handle tutorial mode
+                
+                // Start the game automatically
+                const startSuccess = await GAME_MANAGER.sendStartGamePacket();
+                if (!startSuccess) {
+                    setContent(<StartMenu/>);
+                    return;
+                }
+            }
+
+            // Mark this as a tutorial
             TUTORIAL_MANAGER.startTutorial(tutorial, true);
-            // The user will be in lobby and needs to start the game from there
-            // For now, just show the tutorial screen which will show the lobby
             setContent(<TutorialScreen />);
         } else {
             // Client-side simulation tutorial

@@ -169,19 +169,13 @@ export const detectiveTutorial: Tutorial = {
         {
             id: "welcome",
             title: "Welcome, Detective!",
-            description: "You are a Detective, one of the Town's most powerful investigative roles. Your job is to find evil players by investigating them at night. This is an interactive tutorial - you'll actually play through a game scenario to learn. Click 'Next' to continue.",
+            description: "You are a Detective, one of the Town's most powerful investigative roles. Your job is to find evil players by investigating them at night. This is an interactive tutorial - you'll actually perform detective actions to learn.",
             completionCondition: { type: "manual" }
         },
         {
-            id: "lobby-setup",
-            title: "Tutorial Game Setup",
-            description: "You're currently in the lobby for this tutorial game. The game has been pre-configured with the Detective role and other players. When you're ready, click the 'Start Game' button in the lobby to begin the tutorial.",
-            completionCondition: { type: "manual" }
-        },
-        {
-            id: "game-starts",
-            title: "Game Starting",
-            description: "The game is starting! You'll begin in the Briefing phase, then move through the day phases. The Detective can only investigate during the Night phase, so we'll wait until then to use your ability. Click 'Next' when ready.",
+            id: "briefing-phase",
+            title: "Briefing Phase",
+            description: "The game begins with the Briefing phase where you learn your role. As Detective, you can investigate one player each night to determine if they're suspicious or innocent. Let's wait for the Night phase to use your ability.",
             completionCondition: { type: "manual" }
         },
         {

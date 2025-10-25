@@ -12,6 +12,7 @@ import "./tutorialOverlay.css";
 
 export default function TutorialOverlay() {
     const [, setUpdateCounter] = useState(0);
+    const [minimized, setMinimized] = useState(false);
 
     // Subscribe to tutorial manager updates
     useEffect(() => {
@@ -55,9 +56,28 @@ export default function TutorialOverlay() {
         TUTORIAL_MANAGER.previousStep();
     };
 
-    const handleSkip = () => {
-        TUTORIAL_MANAGER.endTutorial();
+    const handleExit = () => {
+        if (confirm("Are you sure you want to exit the tutorial? Your progress will be lost.")) {
+            TUTORIAL_MANAGER.endTutorial();
+        }
     };
+
+    const handleToggleMinimize = () => {
+        setMinimized(!minimized);
+    };
+
+    // If minimized, show a small indicator
+    if (minimized) {
+        return (
+            <div className="tutorial-minimized" onClick={handleToggleMinimize}>
+                <Icon>school</Icon>
+                <span>Tutorial: Step {currentStepIndex + 1}/{totalSteps}</span>
+                {isActionStep && !isStepCompleted && (
+                    <Icon className="action-pending">touch_app</Icon>
+                )}
+            </div>
+        );
+    }
 
     return (
         <div className="tutorial-overlay">
@@ -65,9 +85,16 @@ export default function TutorialOverlay() {
             <div className="tutorial-panel">
                 <div className="tutorial-header">
                     <h2>{currentStep.title}</h2>
-                    <button className="tutorial-close" onClick={handleSkip} aria-label="Skip Tutorial">
-                        <Icon>close</Icon>
-                    </button>
+                    <div className="tutorial-header-actions">
+                        <button className="tutorial-minimize" onClick={handleToggleMinimize} aria-label="Minimize Tutorial">
+                            <Icon>minimize</Icon>
+                        </button>
+                        {!isActionStep && (
+                            <button className="tutorial-exit" onClick={handleExit} aria-label="Exit Tutorial">
+                                <Icon>close</Icon>
+                            </button>
+                        )}
+                    </div>
                 </div>
                 
                 <div className="tutorial-content">
@@ -99,7 +126,7 @@ export default function TutorialOverlay() {
                         )}
                         
                         {isLastStep ? (
-                            <Button onClick={handleSkip}>
+                            <Button onClick={handleExit}>
                                 <Icon>check</Icon> Finish
                             </Button>
                         ) : isActionStep ? (
