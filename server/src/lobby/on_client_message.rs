@@ -1,4 +1,4 @@
-use std::collections::VecDeque;
+use std::{collections::VecDeque, time::Duration};
 
 use crate::{
     client_connection::ClientConnection,
@@ -180,11 +180,14 @@ impl Lobby {
                     let target_player_count: usize = 9; // Default tutorial size
                     let current_player_count = game_player_params.len();
                     
+                    // Use CouldReconnect instead of Disconnected so bots aren't removed from lobby
                     for i in 0..(target_player_count.saturating_sub(current_player_count)) {
                         if let Some(name) = bot_names.get(i) {
                             game_player_params.push(PlayerInitializeParameters{
                                 host: false,
-                                connection: ClientConnection::Disconnected,
+                                connection: ClientConnection::CouldReconnect { 
+                                    disconnect_timer: Duration::from_secs(3600) // Long timeout for bots
+                                },
                                 name: name.to_string(),
                             });
                         }

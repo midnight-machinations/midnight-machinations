@@ -58,6 +58,37 @@ export default function TutorialMenu(): ReactElement {
                     type: "setRandomSeed",
                     randomSeed: 12345
                 });
+
+                // Configure role list for tutorial
+                // For detective tutorial, set first role to detective, rest to any
+                const roleList: any[] = [];
+                if (setup.playerRole === "detective") {
+                    // First role is detective (for the player)
+                    roleList.push([{ roles: { type: "role", role: "detective" } }]);
+                    // Add 8 more "any" roles for the bots
+                    for (let i = 0; i < 8; i++) {
+                        roleList.push([{ roles: { type: "roleSet", roleSet: "any" } }]);
+                    }
+                }
+
+                GAME_MANAGER.server.sendPacket({
+                    type: "setRoleList",
+                    roleList: roleList
+                });
+
+                // Enable all roles so any role can be selected
+                GAME_MANAGER.server.sendPacket({
+                    type: "setEnabledRoles",
+                    roles: ["jailor", "detective", "lookout", "spy", "tracker", "philosopher", "psychic", 
+                            "auditor", "snoop", "gossip", "doctor", "bodyguard", "cop", 
+                            "bouncer", "engineer", "armorsmith", "vigilante", "veteran", "marksman", 
+                            "deputy", "escort", "medium", "mayor", 
+                            "transporter", "godfather", "mafioso", "hypnotist", "blackmailer", 
+                            "informant", "consort", "mortician", "framer", "forger", "witch", 
+                            "jester", "politician", "wildcard", 
+                            "scarecrow", "martyr", "steward", "kira", "revolutionary", 
+                            "arsonist", "werewolf", "serialKiller"]
+                });
                 
                 // Start the game automatically (server will add bots)
                 const startSuccess = await GAME_MANAGER.sendStartGamePacket();
