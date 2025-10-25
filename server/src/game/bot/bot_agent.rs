@@ -16,11 +16,11 @@ use crate::{
 
 /// Bot agent that uses an LLM to make decisions in the game
 pub struct BotAgent {
-    #[allow(dead_code)]
+    #[allow(dead_code, reason = "Will be used for sending actions in future implementation")]
     player_id: RoomClientID,
     player_name: String,
     receiver: mpsc::UnboundedReceiver<ToClientPacket>,
-    #[allow(dead_code)]
+    #[allow(dead_code, reason = "Will be used for sending controller inputs in future implementation")]
     controller_sender: mpsc::UnboundedSender<ControllerInput>,
     openai_client: Client<async_openai::config::OpenAIConfig>,
     game_state: Arc<Mutex<BotGameState>>,
@@ -153,10 +153,9 @@ impl BotAgent {
         // Try to get a response from the LLM
         match self.openai_client.chat().create(request).await {
             Ok(response) => {
-                if let Some(choice) = response.choices.first() {
-                    if let Some(content) = &choice.message.content {
-                        println!("Bot {} thinking: {}", self.player_name, content);
-                    }
+                if let Some(choice) = response.choices.first()
+                && let Some(content) = &choice.message.content {
+                    println!("Bot {} thinking: {}", self.player_name, content);
                 }
             }
             Err(e) => {

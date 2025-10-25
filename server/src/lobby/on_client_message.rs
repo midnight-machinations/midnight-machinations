@@ -323,11 +323,10 @@ impl Lobby {
                 if let Some(player) = self.clients.get(&room_client_id) && !player.is_host() { break 'packet_match }
 
                 // Check if the player is actually a bot
-                if let Some(client) = self.clients.get(&player_id) {
-                    if matches!(client.connection, ClientConnection::Bot(_)) {
-                        if let RemoveRoomClientResult::RoomShouldClose = self.remove_client(player_id) {
-                            return LobbyClientMessageResult::Close;
-                        }
+                if let Some(client) = self.clients.get(&player_id) 
+                && matches!(client.connection, ClientConnection::Bot(_)) {
+                    if let RemoveRoomClientResult::RoomShouldClose = self.remove_client(player_id) {
+                        return LobbyClientMessageResult::Close;
                     }
                 }
             }
