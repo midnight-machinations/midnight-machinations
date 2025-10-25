@@ -5,8 +5,11 @@ use async_openai::{
     types::{
         ChatCompletionRequestMessage, ChatCompletionRequestSystemMessageArgs,
         ChatCompletionRequestUserMessageArgs, CreateChatCompletionRequestArgs,
+        ChatCompletionTool, ChatCompletionToolType, FunctionObjectArgs,
+        ChatCompletionToolChoiceOption,
     },
 };
+use serde_json::json;
 
 use crate::{
     game::controllers::{Controller, ControllerID, ControllerInput},
@@ -128,15 +131,7 @@ impl BotAgent {
             return Ok(());
         }
 
-        // Build a list of available actions
-        let available_actions: Vec<String> = state.available_controllers
-            .iter()
-            .map(|(id, controller)| {
-                format!("Controller: {:?}, Current selection: {:?}", id, controller.selection())
-            })
-            .collect();
-
-        if available_actions.is_empty() {
+        if state.available_controllers.is_empty() {
             return Ok(());
         }
         
@@ -147,32 +142,83 @@ impl BotAgent {
              Your role: {}\n\
              Current phase: {}\n\
              Alive players: {:?}\n\
-             Recent messages: {}\n\
-             Available actions: {}\n\n\
-             Choose ONE action to take from the available actions. \
-             Respond with ONLY the controller index (0-{}) you want to use, or 'CHAT: <message>' to send a chat message. \
-             Be strategic and consider your role's objectives.",
+             Recent messages: {}\n\n\
+             You have controllers available to send actions. Consider your role's objectives and make strategic decisions.\n\
+             Use the send_ability_input tool to perform game actions, or send_chat_message to communicate with other players.",
             self.player_name,
             state.role.as_ref().unwrap_or(&"Unknown".to_string()),
             state.phase.as_ref().unwrap_or(&"Unknown".to_string()),
             state.alive_status,
-            state.recent_messages.last().unwrap_or(&"None".to_string()),
-            available_actions.join(", "),
-            available_actions.len().saturating_sub(1)
+            state.recent_messages.last().unwrap_or(&"None".to_string())
         );
 
-        let controllers_list: Vec<(ControllerID, Controller)> = state.available_controllers
-            .iter()
-            .map(|(id, c)| (id.clone(), c.clone()))
-            .collect();
+        // Serialize available controllers to show the bot what's available
+        let controllers_json = serde_json::to_string_pretty(&state.available_controllers)?;
 
         drop(state);
 
-        // Query the LLM
+        // Define tools for the bot to use
+        let tools = vec![
+            ChatCompletionTool {
+                r#type: ChatCompletionToolType::Function,
+                function: FunctionObjectArgs::default()
+                    .name("send_chat_message")
+                    .description("Send a chat message to other players")
+                    .parameters(json!({
+                        "type": "object",
+                        "properties": {
+                            "message": {
+                                "type": "string",
+                                "description": "The message to send"
+                            }
+                        },
+                        "required": ["message"]
+                    }))
+                    .build()?,
+            },
+            ChatCompletionTool {
+                r#type: ChatCompletionToolType::Function,
+                function: FunctionObjectArgs::default()
+                    .name("send_ability_input")
+                    .description(format!(
+                        "Send a controller input to perform a game action. The input must be a ControllerInput object with 'id' and 'selection' fields.\n\n\
+                        ControllerID format:\n\
+                        - For role abilities: {{\"type\": \"role\", \"player\": <player_index>, \"role\": \"<RoleName>\", \"id\": <ability_id>}}\n\
+                        - For chat: {{\"type\": \"sendChat\", \"player\": <player_index>}}\n\
+                        - For nomination: {{\"type\": \"nominate\", \"player\": <player_index>}}\n\
+                        - For judgement: {{\"type\": \"judge\", \"player\": <player_index>}}\n\n\
+                        ControllerSelection format (choose based on controller type):\n\
+                        - Unit: {{\"type\": \"unit\", \"selection\": null}}\n\
+                        - Boolean: {{\"type\": \"boolean\", \"selection\": true/false}}\n\
+                        - PlayerList: {{\"type\": \"playerList\", \"selection\": [player_indices]}}\n\
+                        - String: {{\"type\": \"string\", \"selection\": \"text\"}}\n\
+                        - Integer: {{\"type\": \"integer\", \"selection\": number}}\n\n\
+                        Available controllers:\n{}", 
+                        controllers_json
+                    ))
+                    .parameters(json!({
+                        "type": "object",
+                        "properties": {
+                            "id": {
+                                "type": "object",
+                                "description": "The controller ID"
+                            },
+                            "selection": {
+                                "type": "object",
+                                "description": "The controller selection"
+                            }
+                        },
+                        "required": ["id", "selection"]
+                    }))
+                    .build()?,
+            },
+        ];
+
+        // Query the LLM with tools
         let messages = vec![
             ChatCompletionRequestMessage::System(
                 ChatCompletionRequestSystemMessageArgs::default()
-                    .content("You are an AI playing a social deduction game. Make strategic decisions. Respond with only a number or 'CHAT: message'.")
+                    .content("You are an AI playing a social deduction game. Make strategic decisions using the provided tools. You can send chat messages or ability inputs based on your role and the game situation.")
                     .build()?
             ),
             ChatCompletionRequestMessage::User(
@@ -185,52 +231,63 @@ impl BotAgent {
         let request = CreateChatCompletionRequestArgs::default()
             .model("gpt-4o-mini")
             .messages(messages)
-            .max_tokens(100_u32)
+            .tools(tools)
+            .tool_choice(ChatCompletionToolChoiceOption::Auto)
+            .max_tokens(200_u32)
             .temperature(0.7)
             .build()?;
 
         // Try to get a response from the LLM
         match self.openai_client.chat().create(request).await {
             Ok(response) => {
-                if let Some(choice) = response.choices.first()
-                && let Some(content) = &choice.message.content {
-                    let content = content.trim();
-                    println!("Bot {} decided: {}", self.player_name, content);
-                    
-                    // Parse the response
-                    if content.starts_with("CHAT:") {
-                        // Bot wants to send a chat message
-                        if let Some(message) = content.strip_prefix("CHAT:") {
-                            let message = message.trim();
-                            if !message.is_empty() {
-                                // Find the chat controller
-                                for (id, _) in &controllers_list {
-                                    if matches!(id, ControllerID::SendChat { .. }) {
-                                        let input = ControllerInput::new(
-                                            id.clone(),
-                                            crate::game::controllers::StringSelection(message.to_string())
-                                        );
-                                        let _ = self.controller_sender.send(input);
-                                        break;
+                if let Some(choice) = response.choices.first() {
+                    // Check if the bot made tool calls
+                    if let Some(tool_calls) = &choice.message.tool_calls {
+                        for tool_call in tool_calls {
+                            let function_name = &tool_call.function.name;
+                            let arguments = &tool_call.function.arguments;
+                            
+                            println!("Bot {} calling tool: {} with args: {}", self.player_name, function_name, arguments);
+                            
+                            match function_name.as_str() {
+                                "send_chat_message" => {
+                                    if let Ok(args) = serde_json::from_str::<serde_json::Value>(arguments) {
+                                        if let Some(message) = args.get("message").and_then(|m| m.as_str()) {
+                                            // Find the chat controller
+                                            let state = self.game_state.lock().await;
+                                            for (id, _) in state.available_controllers.iter() {
+                                                if matches!(id, ControllerID::SendChat { .. }) {
+                                                    let input = ControllerInput::new(
+                                                        id.clone(),
+                                                        crate::game::controllers::StringSelection(message.to_string())
+                                                    );
+                                                    let _ = self.controller_sender.send(input);
+                                                    break;
+                                                }
+                                            }
+                                        }
                                     }
+                                }
+                                "send_ability_input" => {
+                                    // Deserialize the controller input directly from the arguments
+                                    match serde_json::from_str::<ControllerInput>(arguments) {
+                                        Ok(controller_input) => {
+                                            println!("Bot {} sending controller input: {:?}", self.player_name, controller_input);
+                                            let _ = self.controller_sender.send(controller_input);
+                                        }
+                                        Err(e) => {
+                                            eprintln!("Bot {} failed to deserialize controller input: {}. Args: {}", 
+                                                self.player_name, e, arguments);
+                                        }
+                                    }
+                                }
+                                _ => {
+                                    eprintln!("Bot {} called unknown tool: {}", self.player_name, function_name);
                                 }
                             }
                         }
-                    } else if let Ok(index) = content.parse::<usize>() {
-                        // Bot chose a controller by index
-                        if index < controllers_list.len() {
-                            let (controller_id, controller) = &controllers_list[index];
-                            
-                            // Use the current selection (bots keep existing selections for simplicity)
-                            // In a more sophisticated implementation, we'd have the LLM choose specific targets
-                            let input = ControllerInput::new(
-                                controller_id.clone(),
-                                controller.selection().clone()
-                            );
-                            
-                            let _ = self.controller_sender.send(input);
-                            println!("Bot {} sent controller input: {:?}", self.player_name, controller_id);
-                        }
+                    } else if let Some(content) = &choice.message.content {
+                        println!("Bot {} thinking: {}", self.player_name, content);
                     }
                 }
             }
