@@ -51,7 +51,10 @@ impl RoomState for Game {
         PlayerReference::all_players(self).for_each(|p|p.tick(self, time_passed));
         SpectatorPointer::all_spectators(self).for_each(|s|s.tick(self, time_passed));
 
-        self.phase_machine.time_remaining = self.phase_machine.time_remaining.map(|d|d.saturating_sub(time_passed));
+        // In tutorial mode, don't decrement time - phases stay until client advances them
+        if !self.settings.tutorial_mode {
+            self.phase_machine.time_remaining = self.phase_machine.time_remaining.map(|d|d.saturating_sub(time_passed));
+        }
 
         OnTick::new().as_invokable().invoke(self);
 

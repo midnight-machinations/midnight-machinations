@@ -155,6 +155,13 @@ impl Game {
             ToServerPacket::VoteFastForwardPhase { fast_forward } => {
                 sender_player_ref.set_fast_forward_vote(self, fast_forward);
             },
+            ToServerPacket::TutorialAdvancePhase => {
+                // Only allow phase advancement in tutorial mode
+                if self.settings.tutorial_mode {
+                    use super::phase::PhaseStateMachine;
+                    PhaseStateMachine::next_phase(self, None);
+                }
+            },
             _ => {
                 log!(error "Game"; "Recieved invalid packet for Game state: {incoming_packet:?}");
             }

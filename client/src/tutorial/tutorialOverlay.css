@@ -100,6 +100,29 @@
     margin-bottom: 0;
 }
 
+.tutorial-action-required,
+.tutorial-action-completed {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px;
+    border-radius: 4px;
+    margin-top: 12px;
+    font-weight: 500;
+}
+
+.tutorial-action-required {
+    background-color: rgba(255, 193, 7, 0.1);
+    border: 1px solid rgba(255, 193, 7, 0.3);
+    color: #ffc107;
+}
+
+.tutorial-action-completed {
+    background-color: rgba(76, 175, 80, 0.1);
+    border: 1px solid rgba(76, 175, 80, 0.3);
+    color: #4caf50;
+}
+
 .tutorial-footer {
     display: flex;
     flex-direction: column;

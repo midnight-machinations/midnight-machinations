@@ -36,8 +36,15 @@ export default function TutorialOverlay() {
     const totalSteps = currentTutorial.steps.length;
     const isLastStep = currentStepIndex === totalSteps - 1;
     const isFirstStep = currentStepIndex === 0;
+    const isActionStep = currentStep.completionCondition?.type === "action";
+    const isStepCompleted = TUTORIAL_MANAGER.isStepCompleted();
 
     const handleNext = () => {
+        // For server-based tutorials with phase changes, advance the phase
+        if (currentStep.completionCondition?.type === "phaseChange" && TUTORIAL_MANAGER.isServerBased()) {
+            TUTORIAL_MANAGER.advancePhase();
+        }
+        
         if (!TUTORIAL_MANAGER.nextStep()) {
             // Tutorial completed
             TUTORIAL_MANAGER.endTutorial();
@@ -65,6 +72,18 @@ export default function TutorialOverlay() {
                 
                 <div className="tutorial-content">
                     <p>{currentStep.description}</p>
+                    {isActionStep && !isStepCompleted && (
+                        <div className="tutorial-action-required">
+                            <Icon>touch_app</Icon>
+                            <span>Action required to continue</span>
+                        </div>
+                    )}
+                    {isActionStep && isStepCompleted && (
+                        <div className="tutorial-action-completed">
+                            <Icon>check_circle</Icon>
+                            <span>Action completed!</span>
+                        </div>
+                    )}
                 </div>
 
                 <div className="tutorial-footer">
@@ -73,7 +92,7 @@ export default function TutorialOverlay() {
                     </div>
                     
                     <div className="tutorial-actions">
-                        {!isFirstStep && (
+                        {!isFirstStep && !isActionStep && (
                             <Button onClick={handlePrevious}>
                                 <Icon>arrow_back</Icon> Previous
                             </Button>
@@ -82,6 +101,10 @@ export default function TutorialOverlay() {
                         {isLastStep ? (
                             <Button onClick={handleSkip}>
                                 <Icon>check</Icon> Finish
+                            </Button>
+                        ) : isActionStep ? (
+                            <Button onClick={handleNext} disabled={!isStepCompleted}>
+                                {isStepCompleted ? "Continue" : "Waiting for action..."} <Icon>arrow_forward</Icon>
                             </Button>
                         ) : (
                             <Button onClick={handleNext}>

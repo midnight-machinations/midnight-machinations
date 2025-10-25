@@ -242,4 +242,7 @@ pub enum ToServerPacket{
 
     #[serde(rename_all = "camelCase")]
     VoteFastForwardPhase{fast_forward: FastForwardSetting},
+
+    // Tutorial
+    TutorialAdvancePhase,
 }

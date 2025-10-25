@@ -3,9 +3,10 @@
  * 
  * Manages tutorial state, progression, and execution.
  * This is a singleton that coordinates all tutorial-related functionality.
+ * Supports both client-side simulation and server-based interactive tutorials.
  */
 
-import { Tutorial, TutorialStep, TutorialProgress } from "./tutorialTypes.d";
+import { Tutorial, TutorialStep, TutorialProgress, TutorialActionType } from "./tutorialTypes.d";
 import GAME_MANAGER from "../index";
 import { createGameState, createPlayer, createPlayerGameState } from "../game/gameState";
 import GameState from "../game/gameState.d";
@@ -16,6 +17,60 @@ class TutorialManager {
     private listeners: Array<() => void> = [];
     private active: boolean = false;
     private originalState: any = null;
+    private serverBased: boolean = false;
+    private stepCompleted: boolean = false;
+
+    /**
+     * Check if the current tutorial is server-based
+     */
+    isServerBased(): boolean {
+        return this.serverBased;
+    }
+
+    /**
+     * Mark the current step as completed (used for action-based steps)
+     */
+    markStepCompleted(): void {
+        this.stepCompleted = true;
+        this.notifyListeners();
+    }
+
+    /**
+     * Check if current step is completed
+     */
+    isStepCompleted(): boolean {
+        return this.stepCompleted;
+    }
+
+    /**
+     * Validate if a game action completes the current step
+     */
+    validateAction(actionType: TutorialActionType): boolean {
+        const step = this.getCurrentStep();
+        if (!step || !step.completionCondition) {
+            return false;
+        }
+
+        if (step.completionCondition.type === "action") {
+            // Compare action types
+            const required = step.completionCondition.actionType;
+            if (required.type === actionType.type) {
+                this.markStepCompleted();
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Advance to next phase (for server-based tutorials)
+     */
+    advancePhase(): void {
+        if (this.serverBased && GAME_MANAGER.state.stateType === "game") {
+            GAME_MANAGER.server.sendPacket({ type: "tutorialAdvancePhase" });
+        }
+    }
 
     /**
      * Create a simulated game state for the tutorial
@@ -105,17 +160,28 @@ class TutorialManager {
 
     /**
      * Start a tutorial
+     * @param tutorial The tutorial to start
+     * @param serverBased Whether to use server-based game (true for interactive tutorials)
      */
-    startTutorial(tutorial: Tutorial): void {
-        // Save the original game manager state
-        this.originalState = GAME_MANAGER.state;
-        
-        // Create and set the tutorial game state
-        const tutorialState = this.createTutorialGameState(tutorial);
-        GAME_MANAGER.state = tutorialState;
+    startTutorial(tutorial: Tutorial, serverBased: boolean = false): void {
+        this.serverBased = serverBased;
+        this.currentStepIndex = 0;
+        this.stepCompleted = false;
+
+        if (serverBased) {
+            // For server-based tutorials, we don't create a simulated state
+            // The server will handle game creation
+            this.originalState = GAME_MANAGER.state;
+        } else {
+            // Save the original game manager state for client-side simulation
+            this.originalState = GAME_MANAGER.state;
+            
+            // Create and set the tutorial game state
+            const tutorialState = this.createTutorialGameState(tutorial);
+            GAME_MANAGER.state = tutorialState;
+        }
         
         this.currentTutorial = tutorial;
-        this.currentStepIndex = 0;
         this.active = true;
         this.notifyListeners();
     }
@@ -161,6 +227,7 @@ class TutorialManager {
 
         if (this.currentStepIndex < this.currentTutorial.steps.length - 1) {
             this.currentStepIndex++;
+            this.stepCompleted = false;
             this.notifyListeners();
             return true;
         }
@@ -179,6 +246,7 @@ class TutorialManager {
 
         if (this.currentStepIndex > 0) {
             this.currentStepIndex--;
+            this.stepCompleted = false;
             this.notifyListeners();
             return true;
         }
@@ -191,7 +259,7 @@ class TutorialManager {
      */
     endTutorial(): void {
         // Restore the original game manager state
-        if (this.originalState !== null) {
+        if (this.originalState !== null && !this.serverBased) {
             GAME_MANAGER.state = this.originalState;
             this.originalState = null;
         }
@@ -199,6 +267,8 @@ class TutorialManager {
         this.currentTutorial = null;
         this.currentStepIndex = 0;
         this.active = false;
+        this.serverBased = false;
+        this.stepCompleted = false;
         this.notifyListeners();
     }
 

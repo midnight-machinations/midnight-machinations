@@ -16,6 +16,7 @@ export const basicGameplayTutorial: Tutorial = {
     name: "Basic Gameplay",
     description: "Learn the fundamentals of Midnight Machinations",
     order: 1,
+    serverBased: false,
     initialSetup: {
         playerRole: "villager",
         playerCount: 7,
@@ -89,6 +90,7 @@ export const understandingRolesTutorial: Tutorial = {
     name: "Understanding Roles",
     description: "Learn about the different roles and factions in the game",
     order: 2,
+    serverBased: false,
     initialSetup: {
         playerRole: "detective",
         playerCount: 9,
@@ -148,11 +150,95 @@ export const understandingRolesTutorial: Tutorial = {
 };
 
 /**
+ * Detective Tutorial (Interactive)
+ * Interactive tutorial teaching how to play as Detective
+ */
+export const detectiveTutorial: Tutorial = {
+    id: "detective-tutorial",
+    name: "Playing as Detective",
+    description: "Interactive tutorial: Learn how to investigate players and share your findings",
+    order: 3,
+    serverBased: true,
+    initialSetup: {
+        playerRole: "detective",
+        playerCount: 9,
+        startPhase: "briefing",
+        startDay: 1
+    },
+    steps: [
+        {
+            id: "welcome",
+            title: "Welcome, Detective!",
+            description: "You are a Detective, one of the Town's most powerful investigative roles. Your job is to find evil players by investigating them at night. Let's learn how to use your ability effectively.",
+            completionCondition: { type: "manual" }
+        },
+        {
+            id: "night-phase",
+            title: "Wait for Night",
+            description: "The Detective can only investigate during the Night phase. Click 'Next' when you're ready to skip to Night 1.",
+            completionCondition: { type: "manual" }
+        },
+        {
+            id: "select-target",
+            title: "Choose Someone to Investigate",
+            description: "During the Night, open the Abilities menu and select a player to investigate. For this tutorial, investigate player #2 (Alice). Click on Alice in the abilities menu to select her as your target.",
+            completionCondition: { 
+                type: "action",
+                actionType: { type: "selectTarget", controllerId: "detective-investigation" }
+            }
+        },
+        {
+            id: "obituary",
+            title: "Check Your Results",
+            description: "Great! During the Obituary phase (the start of each day), you'll receive the investigation result. Alice's result will appear in your chat. Read it carefully - it tells you whether she is innocent or suspicious.",
+            completionCondition: { type: "manual" }
+        },
+        {
+            id: "write-will",
+            title: "Document Your Findings",
+            description: "As Detective, you should keep track of your investigation results. Open the Alibi menu (📜) and write down that you investigated Alice. Include what you found. This will help others trust your information if you die.",
+            completionCondition: { 
+                type: "action",
+                actionType: { type: "writeWill" }
+            }
+        },
+        {
+            id: "share-results",
+            title: "Share Your Information",
+            description: "Now that Day has started, you can share your findings in chat. Type a message telling everyone that you investigated Alice and what you found. Good detectives share their results to help Town find evil players!",
+            completionCondition: { 
+                type: "action",
+                actionType: { type: "sendChat" }
+            }
+        },
+        {
+            id: "next-night",
+            title: "Continue Investigating",
+            description: "Excellent work! As Detective, you should investigate a different player every night. Over time, you'll build up a list of innocent and suspicious players. This information is crucial for Town to win.",
+            completionCondition: { type: "manual" }
+        },
+        {
+            id: "tips",
+            title: "Detective Tips",
+            description: "Key tips: (1) Always write your results in your alibi, (2) Share results in chat during the day, (3) Investigate suspicious players or claims, (4) If you find evil players, push to get them voted out!",
+            completionCondition: { type: "manual" }
+        },
+        {
+            id: "conclusion",
+            title: "Tutorial Complete!",
+            description: "You now know how to play as Detective! Remember: investigate, document, and share your findings. Your information can turn the tide of the game. Good luck hunting down the Mafia!",
+            completionCondition: { type: "manual" }
+        }
+    ]
+};
+
+/**
  * Array of all available tutorials
  */
 export const ALL_TUTORIALS: Tutorial[] = [
     basicGameplayTutorial,
-    understandingRolesTutorial
+    understandingRolesTutorial,
+    detectiveTutorial
 ];
 
 /**

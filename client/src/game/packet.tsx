@@ -278,6 +278,8 @@ export type ToServerPacket = {
     type: "voteFastForwardPhase",
     fastForward: FastForwardSetting
 } | {
+    type: "tutorialAdvancePhase"
+} | {
     type: "hostForceBackToLobby"
 } | {
     type: "hostForceEndGame",

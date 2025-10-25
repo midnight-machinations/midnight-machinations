@@ -44,8 +44,18 @@ export type TutorialCompletionCondition =
     | { type: "click", elementId: string }
     | { type: "timer", duration: number }
     | { type: "phaseChange", targetPhase: PhaseType }
-    | { type: "action", actionType: string }
+    | { type: "action", actionType: TutorialActionType }
     | { type: "manual" }; // User clicks "Next" button
+
+/**
+ * Types of actions that can be required in tutorials
+ */
+export type TutorialActionType =
+    | { type: "selectTarget", controllerId: string }
+    | { type: "submitController", controllerId: string }
+    | { type: "writeWill" }
+    | { type: "sendChat" }
+    | { type: "vote", voteType: "nomination" | "trial" };
 
 /**
  * Changes to apply to the game state
@@ -71,6 +81,9 @@ export type Tutorial = {
     
     /** Difficulty level or ordering */
     order: number;
+    
+    /** Whether this tutorial uses the server for game logic */
+    serverBased: boolean;
     
     /** Initial game setup for the tutorial */
     initialSetup: TutorialGameSetup;
