@@ -79,7 +79,7 @@ Once configured, hosts can add bot players from the lobby using the "Add Bot" bu
 
 For more information about the bot system, see [server/src/game/bot/README.md](server/src/game/bot/README.md).
 
-### Production Enviornment
+### Production Environment
 #### Install
 We have built an install script that automatically pulls all the dependencies.
 Run the following command as the root user
