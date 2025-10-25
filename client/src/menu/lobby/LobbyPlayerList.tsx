@@ -19,6 +19,7 @@ type PlayerDisplayData = {
     host: boolean,
     name: string | null,
     displayName: string,
+    bot: boolean,
 }
 
 export default function LobbyPlayerList(): ReactElement {
@@ -27,6 +28,7 @@ export default function LobbyPlayerList(): ReactElement {
             if (state.stateType === "lobby") {
                 return state.players.entries().map(([id, player]) => {
                     const name = player.clientType.type === "player" ? encodeString(player.clientType.name) : null;
+                    const bot = player.clientType.type === "player" && (player.clientType.bot ?? false);
                     return {
                         id,
                         clientType: player.clientType.type,
@@ -35,6 +37,7 @@ export default function LobbyPlayerList(): ReactElement {
                         host: player.ready === "host",
                         name,
                         displayName: name ?? "Spectator",
+                        bot,
                     }
                 })
             } else if (state.host !== null) {
@@ -51,6 +54,7 @@ export default function LobbyPlayerList(): ReactElement {
                         displayName: player.clientType.type === "player"
                             ? encodeString(state.players[player.clientType.index].toString())
                             : player.clientType.index.toString(),
+                        bot: false,
                     }
                 })
             }
@@ -78,6 +82,9 @@ export default function LobbyPlayerList(): ReactElement {
                 }
             </ol>
         </div>
+        {host && <Button onClick={() => GAME_MANAGER.sendAddBotPacket()}>
+            <Icon>smart_toy</Icon>{translate("menu.lobby.button.addBot")}
+        </Button>}
         {host && <>
             <h2>{translate("menu.hostSettings.spectators")}</h2>
             <div className="lobby-player-list">
@@ -112,10 +119,11 @@ function LobbyPlayerListPlayer(props: Readonly<{ player: PlayerDisplayData }>): 
     const [renameOpen, setRenameOpen] = useState(false);
     const renameButtonRef = useRef<HTMLButtonElement>(null);
 
-    return <li key={props.player.id} className={props.player.connection==="connected" ? "" : "keyword-dead"}>
+    return <li key={props.player.id} className={props.player.connection==="connected" || props.player.connection==="bot" ? "" : "keyword-dead"}>
         <div>
             {props.player.connection === "couldReconnect" && <Icon>signal_cellular_connected_no_internet_4_bar</Icon>}
             {props.player.connection === "disconnected" && <Icon>sentiment_very_dissatisfied</Icon>}
+            {props.player.bot && <Icon>settings</Icon>}
             {props.player.host && <Icon>shield</Icon>}
             {props.player.ready && <Icon>check</Icon>}
             <StyledText>{props.player.displayName}</StyledText>
@@ -124,10 +132,13 @@ function LobbyPlayerListPlayer(props: Readonly<{ player: PlayerDisplayData }>): 
             {host && !props.player.host && <button
                 onClick={() => GAME_MANAGER.sendSetPlayerHostPacket(props.player.id)}
             ><Icon>add_moderator</Icon></button>}
-            {host && props.player.connection !== "disconnected" && <button 
+            {host && props.player.connection !== "disconnected" && !props.player.bot && <button 
                 onClick={() => GAME_MANAGER.sendKickPlayerPacket(props.player.id)}
             ><Icon>person_remove</Icon></button>}
-            {host && props.player.clientType === "player" && <>
+            {host && props.player.bot && <button 
+                onClick={() => GAME_MANAGER.sendRemoveBotPacket(props.player.id)}
+            ><Icon>person_remove</Icon></button>}
+            {host && props.player.clientType === "player" && !props.player.bot && <>
                 <RawButton
                     ref={renameButtonRef}
                     onClick={() => setRenameOpen(open => !open)}
