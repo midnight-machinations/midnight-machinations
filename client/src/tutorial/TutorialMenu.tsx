@@ -47,17 +47,19 @@ export default function TutorialMenu(): ReactElement {
                 // Set up the tutorial game configuration
                 const setup = tutorial.initialSetup;
                 
-                // Configure role list, phase times, etc.
-                // Set tutorial mode and fixed seed
+                // Enable tutorial mode - this tells the server to add bot players
+                GAME_MANAGER.server.sendPacket({
+                    type: "setTutorialMode",
+                    tutorialMode: true
+                });
+                
+                // Set fixed seed for reproducible tutorials
                 GAME_MANAGER.server.sendPacket({
                     type: "setRandomSeed",
-                    randomSeed: 12345 // Fixed seed for reproducible tutorials
+                    randomSeed: 12345
                 });
-
-                // Set tutorial mode in settings (sent via modifiers or custom packet)
-                // For now, we'll start the game and the server will handle tutorial mode
                 
-                // Start the game automatically
+                // Start the game automatically (server will add bots)
                 const startSuccess = await GAME_MANAGER.sendStartGamePacket();
                 if (!startSuccess) {
                     setContent(<StartMenu/>);

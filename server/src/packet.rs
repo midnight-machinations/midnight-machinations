@@ -209,6 +209,8 @@ pub enum ToServerPacket{
     SetEnabledRoles{roles: Vec<Role>},
     #[serde(rename_all = "camelCase")]
     SetModifierSettings{modifier_settings: ModifierSettings},
+    #[serde(rename_all = "camelCase")]
+    SetTutorialMode{tutorial_mode: bool},
 
     // Host
     HostDataRequest,

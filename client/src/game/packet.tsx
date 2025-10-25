@@ -240,6 +240,9 @@ export type ToServerPacket = {
         modifiers: ListMapData<ModifierID, ModifierState>,
     }
 } | {
+    type: "setTutorialMode",
+    tutorialMode: boolean
+} | {
     type: "enableModifier",
     modifier: ModifierID
 } | {

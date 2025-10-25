@@ -1,6 +1,7 @@
 use std::collections::VecDeque;
 
 use crate::{
+    client_connection::ClientConnection,
     game::{
         chat::{ChatMessage, ChatMessageVariant},
         game_client::{GameClient, GameClientLocation},
@@ -168,6 +169,28 @@ impl Lobby {
                     }
                 }
 
+                // In tutorial mode, add bot players to satisfy role list requirements
+                if self.settings.tutorial_mode {
+                    let bot_names = vec![
+                        "Alice", "Bob", "Charlie", "Diana", "Eve", "Frank", "Grace", 
+                        "Henry", "Ivy", "Jack", "Kate", "Leo", "Maya", "Noah", "Oliver"
+                    ];
+                    
+                    // Add enough bots to reach the role list size (typically 9-15 players for tutorials)
+                    let target_player_count: usize = 9; // Default tutorial size
+                    let current_player_count = game_player_params.len();
+                    
+                    for i in 0..(target_player_count.saturating_sub(current_player_count)) {
+                        if let Some(name) = bot_names.get(i) {
+                            game_player_params.push(PlayerInitializeParameters{
+                                host: false,
+                                connection: ClientConnection::Disconnected,
+                                name: name.to_string(),
+                            });
+                        }
+                    }
+                }
+
                 let game = match Game::new(self.name.clone(), self.settings.clone(), game_clients, game_player_params, game_spectator_params){
                     Ok(game) => game,
                     Err(err) => {
@@ -246,6 +269,10 @@ impl Lobby {
             ToServerPacket::SetModifierSettings { modifier_settings } => {
                 self.settings.modifiers = modifier_settings.clone();
                 self.send_to_all(ToClientPacket::ModifierSettings { modifier_settings });
+            }
+            ToServerPacket::SetTutorialMode { tutorial_mode } => {
+                if let Some(player) = self.clients.get(&room_client_id) && !player.is_host() { break 'packet_match }
+                self.settings.tutorial_mode = tutorial_mode;
             }
             ToServerPacket::Leave => {
                 if let RemoveRoomClientResult::RoomShouldClose = self.remove_client(room_client_id) {
