@@ -13,6 +13,7 @@ import StandaloneWiki from "./StandaloneWiki";
 import { Button } from "../../components/Button";
 import Credits from "./Credits";
 import StyledText from "../../components/StyledText";
+import TutorialMenu from "../../tutorial/TutorialMenu";
 
 export default function StartMenu(): ReactElement {
     const { setContent: setAnchorContent, setCoverCard } = useContext(AnchorControllerContext)!;
@@ -34,6 +35,9 @@ export default function StartMenu(): ReactElement {
                         }
                     }}>
                         <Icon>play_arrow</Icon> {translate("menu.start.button.play")}
+                    </Button>
+                    <Button onClick={() => setAnchorContent(<TutorialMenu/>)}>
+                        <Icon>school</Icon> Tutorials
                     </Button>
                     <Button onClick={() => setCoverCard(<SettingsMenu />)}>
                         <Icon>settings</Icon> {translate("menu.settings.title")}
