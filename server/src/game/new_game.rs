@@ -63,7 +63,7 @@ impl Game{
             let mut new_players = Vec::new();
             let mut new_players_names = Vec::new();
             for player in players.iter() {
-                let ClientConnection::Connected(ref sender) = player.connection else {
+                if !matches!(player.connection, ClientConnection::Connected(..) | ClientConnection::Bot(..)) {
                     return Err(RejectStartReason::PlayerDisconnected)
                 };
                 
@@ -79,10 +79,17 @@ impl Game{
                 };
                 new_players_names.push(name.clone());
 
-                let new_player = Player::new(
-                    name,
-                    sender.clone()
-                );
+                let new_player = match player.connection {
+                    ClientConnection::Connected(ref sender) => Player::new(
+                        name,
+                        sender.clone()
+                    ),
+                    ClientConnection::Bot(ref bot_connection) => Player::new_bot(
+                        name,
+                        bot_connection.clone()
+                    ),
+                    _ => unreachable!()
+                };
                 
                 new_players.push(new_player);
             }
