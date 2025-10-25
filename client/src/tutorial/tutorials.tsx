@@ -81,10 +81,78 @@ export const basicGameplayTutorial: Tutorial = {
 };
 
 /**
+ * Understanding Roles Tutorial
+ * Teaches about different role categories and factions
+ */
+export const understandingRolesTutorial: Tutorial = {
+    id: "understanding-roles",
+    name: "Understanding Roles",
+    description: "Learn about the different roles and factions in the game",
+    order: 2,
+    initialSetup: {
+        playerRole: "detective",
+        playerCount: 9,
+        startPhase: "briefing",
+        startDay: 1
+    },
+    steps: [
+        {
+            id: "intro",
+            title: "Understanding Roles",
+            description: "In Midnight Machinations, each player has a unique role with special abilities. Understanding roles is key to playing effectively.",
+            completionCondition: { type: "manual" }
+        },
+        {
+            id: "town-faction",
+            title: "Town Faction",
+            description: "The Town is the largest faction and includes roles like Villager, Detective, Doctor, and many others. Town members work together to identify and eliminate evil players.",
+            completionCondition: { type: "manual" }
+        },
+        {
+            id: "mafia-faction",
+            title: "Mafia Faction",
+            description: "The Mafia is the main antagonist faction. Mafia members know each other and can communicate privately. They choose one person to attack each night.",
+            completionCondition: { type: "manual" }
+        },
+        {
+            id: "neutral-roles",
+            title: "Neutral Roles",
+            description: "Neutral roles have their own unique win conditions. Some neutrals are friendly to Town, while others are hostile. Examples include Jester, Survivor, and Executioner.",
+            completionCondition: { type: "manual" }
+        },
+        {
+            id: "investigative-roles",
+            title: "Investigative Roles",
+            description: "Investigative roles like Detective and Lookout can gather information about other players at night. This information helps the Town find evil players.",
+            completionCondition: { type: "manual" }
+        },
+        {
+            id: "protective-roles",
+            title: "Protective Roles",
+            description: "Protective roles like Doctor can prevent attacks on players at night. Keeping important Town members alive is crucial to winning.",
+            completionCondition: { type: "manual" }
+        },
+        {
+            id: "killing-roles",
+            title: "Killing Roles",
+            description: "Some Town roles like Vigilante can kill players at night. These powerful roles must be used carefully - killing a Town member by mistake can cost you the game!",
+            completionCondition: { type: "manual" }
+        },
+        {
+            id: "conclusion",
+            title: "Role Knowledge is Power",
+            description: "Understanding what each role can do helps you analyze claims, spot inconsistencies, and make better decisions. Check the Wiki to learn more about specific roles!",
+            completionCondition: { type: "manual" }
+        }
+    ]
+};
+
+/**
  * Array of all available tutorials
  */
 export const ALL_TUTORIALS: Tutorial[] = [
-    basicGameplayTutorial
+    basicGameplayTutorial,
+    understandingRolesTutorial
 ];
 
 /**
