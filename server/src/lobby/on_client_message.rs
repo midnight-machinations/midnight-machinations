@@ -30,7 +30,7 @@ impl Lobby {
                 if text.is_empty() {break 'packet_match}
                 
                 let name = if let Some(
-                    LobbyClient { client_type: LobbyClientType::Player { name }, .. }
+                    LobbyClient { client_type: LobbyClientType::Player { name, .. }, .. }
                 ) = self.clients.get(&room_client_id) {
                     name.clone()
                 } else {
@@ -48,7 +48,7 @@ impl Lobby {
             }
             ToServerPacket::SetSpectator { spectator } => {
                 let player_names = self.clients.values().filter_map(|p| {
-                    if let LobbyClientType::Player { name } = p.client_type.clone() {
+                    if let LobbyClientType::Player { name, .. } = p.client_type.clone() {
                         Some(name)
                     } else {
                         None
@@ -61,7 +61,7 @@ impl Lobby {
                     match &player.client_type {
                         LobbyClientType::Spectator => {
                             if !spectator {
-                                player.client_type = LobbyClientType::Player { name: new_name}
+                                player.client_type = LobbyClientType::Player { name: new_name, bot: false}
                             }
                         },
                         LobbyClientType::Player { .. } => {
@@ -140,7 +140,7 @@ impl Lobby {
                     );
                     
                     match lobby_client.client_type {
-                        LobbyClientType::Player { ref name } => {
+                        LobbyClientType::Player { ref name, .. } => {
                             game_player_params.push(PlayerInitializeParameters{
                                 host: lobby_client.is_host(),
                                 connection: lobby_client.connection,

@@ -1,5 +1,6 @@
 #![allow(clippy::get_first, reason = "Often need to get first two visits manually.")]
 
+pub mod bot;
 pub mod game_client;
 pub mod phase;
 pub mod player;
