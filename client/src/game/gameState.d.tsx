@@ -45,7 +45,7 @@ export type LobbyClient = {
     connection: ClientConnection,
     clientType: LobbyClientType
 }
-export type ClientConnection = "connected" | "disconnected" | "couldReconnect";
+export type ClientConnection = "connected" | "bot" | "disconnected" | "couldReconnect";
 export type GameClient = {
     clientType: GameClientType,
     connection: ClientConnection,
@@ -64,6 +64,7 @@ export type LobbyClientType = {
 export type PlayerClientType = {
     type: "player",
     name: UnsafeString,
+    bot?: boolean,
 }
 
 type GameState = {
