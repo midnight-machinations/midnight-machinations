@@ -40,6 +40,10 @@ impl SpectatorPointer {
         matches!(self.connection(game), ClientConnection::Connected(..))
     }
 
+    pub fn name(&self, game: &Game) -> Option<String> {
+        self.deref(game).map(|s| s.name.clone())
+    }
+
     pub fn send_packet(&self, game: &Game, packet: ToClientPacket){
         if let Some(s) = self.deref(game) { 
             s.send_packet(packet)

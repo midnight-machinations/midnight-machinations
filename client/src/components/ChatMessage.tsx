@@ -312,7 +312,7 @@ function NormalChatMessage(props: Readonly<{
     let style = props.style;
     let chatGroupIcon = props.chatGroupIcon;
 
-    if(props.message.variant.messageSender.type !== "player" && props.message.variant.messageSender.type !== "livingToDead"){
+    if(props.message.variant.messageSender.type !== "player" && props.message.variant.messageSender.type !== "livingToDead" && props.message.variant.messageSender.type !== "spectator"){
         style += " discreet";
     } else if (props.message.chatGroup === "dead") {
         style += " dead player";
@@ -327,6 +327,8 @@ function NormalChatMessage(props: Readonly<{
     let messageSender = "";
     if (props.message.variant.messageSender.type === "player" || props.message.variant.messageSender.type === "livingToDead") {
         messageSender = encodeString(props.playerNames[props.message.variant.messageSender.player]);
+    }else if(props.message.variant.messageSender.type === "spectator"){
+        messageSender = encodeString(props.message.variant.messageSender.name);
     }else if(props.message.variant.messageSender.type === "jailor" || props.message.variant.messageSender.type === "reporter"){
         messageSender = translate("role."+props.message.variant.messageSender.type+".name");
     }
@@ -1226,6 +1228,9 @@ export type ChatMessageVariant = {
 export type MessageSender = {
     type: "player", 
     player: PlayerIndex
+} | {
+    type: "spectator",
+    name: string
 } | {
     type: "livingToDead",
     player: PlayerIndex,
