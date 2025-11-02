@@ -11,6 +11,7 @@ import { useGameState, usePlayerState, useSpectator } from "../../components/use
 import { MobileContext } from "../Anchor";
 import { encodeString } from "../../components/ChatMessage";
 import Select from "../../components/Select";
+import { loadSettingsParsed } from "../../game/localStorage";
 
 
 export default function HeaderMenu(props: Readonly<{
@@ -35,10 +36,11 @@ export default function HeaderMenu(props: Readonly<{
 
     const spectator = useSpectator()!;
 
+    const reducedHeader = loadSettingsParsed().headerEnabled === false;
 
-    return <div className={"header-menu " + backgroundStyle}>
+    return <div className={"header-menu " + backgroundStyle + (reducedHeader ? " reduced-header" : "")}>
         {!(spectator && !host) && <FastForwardButton spectatorAndHost={spectator && host}/>}
-        <Information />
+        {reducedHeader || <Information />}
         {!mobile && <MenuButtons chatMenuNotification={props.chatMenuNotification}/>}
         <Timer />
     </div>
@@ -91,10 +93,10 @@ function Information(): ReactElement {
         gameState => gameState.myIndex,
         ["yourPlayerIndex"]
     )
-    const roleState = usePlayerState(
-        clientState => clientState.roleState,
-        ["yourRoleState"]
-    )
+    const myRole = usePlayerState(
+        clientState => clientState.myRole,
+        ["yourRole"]
+    )!
     const myName = useMemo(() => {
         return myIndex === undefined ? undefined : players[myIndex]?.toString()
     }, [myIndex, players])
@@ -128,7 +130,7 @@ function Information(): ReactElement {
                     </div>
                 </h3>
                 {spectator || <StyledText>
-                    {encodeString(myName ?? "undefined") + " (" + translate("role."+(roleState!.type)+".name") + ")"}
+                    {encodeString(myName ?? "undefined") + " (" + translate("role."+myRole+".name") + ")"}
                 </StyledText>}
             </div>
         </div>
@@ -148,14 +150,26 @@ export function PhaseSpecificInformation(props: Readonly<{
 
     const spectator = useSpectator();
 
-    if(
-        props.phaseState.type !== "testimony" &&
-        props.phaseState.type !== "judgement" &&
-        props.phaseState.type !== "finalWords"
-    ){
-        return null;
+    switch (props.phaseState.type) {
+        case "nomination":
+        case "adjournment": {
+            const trials = props.phaseState.trialsLeft;
+
+            return <div className="phase-specific">
+                <div className="highlighted">
+                    <StyledText>{translate(trials === 1 ? "trialsRemaining.1" : "trialsRemaining", trials)}</StyledText>
+                </div>
+            </div>
+        }
+        case "testimony":
+        case "judgement":
+        case "finalWords":
+            break;
+        default:
+            return null;
     }
 
+    // Trial
     return <div className="phase-specific">
         <div className="highlighted">
             <StyledText>

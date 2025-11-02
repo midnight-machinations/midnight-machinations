@@ -1,21 +1,7 @@
 use serde::Serialize;
-
-use crate::game::abilities_component::ability_id::AbilityID;
-use crate::game::components::night_visits::{NightVisitsIterator, Visits};
-use crate::game::controllers::{AvailableIntegerSelection, AvailableTwoPlayerOptionSelection, IntegerSelection, PlayerListSelection};
-use crate::game::attack_power::AttackPower;
-use crate::game::components::transport::{Transport, TransportPriority};
-use crate::game::event::on_midnight::{MidnightVariables, OnMidnightPriority};
-use crate::game::components::graves::grave::GraveKiller;
-use crate::game::{attack_power::DefensePower, chat::ChatMessageVariant};
-use crate::game::player::PlayerReference;
-
-use crate::game::visit::Visit;
-use crate::game::Game;
 use crate::vec_map;
-
+use crate::game::prelude::*;
 use super::detective::Detective;
-use super::{ControllerID, ControllerParametersMap, Role, RoleStateTrait};
 
 
 pub(super) const MAXIMUM_COUNT: Option<u8> = None;
@@ -26,12 +12,11 @@ pub struct Polymath;
 
 impl RoleStateTrait for Polymath {
     type ClientAbilityState = Polymath;
-    fn on_midnight(self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut MidnightVariables, priority: OnMidnightPriority) {
+    fn on_midnight(self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut OnMidnightFold, priority: OnMidnightPriority) {
         let selection = Self::ability_type_selection(game, actor_ref);
         match (priority, selection) {
             (OnMidnightPriority::Investigative, PolymathAbilityType::Investigate) => {
-                let actor_visits = actor_ref.role_night_visits_cloned(midnight_variables);
-                let Some(target) = actor_visits.first().map(|v|v.target) else {return};
+                let Some(target) = Visits::default_target(midnight_variables, actor_ref, Role::Polymath) else {return};
                 actor_ref.push_night_message(midnight_variables, 
                     ChatMessageVariant::PolymathSnoopResult {inno:
                         actor_ref.all_direct_night_visitors_cloned(midnight_variables).collect::<Box<[PlayerReference]>>().is_empty() &&
@@ -40,8 +25,7 @@ impl RoleStateTrait for Polymath {
                 );
             },
             (OnMidnightPriority::Heal, PolymathAbilityType::Protect) => {
-                let actor_visits = actor_ref.role_night_visits_cloned(midnight_variables);
-                let Some(target) = actor_visits.first().map(|v|v.target) else {return};
+                let Some(target) = Visits::default_target(midnight_variables, actor_ref, Role::Polymath) else {return};
                 if Visits::into_iter(midnight_variables)
                     .with_visitor(target)
                     .with_target(actor_ref)
@@ -51,26 +35,23 @@ impl RoleStateTrait for Polymath {
                     actor_ref.guard_player(game, midnight_variables, target);
                 }
             },
-            (OnMidnightPriority::Warper, PolymathAbilityType::Support) => {    
-                let actor_visits = actor_ref.role_night_visits_cloned(midnight_variables);
-                let Some(from) = actor_visits.first().map(|v| v.target) else {return};
-                let Some(to) = actor_visits.get(1).map(|v| v.target) else {return};
+            (OnMidnightPriority::Warper, PolymathAbilityType::Support) => {
+                let mut targets = Visits::into_iter(midnight_variables).default_targets(actor_ref, Role::Polymath);
+                let Some(from) = targets.next() else {return};
+                let Some(to) = targets.next() else {return};
                 
                 Transport::transport(
-                    midnight_variables, 
-                    TransportPriority::Warper, 
-                    &vec_map![(from, to)],
-                    |_| true,
-                    false,
+                    midnight_variables, TransportPriority::Warper, 
+                    &vec_map![(from, to)], |_| true, false
                 );
             }
             (OnMidnightPriority::Kill, PolymathAbilityType::Kill) => {
-                let Some(&actor_visit) = actor_ref.role_night_visits_cloned(midnight_variables).first() else {return};
+                let Some(target) = Visits::default_target(midnight_variables, actor_ref, Role::Polymath) else {return};
                 let Some(PlayerListSelection(mark)) = ControllerID::role(actor_ref, Role::Polymath, 4)
                     .get_player_list_selection(game)
                     .cloned() else {return};
                 let Some(mark) = mark.first() else {return};
-                if !actor_visit.target.all_direct_night_visitors_cloned(midnight_variables).any(|p|p == *mark) {return};
+                if !target.all_direct_night_visitors_cloned(midnight_variables).any(|p|p == *mark) {return};
                 
                 mark.try_night_kill_single_attacker (
                     actor_ref,

@@ -1,23 +1,37 @@
-use crate::game::{components::{night_visits::Visits, win_condition::WinCondition}, controllers::{ControllerID, ControllerSelection}, event::on_midnight::MidnightVariables, game_conclusion::GameConclusion, player::PlayerReference, role_list::RoleSet, visit::{Visit, VisitTag}, Game};
-
+use crate::game::prelude::*;
 use super::Role;
 
 
 pub fn standard_charges(game: &Game)->u8{
     game.num_players().div_ceil(5)
 }
-pub fn on_player_roleblocked(midnight_variables: &mut MidnightVariables, actor_ref: PlayerReference, player: PlayerReference){
+pub fn on_player_roleblocked(role: Role, midnight_variables: &mut OnMidnightFold, actor_ref: PlayerReference, player: PlayerReference){
     if player != actor_ref {return}
 
     Visits::retain(midnight_variables, |v|
-        !matches!(v.tag, VisitTag::Role{..}) || v.visitor != actor_ref
+        if let VisitTag::Role { role: visit_role, .. } = v.tag {
+            visit_role != role || v.visitor != actor_ref
+        }else{
+            true
+        }
     );
 }
-pub fn on_visit_wardblocked(midnight_variables: &mut MidnightVariables, actor_ref: PlayerReference, visit: Visit){
+pub fn on_visit_wardblocked(role: Role, midnight_variables: &mut OnMidnightFold, actor_ref: PlayerReference, visit: Visit){
     if actor_ref != visit.visitor {return};
+    if let VisitTag::Role { role: visit_role, .. } = visit.tag {
+        if visit_role != role {
+            return;
+        }
+    }else{
+        return;
+    }
 
     Visits::retain(midnight_variables, |v|
-        !matches!(v.tag, VisitTag::Role{..}) || v.visitor != actor_ref
+        if let VisitTag::Role { role: visit_role, .. } = v.tag {
+            visit_role != role || v.visitor != actor_ref
+        }else{
+            true
+        }
     );
 }
 
@@ -25,7 +39,8 @@ pub fn on_visit_wardblocked(midnight_variables: &mut MidnightVariables, actor_re
 /// This function uses defaults. When using this function, consider if you need to override the defaults.
 /// Defaults to VisitTag::Role { role: actor_ref.role(game), id: 0 }
 pub(super) fn convert_controller_selection_to_visits(game: &Game, actor_ref: PlayerReference, controller_id: ControllerID, attack: bool) -> Vec<Visit> {
-    convert_controller_selection_to_visits_visit_tag(game, actor_ref, controller_id, attack, VisitTag::Role { role: actor_ref.role(game), id: 0 })
+    let ControllerID::Role { role, .. } = controller_id else {unreachable!("Only call this function for role controllers")};
+    convert_controller_selection_to_visits_visit_tag(game, actor_ref, controller_id, attack, VisitTag::Role { role, id: 0 })
 }
 
 pub(super) fn convert_controller_selection_to_visits_visit_tag(game: &Game, actor_ref: PlayerReference, controller_id: ControllerID, attack: bool, tag: VisitTag) -> Vec<Visit> {
@@ -189,16 +204,17 @@ pub(super) fn convert_controller_selection_to_visits_visit_tag(game: &Game, acto
 }
 
 pub(super) fn convert_controller_selection_to_visits_possession(game: &Game, actor_ref: PlayerReference, controller_id: ControllerID) -> Vec<Visit> {
+    let ControllerID::Role { role, .. } = controller_id else {unreachable!("Only call this function for role controllers")};
     let Some(selection) = controller_id.get_selection(game) else {return Vec::new()};
 
     if let ControllerSelection::TwoPlayerOption(selection) = selection {
         if let Some((target_1, target_2)) = selection.0 {
             vec![
-                Visit::new_role(actor_ref, target_1, false, actor_ref.role(game), 0 ),
+                Visit::new_role(actor_ref, target_1, false, role, 0 ),
                 Visit{
                     visitor: actor_ref,
                     target: target_2,
-                    tag: VisitTag::Role { role: actor_ref.role(game), id: 1 },
+                    tag: VisitTag::Role { role, id: 1 },
                     attack: false,
                     wardblock_immune: true,
                     transport_immune: true,

@@ -1,4 +1,4 @@
-use crate::{event_priority, game::{abilities_component::{ability::Ability, ability_id::AbilityID, Abilities}, event::Event}};
+use crate::{event_priority, game::{abilities_component::{ability::Ability, ability_id::AbilityID, Abilities}, event::EventData}};
 
 pub struct OnAbilityCreation{
     pub id: AbilityID,
@@ -13,18 +13,25 @@ pub struct OnAbilityCreationFold{
     pub ability: Ability,
     pub cancelled: bool,
 }
-impl Event for OnAbilityCreation{
+impl EventData for OnAbilityCreation{
     type FoldValue = OnAbilityCreationFold;
     type Priority = OnAbilityCreationPriority;
 
     fn listeners() -> Vec<super::EventListenerFunction<Self>> {vec![
         Abilities::on_ability_creation
     ]}
-
-    fn initial_fold_value(&self, _game: &crate::game::Game) -> Self::FoldValue {OnAbilityCreationFold{
-        ability: self.ability.clone(), cancelled: false
-    }}
 }
 impl OnAbilityCreation{
-    pub fn new(id: AbilityID, ability: Ability)->Self{Self { id, ability, }}
+    pub fn new(id: AbilityID, ability: Ability)->(OnAbilityCreation, OnAbilityCreationFold){
+        (
+            Self {
+                id,
+                ability: ability.clone()
+            },
+            OnAbilityCreationFold{
+                ability,
+                cancelled: false
+            }
+        )
+    }
 }

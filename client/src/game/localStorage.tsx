@@ -1,7 +1,7 @@
 import DEFAULT_GAME_MODES from "../resources/defaultGameModes.json";
 import { CurrentFormat, GameModeStorage } from "../components/gameModeSettings/gameMode";
 import { Language } from "./lang";
-import parseFromJson from "../components/gameModeSettings/gameMode/dataFixer";
+import parseFromJson from "../components/gameModeSettings/gameMode/migrations";
 import { ContentMenu } from "../menu/game/GameScreen";
 import { ParseResult, Success } from "../components/gameModeSettings/gameMode/parse";
 import { UnsafeString } from "./gameState.d";
@@ -54,7 +54,8 @@ export type Settings = {
     defaultName: UnsafeString | null;
     language: Language;
     maxMenus: number;
-    menuOrder: ListMapData<ContentMenu, boolean>
+    menuOrder: ListMapData<ContentMenu, boolean>,
+    headerEnabled?: boolean,
 };
 
 export type RoleSpecificMenuType = "playerList" | "standalone";

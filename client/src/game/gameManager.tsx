@@ -75,6 +75,7 @@ export function createGameManager(): GameManager {
             if (lobbyState !== null && GAME_MANAGER.state.stateType === "game") {
                 GAME_MANAGER.state.roomCode = lobbyState.roomCode;
                 GAME_MANAGER.state.lobbyName = lobbyState.lobbyName;
+                GAME_MANAGER.state.randomSeed = lobbyState.randomSeed;
                 GAME_MANAGER.state.roleList = lobbyState.roleList;
                 GAME_MANAGER.state.phaseTimes = lobbyState.phaseTimes;
                 GAME_MANAGER.state.enabledRoles = lobbyState.enabledRoles;
@@ -349,6 +350,12 @@ export function createGameManager(): GameManager {
                 roleList: roleListEntries
             });
         },
+        sendSetRandomSeedPacket(randomSeed: number | null) {
+            this.server.sendPacket({
+                type: "setRandomSeed",
+                randomSeed: randomSeed
+            });
+        },
         sendSetRoleOutlinePacket(index: number, roleOutline: RoleOutline) {
             this.server.sendPacket({
                 type: "setRoleOutline",
@@ -526,12 +533,6 @@ export function createGameManager(): GameManager {
                 controllerInput: input
             });
         },
-        sendSetDoomsayerGuess(guesses) {
-            this.server.sendPacket({
-                type: "setDoomsayerGuess",
-                guesses: guesses
-            });
-        },
         sendSetConsortOptions(
             roleblock: boolean,
             youWereRoleblockedMessage: boolean,
@@ -611,9 +612,9 @@ function createServer(){
         ws: null,
 
         open : () => {
-            let address = process.env.REACT_APP_WS_ADDRESS;
+            let address = import.meta.env.VITE_WS_ADDRESS;
             if(!address){
-                throw new Error("Missing env var REACT_APP_WS_ADDRES, make sure you defined it in .env");
+                throw new Error("Missing env var VITE_WS_ADDRESS, make sure you defined it in .env");
             }
             try {
                 Server.ws = new WebSocket(address);

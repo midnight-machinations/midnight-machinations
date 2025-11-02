@@ -2,7 +2,7 @@ use std::vec;
 use rand::rng;
 use rand::seq::SliceRandom;
 use serde::{Serialize, Deserialize};
-use crate::game::{event::on_midnight::MidnightVariables, phase::PhaseType, player::PlayerReference, role::Role, role_list::RoleSet, Game};
+use crate::game::{event::on_midnight::OnMidnightFold, phase::PhaseType, player::PlayerReference, role::Role, role_list::RoleSet, Game};
 
 
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq, PartialOrd, Ord)]
@@ -73,7 +73,7 @@ impl Grave{
     }
 
 
-    pub fn from_player_night(game: &Game, midnight_variables: &MidnightVariables, player_ref: PlayerReference) -> Grave {
+    pub fn from_player_night(game: &Game, midnight_variables: &OnMidnightFold, player_ref: PlayerReference) -> Grave {
         let mut killers = player_ref.night_grave_killers(midnight_variables).clone();
         killers.shuffle(&mut rng());
         Grave {

@@ -311,6 +311,11 @@ export default function messageListener(packet: ToClientPacket){
                 }
             }
         break;
+        case "randomSeed":
+            if(GAME_MANAGER.state.stateType === "lobby" || GAME_MANAGER.state.stateType === "game") {
+                GAME_MANAGER.state.randomSeed = packet.randomSeed;
+            }
+        break;
         case "roleOutline":
             //role list entriy
             if(GAME_MANAGER.state.stateType === "lobby" || GAME_MANAGER.state.stateType === "game") {
@@ -351,7 +356,7 @@ export default function messageListener(packet: ToClientPacket){
                 GAME_MANAGER.state.dayNumber = packet.dayNumber;
         
                 if(packet.phase.type === "briefing" && GAME_MANAGER.state.clientState.type === "player"){
-                    const role = GAME_MANAGER.state.clientState.roleState?.type;
+                    const role = GAME_MANAGER.state.clientState.myRole;
                     if(role !== undefined){
                         ANCHOR_CONTROLLER?.setCoverCard(<WikiArticle article={"role/"+role as WikiArticleLink}/>);
                     }
@@ -364,10 +369,12 @@ export default function messageListener(packet: ToClientPacket){
         break;
         case "playerAlive":
             if(GAME_MANAGER.state.stateType === "game"){
-                for(let i = 0; i < GAME_MANAGER.state.players.length && i < packet.alive.length; i++){
-                    GAME_MANAGER.state.players[i].alive = packet.alive[i];
-                }
-                GAME_MANAGER.state.players = [...GAME_MANAGER.state.players];
+                GAME_MANAGER.state.players = GAME_MANAGER.state.players.map((player, i) => {
+                    if (i < packet.alive.length && player.alive !== packet.alive[i]) {
+                        return { ...player, alive: packet.alive[i] };
+                    }
+                    return player;
+                });
             }
         break;
         case "playerVotes":
@@ -375,11 +382,13 @@ export default function messageListener(packet: ToClientPacket){
 
                 let listMapVotes = new ListMap<PlayerIndex, number>(packet.votesForPlayer);
 
-                for(let i = 0; i < GAME_MANAGER.state.players.length; i++){
+                GAME_MANAGER.state.players = GAME_MANAGER.state.players.map((player, i) => {
                     let numVoted = listMapVotes.get(i)??0;
-                    GAME_MANAGER.state.players[i].numVoted = numVoted;
-                }
-                GAME_MANAGER.state.players = [...GAME_MANAGER.state.players];
+                    if (player.numVoted !== numVoted) {
+                        return { ...player, numVoted };
+                    }
+                    return player;
+                });
             }
         break;
         case "yourSendChatGroups":
@@ -413,33 +422,29 @@ export default function messageListener(packet: ToClientPacket){
         break;
         case "yourRoleLabels":
             if(GAME_MANAGER.state.stateType === "game"){
-                for (const player of GAME_MANAGER.state.players) {
-                    player.roleLabel = null;
-                }
-                for (const [key, value] of packet.roleLabels) { 
-                    if(
-                        GAME_MANAGER.state.players !== undefined && 
-                        GAME_MANAGER.state.players[key] !== undefined
-                    )
-                        GAME_MANAGER.state.players[key].roleLabel = value as Role;
-                }
-                GAME_MANAGER.state.players = [...GAME_MANAGER.state.players];
+                const roleLabelMap = new Map(packet.roleLabels);
+                GAME_MANAGER.state.players = GAME_MANAGER.state.players.map((player) => {
+                    const newRoleLabel = roleLabelMap.get(player.index) as Role ?? null;
+                    if (player.roleLabel !== newRoleLabel) {
+                        return { ...player, roleLabel: newRoleLabel };
+                    }
+                    return player;
+                });
             }
         break;
         case "yourPlayerTags":
             if(GAME_MANAGER.state.stateType === "game"){
-                for(let i = 0; i < GAME_MANAGER.state.players.length; i++){
-                    GAME_MANAGER.state.players[i].playerTags = [];
-                }
-
-                for(const [key, value] of packet.playerTags){
-                    if(
-                        GAME_MANAGER.state.players !== undefined && 
-                        GAME_MANAGER.state.players[key] !== undefined
-                    )
-                        GAME_MANAGER.state.players[key].playerTags = value as Tag[];
-                }
-                GAME_MANAGER.state.players = [...GAME_MANAGER.state.players];
+                const playerTagsMap = new Map(packet.playerTags);
+                GAME_MANAGER.state.players = GAME_MANAGER.state.players.map((player) => {
+                    const newPlayerTags = playerTagsMap.get(player.index) as Tag[] ?? [];
+                    // Check if tags array has changed
+                    const tagsChanged = player.playerTags.length !== newPlayerTags.length ||
+                        player.playerTags.some((tag, idx) => tag !== newPlayerTags[idx]);
+                    if (tagsChanged) {
+                        return { ...player, playerTags: newPlayerTags };
+                    }
+                    return player;
+                });
             }
         break;
         case "yourNotes":
@@ -455,9 +460,14 @@ export default function messageListener(packet: ToClientPacket){
             if(GAME_MANAGER.state.stateType === "game" && GAME_MANAGER.state.clientState.type === "player")
                 GAME_MANAGER.state.clientState.deathNote = packet.deathNote ?? "";
         break;
+        case "yourRole":
+            if(GAME_MANAGER.state.stateType === "game" && GAME_MANAGER.state.clientState.type === "player"){
+                GAME_MANAGER.state.clientState.myRole = packet.role;
+            }
+        break;
         case "yourRoleState":
             if(GAME_MANAGER.state.stateType === "game" && GAME_MANAGER.state.clientState.type === "player"){
-                GAME_MANAGER.state.clientState.roleState = packet.roleState;
+                GAME_MANAGER.state.clientState.roleStates.insert(packet.roleState.type, packet.roleState);
             }
         break;
         case "yourVoteFastForwardPhase":

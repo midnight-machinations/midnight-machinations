@@ -1,14 +1,5 @@
 use serde::Serialize;
-
-use crate::game::event::on_midnight::{MidnightVariables, OnMidnightPriority};
-use crate::game::{attack_power::DefensePower, chat::ChatMessageVariant};
-use crate::game::player::PlayerReference;
-use crate::game::abilities_component::ability_id::AbilityID;
-
-
-use crate::game::visit::Visit;
-use crate::game::Game;
-use super::{ControllerID, ControllerParametersMap, Role, RoleState, RoleStateTrait};
+use crate::game::prelude::*;
 
 #[derive(Debug, Clone, Serialize)]
 #[serde(rename_all = "camelCase")]
@@ -42,14 +33,8 @@ pub(super) const DEFENSE: DefensePower = DefensePower::None;
 
 impl RoleStateTrait for Hypnotist {
     type ClientAbilityState = Hypnotist;
-    fn on_midnight(self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut MidnightVariables, priority: OnMidnightPriority) {
-
-        let actor_visits = actor_ref.role_night_visits_cloned(midnight_variables);
-        let Some(visit) = actor_visits.first() else {
-            return;
-        };
-        let target_ref = visit.target;
-        
+    fn on_midnight(self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut OnMidnightFold, priority: OnMidnightPriority) {
+        let Some(target_ref) = Visits::default_target(midnight_variables, actor_ref, Role::Hypnotist) else {return};
 
         match priority {
             OnMidnightPriority::TopPriority => {
@@ -81,11 +66,7 @@ impl RoleStateTrait for Hypnotist {
                         target_ref.push_night_message(midnight_variables, ChatMessageVariant::Transported);
                     }
                     if self.you_were_possessed_message {
-                        if target_ref.role(game).possession_immune() {
-                            target_ref.push_night_message(midnight_variables, ChatMessageVariant::YouWerePossessed { immune: true });
-                        } else {
-                            target_ref.push_night_message(midnight_variables, ChatMessageVariant::YouWerePossessed { immune: false });
-                        }
+                        target_ref.push_night_message(midnight_variables, ChatMessageVariant::YouWerePossessed);
                     }
                     if self.you_were_wardblocked_message {
                         target_ref.push_night_message(midnight_variables, ChatMessageVariant::Wardblocked);
@@ -116,7 +97,7 @@ impl RoleStateTrait for Hypnotist {
             crate::game::components::insider_group::InsiderGroupID::Mafia
         ].into_iter().collect()
     }
-    fn on_player_roleblocked(self, _game: &mut Game, _midnight_variables: &mut MidnightVariables, _actor_ref: PlayerReference, _player: PlayerReference, _invisible: bool) {}
+    fn on_player_roleblocked(self, _game: &mut Game, _midnight_variables: &mut OnMidnightFold, _actor_ref: PlayerReference, _player: PlayerReference, _invisible: bool) {}
 }
 impl Hypnotist {
     pub fn ensure_at_least_one_message(&mut self){

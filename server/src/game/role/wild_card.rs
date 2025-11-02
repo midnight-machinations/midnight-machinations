@@ -20,12 +20,9 @@ pub(super) const DEFENSE: DefensePower = DefensePower::None;
 impl RoleStateTrait for Wildcard {
     type ClientAbilityState = Wildcard;
     fn on_phase_start(self, game: &mut Game, actor_ref: PlayerReference, phase: PhaseType) {
-        match phase {
-            PhaseType::Dusk => {
-                if actor_ref.ability_deactivated_from_death(game) {return;}
-                Wildcard::become_role(game, actor_ref, Role::Wildcard);
-            },
-            _ => {}
+        if phase == PhaseType::Dusk {
+            if actor_ref.ability_deactivated_from_death(game) {return;}
+            Wildcard::become_role(game, actor_ref, Role::Wildcard);
         }
     }
     fn controller_parameters_map(self, game: &Game, actor_ref: PlayerReference) -> super::ControllerParametersMap {
@@ -54,7 +51,8 @@ impl Wildcard {
                     .collect::<Vec<Role>>()
             )
         {
-            actor_ref.set_role_win_con_insider_group(game, role.new_state(game));
+            let new_state = role.new_state(game);
+            actor_ref.set_role_win_con_insider_group(game, new_state);
         }else{
             actor_ref.add_private_chat_message(game, ChatMessageVariant::WildcardConvertFailed{role})
         }

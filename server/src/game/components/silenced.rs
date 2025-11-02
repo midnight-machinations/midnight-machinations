@@ -1,7 +1,7 @@
 use crate::{
     game::{
         chat::ChatMessageVariant, controllers::{ControllerID, PlayerListSelection},
-        event::{on_midnight::MidnightVariables, on_phase_start::OnPhaseStart},
+        event::{on_midnight::OnMidnightFold, on_phase_start::OnPhaseStart},
         phase::PhaseState, player::PlayerReference, Game
     },
     vec_set::VecSet
@@ -20,7 +20,7 @@ pub struct Silenced {
     silenced_players: VecSet<PlayerReference>,
 }
 impl Silenced {
-    pub fn silence_night(game: &mut Game, midnight_variables: &mut MidnightVariables, player: PlayerReference) {
+    pub fn silence_night(game: &mut Game, midnight_variables: &mut OnMidnightFold, player: PlayerReference) {
         game.silenced_mut().silenced_players.insert(player);
 
         player.push_night_message(midnight_variables, ChatMessageVariant::Silenced);

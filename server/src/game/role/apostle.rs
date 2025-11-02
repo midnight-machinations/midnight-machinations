@@ -1,17 +1,7 @@
 use serde::Serialize;
-
-use crate::game::abilities_component::ability_id::AbilityID;
-use crate::game::chat::ChatMessageVariant;
-use crate::game::components::insider_group::InsiderGroupID;
-use crate::game::components::night_visits::Visits;
-use crate::game::controllers::ControllerParametersMap;
-use crate::game::attack_power::{AttackPower, DefensePower};
-use crate::game::components::cult::Cult;
-use crate::game::event::on_midnight::{MidnightVariables, OnMidnightPriority};
-use crate::game::player::PlayerReference;
-use crate::game::visit::Visit;
+use crate::game::prelude::*;
 use crate::game::Game;
-use super::{common_role, ControllerID, Role, RoleStateTrait};
+use super::common_role;
 
 
 #[derive(Clone, Debug, Default, Serialize)]
@@ -23,9 +13,9 @@ pub(super) const DEFENSE: DefensePower = DefensePower::None;
 
 impl RoleStateTrait for Apostle {
     type ClientAbilityState = Apostle;
-    fn on_midnight(self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut MidnightVariables, priority: OnMidnightPriority) {
+    fn on_midnight(self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut OnMidnightFold, priority: OnMidnightPriority) {
         if !matches!(priority, OnMidnightPriority::Convert) {return}
-        let Some(target) = Visits::default_target(game, midnight_variables, actor_ref) else {return};
+        let Some(target) = Visits::default_target(midnight_variables, actor_ref, Role::Apostle) else {return};
         if !Cult::enough_sacrifices(game) {return}
         
         if !AttackPower::Basic.can_pierce(target.night_defense(game, midnight_variables)) {

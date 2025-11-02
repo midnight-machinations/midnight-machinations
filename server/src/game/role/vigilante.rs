@@ -1,17 +1,5 @@
-
 use serde::Serialize;
-
-use crate::game::attack_power::AttackPower;
-use crate::game::event::on_midnight::{MidnightVariables, OnMidnightPriority};
-use crate::game::{attack_power::DefensePower, game_conclusion::GameConclusion};
-use crate::game::components::graves::grave::GraveKiller;
-use crate::game::player::PlayerReference;
-
-use crate::game::visit::Visit;
-
-use crate::game::Game;
-use crate::game::abilities_component::ability_id::AbilityID;
-use super::{ControllerID, ControllerParametersMap, Role, RoleStateTrait};
+use crate::game::prelude::*;
 
 #[derive(Clone, Debug, Serialize)]
 #[serde(rename_all = "camelCase")]
@@ -41,7 +29,7 @@ pub(super) const DEFENSE: DefensePower = DefensePower::None;
 
 impl RoleStateTrait for Vigilante {
     type ClientAbilityState = Vigilante;
-    fn on_midnight(mut self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut MidnightVariables, priority: OnMidnightPriority) {
+    fn on_midnight(mut self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut OnMidnightFold, priority: OnMidnightPriority) {
         match priority{
             OnMidnightPriority::TopPriority => {
                 if VigilanteState::WillSuicide == self.state {
@@ -50,29 +38,21 @@ impl RoleStateTrait for Vigilante {
                 }
             },
             OnMidnightPriority::Kill => {
-            
                 match self.state {
                     VigilanteState::Loaded { bullets } if bullets > 0 => {
-                        let actor_visits = actor_ref.role_night_visits_cloned(midnight_variables);
-                        if let Some(visit) = actor_visits.first(){
-
-                            let target_ref = visit.target;
-
+                        if let Some(target_ref) = Visits::default_target(midnight_variables, actor_ref, Role::Vigilante) {
                             let killed = target_ref.try_night_kill_single_attacker(actor_ref, game, midnight_variables, GraveKiller::Role(Role::Vigilante), AttackPower::Basic, false);
                             self.state = VigilanteState::Loaded { bullets: bullets.saturating_sub(1) };
 
                             if killed && target_ref.win_condition(game).is_loyalist_for(GameConclusion::Town) {
                                 self.state = VigilanteState::WillSuicide;
-                            }                            
+                            }
                         }
                     }       
-
                     VigilanteState::NotLoaded => {
                         self.state = VigilanteState::Loaded { bullets: crate::game::role::common_role::standard_charges(game) };
                     }
-
-                    _ => {},
-                    
+                    _ => {}, 
                 }
             },
             _ => {}

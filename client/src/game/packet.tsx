@@ -3,10 +3,9 @@ import { Grave, GraveIndex } from "./graveState"
 import { ChatMessage, ChatMessageIndex } from "../components/ChatMessage"
 import { RoleList, RoleOutline } from "./roleListState.d"
 import { Role, RoleState } from "./roleState.d"
-import { DoomsayerGuess } from "../menu/game/gameScreenContent/AbilityMenu/RoleSpecificMenus/LargeDoomsayerMenu"
 import { KiraGuess } from "../menu/game/gameScreenContent/AbilityMenu/ControllerSelectionTypes/KiraSelectionMenu"
 import { ControllerInput, ControllerID, SavedController } from "./controllerInput"
-import ListMap, { ListMapData } from "../ListMap"
+import { ListMapData } from "../ListMap"
 import { ModifierID, ModifierState } from "./modifiers"
 
 export type LobbyPreviewData = {
@@ -80,6 +79,9 @@ export type ToClientPacket = {
     type: "roleList",
     roleList: RoleList,
 } | {
+    type: "randomSeed", 
+    randomSeed: number | null,
+} | {
     type: "roleOutline",
     index: number,
     roleOutline: RoleOutline
@@ -141,6 +143,9 @@ export type ToClientPacket = {
 } | {
     type: "yourDeathNote", 
     deathNote: UnsafeString | null
+} | {
+    type: "yourRole",
+    role: Role    
 } | {
     type: "yourRoleState",
     roleState: RoleState
@@ -211,6 +216,9 @@ export type ToServerPacket = {
     type: "setRoleList", 
     roleList: RoleList,
 } | {
+    type: "setRandomSeed", 
+    randomSeed: number | null,
+} | {
     type: "setRoleOutline", 
     index: number,
     roleOutline: RoleOutline
@@ -256,13 +264,6 @@ export type ToServerPacket = {
 } | {
     type: "setKiraGuess",
     guesses: [PlayerIndex, KiraGuess][]
-} | {
-    type: "setDoomsayerGuess",
-    guesses: [
-        [number, DoomsayerGuess],
-        [number, DoomsayerGuess],
-        [number, DoomsayerGuess]
-    ]
 } | {
     type: "setConsortOptions",
     roleblock: boolean,

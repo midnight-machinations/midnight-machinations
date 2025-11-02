@@ -1,19 +1,5 @@
-
 use serde::Serialize;
-
-use crate::game::controllers::{AvailableRoleListSelection, AvailableStringSelection, RoleListSelection};
-use crate::game::attack_power::DefensePower;
-use crate::game::chat::ChatMessageVariant;
-use crate::game::event::on_midnight::{MidnightVariables, OnMidnightPriority};
-use crate::game::phase::PhaseType;
-use crate::game::player::PlayerReference;
-use crate::game::visit::Visit;
-use crate::game::abilities_component::ability_id::AbilityID;
-
-use crate::game::Game;
-use super::{ControllerID, ControllerParametersMap, GetClientAbilityState, Role};
-use super::{RoleState, RoleStateTrait};
-
+use crate::game::prelude::*;
 
 #[derive(Clone, Debug, Serialize)]
 #[serde(rename_all = "camelCase")]
@@ -43,21 +29,18 @@ pub(super) const DEFENSE: DefensePower = DefensePower::None;
 
 impl RoleStateTrait for Forger {
     type ClientAbilityState = ClientRoleState;
-    fn new_state(game: &Game) -> Self {
+    fn new_state(game: &mut Game) -> Self {
         Self{
             forges_remaining: crate::game::role::common_role::standard_charges(game),
             ..Self::default()
         }
     }
-    fn on_midnight(self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut MidnightVariables, priority: OnMidnightPriority) {
+    fn on_midnight(self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut OnMidnightFold, priority: OnMidnightPriority) {
         if self.forges_remaining == 0 {return}
 
         match priority {
             OnMidnightPriority::Deception=>{
-                let actor_visits = actor_ref.role_night_visits_cloned(midnight_variables);
-                let Some(visit) = actor_visits.first() else{return};
-
-                let target_ref = visit.target;
+                let Some(target_ref) = Visits::default_target(midnight_variables, actor_ref, Role::Forger) else {return};
 
                 let fake_role = ControllerID::role(actor_ref, Role::Forger, 1)
                     .get_role_list_selection(game)

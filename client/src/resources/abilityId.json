@@ -75,9 +75,6 @@
     "role/porter/0": {
         "midnight": true
     },
-    "role/retributionist/0": {
-        "midnight": true
-    },
     "role/reporter/0": {
         "midnight": false
     },
@@ -230,6 +227,9 @@
     "role/serialKiller/0": {
         "midnight": true
     },
+    "role/juggernaut/0": {
+        "midnight": true
+    },
     "role/arsonist/0": {
         "midnight": true
     },
@@ -290,10 +290,10 @@
     "pitchforkVote": {
         "midnight": true
     },
-    "syndicateGunItemShoot": {
+    "syndicateGunShoot": {
         "midnight": true
     },
-    "syndicateGunItemGive": {
+    "syndicateGunGive": {
         "midnight": true,
         "instant": true
     },

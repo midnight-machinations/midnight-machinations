@@ -4,14 +4,11 @@ FROM node:23-slim AS base
 ENV PNPM_HOME=/pnpm
 
 # add pnpm to PATH
-ENV PATH=$PNPM_HOME:$PATH \
-    # disable CRA’s ESLint plugin during build:
-    DISABLE_ESLINT_PLUGIN=true \
-    SKIP_PREFLIGHT_CHECK=true
+ENV PATH=$PNPM_HOME:$PATH
 RUN corepack enable
 
-ARG REACT_APP_WS_ADDRESS=ws://localhost:80
-ENV REACT_APP_WS_ADDRESS=${REACT_APP_WS_ADDRESS}
+ARG VITE_WS_ADDRESS=ws://localhost:80
+ENV VITE_WS_ADDRESS=${VITE_WS_ADDRESS}
 
 WORKDIR /app
 COPY . .
@@ -42,6 +39,6 @@ CMD ["serve", "-s", "build", "-l", "3000"]
 
 
 
-# docker build -f dockerfile --build-arg REACT_APP_WS_ADDRESS=ws://localhost:80 -t midnightmachinations-client .
+# docker build -f dockerfile --build-arg VITE_WS_ADDRESS=ws://localhost:80 -t midnightmachinations-client .
 # docker run -p 3000:3000  midnightmachinations-client
 # wss://wss.midnightmachinations.net

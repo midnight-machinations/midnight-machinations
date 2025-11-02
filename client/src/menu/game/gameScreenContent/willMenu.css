@@ -1,0 +1,7 @@
+.will-menu .dead-players-separator {
+    border-top: .13rem solid var(--primary-border-color);
+    border-bottom: .13rem solid var(--primary-border-shadow-color);
+    border-left: .13rem solid transparent;
+    border-right: .13rem solid transparent;
+    background-color: var(--secondary-color);
+}

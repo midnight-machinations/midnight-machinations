@@ -1,19 +1,7 @@
 use rand::seq::IndexedRandom;
 use serde::Serialize;
-
-use crate::game::abilities_component::ability_id::AbilityID;
-use crate::game::components::night_visits::Visits;
-use crate::game::controllers::ControllerParametersMap;
-use crate::game::components::fragile_vest::FragileVests;
-use crate::game::components::player_component::PlayerComponent;
-use crate::game::event::on_midnight::{MidnightVariables, OnMidnightPriority};
-use crate::game::attack_power::DefensePower;
-use crate::game::phase::PhaseType;
-use crate::game::player::PlayerReference;
-
-use crate::game::Game;
+use crate::game::prelude::*;
 use crate::vec_set;
-use super::{common_role, ControllerID, GetClientAbilityState, Role, RoleStateTrait};
 
 #[derive(Clone, Debug)]
 pub struct Armorsmith {
@@ -42,9 +30,9 @@ pub(super) const DEFENSE: DefensePower = DefensePower::None;
 
 impl RoleStateTrait for Armorsmith {
     type ClientAbilityState = ClientRoleState;
-    fn on_midnight(mut self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut MidnightVariables, priority: OnMidnightPriority) {
+    fn on_midnight(mut self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut OnMidnightFold, priority: OnMidnightPriority) {
         if priority != OnMidnightPriority::Heal {return;}
-        let Some(target) = Visits::default_target(game, midnight_variables, actor_ref) else {return};
+        let Some(target) = Visits::default_target(midnight_variables, actor_ref, Role::Armorsmith) else {return};
         if self.open_shops_remaining == 0 {return}
 
         self.night_open_shop = true;
@@ -57,9 +45,9 @@ impl RoleStateTrait for Armorsmith {
         if let Some(player) = if visitors.contains(&target){
             Some(target)
         }else { 
-            visitors.choose(&mut rand::rng()).copied() 
+            visitors.choose(&mut game.rng).copied() 
         }{
-            PlayerComponent::<FragileVests>::add_defense_item_midnight(
+            FragileVestsComponent::add_defense_item_midnight(
                 game,
                 midnight_variables,
                 player,
@@ -83,7 +71,7 @@ impl RoleStateTrait for Armorsmith {
             .add_grayed_out_condition(self.open_shops_remaining == 0)
             .build_map()
     }
-    fn convert_selection_to_visits(self, game: &Game, actor_ref: PlayerReference) -> Vec<crate::game::visit::Visit> {
+    fn convert_selection_to_visits(self, game: &Game, actor_ref: PlayerReference) -> Vec<Visit> {
         common_role::convert_controller_selection_to_visits(
             game,
             actor_ref,
@@ -98,7 +86,7 @@ impl RoleStateTrait for Armorsmith {
                 ..self
             });
     }
-    fn new_state(game: &Game) -> Self {
+    fn new_state(game: &mut Game) -> Self {
         Self{
             open_shops_remaining: crate::game::role::common_role::standard_charges(game),
             ..Self::default()

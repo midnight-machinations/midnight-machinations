@@ -16,7 +16,7 @@ use crate::{
             insider_group::InsiderGroupID, judgement_controller::JudgementController, mafia::Mafia,
             nomination_controller::NominationController
         }, event::{
-            on_controller_changed::OnControllerChanged, Event
+            on_controller_changed::OnControllerChanged, AsInvokable as _, Invokable as _,
         }, player::PlayerReference, Game
     },
     vec_map::VecMap
@@ -89,7 +89,7 @@ impl Controllers{
         for id in controller_ids_to_remove{
             let old = game.controllers.controllers.remove(&id)
                 .map(|(_, c)|c); 
-            OnControllerChanged::new(id.clone(), old, None).invoke(game);
+            OnControllerChanged::new(id.clone(), old, None).as_invokable().invoke(game);
         }
 
         for (id, controller_parameters) in new_controller_parameters_map.controller_parameters().iter(){
@@ -113,7 +113,7 @@ impl Controllers{
 
             let new = Some(new);
             if old != new {
-                OnControllerChanged::new(id.clone(), old, new).invoke(game);
+                OnControllerChanged::new(id.clone(), old, new).as_invokable().invoke(game);
             }
         }
     }
@@ -143,7 +143,7 @@ impl Controllers{
             controller.selection = new_selection;
             let new = Some(controller.clone());
             if old != new {
-                OnControllerChanged::new(id, old, new).invoke(game);
+                OnControllerChanged::new(id, old, new).as_invokable().invoke(game);
             }
         }
 

@@ -4,8 +4,10 @@
     background-color: var(--primary-color);
     margin: .25rem;
     padding: .25rem;
-    border-radius: .5rem;
+    border-radius: 1rem;
     border: .13rem solid var(--primary-border-color);
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
 }
 .grave .note-area {
     background-color: var(--secondary-color);

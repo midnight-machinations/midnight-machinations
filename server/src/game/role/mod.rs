@@ -1,21 +1,7 @@
-#![allow(clippy::single_match, reason = "May add more cases for more priorities later")]
-
-use crate::game::abilities_component::ability_id::AbilityID;
-use crate::game::components::graves::grave_reference::GraveReference;
-use crate::game::event::on_ability_creation::{OnAbilityCreation, OnAbilityCreationFold, OnAbilityCreationPriority};
-use crate::game::event::on_ability_deletion::{OnAbilityDeletion, OnAbilityDeletionPriority};
-use crate::game::event::on_role_switch::OnRoleSwitch;
+// #![allow(clippy::single_match, reason = "May add more cases for more priorities later")]
 use crate::game::role_list_generation::criteria::GenerationCriterion;
 use crate::vec_set::{vec_set, VecSet};
-use crate::game::player::PlayerReference;
-use crate::game::visit::Visit;
-use crate::game::Game;
-use crate::game::Settings;
-use crate::game::ModifierID;
-use crate::game::modifiers::ModifierState;
-use crate::game::chat::PlayerChatGroupMap;
-use crate::game::phase::PhaseType;
-use crate::game::attack_power::DefensePower;
+use crate::game::prelude::*;
 
 use serde::{Serialize, Deserialize};
 
@@ -23,7 +9,7 @@ use super::components::win_condition::WinCondition;
 use super::{
     controllers::*, components::insider_group::InsiderGroupID,
     event::{
-        on_midnight::{MidnightVariables, OnMidnightPriority},
+        on_midnight::{OnMidnightFold, OnMidnightPriority},
         on_whisper::{OnWhisper, WhisperFold, WhisperPriority}
     },
 };
@@ -36,9 +22,9 @@ impl<T: RoleStateTrait> GetClientAbilityState<T> for T {
     fn get_client_ability_state(self, _game: &Game, _actor_ref: PlayerReference) -> T {self}
 }
 
-pub trait RoleStateTrait: Clone + std::fmt::Debug + Default + GetClientAbilityState<<Self as RoleStateTrait>::ClientAbilityState> {
+pub trait RoleStateTrait: Clone + std::fmt::Debug + Default + Into<RoleState> + GetClientAbilityState<<Self as RoleStateTrait>::ClientAbilityState> {
     type ClientAbilityState: Clone + std::fmt::Debug + Serialize;
-    fn on_midnight(self, _game: &mut Game, _id: &AbilityID, _actor_ref: PlayerReference, _midnight_variables: &mut MidnightVariables, _priority: OnMidnightPriority) {}
+    fn on_midnight(self, _game: &mut Game, _id: &AbilityID, _actor_ref: PlayerReference, _midnight_variables: &mut OnMidnightFold, _priority: OnMidnightPriority) {}
 
     fn controller_parameters_map(self, _game: &Game, _actor_ref: PlayerReference) -> ControllerParametersMap {
         ControllerParametersMap::default()
@@ -56,7 +42,7 @@ pub trait RoleStateTrait: Clone + std::fmt::Debug + Default + GetClientAbilitySt
     fn receive_player_chat_group_map(self, _game: &Game, _actor_ref: PlayerReference) -> PlayerChatGroupMap {
         PlayerChatGroupMap::new()
     }
-    fn new_state(_game: &Game) -> Self {
+    fn new_state(_game: &mut Game) -> Self {
         Self::default()
     }
     fn default_revealed_groups(self) -> VecSet<InsiderGroupID> {
@@ -74,12 +60,15 @@ pub trait RoleStateTrait: Clone + std::fmt::Debug + Default + GetClientAbilitySt
     fn on_any_death(self, _game: &mut Game, _actor_ref: PlayerReference, _dead_player_ref: PlayerReference) {}
     fn on_grave_added(self, _game: &mut Game, _actor_ref: PlayerReference, _grave: GraveReference) {}
     fn on_conceal_role(self, _game: &mut Game, _actor_ref: PlayerReference, _player: PlayerReference, _concealed_player: PlayerReference) {}
-    fn on_player_roleblocked(self, _game: &mut Game, midnight_variables: &mut MidnightVariables, actor_ref: PlayerReference, player: PlayerReference, _invisible: bool) {
-        common_role::on_player_roleblocked(midnight_variables, actor_ref, player);
+    
+    fn on_player_roleblocked(self, _game: &mut Game, midnight_variables: &mut OnMidnightFold, actor_ref: PlayerReference, player: PlayerReference, _invisible: bool) {
+        common_role::on_player_roleblocked(self.into().role(), midnight_variables, actor_ref, player);
     }
-    fn on_visit_wardblocked(self, _game: &mut Game, midnight_variables: &mut MidnightVariables, actor_ref: PlayerReference, visit: Visit) {
-        common_role::on_visit_wardblocked(midnight_variables, actor_ref, visit);
+    fn on_visit_wardblocked(self, _game: &mut Game, midnight_variables: &mut OnMidnightFold, actor_ref: PlayerReference, visit: Visit) {
+        common_role::on_visit_wardblocked(self.into().role(), midnight_variables, actor_ref, visit);
     }
+    fn on_player_possessed(self, _game: &mut Game, _id: &AbilityID, _event: &OnPlayerPossessed, _fold: &mut OnMidnightFold, _priority: ()) {}
+   
     fn on_whisper(self, _game: &mut Game, _actor_ref: PlayerReference, _event: &OnWhisper, _fold: &mut WhisperFold, _priority: WhisperPriority) {}
 
     fn role_list_generation_criteria() -> Vec<GenerationCriterion> {
@@ -120,7 +109,6 @@ macros::roles! {
 
     Escort : escort,
     Medium : medium,
-    Retributionist : retributionist,
     Reporter : reporter,
     Mayor : mayor,
     Transporter : transporter,
@@ -133,18 +121,19 @@ macros::roles! {
     Godfather : godfather,
     Counterfeiter : counterfeiter,
     Impostor : impostor,
+    Necromancer : necromancer,
     Recruiter : recruiter,
     Mafioso : mafioso,
     MafiaKillingWildcard : mafia_killing_wildcard,
 
     Goon : made_man,
     Consort : consort,
+    Maverick : maverick,
     
     Hypnotist : hypnotist,
     Blackmailer : blackmailer,
     Cerenovous : cerenovous,
     Informant: informant,
-    Necromancer : necromancer,
     Mortician : mortician,
     Framer : framer,
     Disguiser : disguiser,
@@ -157,7 +146,6 @@ macros::roles! {
     Jester : jester,
     Revolutionary : revolutionary,
     Politician : politician,
-    Doomsayer : doomsayer,
     Mercenary : mercenary,
     Wildcard : wild_card,
     TrueWildcard : true_wildcard,
@@ -182,6 +170,7 @@ macros::roles! {
     Kira : kira,
     Warden : warden,
     Yer : yer,
+    Juggernaut : juggernaut,
     FiendsWildcard : fiends_wildcard,
     SerialKiller : serial_killer,
 
@@ -214,7 +203,7 @@ mod macros {
                         $(Self::$name => RoleState::$name($file::$name::default())),*
                     }
                 }
-                pub fn new_state(&self, game: &Game) -> RoleState {
+                pub fn new_state(&self, game: &mut Game) -> RoleState {
                     match self {
                         $(Self::$name => RoleState::$name($file::$name::new_state(game))),*
                     }
@@ -259,17 +248,22 @@ mod macros {
                     }
                 }
                 
-                pub fn on_player_roleblocked(self, game: &mut Game, midnight_variables: &mut MidnightVariables, actor_ref: PlayerReference, player: PlayerReference, invisible: bool){
+                pub fn on_player_roleblocked(self, game: &mut Game, midnight_variables: &mut OnMidnightFold, actor_ref: PlayerReference, player: PlayerReference, invisible: bool){
                     match self {
                         $(Self::$name(role_struct) => role_struct.on_player_roleblocked(game, midnight_variables, actor_ref, player, invisible)),*
                     }
                 }
-                pub fn on_visit_wardblocked(self, game: &mut Game, midnight_variables: &mut MidnightVariables, actor_ref: PlayerReference, visit: Visit) {
+                pub fn on_visit_wardblocked(self, game: &mut Game, midnight_variables: &mut OnMidnightFold, actor_ref: PlayerReference, visit: Visit) {
                     match self {
                         $(Self::$name(role_struct) => role_struct.on_visit_wardblocked(game, midnight_variables, actor_ref, visit)),*
                     }
                 }
-                pub fn on_midnight(self, game: &mut Game, id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut MidnightVariables, priority: OnMidnightPriority){
+                pub fn on_player_possessed(self, game: &mut Game, id: &AbilityID, event: &OnPlayerPossessed, fold: &mut OnMidnightFold, priority: ()){
+                    match self {
+                        $(Self::$name(role_struct) => role_struct.on_player_possessed(game, id, event, fold, priority)),*
+                    }
+                }
+                pub fn on_midnight(self, game: &mut Game, id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut OnMidnightFold, priority: OnMidnightPriority){
                     match self {
                         $(Self::$name(role_struct) => role_struct.on_midnight(game, id, actor_ref, midnight_variables, priority)),*
                     }
@@ -370,15 +364,4 @@ mod macros {
         }
     }
     pub(super) use roles;
-}
-impl Role{
-    pub fn possession_immune(&self)->bool{
-        matches!(self, 
-            | Role::Bouncer
-            | Role::Veteran | Role::Medium
-            | Role::Transporter | Role::Retributionist
-            | Role::Witch | Role::Doomsayer | Role::Scarecrow | Role::Warper | Role::Porter
-            | Role::Necromancer 
-        )
-    }
 }

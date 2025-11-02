@@ -22,6 +22,9 @@ pub(super) mod on_remove_insider;
 pub(super) mod on_controller_changed;
 pub(super) mod on_ability_creation;
 pub(super) mod on_ability_edit;
+pub(super) mod on_player_possessed;
+
+pub mod prelude;
 
 pub trait EventPriority: Sized + Copy {
     fn values() -> Vec<Self>;
@@ -33,27 +36,29 @@ pub trait EventPriority: Sized + Copy {
 /// // Event listener type
 /// // pub type EventListenerFunction<E: Event> = fn(&mut Game, &E, &mut E::FoldValue, E::Priority);
 /// 
-pub trait Event: Sized {
+pub trait EventData: Sized {
     type FoldValue;
     type Priority: EventPriority;
 
     fn listeners() -> Vec<EventListenerFunction<Self>>;
-    fn initial_fold_value(&self, game: &Game) -> Self::FoldValue;
-    fn invoke(self, game: &mut Game) -> Self::FoldValue {
-        let mut fold = self.initial_fold_value(game);
-
-        for priority in Self::Priority::values() {
-            for listener in Self::listeners() {
-                listener(game, &self, &mut fold, priority);
+}
+pub trait Invokable{
+    fn invoke(self, game: &mut Game)->Self;
+}
+impl<E: EventData> Invokable for (&E, &mut E::FoldValue) {
+    fn invoke(self, game: &mut Game) -> Self {
+        for priority in E::Priority::values() {
+            for listener in E::listeners() {
+                listener(game, self.0, self.1, priority);
             }
         }
-
-        fold
+        self
     }
 }
 
+
 #[expect(type_alias_bounds, reason="This is fine")]
-pub type EventListenerFunction<E: Event> = fn(&mut Game, &E, &mut E::FoldValue, E::Priority);
+pub type EventListenerFunction<E: EventData> = fn(&mut Game, &E, &mut E::FoldValue, E::Priority);
 
 impl EventPriority for () {
     fn values() -> Vec<Self> {vec![()]}
@@ -79,4 +84,17 @@ macro_rules! event_priority {
             }
         }
     };
+}
+
+
+
+
+pub trait AsInvokable<E: EventData>{
+    fn as_invokable(&mut self) -> (&E, &mut E::FoldValue);
+}
+impl<E: EventData> AsInvokable<E> for (E, E::FoldValue) {
+    fn as_invokable(&mut self) -> (&E, &mut E::FoldValue) {
+        let (ref e, ref mut f) = *self;
+        (e, f)
+    }
 }

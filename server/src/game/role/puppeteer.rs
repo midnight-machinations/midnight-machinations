@@ -1,22 +1,5 @@
 use serde::Serialize;
-
-use crate::game::abilities_component::ability_id::AbilityID;
-use crate::game::components::night_visits::Visits;
-use crate::game::controllers::{AvailableIntegerSelection, AvailablePlayerListSelection};
-use crate::game::attack_power::AttackPower;
-use crate::game::components::detained::Detained;
-use crate::game::components::graves::grave::GraveKiller;
-use crate::game::event::on_midnight::{MidnightVariables, OnMidnightPriority};
-use crate::game::{
-    attack_power::DefensePower,
-    components::puppeteer_marionette::PuppeteerMarionette
-};
-use crate::game::player::PlayerReference;
-
-use crate::game::visit::Visit;
-use crate::game::Game;
-
-use super::{ControllerID, ControllerParametersMap, IntegerSelection, Role, RoleStateTrait};
+use crate::game::prelude::*;
 
 #[derive(Clone, Debug, Serialize)]
 #[serde(rename_all = "camelCase")]
@@ -35,17 +18,17 @@ pub(super) const DEFENSE: DefensePower = DefensePower::Armored;
 
 impl RoleStateTrait for Puppeteer {
     type ClientAbilityState = Puppeteer;
-    fn new_state(game: &Game) -> Self {
+    fn new_state(game: &mut Game) -> Self {
         Self{
             marionettes_remaining: crate::game::role::common_role::standard_charges(game),
         }
     }
-    fn on_midnight(mut self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut MidnightVariables, priority: OnMidnightPriority) {
+    fn on_midnight(mut self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut OnMidnightFold, priority: OnMidnightPriority) {
 
         if priority != OnMidnightPriority::Kill {return;}
         if game.day_number() <= 1 {return;}
 
-        if let Some(visit) = Visits::default_visit(game, midnight_variables, actor_ref) {
+        if let Some(visit) = Visits::default_visit(midnight_variables, actor_ref, Role::Puppeteer) {
             let target = visit.target;
             
             if 

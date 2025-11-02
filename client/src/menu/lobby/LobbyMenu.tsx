@@ -23,6 +23,7 @@ import LobbyNamePane from "./LobbyNamePane";
 import { UnsafeString } from "../../game/gameState.d";
 import { encodeString } from "../../components/ChatMessage";
 import ListMap from "../../ListMap";
+import RandomSeedSelector from "../../components/gameModeSettings/RandomSeedSelector";
 
 export default function LobbyMenu(): ReactElement {
     const isSpectator = useLobbyState(
@@ -145,6 +146,10 @@ function LobbyMenuSettings(props: Readonly<{
         <ModifiersSelector
             disabled={!props.isHost}
             setModifiers={modifiers => GAME_MANAGER.sendModifierSettingsPacket(new ListMap(modifiers))}
+        />
+        <RandomSeedSelector
+            disabled={!props.isHost}
+            onChange={randomSeed => GAME_MANAGER.sendSetRandomSeedPacket(randomSeed)}
         />
         <PhaseTimesSelector 
             disabled={!props.isHost}

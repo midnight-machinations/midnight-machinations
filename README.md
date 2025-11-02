@@ -9,14 +9,25 @@ cd mafia
 ```
 From here it's recommended to split terminals (If you're using VSCode), or open up a second terminal - one for client and one for server.
 ## Client setup
-Enter the client directory and install the required dependencies using [npm](https://www.npmjs.com/).
+The client uses [Vite](https://vite.dev/) as the build tool and [pnpm](https://pnpm.io/) for package management (pnpm offers better performance and more efficient disk space usage compared to npm).
+
+First, enable pnpm via corepack:
+```bash
+corepack enable
+```
+
+Then enter the client directory, install dependencies, and start the dev server:
 ```bash
 cd client
-npm install
+pnpm install
+pnpm dev
 ```
-You can now start the client frontend using npm. If you're using WSL, you need to execute with `sudo`
+
+Alternatively, you can use `pnpm start` which is an alias for `pnpm dev`.
+
+To build for production:
 ```bash
-npm start
+pnpm build
 ```
 ## Server setup
 ### Install Rust

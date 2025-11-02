@@ -5,7 +5,6 @@ pub mod phase;
 pub mod player;
 pub mod chat;
 pub mod role;
-pub mod visit;
 pub mod verdict;
 pub mod role_list;
 pub mod role_list_generation;
@@ -24,6 +23,7 @@ pub mod room_state;
 pub mod new_game;
 pub mod abilities_component;
 pub mod abilities;
+pub mod prelude;
 
 use std::collections::VecDeque;
 use std::time::Instant;
@@ -50,6 +50,7 @@ use components::silenced::Silenced;
 use components::synopsis::SynopsisTracker;
 use components::tags::Tags;
 use components::verdicts_today::VerdictsToday;
+use rand::rngs::SmallRng;
 use serde::Serialize;
 use crate::client_connection::ClientConnection;
 use crate::game::chat::ChatComponent;
@@ -106,6 +107,7 @@ pub struct Game {
     
     /// Whether the game is still updating phase times
     pub ticking: bool,
+    pub rng: SmallRng,
     
     
     //components with data
@@ -186,7 +188,7 @@ impl Game {
         (guilty, innocent)
     }
     
-    fn create_voted_player_map(&self) -> VecMap<PlayerReference, u8> {
+    fn create_nominated_player_map(&self) -> VecMap<PlayerReference, u8> {
         let mut voted_player_votes: VecMap<PlayerReference, u8> = VecMap::new();
 
         for player in PlayerReference::all_players(self){
@@ -215,7 +217,7 @@ impl Game {
 
         let &PhaseState::Nomination { trials_left, .. } = self.current_phase() else {return None};
 
-        let voted_player_votes = self.create_voted_player_map();
+        let voted_player_votes = self.create_nominated_player_map();
         self.send_player_votes();
 
         let mut voted_player = None;
@@ -414,7 +416,7 @@ impl Game {
             ToClientPacket::PlayerVotes{
                 votes_for_player: 
                     if !HiddenNominationVotes::nomination_votes_are_hidden(self) {
-                        self.create_voted_player_map()
+                        self.create_nominated_player_map()
                     }else{
                         VecMap::new()
                     }

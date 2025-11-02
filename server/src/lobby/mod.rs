@@ -5,7 +5,7 @@ use std::{collections::VecDeque, time::{Duration, Instant}};
 
 use lobby_client::{LobbyClient, LobbyClientType, Ready};
 
-use crate::{client_connection::ClientConnection, game::{role_list::RoleOutline, settings::Settings}, packet::{RoomPreviewData, RejectJoinReason, ToClientPacket}, room::{name_validation, JoinRoomClientResult, RemoveRoomClientResult, RoomClientID, RoomState, RoomTickResult}, vec_map::VecMap, websocket_connections::connection::ClientSender};
+use crate::{client_connection::ClientConnection, game::{role_list::RoleOutline, settings::Settings}, packet::{RejectJoinReason, RoomPreviewData, ToClientPacket}, room::{name_validation, JoinRoomClientResult, RemoveRoomClientResult, RoomClientID, RoomState, RoomTickResult}, vec_map::VecMap, websocket_connections::connection::ClientSender};
 
 pub struct Lobby {
     pub name: String,
@@ -71,6 +71,7 @@ impl Lobby {
     fn send_settings(&self, send: &ClientSender) {
         send.send(ToClientPacket::RoomName { name: self.name.clone() });
         send.send(ToClientPacket::PhaseTimes { phase_time_settings: self.settings.phase_times.clone() });
+        send.send(ToClientPacket::RandomSeed { random_seed: self.settings.random_seed });
         send.send(ToClientPacket::RoleList { role_list: self.settings.role_list.clone() });
         send.send(ToClientPacket::EnabledRoles { roles: self.settings.enabled_roles.clone().into_iter().collect() });
         send.send(ToClientPacket::ModifierSettings { modifier_settings: self.settings.modifiers.clone() });

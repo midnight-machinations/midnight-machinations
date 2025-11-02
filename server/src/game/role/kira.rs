@@ -1,17 +1,7 @@
 use kira_selection::{AvailableKiraSelection, KiraSelection};
 use serde::{Serialize, Deserialize};
-
-use crate::game::attack_power::AttackPower;
-use crate::game::event::on_midnight::{MidnightVariables, OnMidnightPriority};
-use crate::game::{attack_power::DefensePower, chat::ChatMessageVariant};
-use crate::game::components::graves::grave::GraveKiller;
-use crate::game::player::PlayerReference;
-
-use crate::game::abilities_component::ability_id::AbilityID;
-use crate::game::Game;
+use crate::game::prelude::*;
 use crate::vec_map::VecMap;
-use crate::game::controllers::*;
-use super::{Role, RoleStateTrait};
 
 #[derive(Clone, Debug, Serialize, Default)]
 pub struct Kira;
@@ -19,97 +9,22 @@ pub struct Kira;
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Default, PartialOrd, Ord)]
 #[serde(rename_all = "camelCase")]
 pub enum KiraGuess{
-    None,
-    #[default] NonTown,
-
-    Jailor, Villager,
-    Detective, Lookout, Tracker, Psychic, Philosopher, Gossip, Auditor, Snoop, Spy, TallyClerk,
-    Doctor, Bodyguard, Cop, Bouncer, Engineer, Armorsmith, Steward,
-    Vigilante, Veteran, Marksman, Deputy, Rabblerouser,
-
-    Escort, Courtesan,
-    Medium, Retributionist, 
-    Reporter, 
-    Mayor, Nepotist,
-    Transporter, Porter, 
-    Polymath
+    #[default] None,
+    NonTown,
+    #[serde(untagged)]
+    Role(Role),
 }
+//[[1,"none"],[0,"villager"]]
 impl KiraGuess{
-    fn convert_to_guess(role: Role)->Option<KiraGuess>{
-        match role {
-            Role::Jailor => Some(Self::Jailor),
-            Role::Villager => Some(Self::Villager),
-
-            Role::Detective => Some(Self::Detective),
-            Role::Lookout => Some(Self::Lookout),
-            Role::Tracker => Some(Self::Tracker),
-            Role::Philosopher => Some(Self::Philosopher),
-            Role::Psychic => Some(Self::Psychic),
-            Role::Auditor => Some(Self::Auditor),
-            Role::Snoop => Some(Self::Snoop),
-            Role::Gossip => Some(Self::Gossip),
-            Role::Spy => Some(Self::Spy),
-            Role::TallyClerk => Some(Self::TallyClerk),
-
-            Role::Doctor => Some(Self::Doctor),
-            Role::Bodyguard => Some(Self::Bodyguard),
-            Role::Cop => Some(Self::Cop),
-            Role::Bouncer => Some(Self::Bouncer),
-            Role::Engineer => Some(Self::Engineer),
-            Role::Armorsmith => Some(Self::Armorsmith),
-            Role::Steward => Some(Self::Steward),
-
-            Role::Vigilante => Some(Self::Vigilante),
-            Role::Veteran => Some(Self::Veteran),
-            Role::Marksman => Some(Self::Marksman),
-            Role::Deputy => Some(Self::Deputy),
-            Role::Rabblerouser => Some(Self::Rabblerouser),
-
-            Role::Escort => Some(Self::Escort),
-            Role::Courtesan => Some(Self::Courtesan),
-            Role::Medium => Some(Self::Medium),
-            Role::Retributionist => Some(Self::Retributionist),
-            Role::Reporter => Some(Self::Reporter),
-            Role::Mayor => Some(Self::Mayor),
-            Role::Nepotist => Some(Self::Nepotist),
-            Role::Transporter => Some(Self::Transporter),
-            Role::Porter => Some(Self::Porter),
-            Role::Polymath => Some(Self::Polymath),
-
-            //Mafia
-            Role::Godfather | Role::Mafioso |
-            Role::Counterfeiter | Role::Recruiter | Role::Impostor | Role::MafiaKillingWildcard |
-            Role::Goon |
-            Role::Hypnotist | Role::Blackmailer | Role::Cerenovous | Role::Informant | 
-            Role::Necromancer | Role::Consort |
-            Role::Mortician | Role::Framer | Role::Forger | 
-            Role::Disguiser | Role::Reeducator |
-            Role::Ambusher | Role::MafiaSupportWildcard => Some(Self::NonTown),
-
-            //Neutral
-            Role::Jester | Role::Revolutionary | Role::Politician |
-            Role::Doomsayer | Role::Mercenary |
-            Role::Witch | Role::Scarecrow | Role::Warper | Role::Kidnapper | Role::Pawn | Role::Tailor | Role::Chronokaiser |
-            Role::Wildcard | Role::TrueWildcard | Role::Drunk | Role::Spiral |
-            Role::SantaClaus | Role::Krampus => Some(Self::NonTown),
-            Role::Martyr => None,
-
-            //Fiends
-            Role::Arsonist | Role::Werewolf | 
-            Role::Ojo | Role::Puppeteer | Role::Pyrolisk | Role::Kira | 
-            Role::SerialKiller | Role::Warden | Role::Yer |
-            Role::FiendsWildcard => Some(Self::NonTown),
-            
-            //Cult
-            Role::Apostle | Role::Disciple | Role::Zealot => Some(Self::NonTown),
+    fn convert_to_guess(role: Role)->KiraGuess{
+        if RoleSet::Town.get_roles().contains(&role) {
+            KiraGuess::Role(role)
+        } else {
+            KiraGuess::NonTown
         }
     }
     fn guess_matches_role(&self, role: Role)->bool{
-        if let Some(guess) = Self::convert_to_guess(role) {
-            *self == guess
-        }else{
-            false
-        }
+        *self == Self::convert_to_guess(role)
     }
     fn is_in_game(&self, game: &Game)->bool{
         PlayerReference::all_players(game).any(|player_ref| {
@@ -171,7 +86,7 @@ pub(super) const DEFENSE: DefensePower = DefensePower::Armored;
 
 impl RoleStateTrait for Kira {
     type ClientAbilityState = Kira;
-    fn on_midnight(self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut MidnightVariables, priority: OnMidnightPriority) {
+    fn on_midnight(self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut OnMidnightFold, priority: OnMidnightPriority) {
         if actor_ref.night_blocked(midnight_variables) {return;}
         if actor_ref.ability_deactivated_from_death(game) {return;}
 
@@ -181,12 +96,20 @@ impl RoleStateTrait for Kira {
         let result = KiraResult::new(selection.clone(), game);
 
         match priority {
-            OnMidnightPriority::Kill if result.all_correct() => {
-                if game.day_number() == 1 {return};
+            OnMidnightPriority::Kill => {
+                if !result.all_correct() {return}
+                if game.day_number() == 1 {return}
                 
                 for (player, (guess, result)) in result.guesses.iter(){
                     if player.alive(game) && *result == KiraGuessResult::Correct && *guess != KiraGuess::None {
-                        player.try_night_kill_single_attacker(actor_ref, game, midnight_variables, GraveKiller::Role(super::Role::Kira), AttackPower::ArmorPiercing, true);
+                        player.try_night_kill_single_attacker(
+                            actor_ref,
+                            game,
+                            midnight_variables,
+                            GraveKiller::Role(super::Role::Kira),
+                            AttackPower::ArmorPiercing,
+                            true
+                        );
                     }
                 }
             },

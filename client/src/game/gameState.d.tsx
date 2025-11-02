@@ -32,6 +32,7 @@ export type LobbyState = {
     myId: number | null,
 
     roleList: RoleList,
+    randomSeed: number | null,
     phaseTimes: PhaseTimes,
     enabledRoles: Role[],
     modifierSettings: ListMap<ModifierID, ModifierState>,
@@ -87,6 +88,7 @@ type GameState = {
     fastForward: FastForwardSetting,
     
     roleList: RoleList,
+    randomSeed: number | null,
     enabledRoles: Role[],
     phaseTimes: PhaseTimes,
     modifierSettings: ListMap<ModifierID, ModifierState>,
@@ -107,7 +109,8 @@ export type PlayerGameState = {
 
     myIndex: PlayerIndex,
     
-    roleState: RoleState,
+    myRole: Role,
+    roleStates: ListMap<Role, RoleState>,
 
     notes: UnsafeString[],
     crossedOutOutlines: number[],
@@ -129,9 +132,9 @@ export type LobbyClientID = number;
 export type Verdict = "innocent"|"guilty"|"abstain";
 export const PHASES = ["obituary", "discussion", "nomination", "adjournment", "testimony", "judgement", "finalWords", "briefing", "dusk", "night", "recess"] as const;
 export type PhaseType = (typeof PHASES)[number];
-export type PhaseState = {type: "briefing"} | {type: "dusk"} | {type: "night"} | {type: "obituary"} | {type: "adjournment"} | {type: "discussion"} | 
+export type PhaseState = {type: "briefing"} | {type: "dusk"} | {type: "night"} | {type: "obituary"} | {type: "discussion"} | 
 {
-    type: "nomination",
+    type: "nomination" | "adjournment",
     trialsLeft: number
 } | {
     type: "testimony",
@@ -173,6 +176,24 @@ export type Player = {
     playerTags: Tag[]
 
     toString(): UnsafeString
+}
+
+export type VisitTag = 
+    {type: "role", role: Role, id: number} |
+    {type: "syndicateGun"} | 
+    {type: "syndicateBackupAttack"} |
+    {type: "appeared"}
+
+export function translateVisitTag(visitTag: VisitTag): string{
+    switch(visitTag.type){
+        case "role":
+            return translate(`role.${visitTag.role}.name`);
+        case "syndicateGun":
+        case "syndicateBackupAttack":
+            return translate("visitTag.syndicateGun.name");
+        case "appeared":
+            return translate("visitTag.appeared.name");
+    }
 }
 
 // Not actually unknown, but this prevents use without sanitization

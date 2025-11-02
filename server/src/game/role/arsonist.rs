@@ -1,21 +1,6 @@
 use serde::Serialize;
-
-use crate::game::abilities_component::ability_id::AbilityID;
-use crate::game::controllers::AvailableBooleanSelection;
-use crate::game::event::on_ability_creation::{OnAbilityCreation, OnAbilityCreationFold, OnAbilityCreationPriority};
-use crate::game::event::on_ability_deletion::{OnAbilityDeletion, OnAbilityDeletionPriority};
-use crate::game::event::on_midnight::{MidnightVariables, OnMidnightPriority};
-use crate::game::attack_power::AttackPower;
-use crate::game::components::tags::{TagSetID, Tags};
-use crate::game::components::graves::grave::GraveKiller;
-use crate::game::attack_power::DefensePower;
-use crate::game::player::PlayerReference;
-
-use crate::game::visit::Visit;
-
+use crate::game::prelude::*;
 use crate::game::Game;
-use super::{ControllerID, ControllerParametersMap, Role, RoleStateTrait};
-
 
 #[derive(Clone, Debug, Serialize, Default)]
 pub struct Arsonist;
@@ -26,13 +11,11 @@ pub(super) const DEFENSE: DefensePower = DefensePower::Armored;
 
 impl RoleStateTrait for Arsonist {
     type ClientAbilityState = Arsonist;
-    fn on_midnight(self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut MidnightVariables, priority: OnMidnightPriority) {
+    fn on_midnight(self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut OnMidnightFold, priority: OnMidnightPriority) {
         match priority {
             OnMidnightPriority::Deception => {
                 //douse target
-                let actor_visits = actor_ref.role_night_visits_cloned(midnight_variables);
-                if let Some(visit) = actor_visits.first(){
-                    let target_ref = visit.target;
+                if let Some(target_ref) = Visits::default_target(midnight_variables, actor_ref, Role::Arsonist){
                     Self::douse(game, target_ref);
                 }
                 
@@ -99,15 +82,15 @@ impl RoleStateTrait for Arsonist {
 }
 impl Arsonist{
     fn douse(game: &mut Game, player: PlayerReference){
-        if player.role(game) == Role::Arsonist {
+        if (AbilityID::Role { role: Role::Arsonist, player }).exists(game) {
             return
         }
 
         Tags::add_tag(game, TagSetID::ArsonistDoused, player);
     }
-    pub fn ignite(game: &mut Game, igniter: PlayerReference, midnight_variables: &mut MidnightVariables) {
+    pub fn ignite(game: &mut Game, igniter: PlayerReference, midnight_variables: &mut OnMidnightFold) {
         for player in Tags::tagged(game, TagSetID::ArsonistDoused) {
-            if player.role(game) == Role::Arsonist {continue;}
+            if (AbilityID::Role { role: Role::Arsonist, player }).exists(game) {continue;}
             if !player.alive(game) {continue;}
             player.try_night_kill_single_attacker(
                 igniter,
@@ -123,7 +106,7 @@ impl Arsonist{
         Tags::has_tag(game, TagSetID::ArsonistDoused, player) &&
         PlayerReference::all_players(game).any(|player_ref|
             !player_ref.ability_deactivated_from_death(game) &&
-            player_ref.role(game) == Role::Arsonist
+            AbilityID::Role { role: Role::Arsonist, player: player_ref }.exists(game)
         )
     }
     fn chose_to_ignite(game: &Game, actor: PlayerReference)->bool{

@@ -1,9 +1,9 @@
-div.draggable {
+.draggable {
     cursor: grab;
     touch-action: none;
 }
 
-div.draggable.dragged {
+.dragged {
     opacity: 40%;
     border-style: dashed;
 }

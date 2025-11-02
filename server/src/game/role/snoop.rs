@@ -1,18 +1,5 @@
 use serde::Serialize;
-
-use crate::game::components::aura::Aura;
-use crate::game::components::confused::Confused;
-use crate::game::components::night_visits::{NightVisitsIterator, Visits};
-use crate::game::event::on_midnight::{MidnightVariables, OnMidnightPriority};
-use crate::game::{attack_power::DefensePower, chat::ChatMessageVariant};
-use crate::game::game_conclusion::GameConclusion;
-use crate::game::player::PlayerReference;
-
-use crate::game::abilities_component::ability_id::AbilityID;
-use crate::game::visit::Visit;
-use crate::game::Game;
-
-use super::{ControllerID, ControllerParametersMap, Role, RoleStateTrait};
+use crate::game::prelude::*;
 
 
 pub(super) const MAXIMUM_COUNT: Option<u8> = None;
@@ -23,12 +10,12 @@ pub struct Snoop;
 
 impl RoleStateTrait for Snoop {
     type ClientAbilityState = Snoop;
-    fn on_midnight(self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut MidnightVariables, priority: OnMidnightPriority) {
+    fn on_midnight(self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut OnMidnightFold, priority: OnMidnightPriority) {
         if priority != OnMidnightPriority::Investigative {return;}
 
         let buddy = ControllerID::role(actor_ref, Role::Snoop, 1).get_role_list_selection_first(game).copied();
 
-        if let Some(visit) = Visits::default_visit(game, midnight_variables, actor_ref) {
+        if let Some(visit) = Visits::default_visit(midnight_variables, actor_ref, Role::Snoop) {
 
             let townie = if Confused::is_confused(game, actor_ref) {
                 Snoop::confused_result()
@@ -69,7 +56,7 @@ impl RoleStateTrait for Snoop {
 
 impl Snoop{
     /// Is a town loyalist
-    fn result(game: &Game, midnight_variables: &MidnightVariables, buddy: Option<Role>, visit: Visit)->bool{
+    fn result(game: &Game, midnight_variables: &OnMidnightFold, buddy: Option<Role>, visit: Visit)->bool{
         visit.target.win_condition(game).is_loyalist_for(GameConclusion::Town) &&
         !Aura::suspicious(game, midnight_variables, visit.target) &&
         !Self::too_many_visitors(game, midnight_variables, buddy, visit)
@@ -77,7 +64,7 @@ impl Snoop{
     fn confused_result()->bool{
         false
     }
-    fn too_many_visitors(game: &Game, midnight_variables: &MidnightVariables, buddy: Option<Role>, visit: Visit)->bool{
+    fn too_many_visitors(game: &Game, midnight_variables: &OnMidnightFold, buddy: Option<Role>, visit: Visit)->bool{
         Visits::into_iter(midnight_variables)
             .with_direct()
             .with_target(visit.visitor)

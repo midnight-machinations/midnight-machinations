@@ -72,7 +72,8 @@ export default function WikiArticle(props: {
                         {"### "+translate("wiki.article.role.chatMessages")+"\n"}
                     </WikiStyledText>
                     {chatMessages.map((msgvariant, i)=>
-                        <ChatElement key={i} 
+                        <ChatElement key={i}
+                            canCopyPaste={true}
                             message={
                                 {
                                     variant: msgvariant,

@@ -1,3 +1,6 @@
+import enUsJson from "../resources/lang/en_us.json";
+import brokenKeyboardJson from "../resources/lang/broken_keyboard.json";
+import dyslexicJson from "../resources/lang/dyslexic.json";
 
 export let langMap: ReadonlyMap<string, string>;
 export let langText: string;
@@ -5,10 +8,17 @@ export let langJson: any;
 
 export const LANGUAGES = ["en_us", "broken_keyboard", "dyslexic"] as const;
 export type Language = typeof LANGUAGES[number]
+
+const LANGUAGE_IMPORTS: Record<Language, any> = {
+    "en_us": enUsJson,
+    "broken_keyboard": brokenKeyboardJson,
+    "dyslexic": dyslexicJson
+};
+
 switchLanguage("en_us");
 
 export function switchLanguage(language: Language) {
-    langJson = require("../resources/lang/" + language + ".json");
+    langJson = LANGUAGE_IMPORTS[language];
     langMap = new Map<string, string>(Object.entries(langJson));
     langText = JSON.stringify(langJson, null, 1);
 }
@@ -50,6 +60,6 @@ export function translateChecked(langKey: string, ...valuesList: (string | numbe
 }
 
 export function languageName(language: Language): string {
-    const json = require("../resources/lang/" + language + ".json");
+    const json = LANGUAGE_IMPORTS[language];
     return json.language;
 }

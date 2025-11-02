@@ -1,5 +1,48 @@
 # GitHub Copilot Instructions
 
+## Project Overview
+
+This is Midnight Machinations (formerly Mafia), a multiplayer social deduction game built with:
+- **Backend**: Rust (server-side game logic, WebSocket server)
+- **Frontend**: TypeScript/React with Vite (game client UI)
+- **Package Management**: pnpm for client, Cargo for server
+
+### Project Structure
+
+```
+.
+├── client/          # Frontend React/TypeScript application
+│   ├── src/         # Source code
+│   └── public/      # Static assets
+├── server/          # Backend Rust application
+│   ├── src/         # Source code
+│   └── tests/       # Test files
+└── generate/        # Code generation utilities
+```
+
+## Build, Test, and Lint Commands
+
+### Client (Frontend)
+
+```bash
+cd client
+corepack enable              # Enable pnpm
+pnpm install                 # Install dependencies
+pnpm dev                     # Start development server
+pnpm build                   # Build for production
+pnpm test --if-present       # Run tests if they exist
+```
+
+### Server (Backend)
+
+```bash
+cd server
+cargo build --verbose        # Build the server
+cargo test --verbose         # Run tests
+cargo clippy --verbose       # Run linter
+cargo audit                  # Check for security vulnerabilities
+```
+
 ## Code Generation Guidelines
 
 - Think through your solutions step by step.
@@ -7,6 +50,10 @@
 - When you ask a clarifying question, allow me to respond before continuing.
 - Check for errors whenever you finish making code edits. If there are any, continue to iterate until you've resolved them.
 - Don't assume the contents of other files. Check exports manually if you need to use something from another file.
+- Always run the appropriate linter after making changes:
+  - For Rust: `cargo clippy`
+  - For TypeScript/React: run build to check for type errors
+- Test your changes using the test commands above before finalizing
 
 ## Adding New Roles
 
@@ -44,7 +91,6 @@
   - If no information is required, skip this step.
   - If only a small amount of information is required, create a small role-specific menu by editing the render function in `client/src/menu/game/gameScreenContent/AbilityMenu/RoleSpecific.tsx`.
   - If a large amount of information is required, create a large role-specific menu by creating a new file in `client/src/menu/game/gameScreenContent/AbilityMenu/RoleSpecificMenus/`.
-* Add the role to the Doomsayer menu in `client/src/menu/game/gameScreenContent/AbilityMenu/RoleSpecificMenus/LargeDoomsayerMenu.tsx`
 
 ## Creating new Messages
 

@@ -1,5 +1,8 @@
 use crate::{
-    game::{components::fast_forward::FastForwardComponent, event::Event}, lobby::{lobby_client::LobbyClient, Lobby}, log, packet::{ToClientPacket, ToServerPacket}, room::{RemoveRoomClientResult, RoomClientID, RoomState}, vec_map::VecMap, websocket_connections::connection::ClientSender
+    game::{
+        abilities::role_abilities::RoleAbility, abilities_component::{ability::Ability, ability_id::AbilityID}, components::fast_forward::FastForwardComponent, event::{AsInvokable as _, Invokable as _}, role::Role
+    }, lobby::{lobby_client::LobbyClient, Lobby}, log, packet::{ToClientPacket, ToServerPacket},
+    room::{RemoveRoomClientResult, RoomClientID, RoomState}, vec_map::VecMap, websocket_connections::connection::ClientSender
 };
 
 use super::{
@@ -76,7 +79,7 @@ impl Game {
 
                 let conclusion = GameConclusion::get_premature_conclusion(self);
 
-                OnGameEnding::new(conclusion).invoke(self);
+                OnGameEnding::new(conclusion).as_invokable().invoke(self);
             }
             ToServerPacket::HostForceSkipPhase => {
                 if let Some(player) = self.clients.get(&room_client_id)
@@ -123,12 +126,6 @@ impl Game {
             },
             ToServerPacket::ControllerInput { controller_input: ability_input } => 
                 ability_input.on_client_message(self, sender_player_ref),
-            ToServerPacket::SetDoomsayerGuess { guesses } => {
-                if let RoleState::Doomsayer(mut doomsayer) = sender_player_ref.role_state(self).clone(){
-                    doomsayer.guesses = guesses;
-                    sender_player_ref.edit_role_ability_helper(self, RoleState::Doomsayer(doomsayer));
-                }
-            },
             ToServerPacket::SetConsortOptions { 
                 roleblock, 
                 you_were_roleblocked_message, 
@@ -138,7 +135,8 @@ impl Game {
                 you_were_possessed_message, 
                 you_were_wardblocked_message 
             } => {
-                if let RoleState::Hypnotist(mut hypnotist) = sender_player_ref.role_state(self).clone(){
+                let id: AbilityID = AbilityID::Role { role: Role::Hypnotist, player: sender_player_ref };
+                if let Some(Ability::Role(RoleAbility(RoleState::Hypnotist(mut hypnotist)))) = id.get_ability(self).cloned() {
                     hypnotist.roleblock = roleblock;
 
                     hypnotist.you_were_roleblocked_message = you_were_roleblocked_message;
@@ -151,7 +149,7 @@ impl Game {
                     //There must be at least one message enabled, so if none are, enable roleblocked message
                     hypnotist.ensure_at_least_one_message();
 
-                    sender_player_ref.edit_role_ability_helper(self, RoleState::Hypnotist(hypnotist));
+                    id.edit_role_ability(self, hypnotist);
                 }
             },
             ToServerPacket::VoteFastForwardPhase { fast_forward } => {

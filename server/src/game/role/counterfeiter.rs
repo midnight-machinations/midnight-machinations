@@ -1,23 +1,5 @@
 use serde::Serialize;
-
-use crate::game::abilities_component::ability_id::AbilityID;
-use crate::game::controllers::{AvailableIntegerSelection, AvailableStringSelection, RoleListSelection};
-use crate::game::attack_power::{AttackPower, DefensePower};
-use crate::game::chat::ChatMessageVariant;
-use crate::game::event::on_midnight::{MidnightVariables, OnMidnightPriority};
-use crate::game::components::graves::grave::GraveKiller;
-use crate::game::phase::PhaseType;
-use crate::game::player::PlayerReference;
-
-use crate::game::role_list::RoleSet;
-use crate::game::visit::Visit;
-
-use crate::game::Game;
-use super::godfather::Godfather;
-use super::{
-    ControllerID, ControllerParametersMap, GetClientAbilityState, IntegerSelection, Role,
-    RoleStateTrait
-};
+use crate::game::{prelude::*, role::godfather::Godfather};
 
 
 #[derive(Debug, Clone, Serialize)]
@@ -47,23 +29,19 @@ pub(super) const DEFENSE: DefensePower = DefensePower::None;
 
 impl RoleStateTrait for Counterfeiter {
     type ClientAbilityState = ClientRoleState;
-    fn new_state(game: &Game) -> Self {
+    fn new_state(game: &mut Game) -> Self {
         Self{
             forges_remaining: crate::game::role::common_role::standard_charges(game),
             ..Self::default()
         }
     }
-    fn on_midnight(self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut MidnightVariables, priority: OnMidnightPriority) {
+    fn on_midnight(self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut OnMidnightFold, priority: OnMidnightPriority) {
         if game.day_number() <= 1 {return}
 
         match priority {
             OnMidnightPriority::Deception => {
                 if self.forges_remaining == 0 || chose_no_forge(game, actor_ref) {return}
-                
-                let actor_visits = actor_ref.role_night_visits_cloned(midnight_variables);
-                let Some(visit) = actor_visits.first() else{return};
-
-                let target_ref = visit.target;
+                let Some(target_ref) = Visits::default_target(midnight_variables, actor_ref, Role::Counterfeiter) else {return};
 
                 let fake_role = ControllerID::role(actor_ref, Role::Counterfeiter, 1)
                     .get_role_list_selection(game)
@@ -83,14 +61,10 @@ impl RoleStateTrait for Counterfeiter {
                 });
             },
             OnMidnightPriority::Kill => {
-                let actor_visits = actor_ref.role_night_visits_cloned(midnight_variables);
-                if let Some(visit) = actor_visits.first(){
-                    let target_ref = visit.target;
-            
-                    target_ref.try_night_kill_single_attacker(
-                        actor_ref, game, midnight_variables, GraveKiller::RoleSet(RoleSet::Mafia), AttackPower::Basic, false
-                    );
-                }
+                let Some(target_ref) = Visits::default_target(midnight_variables, actor_ref, Role::Counterfeiter) else {return};
+                target_ref.try_night_kill_single_attacker(
+                    actor_ref, game, midnight_variables, GraveKiller::RoleSet(RoleSet::Mafia), AttackPower::Basic, false
+                );
             },
             OnMidnightPriority::Investigative => {
                 if let Some(forged_ref) = self.forged_ref && forged_ref.night_died(midnight_variables) {

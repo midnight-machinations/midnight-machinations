@@ -1,15 +1,15 @@
 use crate::game::{
     components::{
         cult::Cult, enfranchise::EnfranchiseComponent, forfeit_vote::ForfeitNominationVote, mafia::Mafia
-    }, event::Event, modifiers::ModifierSettings, Game
+    }, event::EventData, modifiers::ModifierSettings,
 };
 
 #[must_use = "Event must be invoked"]
 pub struct OnGameStart;
 impl OnGameStart{
-    pub fn new()->Self{Self}
+    pub fn new()->(Self, ()){(Self, ())}
 }
-impl Event for OnGameStart{
+impl EventData for OnGameStart{
     type FoldValue = ();
     type Priority = ();
     fn listeners() -> Vec<super::EventListenerFunction<Self>> {vec![
@@ -19,5 +19,4 @@ impl Event for OnGameStart{
         EnfranchiseComponent::on_game_start,
         ForfeitNominationVote::on_game_start,
     ]}
-    fn initial_fold_value(&self, _game: &Game) -> Self::FoldValue {}
 }

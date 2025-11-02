@@ -3,7 +3,7 @@ import React, { ReactElement } from "react";
 import GAME_MANAGER, { find, replaceMentions } from "..";
 import StyledText, { KeywordDataMap, PLAYER_SENDER_KEYWORD_DATA } from "./StyledText";
 import "./chatMessage.css"
-import { ChatGroup, Conclusion, DefensePower, InsiderGroup, PhaseState, PlayerIndex, Tag, translateConclusion, translateWinCondition, UnsafeString, Verdict, WinCondition } from "../game/gameState.d";
+import { ChatGroup, Conclusion, DefensePower, InsiderGroup, PhaseState, PlayerIndex, Tag, translateConclusion, translateVisitTag, translateWinCondition, UnsafeString, Verdict, VisitTag, WinCondition } from "../game/gameState.d";
 import { Role, RoleState } from "../game/roleState.d";
 import { Grave } from "../game/graveState";
 import GraveComponent from "./grave";
@@ -16,14 +16,24 @@ import { ControllerID, ControllerSelection, translateControllerID, controllerIdT
 import DetailsSummary from "./DetailsSummary";
 import ListMap from "../ListMap";
 import { Button } from "./Button";
+import chatMessageStylesImport from "../resources/styling/chatMessage.json" with { type: "json" };
+
+const chatMessageStyles = chatMessageStylesImport as Record<string, string>;
 
 
-function canCopyPasteChatMessages(roleState?: RoleState): boolean{
-    return roleState?.type === "forger" || roleState?.type === "counterfeiter" || roleState?.type === "cerenovous";
+function canCopyPasteChatMessages(roleStates?: ListMap<Role, RoleState>): boolean{
+    if(roleStates===undefined) return false;
+    for(const roleState of roleStates.values()){
+        if(roleState.type === "forger" || roleState.type === "counterfeiter" || roleState.type === "cerenovous"){
+            return true;
+        }
+    }
+    return false;
 }
 
 const ChatElement = React.memo((
     props: {
+        canCopyPaste?: boolean,
         messageIndex?: ChatMessageIndex,
         message: ChatMessage,
         playerNames?: string[],
@@ -33,10 +43,11 @@ const ChatElement = React.memo((
         roleListKeywordData?: KeywordDataMap,
     }, 
 ) => {
-    const roleState = usePlayerState(
-        playerState => playerState.roleState,
+    const roleStates = usePlayerState(
+        playerState => playerState.roleStates,
         ["yourRoleState"]
     );
+    const canCopyPaste = props.canCopyPaste ?? canCopyPasteChatMessages(roleStates);
     const forwardButton = usePlayerState(
         playerState => {
             let controller = new ListMap(playerState.savedControllers, (a,b)=>a.type===b.type)
@@ -62,7 +73,6 @@ const ChatElement = React.memo((
     const realPlayerNames = usePlayerNames();
     const playerNames = props.playerNames ?? realPlayerNames;
     const roleList = props.roleList ?? realRoleList ?? [];
-    const chatMessageStyles = require("../resources/styling/chatMessage.json");
     if(message.variant === undefined){
         console.error("ChatElement message with undefined variant:");
         console.error(message);
@@ -100,7 +110,7 @@ const ChatElement = React.memo((
                 style={style}
                 chatGroupIcon={chatGroupIcon!}
                 playerNames={playerNames}
-                roleState={roleState}
+                canCopyPaste={canCopyPaste}
                 playerKeywordData={props.playerKeywordData}
                 playerSenderKeywordData={props.playerSenderKeywordData}
                 roleListKeywordData={props.roleListKeywordData}
@@ -194,7 +204,7 @@ const ChatElement = React.memo((
             className="chat-message-div-small-button-div"
         >
             {
-                canCopyPasteChatMessages(roleState)
+                canCopyPaste
                 && <CopyButton
                     className="chat-message-div-small-button"
                     text={translateChatMessage(message.variant, playerNames, roleList)}
@@ -289,7 +299,7 @@ function NormalChatMessage(props: Readonly<{
     style: string,
     chatGroupIcon: string,
     playerNames: UnsafeString[],
-    roleState: RoleState | undefined,
+    canCopyPaste: boolean,
     playerKeywordData: KeywordDataMap | undefined,
     playerSenderKeywordData: KeywordDataMap | undefined,
     roleListKeywordData?: KeywordDataMap,
@@ -336,7 +346,7 @@ function NormalChatMessage(props: Readonly<{
         onMouseOver={() => props.setMouseHovering(true)}
         onMouseOut={() => props.setMouseHovering(false)}
     >
-        <span className={`chat-message ${style}`}>
+        <span className={`chat-message ${style} will-menu-colors`}>
             <StyledText
                 playerKeywordData={props.playerSenderKeywordData ?? PLAYER_SENDER_KEYWORD_DATA}
                 roleListKeywordData={props.roleListKeywordData}
@@ -353,7 +363,7 @@ function NormalChatMessage(props: Readonly<{
             className="chat-message-div-small-button-div"
         >
             {
-                canCopyPasteChatMessages(props.roleState)
+                props.canCopyPaste
                 && <CopyButton
                     className="chat-message-div-small-button"
                     text={translateChatMessage(props.message.variant, props.playerNames, props.roleList)}
@@ -390,11 +400,22 @@ function useContainsMention(message: ChatMessageVariant & { text: string | Unsaf
         ["lobbyClients", "yourId", "yourPlayerIndex", "gamePlayers"]
     );
 
-    if (myName === undefined) {
-        return false;
-    }
+    const myRole = useLobbyOrGameState(
+        state => {
+            if (state.stateType === "game" && state.clientState.type === "player") {
+                return state.clientState.myRole
+            } else {
+                return undefined
+            }
+        },
+        ["yourPlayerIndex", "yourRole", "yourRoleState"]
+    );
+
+    const text = encodeString(replaceMentions(message.text, playerNames, roleList));
+
     return (
-        find(encodeString(myName)).test(encodeString(replaceMentions(message.text, playerNames, roleList)))
+        (myName !== undefined && find(encodeString(myName)).test(text)) ||
+        (myRole !== undefined && find('@' + translate('role.' + myRole + '.name')).test(text))
     )
 }
 
@@ -408,7 +429,14 @@ function playerListToString(playerList: PlayerIndex[], playerNames: UnsafeString
         return encodeString(playerNames[playerIndex]);
     }).join(", ");
 }
-
+function visitTagListToString(visitTags: VisitTag[]): string {
+    if (visitTags === null || visitTags.length === 0) {
+        return translate("none");
+    }
+    return visitTags.map((vT) => {
+        return translateVisitTag(vT);
+    }).join(", ");
+}
 function roleListToString(roleList: Role[]): string {
     if (roleList === null || roleList.length === 0) {
         return translate("none");
@@ -716,7 +744,7 @@ export function translateChatMessage(
         case "spyMafiaVisit":
             return translate("chatMessage.spyMafiaVisit", playerListToString(message.players, playerNames));
         case "spyBug":
-            return translate("chatMessage.spyBug", roleListToString(message.roles));
+            return translate("chatMessage.spyBug", visitTagListToString(message.visitTags));
         case "trackerResult":
             return translate("chatMessage.trackerResult", playerListToString(message.players, playerNames));
         case "seerResult":
@@ -737,8 +765,6 @@ export function translateChatMessage(
                 message.outlineIndex+1,
                 message.result.map((role)=>translate("role."+role+".name")).join(", ")
             ), playerNames, roleList));
-        case "engineerVisitorsRole":
-            return translate("chatMessage.engineerVisitorsRole", translate("role."+message.role+".name"));
         case "trapState":
             return translate("chatMessage.trapState."+message.state.type);
         case "trapStateEndOfNight":
@@ -771,7 +797,7 @@ export function translateChatMessage(
         case "mediumSeance":
             return translate("chatMessage.mediumSeance", encodeString(playerNames[message.medium]), encodeString(playerNames[message.player]));
         case "youWerePossessed":
-            return translate("chatMessage.youWerePossessed" + (message.immune ? ".immune" : ""));
+            return translate("chatMessage.youWerePossessed");
         case "targetHasRole":
             return translate("chatMessage.targetHasRole", translate("role."+message.role+".name"));
         case "targetHasWinCondition":
@@ -836,11 +862,8 @@ export function translateChatMessage(
         case "yourConvertFailed":
         case "someoneSurvivedYourAttack":
         case "transported":
-        case "targetIsPossessionImmune":
         case "youSurvivedAttack":
         case "youArePoisoned":
-        case "doomsayerFailed":
-        case "doomsayerWon":
         case "silenced":
         case "brained":
         case "martyrFailed":
@@ -1059,7 +1082,7 @@ export type ChatMessageVariant = {
     players: PlayerIndex[]
 } | {
     type: "spyBug", 
-    roles: Role[]
+    visitTags: VisitTag[]
 } | {
     type: "trackerResult",
     players: PlayerIndex[]
@@ -1129,10 +1152,7 @@ export type ChatMessageVariant = {
     type: "ambusherCaught",
     ambusher: PlayerIndex
 } | {
-    type: "targetIsPossessionImmune"
-} | {
-    type: "youWerePossessed",
-    immune: boolean
+    type: "youWerePossessed"
 } | {
     type: "targetHasRole",
     role: Role
@@ -1160,10 +1180,6 @@ export type ChatMessageVariant = {
 } | {
     type: "chronokaiserSpeedUp"
     percent: number
-} | {
-    type: "doomsayerFailed"
-} | {
-    type: "doomsayerWon"
 } | {
     type: "mercenaryHits",
     roles: Role[]

@@ -2,9 +2,7 @@ use crate::{
     game::{
         controllers::{ControllerID, ControllerInput, Controllers}, 
         event::{
-            on_controller_changed::OnControllerChanged, on_controller_input_received::OnControllerInputReceived,
-            on_phase_start::OnPhaseStart, on_validated_ability_input_received::OnValidatedControllerInputReceived,
-            Event
+            on_controller_changed::OnControllerChanged, on_controller_input_received::OnControllerInputReceived, on_phase_start::OnPhaseStart, on_tick::OnTick, on_validated_ability_input_received::OnValidatedControllerInputReceived, AsInvokable as _, Invokable as _
         }, 
         Game
     }, 
@@ -31,7 +29,7 @@ impl Controllers{
             Self::send_selection_message(game, actor, id, incoming_selection);
         }
 
-        OnValidatedControllerInputReceived::new(actor, event.input.clone()).invoke(game);
+        OnValidatedControllerInputReceived::new(actor, event.input.clone()).as_invokable().invoke(game);
     }
 
     pub fn on_phase_start(game: &mut Game, event: &OnPhaseStart, _fold: &mut (), _priority: ()){
@@ -47,12 +45,12 @@ impl Controllers{
                     id.clone(),
                     Some(old),
                     Some(controller.clone())
-                ).invoke(game);
+                ).as_invokable().invoke(game);
             }
         }
     }
 
-    pub fn on_tick(game: &mut Game){
+    pub fn on_tick(game: &mut Game, _event: &OnTick, _fold: &mut (), _priority: ()){
         Self::update_controllers_from_parameters(game);
     }
 

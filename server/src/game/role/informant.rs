@@ -1,16 +1,6 @@
 use rand::prelude::SliceRandom;
 use serde::Serialize;
-use crate::game::components::blocked::BlockedComponent;
-use crate::game::event::on_midnight::{MidnightVariables, OnMidnightPriority};
-use crate::game::event::on_whisper::{OnWhisper, WhisperFold, WhisperPriority};
-use crate::game::{attack_power::DefensePower, chat::ChatMessageVariant};
-use crate::game::player::PlayerReference;
-
-use crate::game::abilities_component::ability_id::AbilityID;
-use crate::game::visit::Visit;
-
-use crate::game::Game;
-use super::{ControllerID, ControllerParametersMap, Role, RoleStateTrait};
+use crate::game::prelude::*;
 
 #[derive(Clone, Debug, Serialize, Default)]
 pub struct Informant;
@@ -21,19 +11,16 @@ pub(super) const DEFENSE: DefensePower = DefensePower::None;
 
 impl RoleStateTrait for Informant {
     type ClientAbilityState = Informant;
-    fn on_midnight(self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut MidnightVariables, priority: OnMidnightPriority) {
+    fn on_midnight(self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut OnMidnightFold, priority: OnMidnightPriority) {
         if priority != OnMidnightPriority::Investigative {return}
-        
 
-        let actor_visits = actor_ref.role_night_visits_cloned(midnight_variables);
-        for visit in actor_visits{
+        for visit in Visits::into_iter(midnight_variables).default_visits(actor_ref, Role::Informant){
             let target_ref = visit.target;
-
-            let mut visited_by: Vec<PlayerReference> = visit.target.lookout_seen_players(midnight_variables, visit).collect();
-            visited_by.shuffle(&mut rand::rng());
+            let mut visited_by: Vec<PlayerReference> = target_ref.lookout_seen_players(midnight_variables, visit).collect();
+            visited_by.shuffle(&mut game.rng);
 
             let mut visited: Vec<PlayerReference> = target_ref.tracker_seen_players(midnight_variables).collect();
-            visited.shuffle(&mut rand::rng());
+            visited.shuffle(&mut game.rng);
 
             let message = ChatMessageVariant::InformantResult{
                 player: target_ref,

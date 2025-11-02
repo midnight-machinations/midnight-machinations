@@ -1,14 +1,5 @@
 use serde::Serialize;
-use crate::game::controllers::{AvailableRoleListSelection, ControllerID, RoleListSelection};
-use crate::game::event::on_midnight::{MidnightVariables, OnMidnightPriority};
-use crate::game::role::common_role;
-use crate::game::visit::Visit;
-use crate::game::{attack_power::DefensePower, chat::ChatMessageVariant};
-use crate::game::phase::PhaseType;
-use crate::game::player::PlayerReference;
-use crate::game::Game;
-use crate::game::abilities_component::ability_id::AbilityID;
-use super::{ControllerParametersMap, GetClientAbilityState, Role, RoleStateTrait};
+use crate::game::prelude::*;
 
 #[derive(Clone, Debug)]
 pub struct Steward {
@@ -40,7 +31,7 @@ pub(super) const DEFENSE: DefensePower = DefensePower::None;
 
 impl RoleStateTrait for Steward {
     type ClientAbilityState = ClientRoleState;
-    fn on_midnight(mut self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut MidnightVariables, priority: OnMidnightPriority) {
+    fn on_midnight(mut self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut OnMidnightFold, priority: OnMidnightPriority) {
 
         if actor_ref.night_blocked(midnight_variables) {return}
         if actor_ref.ability_deactivated_from_death(game) {return}
@@ -54,6 +45,7 @@ impl RoleStateTrait for Steward {
 
                 self.target_healed_refs = vec![];
                 
+                //increase defense
                 for &role in roles.iter(){
                     for player in PlayerReference::all_players(game){
                         if role != player.role(game) {continue;}
@@ -63,11 +55,13 @@ impl RoleStateTrait for Steward {
                     }
                 }
 
+                //use charges
                 self.self_heals_remaining = self.self_heals_remaining
                     .saturating_sub(
                         if roles.contains(&Role::Steward){1}else{0}
                     );
                 
+                //set ability
                 actor_ref.edit_role_ability_helper(game, Steward{
                     previous_input: RoleListSelection(
                         vec![roles.first(), roles.get(1)]

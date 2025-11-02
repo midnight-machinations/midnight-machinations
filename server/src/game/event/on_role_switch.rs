@@ -1,5 +1,6 @@
 use crate::game::{
-    abilities_component::Abilities, components::{cult::Cult, mafia::Mafia, role_reveal::RevealedPlayersComponent, synopsis::SynopsisTracker}, event::Event, player::PlayerReference, role::RoleState, Game
+    abilities_component::Abilities, components::{cult::Cult, mafia::Mafia, role_reveal::RevealedPlayersComponent, synopsis::SynopsisTracker},
+    event::EventData, player::PlayerReference, role::RoleState,
 };
 
 #[must_use = "Event must be invoked"]
@@ -9,11 +10,11 @@ pub struct OnRoleSwitch{
     pub new: RoleState,
 }
 impl OnRoleSwitch{
-    pub fn new(player: PlayerReference, old: RoleState, new: RoleState) -> Self{
-        Self{ player, old, new }
+    pub fn new(player: PlayerReference, old: RoleState, new: RoleState) -> (Self, ()){
+        (Self{ player, old, new }, ())
     }
 }
-impl Event for OnRoleSwitch{
+impl EventData for OnRoleSwitch{
     type FoldValue = ();
     type Priority = ();
 
@@ -24,6 +25,4 @@ impl Event for OnRoleSwitch{
         SynopsisTracker::on_role_switch,
         Abilities::on_role_switch,
     ]}
-
-    fn initial_fold_value(&self, _game: &Game) -> Self::FoldValue {}
 }

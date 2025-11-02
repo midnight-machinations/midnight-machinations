@@ -7,7 +7,7 @@ use super::tags::Tags;
 
 pub type EnfranchiseComponent = PlayerComponent<Option<EnfranchisePower>>;
 pub struct EnfranchisePower{
-    additional_votes: u8
+    power: u8
 } 
 impl EnfranchiseComponent{
     /// # Safety
@@ -20,11 +20,11 @@ impl EnfranchiseComponent{
             )
         }
     }
-    pub fn enfranchise(game: &mut Game, player: PlayerReference, additional_votes: u8){
+    pub fn enfranchise(game: &mut Game, player: PlayerReference, power: u8){
         game.add_message_to_chat_group(ChatGroup::All, ChatMessageVariant::PlayerEnfranchised { player_index: player });
 
         Tags::add_tag(game, super::tags::TagSetID::Enfranchised, player);
-        *game.enfranchise.get_mut(player) = Some(EnfranchisePower{additional_votes});
+        *game.enfranchise.get_mut(player) = Some(EnfranchisePower{power});
 
         game.count_nomination_and_start_trial(
             game.modifier_settings().is_enabled(ModifierID::UnscheduledNominations)
@@ -38,7 +38,7 @@ impl EnfranchiseComponent{
         game.enfranchise.get(player).is_some()
     }
     fn enfranchise_power(game: &Game, player: PlayerReference)->Option<u8>{
-        game.enfranchise.get(player).as_ref().map(|o| o.additional_votes)
+        game.enfranchise.get(player).as_ref().map(|o| o.power)
     }
     pub fn voting_power(game: &Game, player: PlayerReference)->u8{
         EnfranchiseComponent::enfranchise_power(game, player).unwrap_or(1)

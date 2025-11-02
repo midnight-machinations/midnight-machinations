@@ -1,5 +1,5 @@
 use serde::{Deserialize, Serialize};
-use crate::{game::{event::{on_convert::OnConvert, Event}, game_conclusion::GameConclusion, player::PlayerReference, role::{chronokaiser::Chronokaiser, RoleState}, Assignments, Game}, vec_set::{vec_set, VecSet}};
+use crate::{game::{event::{on_convert::OnConvert, AsInvokable as _, Invokable as _}, game_conclusion::GameConclusion, player::PlayerReference, role::{chronokaiser::Chronokaiser, RoleState}, Assignments, Game}, vec_set::{vec_set, VecSet}};
 
 use super::player_component::PlayerComponent;
 pub type WinConditionComponent = PlayerComponent::<WinCondition>;
@@ -23,7 +23,7 @@ impl PlayerReference{
         let old_win_condition = self.win_condition(game).clone();
         *game.win_condition.get_mut(*self) = win_condition.clone();
 
-        OnConvert::new(*self, old_win_condition, win_condition).invoke(game)
+        OnConvert::new(*self, old_win_condition, win_condition).as_invokable().invoke(game);
     }
 }
 
@@ -97,7 +97,6 @@ impl WinCondition{
     pub fn won_with_role_state(game: &Game, player: PlayerReference)->bool{
         match player.role_state(game) {
             RoleState::Jester(r) => r.won(),
-            RoleState::Doomsayer(r) => r.won(),
             RoleState::Mercenary(r) => r.won(),
             RoleState::Revolutionary(r) => r.won(),
             RoleState::Chronokaiser(_) => Chronokaiser::won(game, player),

@@ -8,6 +8,11 @@ import { TextDropdownArea } from "../../../components/TextAreaDropdown";
 import ListMap from "../../../ListMap";
 import { controllerIdToLinkWithPlayer } from "../../../game/controllerInput";
 import { PlayerIndex, UnsafeString } from "../../../game/gameState.d";
+import { DragAndDrop } from "../../../components/DragAndDrop";
+import { Button } from "../../../components/Button";
+import Icon from "../../../components/Icon";
+import StyledText from "../../../components/StyledText";
+import "./willMenu.css";
 
 export function defaultAlibi(): string {
     return DEFAULT_ALIBI;
@@ -24,9 +29,9 @@ export default function WillMenu(): ReactElement {
         ["yourSendChatGroups"]
     )!;
 
-    const role = usePlayerState(
-        playerState => playerState.roleState.type,
-        ["yourRoleState"]
+    const myRole = usePlayerState(
+        playerState => playerState.myRole,
+        ["yourRole"]
     )!;
 
     const savedAbilities = usePlayerState(
@@ -62,9 +67,8 @@ export default function WillMenu(): ReactElement {
     return <div className="will-menu will-menu-colors">
         <ContentTab
             close={ContentMenu.WillMenu}
-            helpMenu={"standard/alibi"}
         >
-                {translate("menu.will.title")}
+            {translate("menu.will.title")}
         </ContentTab>
         <section>
             <TextDropdownArea
@@ -76,39 +80,7 @@ export default function WillMenu(): ReactElement {
                     GAME_MANAGER.sendSaveWillPacket(text);
                 }}
             />
-            {(notes.length === 0 ? [""] : notes).map((note, i) => {
-                const title: UnsafeString = (note as string).split('\n')[0] || translate("menu.will.notes");
-                return <TextDropdownArea
-                    canPostAs={canPostAsPlayers}
-
-                    key={title as string + i}
-                    titleString={title}
-                    savedText={note}
-                    cantPost={cantPost}
-                    onAdd={() => {
-                        if(GAME_MANAGER.state.stateType === "game" && GAME_MANAGER.state.clientState.type === "player"){
-                            const notes = [...GAME_MANAGER.state.clientState.notes];
-                            notes.splice(i+1, 0, "");
-                            GAME_MANAGER.sendSaveNotesPacket(notes as string[]);
-                        }
-                    }}
-                    onSubtract={() => {
-                        if(GAME_MANAGER.state.stateType === "game" && GAME_MANAGER.state.clientState.type === "player"){
-                            const notes = [...GAME_MANAGER.state.clientState.notes];
-                            notes.splice(i, 1);
-                            GAME_MANAGER.sendSaveNotesPacket(notes as string[]);
-                        }
-                    }}
-                    onSave={(text) => {
-                        if(GAME_MANAGER.state.stateType === "game" && GAME_MANAGER.state.clientState.type === "player"){
-                            const notes = [...GAME_MANAGER.state.clientState.notes];
-                            notes[i] = text;
-                            GAME_MANAGER.sendSaveNotesPacket(notes as string[]);
-                        }
-                    }}
-                />
-            })}
-            {getSingleRoleJsonData(role).canWriteDeathNote===true ? <TextDropdownArea
+            {getSingleRoleJsonData(myRole).canWriteDeathNote===true ? <TextDropdownArea
                 titleString={translate("menu.will.deathNote")}
                 savedText={deathNote}
                 cantPost={cantPost}
@@ -116,6 +88,55 @@ export default function WillMenu(): ReactElement {
                     GAME_MANAGER.sendSaveDeathNotePacket(text);
                 }}
             />:null}
+
+            <div className="dead-players-separator">
+                <StyledText>{translate("menu.will.notes.icon")} {translate("menu.will.notes")}</StyledText>
+            </div>
+
+            <DragAndDrop
+                items={(notes.length === 0 ? [["", 0]] : notes.map((note, i) => [note, i])) as [UnsafeString, number][]}
+                dragHandle={true}
+                render={([note], i, dragHandleProps) => {
+                    const title: UnsafeString = (note as string).split('\n')[0] || translate("menu.will.notes");
+                    return <TextDropdownArea
+                        canPostAs={canPostAsPlayers}
+
+                        key={i}
+                        titleString={title}
+                        savedText={note}
+                        cantPost={cantPost}
+                        dragHandleProps={dragHandleProps}
+                        onSubtract={() => {
+                            if(GAME_MANAGER.state.stateType === "game" && GAME_MANAGER.state.clientState.type === "player"){
+                                const notes = [...GAME_MANAGER.state.clientState.notes];
+                                notes.splice(i, 1);
+                                GAME_MANAGER.sendSaveNotesPacket(notes as string[]);
+                            }
+                        }}
+                        onSave={(text) => {
+                            if(GAME_MANAGER.state.stateType === "game" && GAME_MANAGER.state.clientState.type === "player"){
+                                const notes = [...GAME_MANAGER.state.clientState.notes];
+                                notes[i] = text;
+                                GAME_MANAGER.sendSaveNotesPacket(notes as string[]);
+                            }
+                        }}
+                    />
+                }}
+                onDragEnd={(newItems) => {
+                    if(GAME_MANAGER.state.stateType === "game" && GAME_MANAGER.state.clientState.type === "player"){
+                        GAME_MANAGER.sendSaveNotesPacket(newItems.map(([note]) => note) as string[]);
+                    }
+                }}
+            />
+            <Button
+                onClick={() => {
+                    if(GAME_MANAGER.state.stateType === "game" && GAME_MANAGER.state.clientState.type === "player"){
+                        const notes = [...GAME_MANAGER.state.clientState.notes];
+                        notes.push("Note "+(notes.length+1));
+                        GAME_MANAGER.sendSaveNotesPacket(notes as string[]);
+                    }
+                }}
+            ><Icon>add</Icon></Button>
         </section>
     </div>
 }

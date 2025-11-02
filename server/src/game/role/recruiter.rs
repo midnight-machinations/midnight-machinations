@@ -1,25 +1,7 @@
 
 use serde::Serialize;
+use crate::game::{prelude::*, role::godfather::Godfather, role_list_generation::*};
 
-use crate::game::controllers::AvailableIntegerSelection;
-use crate::game::attack_power::{AttackPower, DefensePower};
-use crate::game::components::mafia_recruits::MafiaRecruits;
-use crate::game::event::on_midnight::{MidnightVariables, OnMidnightPriority};
-use crate::game::components::graves::grave::GraveKiller;
-use crate::game::player::PlayerReference;
-use crate::game::role_list::RoleSet;
-use crate::game::role_list_generation::criteria::{GenerationCriterion, GenerationCriterionResult};
-use crate::game::role_list_generation::PartialOutlineListAssignmentNode;
-use crate::game::settings::Settings;
-use crate::game::visit::Visit;
-use crate::game::abilities_component::ability_id::AbilityID;
-
-use crate::game::Game;
-use super::godfather::Godfather;
-use super::{
-    ControllerID,
-    ControllerParametersMap, IntegerSelection, Role, RoleStateTrait
-};
 
 #[derive(Debug, Clone, Serialize)]
 #[serde(rename_all = "camelCase")]
@@ -42,12 +24,12 @@ pub(super) const DEFENSE: DefensePower = DefensePower::None;
 
 impl RoleStateTrait for Recruiter {
     type ClientAbilityState = Recruiter;
-    fn new_state(game: &Game) -> Self {
+    fn new_state(game: &mut Game) -> Self {
         Self{
             recruits_remaining: crate::game::role::common_role::standard_charges(game),
         }
     }
-    fn on_midnight(self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut MidnightVariables, priority: OnMidnightPriority) {
+    fn on_midnight(self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut OnMidnightFold, priority: OnMidnightPriority) {
 
         let choose_attack = Self::choose_attack(game, actor_ref);
 
@@ -55,18 +37,16 @@ impl RoleStateTrait for Recruiter {
             if game.day_number() <= 1 {return}
         } else if self.recruits_remaining == 0 {return}
 
-        match priority {
-            OnMidnightPriority::Kill => {
-                let actor_visits = actor_ref.role_night_visits_cloned(midnight_variables);
-                if let Some(visit) = actor_visits.first() && Recruiter::night_ability(self.clone(), game, midnight_variables, actor_ref, visit.target) {
-                    if choose_attack {
-                        actor_ref.edit_role_ability_helper(game, Recruiter{recruits_remaining: self.recruits_remaining.saturating_add(1)})
-                    }else{
-                        actor_ref.edit_role_ability_helper(game, Recruiter{recruits_remaining: self.recruits_remaining.saturating_sub(1)});
-                    }
-                }
-            },
-            _ => {}
+        if 
+            priority == OnMidnightPriority::Kill &&
+            let Some(target_ref) = Visits::default_target(midnight_variables, actor_ref, Role::Recruiter) &&
+            Recruiter::night_ability(self.clone(), game, midnight_variables, actor_ref, target_ref)
+        {
+            if choose_attack {
+                actor_ref.edit_role_ability_helper(game, Recruiter{recruits_remaining: self.recruits_remaining.saturating_add(1)})
+            }else{
+                actor_ref.edit_role_ability_helper(game, Recruiter{recruits_remaining: self.recruits_remaining.saturating_sub(1)});
+            }
         }
     }
     fn controller_parameters_map(self, game: &Game, actor_ref: PlayerReference) -> super::ControllerParametersMap {
@@ -119,7 +99,7 @@ impl RoleStateTrait for Recruiter {
 impl Recruiter {
     /// returns true if target_ref is killed when trying to kill
     /// returns true if target_ref is recruited when trying to recruit
-    pub fn night_ability(self, game: &mut Game, midnight_variables: &mut MidnightVariables, actor_ref: PlayerReference, target_ref: PlayerReference) -> bool {
+    pub fn night_ability(self, game: &mut Game, midnight_variables: &mut OnMidnightFold, actor_ref: PlayerReference, target_ref: PlayerReference) -> bool {
         let choose_attack = Self::choose_attack(game, actor_ref);
 
         if choose_attack {

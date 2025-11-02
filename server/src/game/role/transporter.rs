@@ -1,18 +1,7 @@
 use serde::Serialize;
-use crate::game::abilities_component::ability_id::AbilityID;
-use crate::game::controllers::AvailableTwoPlayerOptionSelection;
-use crate::game::event::on_midnight::{MidnightVariables, OnMidnightPriority};
-use crate::game::attack_power::DefensePower;
-use crate::game::player::PlayerReference;
-
-use crate::game::visit::Visit;
-use crate::game::Game;
-use crate::game::components::transport::{Transport, TransportPriority};
+use crate::game::prelude::*;
 use crate::vec_set;
-
 use crate::vec_map::vec_map;
-
-use super::{common_role, ControllerID, ControllerParametersMap, Role, RoleStateTrait};
 
 #[derive(Clone, Debug, Serialize, Default)]
 pub struct Transporter;
@@ -23,16 +12,16 @@ pub(super) const DEFENSE: DefensePower = DefensePower::None;
 
 impl RoleStateTrait for Transporter {
     type ClientAbilityState = Transporter;
-    fn on_midnight(self, _game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut MidnightVariables, priority: OnMidnightPriority) {
+    fn on_midnight(self, _game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut OnMidnightFold, priority: OnMidnightPriority) {
         if priority != OnMidnightPriority::Transporter {return;}
     
-        let transporter_visits = actor_ref.role_night_visits_cloned(midnight_variables);
-        let Some(first_visit) = transporter_visits.get(0).map(|v| v.target) else {return};
-        let Some(second_visit) = transporter_visits.get(1).map(|v| v.target) else {return};
+        let mut targets = Visits::into_iter(midnight_variables).default_targets(actor_ref, Role::Transporter);
+        let Some(a) = targets.next() else {return};
+        let Some(b) = targets.next() else {return};
         
         Transport::transport(
             midnight_variables, TransportPriority::Transporter, 
-            &vec_map![(first_visit, second_visit), (second_visit, first_visit)], |_| true, true
+            &vec_map![(a, b), (b, a)], |_| true, true
         );
     }
     fn controller_parameters_map(self, game: &Game, actor_ref: PlayerReference) -> ControllerParametersMap {
@@ -59,5 +48,5 @@ impl RoleStateTrait for Transporter {
             false
         )
     }
-    fn on_player_roleblocked(self, _game: &mut Game, _midnight_variables: &mut MidnightVariables, _actor_ref: PlayerReference, _player: PlayerReference, _invisible: bool) {}
+    fn on_player_roleblocked(self, _game: &mut Game, _midnight_variables: &mut OnMidnightFold, _actor_ref: PlayerReference, _player: PlayerReference, _invisible: bool) {}
 }

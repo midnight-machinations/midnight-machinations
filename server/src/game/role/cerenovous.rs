@@ -1,18 +1,5 @@
 use serde::Serialize;
-use crate::game::controllers::AvailablePlayerListSelection;
-use crate::game::chat::ChatMessageVariant;
-use crate::game::components::insider_group::InsiderGroupID;
-use crate::game::event::on_midnight::{MidnightVariables, OnMidnightPriority};
-use crate::game::event::on_whisper::{OnWhisper, WhisperFold, WhisperPriority};
-use crate::game::phase::PhaseType;
-use crate::game::role::informant::Informant;
-use crate::game::{attack_power::DefensePower, player::PlayerReference};
-
-use crate::game::abilities_component::ability_id::AbilityID;
-use crate::game::visit::Visit;
-
-use crate::game::Game;
-use super::{ControllerID, ControllerParametersMap, Role, RoleStateTrait};
+use crate::game::{prelude::*, role::informant::Informant};
 
 
 #[derive(Clone, Debug, Serialize, Default)]
@@ -29,20 +16,17 @@ pub(super) const DEFENSE: DefensePower = DefensePower::None;
 
 impl RoleStateTrait for Cerenovous {
     type ClientAbilityState = Cerenovous;
-    fn new_state(game: &Game) -> Self {
+    fn new_state(game: &mut Game) -> Self {
         Self{
             charges: crate::game::role::common_role::standard_charges(game),
             ..Self::default()
         }
     }
-    fn on_midnight(mut self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut MidnightVariables, priority: OnMidnightPriority) {
+    fn on_midnight(mut self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut OnMidnightFold, priority: OnMidnightPriority) {
         if priority != OnMidnightPriority::Deception {return}
 
-        let actor_visits = actor_ref.role_night_visits_cloned(midnight_variables);
-        if let Some(visit) = actor_visits.first() {
+        if let Some(target_ref) = Visits::default_target(midnight_variables, actor_ref, Role::Cerenovous) {
             if self.charges != 0 {
-                let target_ref = visit.target;
-                
                 target_ref.push_night_message(midnight_variables, ChatMessageVariant::Brained);
                 self.currently_brained = Some(target_ref);
                 self.previous = Some(target_ref);

@@ -1,5 +1,4 @@
 use serde::Serialize;
-
 use crate::game::attack_power::DefensePower;
 use super::RoleStateTrait;
 

@@ -1,13 +1,7 @@
 use rand::seq::IndexedRandom;
 use serde::Serialize;
-use crate::game::abilities_component::ability_id::AbilityID;
-use crate::game::event::on_ability_creation::OnAbilityCreationPriority;
-use crate::game::event::on_ability_deletion::OnAbilityDeletionPriority;
-use crate::game::event::on_role_switch::OnRoleSwitch;
 use crate::game::role_list::role_enabled_and_not_taken;
-use crate::game::{attack_power::DefensePower, components::confused::Confused};
-use crate::game::player::PlayerReference;
-use crate::game::Game;
+use crate::game::prelude::*;
 
 use super::{Role, RoleStateTrait};
 
@@ -37,8 +31,9 @@ impl RoleStateTrait for Drunk {
             ))
             .collect::<Vec<_>>();
 
-        if let Some(new_role) = possible_roles.choose(&mut rand::rng()) {
-            actor_ref.set_new_role(game, new_role.new_state(game), false);
+        if let Some(new_role) = possible_roles.choose(&mut game.rng) {
+            let new_state = new_role.new_state(game);
+            actor_ref.set_new_role(game, new_state, false);
         }
     }
     fn on_ability_deletion(self, game: &mut Game, actor_ref: PlayerReference, event: &crate::game::event::on_ability_deletion::OnAbilityDeletion, _fold: &mut (), priority: crate::game::event::on_ability_deletion::OnAbilityDeletionPriority) {

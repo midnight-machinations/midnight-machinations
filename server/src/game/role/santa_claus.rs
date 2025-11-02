@@ -1,17 +1,6 @@
 use serde::{Deserialize, Serialize};
-use crate::game::controllers::AvailablePlayerListSelection;
-use crate::game::chat::ChatMessageVariant;
-use crate::game::event::on_midnight::{MidnightVariables, OnMidnightPriority};
-use crate::game::game_conclusion::GameConclusion;
-use crate::game::phase::PhaseType;
-use crate::game::abilities_component::ability_id::AbilityID;
-use crate::game::components::win_condition::WinCondition;
-use crate::game::attack_power::{AttackPower, DefensePower};
-use crate::game::player::PlayerReference;
-use crate::game::visit::Visit;
-use crate::game::Game;
+use crate::game::prelude::*;
 use crate::vec_set::VecSet;
-use super::{ControllerID, ControllerParametersMap, Role, RoleStateTrait};
 
 #[derive(Clone, Debug, Default, Serialize)]
 #[serde(rename_all = "camelCase")]
@@ -32,15 +21,12 @@ pub(super) const DEFENSE: DefensePower = DefensePower::None;
 
 impl RoleStateTrait for SantaClaus {
     type ClientAbilityState = SantaClaus;
-    fn on_midnight(self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut MidnightVariables, priority: OnMidnightPriority) {
+    fn on_midnight(self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut OnMidnightFold, priority: OnMidnightPriority) {
         if priority != OnMidnightPriority::Convert { return }
 
         match self.get_next_santa_ability() {
             SantaListKind::Nice => {
-                let actor_visits = actor_ref.role_night_visits_cloned(midnight_variables).into_iter();
-                let targets = actor_visits.map(|v| v.target);
-
-                for target_ref in targets {
+                for target_ref in Visits::into_iter(midnight_variables).default_targets(actor_ref, Role::SantaClaus) {
                     let WinCondition::GameConclusionReached { mut win_if_any } = target_ref.win_condition(game).clone() else {
                         actor_ref.push_night_message(midnight_variables, ChatMessageVariant::YourConvertFailed);
                         continue
@@ -64,10 +50,7 @@ impl RoleStateTrait for SantaClaus {
                 }
             }
             SantaListKind::Naughty => {
-                let actor_visits = actor_ref.role_night_visits_cloned(midnight_variables).into_iter();
-                let targets = actor_visits.map(|v| v.target);
-
-                for target_ref in targets {
+                for target_ref in Visits::into_iter(midnight_variables).default_targets(actor_ref, Role::SantaClaus) {
                     let WinCondition::GameConclusionReached { mut win_if_any } = target_ref.win_condition(game).clone() else {
                         actor_ref.push_night_message(midnight_variables, ChatMessageVariant::YourConvertFailed);
                         continue
@@ -147,13 +130,10 @@ impl RoleStateTrait for SantaClaus {
         }
     }
     fn on_phase_start(self, game: &mut Game, actor_ref: PlayerReference, phase: PhaseType){
-        match phase {
-            PhaseType::Night => {
-                actor_ref.add_private_chat_message(game,
-                    ChatMessageVariant::NextSantaAbility { ability: self.get_next_santa_ability() }
-                );
-            },
-            _ => {}
+        if phase == PhaseType::Night {
+            actor_ref.add_private_chat_message(game,
+                ChatMessageVariant::NextSantaAbility { ability: self.get_next_santa_ability() }
+            );
         }
     }
     fn default_win_condition(self) -> WinCondition where super::RoleState: From<Self> {

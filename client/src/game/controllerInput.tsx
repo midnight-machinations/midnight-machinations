@@ -88,9 +88,9 @@ export type ControllerID = {
     type: "forwardMessage",
     player: PlayerIndex,
 } | {
-    type: "syndicateGunItemShoot",
+    type: "syndicateGunShoot",
 } | {
-    type: "syndicateGunItemGive",
+    type: "syndicateGunGive",
 } | {
     type: "syndicateChooseBackup"
 } | {
@@ -109,9 +109,9 @@ export type ControllerIDLink = (
 export function controllerIdToLinkWithPlayer(id: ControllerID): string {
     let out: string = `${id.type}`;
     if(
-        id.type!=="syndicateGunItemShoot" &&
+        id.type!=="syndicateGunShoot" &&
         id.type!=="syndicateBackupAttack" &&
-        id.type!=="syndicateGunItemGive" &&
+        id.type!=="syndicateGunGive" &&
         id.type!=="syndicateChooseBackup"
     ){
         out+=`/${id.player}`;
@@ -159,8 +159,8 @@ export function sortControllerIdCompare(
     // Define priority order for each type
     const typePriority: Record<string, number> = {
         role: 1,
-        syndicateGunItemShoot: 2,
-        syndicateGunItemGive: 3,
+        syndicateGunShoot: 2,
+        syndicateGunGive: 3,
         syndicateChooseBackup: 4,
         syndicateBackupAttack: 5,
         forfeitNominationVote: 6,

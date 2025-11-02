@@ -1,18 +1,6 @@
 use rand::seq::SliceRandom;
 use serde::Serialize;
-
-use crate::game::abilities_component::ability_id::AbilityID;
-use crate::game::components::aura::Aura;
-use crate::game::components::confused::Confused;
-use crate::game::event::on_midnight::{MidnightVariables, OnMidnightPriority};
-use crate::game::visit::Visit;
-use crate::game::{attack_power::DefensePower, chat::ChatMessageVariant};
-use crate::game::game_conclusion::GameConclusion;
-use crate::game::player::PlayerReference;
-
-
-use crate::game::Game;
-use super::{ControllerID, ControllerParametersMap, Role, RoleStateTrait};
+use crate::game::prelude::*;
 
 #[derive(Debug, Clone, Serialize, Default)]
 pub struct Psychic;
@@ -23,18 +11,15 @@ pub(super) const DEFENSE: DefensePower = DefensePower::None;
 
 impl RoleStateTrait for Psychic {
     type ClientAbilityState = Psychic;
-    fn on_midnight(self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut MidnightVariables, priority: OnMidnightPriority) {
+    fn on_midnight(self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut OnMidnightFold, priority: OnMidnightPriority) {
         if priority != OnMidnightPriority::Investigative {return}
-
-        
-                let actor_visits = actor_ref.role_night_visits_cloned(midnight_variables);
-                let Some(visit) = actor_visits.first() else {return};
+        let Some(target_ref) = Visits::default_target(midnight_variables, actor_ref, Role::Psychic) else {return};
 
         actor_ref.push_night_message(midnight_variables, 
             if game.day_number() % 2 == 1 {
-                Psychic::get_result_evil(game, midnight_variables, actor_ref, visit.target, Confused::is_confused(game, actor_ref))
+                Psychic::get_result_evil(game, midnight_variables, actor_ref, target_ref, Confused::is_confused(game, actor_ref))
             }else{
-                Psychic::get_result_good(game, midnight_variables, actor_ref, visit.target, Confused::is_confused(game, actor_ref))
+                Psychic::get_result_good(game, midnight_variables, actor_ref, target_ref, Confused::is_confused(game, actor_ref))
             }
         );
     }
@@ -57,14 +42,14 @@ impl RoleStateTrait for Psychic {
 }
 
 impl Psychic {
-    fn get_result_evil(game: &Game, midnight_variables: &MidnightVariables, actor_ref: PlayerReference, target: PlayerReference, confused: bool)->ChatMessageVariant{
+    fn get_result_evil(game: &mut Game, midnight_variables: &OnMidnightFold, actor_ref: PlayerReference, target: PlayerReference, confused: bool)->ChatMessageVariant{
         
         let mut valid_players: Vec<_> = Self::get_valid_players(game, actor_ref, target)
             .into_iter()
             .filter(|p|!Aura::innocent(game, midnight_variables, *p))
             .collect();
 
-        valid_players.shuffle(&mut rand::rng());
+        valid_players.shuffle(&mut game.rng);
 
         #[expect(clippy::indexing_slicing, reason = "We're iterating over indexes, so it's safe")]
         for i in 0..valid_players.len(){
@@ -78,13 +63,13 @@ impl Psychic {
 
         ChatMessageVariant::PsychicFailed
     }
-    fn get_result_good(game: &Game, midnight_variables: &MidnightVariables, actor_ref: PlayerReference, target: PlayerReference, confused: bool)->ChatMessageVariant{
+    fn get_result_good(game: &mut Game, midnight_variables: &OnMidnightFold, actor_ref: PlayerReference, target: PlayerReference, confused: bool)->ChatMessageVariant{
         let mut valid_players: Vec<_> = Self::get_valid_players(game, actor_ref, target)
             .into_iter()
             .filter(|p|!Aura::suspicious(game, midnight_variables, *p))
             .collect();
 
-        valid_players.shuffle(&mut rand::rng());
+        valid_players.shuffle(&mut game.rng);
 
         for player in valid_players{
             if confused || Self::contains_good(game, target, player){

@@ -33,3 +33,4 @@ pub mod role_reveal;
 pub mod attack;
 pub mod blocked;
 pub mod ascend;
+pub mod possession;

@@ -1,8 +1,0 @@
-.large-doomsayer-menu > div {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-}
-.large-doomsayer-menu > div > * {
-    width: 100%;
-}

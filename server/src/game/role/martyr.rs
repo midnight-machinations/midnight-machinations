@@ -1,20 +1,5 @@
 use serde::Serialize;
-use crate::game::controllers::AvailableBooleanSelection;
-use crate::game::attack_power::{AttackPower, DefensePower};
-use crate::game::chat::{ChatGroup, ChatMessageVariant};
-use crate::game::components::graves::grave::{Grave, GraveDeathCause, GraveInformation, GraveKiller};
-use crate::game::components::graves::grave_reference::GraveReference;
-use crate::game::event::on_ability_creation::{OnAbilityCreation, OnAbilityCreationFold, OnAbilityCreationPriority};
-use crate::game::event::on_midnight::{MidnightVariables, OnMidnightPriority};
-use crate::game::phase::PhaseType;
-use crate::game::player::PlayerReference;
-use crate::game::abilities_component::ability_id::AbilityID;
-
-use crate::game::role::BooleanSelection;
-use crate::game::visit::Visit;
-use crate::game::Game;
-
-use super::{ControllerID, ControllerParametersMap, Role, RoleState, RoleStateTrait};
+use crate::game::prelude::*;
 
 #[derive(PartialEq, Eq, Clone, Debug, Serialize)]
 #[serde(rename_all = "camelCase")]
@@ -50,18 +35,16 @@ impl RoleStateTrait for Martyr {
     // More information is being sent than needed by the client.
     // This should be fixed later
     type ClientAbilityState = Martyr;
-    fn new_state(game: &Game) -> Self {
+    fn new_state(game: &mut Game) -> Self {
         Self{
             state: MartyrState::StillPlaying { bullets: crate::game::role::common_role::standard_charges(game) }
         }
     }
-    fn on_midnight(mut self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut MidnightVariables, priority: OnMidnightPriority) {
+    fn on_midnight(mut self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut OnMidnightFold, priority: OnMidnightPriority) {
         if priority != OnMidnightPriority::Kill {return}
         let MartyrState::StillPlaying { bullets } = self.state else {return};
         if bullets == 0 {return}
-        let actor_visits = actor_ref.role_night_visits_cloned(midnight_variables);
-        if let Some(visit) = actor_visits.first() {
-            let target_ref = visit.target;
+        if let Some(target_ref) = Visits::default_target(midnight_variables, actor_ref, Role::Martyr) {
 
             self.state = MartyrState::StillPlaying { bullets: bullets.saturating_sub(1) };
 

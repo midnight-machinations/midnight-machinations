@@ -1,24 +1,6 @@
 use serde::Serialize;
-
-use crate::game::controllers::AvailablePlayerListSelection;
-use crate::game::attack_power::AttackPower;
-use crate::game::attack_power::DefensePower;
-use crate::game::event::on_midnight::MidnightVariables;
-use crate::game::event::on_midnight::OnMidnightPriority;
-use crate::game::game_conclusion::GameConclusion;
-use crate::game::components::graves::grave::GraveKiller;
-use crate::game::phase::PhaseType;
-use crate::game::player::PlayerReference;
-use crate::game::abilities_component::ability_id::AbilityID;
-
-use crate::game::visit::Visit;
-
-use crate::game::Game;
+use crate::game::prelude::*;
 use crate::vec_set::VecSet;
-use super::{
-    ControllerID, ControllerParametersMap,
-    PlayerListSelection, Role, RoleStateTrait
-};
 
 #[derive(Clone, Debug, Serialize, Default)]
 #[serde(rename_all = "camelCase")]
@@ -42,13 +24,11 @@ pub(super) const DEFENSE: DefensePower = DefensePower::None;
 
 impl RoleStateTrait for Marksman {
     type ClientAbilityState = Marksman;
-    fn on_midnight(mut self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut MidnightVariables, priority: OnMidnightPriority) {
+    fn on_midnight(mut self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut OnMidnightFold, priority: OnMidnightPriority) {
         if priority != OnMidnightPriority::Kill {return};
 
-        let visiting_players: Vec<_> = actor_ref
-            .role_night_visits_cloned(midnight_variables)
-            .into_iter()
-            .flat_map(|p|p.target.all_direct_night_visitors_cloned(midnight_variables))
+        let visiting_players: Vec<_> = Visits::into_iter(midnight_variables).default_visits(actor_ref, Role::Marksman)
+            .flat_map(|v|v.target.all_direct_night_visitors_cloned(midnight_variables))
             .collect();
 
         let Some(PlayerListSelection(marks)) = ControllerID::role(actor_ref, Role::Marksman, 0)

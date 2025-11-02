@@ -27,11 +27,15 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
-      - name: Build
+      - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: 16.x
-      - run: npm install
-      - run: npm ci
-      - run: npm run build
-      - run: npm test --if-present
+          node-version: 18.x
+      - name: Enable pnpm
+        run: corepack enable
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Build
+        run: pnpm run build
+      - name: Test
+        run: pnpm test --if-present

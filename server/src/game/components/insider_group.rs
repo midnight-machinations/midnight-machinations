@@ -1,6 +1,16 @@
 use serde::{Deserialize, Serialize};
 
-use crate::{game::{chat::{ChatGroup, ChatMessageVariant, PlayerChatGroupMap}, components::detained::Detained, event::{on_add_insider::OnAddInsider, on_conceal_role::OnConcealRole, on_remove_insider::OnRemoveInsider, Event}, modifiers::ModifierID, phase::PhaseType, player::PlayerReference, Assignments, Game}, packet::ToClientPacket, vec_set::VecSet};
+use crate::{
+    game::{
+        chat::{ChatGroup, ChatMessageVariant, PlayerChatGroupMap},
+        components::detained::Detained, event::{
+            on_add_insider::OnAddInsider, on_conceal_role::OnConcealRole,
+            on_remove_insider::OnRemoveInsider, AsInvokable as _, Invokable as _
+        },
+        modifiers::ModifierID, phase::PhaseType, player::PlayerReference, Assignments, Game
+    },
+    packet::ToClientPacket, vec_set::VecSet
+};
 
 #[derive(Debug)]
 pub struct InsiderGroups{
@@ -158,20 +168,20 @@ impl InsiderGroupID{
     /// This function will not alert the other players of the addition of this new player
     pub unsafe fn add_player_to_revealed_group_unchecked(&self, game: &mut Game, player: PlayerReference){
         self.players_mut(game).insert(player);
-        OnAddInsider::new(player, *self).invoke(game);
+        OnAddInsider::new(player, *self).as_invokable().invoke(game);
     }
     pub fn add_player_to_revealed_group(&self, game: &mut Game, player: PlayerReference){
         if self.players_mut(game).insert(player).is_none() {
             self.reveal_group_players(game);
         }
-        OnAddInsider::new(player, *self).invoke(game);
+        OnAddInsider::new(player, *self).as_invokable().invoke(game);
         InsiderGroups::send_player_insider_groups_packet(game, player);
     }
     pub fn remove_player_from_insider_group(&self, game: &mut Game, player: PlayerReference){
         if self.players_mut(game).remove(&player).is_some() {
             self.reveal_group_players(game);
         }
-        OnRemoveInsider::new(player, *self).invoke(game);
+        OnRemoveInsider::new(player, *self).as_invokable().invoke(game);
         InsiderGroups::send_player_insider_groups_packet(game, player);
     }
     pub fn set_player_insider_groups(set: VecSet<InsiderGroupID>, game: &mut Game, player: PlayerReference){

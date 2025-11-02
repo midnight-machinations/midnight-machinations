@@ -1,10 +1,8 @@
 use rand::seq::IndexedRandom;
 
-use crate::{game::{
-    abilities::syndicate_gun::SyndicateGun, attack_power::{AttackPower, DefensePower}, chat::{ChatGroup, ChatMessageVariant}, components::{graves::grave::GraveKiller, night_visits::NightVisitsIterator}, controllers::{AvailablePlayerListSelection, ControllerParametersMap}, event::{
-        on_add_insider::OnAddInsider, on_any_death::OnAnyDeath, on_controller_selection_changed::OnControllerSelectionChanged, on_game_start::OnGameStart, on_midnight::{MidnightVariables, OnMidnight, OnMidnightPriority}, on_remove_insider::OnRemoveInsider, on_role_switch::OnRoleSwitch
-    }, phase::PhaseType, player::PlayerReference, role::RoleState, role_list::RoleSet, visit::{Visit, VisitTag}, ControllerID, Game, PlayerListSelection
-}, vec_set::{vec_set, VecSet}};
+use crate::game::abilities::syndicate_gun::SyndicateGun;
+use crate::game::prelude::*;
+use crate::vec_set::{vec_set, VecSet};
 
 use super::{
     detained::Detained, fragile_vest::FragileVests, insider_group::InsiderGroupID, night_visits::Visits,
@@ -22,15 +20,43 @@ impl Game{
     }
 }
 impl Mafia{
-    pub fn on_visit_wardblocked(_game: &mut Game, midnight_variables: &mut MidnightVariables, visit: Visit){
+    pub fn on_visit_wardblocked(_game: &mut Game, event: &OnVisitWardblocked, midnight_variables: &mut OnMidnightFold, _priority: ()){
         Visits::retain(midnight_variables, |v|
-            v.tag != VisitTag::SyndicateBackupAttack || v.visitor != visit.visitor
+            v.tag != VisitTag::SyndicateBackupAttack || v.visitor != event.visit.visitor
         );
     }
-    pub fn on_player_roleblocked(_game: &mut Game, midnight_variables: &mut MidnightVariables, player: PlayerReference){
+    pub fn on_player_roleblocked(_game: &mut Game, event: &OnPlayerRoleblocked, midnight_variables: &mut OnMidnightFold, _priority: ()){
         Visits::retain(midnight_variables, |v|
-            v.tag != VisitTag::SyndicateBackupAttack || v.visitor != player
+            v.tag != VisitTag::SyndicateBackupAttack || v.visitor != event.player
         );
+    }
+    pub fn on_player_possessed(game: &mut Game, event: &OnPlayerPossessed, fold: &mut OnMidnightFold, _priority: ()){
+        let Some(PlayerListSelection(backup)) = ControllerID::syndicate_choose_backup().get_player_list_selection(game) else {return};
+        let Some(backup) = backup.first().copied() else {return};
+
+        if event.possessed != backup {
+            return;
+        }
+
+        if Possession::possession_immune(&ControllerID::SyndicateBackupAttack) { return; }
+        Possession::possess_controller(game, ControllerID::SyndicateBackupAttack.clone(), event.possessed, event.possessed_into);
+
+        Visits::retain(fold, |v|v.tag != VisitTag::SyndicateBackupAttack || v.visitor != backup);
+
+
+        let Some(PlayerListSelection(backup_target)) = ControllerID::syndicate_backup_attack().get_player_list_selection(game) else {return};
+        let Some(backup_target) = backup_target.first() else {return};
+
+        Visits::add_visit(fold, Visit {
+            visitor: backup,
+            target: *backup_target,
+            tag: VisitTag::SyndicateBackupAttack,
+            attack: true,
+            wardblock_immune: false,
+            transport_immune: false,
+            investigate_immune: false,
+            indirect: false
+        });
     }
 
     pub fn controller_parameters_map(game: &Game)->ControllerParametersMap{
@@ -96,7 +122,7 @@ impl Mafia{
             )
             .collect::<VecSet<_>>()
     }
-    pub fn on_midnight(game: &mut Game, _event: &OnMidnight, midnight_variables: &mut MidnightVariables, priority: OnMidnightPriority){
+    pub fn on_midnight(game: &mut Game, _event: &OnMidnight, midnight_variables: &mut OnMidnightFold, priority: OnMidnightPriority){
         if game.day_number() <= 1 {return}
         match priority {
             OnMidnightPriority::TopPriority => {
@@ -106,7 +132,7 @@ impl Mafia{
                 let Some(PlayerListSelection(backup_target)) = ControllerID::syndicate_backup_attack().get_player_list_selection(game) else {return};
                 let Some(backup_target) = backup_target.first() else {return};
 
-                let new_visit = Visit {
+                Visits::add_visit(midnight_variables, Visit {
                     visitor: *backup,
                     target: *backup_target,
                     tag: VisitTag::SyndicateBackupAttack,
@@ -115,8 +141,7 @@ impl Mafia{
                     transport_immune: false,
                     investigate_immune: false,
                     indirect: false
-                };
-                Visits::add_visit(midnight_variables, new_visit);
+                });
             }
             OnMidnightPriority::Deception => {
                 if Self::syndicate_killing_players(game).into_iter().any(|p|!p.night_blocked(midnight_variables) && p.alive(game)) {
@@ -153,7 +178,7 @@ impl Mafia{
                 .filter(|p| InsiderGroupID::Mafia.contains_player(game, *p))
                 .collect::<Vec<_>>();
 
-            let Some(insider) = insiders.choose(&mut rand::rng()) else {return};
+            let Some(insider) = insiders.choose(&mut game.rng) else {return};
 
             SyndicateGun::give_gun_to_player(game, *insider);
             PlayerComponent::<FragileVests>::add_defense_item(game, *insider, DefensePower::Armored, vec_set![*insider]);
@@ -208,7 +233,7 @@ impl Mafia{
         ) {return;}
         
         //choose random mafia to be mafia killing
-        let random_mafia = living_players_to_convert.choose(&mut rand::rng());
+        let random_mafia = living_players_to_convert.choose(&mut game.rng);
         
         if let Some(random_mafia) = random_mafia {
             random_mafia.set_new_role(game, role, true);

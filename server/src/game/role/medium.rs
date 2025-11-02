@@ -1,17 +1,5 @@
 use serde::Serialize;
-use crate::game::attack_power::DefensePower;
-use crate::game::chat::{ChatGroup, ChatMessageVariant, PlayerChatGroupMap};
-use crate::game::components::detained::Detained;
-use crate::game::controllers::AvailablePlayerListSelection;
-use crate::game::event::on_midnight::MidnightVariables;
-use crate::game::phase::PhaseType;
-use crate::game::player::PlayerReference;
-use crate::game::role::common_role;
-use crate::game::Game;
-
-use super::{
-    ControllerID, ControllerParametersMap, Role, RoleStateTrait
-};
+use crate::game::{abilities::role_abilities::RoleAbility, abilities_component::ability::Ability, prelude::*};
 
 #[derive(Clone, Debug, Serialize)]
 #[serde(rename_all = "camelCase")]
@@ -33,7 +21,7 @@ pub(super) const DEFENSE: DefensePower = DefensePower::None;
 
 impl RoleStateTrait for Medium {
     type ClientAbilityState = Medium;
-    fn new_state(game: &Game) -> Self {
+    fn new_state(game: &mut Game) -> Self {
         Self{
             haunts_remaining: crate::game::role::common_role::standard_charges(game),
             ..Self::default()
@@ -155,11 +143,19 @@ impl RoleStateTrait for Medium {
             _=>{}
         }
     }
-    fn on_player_roleblocked(self, game: &mut Game, midnight_variables: &mut MidnightVariables, actor_ref: PlayerReference, player: PlayerReference, invisible: bool) {
-        common_role::on_player_roleblocked(midnight_variables, actor_ref, player);
+    fn on_player_roleblocked(self, game: &mut Game, midnight_variables: &mut OnMidnightFold, actor_ref: PlayerReference, player: PlayerReference, invisible: bool) {
+        common_role::on_player_roleblocked(Role::Medium, midnight_variables, actor_ref, player);
         if player != actor_ref {return}
         if let Some(seanced) = self.seanced_target {
             seanced.roleblock(game, midnight_variables, invisible);
         }
+    }
+}
+impl Medium {
+    pub fn get_seanced_targets(game: &Game, actor_ref: PlayerReference) -> Vec<PlayerReference> {
+        if !actor_ref.alive(game) {return vec![]}
+        let Some(Ability::Role(RoleAbility(RoleState::Medium(Medium{seanced_target: Some(seanced_target), ..})))) = 
+            (AbilityID::Role { role: Role::Medium, player: actor_ref }).get_ability(game) else {return vec![]};
+        vec![*seanced_target]
     }
 }

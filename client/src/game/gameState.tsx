@@ -1,6 +1,7 @@
 import ListMap from "../ListMap"
 import GameState, { LobbyClient, LobbyState, PhaseTimes, Player, LobbyClientID, PlayerGameState, UnsafeString } from "./gameState.d"
 import { ModifierID, ModifierState } from "./modifiers"
+import { Role, RoleState } from "./roleState.d"
 
 
 export function defaultPhaseTimes(): PhaseTimes {
@@ -27,6 +28,7 @@ export function createLobbyState(): LobbyState {
         myId: null,
 
         roleList: [],
+        randomSeed: null,
         phaseTimes: defaultPhaseTimes(),
         enabledRoles: [],
         modifierSettings: new ListMap<ModifierID, ModifierState>(),
@@ -59,6 +61,7 @@ export function createGameState(): GameState {
         fastForward: {type:"none"},
         
         roleList: [],
+        randomSeed: null,
         enabledRoles: [],
         phaseTimes: defaultPhaseTimes(),
         modifierSettings: new ListMap<ModifierID, ModifierState>(),
@@ -78,7 +81,8 @@ export function createPlayerGameState(): PlayerGameState {
 
         myIndex: 0,
         
-        roleState: { type: "detective" },
+        myRole: "detective" as Role,
+        roleStates: new ListMap<Role, RoleState>(),
 
         savedControllers: [],
 

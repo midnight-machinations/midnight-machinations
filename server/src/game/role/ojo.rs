@@ -1,22 +1,7 @@
 use rand::seq::SliceRandom;
 use serde::Serialize;
-use crate::game::abilities_component::ability_id::AbilityID;
-use crate::game::components::night_visits::{NightVisitsIterator, Visits};
-use crate::game::controllers::ControllerParametersMap;
-use crate::game::attack_power::AttackPower;
-use crate::game::chat::ChatMessageVariant;
-use crate::game::components::graves::grave::GraveKiller;
-use crate::game::event::on_ability_creation::{OnAbilityCreation, OnAbilityCreationFold, OnAbilityCreationPriority};
-use crate::game::event::on_midnight::{MidnightVariables, OnMidnightPriority};
-use crate::game::event::on_whisper::{OnWhisper, WhisperFold, WhisperPriority};
-use crate::game::attack_power::DefensePower;
-use crate::game::player::PlayerReference;
-
-use crate::game::role::informant::Informant;
-use crate::game::visit::Visit;
-
-use crate::game::Game;
-use super::{common_role, ControllerID, Role, RoleStateTrait};
+use crate::game::{prelude::*, role::informant::Informant};
+use super::common_role;
 
 
 #[derive(Debug, Clone, Serialize, Default)]
@@ -28,23 +13,20 @@ pub(super) const DEFENSE: DefensePower = DefensePower::Armored;
 
 impl RoleStateTrait for Ojo {
     type ClientAbilityState = Ojo;
-    fn on_midnight(self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut MidnightVariables, priority: OnMidnightPriority) {
+    fn on_midnight(self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut OnMidnightFold, priority: OnMidnightPriority) {
         match priority {
             OnMidnightPriority::Kill => {
                 if game.day_number() == 1 {return}
-                let actor_visits = actor_ref.role_night_visits_cloned(midnight_variables);
-                if let Some(visit) = actor_visits.first(){
-                    let target_ref = visit.target;
-            
-                    target_ref.try_night_kill_single_attacker(
-                        actor_ref,
-                        game,
-                        midnight_variables,
-                        GraveKiller::Role(Role::Ojo),
-                        AttackPower::Basic,
-                        true
-                    );
-                }
+                let Some(target_ref) = Visits::default_target(midnight_variables, actor_ref, Role::Ojo) else {return};
+        
+                target_ref.try_night_kill_single_attacker(
+                    actor_ref,
+                    game,
+                    midnight_variables,
+                    GraveKiller::Role(Role::Ojo),
+                    AttackPower::Basic,
+                    true
+                );
             },
             OnMidnightPriority::Investigative => {
                 PlayerReference::all_players(game)
@@ -55,7 +37,7 @@ impl RoleStateTrait for Ojo {
                         .with_investigatable()
                         .map_target()
                         .collect();
-                    players.shuffle(&mut rand::rng());
+                    players.shuffle(&mut game.rng);
 
                     actor_ref.push_night_message(midnight_variables, 
                         ChatMessageVariant::WerewolfTrackingResult{

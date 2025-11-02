@@ -3,7 +3,7 @@ use crate::game::{
     components::{
         cult::Cult, dead_can_still_play_message::DeadCanStillPlayMessage, mafia::Mafia
     },
-    event::Event, modifiers::ModifierSettings, player::PlayerReference, Game
+    event::EventData, modifiers::ModifierSettings, player::PlayerReference,
 };
 
 #[must_use = "Event must be invoked"]
@@ -11,11 +11,11 @@ pub struct OnAnyDeath{
     pub dead_player: PlayerReference,
 }
 impl OnAnyDeath{
-    pub fn new(dead_player: PlayerReference) -> Self{
-        Self{dead_player}
+    pub fn new(dead_player: PlayerReference) -> (Self, ()){
+        (Self{dead_player}, ())
     }
 }
-impl Event for OnAnyDeath{
+impl EventData for OnAnyDeath{
     type FoldValue = ();
 
     type Priority = ();
@@ -27,6 +27,4 @@ impl Event for OnAnyDeath{
         Abilities::on_any_death,
         DeadCanStillPlayMessage::on_any_death
     ]}
-
-    fn initial_fold_value(&self, _game: &Game) -> Self::FoldValue {}
 }

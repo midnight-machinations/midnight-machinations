@@ -99,6 +99,9 @@ impl PlayerReference{
             ToClientPacket::YourPlayerIndex { 
                 player_index: self.index() 
             },
+            ToClientPacket::YourRole {
+                role: self.role(game)
+            },
             ToClientPacket::YourRoleState {
                 role_state: self.role_state(game).clone().get_client_ability_state(game, *self)
             },

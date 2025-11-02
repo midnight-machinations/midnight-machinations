@@ -1,18 +1,10 @@
 use std::iter::once;
-use crate::game::abilities_component::ability_id::AbilityID;
-use serde::{Deserialize, Serialize};
-use crate::game::components::confused::Confused;
+use crate::game::prelude::*;
 use crate::game::role_outline_reference::RoleOutlineReference;
-use crate::game::controllers::*;
-use crate::game::{attack_power::DefensePower, chat::ChatMessageVariant};
-use crate::game::player::PlayerReference;
-use crate::game::visit::Visit;
-use crate::game::Game;
 use crate::vec_map::VecMap;
 use crate::vec_set::VecSet;
 use rand::prelude::SliceRandom;
-use super::{common_role, Role, RoleStateTrait};
-use crate::game::event::on_midnight::{MidnightVariables, OnMidnightPriority};
+use serde::{Deserialize, Serialize};
 
 
 #[derive(Clone, Debug, Serialize, Default)]
@@ -30,7 +22,7 @@ pub(super) const DEFENSE: DefensePower = DefensePower::None;
 
 impl RoleStateTrait for Auditor {
     type ClientAbilityState = Auditor;
-    fn on_midnight(mut self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut MidnightVariables, priority: OnMidnightPriority) {
+    fn on_midnight(mut self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut OnMidnightFold, priority: OnMidnightPriority) {
 
         if priority != OnMidnightPriority::Investigative {return;}
         if actor_ref.night_blocked(midnight_variables) {return;}
@@ -90,7 +82,7 @@ impl RoleStateTrait for Auditor {
 
 impl Auditor{
     const MAX_RESULT_COUNT: usize = 4;
-    pub fn get_result(game: &Game, chosen_outline: RoleOutlineReference, confused: bool) -> AuditorResult {
+    pub fn get_result(game: &mut Game, chosen_outline: RoleOutlineReference, confused: bool) -> AuditorResult {
         let outline = chosen_outline.deref(game);
 
         let mut all_possible_fake_roles = outline
@@ -98,7 +90,7 @@ impl Auditor{
             .into_iter()
             .filter(|x|game.settings.enabled_roles.contains(x))
             .collect::<Vec<Role>>();
-        all_possible_fake_roles.shuffle(&mut rand::rng());
+        all_possible_fake_roles.shuffle(&mut game.rng);
 
         let role = chosen_outline.deref_as_role_and_player_originally_generated(game).0;
         let mut out = VecSet::new();
@@ -113,7 +105,7 @@ impl Auditor{
             if out.count() >= Auditor::MAX_RESULT_COUNT || out.count() >= all_possible_fake_roles.len().saturating_sub(1) {break}
             out.insert(*role);
         }
-        out.shuffle(&mut rand::rng());
+        out.shuffle(&mut game.rng);
 
         AuditorResult(out)
     }

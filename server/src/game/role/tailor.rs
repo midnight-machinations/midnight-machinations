@@ -1,19 +1,5 @@
 use serde::Serialize;
-use crate::game::components::night_visits::Visits;
-use crate::game::event::on_midnight::{MidnightVariables, OnMidnightPriority};
-use crate::game::attack_power::DefensePower;
-use crate::game::phase::PhaseType;
-use crate::game::player::PlayerReference;
-use crate::game::role::GetClientAbilityState;
-use crate::game::role_list::RoleSet;
-use crate::game::visit::Visit;
-use crate::game::Game;
-use super::{
-    ControllerID,
-    ControllerParametersMap,
-    Role, RoleStateTrait
-};
-use crate::game::abilities_component::ability_id::AbilityID;
+use crate::game::prelude::*;
 
 
 #[derive(Clone, Debug, Default)]
@@ -34,13 +20,14 @@ pub(super) const DEFENSE: DefensePower = DefensePower::None;
 
 impl RoleStateTrait for Tailor {
     type ClientAbilityState = ClientRoleState;
-    fn on_midnight(self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut MidnightVariables, priority: OnMidnightPriority) {
+    fn on_midnight(self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut OnMidnightFold, priority: OnMidnightPriority) {
         if priority != OnMidnightPriority::Convert {return;}
-        let Some(target) = Visits::default_target(game, midnight_variables, actor_ref) else {return};
-        let Some(role) = ControllerID::role(actor_ref, Role::Tailor, 1).get_role_list_selection_first(game) else {return};
+        let Some(target) = Visits::default_target(midnight_variables, actor_ref, Role::Tailor) else {return};
+        let Some(&role) = ControllerID::role(actor_ref, Role::Tailor, 1).get_role_list_selection_first(game) else {return};
     
-        if !RoleSet::TownCommon.get_roles().contains(&target.role(game)) {return}
-        target.set_night_convert_role_to(midnight_variables, Some(role.new_state(game)));
+        if RoleSet::TownCommon.get_roles().contains(&target.role(game)) {
+            target.set_night_convert_role_to(midnight_variables, Some(role.new_state(game)));
+        }
         actor_ref.edit_role_ability_helper(game, Tailor{previous_target: Some(target)});
     }
     fn on_phase_start(self, game: &mut Game, actor_ref: PlayerReference, phase: crate::game::phase::PhaseType) {

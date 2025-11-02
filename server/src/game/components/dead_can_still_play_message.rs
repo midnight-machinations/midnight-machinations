@@ -1,13 +1,15 @@
-use crate::game::{chat::ChatMessageVariant, event::on_any_death::OnAnyDeath, player::PlayerReference, role::Role, Game};
+use crate::game::{abilities_component::{ability_id::AbilityID, Abilities}, chat::ChatMessageVariant, event::on_any_death::OnAnyDeath, role::Role, Game};
 
 pub struct DeadCanStillPlayMessage;
 
 impl DeadCanStillPlayMessage {
     pub fn on_any_death(game: &mut Game, event: &OnAnyDeath, _fold: &mut (), _priority: ()) {
         if
-            PlayerReference::all_players(game).any(|player|
-                matches!(player.role(game), Role::Medium | Role::Puppeteer)
-            )
+            Abilities::ids(game)
+                .into_iter()
+                .any(|id|{
+                    matches!(id, AbilityID::Role { role: Role::Medium, .. })
+                })
         {
             event.dead_player.add_private_chat_message(
                 game,
