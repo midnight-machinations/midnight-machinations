@@ -108,3 +108,50 @@
 .role-set-article .masonry-item {
     text-align: center;
 }
+
+/* Enhanced Wiki Containers */
+.wiki-container {
+    margin: 1rem 0;
+    padding: 1rem;
+    border-radius: 0.5rem;
+    border-left: 4px solid;
+}
+
+.wiki-container-title {
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+    font-size: 1.1em;
+}
+
+.wiki-container-content {
+    margin-left: 0.5rem;
+}
+
+.wiki-container-tip {
+    background-color: rgba(76, 175, 80, 0.1);
+    border-color: #4caf50;
+}
+
+.wiki-container-warning {
+    background-color: rgba(255, 152, 0, 0.1);
+    border-color: #ff9800;
+}
+
+.wiki-container-danger {
+    background-color: rgba(244, 67, 54, 0.1);
+    border-color: #f44336;
+}
+
+.wiki-container-info {
+    background-color: rgba(33, 150, 243, 0.1);
+    border-color: #2196f3;
+}
+
+.wiki-container-note {
+    background-color: rgba(158, 158, 158, 0.1);
+    border-color: #9e9e9e;
+}
+
+.enhanced-wiki-content {
+    width: 100%;
+}
