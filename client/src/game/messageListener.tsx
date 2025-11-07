@@ -31,7 +31,9 @@ function sendDefaultName() {
 } 
 
 export default async function messageListener(packet: ToClientPacket){
-    console.log(JSON.stringify(packet, null, 2));
+    if (!(packet.type in ["pong", "voiceData"])) {
+        console.log(JSON.stringify(packet, null, 2));
+    }
 
     switch(packet.type) {
         case "pong":
