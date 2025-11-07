@@ -1,6 +1,6 @@
 use rand::seq::SliceRandom;
 use serde::Serialize;
-use crate::{game::prelude::*, vec_set::VecSet};
+use crate::{game::{components::attack::night_attack::NightAttack, prelude::*}, vec_set::VecSet};
 
 
 pub(super) const MAXIMUM_COUNT: Option<u8> = None;
@@ -44,14 +44,13 @@ impl RoleStateTrait for Mercenary {
         match (priority, visit.tag) {
             (OnMidnightPriority::Kill, VisitTag::Role { role: Role::Mercenary, id: 2 }) => {
                 if game.day_number() == 1 || self.attacks_remaining == 0 {return}
-                visit.target.try_night_kill_single_attacker(
-                    actor_ref,
-                    game,
-                    midnight_variables,
-                    GraveKiller::Role(Role::Mercenary),
-                    AttackPower::Basic,
-                    true
-                );
+
+                NightAttack::new()
+                    .attackers([actor_ref])
+                    .grave_killer(Role::Mercenary)
+                    .leave_death_note()
+                    .attack(game, midnight_variables, visit.target);
+
                 actor_ref.edit_role_ability_helper(game, Self{attacks_remaining: self.attacks_remaining.saturating_sub(1), ..self});
             },
             (OnMidnightPriority::Investigative, VisitTag::Role { role: Role::Mercenary, id: 1 }) => {

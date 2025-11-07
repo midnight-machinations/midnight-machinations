@@ -1,4 +1,5 @@
 use serde::Serialize;
+use crate::game::components::attack::night_attack::NightAttack;
 use crate::game::prelude::*;
 use crate::game::Game;
 
@@ -75,10 +76,11 @@ impl Godfather{
         if game.day_number() == 1 {return}
         if priority != OnMidnightPriority::Kill {return}
         let Some(target_ref) = Visits::default_target(midnight_variables, actor_ref, role) else {return};
-        target_ref.clone().try_night_kill_single_attacker(
-            actor_ref, game, midnight_variables, GraveKiller::RoleSet(RoleSet::Mafia),
-            AttackPower::Basic, false
-        );
+
+        NightAttack::new()
+            .attackers([actor_ref])
+            .grave_killer(RoleSet::Mafia)
+            .attack(game, midnight_variables, target_ref);
     }
     pub (super) fn pass_role_state_down(
         game: &mut Game,

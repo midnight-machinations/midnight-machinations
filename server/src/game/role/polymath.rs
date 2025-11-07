@@ -1,4 +1,5 @@
 use serde::Serialize;
+use crate::game::components::attack::night_attack::NightAttack;
 use crate::vec_map;
 use crate::game::prelude::*;
 use super::detective::Detective;
@@ -53,14 +54,10 @@ impl RoleStateTrait for Polymath {
                 let Some(mark) = mark.first() else {return};
                 if !target.all_direct_night_visitors_cloned(midnight_variables).any(|p|p == *mark) {return};
                 
-                mark.try_night_kill_single_attacker (
-                    actor_ref,
-                    game, 
-                    midnight_variables, 
-                    GraveKiller::Role(Role::Marksman), 
-                    AttackPower::Basic, 
-                    false
-                );
+                NightAttack::new()
+                    .attackers([actor_ref])
+                    .grave_killer(Role::Marksman)
+                    .attack(game, midnight_variables, *mark);
             },
             _=>(),
         }

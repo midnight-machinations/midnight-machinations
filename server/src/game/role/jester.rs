@@ -1,6 +1,6 @@
 use rand::seq::IndexedRandom;
 use serde::Serialize;
-use crate::game::{prelude::*, verdict::Verdict};
+use crate::game::{components::attack::night_attack::NightAttack, prelude::*, verdict::Verdict};
 
 #[derive(Clone, Debug, Default)]
 pub struct Jester {
@@ -42,10 +42,12 @@ impl RoleStateTrait for Jester {
             *target_ref
         };
         
-        
-        target_ref.try_night_kill_single_attacker(actor_ref, game, midnight_variables,
-            GraveKiller::Role(super::Role::Jester), AttackPower::ProtectionPiercing, true
-        );
+        NightAttack::new()
+            .attackers([actor_ref])
+            .grave_killer(Role::Jester)
+            .power(AttackPower::ProtectionPiercing)
+            .leave_death_note()
+            .attack(game, midnight_variables, target_ref);
     }
     fn controller_parameters_map(self, game: &Game, actor_ref: PlayerReference) -> ControllerParametersMap {
         ControllerParametersMap::builder(game)

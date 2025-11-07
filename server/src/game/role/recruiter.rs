@@ -1,6 +1,6 @@
 
 use serde::Serialize;
-use crate::game::{prelude::*, role::godfather::Godfather, role_list_generation::*};
+use crate::game::{components::attack::night_attack::NightAttack, prelude::*, role::godfather::Godfather, role_list_generation::*};
 
 
 #[derive(Debug, Clone, Serialize)]
@@ -103,14 +103,10 @@ impl Recruiter {
         let choose_attack = Self::choose_attack(game, actor_ref);
 
         if choose_attack {
-            target_ref.try_night_kill_single_attacker(
-                actor_ref,
-                game,
-                midnight_variables,
-                GraveKiller::RoleSet(RoleSet::Mafia),
-                AttackPower::Basic,
-                false
-            )
+            NightAttack::new()
+                .attackers([actor_ref])
+                .grave_killer(RoleSet::Mafia)
+                .attack(game, midnight_variables, target_ref)
         }else if AttackPower::Basic.can_pierce(target_ref.night_defense(game, midnight_variables)) {
             MafiaRecruits::recruit(game, midnight_variables, target_ref)
         }else{

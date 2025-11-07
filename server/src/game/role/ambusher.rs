@@ -1,6 +1,6 @@
 use rand::seq::IndexedRandom;
 use serde::Serialize;
-use crate::game::prelude::*;
+use crate::game::{components::attack::night_attack::NightAttack, prelude::*};
 
 
 #[derive(Clone, Debug, Default, Serialize)]
@@ -38,14 +38,10 @@ impl RoleStateTrait for Ambusher {
                 .copied()
             ) else {return};
 
-        player_to_attack.try_night_kill_single_attacker(
-            actor_ref,
-            game,
-            midnight_variables,
-            GraveKiller::Role(Role::Ambusher),
-            AttackPower::Basic,
-            false
-        );
+        NightAttack::new()
+            .attackers([actor_ref])
+            .grave_killer(Role::Ambusher)
+            .attack(game, midnight_variables, player_to_attack);
 
         for visitor in ambush_visit.target.all_direct_night_visitors_cloned(midnight_variables){
             if visitor == player_to_attack || visitor == actor_ref {continue;}

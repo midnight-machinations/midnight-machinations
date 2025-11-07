@@ -48,6 +48,18 @@ pub enum GraveKiller {
     Quit,
 }
 
+impl From<Role> for GraveKiller {
+    fn from(value: Role) -> Self {
+        GraveKiller::Role(value)
+    }
+}
+
+impl From<RoleSet> for GraveKiller {
+    fn from(value: RoleSet) -> Self {
+        GraveKiller::RoleSet(value)
+    }
+}
+
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq, PartialOrd, Ord)]
 #[serde(rename_all = "camelCase")]
 pub enum GravePhase {

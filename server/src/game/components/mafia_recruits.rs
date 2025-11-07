@@ -1,11 +1,10 @@
 use std::collections::HashSet;
 
 use crate::{game::{
-    attack_power::AttackPower, chat::ChatMessageVariant, components::{graves::grave::GraveKiller, insider_group::InsiderGroupID},
-    event::{
-        on_add_insider::OnAddInsider, on_midnight::{OnMidnightFold, OnMidnight, OnMidnightPriority},
+    Game, attack_power::AttackPower, chat::ChatMessageVariant, components::{attack::night_attack::NightAttack, insider_group::InsiderGroupID}, event::{
+        on_add_insider::OnAddInsider, on_midnight::{OnMidnight, OnMidnightFold, OnMidnightPriority},
         on_remove_insider::OnRemoveInsider
-    }, game_conclusion::GameConclusion, player::PlayerReference, role::Role, role_list::RoleSet, Game
+    }, game_conclusion::GameConclusion, player::PlayerReference, role::Role, role_list::RoleSet
 }, vec_set::VecSet};
 
 use super::{tags::Tags, win_condition::WinCondition};
@@ -61,7 +60,11 @@ impl MafiaRecruits{
             .collect();
 
         for player in players{
-            player.try_night_kill(recruiters.clone(), game, midnight_variables, GraveKiller::RoleSet(RoleSet::Mafia), attack_power, false);
+            NightAttack::new()
+                .attackers(recruiters.clone())
+                .grave_killer(RoleSet::Mafia)
+                .power(attack_power)
+                .attack(game, midnight_variables, player);
         }
     }
 

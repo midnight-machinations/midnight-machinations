@@ -1,6 +1,6 @@
 use rand::seq::SliceRandom;
 use serde::Serialize;
-use crate::game::prelude::*;
+use crate::game::{components::attack::night_attack::NightAttack, prelude::*};
 
 
 #[derive(Clone, Debug, Default)]
@@ -55,26 +55,21 @@ impl RoleStateTrait for Werewolf {
                     if game.day_number() <= 1 {return}
                         
                     //rampage target
-                    my_visit.target.rampage(
-                        game,
-                        midnight_variables,
-                        actor_ref,
-                        GraveKiller::Role(Role::Werewolf),
-                        AttackPower::ArmorPiercing,
-                        true,
-                        |v|*v != my_visit
-                    );
+                    NightAttack::new()
+                        .attackers([actor_ref])
+                        .grave_killer(Role::Werewolf)
+                        .power(AttackPower::ArmorPiercing)
+                        .leave_death_note()
+                        .rampage(game, midnight_variables, my_visit.target, |v| *v != my_visit);
                     
                     //If target visits or you are enraged, attack them
                     if my_visit.attack {
-                        my_visit.target.try_night_kill_single_attacker(
-                            actor_ref,
-                            game,
-                            midnight_variables,
-                            GraveKiller::Role(Role::Werewolf),
-                            AttackPower::ArmorPiercing,
-                            true
-                        );
+                        NightAttack::new()
+                            .attackers([actor_ref])
+                            .grave_killer(Role::Werewolf)
+                            .power(AttackPower::ArmorPiercing)
+                            .leave_death_note()
+                            .attack(game, midnight_variables, my_visit.target);
                     } 
                 }
                 

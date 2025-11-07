@@ -1,5 +1,5 @@
 use serde::Serialize;
-use crate::game::prelude::*;
+use crate::game::{components::attack::night_attack::NightAttack, prelude::*};
 
 #[derive(Debug, Clone, Serialize)]
 #[serde(rename_all = "camelCase")]
@@ -42,14 +42,12 @@ impl RoleStateTrait for Yer {
             if !chose_to_convert {
                 if priority != OnMidnightPriority::Kill {return}
 
-                target_ref.try_night_kill_single_attacker(
-                    actor_ref,
-                    game,
-                    midnight_variables,
-                    GraveKiller::Role(Role::Yer),
-                    AttackPower::ArmorPiercing,
-                    true
-                );
+                NightAttack::new()
+                    .attackers([actor_ref])
+                    .grave_killer(Role::Yer)
+                    .power(AttackPower::ArmorPiercing)
+                    .leave_death_note()
+                    .attack(game, midnight_variables, target_ref);
             } else {
                 if priority != OnMidnightPriority::Convert {return}
                 if self.star_passes_remaining == 0 {return}
@@ -76,14 +74,12 @@ impl RoleStateTrait for Yer {
                     old_role: target_ref.role(game),
                 })));
 
-                actor_ref.try_night_kill_single_attacker(
-                    actor_ref,
-                    game,
-                    midnight_variables,
-                    GraveKiller::Role(Role::Yer),
-                    AttackPower::ProtectionPiercing,
-                    true
-                );
+                NightAttack::new()
+                    .attackers([actor_ref])
+                    .grave_killer(Role::Yer)
+                    .power(AttackPower::ProtectionPiercing)
+                    .leave_death_note()
+                    .attack(game, midnight_variables, actor_ref);
 
                 actor_ref.edit_role_ability_helper(game, self);
             }
