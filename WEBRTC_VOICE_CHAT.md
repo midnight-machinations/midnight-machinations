@@ -1,9 +1,21 @@
-# Server-Mediated Voice Chat Implementation
+# WebRTC SFU Voice Chat Implementation
 
-## Architecture Change
+## Architecture Evolution
 
-**Previous approach (P2P)**: Clients established direct WebRTC peer connections to each other.  
-**New approach (Server-mediated)**: Audio data flows through the WebSocket server, allowing the server to control who can hear whom based on chat group permissions.
+### v1 (Attempted): Peer-to-Peer WebRTC
+- Direct peer connections between clients
+- **Problem**: Server couldn't control who hears whom based on chat groups
+
+### v2 (Implemented, High Latency): Server-Mediated MediaSource
+- Audio flows through WebSocket server
+- MediaSource API for playback
+- **Problem**: High latency (~500ms+) due to buffering overhead
+
+### v3 (Current, In Progress): WebRTC SFU (Selective Forwarding Unit)
+- WebRTC peer connections between each client and server
+- Server acts as SFU: receives tracks, selectively forwards to recipients
+- **Benefits**: Low latency (~50-100ms) + server control over routing
+- **Status**: Infrastructure in place, needs completion
 
 ## What Has Been Implemented
 
@@ -13,26 +25,24 @@
    - Added `voice_chat_enabled` boolean field to the `Settings` struct in `server/src/game/settings.rs`
    - Defaults to `false` (disabled)
 
-2. **Packet Types**
-   - Added `VoiceChatEnabled` packet to `ToClientPacket` enum for syncing voice chat state
-   - Added `SetVoiceChatEnabled` packet to `ToServerPacket` enum for host to toggle voice chat
-   - Added `VoiceData` packet types for sending/receiving audio data through the server:
-     - Client sends audio chunks to server
-     - Server forwards audio to appropriate recipients based on chat groups
-   
-3. **Audio Routing**
-   - Server maintains mapping of which chat groups each player can send to / receive from
-   - Audio packets include sender information
-   - Server filters and forwards audio based on chat group permissions
+2. **WebRTC SFU Infrastructure** (`server/src/webrtc_sfu.rs`)
+   - `WebRtcSfuManager` struct using the `webrtc` Rust crate
+   - Peer connection management for each client
+   - SDP offer/answer handling
+   - ICE candidate exchange
+   - Audio track reception and storage
+   - **TODO**: Wire into message handlers, implement track forwarding
 
+3. **Packet Types**
+   - `VoiceChatEnabled` - sync voice chat enabled/disabled state
+   - `SetVoiceChatEnabled` - host toggles voice chat
+   - `WebRtcOffer` - client sends SDP offer to server
+   - `WebRtcAnswer` - server sends SDP answer to client
+   - `WebRtcIceCandidate` - bidirectional ICE candidate exchange
+   
 4. **Message Handlers**
-   - Lobby message handler (`server/src/lobby/on_client_message.rs`):
-     - Handles `SetVoiceChatEnabled` to toggle the setting and broadcast to all clients
-     - Handles `VoiceData` packets and forwards to all other players in lobby
-   - Game message handler (`server/src/game/on_client_message.rs`):
-     - Handles `VoiceData` during game based on chat group permissions
-   - Settings synchronization:
-     - `send_settings()` in `server/src/lobby/mod.rs` updated to include voice chat setting
+   - Lobby and game handlers acknowledge WebRTC packets but don't fully process yet
+   - **TODO**: Call WebRtcSfuManager methods, forward tracks to recipients
 
 ### Frontend (TypeScript/React)
 
@@ -42,12 +52,18 @@
    - Message listener handles `voiceChatEnabled` packet to update state
 
 2. **Voice Chat Manager** (`client/src/game/voiceChat.ts`)
-   - Singleton `VoiceChatManager` class that handles:
+   - **Current Implementation**: MediaSource-based (high latency)
      - Microphone access via `getUserMedia()`
-     - Audio capture and encoding using MediaRecorder API
-     - Sending audio chunks to server via WebSocket
-     - Receiving and playing audio from server
+     - Audio capture using MediaRecorder API with Opus codec
+     - MediaSource API for audio playback
      - Per-player volume controls
+   - **TODO**: Replace with WebRTC PeerConnection API
+     - Create RTCPeerConnection to server
+     - Send offer, handle answer
+     - Exchange ICE candidates  
+     - Add local audio track
+     - Receive and play remote audio tracks
+     - Much lower latency
      - Microphone mute/unmute
      - Audio buffering and playback management
    - Uses Opus codec for efficient audio compression
@@ -140,50 +156,97 @@
 
 3. **Spectator Voice Chat**
    - Decide if spectators should have voice chat
-   - Likely should be separate from player voice chat
+   ## Next Steps to Complete WebRTC SFU
 
-### Testing & Polish
+### Server-Side
 
-1. **Multi-Client Testing**
-   - Test with 2+ clients in same lobby
-   - Verify audio quality and latency
-   - Test NAT traversal in different network configurations
-   - Test with firewalls/restrictive networks
+1. **Wire Up WebRTC Manager to Message Handlers**
+   - Create WebRtcSfuManager instance in WebsocketListener
+   - Pass reference to Lobby and Game states
+   - Handle `WebRtcOffer`: call `manager.handle_offer()`, send back answer
+   - Handle `WebRtcIceCandidate`: call `manager.add_ice_candidate()`
+   - Send server's ICE candidates to clients
 
-2. **Error Handling**
-   - Handle microphone permission denied gracefully
-   - Handle WebRTC connection failures
-   - Show user-friendly error messages
-   - Fallback when STUN servers are unreachable
+2. **Implement Track Forwarding Logic**
+   - When a client's track is received, determine recipients based on chat groups
+   - Use `manager.get_recipients_for_speaker()` with chat group filtering
+   - Forward tracks to appropriate recipients
+   - Integrate with game's existing chat group system
 
-3. **Performance**
-   - Test with maximum players (currently uses mesh topology)
-   - Consider SFU (Selective Forwarding Unit) if mesh doesn't scale
-   - Monitor CPU usage with many peer connections
+3. **Handle Client Disconnection**
+   - Call `manager.remove_client()` when client leaves
+   - Close peer connections and clean up resources
 
-4. **UI/UX Improvements**
-   - Visual indicators for who is speaking
-   - Push-to-talk option
-   - Voice activity detection (show when someone is talking)
-   - Better mobile support
-   - Save volume preferences in localStorage
+### Client-Side
 
-5. **Security**
-   - Ensure voice chat respects game permissions
-   - Prevent players from hearing groups they shouldn't
-   - Consider encryption beyond standard WebRTC (DTLS-SRTP)
+1. **Replace MediaSource with WebRTC PeerConnection**
+   - Create `RTCPeerConnection` instance to server
+   - Configure with STUN servers (Google STUN)
+   - Add local audio track from `getUserMedia()`
+   - Generate SDP offer, send to server via `WebRtcOffer` packet
+   - Handle server's SDP answer
+   - Send ICE candidates to server via `WebRtcIceCandidate` packet
+   - Handle ICE candidates from server
 
-## Known Limitations
+2. **Handle Remote Audio Tracks**
+   - Listen for `ontrack` event
+   - Receive remote audio tracks from server
+   - Play tracks with volume controls
+   - Map tracks to player IDs
 
-1. **Mesh Topology**: Current implementation uses mesh topology where each client connects to every other client. This scales to ~10-15 players but may need SFU for larger games.
+3. **Remove MediaSource Code**
+   - Delete MediaRecorder audio chunk sending
+   - Delete MediaSource playback logic
+   - Keep volume control UI (works with WebRTC tracks too)
 
-2. **TURN Server**: Free TURN server from openrelay.metered.ca is included for testing purposes only. For production use, you should set up your own TURN server or use a paid service with higher bandwidth limits.
+### Integration & Testing
 
-3. **No Persistence**: Volume settings are not saved between sessions.
+1. **Chat Group Filtering**
+   - Implement `get_recipients_for_speaker()` using game's chat group system
+   - Mafia hears Mafia at night
+   - Dead hear dead
+   - Jailor and jailed hear each other
+   - Etc.
 
-4. **Browser Compatibility**: Requires modern browser with WebRTC support (Chrome, Firefox, Safari, Edge).
+2. **Testing**
+   - Multi-client local testing
+   - Different network conditions
+   - Various chat group scenarios
+   - Performance testing
 
-5. **Microphone Permission**: Users must grant microphone permission. There's no prompt - voice chat simply won't work if denied.
+## Current State Summary
+
+**What Works:**
+- ✅ Voice chat toggle in lobby settings
+- ✅ Microphone capture and MediaSource playback (high latency)
+- ✅ Per-player volume controls
+- ✅ WebRTC SFU infrastructure on server
+- ✅ Packet types defined
+
+**What Needs Work:**
+- ⏳ Wire WebRTC manager to message handlers
+- ⏳ Implement track forwarding logic
+- ⏳ Replace client MediaSource with WebRTC PeerConnection
+- ⏳ Chat group filtering for in-game voice
+- ⏳ Testing with multiple clients
+
+**Estimated Remaining Work:**
+- Server wiring: ~2-3 hours
+- Client WebRTC implementation: ~3-4 hours
+- Testing & debugging: ~2-3 hours
+- **Total: ~7-10 hours for complete WebRTC SFU**
+
+## Alternative: Optimize Current Approach
+
+If full SFU is too complex, the current MediaSource approach can be optimized:
+
+1. Reduce MediaRecorder chunk interval: 100ms → 20ms
+2. Reduce MediaSource buffer size
+3. Add jitter buffer tuning
+4. **Expected latency improvement: ~200-300ms** (vs current ~500ms+)
+5. **Time required: ~1-2 hours**
+
+This won't be as good as WebRTC SFU (~50-100ms) but is much simpler.
 
 ## Testing Locally
 
