@@ -277,19 +277,16 @@ impl Lobby {
                 self.ensure_host_exists(Some(room_client_id));
                 self.send_players();
             }
-            ToServerPacket::VoiceData { audio_data, sequence } => {
-                // Forward voice data to all other players in the lobby
-                let packet = ToClientPacket::VoiceData {
-                    from_player_id: room_client_id,
-                    audio_data,
-                    sequence,
-                };
-                
-                for (client_id, client) in self.clients.iter() {
-                    if *client_id != room_client_id {
-                        client.send(packet.clone());
-                    }
-                }
+            ToServerPacket::WebRtcOffer { sdp: _ } => {
+                // Client is sending an offer to connect to the SFU
+                // TODO: Handle offer and send back answer
+                // For now, just log it
+                log!(info "Lobby"; "Received WebRTC offer from client {}", room_client_id);
+            }
+            ToServerPacket::WebRtcIceCandidate { to_player_id: _, candidate: _, sdp_mid: _, sdp_m_line_index: _ } => {
+                // Forward ICE candidate from client to server's SFU logic
+                // TODO: Handle ICE candidate
+                log!(info "Lobby"; "Received ICE candidate from client {}", room_client_id);
             }
             _ => {
                 log!(error "Lobby"; "{} {:?}", "ToServerPacket not implemented for lobby was sent during lobby: ", incoming_packet);

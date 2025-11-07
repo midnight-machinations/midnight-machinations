@@ -153,12 +153,25 @@ pub enum ToClientPacket{
 
     GameOver{reason: GameOverReason},
 
-    // Voice Chat - Server-mediated audio
+    // Voice Chat - WebRTC SFU signaling
     #[serde(rename_all = "camelCase")]
-    VoiceData{
+    WebRtcOffer{
         from_player_id: RoomClientID,
-        audio_data: Vec<u8>,
-        sequence: u32,
+        sdp: String,
+    },
+    
+    #[serde(rename_all = "camelCase")]
+    WebRtcAnswer{
+        to_player_id: RoomClientID,
+        sdp: String,
+    },
+    
+    #[serde(rename_all = "camelCase")]
+    WebRtcIceCandidate{
+        from_player_id: RoomClientID,
+        candidate: String,
+        sdp_mid: Option<String>,
+        sdp_m_line_index: Option<u16>,
     },
 }
 
@@ -255,10 +268,17 @@ pub enum ToServerPacket{
     #[serde(rename_all = "camelCase")]
     VoteFastForwardPhase{fast_forward: FastForwardSetting},
 
-    // Voice Chat - Server-mediated audio
+    // Voice Chat - WebRTC SFU signaling
     #[serde(rename_all = "camelCase")]
-    VoiceData{
-        audio_data: Vec<u8>,
-        sequence: u32,
+    WebRtcOffer{
+        sdp: String,
+    },
+    
+    #[serde(rename_all = "camelCase")]
+    WebRtcIceCandidate{
+        to_player_id: RoomClientID,
+        candidate: String,
+        sdp_mid: Option<String>,
+        sdp_m_line_index: Option<u16>,
     },
 }

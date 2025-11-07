@@ -155,22 +155,13 @@ impl Game {
             ToServerPacket::VoteFastForwardPhase { fast_forward } => {
                 sender_player_ref.set_fast_forward_vote(self, fast_forward);
             },
-            ToServerPacket::VoiceData { audio_data, sequence } => {
-                // Forward voice data to players based on chat group permissions
-                // For now, send to all players (TODO: filter by chat groups)
-                let packet = ToClientPacket::VoiceData {
-                    from_player_id: room_client_id,
-                    audio_data,
-                    sequence,
-                };
-                
-                for (client_id, client) in self.clients.iter() {
-                    if *client_id != room_client_id {
-                        if let GameClientLocation::Player(player_ref) = client.client_location {
-                            player_ref.send_packet(self, packet.clone());
-                        }
-                    }
-                }
+            ToServerPacket::WebRtcOffer { sdp: _ } => {
+                // WebRTC offers should be handled by the room/lobby level
+                log!(error "Game"; "WebRTC offer received in game state, should be handled at room level");
+            },
+            ToServerPacket::WebRtcIceCandidate { to_player_id: _, candidate: _, sdp_mid: _, sdp_m_line_index: _ } => {
+                // WebRTC ICE candidates should be handled by the room/lobby level
+                log!(error "Game"; "WebRTC ICE candidate received in game state, should be handled at room level");
             },
             _ => {
                 log!(error "Game"; "Recieved invalid packet for Game state: {incoming_packet:?}");
