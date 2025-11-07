@@ -17,7 +17,7 @@ impl RoleStateTrait for Mafioso {
         let Some(target_ref) = Visits::default_target(midnight_variables, actor_ref, Role::Mafioso) else {return};
         NightAttack::new()
             .attackers([actor_ref])
-            .grave_killer(Role::Mafioso)
+            .grave_killer(RoleSet::Mafia)
             .attack(game, midnight_variables, target_ref);
     }
     fn controller_parameters_map(self, game: &Game, actor_ref: PlayerReference) -> super::ControllerParametersMap {
