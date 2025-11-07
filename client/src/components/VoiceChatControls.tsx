@@ -47,26 +47,18 @@ export function VoiceChatControls(): ReactElement | null {
         }
     }, [voiceChatEnabled, initialized, players]);
 
-    // Handle player joins/leaves
+    // Handle player joins/leaves - simplified for server-mediated architecture
     useEffect(() => {
         if (!voiceChatEnabled || !initialized || !players) return;
 
         const updatePlayers = async () => {
             const { voiceChatManager } = await import("../game/voiceChat");
             const currentPlayerIds = Array.from(players.keys());
-            const managedPlayerIds = new Set(voiceChatManager["peerConnections"].keys());
 
-            // Add new players
+            // Just notify about player changes (server handles routing)
             for (const playerId of currentPlayerIds) {
-                if (playerId !== myId && !managedPlayerIds.has(playerId)) {
+                if (playerId !== myId) {
                     voiceChatManager.addPlayer(playerId);
-                }
-            }
-
-            // Remove disconnected players
-            for (const playerId of managedPlayerIds) {
-                if (!currentPlayerIds.includes(playerId)) {
-                    voiceChatManager.removePlayer(playerId);
                 }
             }
         };

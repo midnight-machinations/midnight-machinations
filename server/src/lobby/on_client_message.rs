@@ -277,13 +277,18 @@ impl Lobby {
                 self.ensure_host_exists(Some(room_client_id));
                 self.send_players();
             }
-            ToServerPacket::WebRtcSignal { target_player_id, signal } => {
-                // Forward WebRTC signaling messages to the target player
-                if let Some(target_client) = self.clients.get(&target_player_id) {
-                    target_client.send(ToClientPacket::WebRtcSignal {
-                        from_player_id: room_client_id,
-                        signal,
-                    });
+            ToServerPacket::VoiceData { audio_data, sequence } => {
+                // Forward voice data to all other players in the lobby
+                let packet = ToClientPacket::VoiceData {
+                    from_player_id: room_client_id,
+                    audio_data,
+                    sequence,
+                };
+                
+                for (client_id, client) in self.clients.iter() {
+                    if *client_id != room_client_id {
+                        client.send(packet.clone());
+                    }
                 }
             }
             _ => {

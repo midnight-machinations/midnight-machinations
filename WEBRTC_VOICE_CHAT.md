@@ -1,4 +1,9 @@
-# WebRTC Voice Chat Implementation
+# Server-Mediated Voice Chat Implementation
+
+## Architecture Change
+
+**Previous approach (P2P)**: Clients established direct WebRTC peer connections to each other.  
+**New approach (Server-mediated)**: Audio data flows through the WebSocket server, allowing the server to control who can hear whom based on chat group permissions.
 
 ## What Has Been Implemented
 
@@ -11,17 +16,21 @@
 2. **Packet Types**
    - Added `VoiceChatEnabled` packet to `ToClientPacket` enum for syncing voice chat state
    - Added `SetVoiceChatEnabled` packet to `ToServerPacket` enum for host to toggle voice chat
-   - Added `WebRtcSignal` packet types for both `ToClientPacket` and `ToServerPacket` with signal data:
-     - `Offer` - WebRTC offer with SDP
-     - `Answer` - WebRTC answer with SDP  
-     - `IceCandidate` - ICE candidates for NAT traversal
+   - Added `VoiceData` packet types for sending/receiving audio data through the server:
+     - Client sends audio chunks to server
+     - Server forwards audio to appropriate recipients based on chat groups
    
-3. **Message Handlers**
+3. **Audio Routing**
+   - Server maintains mapping of which chat groups each player can send to / receive from
+   - Audio packets include sender information
+   - Server filters and forwards audio based on chat group permissions
+
+4. **Message Handlers**
    - Lobby message handler (`server/src/lobby/on_client_message.rs`):
      - Handles `SetVoiceChatEnabled` to toggle the setting and broadcast to all clients
-     - Handles `WebRtcSignal` to forward signaling messages between clients
+     - Handles `VoiceData` packets and forwards to all other players in lobby
    - Game message handler (`server/src/game/on_client_message.rs`):
-     - Handles `WebRtcSignal` during game to support in-game voice chat
+     - Handles `VoiceData` during game based on chat group permissions
    - Settings synchronization:
      - `send_settings()` in `server/src/lobby/mod.rs` updated to include voice chat setting
 
@@ -32,16 +41,16 @@
    - Added to `createLobbyState()` default initialization (defaults to `false`)
    - Message listener handles `voiceChatEnabled` packet to update state
 
-2. **WebRTC Manager** (`client/src/game/voiceChat.ts`)
+2. **Voice Chat Manager** (`client/src/game/voiceChat.ts`)
    - Singleton `VoiceChatManager` class that handles:
      - Microphone access via `getUserMedia()`
-     - Peer-to-peer WebRTC connections using mesh topology
-     - Audio track management (local and remote streams)
-     - ICE candidate exchange via server signaling
+     - Audio capture and encoding using MediaRecorder API
+     - Sending audio chunks to server via WebSocket
+     - Receiving and playing audio from server
      - Per-player volume controls
      - Microphone mute/unmute
-     - Connection lifecycle management
-   - Uses free Google STUN servers for NAT traversal
+     - Audio buffering and playback management
+   - Uses Opus codec for efficient audio compression
    - Supports echo cancellation, noise suppression, and auto gain control
 
 3. **UI Components**

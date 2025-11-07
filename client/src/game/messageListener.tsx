@@ -549,10 +549,10 @@ export default async function messageListener(packet: ToClientPacket){
                 }
             }
         break;
-        case "webRtcSignal":
-            // Handle WebRTC signaling messages
+        case "voiceData":
+            // Handle voice data from server
             const { voiceChatManager } = await import("./voiceChat");
-            voiceChatManager.handleSignal(packet.fromPlayerId, packet.signal);
+            voiceChatManager.handleVoiceData(packet.fromPlayerId, packet.audioData, packet.sequence);
         break;
         default:
             console.error(`incoming message response not implemented: ${(packet as any)?.type}`);

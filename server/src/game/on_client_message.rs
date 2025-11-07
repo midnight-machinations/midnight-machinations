@@ -155,14 +155,20 @@ impl Game {
             ToServerPacket::VoteFastForwardPhase { fast_forward } => {
                 sender_player_ref.set_fast_forward_vote(self, fast_forward);
             },
-            ToServerPacket::WebRtcSignal { target_player_id, signal } => {
-                // Forward WebRTC signaling messages to the target player - handle via game client map
-                if let Some(target_client) = self.clients.get(&target_player_id) {
-                    if let GameClientLocation::Player(target_player_ref) = target_client.client_location {
-                        target_player_ref.send_packet(self, ToClientPacket::WebRtcSignal {
-                            from_player_id: room_client_id,
-                            signal,
-                        });
+            ToServerPacket::VoiceData { audio_data, sequence } => {
+                // Forward voice data to players based on chat group permissions
+                // For now, send to all players (TODO: filter by chat groups)
+                let packet = ToClientPacket::VoiceData {
+                    from_player_id: room_client_id,
+                    audio_data,
+                    sequence,
+                };
+                
+                for (client_id, client) in self.clients.iter() {
+                    if *client_id != room_client_id {
+                        if let GameClientLocation::Player(player_ref) = client.client_location {
+                            player_ref.send_packet(self, packet.clone());
+                        }
                     }
                 }
             },
