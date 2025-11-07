@@ -9,9 +9,7 @@ class VoiceChatManager {
     private localStream: MediaStream | null = null;
     private mediaRecorder: MediaRecorder | null = null;
     private audioContext: AudioContext | null = null;
-    private audioBuffers: Map<LobbyClientID, AudioBuffer[]> = new Map();
-    private audioSources: Map<LobbyClientID, AudioBufferSourceNode> = new Map();
-    private volumeSettings: Map<LobbyClientID, GainNode> = new Map();
+    private playerVolumes: Map<LobbyClientID, number> = new Map();
     private enabled: boolean = false;
     private micEnabled: boolean = false;
     private sequence: number = 0;
@@ -143,7 +141,7 @@ class VoiceChatManager {
      * Handle incoming voice data from server
      */
     async handleVoiceData(fromPlayerId: LobbyClientID, audioData: number[], sequence: number): Promise<void> {
-        if (!this.enabled || !this.audioContext) {
+        if (!this.enabled) {
             return;
         }
 
@@ -151,15 +149,14 @@ class VoiceChatManager {
             // Convert number array back to Uint8Array
             const uint8Array = new Uint8Array(audioData);
             
-            // Create a Blob from the data
+            // Create a Blob from the data with proper MIME type
             const blob = new Blob([uint8Array], { type: 'audio/webm;codecs=opus' });
             
-            // Decode audio data
-            const arrayBuffer = await blob.arrayBuffer();
-            const audioBuffer = await this.audioContext.decodeAudioData(arrayBuffer);
-
-            // Play the audio
-            this.playAudioBuffer(fromPlayerId, audioBuffer);
+            // Create an object URL from the blob
+            const audioUrl = URL.createObjectURL(blob);
+            
+            // Play the audio using HTML Audio element
+            this.playAudioUrl(fromPlayerId, audioUrl);
 
         } catch (error) {
             console.error(`Error handling voice data from player ${fromPlayerId}:`, error);
@@ -167,7 +164,39 @@ class VoiceChatManager {
     }
 
     /**
-     * Play an audio buffer for a specific player
+     * Play audio from a URL for a specific player
+     */
+    private playAudioUrl(playerId: LobbyClientID, audioUrl: string): void {
+        try {
+            // Create audio element
+            const audio = new Audio(audioUrl);
+            
+            // Apply volume setting
+            const volume = this.getPlayerVolume(playerId);
+            audio.volume = volume;
+            
+            // Play the audio
+            audio.play().catch(err => {
+                console.error(`Error playing audio from player ${playerId}:`, err);
+            });
+
+            // Clean up the object URL after playback
+            audio.onended = () => {
+                URL.revokeObjectURL(audioUrl);
+            };
+            
+            // Also clean up on error
+            audio.onerror = () => {
+                URL.revokeObjectURL(audioUrl);
+            };
+
+        } catch (error) {
+            console.error(`Error playing audio from player ${playerId}:`, error);
+        }
+    }
+
+    /**
+     * Play an audio buffer for a specific player (legacy method, not currently used)
      */
     private playAudioBuffer(playerId: LobbyClientID, audioBuffer: AudioBuffer): void {
         if (!this.audioContext) {
@@ -179,17 +208,8 @@ class VoiceChatManager {
             const source = this.audioContext.createBufferSource();
             source.buffer = audioBuffer;
 
-            // Create or get gain node for volume control
-            let gainNode = this.volumeSettings.get(playerId);
-            if (!gainNode) {
-                gainNode = this.audioContext.createGain();
-                gainNode.gain.value = 1.0; // Default volume
-                gainNode.connect(this.audioContext.destination);
-                this.volumeSettings.set(playerId, gainNode);
-            }
-
             // Connect and play
-            source.connect(gainNode);
+            source.connect(this.audioContext.destination);
             source.start(0);
 
             // Clean up after playback
@@ -206,28 +226,8 @@ class VoiceChatManager {
      * Clear all audio buffers
      */
     private clearAllAudioBuffers(): void {
-        this.audioBuffers.clear();
-        
-        // Stop all active audio sources
-        for (const source of this.audioSources.values()) {
-            try {
-                source.stop();
-                source.disconnect();
-            } catch (e) {
-                // Ignore errors from already stopped sources
-            }
-        }
-        this.audioSources.clear();
-
-        // Disconnect gain nodes
-        for (const gainNode of this.volumeSettings.values()) {
-            try {
-                gainNode.disconnect();
-            } catch (e) {
-                // Ignore errors
-            }
-        }
-        this.volumeSettings.clear();
+        // Clear volume settings
+        this.playerVolumes.clear();
     }
 
     /**
@@ -237,24 +237,15 @@ class VoiceChatManager {
         // Clamp volume between 0 and 1
         volume = Math.max(0, Math.min(1, volume));
         
-        let gainNode = this.volumeSettings.get(playerId);
-        if (!gainNode && this.audioContext) {
-            gainNode = this.audioContext.createGain();
-            gainNode.connect(this.audioContext.destination);
-            this.volumeSettings.set(playerId, gainNode);
-        }
-        
-        if (gainNode) {
-            gainNode.gain.value = volume;
-        }
+        // Store volume setting for future audio playback
+        this.playerVolumes.set(playerId, volume);
     }
 
     /**
      * Get volume for a specific player
      */
     getPlayerVolume(playerId: LobbyClientID): number {
-        const gainNode = this.volumeSettings.get(playerId);
-        return gainNode ? gainNode.gain.value : 1.0;
+        return this.playerVolumes.get(playerId) ?? 1.0;
     }
 
     /**
@@ -314,29 +305,8 @@ class VoiceChatManager {
      * Remove a player from voice chat
      */
     removePlayer(playerId: LobbyClientID): void {
-        // Clean up any audio state for this player
-        this.audioBuffers.delete(playerId);
-        
-        const source = this.audioSources.get(playerId);
-        if (source) {
-            try {
-                source.stop();
-                source.disconnect();
-            } catch (e) {
-                // Ignore
-            }
-            this.audioSources.delete(playerId);
-        }
-
-        const gainNode = this.volumeSettings.get(playerId);
-        if (gainNode) {
-            try {
-                gainNode.disconnect();
-            } catch (e) {
-                // Ignore
-            }
-            this.volumeSettings.delete(playerId);
-        }
+        // Clean up volume setting for this player
+        this.playerVolumes.delete(playerId);
 
         console.log(`Player ${playerId} removed from voice chat`);
     }
