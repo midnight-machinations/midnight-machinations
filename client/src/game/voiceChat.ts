@@ -10,6 +10,7 @@ class VoiceChatManager {
     private mediaRecorder: MediaRecorder | null = null;
     private audioContext: AudioContext | null = null;
     private playerVolumes: Map<LobbyClientID, number> = new Map();
+    private mediaSourceMap: Map<LobbyClientID, { mediaSource: MediaSource, audio: HTMLAudioElement, sourceBuffer: SourceBuffer | null, queue: Uint8Array[] }> = new Map();
     private enabled: boolean = false;
     private micEnabled: boolean = false;
     private sequence: number = 0;
@@ -149,14 +150,18 @@ class VoiceChatManager {
             // Convert number array back to Uint8Array
             const uint8Array = new Uint8Array(audioData);
             
-            // Create a Blob from the data with proper MIME type
-            const blob = new Blob([uint8Array], { type: 'audio/webm;codecs=opus' });
+            // Get or create MediaSource for this player
+            let playerMedia = this.mediaSourceMap.get(fromPlayerId);
+            if (!playerMedia) {
+                playerMedia = this.createMediaSourceForPlayer(fromPlayerId);
+                this.mediaSourceMap.set(fromPlayerId, playerMedia);
+            }
             
-            // Create an object URL from the blob
-            const audioUrl = URL.createObjectURL(blob);
+            // Add chunk to queue
+            playerMedia.queue.push(uint8Array);
             
-            // Play the audio using HTML Audio element
-            this.playAudioUrl(fromPlayerId, audioUrl);
+            // Process queue if source buffer is ready
+            this.processAudioQueue(fromPlayerId);
 
         } catch (error) {
             console.error(`Error handling voice data from player ${fromPlayerId}:`, error);
@@ -164,7 +169,75 @@ class VoiceChatManager {
     }
 
     /**
-     * Play audio from a URL for a specific player
+     * Create MediaSource and Audio element for a player
+     */
+    private createMediaSourceForPlayer(playerId: LobbyClientID): { mediaSource: MediaSource, audio: HTMLAudioElement, sourceBuffer: SourceBuffer | null, queue: Uint8Array[] } {
+        const mediaSource = new MediaSource();
+        const audio = new Audio();
+        audio.src = URL.createObjectURL(mediaSource);
+        
+        // Apply volume setting
+        const volume = this.getPlayerVolume(playerId);
+        audio.volume = volume;
+        
+        const playerMedia = {
+            mediaSource,
+            audio,
+            sourceBuffer: null as SourceBuffer | null,
+            queue: [] as Uint8Array[]
+        };
+        
+        mediaSource.addEventListener('sourceopen', () => {
+            try {
+                if (mediaSource.readyState === 'open') {
+                    const sourceBuffer = mediaSource.addSourceBuffer('audio/webm; codecs="opus"');
+                    playerMedia.sourceBuffer = sourceBuffer;
+                    
+                    sourceBuffer.addEventListener('updateend', () => {
+                        this.processAudioQueue(playerId);
+                    });
+                    
+                    // Start playback
+                    audio.play().catch(err => {
+                        console.error(`Error starting audio playback for player ${playerId}:`, err);
+                    });
+                    
+                    // Process any queued data
+                    this.processAudioQueue(playerId);
+                }
+            } catch (error) {
+                console.error(`Error setting up source buffer for player ${playerId}:`, error);
+            }
+        });
+        
+        return playerMedia;
+    }
+    
+    /**
+     * Process queued audio data for a player
+     */
+    private processAudioQueue(playerId: LobbyClientID): void {
+        const playerMedia = this.mediaSourceMap.get(playerId);
+        if (!playerMedia || !playerMedia.sourceBuffer) {
+            return;
+        }
+        
+        const { sourceBuffer, queue } = playerMedia;
+        
+        // Only append if not currently updating and we have data
+        if (!sourceBuffer.updating && queue.length > 0) {
+            const chunk = queue.shift()!;
+            try {
+                // Cast to ArrayBuffer to satisfy TypeScript
+                sourceBuffer.appendBuffer(chunk.buffer as ArrayBuffer);
+            } catch (error) {
+                console.error(`Error appending buffer for player ${playerId}:`, error);
+            }
+        }
+    }
+
+    /**
+     * Play audio from a URL for a specific player (legacy, not used)
      */
     private playAudioUrl(playerId: LobbyClientID, audioUrl: string): void {
         try {
@@ -226,6 +299,21 @@ class VoiceChatManager {
      * Clear all audio buffers
      */
     private clearAllAudioBuffers(): void {
+        // Clean up all MediaSource instances
+        for (const [playerId, playerMedia] of this.mediaSourceMap.entries()) {
+            try {
+                playerMedia.audio.pause();
+                playerMedia.audio.src = '';
+                if (playerMedia.mediaSource.readyState === 'open') {
+                    playerMedia.mediaSource.endOfStream();
+                }
+                URL.revokeObjectURL(playerMedia.audio.src);
+            } catch (e) {
+                // Ignore cleanup errors
+            }
+        }
+        this.mediaSourceMap.clear();
+        
         // Clear volume settings
         this.playerVolumes.clear();
     }
@@ -237,8 +325,14 @@ class VoiceChatManager {
         // Clamp volume between 0 and 1
         volume = Math.max(0, Math.min(1, volume));
         
-        // Store volume setting for future audio playback
+        // Store volume setting
         this.playerVolumes.set(playerId, volume);
+        
+        // Apply to existing audio element if it exists
+        const playerMedia = this.mediaSourceMap.get(playerId);
+        if (playerMedia) {
+            playerMedia.audio.volume = volume;
+        }
     }
 
     /**
@@ -305,6 +399,21 @@ class VoiceChatManager {
      * Remove a player from voice chat
      */
     removePlayer(playerId: LobbyClientID): void {
+        // Clean up MediaSource for this player
+        const playerMedia = this.mediaSourceMap.get(playerId);
+        if (playerMedia) {
+            try {
+                playerMedia.audio.pause();
+                playerMedia.audio.src = '';
+                if (playerMedia.mediaSource.readyState === 'open') {
+                    playerMedia.mediaSource.endOfStream();
+                }
+            } catch (e) {
+                // Ignore cleanup errors
+            }
+            this.mediaSourceMap.delete(playerId);
+        }
+        
         // Clean up volume setting for this player
         this.playerVolumes.delete(playerId);
 
