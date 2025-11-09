@@ -61,12 +61,8 @@ impl WebRtcSfuManager {
                     urls: vec!["stun:stun.l.google.com:19302".to_owned()],
                     ..Default::default()
                 },
-                RTCIceServer {
-                    urls: vec!["turn:openrelay.metered.ca:80".to_owned()],
-                    username: "openrelayproject".to_owned(),
-                    credential: "openrelayproject".to_owned(),
-                    ..Default::default()
-                },
+                // TURN server removed - credentials were invalid
+                // Add your own TURN server if needed for restrictive networks
             ],
             ..Default::default()
         };
