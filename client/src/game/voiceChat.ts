@@ -87,15 +87,11 @@ class VoiceChatManager {
         }
 
         try {
-            // Create peer connection with STUN/TURN servers
+            // Create peer connection with STUN server only
+            // TURN server removed due to invalid credentials
             const configuration: RTCConfiguration = {
                 iceServers: [
-                    { urls: 'stun:stun.l.google.com:19302' },
-                    {
-                        urls: 'turn:openrelay.metered.ca:80',
-                        username: 'openrelayproject',
-                        credential: 'openrelayproject'
-                    }
+                    { urls: 'stun:stun.l.google.com:19302' }
                 ]
             };
 
@@ -111,13 +107,15 @@ class VoiceChatManager {
             // Handle ICE candidates
             this.peerConnection.onicecandidate = (event) => {
                 if (event.candidate) {
-                    console.log("Sending ICE candidate to server");
+                    console.log("Sending ICE candidate to server:", event.candidate.candidate.substring(0, 50) + "...");
                     GAME_MANAGER.server.sendPacket({
                         type: "webRtcIceCandidate",
                         candidate: event.candidate.candidate,
                         sdpMid: event.candidate.sdpMid,
                         sdpMLineIndex: event.candidate.sdpMLineIndex
                     });
+                } else {
+                    console.log("ICE gathering complete");
                 }
             };
 
