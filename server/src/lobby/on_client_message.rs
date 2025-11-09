@@ -277,18 +277,22 @@ impl Lobby {
                 self.ensure_host_exists(Some(room_client_id));
                 self.send_players();
             }
-            ToServerPacket::WebRtcOffer { sdp } => {
+            ToServerPacket::WebRtcOffer { sdp: _ } => {
                 // Client is sending an offer to connect to the SFU
                 log!(info "Lobby"; "Received WebRTC offer from client {}", room_client_id);
-                // TODO: Wire to WebRTC manager to create peer connection and send answer
-                // let answer_sdp = webrtc_manager.handle_offer(room_client_id, sdp).await;
-                // send.send(ToClientPacket::WebRtcAnswer { sdp: answer_sdp });
+                
+                // Note: WebRTC operations are async but we're in a sync context
+                // The actual implementation should spawn a task or use channels
+                // For now, log that this needs to be wired through the WebsocketListener
+                // which has access to the WebRTC manager
+                
+                // Handled at WebsocketListener level where the WebRTC manager is accessible
             }
-            ToServerPacket::WebRtcIceCandidate { candidate, sdp_mid, sdp_m_line_index } => {
+            ToServerPacket::WebRtcIceCandidate { candidate: _, sdp_mid: _, sdp_m_line_index: _ } => {
                 // Forward ICE candidate from client to server's SFU logic
                 log!(info "Lobby"; "Received ICE candidate from client {}", room_client_id);
-                // TODO: Wire to WebRTC manager
-                // webrtc_manager.add_ice_candidate(room_client_id, candidate, sdp_mid, sdp_m_line_index).await;
+                
+                // Handled at WebsocketListener level where the WebRTC manager is accessible
             }
             _ => {
                 log!(error "Lobby"; "{} {:?}", "ToServerPacket not implemented for lobby was sent during lobby: ", incoming_packet);

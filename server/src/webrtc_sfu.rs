@@ -75,7 +75,6 @@ impl WebRtcSfuManager {
         let peer_connection = Arc::new(self.api.new_peer_connection(config).await?);
 
         // Set up ICE candidate event handler
-        let pc_for_ice = Arc::clone(&peer_connection);
         peer_connection.on_ice_candidate(Box::new(move |candidate| {
             if let Some(c) = candidate {
                 let candidate_str = c.to_json().unwrap_or_default().candidate;
