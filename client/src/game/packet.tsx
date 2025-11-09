@@ -172,10 +172,14 @@ export type ToClientPacket = {
     type: "yourPitchforkVote",
     player: PlayerIndex | null
 } | {
-    type: "voiceData",
+    type: "webRtcAnswer",
+    sdp: string
+} | {
+    type: "webRtcIceCandidate",
     fromPlayerId: LobbyClientID,
-    audioData: number[],
-    sequence: number
+    candidate: string,
+    sdpMid: string | null,
+    sdpMLineIndex: number | null
 }
 
 export type ToServerPacket = {
@@ -299,7 +303,11 @@ export type ToServerPacket = {
     id: number,
     name: string
 } | {
-    type: "voiceData",
-    audioData: number[],
-    sequence: number
+    type: "webRtcOffer",
+    sdp: string
+} | {
+    type: "webRtcIceCandidate",
+    candidate: string,
+    sdpMid: string | null,
+    sdpMLineIndex: number | null
 }

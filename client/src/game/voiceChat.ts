@@ -2,21 +2,21 @@ import GAME_MANAGER from "../index";
 import { LobbyClientID } from "./gameState.d";
 
 /**
- * Manages server-mediated voice chat
- * Audio flows through the WebSocket server instead of peer-to-peer
+ * Manages WebRTC SFU voice chat
+ * Uses WebRTC peer connection to server for low-latency audio
  */
 class VoiceChatManager {
     private localStream: MediaStream | null = null;
-    private mediaRecorder: MediaRecorder | null = null;
-    private audioContext: AudioContext | null = null;
+    private peerConnection: RTCPeerConnection | null = null;
     private playerVolumes: Map<LobbyClientID, number> = new Map();
-    private mediaSourceMap: Map<LobbyClientID, { mediaSource: MediaSource, audio: HTMLAudioElement, sourceBuffer: SourceBuffer | null, queue: Uint8Array[] }> = new Map();
+    private remoteAudioElements: Map<LobbyClientID, HTMLAudioElement> = new Map();
     private enabled: boolean = false;
     private micEnabled: boolean = false;
-    private sequence: number = 0;
+    private iceCandidateQueue: RTCIceCandidateInit[] = [];
+    private remoteDescriptionSet: boolean = false;
 
     constructor() {
-        this.handleVoiceData = this.handleVoiceData.bind(this);
+        this.handleWebRtcSignal = this.handleWebRtcSignal.bind(this);
     }
 
     /**
@@ -33,13 +33,9 @@ class VoiceChatManager {
                     echoCancellation: true,
                     noiseSuppression: true,
                     autoGainControl: true,
-                    sampleRate: 48000,
                 }, 
                 video: false 
             });
-            
-            // Initialize AudioContext for playback
-            this.audioContext = new AudioContext({ sampleRate: 48000 });
 
             // Mute by default
             this.localStream.getAudioTracks().forEach(track => {
@@ -66,8 +62,8 @@ class VoiceChatManager {
 
         this.enabled = true;
 
-        // Start recording and sending audio
-        this.startAudioCapture();
+        // Create WebRTC peer connection to server
+        await this.setupPeerConnection();
 
         console.log("Voice chat enabled");
     }
@@ -77,244 +73,154 @@ class VoiceChatManager {
      */
     disable(): void {
         this.enabled = false;
-        this.stopAudioCapture();
-        this.clearAllAudioBuffers();
+        this.closePeerConnection();
+        this.clearAllAudioElements();
         console.log("Voice chat disabled");
     }
 
     /**
-     * Start capturing audio and sending it to the server
+     * Set up WebRTC peer connection to server
      */
-    private startAudioCapture(): void {
+    private async setupPeerConnection(): Promise<void> {
         if (!this.localStream) {
             return;
         }
 
         try {
-            // Use MediaRecorder with Opus codec for efficient compression
-            const options: MediaRecorderOptions = {
-                mimeType: 'audio/webm;codecs=opus',
-                audioBitsPerSecond: 24000, // 24 kbps for voice
+            // Create peer connection with STUN/TURN servers
+            const configuration: RTCConfiguration = {
+                iceServers: [
+                    { urls: 'stun:stun.l.google.com:19302' },
+                    {
+                        urls: 'turn:openrelay.metered.ca:80',
+                        username: 'openrelayproject',
+                        credential: 'openrelayproject'
+                    }
+                ]
             };
 
-            this.mediaRecorder = new MediaRecorder(this.localStream, options);
+            this.peerConnection = new RTCPeerConnection(configuration);
 
-            // Send audio data chunks to server
-            this.mediaRecorder.ondataavailable = (event) => {
-                if (event.data.size > 0 && this.micEnabled && this.enabled) {
-                    // Convert Blob to ArrayBuffer
-                    event.data.arrayBuffer().then(arrayBuffer => {
-                        const audioData = Array.from(new Uint8Array(arrayBuffer));
-                        
-                        GAME_MANAGER.server.sendPacket({
-                            type: "voiceData",
-                            audioData,
-                            sequence: this.sequence++
-                        });
-                    });
+            // Add local audio track to peer connection
+            this.localStream.getTracks().forEach(track => {
+                if (this.peerConnection && this.localStream) {
+                    this.peerConnection.addTrack(track, this.localStream);
                 }
-            };
-
-            this.mediaRecorder.onerror = (event) => {
-                console.error("MediaRecorder error:", event);
-            };
-
-            // Request data every 100ms for low latency
-            this.mediaRecorder.start(100);
-
-            console.log("Audio capture started");
-        } catch (error) {
-            console.error("Failed to start audio capture:", error);
-        }
-    }
-
-    /**
-     * Stop capturing audio
-     */
-    private stopAudioCapture(): void {
-        if (this.mediaRecorder && this.mediaRecorder.state !== 'inactive') {
-            this.mediaRecorder.stop();
-            this.mediaRecorder = null;
-        }
-    }
-
-    /**
-     * Handle incoming voice data from server
-     */
-    async handleVoiceData(fromPlayerId: LobbyClientID, audioData: number[], sequence: number): Promise<void> {
-        if (!this.enabled) {
-            return;
-        }
-
-        try {
-            // Convert number array back to Uint8Array
-            const uint8Array = new Uint8Array(audioData);
-            
-            // Get or create MediaSource for this player
-            let playerMedia = this.mediaSourceMap.get(fromPlayerId);
-            if (!playerMedia) {
-                playerMedia = this.createMediaSourceForPlayer(fromPlayerId);
-                this.mediaSourceMap.set(fromPlayerId, playerMedia);
-            }
-            
-            // Add chunk to queue
-            playerMedia.queue.push(uint8Array);
-            
-            // Process queue if source buffer is ready
-            this.processAudioQueue(fromPlayerId);
-
-        } catch (error) {
-            console.error(`Error handling voice data from player ${fromPlayerId}:`, error);
-        }
-    }
-
-    /**
-     * Create MediaSource and Audio element for a player
-     */
-    private createMediaSourceForPlayer(playerId: LobbyClientID): { mediaSource: MediaSource, audio: HTMLAudioElement, sourceBuffer: SourceBuffer | null, queue: Uint8Array[] } {
-        const mediaSource = new MediaSource();
-        const audio = new Audio();
-        audio.src = URL.createObjectURL(mediaSource);
-        
-        // Apply volume setting
-        const volume = this.getPlayerVolume(playerId);
-        audio.volume = volume;
-        
-        const playerMedia = {
-            mediaSource,
-            audio,
-            sourceBuffer: null as SourceBuffer | null,
-            queue: [] as Uint8Array[]
-        };
-        
-        mediaSource.addEventListener('sourceopen', () => {
-            try {
-                if (mediaSource.readyState === 'open') {
-                    const sourceBuffer = mediaSource.addSourceBuffer('audio/webm; codecs="opus"');
-                    playerMedia.sourceBuffer = sourceBuffer;
-                    
-                    sourceBuffer.addEventListener('updateend', () => {
-                        this.processAudioQueue(playerId);
-                    });
-                    
-                    // Start playback
-                    audio.play().catch(err => {
-                        console.error(`Error starting audio playback for player ${playerId}:`, err);
-                    });
-                    
-                    // Process any queued data
-                    this.processAudioQueue(playerId);
-                }
-            } catch (error) {
-                console.error(`Error setting up source buffer for player ${playerId}:`, error);
-            }
-        });
-        
-        return playerMedia;
-    }
-    
-    /**
-     * Process queued audio data for a player
-     */
-    private processAudioQueue(playerId: LobbyClientID): void {
-        const playerMedia = this.mediaSourceMap.get(playerId);
-        if (!playerMedia || !playerMedia.sourceBuffer) {
-            return;
-        }
-        
-        const { sourceBuffer, queue } = playerMedia;
-        
-        // Only append if not currently updating and we have data
-        if (!sourceBuffer.updating && queue.length > 0) {
-            const chunk = queue.shift()!;
-            try {
-                // Cast to ArrayBuffer to satisfy TypeScript
-                sourceBuffer.appendBuffer(chunk.buffer as ArrayBuffer);
-            } catch (error) {
-                console.error(`Error appending buffer for player ${playerId}:`, error);
-            }
-        }
-    }
-
-    /**
-     * Play audio from a URL for a specific player (legacy, not used)
-     */
-    private playAudioUrl(playerId: LobbyClientID, audioUrl: string): void {
-        try {
-            // Create audio element
-            const audio = new Audio(audioUrl);
-            
-            // Apply volume setting
-            const volume = this.getPlayerVolume(playerId);
-            audio.volume = volume;
-            
-            // Play the audio
-            audio.play().catch(err => {
-                console.error(`Error playing audio from player ${playerId}:`, err);
             });
 
-            // Clean up the object URL after playback
-            audio.onended = () => {
-                URL.revokeObjectURL(audioUrl);
-            };
-            
-            // Also clean up on error
-            audio.onerror = () => {
-                URL.revokeObjectURL(audioUrl);
+            // Handle ICE candidates
+            this.peerConnection.onicecandidate = (event) => {
+                if (event.candidate) {
+                    console.log("Sending ICE candidate to server");
+                    GAME_MANAGER.server.sendPacket({
+                        type: "webRtcIceCandidate",
+                        candidate: event.candidate.candidate,
+                        sdpMid: event.candidate.sdpMid,
+                        sdpMLineIndex: event.candidate.sdpMLineIndex
+                    });
+                }
             };
 
+            // Handle remote tracks (audio from other players)
+            this.peerConnection.ontrack = (event) => {
+                console.log("Received remote track");
+                // Remote tracks will be associated with players via track events
+                // For now, play all remote audio
+                const audio = new Audio();
+                audio.srcObject = event.streams[0];
+                audio.play().catch(err => console.error("Error playing remote audio:", err));
+            };
+
+            // Handle connection state changes
+            this.peerConnection.onconnectionstatechange = () => {
+                if (this.peerConnection) {
+                    console.log("Peer connection state:", this.peerConnection.connectionState);
+                }
+            };
+
+            // Create and send offer to server
+            const offer = await this.peerConnection.createOffer();
+            await this.peerConnection.setLocalDescription(offer);
+
+            console.log("Sending offer to server");
+            GAME_MANAGER.server.sendPacket({
+                type: "webRtcOffer",
+                sdp: offer.sdp || ""
+            });
+
         } catch (error) {
-            console.error(`Error playing audio from player ${playerId}:`, error);
+            console.error("Failed to setup peer connection:", error);
         }
     }
 
     /**
-     * Play an audio buffer for a specific player (legacy method, not currently used)
+     * Handle WebRTC signaling from server (offers, answers, ICE candidates)
      */
-    private playAudioBuffer(playerId: LobbyClientID, audioBuffer: AudioBuffer): void {
-        if (!this.audioContext) {
+    async handleWebRtcSignal(type: "offer" | "answer" | "iceCandidate", data: any): Promise<void> {
+        if (!this.peerConnection) {
+            console.warn("Received WebRTC signal but no peer connection exists");
             return;
         }
 
         try {
-            // Create audio source
-            const source = this.audioContext.createBufferSource();
-            source.buffer = audioBuffer;
+            if (type === "answer") {
+                // Server sent answer to our offer
+                const answer = new RTCSessionDescription({
+                    type: "answer",
+                    sdp: data.sdp
+                });
+                await this.peerConnection.setRemoteDescription(answer);
+                this.remoteDescriptionSet = true;
+                console.log("Set remote description (answer from server)");
 
-            // Connect and play
-            source.connect(this.audioContext.destination);
-            source.start(0);
+                // Process queued ICE candidates
+                while (this.iceCandidateQueue.length > 0) {
+                    const candidate = this.iceCandidateQueue.shift()!;
+                    await this.peerConnection.addIceCandidate(candidate);
+                }
+            } else if (type === "iceCandidate") {
+                // Server sent ICE candidate
+                const candidate: RTCIceCandidateInit = {
+                    candidate: data.candidate,
+                    sdpMid: data.sdpMid,
+                    sdpMLineIndex: data.sdpMLineIndex
+                };
 
-            // Clean up after playback
-            source.onended = () => {
-                source.disconnect();
-            };
-
+                if (this.remoteDescriptionSet) {
+                    await this.peerConnection.addIceCandidate(candidate);
+                    console.log("Added ICE candidate from server");
+                } else {
+                    // Queue candidates until remote description is set
+                    this.iceCandidateQueue.push(candidate);
+                    console.log("Queued ICE candidate from server");
+                }
+            }
         } catch (error) {
-            console.error(`Error playing audio from player ${playerId}:`, error);
+            console.error("Error handling WebRTC signal:", error);
         }
     }
 
     /**
-     * Clear all audio buffers
+     * Close peer connection
      */
-    private clearAllAudioBuffers(): void {
-        // Clean up all MediaSource instances
-        for (const [playerId, playerMedia] of this.mediaSourceMap.entries()) {
-            try {
-                playerMedia.audio.pause();
-                playerMedia.audio.src = '';
-                if (playerMedia.mediaSource.readyState === 'open') {
-                    playerMedia.mediaSource.endOfStream();
-                }
-                URL.revokeObjectURL(playerMedia.audio.src);
-            } catch (e) {
-                // Ignore cleanup errors
-            }
+    private closePeerConnection(): void {
+        if (this.peerConnection) {
+            this.peerConnection.close();
+            this.peerConnection = null;
         }
-        this.mediaSourceMap.clear();
-        
-        // Clear volume settings
+        this.remoteDescriptionSet = false;
+        this.iceCandidateQueue = [];
+    }
+
+    /**
+     * Clear all audio elements
+     */
+    private clearAllAudioElements(): void {
+        for (const [playerId, audio] of this.remoteAudioElements.entries()) {
+            audio.pause();
+            audio.srcObject = null;
+        }
+        this.remoteAudioElements.clear();
         this.playerVolumes.clear();
     }
 
@@ -329,9 +235,9 @@ class VoiceChatManager {
         this.playerVolumes.set(playerId, volume);
         
         // Apply to existing audio element if it exists
-        const playerMedia = this.mediaSourceMap.get(playerId);
-        if (playerMedia) {
-            playerMedia.audio.volume = volume;
+        const audio = this.remoteAudioElements.get(playerId);
+        if (audio) {
+            audio.volume = volume;
         }
     }
 
@@ -399,19 +305,12 @@ class VoiceChatManager {
      * Remove a player from voice chat
      */
     removePlayer(playerId: LobbyClientID): void {
-        // Clean up MediaSource for this player
-        const playerMedia = this.mediaSourceMap.get(playerId);
-        if (playerMedia) {
-            try {
-                playerMedia.audio.pause();
-                playerMedia.audio.src = '';
-                if (playerMedia.mediaSource.readyState === 'open') {
-                    playerMedia.mediaSource.endOfStream();
-                }
-            } catch (e) {
-                // Ignore cleanup errors
-            }
-            this.mediaSourceMap.delete(playerId);
+        // Clean up audio element for this player
+        const audio = this.remoteAudioElements.get(playerId);
+        if (audio) {
+            audio.pause();
+            audio.srcObject = null;
+            this.remoteAudioElements.delete(playerId);
         }
         
         // Clean up volume setting for this player
@@ -424,22 +323,16 @@ class VoiceChatManager {
      * Clean up resources
      */
     cleanup(): void {
-        this.stopAudioCapture();
-        this.clearAllAudioBuffers();
+        this.closePeerConnection();
+        this.clearAllAudioElements();
         
         if (this.localStream) {
             this.localStream.getTracks().forEach(track => track.stop());
             this.localStream = null;
         }
 
-        if (this.audioContext) {
-            this.audioContext.close();
-            this.audioContext = null;
-        }
-
         this.enabled = false;
         this.micEnabled = false;
-        this.sequence = 0;
 
         console.log("Voice chat cleaned up");
     }

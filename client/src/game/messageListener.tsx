@@ -551,10 +551,19 @@ export default async function messageListener(packet: ToClientPacket){
                 }
             }
         break;
-        case "voiceData":
-            // Handle voice data from server
-            const { voiceChatManager } = await import("./voiceChat");
-            voiceChatManager.handleVoiceData(packet.fromPlayerId, packet.audioData, packet.sequence);
+        case "webRtcAnswer":
+            // Handle WebRTC answer from server
+            const { voiceChatManager: vcmAnswer } = await import("./voiceChat");
+            vcmAnswer.handleWebRtcSignal("answer", { sdp: packet.sdp });
+        break;
+        case "webRtcIceCandidate":
+            // Handle ICE candidate from server
+            const { voiceChatManager: vcmIce } = await import("./voiceChat");
+            vcmIce.handleWebRtcSignal("iceCandidate", {
+                candidate: packet.candidate,
+                sdpMid: packet.sdpMid,
+                sdpMLineIndex: packet.sdpMLineIndex
+            });
         break;
         default:
             console.error(`incoming message response not implemented: ${(packet as any)?.type}`);
