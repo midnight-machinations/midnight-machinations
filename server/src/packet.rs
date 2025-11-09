@@ -155,14 +155,7 @@ pub enum ToClientPacket{
 
     // Voice Chat - WebRTC SFU signaling
     #[serde(rename_all = "camelCase")]
-    WebRtcOffer{
-        from_player_id: RoomClientID,
-        sdp: String,
-    },
-    
-    #[serde(rename_all = "camelCase")]
     WebRtcAnswer{
-        to_player_id: RoomClientID,
         sdp: String,
     },
     
@@ -276,7 +269,6 @@ pub enum ToServerPacket{
     
     #[serde(rename_all = "camelCase")]
     WebRtcIceCandidate{
-        to_player_id: RoomClientID,
         candidate: String,
         sdp_mid: Option<String>,
         sdp_m_line_index: Option<u16>,

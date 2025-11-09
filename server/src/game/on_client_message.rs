@@ -159,7 +159,7 @@ impl Game {
                 // WebRTC offers should be handled by the room/lobby level
                 log!(error "Game"; "WebRTC offer received in game state, should be handled at room level");
             },
-            ToServerPacket::WebRtcIceCandidate { to_player_id: _, candidate: _, sdp_mid: _, sdp_m_line_index: _ } => {
+            ToServerPacket::WebRtcIceCandidate { candidate: _, sdp_mid: _, sdp_m_line_index: _ } => {
                 // WebRTC ICE candidates should be handled by the room/lobby level
                 log!(error "Game"; "WebRTC ICE candidate received in game state, should be handled at room level");
             },

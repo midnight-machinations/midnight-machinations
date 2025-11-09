@@ -277,16 +277,18 @@ impl Lobby {
                 self.ensure_host_exists(Some(room_client_id));
                 self.send_players();
             }
-            ToServerPacket::WebRtcOffer { sdp: _ } => {
+            ToServerPacket::WebRtcOffer { sdp } => {
                 // Client is sending an offer to connect to the SFU
-                // TODO: Handle offer and send back answer
-                // For now, just log it
                 log!(info "Lobby"; "Received WebRTC offer from client {}", room_client_id);
+                // TODO: Wire to WebRTC manager to create peer connection and send answer
+                // let answer_sdp = webrtc_manager.handle_offer(room_client_id, sdp).await;
+                // send.send(ToClientPacket::WebRtcAnswer { sdp: answer_sdp });
             }
-            ToServerPacket::WebRtcIceCandidate { to_player_id: _, candidate: _, sdp_mid: _, sdp_m_line_index: _ } => {
+            ToServerPacket::WebRtcIceCandidate { candidate, sdp_mid, sdp_m_line_index } => {
                 // Forward ICE candidate from client to server's SFU logic
-                // TODO: Handle ICE candidate
                 log!(info "Lobby"; "Received ICE candidate from client {}", room_client_id);
+                // TODO: Wire to WebRTC manager
+                // webrtc_manager.add_ice_candidate(room_client_id, candidate, sdp_mid, sdp_m_line_index).await;
             }
             _ => {
                 log!(error "Lobby"; "{} {:?}", "ToServerPacket not implemented for lobby was sent during lobby: ", incoming_packet);
