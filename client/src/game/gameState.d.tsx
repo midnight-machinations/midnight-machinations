@@ -36,6 +36,7 @@ export type LobbyState = {
     phaseTimes: PhaseTimes,
     enabledRoles: Role[],
     modifierSettings: ListMap<ModifierID, ModifierState>,
+    voiceChatEnabled: boolean,
 
     players: ListMap<LobbyClientID, LobbyClient>,
     chatMessages: ListMap<ChatMessageIndex, ChatMessage>,
