@@ -3,6 +3,7 @@ use std::sync::Arc;
 use tokio::sync::Mutex;
 use webrtc::api::media_engine::MediaEngine;
 use webrtc::api::APIBuilder;
+use webrtc::ice_transport::ice_gatherer_state::RTCIceGathererState;
 use webrtc::ice_transport::ice_server::RTCIceServer;
 use webrtc::peer_connection::configuration::RTCConfiguration;
 use webrtc::peer_connection::sdp::session_description::RTCSessionDescription;
@@ -71,13 +72,29 @@ impl WebRtcSfuManager {
         let peer_connection = Arc::new(self.api.new_peer_connection(config).await?);
 
         // Set up ICE candidate event handler
+        let cid_for_ice = client_id;
         peer_connection.on_ice_candidate(Box::new(move |candidate| {
             if let Some(c) = candidate {
+                println!("[WebRTC] Client {} ICE candidate generated", cid_for_ice);
                 let candidate_str = c.to_json().unwrap_or_default().candidate;
                 let sdp_mid = c.to_json().ok().and_then(|j| j.sdp_mid);
                 let sdp_mline_index = c.to_json().ok().and_then(|j| j.sdp_mline_index);
                 on_ice_candidate(candidate_str, sdp_mid, sdp_mline_index);
             }
+            Box::pin(async {})
+        }));
+        
+        // Monitor ICE gathering state
+        let cid_for_gathering = client_id;
+        peer_connection.on_ice_gathering_state_change(Box::new(move |state: RTCIceGathererState| {
+            println!("[WebRTC] Client {} ICE gathering state: {:?}", cid_for_gathering, state);
+            Box::pin(async {})
+        }));
+        
+        // Monitor peer connection state
+        let cid_for_state = client_id;
+        peer_connection.on_peer_connection_state_change(Box::new(move |state: RTCPeerConnectionState| {
+            println!("[WebRTC] Client {} peer connection state: {:?}", cid_for_state, state);
             Box::pin(async {})
         }));
 
