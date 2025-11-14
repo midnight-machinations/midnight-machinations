@@ -1,6 +1,6 @@
 use std::collections::HashSet;
 use serde::{Deserialize, Serialize};
-use crate::game::prelude::*;
+use crate::game::{components::attack::night_attack::NightAttack, prelude::*};
 
 #[derive(Debug, Clone, Serialize, Default)]
 #[serde(rename_all = "camelCase")]
@@ -29,7 +29,11 @@ impl RoleStateTrait for Krampus {
                 if let Some(visit) = actor_visits.first() {
                     let target_ref = visit.target;
 
-                    target_ref.try_night_kill_single_attacker(actor_ref, game, midnight_variables, GraveKiller::Role(Role::Krampus), AttackPower::Basic, true);
+                    NightAttack::new()
+                        .attackers([actor_ref])
+                        .grave_killer(Role::Krampus)
+                        .leave_death_note()
+                        .attack(game, midnight_variables, target_ref);
 
                     actor_ref.edit_role_ability_helper(game, Krampus {
                         last_used_ability: Some(KrampusAbility::Kill),

@@ -1,5 +1,5 @@
 use serde::Serialize;
-use crate::game::prelude::*;
+use crate::game::{components::attack::night_attack::NightAttack, prelude::*};
 
 
 #[derive(Serialize, Clone, Debug)]
@@ -28,14 +28,12 @@ impl RoleStateTrait for Kidnapper {
         let Some(BooleanSelection(true)) = ControllerID::role(actor_ref, Role::Kidnapper, 1).get_boolean_selection(game) else {return};
         let Some(target) = self.jailed_target_ref else {return};
         if !Detained::is_detained(game, target){return}
-        target.try_night_kill_single_attacker(
-            actor_ref, 
-            game, 
-            midnight_variables,
-            GraveKiller::Role(Role::Jailor),
-            AttackPower::ProtectionPiercing, 
-            false
-        );
+
+        NightAttack::new()
+            .attackers([actor_ref])
+            .grave_killer(Role::Jailor)
+            .power(AttackPower::ProtectionPiercing)
+            .attack(game, midnight_variables, target);
 
         self.executions_remaining = self.executions_remaining.saturating_sub(1);
         actor_ref.edit_role_ability_helper(game, self);

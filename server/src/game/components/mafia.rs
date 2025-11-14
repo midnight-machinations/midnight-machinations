@@ -1,6 +1,7 @@
 use rand::seq::IndexedRandom;
 
 use crate::game::abilities::syndicate_gun::SyndicateGun;
+use crate::game::components::attack::night_attack::NightAttack;
 use crate::game::prelude::*;
 use crate::vec_set::{vec_set, VecSet};
 
@@ -152,10 +153,10 @@ impl Mafia{
                 for backup_visit in Visits::into_iter(midnight_variables)
                     .with_tag(VisitTag::SyndicateBackupAttack)
                 {
-                    backup_visit.target.try_night_kill_single_attacker(
-                        backup_visit.visitor, game, midnight_variables, GraveKiller::RoleSet(RoleSet::Mafia),
-                        AttackPower::Basic, false
-                    );
+                    NightAttack::new()
+                        .attackers([backup_visit.visitor])
+                        .grave_killer(RoleSet::Mafia)
+                        .attack(game, midnight_variables, backup_visit.target);
                     game.add_message_to_chat_group(ChatGroup::Mafia, 
                         ChatMessageVariant::GodfatherBackupKilled { backup: backup_visit.visitor }
                     );

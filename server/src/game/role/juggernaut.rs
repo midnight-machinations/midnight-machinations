@@ -1,6 +1,6 @@
 use rand::seq::IndexedRandom;
 use serde::Serialize;
-use crate::{game::prelude::*, vec_set::VecSet};
+use crate::{game::{components::attack::night_attack::NightAttack, prelude::*}, vec_set::VecSet};
 
 #[derive(Debug, Clone, Default, Serialize)]
 pub struct Juggernaut{
@@ -20,7 +20,12 @@ impl RoleStateTrait for Juggernaut {
         if priority != OnMidnightPriority::Kill {return}
         if game.day_number() == 1 {return}
         let Some(target_ref) = Visits::default_target(midnight_variables, actor_ref, Role::Juggernaut) else {return};
-        target_ref.try_night_kill_single_attacker(actor_ref, game, midnight_variables, GraveKiller::Role(Role::Juggernaut), AttackPower::ArmorPiercing, true);
+        NightAttack::new()
+            .attackers([actor_ref])
+            .grave_killer(Role::Juggernaut)
+            .power(AttackPower::ArmorPiercing)
+            .leave_death_note()
+            .attack(game, midnight_variables, target_ref);
     }
     fn controller_parameters_map(self, game: &Game, actor_ref: PlayerReference) -> ControllerParametersMap {
         ControllerParametersMap::builder(game)

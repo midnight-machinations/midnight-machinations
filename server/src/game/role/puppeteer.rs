@@ -1,5 +1,5 @@
 use serde::Serialize;
-use crate::game::prelude::*;
+use crate::game::{components::attack::night_attack::NightAttack, prelude::*};
 
 #[derive(Clone, Debug, Serialize)]
 #[serde(rename_all = "camelCase")]
@@ -44,14 +44,12 @@ impl RoleStateTrait for Puppeteer {
                     actor_ref.edit_role_ability_helper(game, self);
                 }
             }else{
-                target.try_night_kill_single_attacker(
-                    actor_ref,
-                    game,
-                    midnight_variables,
-                    GraveKiller::Role(Role::Puppeteer),
-                    AttackPower::ArmorPiercing,
-                    true
-                );
+                NightAttack::new()
+                    .attackers([actor_ref])
+                    .grave_killer(Role::Puppeteer)
+                    .power(AttackPower::ArmorPiercing)
+                    .leave_death_note()
+                    .attack(game, midnight_variables, target);
             }
         }
     }

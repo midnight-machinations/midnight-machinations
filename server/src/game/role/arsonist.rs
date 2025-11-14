@@ -1,4 +1,5 @@
 use serde::Serialize;
+use crate::game::components::attack::night_attack::NightAttack;
 use crate::game::prelude::*;
 use crate::game::Game;
 
@@ -92,14 +93,13 @@ impl Arsonist{
         for player in Tags::tagged(game, TagSetID::ArsonistDoused) {
             if (AbilityID::Role { role: Role::Arsonist, player }).exists(game) {continue;}
             if !player.alive(game) {continue;}
-            player.try_night_kill_single_attacker(
-                igniter,
-                game,
-                midnight_variables,
-                GraveKiller::Role(Role::Arsonist),
-                AttackPower::ProtectionPiercing,
-                true
-            );
+
+            NightAttack::new()
+                .attackers([igniter])
+                .grave_killer(Role::Arsonist)
+                .power(AttackPower::ProtectionPiercing)
+                .leave_death_note()
+                .attack(game, midnight_variables, player);
         }
     }
     pub fn has_suspicious_aura_douse(game: &Game, player: PlayerReference) -> bool {

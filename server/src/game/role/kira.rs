@@ -1,5 +1,6 @@
 use kira_selection::{AvailableKiraSelection, KiraSelection};
 use serde::{Serialize, Deserialize};
+use crate::game::components::attack::night_attack::NightAttack;
 use crate::game::prelude::*;
 use crate::vec_map::VecMap;
 
@@ -102,14 +103,12 @@ impl RoleStateTrait for Kira {
                 
                 for (player, (guess, result)) in result.guesses.iter(){
                     if player.alive(game) && *result == KiraGuessResult::Correct && *guess != KiraGuess::None {
-                        player.try_night_kill_single_attacker(
-                            actor_ref,
-                            game,
-                            midnight_variables,
-                            GraveKiller::Role(super::Role::Kira),
-                            AttackPower::ArmorPiercing,
-                            true
-                        );
+                        NightAttack::new()
+                            .attackers([actor_ref])
+                            .grave_killer(Role::Kira)
+                            .power(AttackPower::ArmorPiercing)
+                            .leave_death_note()
+                            .attack(game, midnight_variables, *player);
                     }
                 }
             },

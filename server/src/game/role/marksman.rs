@@ -1,4 +1,5 @@
 use serde::Serialize;
+use crate::game::components::attack::night_attack::NightAttack;
 use crate::game::prelude::*;
 use crate::vec_set::VecSet;
 
@@ -38,7 +39,10 @@ impl RoleStateTrait for Marksman {
         for mark in marks {
             if !visiting_players.contains(&mark) {continue};
             
-            let killed = mark.try_night_kill_single_attacker(actor_ref, game, midnight_variables, GraveKiller::Role(Role::Marksman), AttackPower::Basic, false);
+            let killed = NightAttack::new()
+                .attackers([actor_ref])
+                .grave_killer(Role::Marksman)
+                .attack(game, midnight_variables, mark);
 
             if killed && mark.win_condition(game).is_loyalist_for(GameConclusion::Town) {
                 self.state = MarksmanState::ShotTownie;

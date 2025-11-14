@@ -1,5 +1,5 @@
 use serde::Serialize;
-use crate::game::{prelude::*, role::godfather::Godfather};
+use crate::game::{components::attack::night_attack::NightAttack, prelude::*, role::godfather::Godfather};
 
 
 #[derive(Debug, Clone, Serialize)]
@@ -62,9 +62,10 @@ impl RoleStateTrait for Counterfeiter {
             },
             OnMidnightPriority::Kill => {
                 let Some(target_ref) = Visits::default_target(midnight_variables, actor_ref, Role::Counterfeiter) else {return};
-                target_ref.try_night_kill_single_attacker(
-                    actor_ref, game, midnight_variables, GraveKiller::RoleSet(RoleSet::Mafia), AttackPower::Basic, false
-                );
+                NightAttack::new()
+                    .attackers([actor_ref])
+                    .grave_killer(RoleSet::Mafia)
+                    .attack(game, midnight_variables, target_ref);
             },
             OnMidnightPriority::Investigative => {
                 if let Some(forged_ref) = self.forged_ref && forged_ref.night_died(midnight_variables) {

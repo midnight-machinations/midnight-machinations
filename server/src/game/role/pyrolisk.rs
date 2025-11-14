@@ -1,5 +1,5 @@
 use serde::Serialize;
-use crate::{game::prelude::*, vec_set::VecSet};
+use crate::{game::{components::attack::night_attack::NightAttack, prelude::*}, vec_set::VecSet};
 
 
 #[derive(Debug, Clone, Default)]
@@ -28,7 +28,13 @@ impl RoleStateTrait for Pyrolisk {
                 *other_player_ref != actor_ref
             ).collect::<Vec<PlayerReference>>()
         {
-            if other_player_ref.try_night_kill_single_attacker(actor_ref, game, midnight_variables, GraveKiller::Role(Role::Pyrolisk), AttackPower::ArmorPiercing, true) {
+            if NightAttack::new()
+                .attackers([actor_ref])
+                .grave_killer(Role::Pyrolisk)
+                .power(AttackPower::ArmorPiercing)
+                .leave_death_note()
+                .attack(game, midnight_variables, other_player_ref)
+            {
                 tagged_for_obscure.insert(other_player_ref);
                 killed_at_least_once = true;
             }
@@ -37,7 +43,12 @@ impl RoleStateTrait for Pyrolisk {
         if
             !killed_at_least_once &&
             let Some(target_ref) = Visits::default_target(midnight_variables, actor_ref, Role::Pyrolisk) &&
-            target_ref.try_night_kill_single_attacker(actor_ref, game, midnight_variables, GraveKiller::Role(Role::Pyrolisk), AttackPower::ArmorPiercing, true)
+            NightAttack::new()
+                .attackers([actor_ref])
+                .grave_killer(Role::Pyrolisk)
+                .power(AttackPower::ArmorPiercing)
+                .leave_death_note()
+                .attack(game, midnight_variables, target_ref)
         {
             tagged_for_obscure.insert(target_ref);
         }
