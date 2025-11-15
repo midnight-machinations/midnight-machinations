@@ -132,3 +132,27 @@
 .chat-message-div .details-summary-container {
     width: 100%;
 }
+
+.player-synopsis-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.player-synopsis-table td {
+    padding: 0.25rem;
+    border-bottom: 1px solid var(--primary-border-color);
+}
+
+.player-synopsis-table tr:last-child td {
+    border-bottom: none;
+}
+.game-over-summary {
+    display: flex;
+    flex-direction: column;
+}
+.game-over-summary .details-summary-container table {
+    width: max-content;
+}
+.game-over-summary .details-summary-container table td:first-of-type {
+    width: fit-content;
+}
