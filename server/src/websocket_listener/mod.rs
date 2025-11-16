@@ -5,9 +5,10 @@ mod handle_message;
 pub type RoomCode = usize;
 
 
-use std::{collections::HashMap, net::SocketAddr, sync::{Arc, Mutex}, time::Duration};
+use std::{collections::HashMap, net::SocketAddr, sync::{Arc}, time::Duration};
+use tokio::sync::Mutex;
 
-use crate::{log, packet::{RejectJoinReason, ToClientPacket}, room::{JoinRoomClientResult, RemoveRoomClientResult, Room, RoomClientID, RoomState}, websocket_connections::connection::Connection};
+use crate::{log, packet::{RejectJoinReason, ToClientPacket}, room::{JoinRoomClientResult, RemoveRoomClientResult, Room, RoomClientID, RoomState}, websocket_connections::connection::Connection, webrtc_sfu::WebRtcSfuManager};
 
 use self::client::{Client, ClientLocation, ClientReference, GetRoomError};
 use rand::random;
@@ -27,12 +28,18 @@ pub struct WebsocketListener {
     ///  Yes                 | Yes              | Hooray!
     clients: HashMap<SocketAddr, Client>,
     rooms: HashMap<RoomCode, Box<Room>>,
+    /// WebRTC SFU manager for voice chat
+    pub webrtc_manager: Arc<Mutex<WebRtcSfuManager>>,
 }
 impl WebsocketListener{
-    pub fn new() -> Self {
+    pub async fn new() -> Self {
+        let webrtc_manager = WebRtcSfuManager::new().await
+            .expect("Failed to create WebRTC SFU manager");
+        
         Self {
             rooms: HashMap::new(),
             clients: HashMap::new(),
+            webrtc_manager: Arc::new(Mutex::new(webrtc_manager)),
         }
     }
     fn clients(&self) -> &HashMap<SocketAddr, Client> {
@@ -67,20 +74,31 @@ impl WebsocketListener{
         self.clients.insert(*connection.address(), Client::new(connection.clone()));
     }
     fn delete_client(&mut self, client: &ClientReference) {
-        let Some(client) = self.clients.remove(&client.address(self).clone()) else {return};
+        let Some(client_data) = self.clients.remove(&client.address(self).clone()) else {return};
 
         //This ToClientPacket is still useful in the *rare* case that the player is still connected when they're being forced to disconnect
         //A player can be forced to disconnect if a seperate connection is made with the same ip and port address
-        client.send(ToClientPacket::ForcedDisconnect);
+        client_data.send(ToClientPacket::ForcedDisconnect);
 
 
-        let ClientLocation::InRoom { room_code, room_client_id } = client.location() else {return};
-        let Some(room) = self.rooms.get_mut(room_code) else {return};
+        let ClientLocation::InRoom { room_code, room_client_id } = client_data.location() else {return};
+        let room_client_id_copy = *room_client_id;
+        let room_code_copy = *room_code;
+        
+        // Clean up WebRTC connection for this client
+        let webrtc_manager = self.webrtc_manager.clone();
+        tokio::spawn(async move {
+            let manager = webrtc_manager.lock().await;
+            manager.remove_client(room_client_id_copy).await;
+            log!(info "WebRTC"; "Cleaned up connection for client {}", room_client_id_copy);
+        });
+        
+        let Some(room) = self.rooms.get_mut(&room_code_copy) else {return};
 
-        match room.remove_client_rejoinable(*room_client_id) {
+        match room.remove_client_rejoinable(room_client_id_copy) {
             RemoveRoomClientResult::Success |
             RemoveRoomClientResult::ClientNotInRoom => {},
-            RemoveRoomClientResult::RoomShouldClose => self.delete_room(*room_code)
+            RemoveRoomClientResult::RoomShouldClose => self.delete_room(room_code_copy)
         }
     }
 
@@ -184,11 +202,8 @@ impl WebsocketListener{
                 let delta_time = frame_start_time.elapsed();
                 frame_start_time = tokio::time::Instant::now();
 
-                if let Ok(mut listener) = listener.lock() {
-                    listener.tick(delta_time);                  
-                } else { 
-                    return;
-                }
+                let mut listener = listener.lock().await;
+                listener.tick(delta_time);                  
 
                 tokio::time::sleep(DESIRED_FRAME_TIME.saturating_sub(frame_start_time.elapsed())).await;
             }
