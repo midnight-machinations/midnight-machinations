@@ -11,10 +11,12 @@ use crate::{
 pub struct SpectatorInitializeParameters {
     pub connection: ClientConnection,
     pub host: bool,
+    pub name: String,
 }
 pub struct Spectator {
     pub connection: ClientConnection,
     pub fast_forward_vote: bool,
+    pub name: String,
 
     pub queued_chat_messages: VecDeque<(ChatMessageIndex, ChatMessageVariant)>,
 }
@@ -23,6 +25,7 @@ impl Spectator {
         Self {
             connection: params.connection,
             fast_forward_vote: false,
+            name: params.name,
 
             queued_chat_messages: VecDeque::new(),
         }
