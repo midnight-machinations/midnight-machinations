@@ -1,0 +1,17 @@
+.tabbed-content {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.tabbed-content .settings-tabs {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.tabbed-content .tab-content {
+    display: flex;
+    flex-direction: column;
+}
