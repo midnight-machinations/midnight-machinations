@@ -2,7 +2,7 @@ use std::{ops::Div, time::Duration};
 
 use serde::{Serialize, Deserialize};
 
-use crate::game::{components::graves::{grave::Grave, Graves}, event::{AsInvokable as _, Invokable as _}, modifiers::{hidden_nomination_votes::HiddenNominationVotes, hidden_verdict_votes::HiddenVerdictVotes, ModifierID}};
+use crate::game::{components::graves::{grave::Grave, Graves}, event::{AsInvokable as _, Invokable as _}, modifiers::{gravity::Gravity, hidden_nomination_votes::HiddenNominationVotes, hidden_verdict_votes::HiddenVerdictVotes, ModifierID}};
 
 use super::{
     chat::{ChatGroup, ChatMessageVariant},
@@ -299,7 +299,12 @@ impl PhaseState {
                 }
             },
             PhaseState::FinalWords { player_on_trial } => {
-                player_on_trial.die_and_add_grave(game, Grave::from_player_lynch(game, player_on_trial));
+                // Zero-gravity: Player is not executed (can't be hanged)
+                if !Gravity::is_zero_gravity(game) {
+                    player_on_trial.die_and_add_grave(game, Grave::from_player_lynch(game, player_on_trial));
+                } else {
+                    game.add_message_to_chat_group(ChatGroup::All, ChatMessageVariant::GravitySavedPlayer { player: player_on_trial });
+                }
 
                 Self::Dusk
             },

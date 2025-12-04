@@ -18,6 +18,7 @@ pub mod hidden_verdict_votes;
 pub mod forfeit_vote;
 pub mod random_player_names;
 pub mod no_majority;
+pub mod gravity;
 
 use crate::{
     game::event::{
@@ -37,7 +38,7 @@ use super::{
 };
 
 pub trait ModifierStateImpl where Self: Clone + Sized + Default + Serialize + for<'de> Deserialize<'de>{
-    fn on_midnight(self, _game: &mut Game, _priority: OnMidnightPriority) {}
+    fn on_midnight(self, _game: &mut Game, _fold: &mut OnMidnightFold, _priority: OnMidnightPriority) {}
     fn before_phase_end(self, _game: &mut Game, _phase: super::phase::PhaseType) {}
     fn on_phase_start(self, _game: &mut Game, _event: &OnPhaseStart, _fold: &mut (), _priority: ()) {}
     fn on_grave_added(self, _game: &mut Game, _event: &OnGraveAdded, _fold: &mut (), _priority: ()) {}
@@ -66,7 +67,8 @@ macros::modifiers! {
     hidden_verdict_votes: HiddenVerdictVotes,
     forfeit_vote: ForfeitNominationVote,
     random_player_names: RandomPlayerNames,
-    custom_role_limits: CustomRoleLimits
+    custom_role_limits: CustomRoleLimits,
+    gravity: Gravity
 }
 
 
@@ -98,9 +100,9 @@ impl ModifierSettings{
             state
         );
     }
-    pub fn on_midnight(game: &mut Game, _event: &OnMidnight, _fold: &mut OnMidnightFold, priority: OnMidnightPriority){
+    pub fn on_midnight(game: &mut Game, _event: &OnMidnight, fold: &mut OnMidnightFold, priority: OnMidnightPriority){
         for modifier in game.modifier_settings().modifiers.clone(){
-            modifier.1.on_midnight(game, priority);
+            modifier.1.on_midnight(game, fold, priority);
         }
     }
     pub fn on_grave_added(game: &mut Game, event: &OnGraveAdded, fold: &mut (), priority: ()){
@@ -175,10 +177,10 @@ mod macros {
             }
 
             impl ModifierState {
-                fn on_midnight(self, game: &mut Game, priority: OnMidnightPriority) {
+                fn on_midnight(self, game: &mut Game, fold: &mut OnMidnightFold, priority: OnMidnightPriority) {
                     match self {
                         $(
-                            ModifierState::$name(s) => s.on_midnight(game, priority),
+                            ModifierState::$name(s) => s.on_midnight(game, fold, priority),
                         )*
                     }
                 }
