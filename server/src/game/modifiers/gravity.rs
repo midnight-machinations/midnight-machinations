@@ -62,12 +62,10 @@ impl ModifierStateImpl for Gravity {
             return;
         }
 
-        // Find all players who made direct visits (i.e., went outside)
+        // Find all unique players who made direct visits (i.e., went outside)
         let direct_visitors: Vec<PlayerReference> = Visits::into_iter(fold)
             .filter(|v| !v.indirect)
             .map(|v| v.visitor)
-            .collect::<Vec<_>>()
-            .into_iter()
             .collect::<std::collections::HashSet<_>>()
             .into_iter()
             .collect();
@@ -79,6 +77,8 @@ impl ModifierStateImpl for Gravity {
 
             visitor.push_night_message(fold, ChatMessageVariant::GravityFloatedAway);
             
+            // Gravity is physics - it bypasses all protection (ProtectionPiercing)
+            // because you can't defend against floating away into space
             NightAttack::new()
                 .power(AttackPower::ProtectionPiercing)
                 .hide_messages()
