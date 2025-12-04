@@ -3071,3 +3071,74 @@ fn juggernaut_wardblock() {
     assert!(!Silenced::silenced(&game, villager.player_ref()));
     assert!(Tags::has_tag(&game, TagSetID::MorticianTag(juggernaut.player_ref()), bouncer.player_ref()))
 }
+#[test]
+fn zero_gravity_prevents_execution() {
+    kit::scenario!(game in Briefing 1 where
+        accused: Villager,
+        voter1: Mafioso,
+        voter2: Villager,
+        voter3: Detective
+    );
+
+    // Enable zero-gravity modifier
+    game.set_modifier(ModifierState::Gravity(Gravity { level: GravityLevel::ZeroGravity }));
+
+    // Skip to nomination phase
+    game.skip_to(Nomination, 2);
+
+    // Vote for the accused - need 3 out of 4 players for majority
+    voter1.vote_for_player(accused);
+    voter2.vote_for_player(accused);
+    voter3.vote_for_player(accused);
+
+    // Accused should be nominated, skip through trial
+    game.skip_to(Judgement, 2);
+    voter1.set_verdict(Verdict::Guilty);
+    voter2.set_verdict(Verdict::Guilty);
+    voter3.set_verdict(Verdict::Guilty);
+
+    // Go through final words and to dusk
+    game.skip_to(Dusk, 2);
+
+    // Player should still be alive due to zero-gravity
+    assert!(accused.alive());
+
+    // Check for the gravity saved message
+    assert_contains!(
+        accused.get_messages(),
+        ChatMessageVariant::GravitySavedPlayer { player: accused.player_ref() }
+    );
+}
+
+#[test]
+fn anti_gravity_kills_direct_visitors() {
+    kit::scenario!(game in Briefing 1 where
+        attacker: Mafioso,
+        target: Villager,
+        townie: Villager
+    );
+
+    // Enable anti-gravity modifier
+    game.set_modifier(ModifierState::Gravity(Gravity { level: GravityLevel::AntiGravity }));
+
+    // Mafioso can't attack on Night 1, so skip to Night 2
+    game.skip_to(Night, 2);
+
+    // Mafioso visits to attack (direct visit)
+    attacker.send_ability_input_player_list_typical(target);
+
+    game.next_phase();
+
+    // Attacker should be dead from floating away
+    assert!(!attacker.alive());
+
+    // Target is also killed because the attack went through before the attacker floated away
+    // (The gravity effect happens during the kill phase, same time as attacks)
+    assert!(!target.alive());
+
+    // Attacker should get the message that they floated away
+    assert_contains!(
+        attacker.get_messages_after_night(2),
+        ChatMessageVariant::GravityFloatedAway
+    );
+}
