@@ -126,7 +126,7 @@ impl RoleStateTrait for Disguiser {
 
 impl Disguiser{
     fn disguised_role(&self, game: &Game, actor_ref: PlayerReference)->Role{
-        if let Some(role) = ControllerID::role(actor_ref, Role::Disguiser, 1)
+        if let Some(role) = ControllerID::role(actor_ref, Role::Disguiser, 2)
             .get_role_list_selection(game)
             .and_then(|selection| selection.0.first().copied())
         {

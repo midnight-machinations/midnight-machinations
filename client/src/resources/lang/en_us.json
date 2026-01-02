@@ -2081,10 +2081,10 @@
     "wiki.article.role.trueWildcard.extra":"* If you choose a role that was disabled you stay as the True Wildcard\n* You can choose true wildcard to stay as true wildcard\n* You can become a role that is at its role limit, if there is a veteran in the game, you still can become one",
 
     "wiki.article.role.witch.reminder": "Each night, possess a player.",
-    "wiki.article.role.witch.guide": "- You win if town loses, when town loses you leave town\n- At night, possess a player by selecting 2 players\n    - The first player you select will be forced to visit the second player you select\n\n_For example_\n- You can posses a vigilante to attack another townie by selecting the vigilante first and the townie second",
-    "wiki.article.role.witch.abilities":"* Visit 2 players to make the first player visit the second player\n* If there are no living townies, you win, and leave town at the start of the next phase",
-    "wiki.article.role.witch.attributes":"* The first player you visit is told that they were possessed or immune to possession\n* You are told all night information messages that the player you possess gets told",
-    "wiki.article.role.witch.extra":"* You are immune to getting roleblocked and possession\n* Your second target is investigate immune, indirect, and wardblock immune",
+    "wiki.article.role.witch.guide": "- You win if town loses, when town loses you leave town\n- At night, possess a player by selecting 2 players\n\n_For example_\n- You can posses a vigilante to attack another townie by selecting the vigilante first and the townie second",
+    "wiki.article.role.witch.abilities":"",
+    "wiki.article.role.witch.attributes":"* The first player you visit is eithertol d that they are possessed or that they are immune to possession\n* You are told all night information messages that the player you possess gets told",
+    "wiki.article.role.witch.extra":"* You are immune to getting roleblocked and possession\n* Your second visit is investigate immune, indirect, and wardblock immune",
     
     "wiki.article.role.scarecrow.reminder": "Each night, select a player to ward them, everyone you wardblock is revealed to you.",
     "wiki.article.role.scarecrow.guide": "- You win if town loses, when town loses you leave town\n- At night, select a player to ward them, stopping almost all abilities from working on them.\n    - The players you ward are revealed to you",
