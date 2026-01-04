@@ -1,4 +1,5 @@
 use serde::Serialize;
+use crate::game::components::attack::night_attack::NightAttack;
 use crate::vec_map::VecMap;
 use crate::game::prelude::*;
 use crate::vec_set::VecSet;
@@ -159,13 +160,12 @@ impl Warden {
     }
     fn kill_players(game: &mut Game, midnight_variables: &mut OnMidnightFold, actor_ref: PlayerReference, players: &VecSet<PlayerReference>){
         for player in players.iter() {
-            player.try_night_kill_single_attacker(
-                actor_ref,
-                game, midnight_variables,
-                GraveKiller::Role(Role::Warden),
-                AttackPower::ArmorPiercing,
-                true
-            );
+            NightAttack::new()
+                .attackers([actor_ref])
+                .grave_killer(Role::Warden)
+                .power(AttackPower::ArmorPiercing)
+                .leave_death_note()
+                .attack(game, midnight_variables, *player);
         }
     }
     fn players_to_kill(&self, game: &Game, actor_ref: PlayerReference)->VecSet<PlayerReference>{

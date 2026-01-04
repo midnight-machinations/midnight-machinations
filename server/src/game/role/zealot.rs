@@ -1,5 +1,5 @@
 use serde::Serialize;
-use crate::game::prelude::*;
+use crate::game::{components::attack::night_attack::NightAttack, prelude::*};
 
 
 #[derive(Clone, Debug, Default, Serialize)]
@@ -16,14 +16,10 @@ impl RoleStateTrait for Zealot {
         let Some(target) = Visits::default_target(midnight_variables, actor_ref, Role::Zealot) else {return};
         if !Cult::can_kill_tonight(game) {return}
 
-        target.try_night_kill_single_attacker(
-            actor_ref,
-            game,
-            midnight_variables,
-            GraveKiller::Role(Role::Zealot),
-            AttackPower::Basic,
-            false
-        );
+        NightAttack::new()
+            .attackers([actor_ref])
+            .grave_killer(Role::Zealot)
+            .attack(game, midnight_variables, target);
     }
     fn controller_parameters_map(self, game: &Game, actor_ref: PlayerReference) -> ControllerParametersMap {
         ControllerParametersMap::builder(game)

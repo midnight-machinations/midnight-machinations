@@ -1,10 +1,6 @@
 use crate::{
     game::{
-        abilities_component::{ability::Ability, ability_id::AbilityID, ability_trait::AbilityTrait},
-        attack_power::AttackPower, components::{graves::grave::GraveKiller, pitchfork_item::PitchforkItemComponent},
-        controllers::{AvailablePlayerListSelection, ControllerID, ControllerParametersMap, PlayerListSelection},
-        event::{before_phase_end::BeforePhaseEnd, on_midnight::{OnMidnightFold, OnMidnight, OnMidnightPriority}},
-        game_conclusion::GameConclusion, phase::PhaseType, player::PlayerReference, role::{common_role, Role}, role_list::RoleSet, Game
+        Game, abilities_component::{ability::Ability, ability_id::AbilityID, ability_trait::AbilityTrait}, attack_power::AttackPower, components::{attack::night_attack::NightAttack, pitchfork_item::PitchforkItemComponent}, controllers::{AvailablePlayerListSelection, ControllerID, ControllerParametersMap, PlayerListSelection}, event::{before_phase_end::BeforePhaseEnd, on_midnight::{OnMidnight, OnMidnightFold, OnMidnightPriority}}, game_conclusion::GameConclusion, phase::PhaseType, player::PlayerReference, role::{Role, common_role}, role_list::RoleSet
     },
     vec_map::VecMap
 };
@@ -79,13 +75,12 @@ impl AbilityTrait for PitchforkAbility{
         
         let mut ability = self.clone();
         if let Some(target) = ability.angry_mobbed_player {
-            target.try_night_kill(
-                pitchfork_players.clone(), 
-                game, midnight_variables,
-                GraveKiller::RoleSet(RoleSet::Town), 
-                AttackPower::ProtectionPiercing, 
-                false
-            );
+            NightAttack::new()
+                .attackers(pitchfork_players.clone())
+                .grave_killer(RoleSet::Town)
+                .power(AttackPower::ProtectionPiercing)
+                .attack(game, midnight_variables, target);
+
             ability.charges = ability.charges.saturating_sub(1);
         }
         AbilityID::Pitchfork.set_ability(game, Some(ability));

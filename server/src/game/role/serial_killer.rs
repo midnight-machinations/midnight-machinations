@@ -1,5 +1,5 @@
 use serde::Serialize;
-use crate::game::prelude::*;
+use crate::game::{components::attack::night_attack::NightAttack, prelude::*};
 
 #[derive(Debug, Clone, Serialize, Default)]
 pub struct SerialKiller;
@@ -18,14 +18,12 @@ impl RoleStateTrait for SerialKiller {
 
             let target_ref = visit.target;
             
-            target_ref.try_night_kill_single_attacker(
-                actor_ref,
-                game,
-                midnight_variables,
-                GraveKiller::Role(Role::SerialKiller),
-                AttackPower::ArmorPiercing,
-                true
-            );
+            NightAttack::new()
+                .attackers([actor_ref])
+                .grave_killer(Role::SerialKiller)
+                .power(AttackPower::ArmorPiercing)
+                .leave_death_note()
+                .attack(game, midnight_variables, target_ref);
         }
     }
     fn controller_parameters_map(self, game: &Game, actor_ref: PlayerReference) -> ControllerParametersMap {

@@ -8,7 +8,7 @@ import { DragAndDrop } from "../DragAndDrop";
 import { GameModeContext } from "./GameModesEditor";
 import translate from "../../game/lang";
 import "./gameModeSelector.css"
-import parseFromJson, { LATEST_VERSION_STRING } from "./gameMode/dataFixer";
+import parseFromJson, { getLatestFormat } from "./gameMode/migrations";
 import { GameMode, GameModeData, GameModeStorage } from "./gameMode";
 import { isFailure, parseJsonObject } from "./gameMode/parse";
 
@@ -147,7 +147,7 @@ function GameModeSelectorPanel(props: {
     const verbose = false;
 
     const shareableGameModeJsonString = JSON.stringify({
-        format: LATEST_VERSION_STRING,
+        format: getLatestFormat("ShareableGameMode"),
         name: gameModeNameField === "" ? "Unnamed Game Mode" : gameModeNameField,
         roleList,
         phaseTimes,

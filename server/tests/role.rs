@@ -1107,7 +1107,10 @@ fn grave_contains_multiple_killers() {
 
     assert!(mafioso.send_ability_input_player_list_typical(townie));
     assert!(vigilante.send_ability_input_player_list_typical(townie));
+
     game.next_phase();
+
+    print!("{:#?}", *unsafe{GraveReference::new_unchecked(0)}.deref(&game));
     assert!(
         *unsafe{GraveReference::new_unchecked(0)}.deref(&game) ==
         Grave{ 

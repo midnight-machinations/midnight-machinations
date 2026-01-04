@@ -1,5 +1,6 @@
 use crate::game::abilities_component::ability::Ability;
 use crate::game::abilities_component::ability_trait::AbilityTrait;
+use crate::game::components::attack::night_attack::NightAttack;
 use crate::vec_set;
 use crate::game::prelude::*;
 
@@ -122,13 +123,10 @@ impl AbilityTrait for SyndicateGun {
                     .with_tag(VisitTag::SyndicateGun)
                     .map(|visit| (visit.visitor, visit.target))
                 {
-                    target.try_night_kill_single_attacker(
-                        attacker,
-                        game, midnight_variables,
-                        GraveKiller::RoleSet(RoleSet::Mafia),
-                        AttackPower::Basic,
-                        false
-                    );
+                    NightAttack::new()
+                        .attackers([attacker])
+                        .grave_killer(RoleSet::Mafia)
+                        .attack(game, midnight_variables, target);
                 }
             }
             _ => {}

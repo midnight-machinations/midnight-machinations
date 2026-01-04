@@ -403,6 +403,8 @@
 
     "role.hypnotist.name": "Hypnotist",
     "role.hypnotist.name:var.0": "Hypnotists",
+    "role.hypnotist.name:var.1": "Hypnotherapist",
+    "role.hypnotist.name:var.2": "Hypnotherapists",
     "controllerId.role.hypnotist.0.name": "Hypnotize",
 
     "role.consort.name": "Consort",
@@ -1738,7 +1740,7 @@
     "wiki.article.role.auditor.exampleAlibi.description":"The auditor gets a lot of information, so make sure to format your alibi so it is as easy to read as possible. Here's an example:",
 
     "wiki.article.role.snoop.reminder": "At night, select a player to learn if they are a town loyalist, but you can't tell if you are visited a player who isn't your buddy.",
-    "wiki.article.role.snoop.lore":"\"Dude! Dude! Check this out!\"",
+    "wiki.article.role.snoop.lore":"\"Dude! Dude! Check this out!\". Accidentally uncovering the syndicate's secrets with their buddy. Sometimes telling, but not always.",
     "wiki.article.role.snoop.guide": "- At night, select a player and a role. You are either told that the player you chose is a town loyalist, or that you can't tell\n    - You can't tell what your target was if:\n        - They aren't a town loyalist\n        - You are visited by a non-buddy player (visited by any player who doesn't have the role you chose).\n        - They have a suspicious aura\n\n    - Otherwise, you are told they are a town loyalist",
     "wiki.article.role.snoop.abilities":"",
     "wiki.article.role.snoop.attributes":"",
@@ -1776,7 +1778,7 @@
     "wiki.article.role.bodyguard.extra":"* If your target is attacked, you attack each attacking visitor.",
 
     "wiki.article.role.cop.reminder": "At night, select a player to guard. You attack a random visitor of the player you guard.",
-    "wiki.article.role.cop.lore": "\"This is for your safety!\"",
+    "wiki.article.role.cop.lore": "\"This is for your safety!\"\nThe Town doesn't know whether to thank them or fear them.",
     "wiki.article.role.cop.guide": "- At night, select a player to guard\n    - Guarding a player gives the protected defense, so most attacks can't kill them.\n - You attack one random other player who visits your target\n- You can't use your ability night 1.",
     "wiki.article.role.cop.abilities":"* Visit a player to guard for the night\n* Attack a random visitor of the player you guard",
     "wiki.article.role.cop.attributes":"* Your attack prioritizes non town loyalists\n* You can attack yourself if you somehow visit yourself with another ability.",
@@ -1789,10 +1791,10 @@
     "wiki.article.role.bouncer.extra":"* You can't select yourself\n* You are immune to roleblocks, wardblocks, and possession",
 
     "wiki.article.role.engineer.reminder": "At night, after building your trap, set a trap on a player. When the trap triggers, it kills attackers, and gives investigative results.",
-    "wiki.article.role.engineer.guide": "You have a trap that you can set on players to guard them, attack attackers, and give investigative results.\n- While the trap is dismantled:\n    - You can't do anything, the trap will become ready the next night.\n    - If you are blocked, the trap will stay dismantled.\n- While the trap is ready:\n    - You can set the trap on a player.\n    - If you are blocked, the trap will stay ready.\n    - The trap could potentially trigger on the same night that it is first set.\n- While the trap is set:\n    - The trap triggers if the player with the trap is either attacked, or visited by anyone except yourself.\n    - The player with the trap is guarded by you.\n    - You can choose to dismantle it, if you do, it can't trigger tonight, but will be ready the next night.\n    - If you are blocked, the ability works normally.\n- When the trap triggers:\n    - You are told the role of all visitors to the player with the trap, but not their names, even if they are not attackers.\n    - You attack every attacking visitor to the player with the trap with an armor-piercing attack\n",
+    "wiki.article.role.engineer.guide": "You have a trap that you can set on players to guard them, attack attackers, and give investigative results.\n- While the trap is dismantled:\n    - You can't do anything, the trap will become ready the next night.\n    - If you are blocked, the trap will stay dismantled.\n- While the trap is ready:\n    - You can set the trap on a player.\n    - If you are blocked, the trap will stay ready.\n    - The trap could potentially trigger on the same night that it is first set.\n- While the trap is set:\n    - The trap triggers if the player with the trap is either attacked, or visited by anyone except yourself.\n    - The player with the trap is guarded by you.\n    - You can choose to dismantle it, if you do, it can't trigger tonight, but will be ready the next night.\n    - If you are blocked, the ability works normally.\n- When the trap triggers:\n    - You are told the abilities of all visits targeting the player with the trap, even if they are not attacking.\n    - You attack every attacking visitor to the player with the trap with an armor-piercing attack\n",
     "wiki.article.role.engineer.abilities":"",
     "wiki.article.role.engineer.attributes":"",
-    "wiki.article.role.engineer.extra":"- You are told the state of your trap at the start of every night and at the end of every night, even while dead.",
+    "wiki.article.role.engineer.extra":"- You are told the state of your trap at the start of every night and at the end of every night, even while dead.\n- Appeared visits do not change your information",
 
     "wiki.article.role.armorsmith.reminder": "At night, open shop to guard yourself and all visitors to you. Give one visitor a protected fragile vest.",
     "wiki.article.role.armorsmith.guide": "- At night, visit a player to open shop, up to X times per game (X = Total players ÷ 5 (round up))\n    - You and all visitors to you are guarded for the night\n    - One random visitor to you is given protected fragile vest, prioritizing the player you visited.",
@@ -1854,14 +1856,14 @@
     "wiki.article.role.rabblerouser.extra":"- The pitchfork menu stays available\n   - Even if all Rabblerousers are dead\n    - Even if there is no Rabblerouser\n    - Even if all three uses are consumed\n- Multiple Rabblerousers does not mean multiple attacks or more uses. There is a maximum of 3 uses and a maximum of 1 attack per night",
 
     "wiki.article.role.veteran.reminder":"Each night, choose to rampage yourself, killing all visitors to you.",
-    "wiki.article.role.veteran.lore": "Nobody actually knows what war they were in, but they said they are a veteran. Definetly don't ask, it's far too dangerous.",
+    "wiki.article.role.veteran.lore": "The Veteran claims a war fought long ago. Don't ask—they won't tell, and it's far too dangerous to pry.",
     "wiki.article.role.veteran.guide": "- At night, you can choose to alert to gain protected defense for the night and rampage yourself, attacking everyone who visits you\n- You can only use your ability X times (X = Total players ÷ 5 (round up))\n- You can't use your ability on night 1\n* You should try to trick evil players into visiting you, so you can block the attack and kill them. Try to avoid killing unnecessary townies.",
     "wiki.article.role.veteran.abilities":"* Select yourself\n    - rampage yourself\n    - gain protected defense for the night",
     "wiki.article.role.veteran.attributes":"* You only have three uses of your ability\n* You are told when a visitor is attacked by your rampage\n* You have an armor-piercing attack\n- You can't use your ability night 1",
     "wiki.article.role.veteran.extra":"* You are immune to getting roleblocked and getting possessed\n* When you select yourself, you don't visit yourself\n* You can't attack dead players",
 
     "wiki.article.role.marksman.reminder": "Each night, mark up to 3 players and camp up to 3 players. If a marked player visits a camped player, you attack the marked player.",
-    "wiki.article.role.marksman.lore": "When the killings started, the marksman decided it's time the town had a curfew. If anyone steps out of line and dies, its not the marksman's fault. \"Just don't be stupid and you'll be safe.\"",
+    "wiki.article.role.marksman.lore": "When the killings began, order demanded precision. The Marksman established curfews and checkpoints, watching every route through town. \"Stay compliant. Stay alive.\"",
     "wiki.article.role.marksman.guide": "- Each night, choose up to three players to mark, and camp up to three players to camp\n    - If a marked player visits a camped player, you attack the marked player\n- You can't do anything on the first night\n- If you kill a townie, you can't use your ability again\n- You should try to mark players who act suspicious, and camp players that they would only visit if they're evil",
     "wiki.article.role.marksman.abilities":"* Choose to mark up to 3 players\n* Select up to 3 players, if you have nobody marked, you can't camp anyone\n    - If a marked player visits any of your targets, you attack them",
     "wiki.article.role.marksman.attributes":"* You can't mark or camp to camp on night 1\n* If you kill a town loyalist, you can't mark or camp again\n* You have a basic attack",
@@ -1955,7 +1957,7 @@
     "wiki.article.role.maverick.extra":"- Your ability breaks role limits, you can be given an ability with role limit 1, even if there is a player with that ability in the game.",
     
     "wiki.article.role.hypnotist.reminder": "Each night, select a player to roleblock and/or send false messages.",
-    "wiki.article.role.hypnotist.lore": "A hypnotherapist who used their \"uncanny\" abilities to help townsfolk with mental troubles. When the town decided the hypnotherapists methods were too mysterious, they drove the hypnotist out of town. The patients had nowhere left to turn, so the hypnotist resorted to using their powers of suggestion underground, the rest was history.",
+    "wiki.article.role.hypnotist.lore": "Once a licensed hypnotherapist who loved to heal minds. But when the mayor needed the hypnotist most, the hypnotist failed. The hypnotist was driven underground, to the syndicate. Now they treat whoever still dares to trust them.",
     "wiki.article.role.hypnotist.guide": "- Each night choose a player\n    - You may choose to roleblock them\n    - You must send one or more of the following chat messages to your target\n        - You were roleblocked. (Your choice to send this message is independent of your choice to roleblock your target)\n        - You were guarded.\n        - You were attacked but had defense.\n        - You were transported.\n        - You were possessed.\n        - A visit of yours was wardblocked.",
     "wiki.article.role.hypnotist.abilities":"None",
     "wiki.article.role.hypnotist.attributes":"None",
@@ -1968,6 +1970,7 @@
     "wiki.article.role.consort.extra":"* When someone is roleblocked, their visits are wiped, so they don't visit anyone\n* You can't select other syndicate members",
 
     "wiki.article.role.blackmailer.reminder": "Each night, select a player to silence until the next night. All votes are hidden while you are alive.",
+    "wiki.article.role.blackmailer.lore": "Silence is the safest posture. As the Informant uncovers whispered secrets, the Blackmailer ensures they never forget the lies they whispered.",
     "wiki.article.role.blackmailer.guide": "- At night, select a player to silence\n- The silenced player can't speak during the next day.\n- While a blackmailer is alive, nomination votes are hidden and verdict votes are hidden.\n- You can't choose to silence the player you silenced yesterday.\n- Silenced players call all witnesses at the start of testimony.",
     "wiki.article.role.blackmailer.abilities":"* Visit a player to silence them during the next day",
     "wiki.article.role.blackmailer.attributes":"- Silenced players can not talk in chat or out loud during the entire next day.",
@@ -2004,14 +2007,14 @@
     "wiki.article.role.framer.extra":"- Your appeared into visit is wardblock immune, investigate immune, and indirect",
 
     "wiki.article.role.disguiser.reminder": "Your grave shows whatever role you choose when you die. You have innocent aura. At night, give a fellow insider appeared visits.",
-    "wiki.article.role.disguiser.lore": "The town did not approve of the costumes the disguiser made.",
+    "wiki.article.role.disguiser.lore": "The Town did not approve of the costumes the Disguiser made. They confiscated the masks but it was too late. The Disguiser had already donned a new face.",
     "wiki.article.role.disguiser.guide": "- At night, select a fellow insider to make them appear to visit other players\n - You have your role appear to be what you chose on your grave\n - You have innocent aura\n - When you are roleblocked, until the start of next night, if you die, your grave shows disguiser on it, and you don't have innocent aura.",
     "wiki.article.role.disguiser.abilities":"",
     "wiki.article.role.disguiser.attributes":"",
     "wiki.article.role.disguiser.extra":"- Your appeared into visit is wardblock immune, investigate immune, and indirect",
 
     "wiki.article.role.reeducator.reminder": "Once per game at night*, choose a player to join the syndicate. At night you can instantly change the role of fellow insiders.",
-    "wiki.article.role.reeducator.lore": "Once a brilliant educator, now in hiding. They were nearly executed after they fell victim to the syndicates propoganda machine. They taught students that the syndicate knows more than the town leads you to believe.",
+    "wiki.article.role.reeducator.lore": "Formerly an acclaimed instructor but condemned after questioning the Town's curriculum. The Syndicate's \"propaganda,\" they called it. Though the Reeducator insists they were teaching truth. Their lectures continue as whispers across unstable connections.\n",
     "wiki.article.role.reeducator.guide": "- Once per game, on any night except the first, select a player and syndicate support role. If they have no defense:\n    - Their role switches to the role you choose\n    - They become a syndicate insider\n    - They become a syndicate loyalist\n - During night, choose a fellow insider or yourself to instantly change to the syndicate support role you chose.\n - For each reeducator that generates at the start of the game, one less syndicate support generates.",
     "wiki.article.role.reeducator.abilities": "",
     "wiki.article.role.reeducator.attributes": "",
@@ -2078,10 +2081,10 @@
     "wiki.article.role.trueWildcard.extra":"* If you choose a role that was disabled you stay as the True Wildcard\n* You can choose true wildcard to stay as true wildcard\n* You can become a role that is at its role limit, if there is a veteran in the game, you still can become one",
 
     "wiki.article.role.witch.reminder": "Each night, possess a player.",
-    "wiki.article.role.witch.guide": "- You win if town loses, when town loses you leave town\n- At night, possess a player by selecting 2 players\n    - The first player you select will be forced to visit the second player you select\n\n_For example_\n- You can posses a vigilante to attack another townie by selecting the vigilante first and the townie second",
-    "wiki.article.role.witch.abilities":"* Visit 2 players to make the first player visit the second player\n* If there are no living townies, you win, and leave town at the start of the next phase",
-    "wiki.article.role.witch.attributes":"* The first player you visit is told that they were possessed or immune to possession\n* You are told all night information messages that the player you possess gets told",
-    "wiki.article.role.witch.extra":"* You are immune to getting roleblocked and possession\n* Your second target is investigate immune, indirect, and wardblock immune",
+    "wiki.article.role.witch.guide": "- You win if town loses, when town loses you leave town\n- At night, possess a player by selecting 2 players\n\n_For example_\n- You can posses a vigilante to attack another townie by selecting the vigilante first and the townie second",
+    "wiki.article.role.witch.abilities":"",
+    "wiki.article.role.witch.attributes":"* The first player you visit is eithertol d that they are possessed or that they are immune to possession\n* You are told all night information messages that the player you possess gets told",
+    "wiki.article.role.witch.extra":"* You are immune to getting roleblocked and possession\n* Your second visit is investigate immune, indirect, and wardblock immune",
     
     "wiki.article.role.scarecrow.reminder": "Each night, select a player to ward them, everyone you wardblock is revealed to you.",
     "wiki.article.role.scarecrow.guide": "- You win if town loses, when town loses you leave town\n- At night, select a player to ward them, stopping almost all abilities from working on them.\n    - The players you ward are revealed to you",

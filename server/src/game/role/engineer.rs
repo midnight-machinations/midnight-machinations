@@ -1,6 +1,6 @@
 use rand::seq::SliceRandom as _;
 use serde::{Deserialize, Serialize};
-use crate::game::prelude::*;
+use crate::game::{components::attack::night_attack::NightAttack, prelude::*};
 use super::common_role;
 
 #[derive(Default, Clone, Debug)]
@@ -98,7 +98,11 @@ impl RoleStateTrait for Engineer {
                             visit.visitor != actor_ref &&
                             !visit.indirect
                         {
-                            visit.visitor.try_night_kill_single_attacker(actor_ref, game, midnight_variables, GraveKiller::Role(Role::Engineer), AttackPower::ArmorPiercing, false);
+                            NightAttack::new()
+                                .attackers([actor_ref])
+                                .grave_killer(Role::Engineer)
+                                .power(AttackPower::ArmorPiercing)
+                                .attack(game, midnight_variables, visit.visitor);
                         }
                     }
                 }

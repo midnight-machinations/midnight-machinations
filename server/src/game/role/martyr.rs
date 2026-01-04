@@ -1,5 +1,5 @@
 use serde::Serialize;
-use crate::game::prelude::*;
+use crate::game::{components::attack::night_attack::NightAttack, prelude::*};
 
 #[derive(PartialEq, Eq, Clone, Debug, Serialize)]
 #[serde(rename_all = "camelCase")]
@@ -49,11 +49,20 @@ impl RoleStateTrait for Martyr {
             self.state = MartyrState::StillPlaying { bullets: bullets.saturating_sub(1) };
 
             if target_ref == actor_ref {
-                if target_ref.try_night_kill_single_attacker(actor_ref, game, midnight_variables, GraveKiller::Suicide, AttackPower::Basic, true) {
+                if NightAttack::new()
+                    .attackers([actor_ref])
+                    .grave_killer(GraveKiller::Suicide)
+                    .leave_death_note()
+                    .attack(game, midnight_variables, target_ref)
+                {
                     self.state = MartyrState::Won;
                 }
             } else {
-                target_ref.try_night_kill_single_attacker(actor_ref, game, midnight_variables, GraveKiller::Role(Role::Martyr), AttackPower::Basic, true);
+                NightAttack::new()
+                    .attackers([actor_ref])
+                    .grave_killer(Role::Martyr)
+                    .leave_death_note()
+                    .attack(game, midnight_variables, target_ref);
             }
         };
 

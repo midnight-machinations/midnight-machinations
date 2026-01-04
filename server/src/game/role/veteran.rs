@@ -1,5 +1,5 @@
 use serde::Serialize;
-use crate::game::prelude::*;
+use crate::game::{components::attack::night_attack::NightAttack, prelude::*};
 
 #[derive(Debug, Clone)]
 pub struct Veteran { 
@@ -53,15 +53,11 @@ impl RoleStateTrait for Veteran {
             OnMidnightPriority::Kill => {
                 if !self.alerting_tonight {return}
 
-                actor_ref.rampage(
-                    game,
-                    midnight_variables,
-                    actor_ref,
-                    GraveKiller::Role(Role::Veteran),
-                    AttackPower::ArmorPiercing,
-                    false,
-                    |_|true
-                );
+                NightAttack::new()
+                    .attackers([actor_ref])
+                    .grave_killer(Role::Veteran)
+                    .power(AttackPower::ArmorPiercing)
+                    .rampage(game, midnight_variables, actor_ref, |_| true);
             }
             _=>{}
         }

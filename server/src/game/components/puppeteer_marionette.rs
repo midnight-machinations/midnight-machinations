@@ -1,7 +1,7 @@
 use std::collections::HashSet;
 
 use crate::{game::{
-    attack_power::AttackPower, chat::ChatMessageVariant, components::graves::grave::GraveKiller, event::{on_add_insider::OnAddInsider, on_midnight::{OnMidnightFold, OnMidnight, OnMidnightPriority}, on_remove_insider::OnRemoveInsider}, game_conclusion::GameConclusion, player::PlayerReference, role::Role, Game
+    Game, attack_power::AttackPower, chat::ChatMessageVariant, components::attack::night_attack::NightAttack, event::{on_add_insider::OnAddInsider, on_midnight::{OnMidnight, OnMidnightFold, OnMidnightPriority}, on_remove_insider::OnRemoveInsider}, game_conclusion::GameConclusion, player::PlayerReference, role::Role
 }, vec_set::VecSet};
 
 use super::{insider_group::InsiderGroupID, tags::Tags, win_condition::WinCondition};
@@ -56,7 +56,12 @@ impl PuppeteerMarionette{
             .collect();
 
         for player in players{
-            player.try_night_kill(puppeteers.clone(), game, midnight_variables,GraveKiller::Role(Role::Puppeteer), attack_power, true);
+            NightAttack::new()
+                .attackers(puppeteers.clone())
+                .grave_killer(Role::Puppeteer)
+                .power(attack_power)
+                .leave_death_note()
+                .attack(game, midnight_variables, player);
         }
     }
 

@@ -1,5 +1,6 @@
 
 use serde::Serialize;
+use crate::game::components::attack::night_attack::NightAttack;
 use crate::game::components::transport::{Transport, TransportPriority};
 use crate::game::prelude::*;
 use crate::vec_map::vec_map;
@@ -66,7 +67,11 @@ impl RoleStateTrait for Bodyguard {
             },
             OnMidnightPriority::Kill => {
                 for redirected_player_ref in self.redirected_player_refs {
-                    redirected_player_ref.try_night_kill_single_attacker(actor_ref, game, midnight_variables, GraveKiller::Role(Role::Bodyguard), AttackPower::ArmorPiercing, false);
+                    NightAttack::new()
+                        .attackers([actor_ref])
+                        .grave_killer(Role::Bodyguard)
+                        .power(AttackPower::ArmorPiercing)
+                        .attack(game, midnight_variables, redirected_player_ref);
                 }
             }
             _ => {}
