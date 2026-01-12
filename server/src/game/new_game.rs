@@ -157,7 +157,7 @@ impl Game{
         
         game.send_packet_to_all(ToClientPacket::StartGame);
         
-        Abilities::set_default_abilties(&mut game);
+        Abilities::set_abilities_states_to_default(&mut game);
 
         //initial role creation calls "on role created". It acts as if your role was just switched but doesnt call on role switch
         for player_ref in PlayerReference::all_players(&game){

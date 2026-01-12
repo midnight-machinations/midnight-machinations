@@ -34,7 +34,11 @@ impl PlayerReference{
             InsiderGroupID::all_groups_with_player(game, *self), 
             game, *self
         );
-        if self.chat_messages(game).iter().all(|m|*m.variant() != ChatMessageVariant::RoleAssignment { role: self.role(game) }) {
+        //if they werent told their current role yet, set their role, which sends the chat message
+        if self.chat_messages(game)
+            .iter()
+            .all(|m|*m.variant() != ChatMessageVariant::RoleAssignment { role: self.role(game) })
+        {
             RoleComponent::set_role_without_ability(*self, game, self.role(game));
         }
     }

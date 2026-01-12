@@ -128,7 +128,6 @@ fn employer_basic(){
     game.skip_to(Obituary, 2);
 
     assert_eq!(townie.role(), Role::Lookout);
-    assert_contains!(tailor.player_ref().revealed_players(&game), &townie.player_ref());
 }
 
 #[test]

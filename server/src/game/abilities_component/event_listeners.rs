@@ -70,16 +70,15 @@ impl Abilities{
         }
     }
     pub fn on_ability_creation(game: &mut Game, event: &OnAbilityCreation, fold: &mut OnAbilityCreationFold, priority: OnAbilityCreationPriority) {
-        if priority == OnAbilityCreationPriority::CancelOrEdit {
-            game.abilities.abilities.insert(event.id.clone(), fold.ability.clone());
-        }
-        if priority == OnAbilityCreationPriority::SetAbility{
-            if fold.cancelled {
-                game.abilities.abilities.remove(&event.id);
-            }else{
+        match priority {
+            OnAbilityCreationPriority::Edit => {
+                game.abilities.abilities.insert(event.id.clone(), fold.ability.clone());
+            },
+            OnAbilityCreationPriority::SetAbility => {
                 game.abilities.abilities.insert(event.id.clone(), fold.ability.clone());
                 OnAbilityEdit::new(event.id.clone(), Some(fold.ability.clone())).as_invokable().invoke(game);
-            }
+            },
+            _ => {}
         }
 
         for (id, _ability) in game.abilities.abilities.clone() {

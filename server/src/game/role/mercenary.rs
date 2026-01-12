@@ -93,8 +93,8 @@ impl RoleStateTrait for Mercenary {
             VisitTag::Role{role: Role::Mercenary, id: controller_id}
         )
     }
-    fn on_ability_creation(self, game: &mut Game, actor_ref: PlayerReference, event: &OnAbilityCreation, fold: &mut OnAbilityCreationFold, priority: OnAbilityCreationPriority) {
-        if priority != OnAbilityCreationPriority::SideEffect || !event.id.is_players_role(actor_ref, Role::Mercenary) || fold.cancelled {return}
+    fn on_ability_creation(self, game: &mut Game, actor_ref: PlayerReference, event: &OnAbilityCreation, _fold: &mut OnAbilityCreationFold, priority: OnAbilityCreationPriority) {
+        if priority != OnAbilityCreationPriority::SideEffect || !event.id.is_players_role(actor_ref, Role::Mercenary) {return}
         for player in PlayerReference::all_players(game){
             if !self.roles.contains(&player.role(game)) {continue};
             player.add_private_chat_message(game, ChatMessageVariant::MercenaryYouAreAHit);

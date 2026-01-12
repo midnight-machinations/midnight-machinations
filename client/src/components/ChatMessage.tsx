@@ -482,6 +482,10 @@ export function translateChatMessage(
             return translate("chatMessage.roleAssignment", 
                 translate("role."+message.role+".name")
             );
+        case "gainedRoleAbility":
+            return translate("chatMessage.gainedRoleAbility", 
+                translate("role."+message.role+".name")
+            );
         case "playersRoleRevealed":
             return translate("chatMessage.playersRoleRevealed",
                 encodeString(playerNames[message.player]),
@@ -912,6 +916,9 @@ export type ChatMessageVariant = {
 // System
 {
     type: "roleAssignment", 
+    role: Role
+} | {
+    type: "gainedRoleAbility", 
     role: Role
 } | {
     type: "playerDied", 

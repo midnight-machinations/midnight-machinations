@@ -995,6 +995,7 @@
     "chatMessage.broadcastWhisper":"\\0 whispered to \\1.",
 
     "chatMessage.roleAssignment":"Your role is \\0",
+    "chatMessage.gainedRoleAbility":"You gained the ability of the \\0",
     "chatMessage.playerDied":"\\0 (\\1) died.",
     "chatMessage.playersRoleRevealed":"\\0 was revealed to be the \\1 to you.",
     "chatMessage.playersRoleConcealed":"\\0 had their role concealed from you.",

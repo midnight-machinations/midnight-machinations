@@ -54,7 +54,7 @@ impl RoleStateTrait for Revolutionary {
     fn on_ability_creation(self, game: &mut Game, actor_ref: PlayerReference, event: &OnAbilityCreation, fold: &mut OnAbilityCreationFold, priority: OnAbilityCreationPriority){
         if event.id.is_players_role(actor_ref, Role::Revolutionary) {
             match priority {
-                OnAbilityCreationPriority::CancelOrEdit => {
+                OnAbilityCreationPriority::Edit => {
                     let Ability::Role(RoleAbility(RoleState::Revolutionary(Revolutionary { target: RevolutionaryTarget::Won }))) = event.ability else {return};
                     if let Some(target) = PlayerReference::all_players(game)
                         .filter(|p|
@@ -69,12 +69,17 @@ impl RoleStateTrait for Revolutionary {
                             Revolutionary{target: RevolutionaryTarget::Target(*target)}
                         )));
                     }else{
-                        fold.cancelled = true;
-                        actor_ref.set_new_role(game, RoleState::Jester(Jester::default()), true)
+                        fold.ability = Ability::Role(RoleAbility(RoleState::Revolutionary(
+                            Revolutionary{target: RevolutionaryTarget::Target(actor_ref)}
+                        )));
                     };
                 },
                 OnAbilityCreationPriority::SideEffect => {
-                    if !fold.cancelled && let RevolutionaryTarget::Target(target) = self.target {
+                    if let RevolutionaryTarget::Target(target) = self.target {
+                        if target == actor_ref {
+                            actor_ref.set_new_role(game, RoleState::Jester(Jester::default()), true);
+                            return;
+                        }
                         Tags::add_viewer(game, TagSetID::RevolutionaryTarget(actor_ref), actor_ref);
                         Tags::add_tag(game, TagSetID::RevolutionaryTarget(actor_ref), target);
                         actor_ref.reveal_players_role(game, target);
@@ -106,11 +111,12 @@ impl Revolutionary {
     pub fn won(&self)->bool{
         self.target == RevolutionaryTarget::Won
     }
-    const CANT_CHOOSE_ROLES: [Role; 5] = [
+    const CANT_CHOOSE_ROLES: [Role; 6] = [
         Role::Jailor,
         Role::Deputy,    
         Role::Transporter,
         Role::Mayor,
         Role::Reporter,
+        Role::Veteran,
     ];
 }

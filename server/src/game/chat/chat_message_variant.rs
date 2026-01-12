@@ -41,6 +41,7 @@ pub enum ChatMessageVariant {
     },
 
     RoleAssignment{role: Role},
+    GainedRoleAbility{role: Role},
     PlayerDied{grave: Grave},
     PlayersRoleRevealed{player: PlayerReference, role: Role},
     PlayersRoleConcealed{player: PlayerReference},
