@@ -107,14 +107,14 @@ impl GameOverCheckPlayer{
         if self.insider_groups.contains(&InsiderGroupID::Cult) {return true;}   //will get converted to apostle, so can kill
         if self.win_condition.is_loyalist_for(GameConclusion::Town) {return true;}  //"can vote", need this or else theres no other team
         
-        //Role can kill / convert
+        //Role can kill / convert or can become a role that does
         if
             RoleSet::Fiends.get_roles().contains(&self.role) ||
             RoleSet::MafiaKilling.get_roles().contains(&self.role) 
         {
             true
-        }else{
-            matches!(self.role, Role::Apostle | Role::Zealot | Role::Krampus | Role::Politician)
+        } else {
+            matches!(self.role, Role::Apostle | Role::Zealot | Role::Krampus | Role::Politician | Role::TrueWildcard | Role::Wildcard)
         }
     }
 }
