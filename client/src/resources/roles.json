@@ -379,14 +379,15 @@
     },
     "employer":{
         "mainRoleSet": "town",
-        "roleSets": ["townCommon", "townSupport"],
+        "roleSets": ["town", "townCommon", "townSupport"],
         "armor": false,
         "aura": null,
         "maxCount": null,
         "canWriteDeathNote": false,
         "canBeConvertedTo": [],
         "chatMessages":[
-            {"type": "roleAssignment", "role":"mayor"}
+            {"type": "roleAssignment", "role":"mayor"},
+            {"type": "gainedRoleAbility", "role":"mayor"}
         ]
     },
     "courtesan": {
