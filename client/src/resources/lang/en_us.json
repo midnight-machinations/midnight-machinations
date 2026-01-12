@@ -292,6 +292,11 @@
     "role.escort.name:var.0": "Escorts",
     "role.escort.target": "Roleblock",
     "controllerId.role.escort.0.name": "Roleblock",
+    
+    "role.employer.name": "Employer",
+    "role.employer.name:var.0": "Employers",
+    "controllerId.role.employer.0.name": "Measure",
+    "controllerId.role.employer.1.name": "Fit",
 
     "role.courtesan.name": "Courtesan",
     "role.courtesan.name:var.0": "Courtesans",
@@ -990,6 +995,7 @@
     "chatMessage.broadcastWhisper":"\\0 whispered to \\1.",
 
     "chatMessage.roleAssignment":"Your role is \\0",
+    "chatMessage.gainedRoleAbility":"You gained the ability of the \\0",
     "chatMessage.playerDied":"\\0 (\\1) died.",
     "chatMessage.playersRoleRevealed":"\\0 was revealed to be the \\1 to you.",
     "chatMessage.playersRoleConcealed":"\\0 had their role concealed from you.",
@@ -1815,6 +1821,12 @@
     "wiki.article.role.escort.attributes":"* You can't be roleblocked\n* Your target is told when they are roleblocked, even if they are immune to being roleblocked",
     "wiki.article.role.escort.extra":"* When someone is roleblocked, their visits are , so they don't visit anyone",
     
+    "wiki.article.role.employer.reminder": "Each night, choose a player to change their role. You can only change players from town roles to town roles. If you choose a player with a non town role, then they gain the ability of the role you chose.",
+    "wiki.article.role.employer.guide": "- At night, choose a player and a town common role.\n    - If that player has a town common role, you change their role to the role you chose.\n    - If you don't choose a role, you do not visit.\n    - If the target does not have a town common role, they gain the ability of the role you chose in addition to their current abilities.",
+    "wiki.article.role.employer.abilities": "",
+    "wiki.article.role.employer.attributes": "",
+    "wiki.article.role.employer.extra": "",
+
     "wiki.article.role.courtesan.reminder": "At night, select two players to roleblock them, stopping them from visiting anyone.",
     "wiki.article.role.courtesan.guide": "- At night, select two players to roleblock them, stopping them from using their ability\n - Your targets are told they are roleblocked.\n - You can't choose to roleblock a player that you roleblocked last night",
     "wiki.article.role.courtesan.abilities":"* Visit two players to roleblock them",

@@ -52,6 +52,9 @@
     "role/escort/0": {
         "midnight": true
     },
+    "role/employer/0": {
+        "midnight": true
+    },
     "role/courtesan/0": {
         "midnight": true
     },

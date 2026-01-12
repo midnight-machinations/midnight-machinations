@@ -37,7 +37,7 @@ impl Abilities{
         abilities.sort();
         Self{abilities}
     }
-    pub fn set_default_abilties(game: &mut Game){
+    pub fn set_abilities_states_to_default(game: &mut Game){
         for (id, _) in game.abilities.abilities.clone() {
             let new_state = id.new_state(game);
             Abilities::new_ability(game, &id, new_state);

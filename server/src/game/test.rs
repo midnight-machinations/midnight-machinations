@@ -98,7 +98,7 @@ pub fn mock_game(settings: Settings, num_players: u8) -> Result<(Game, Assignmen
         InsiderGroups::send_player_insider_groups_packet(&game, player);
     }
     
-    Abilities::set_default_abilties(&mut game);
+    Abilities::set_abilities_states_to_default(&mut game);
 
     //on role creation needs to be called after all players roles are known
     for player_ref in PlayerReference::all_players(&game){

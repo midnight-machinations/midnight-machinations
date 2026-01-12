@@ -270,7 +270,7 @@ impl RoleSet{
                     Role::Transporter, Role::Porter,
                     Role::Mayor, Role::Nepotist, Role::Reporter,
                     Role::Courtesan, Role::Escort,
-                    Role::Polymath
+                    Role::Polymath, Role::Employer
                 ],
             RoleSet::Mafia =>
                 vec_set![

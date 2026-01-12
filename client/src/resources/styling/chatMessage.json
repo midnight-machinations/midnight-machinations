@@ -3,6 +3,7 @@
     "whisper": "discreet",
     "broadcastWhisper": "discreet",
     "roleAssignment": "important center",
+    "gainedRoleAbility": "special",
     "playerDied": "important",
     "godfatherBackupKilled": "special",
     "godfatherBackup": "special",
