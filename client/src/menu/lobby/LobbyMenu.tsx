@@ -24,6 +24,8 @@ import { UnsafeString } from "../../game/gameState.d";
 import { encodeString } from "../../components/ChatMessage";
 import ListMap from "../../ListMap";
 import RandomSeedSelector from "../../components/gameModeSettings/RandomSeedSelector";
+import { VoiceChatToggle } from "../../components/gameModeSettings/VoiceChatToggle";
+import { VoiceChatControls } from "../../components/VoiceChatControls";
 
 export default function LobbyMenu(): ReactElement {
     const isSpectator = useLobbyState(
@@ -63,6 +65,7 @@ export default function LobbyMenu(): ReactElement {
                     <div>
                         <LobbyNamePane />
                         <LobbyPlayerList />
+                        <VoiceChatControls />
                         <LobbyChatMenu spectator={isSpectator}/>
                     </div>
                     <div>
@@ -73,6 +76,7 @@ export default function LobbyMenu(): ReactElement {
                     <div>
                         <LobbyNamePane />
                         <LobbyPlayerList />
+                        <VoiceChatControls />
                     </div>
                     <div>
                         <LobbyChatMenu spectator={isSpectator}/>
@@ -146,6 +150,9 @@ function LobbyMenuSettings(props: Readonly<{
         <ModifiersSelector
             disabled={!props.isHost}
             setModifiers={modifiers => GAME_MANAGER.sendModifierSettingsPacket(new ListMap(modifiers))}
+        />
+        <VoiceChatToggle
+            disabled={!props.isHost}
         />
         <RandomSeedSelector
             disabled={!props.isHost}

@@ -75,6 +75,7 @@ impl Lobby {
         send.send(ToClientPacket::RoleList { role_list: self.settings.role_list.clone() });
         send.send(ToClientPacket::EnabledRoles { roles: self.settings.enabled_roles.clone().into_iter().collect() });
         send.send(ToClientPacket::ModifierSettings { modifier_settings: self.settings.modifiers.clone() });
+        send.send(ToClientPacket::VoiceChatEnabled { enabled: self.settings.voice_chat_enabled });
     }
 
     pub fn set_player_name(&mut self, room_client_id: RoomClientID, name: String) {
