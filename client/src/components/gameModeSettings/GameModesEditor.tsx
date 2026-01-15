@@ -1,4 +1,4 @@
-import { ReactElement, createContext, useCallback, useState } from "react";
+import { ReactElement, createContext, useCallback, useMemo, useState } from "react";
 import React from "react";
 import { OutlineListSelector } from "./OutlineSelector";
 import { getAllRoles, RoleList, RoleOutline } from "../../game/roleListState.d";
@@ -15,6 +15,7 @@ import { ShareableGameMode } from "./gameMode";
 import { ModifiersSelector } from "./ModifiersSelector";
 import { ListMapData } from "../../ListMap";
 import { ModifierID, ModifierState } from "../../game/modifiers";
+import { TabbedContent, TabDefinition } from "../TabbedContent";
 
 const GameModeContext = createContext({
     roleList: [] as RoleList,
@@ -23,6 +24,8 @@ const GameModeContext = createContext({
     modifierSettings: [] as ListMapData<ModifierID, ModifierState>
 });
 export {GameModeContext};
+
+type SettingsTab = "phaseTimes" | "modifiers" | "outlineList" | "enabledRoles";
 
 
 export default function GameModesEditor(props: Readonly<{
@@ -90,6 +93,45 @@ export default function GameModesEditor(props: Readonly<{
     const setModifiers = (modifiers: ListMapData<ModifierID, ModifierState>) => {
         setModifierSettings(modifiers);
     }
+
+    const tabs: TabDefinition<SettingsTab>[] = useMemo(() => [
+        {
+            id: "phaseTimes",
+            label: translate("menu.lobby.timeSettings"),
+            content: <PhaseTimesSelector 
+                onChange={(newPhaseTimes) => {
+                    setPhaseTimes(newPhaseTimes);
+                }}            
+            />
+        },
+        {
+            id: "modifiers",
+            label: translate("modifiers"),
+            content: <ModifiersSelector
+                disabled={false}
+                setModifiers={setModifiers}
+            />
+        },
+        {
+            id: "outlineList",
+            label: translate("menu.lobby.roleList"),
+            content: <OutlineListSelector
+                onChangeRolePicker={onChangeRolePicker}
+                onAddNewOutline={addOutline}
+                onRemoveOutline={removeOutline}
+                setRoleList={setRoleList}
+            />
+        },
+        {
+            id: "enabledRoles",
+            label: translate("menu.lobby.enabledRoles"),
+            content: <EnabledRoleSelector
+                onDisableRoles={onDisableRoles}
+                onEnableRoles={onEnableRoles}
+                onIncludeAll={onEnableAll}         
+            />
+        }
+    ], [onChangeRolePicker, onDisableRoles, onEnableRoles, onEnableAll, setModifiers, addOutline, removeOutline, setRoleList]);
     
     
     return <div className="game-modes-editor">
@@ -98,7 +140,7 @@ export default function GameModesEditor(props: Readonly<{
         </header>
         <GameModeContext.Provider value={{roleList, phaseTimes, enabledRoles, modifierSettings}}>
             <main>
-                <div>
+                <div className="left-column">
                     <GameModeSelector 
                         canModifySavedGameModes={true}
                         loadGameMode={gameMode => {
@@ -108,27 +150,11 @@ export default function GameModesEditor(props: Readonly<{
                             setModifierSettings(gameMode.modifierSettings);
                         }}
                     />
-                    <PhaseTimesSelector 
-                        onChange={(newPhaseTimes) => {
-                            setPhaseTimes(newPhaseTimes);
-                        }}            
-                    />
                 </div>
-                <div>
-                    <ModifiersSelector
-                        disabled={false}
-                        setModifiers={setModifiers}
-                    />
-                    <OutlineListSelector
-                        onChangeRolePicker={onChangeRolePicker}
-                        onAddNewOutline={addOutline}
-                        onRemoveOutline={removeOutline}
-                        setRoleList={setRoleList}
-                    />
-                    <EnabledRoleSelector
-                        onDisableRoles={onDisableRoles}
-                        onEnableRoles={onEnableRoles}
-                        onIncludeAll={onEnableAll}         
+                <div className="right-column">
+                    <TabbedContent
+                        tabs={tabs}
+                        defaultTab="phaseTimes"
                     />
                 </div>
             </main>
