@@ -63,7 +63,23 @@ You can now start the server backend:
 cargo run
 ```
 
-### Production Enviornment
+### Bot Players (Optional)
+The server supports LLM-powered bot players that can join games. To enable this feature, you need to set up an OpenAI API key:
+
+```bash
+export OPENAI_API_KEY="your-api-key-here"
+```
+
+Or add it to a `.env` file in the server directory:
+```
+OPENAI_API_KEY=your-api-key-here
+```
+
+Once configured, hosts can add bot players from the lobby using the "Add Bot" button. Bots will use ChatGPT to make decisions during the game.
+
+For more information about the bot system, see [server/src/game/bot/README.md](server/src/game/bot/README.md).
+
+### Production Environment
 #### Install
 We have built an install script that automatically pulls all the dependencies.
 Run the following command as the root user

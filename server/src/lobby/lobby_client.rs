@@ -33,6 +33,8 @@ pub enum LobbyClientType{
     Spectator,
     Player{
         name: String,
+        #[serde(default)]
+        bot: bool,
     }
 }
 
@@ -41,7 +43,15 @@ impl LobbyClient {
         LobbyClient{
             connection: ClientConnection::Connected(connection),
             ready: if host { Ready::Host } else { Ready::NotReady },
-            client_type: LobbyClientType::Player{name},
+            client_type: LobbyClientType::Player{name, bot: false},
+            last_message_times: VecDeque::new()
+        }
+    }
+    pub fn new_bot(name: String, connection: crate::game::bot::BotConnection, host: bool)->Self{
+        LobbyClient{
+            connection: ClientConnection::Bot(connection),
+            ready: if host { Ready::Host } else { Ready::Ready },
+            client_type: LobbyClientType::Player{name, bot: true},
             last_message_times: VecDeque::new()
         }
     }
@@ -49,10 +59,11 @@ impl LobbyClient {
 
         match game_client.client_location {
             GameClientLocation::Player(player) => {
+                let is_bot = matches!(player.connection(game), ClientConnection::Bot(_));
                 LobbyClient{
                     connection: player.connection(game).clone(),
                     ready: if game_client.host { Ready::Host } else { Ready::NotReady },
-                    client_type: LobbyClientType::Player{name: player.name(game).to_string()},
+                    client_type: LobbyClientType::Player{name: player.name(game).to_string(), bot: is_bot},
                     last_message_times: VecDeque::new()
                 }
             },

@@ -61,6 +61,9 @@ pub fn mock_game(settings: Settings, num_players: u8) -> Result<(Game, Assignmen
         players: players.into_boxed_slice(),
         phase_machine: PhaseStateMachine::new(settings.phase_times.clone()),
         settings,
+        
+        bot_controller_receiver: tokio::sync::mpsc::unbounded_channel().1,
+        bot_agent_handles: Vec::new(),
 
         player_chat_groups: PlayerChatGroups::new(),
         enfranchise: unsafe{EnfranchiseComponent::new(num_players)},

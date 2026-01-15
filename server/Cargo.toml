@@ -17,3 +17,4 @@ chrono = { version = "0.4.25", default-features = false, features = ["clock"] }
 vec1 = { version = "1.12.1", features = ["serde"] }
 enum_delegate = "0.2.0"
 dotenv = "0.15"
+async-openai = "0.30"

@@ -1,8 +1,7 @@
 use rand::{rngs::SmallRng, SeedableRng};
 
 use crate::{
-    client_connection::ClientConnection,
-    game::{
+    client_connection::ClientConnection, game::{
         abilities_component::Abilities, chat::{ChatComponent, PlayerChatGroups},
         components::{
             blocked::BlockedComponent, confused::Confused, cult::Cult, detained::Detained, enfranchise::EnfranchiseComponent, fast_forward::FastForwardComponent, fragile_vest::FragileVestsComponent, graves::Graves, insider_group::{InsiderGroupID, InsiderGroups}, mafia::Mafia, mafia_recruits::MafiaRecruits, pitchfork_item::PitchforkItemComponent, poison::Poison, puppeteer_marionette::PuppeteerMarionette, role::RoleComponent, role_reveal::RevealedPlayersComponent, silenced::Silenced, synopsis::SynopsisTracker, tags::Tags, verdicts_today::VerdictsToday, win_condition::WinConditionComponent
@@ -13,9 +12,7 @@ use crate::{
         role_list_generation::{OutlineListAssignment, RoleListGenerator}, settings::Settings,
         spectator::{spectator_pointer::SpectatorPointer, Spectator, SpectatorInitializeParameters}, Assignments,
         Game, RejectStartReason
-    },
-    packet::ToClientPacket, room::{name_validation::generate_random_name, RoomClientID},
-    vec_map::VecMap
+    }, packet::ToClientPacket, room::{name_validation::generate_random_name, RoomClientID}, vec_map::VecMap
 };
 
 impl Game{
@@ -63,7 +60,7 @@ impl Game{
             let mut new_players = Vec::new();
             let mut new_players_names = Vec::new();
             for player in players.iter() {
-                let ClientConnection::Connected(ref sender) = player.connection else {
+                if !matches!(player.connection, ClientConnection::Connected(..) | ClientConnection::Bot(..)) {
                     return Err(RejectStartReason::PlayerDisconnected)
                 };
                 
@@ -79,16 +76,26 @@ impl Game{
                 };
                 new_players_names.push(name.clone());
 
-                let new_player = Player::new(
-                    name,
-                    sender.clone()
-                );
+                let new_player = match player.connection {
+                    ClientConnection::Connected(ref sender) => Player::new(
+                        name,
+                        sender.clone()
+                    ),
+                    ClientConnection::Bot(ref bot_connection) => Player::new_bot(
+                        name,
+                        bot_connection.clone()
+                    ),
+                    _ => unreachable!()
+                };
                 
                 new_players.push(new_player);
             }
 
             #[expect(clippy::cast_possible_truncation, reason = "Explained in doc comment")]
             let num_players = new_players.len() as u8;
+
+            // Create bot controller input channel
+            let (bot_input_tx, bot_input_rx) = tokio::sync::mpsc::unbounded_channel();
 
             let mut game = Self {
                 room_name: room_name.clone(),
@@ -103,6 +110,9 @@ impl Game{
                 players: new_players.into_boxed_slice(),
                 phase_machine: PhaseStateMachine::new(settings.phase_times.clone()),
                 settings,
+                
+                bot_controller_receiver: bot_input_rx,
+                bot_agent_handles: Vec::new(),
 
                 player_chat_groups: PlayerChatGroups::new(),
                 enfranchise: unsafe{EnfranchiseComponent::new(num_players)},
@@ -130,6 +140,50 @@ impl Game{
                 fast_forward: unsafe{FastForwardComponent::new(num_players)},
                 chat_messages: unsafe{ChatComponent::new(num_players)}
             };
+
+            // Start bot agents for bot players
+            for (player_index, _) in game.players.iter().enumerate() {
+                #[expect(clippy::cast_possible_truncation, reason = "player_index is guaranteed to be small")]
+                let player_index_u8 = player_index as u8;
+                
+                if let Ok(player_ref) = PlayerReference::new(&game, player_index_u8) {
+                    if let ClientConnection::Bot(bot_connection) = player_ref.connection(&game) {
+                        let api_key = std::env::var("OPENAI_API_KEY").ok();
+                        
+                        // Find the room client ID for this player
+                        let room_client_id = clients.iter()
+                            .find(|(_, gc)| matches!(gc.client_location, crate::game::game_client::GameClientLocation::Player(pr) if pr.index() == player_index_u8))
+                            .map(|(id, _)| *id)
+                            .unwrap_or(0);
+                        
+                        // Take the receiver from the bot connection
+                        if let Some(receiver) = bot_connection.take_receiver() {
+                            // Create sender for controller inputs
+                            let input_tx = bot_input_tx.clone();
+                            let (controller_tx, mut controller_rx) = tokio::sync::mpsc::unbounded_channel();
+                            
+                            // Spawn a task to forward controller inputs with player index
+                            let player_idx_for_forward = player_index_u8;
+                            tokio::spawn(async move {
+                                while let Some(input) = controller_rx.recv().await {
+                                    let _ = input_tx.send((player_idx_for_forward, input));
+                                }
+                            });
+                            
+                            let bot_agent = crate::game::bot::BotAgent::new(
+                                room_client_id,
+                                player_ref.name(&game).clone(),
+                                receiver,
+                                controller_tx,
+                                api_key
+                            );
+                            
+                            let handle = bot_agent.spawn();
+                            game.bot_agent_handles.push(handle);
+                        }
+                    }
+                }
+            }
 
             for player in PlayerReference::all_players(&game){
                 let Some(assignment) = assignments.get(&player) else {
