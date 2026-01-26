@@ -28,7 +28,7 @@ impl RoleStateTrait for Marksman {
     fn on_midnight(mut self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut OnMidnightFold, priority: OnMidnightPriority) {
         if priority != OnMidnightPriority::Kill {return};
 
-        let visiting_players: Vec<_> = Visits::into_iter(midnight_variables).default_visits(actor_ref, Role::Marksman)
+        let visiting_players: Vec<_> = Visits::into_iter(midnight_variables).default_role_visits(actor_ref, Role::Marksman)
             .flat_map(|v|v.target.all_direct_night_visitors_cloned(midnight_variables))
             .collect();
 

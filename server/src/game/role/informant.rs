@@ -14,7 +14,7 @@ impl RoleStateTrait for Informant {
     fn on_midnight(self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut OnMidnightFold, priority: OnMidnightPriority) {
         if priority != OnMidnightPriority::Investigative {return}
 
-        for visit in Visits::into_iter(midnight_variables).default_visits(actor_ref, Role::Informant){
+        for visit in Visits::into_iter(midnight_variables).default_role_visits(actor_ref, Role::Informant){
             let target_ref = visit.target;
             let mut visited_by: Vec<PlayerReference> = target_ref.lookout_seen_players(midnight_variables, visit).collect();
             visited_by.shuffle(&mut game.rng);

@@ -39,7 +39,7 @@ impl RoleStateTrait for Werewolf {
                     .is_empty()
                 {
                     Visits::iter_mut(midnight_variables)
-                        .default_visit(actor_ref, Role::Werewolf)
+                        .default_role_visit(actor_ref, Role::Werewolf)
                         .into_iter()
                         .for_each(|v|v.attack = true);
                 }
