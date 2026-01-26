@@ -186,6 +186,7 @@
         "canBeConvertedTo": [],
         "chatMessages":[
             {"type": "tallyClerkResult", "evilCount": 2},
+            {"type": "tallyClerkResult", "evilCount": 1},
             {"type": "tallyClerkResult", "evilCount": 0}
         ]
     },

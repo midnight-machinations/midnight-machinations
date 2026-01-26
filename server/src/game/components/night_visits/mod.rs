@@ -72,7 +72,7 @@ impl Visits{
     }
     pub fn default_visit(midnight_variables: &OnMidnightFold, actor: PlayerReference, role: Role) -> Option<Visit>{
         Self::into_iter(midnight_variables)
-            .default_visit(actor, role)
+            .default_role_visit(actor, role)
     }
 }
 pub trait NightVisitsIterator: Sized {
@@ -95,8 +95,8 @@ pub trait NightVisitsIterator: Sized {
     fn map_target(self) -> impl Iterator<Item = PlayerReference>;
     fn map_tag(self) -> impl Iterator<Item = VisitTag>;
 
-    fn default_visit(self, actor: PlayerReference, role: Role) -> Option<Self::Item>;
-    fn default_visits(self, actor: PlayerReference, role: Role) -> impl Iterator<Item = Self::Item>;
+    fn default_role_visit(self, actor: PlayerReference, role: Role) -> Option<Self::Item>;
+    fn default_role_visits(self, actor: PlayerReference, role: Role) -> impl Iterator<Item = Self::Item>;
     fn default_target(self, actor: PlayerReference, role: Role) -> Option<PlayerReference>;
     fn default_targets(self, actor: PlayerReference, role: Role) -> impl Iterator<Item = PlayerReference>;
 
@@ -155,13 +155,13 @@ where
         self.map(|v|v.borrow().target)
     }
 
-    fn default_visit(self, actor: PlayerReference, role: Role) -> Option<Self::Item>{
+    fn default_role_visit(self, actor: PlayerReference, role: Role) -> Option<Self::Item>{
         self
-            .default_visits(actor, role)
+            .default_role_visits(actor, role)
             .next()
 
     }
-    fn default_visits(self, actor: PlayerReference, role: Role) -> impl Iterator<Item = Self::Item>{
+    fn default_role_visits(self, actor: PlayerReference, role: Role) -> impl Iterator<Item = Self::Item>{
         self
             .with_visitor(actor)
             .filter(move |v|if let VisitTag::Role{role: r, .. } = v.borrow().tag {r == role} else {false})
@@ -173,7 +173,7 @@ where
     }
     fn default_targets(self, actor: PlayerReference, role: Role) -> impl Iterator<Item = PlayerReference>{
         self
-            .default_visits(actor, role)
+            .default_role_visits(actor, role)
             .map(|v|v.borrow().target)
     }
 

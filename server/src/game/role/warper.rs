@@ -13,7 +13,7 @@ impl RoleStateTrait for Warper {
     fn on_midnight(self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut OnMidnightFold, priority: OnMidnightPriority) {
         if priority != OnMidnightPriority::Warper {return;}
     
-        let mut transporter_visits = Visits::into_iter(midnight_variables).default_visits(actor_ref, Role::Warper);
+        let mut transporter_visits = Visits::into_iter(midnight_variables).default_role_visits(actor_ref, Role::Warper);
         let Some(first_visit) = transporter_visits.next().map(|v| v.target) else {return};
         let Some(second_visit) = transporter_visits.next().map(|v| v.target) else {return};
         

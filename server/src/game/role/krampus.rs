@@ -22,7 +22,7 @@ pub(super) const DEFENSE: DefensePower = DefensePower::Armored;
 impl RoleStateTrait for Krampus {
     type ClientAbilityState = ();
     fn on_midnight(self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut OnMidnightFold, priority: OnMidnightPriority) {
-        let actor_visits = Visits::into_iter(midnight_variables).default_visits(actor_ref, Role::Krampus).collect::<Vec<_>>();
+        let actor_visits = Visits::into_iter(midnight_variables).default_role_visits(actor_ref, Role::Krampus).collect::<Vec<_>>();
 
         match (priority, self.ability) {
             (OnMidnightPriority::Kill, KrampusAbility::Kill) => {
