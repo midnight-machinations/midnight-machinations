@@ -784,7 +784,8 @@ export function translateChatMessage(
                 encodeString(playerNames[message.player]),
                 translate("role."+message.role+".name"),
                 translate("chatMessage.informantResult.visited", playerListToString(message.visited, playerNames)),
-                translate("chatMessage.informantResult.visitedBy", playerListToString(message.visitedBy, playerNames))
+                translate("chatMessage.informantResult.visitedBy", playerListToString(message.visitedBy, playerNames)),
+                translate("chatMessage.informantResult.winCondition", translateWinCondition(message.winCondition))
             );
         case "ambusherCaught":
             return translate("chatMessage.ambusherCaught",
@@ -1154,7 +1155,8 @@ export type ChatMessageVariant = {
     player: PlayerIndex
     role: Role,
     visitedBy: PlayerIndex[],
-    visited: PlayerIndex[]
+    visited: PlayerIndex[],
+    winCondition: WinCondition
 } | {
     type: "ambusherCaught",
     ambusher: PlayerIndex

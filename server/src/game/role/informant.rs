@@ -26,7 +26,8 @@ impl RoleStateTrait for Informant {
                 player: target_ref,
                 role: target_ref.role(game), 
                 visited_by,
-                visited
+                visited,
+                win_condition: target_ref.win_condition(game).clone()
             };
             actor_ref.push_night_message(midnight_variables, message);
             actor_ref.reveal_players_role(game, target_ref);

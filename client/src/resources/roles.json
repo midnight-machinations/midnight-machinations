@@ -738,8 +738,21 @@
         "canWriteDeathNote": false,
         "canBeConvertedTo": ["godfather"],
         "chatMessages":[
-            {"type": "informantResult", "player": 10, "role": "arsonist", "visitedBy":[31,32], "visited":[33]},
-            {"type": "informantResult", "player": 8, "role": "vigilante", "visitedBy":[], "visited":[]}
+            {"type": "informantResult", "player": 10, "role": "arsonist", "visitedBy":[31,32], "visited":[33], "winCondition": { 
+                "type": "gameConclusionReached",
+                "winIfAny": ["fiends"]
+            }},
+            {"type": "informantResult", "player": 8, "role": "vigilante", "visitedBy":[], "visited":[], "winCondition": { 
+                "type": "gameConclusionReached",
+                "winIfAny": ["town"]
+            }},
+            {"type": "informantResult", "player": 8, "role": "jester", "visitedBy":[5, 10, 14], "visited":[], "winCondition": { 
+                "type": "roleStateWon"
+            }},
+            {"type": "informantResult", "player": 8, "role": "detective", "visitedBy":[], "visited":[21], "winCondition": { 
+                "type": "gameConclusionReached",
+                "winIfAny": ["mafia", "fiends", "cult", "politician"]
+            }}
         ]
     },
     "mortician": {
