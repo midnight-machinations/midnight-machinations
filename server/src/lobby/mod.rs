@@ -83,7 +83,7 @@ impl Lobby {
 
         let other_player_names = {
             other_players.values().filter_map(|p| {
-                if let LobbyClientType::Player { name } = p.client_type.clone() {
+                if let LobbyClientType::Player { name, .. } = p.client_type.clone() {
                     Some(name)
                 } else {
                     None
@@ -95,7 +95,7 @@ impl Lobby {
 
         if 
             let Some(player) = self.clients.get_mut(&room_client_id) &&
-            let LobbyClientType::Player { name } = &mut player.client_type
+            let LobbyClientType::Player { name, .. } = &mut player.client_type
         {
             *name = new_name;
         }
@@ -150,7 +150,7 @@ impl RoomState for Lobby {
 
     fn join_client(&mut self, send: &ClientSender) -> Result<JoinRoomClientResult, RejectJoinReason> {
         let player_names = self.clients.values().filter_map(|p| {
-            if let LobbyClientType::Player { name } = p.client_type.clone() {
+            if let LobbyClientType::Player { name, .. } = p.client_type.clone() {
                 Some(name)
             } else {
                 None
@@ -231,6 +231,7 @@ impl RoomState for Lobby {
         };
         match &mut client.connection {
             ClientConnection::Connected(_) => Err(RejectJoinReason::PlayerTaken),
+            ClientConnection::Bot(_) => Err(RejectJoinReason::PlayerTaken),
             ClientConnection::CouldReconnect { .. } => {
                 client.connection = ClientConnection::Connected(send.clone());
     
@@ -281,7 +282,7 @@ impl RoomState for Lobby {
             name: self.name.clone(),
             in_game: false,
             players: self.clients.iter().filter_map(|p|
-                if let LobbyClientType::Player { name } = &p.1.client_type {
+                if let LobbyClientType::Player { name, .. } = &p.1.client_type {
                     Some((*p.0, name.clone()))
                 }else{
                     None

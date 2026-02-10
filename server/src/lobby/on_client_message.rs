@@ -1,6 +1,7 @@
 use std::collections::VecDeque;
 
 use crate::{
+    client_connection::ClientConnection,
     game::{
         chat::{ChatMessage, ChatMessageVariant},
         game_client::{GameClient, GameClientLocation},
@@ -30,7 +31,7 @@ impl Lobby {
                 if text.is_empty() {break 'packet_match}
                 
                 let name = if let Some(
-                    LobbyClient { client_type: LobbyClientType::Player { name }, .. }
+                    LobbyClient { client_type: LobbyClientType::Player { name, .. }, .. }
                 ) = self.clients.get(&room_client_id) {
                     name.clone()
                 } else {
@@ -48,7 +49,7 @@ impl Lobby {
             }
             ToServerPacket::SetSpectator { spectator } => {
                 let player_names = self.clients.values().filter_map(|p| {
-                    if let LobbyClientType::Player { name } = p.client_type.clone() {
+                    if let LobbyClientType::Player { name, .. } = p.client_type.clone() {
                         Some(name)
                     } else {
                         None
@@ -61,7 +62,7 @@ impl Lobby {
                     match &player.client_type {
                         LobbyClientType::Spectator => {
                             if !spectator {
-                                player.client_type = LobbyClientType::Player { name: new_name}
+                                player.client_type = LobbyClientType::Player { name: new_name, bot: false}
                             }
                         },
                         LobbyClientType::Player { .. } => {
@@ -140,7 +141,7 @@ impl Lobby {
                     );
                     
                     match lobby_client.client_type {
-                        LobbyClientType::Player { ref name } => {
+                        LobbyClientType::Player { ref name, .. } => {
                             game_player_params.push(PlayerInitializeParameters{
                                 host: lobby_client.is_host(),
                                 connection: lobby_client.connection,
@@ -272,6 +273,58 @@ impl Lobby {
                 }
                 self.ensure_host_exists(Some(room_client_id));
                 self.send_players();
+            }
+            ToServerPacket::HostAddBot => {
+                if let Some(player) = self.clients.get(&room_client_id) && !player.is_host() { break 'packet_match }
+
+                // Generate bot name
+                let player_names = self.clients.values().filter_map(|p| {
+                    if let LobbyClientType::Player { name, .. } = p.client_type.clone() {
+                        Some(name)
+                    } else {
+                        None
+                    }
+                }).collect::<Vec<_>>();
+
+                let bot_name = name_validation::sanitize_name("Bot".to_string(), &player_names);
+
+                // Create bot connection
+                let (tx, rx) = tokio::sync::mpsc::unbounded_channel();
+                let bot_connection = crate::game::bot::BotConnection::new_with_receiver(tx, rx);
+
+                // Create bot client
+                let bot_client = LobbyClient::new_bot(bot_name, bot_connection, false);
+
+                // Get next client ID
+                let Some(room_client_id) =
+                    (self.clients
+                        .iter()
+                        .map(|(i,_)|*i)
+                        .fold(0u32, u32::max) as RoomClientID).checked_add(1) else {
+                            break 'packet_match
+                        };
+
+                self.clients.insert(room_client_id, bot_client);
+
+                self.set_rolelist_length();
+                self.send_players();
+                
+                for player in self.clients.iter(){
+                    if let ClientConnection::Connected(send) = &player.1.connection {
+                        self.send_settings(send);
+                    }
+                }
+            }
+            ToServerPacket::HostRemoveBot { player_id } => {
+                if let Some(player) = self.clients.get(&room_client_id) && !player.is_host() { break 'packet_match }
+
+                // Check if the player is actually a bot
+                if let Some(client) = self.clients.get(&player_id) 
+                && matches!(client.connection, ClientConnection::Bot(_)) {
+                    if let RemoveRoomClientResult::RoomShouldClose = self.remove_client(player_id) {
+                        return LobbyClientMessageResult::Close;
+                    }
+                }
             }
             _ => {
                 log!(error "Lobby"; "{} {:?}", "ToServerPacket not implemented for lobby was sent during lobby: ", incoming_packet);
