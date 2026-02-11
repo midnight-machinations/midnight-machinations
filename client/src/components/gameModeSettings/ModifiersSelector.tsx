@@ -1,5 +1,5 @@
 import React, { ReactElement, useCallback, useContext, useEffect, useRef, useState } from "react";
-import { MODIFIERS, ModifierID, ModifierState, defaultModifierState, isModifierConfigurable } from "../../game/modifiers";
+import { GravityLevel, MODIFIERS, ModifierID, ModifierState, defaultModifierState, isModifierConfigurable } from "../../game/modifiers";
 import translate from "../../game/lang";
 import StyledText from "../StyledText";
 import { GameModeContext } from "./GameModesEditor";
@@ -188,9 +188,57 @@ export function ModifierConfigMenu(props: Readonly<{
                 close={props.close}
             />
         }
+        case "gravity": {
+            return <GravityConfigMenu
+                state={props.state as ModifierState & { type: "gravity" }}
+                modifiable={props.modifiable}
+                setModifier={props.setModifier}
+                close={props.close}
+            />
+        }
         default:
             return null;
     }
+}
+
+const GRAVITY_LEVELS: GravityLevel[] = ["zeroGravity", "antiGravity"];
+
+function GravityConfigMenu(props: Readonly<{
+    state: ModifierState & { type: "gravity" },
+    modifiable: boolean,
+    setModifier: (modifier: ModifierState | undefined) => void,
+    close: () => void,
+}>): ReactElement {
+    const optionsSearch = new Map<GravityLevel, [ReactElement, string]>();
+
+    GRAVITY_LEVELS.forEach(level => {
+        optionsSearch.set(level, [
+            <StyledText key={level} noLinks={true}>
+                {translate(`gravity.${level}`)}
+            </StyledText>,
+            translate(`gravity.${level}`)
+        ]);
+    });
+
+    return <div>
+        {!props.modifiable && <StyledText>{translate(`gravity`)}: {translate(`gravity.${props.state.level}`)}</StyledText>}
+        {props.modifiable && <>
+            <Select
+                value={props.state.level}
+                onChange={level => props.setModifier({ type: "gravity", level })}
+                optionsSearch={optionsSearch}
+            />
+            <Button onClick={() => {
+                props.setModifier(undefined);
+                props.close();
+            }}>
+                <Icon>delete</Icon>
+            </Button>
+            <Button onClick={() => props.close()}>
+                <Icon>expand_less</Icon>
+            </Button>
+        </>}
+    </div>;
 }
 
 function CustomRoleLimitsConfigMenu(props: Readonly<{

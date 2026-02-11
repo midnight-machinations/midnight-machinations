@@ -860,6 +860,9 @@
     "forfeitNominationVote": "Forfeit Nomination Vote",
     "randomPlayerNames": "Random Player Names",
     "customRoleLimits": "Custom Role Limits",
+    "gravity": "Gravity",
+    "gravity.zeroGravity": "Zero-gravity",
+    "gravity.antiGravity": "Anti-gravity",
 
     "syndicateGun": "Syndicate Gun",
     "nightMessages": "Night Messages",
@@ -1064,6 +1067,8 @@
     "chatMessage.recruiterPlayerIsNowRecruit":"The recruiter recruited \\0 into the syndicate. They are now a Syndicate Loyalist and Syndicate Insider. They will be attacked every night.",
     "chatMessage.wardenPlayersImprisoned": "The warden has made these players their prisoners: \\0. They will be roleblocked and each must choose cooperate or defect.",
     "chatMessage.yourConvertFailed": "You failed to convert your target.",
+    "chatMessage.gravityFloatedAway": "You floated away into the sky!",
+    "chatMessage.gravitySavedPlayer": "\\0 floated up instead of being hanged!",
 
     "chatMessage.youDied":"You died!",
     "chatMessage.youSurvivedAttack": "You were attacked by someone, but you had defense and survived.",
@@ -1596,6 +1601,8 @@
     "wiki.article.modifier.randomPlayerNames.text": "Random Player Names is a modifier that randomizes players names when the game starts, allowing anonymous games.",
     "wiki.article.modifier.customRoleLimits.title": "Custom Role Limits",
     "wiki.article.modifier.customRoleLimits.text": "Custom Role Limits is a modifier that allows the host to set custom limits for each role. For example, the host could allow for infinite Jailors or restrict the number of Detectives to 1.",
+    "wiki.article.modifier.gravity.title": "Gravity",
+    "wiki.article.modifier.gravity.text": "Gravity is a configurable modifier that affects how players interact with the game world.\n\n**Zero-gravity**: Players cannot be hanged when executed at trial. When a player would normally be executed, they float up into the sky instead and survive.\n\n**Anti-gravity**: Any action that requires leaving your house at night (direct visits) will cause you to float away and die. Additionally, if the Deputy shoots someone during the day, they will float away and die instead of their target.",
     
     "wiki.article.standard.syndicateGun.title":"Syndicate Gun",
     "wiki.article.standard.syndicateGun.text":"Syndicate Gun is an ability a syndicate member gets when theres no syndicate killing role present\n- A syndicate member is given a gun they can use to kill a player with a basic attack at night\n- The gun can't be used on the first night\n- The gun can be passed around between syndicate members, so a different syndicate member can shoot it every night\n- The gun still uses visits, so getting roleblocked still erases that visit, and transports still move it\n- The killer appears to be syndicate on the grave of the player who died to the gun\n- When the game starts, the player with the gun is given an armored fragile vest, and that player is told if it breaks.\n    - The vest does not move when the gun moves, so the player who starts with the vest keeps it.",

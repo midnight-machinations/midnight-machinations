@@ -1,4 +1,4 @@
-use mafia_server::game::{phase::{PhaseState, PhaseStateMachine, PhaseType}, Game};
+use mafia_server::game::{modifiers::ModifierState, phase::{PhaseState, PhaseStateMachine, PhaseType}, Game};
 
 pub struct TestGame (*mut Game);
 
@@ -66,5 +66,10 @@ impl TestGame {
     }
     pub fn next_phase(&mut self){
         PhaseStateMachine::next_phase(self, None);
+    }
+
+    /// Set a modifier on the game settings
+    pub fn set_modifier(&mut self, state: ModifierState) {
+        self.settings.modifiers.set_modifier(state);
     }
 }
