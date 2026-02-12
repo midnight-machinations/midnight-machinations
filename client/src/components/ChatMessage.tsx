@@ -187,6 +187,16 @@ const ChatElement = React.memo((
                 roleList={roleList}
                 message={message as any}
             />
+        case "gameOver":
+            return <GameOverChatMessage
+                playerKeywordData={props.playerKeywordData}
+                roleListKeywordData={props.roleListKeywordData}
+                style={style}
+                chatGroupIcon={chatGroupIcon}
+                playerNames={playerNames}
+                roleList={roleList}
+                message={message as any}
+            />
     }
 
     return <div
@@ -263,6 +273,132 @@ function PlayerDiedChatMessage(props: Readonly<{
             <GraveComponent grave={props.message.variant.grave} playerNames={props.playerNames} roleList={props.roleList}/>
         </DetailsSummary>
     </div>;
+}
+
+function GameOverChatMessage(props: Readonly<{
+    playerKeywordData?: KeywordDataMap,
+    roleListKeywordData?: KeywordDataMap,
+    style: string,
+    chatGroupIcon: string | null,
+    playerNames: UnsafeString[],
+    roleList: RoleList,
+    message: ChatMessage & { variant: { type: "gameOver" } }
+}>): ReactElement {
+    const conclusionString = 
+        translateChecked(`chatMessage.gameOver.conclusion.${props.message.variant.synopsis.conclusion}`)
+        ?? translate(`chatMessage.gameOver.conclusion.unknown`, translateConclusion(props.message.variant.synopsis.conclusion));
+
+    const spectator = useSpectator();
+
+    return <div className={"chat-message-div game-over-summary"}>
+        <StyledText className={"chat-message " + props.style}
+            playerKeywordData={props.playerKeywordData}
+            roleListKeywordData={props.roleListKeywordData}
+        >
+            {(props.chatGroupIcon ?? "")} {conclusionString}
+        </StyledText>
+        {props.message.variant.synopsis.playerSynopses.map((synopsis, index) => 
+            <PlayerSynopsisDropdown
+                key={index}
+                playerIndex={index}
+                synopsis={synopsis}
+                playerNames={props.playerNames}
+                roleList={props.roleList}
+                defaultOpen={spectator ?? false}
+            />
+        )}
+    </div>;
+}
+
+function PlayerSynopsisDropdown(props: Readonly<{
+    playerIndex: number,
+    synopsis: {
+        outlineAssignment: number,
+        crumbs: {
+            time: { type: "night", day: number } | { type: "day", day: number },
+            role: Role,
+            winCondition: WinCondition,
+            insiderGroups: InsiderGroup[]
+        }[],
+        won: boolean
+    },
+    playerNames: UnsafeString[],
+    roleList: RoleList,
+    defaultOpen: boolean
+}>): ReactElement {
+    const playerName = encodeString(props.playerNames[props.playerIndex]);
+    const wonText = props.synopsis.won ? translate("chatMessage.gameOver.player.won.true", playerName) : translate("chatMessage.gameOver.player.won.false", playerName);
+    
+    // Helper function to format a state (insider groups, win condition, role)
+    const formatState = (crumb: typeof props.synopsis.crumbs[0]): string => {
+        const insiderGroupIcons = crumb.insiderGroups.map(group => 
+            translate("chatGroup." + group + ".icon")
+        ).join(translate("union")) || translate("chatGroup.all.icon");
+        const winCondition = translateWinCondition(crumb.winCondition);
+        const role = translate("role." + crumb.role + ".name");
+        return `${insiderGroupIcons}, ${winCondition}, ${role}`;
+    };
+    
+    let summaryText: string;
+    if (props.synopsis.crumbs.length === 0) {
+        // No crumbs - just show won/lost
+        summaryText = wonText;
+    } else if (props.synopsis.crumbs.length === 1) {
+        // Only one crumb (game start) - show (Starting State)
+        summaryText = `${wonText} (${formatState(props.synopsis.crumbs[0])})`;
+    } else {
+        // Multiple crumbs - show (Starting State -> Final State)
+        const startingState = formatState(props.synopsis.crumbs[0]);
+        const finalState = formatState(props.synopsis.crumbs[props.synopsis.crumbs.length - 1]);
+        summaryText = `${wonText} (${startingState} → ${finalState})`;
+    }
+
+    return <DetailsSummary
+        summary={
+            <StyledText className="chat-message">
+                {summaryText}
+            </StyledText>
+        }
+        defaultOpen={props.defaultOpen}
+    >
+        <table className="player-synopsis-table">
+            <tbody>
+                <tr>
+                    <td><StyledText>{translate("chatMessage.gameOver.time.roleListGeneration")}</StyledText></td>
+                    <td colSpan={3}>
+                        <StyledText>
+                            {(props.synopsis.outlineAssignment + 1).toString()}: {translateRoleOutline(props.roleList[props.synopsis.outlineAssignment], props.playerNames)}
+                        </StyledText>
+                    </td>
+                </tr>
+                {/* Crumbs rows */}
+                {props.synopsis.crumbs.map((crumb, crumbIndex) => {
+                    let timeText: string;
+                    if (crumbIndex === 0) {
+                        // First crumb is always "Game Start"
+                        timeText = translate("chatMessage.gameOver.time.gameStart");
+                    } else if (crumb.time.type === "night") {
+                        // Night phase
+                        timeText = translate("chatMessage.gameOver.time.night", crumb.time.day);
+                    } else {
+                        // Day phase
+                        timeText = translate("chatMessage.gameOver.time.day", crumb.time.day);
+                    }
+
+                    const insiderGroupIcons = crumb.insiderGroups.map(group => 
+                        translate("chatGroup." + group + ".icon")
+                    ).join(translate("union")) || translate("chatGroup.all.icon");
+
+                    return <tr key={crumbIndex}>
+                        <td><StyledText>{timeText}</StyledText></td>
+                        <td>{insiderGroupIcons}</td>
+                        <td><StyledText>{translateWinCondition(crumb.winCondition)}</StyledText></td>
+                        <td><StyledText>{translate("role." + crumb.role + ".name")}</StyledText></td>
+                    </tr>;
+                })}
+            </tbody>
+        </table>
+    </DetailsSummary>;
 }
 
 function LobbyChatMessage(props: Readonly<{
@@ -831,19 +967,7 @@ export function translateChatMessage(
                 translateChecked(`chatMessage.gameOver.conclusion.${message.synopsis.conclusion}`)
                 ?? translate(`chatMessage.gameOver.conclusion.unknown`, translateConclusion(message.synopsis.conclusion))
             
-            return conclusionString + '\n'
-                + message.synopsis.playerSynopses.map((synopsis, index) => 
-                    translate(`chatMessage.gameOver.player.won.${synopsis.won}`, encodeString(playerNames![index]))
-                        + ` (${synopsis.outlineAssignment + 1}: ${translateRoleOutline(roleList[synopsis.outlineAssignment], playerNames)}`
-                        + `: ${synopsis.crumbs.map(crumb => 
-                            translate("chatMessage.gameOver.player.crumb",
-                                crumb.insiderGroups.map(group => translate("chatGroup."+group+".icon")).join("|") || translate("chatGroup.all.icon"),
-                                translateWinCondition(crumb.winCondition), 
-                                translate(`role.${crumb.role}.name`)
-                            )
-                        ).join(" → ")}`
-                        + `)`
-                ).join('\n');
+            return conclusionString;
         }
         case "playerForwardedMessage":
             return translate(`chatMessage.playerForwardedMessage`, encodeString(playerNames[message.forwarder]));
@@ -945,7 +1069,7 @@ export type ChatMessageVariant = {
         playerSynopses: {
             outlineAssignment: number // role outline index
             crumbs: {
-                night: number | null,
+                time: { type: "night", day: number } | { type: "day", day: number },
                 role: Role,
                 winCondition: WinCondition,
                 insiderGroups: InsiderGroup[]
