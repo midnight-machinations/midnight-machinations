@@ -13,6 +13,7 @@ use crate::{
 pub enum ChatGroup {
     All,
     Dead,
+    Spectator,
 
     Mafia,
     Cult,

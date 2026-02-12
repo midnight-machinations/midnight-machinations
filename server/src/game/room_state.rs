@@ -85,6 +85,7 @@ impl RoomState for Game {
         let new_spectator = self.join_spectator(SpectatorInitializeParameters {
             connection: ClientConnection::Connected(send.clone()),
             host: is_host,
+            name: "Spectator".to_string(),
         })?;
         
         let new_client = GameClient::new_spectator(new_spectator, is_host);

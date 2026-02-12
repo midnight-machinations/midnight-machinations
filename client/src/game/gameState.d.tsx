@@ -59,7 +59,8 @@ export type GameClientType = {
     index: number,
 }
 export type LobbyClientType = {
-    type: "spectator"
+    type: "spectator",
+    name: UnsafeString,
 } | PlayerClientType;
 export type PlayerClientType = {
     type: "player",
@@ -149,7 +150,7 @@ export type PhaseState = {type: "briefing"} | {type: "dusk"} | {type: "night"} |
     playerOnTrial: PlayerIndex
 } | {type: "recess"}
 
-export type ChatGroup = "all" | "dead" | "mafia" | "cult" | "jail" | "kidnapper" | "interview" | "puppeteer";
+export type ChatGroup = "all" | "dead" | "spectator" | "mafia" | "cult" | "jail" | "kidnapper" | "interview" | "puppeteer";
 export type InsiderGroup = (typeof INSIDER_GROUPS)[number];
 export const INSIDER_GROUPS = ["mafia", "cult", "puppeteer"] as const;
 export type PhaseTimes = Record<Exclude<PhaseType, "recess">, number>;

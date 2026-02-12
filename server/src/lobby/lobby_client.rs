@@ -30,7 +30,9 @@ pub enum Ready {
 #[serde(tag = "type")]
 #[serde(rename_all = "camelCase")]
 pub enum LobbyClientType{
-    Spectator,
+    Spectator{
+        name: String,
+    },
     Player{
         name: String,
     }
@@ -60,7 +62,9 @@ impl LobbyClient {
                 LobbyClient{
                     connection: spectator.connection(game),
                     ready: if game_client.host { Ready::Host } else { Ready::Ready },
-                    client_type: LobbyClientType::Spectator,
+                    client_type: LobbyClientType::Spectator{
+                        name: spectator.name(game).unwrap_or_else(|| "Spectator".to_string())
+                    },
                     last_message_times: VecDeque::new()
                 }
             }
@@ -80,7 +84,7 @@ impl LobbyClient {
     }
 
     pub fn is_spectator(&self) -> bool {
-        matches!(self.client_type, LobbyClientType::Spectator)
+        matches!(self.client_type, LobbyClientType::Spectator { .. })
     }
 
     pub fn send(&self, message: ToClientPacket) {
