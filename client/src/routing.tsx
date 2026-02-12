@@ -88,7 +88,7 @@ async function routeGameMode(anchorController: AnchorController, gameModeString:
 
 async function route404(anchorController: AnchorController, path: string) {
     anchorController.setContent(
-        <div className="hero" style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "1rem" }}>
+        <div style={{ height: "100vh", display: "flex", alignItems: "center", justifyContent: "center", gap: "1rem" }}>
             <h1>404</h1>
             <p>The requested path ({path}) could not be found</p>
         </div>

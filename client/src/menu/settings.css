@@ -40,7 +40,8 @@
     border: .13rem solid var(--primary-border-color);
     border-bottom-color: var(--primary-border-shadow-color);
     border-right-color: var(--primary-border-shadow-color);
-    border-radius: 1rem;
+    border-radius: 0;
+    box-shadow: 0 0 15px rgba(from var(--text-color) / 0.3);
 }
 .settings-menu > div > section {
     display: flex;
@@ -48,10 +49,11 @@
     border: solid .13rem var(--primary-border-color);
     border-top-color: var(--primary-border-shadow-color);
     border-left-color: var(--primary-border-shadow-color);
-    border-radius: 0.5rem;
+    border-radius: 0;
     padding: 0.5rem;
     background-color: var(--secondary-color);
     align-items: center;
+    box-shadow: 0 0 10px rgba(from var(--text-color) / 0.2);
 }
 
 .settings-menu .menu-list {

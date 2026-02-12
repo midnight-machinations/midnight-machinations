@@ -107,28 +107,31 @@
 
 
 :root{
-    --background-color: #0d0d0f;
+    /* Analog Horror Terminal Color Scheme */
+    --background-color: #000000;
+    --fade-color: #0a0a0a;
 
-    --fade-color: #0e101b;
+    --primary-color: #111111;
+    --secondary-color: #1a1a1a;
+    --text-color: white;
 
-    --primary-color: #272b3b;
-    --secondary-color: #232754;
-    --text-color: #ffffff;
+    --primary-border-color: #ffffff;
+    --primary-border-shadow-color: #333333;
+    --background-border-color: #aaaaaa;
+    --background-border-shadow-color: #000000;
 
-    --primary-border-color: #545b78;
-    --primary-border-shadow-color: #1c1f2d;
-    --background-border-color: #33323d;
-    --background-border-shadow-color: #0a0a0f;
-
-    --hover-color: #30375a;
-    --focus-outline-color: #929ccc;
+    --hover-color: #222222;
+    --focus-outline-color: #ffffff;
 
     font-size: 1em;
     
-    --game-font: game-base-font;
-    --kira-font: game-kira-font;
-    --spiral-font: game-spiral-font;
-    --title-font: game-title-font;
+    /* Terminal font as primary */
+    --game-font: computer-font;
+    --kira-font: computer-font;
+    --spiral-font: computer-font;
+    --title-font: computer-font;
+
+    font-family: var(--game-font);
 }
 
 s {
@@ -148,16 +151,18 @@ s {
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
 
-    color: white;
+    color: var(--text-color);
 
     font-family: var(--game-font, Arial);
+    text-shadow: 0 0 5px var(--text-color);
 }
 .timer-box{
     width: 100%;
     height: .5rem;
     margin: 0%;
     padding: 0%;
-    background-color: #220000;
+    background-color: #000000;
+    box-shadow: inset 0 0 10px rgba(255, 0, 65, 0.3);
 }
 
 .centered-label {
@@ -167,15 +172,16 @@ s {
 }
 
 button, .button, input, select, option, textarea, .textarea, summary {
-    border-radius: 0.4rem;
+    border-radius: 0;
     margin: .13rem;
     background-color: var(--secondary-color);
     border-color: var(--primary-border-color);
     border-style: solid;
     border-width: .13rem;
-    color: white;
+    color: var(--text-color);
     font-size: 1em;
     padding: 0.13rem 0.25rem;
+    box-shadow: 0 0 10px rgba(from var(--text-color) / 0.3);
 }
 
 /*
@@ -270,14 +276,6 @@ button:hover:not([disabled]):not(:active), .button:hover:not([disabled]):not(:ac
     background-color: var(--hover-color);
 }
 
-.hero {
-    height: 100vh;
-    background-position: center;
-    background-repeat: no-repeat;
-    background-size: cover;
-    position: relative;
-}
-
 code, .code {
     font-family: 'Courier New', Courier, monospace;
     font-weight: bold;
@@ -291,17 +289,17 @@ code, .code {
 }
 /* Track */
 ::-webkit-scrollbar-track {
-    background: #2b2b2b;
-    border-radius: .4rem;
+    background: #000000;
+    border: 1px solid #888888;
 }
 /* Handle */
 ::-webkit-scrollbar-thumb {
-    background: #616161;
-    border-radius: .4rem;
+    background: #aaaaaa;
+    box-shadow: 0 0 5px #aaaaaa;
 }
 /* Handle on hover */
 ::-webkit-scrollbar-thumb:hover {
-    background: #a1a1a1;
+    background: #ffffff;
 }
 
 ::-webkit-scrollbar-corner {
@@ -309,96 +307,87 @@ code, .code {
 }
 
 .chat-menu-colors {
-
-    --fade-color: #161b34;
-
-    --primary-color: #1c244e;
-    --secondary-color: #232754;
-    --text-color: #ffffff;
-
-    --primary-border-color: #3c4675;
-    --primary-border-shadow-color: #111836;
-
-    --hover-color: #232c57;
-    --focus-outline-color: #929ccc;
-
-
-    --background-color: #151a41;
-    --background-border-color: #2b3162;
-    --background-border-shadow-color: #0e1024;
-
-    --primary-color: #1c244e;
-    --secondary-color: #232754;
+    --background-color: #000011;
+    --fade-color: #0a0a0a;
+    --primary-color: #00001a;
+    --secondary-color: #000022;
+    --text-color: white;
+    --primary-border-color: #0031c4;
+    --primary-border-shadow-color: #000033;
+    --background-border-color: #000081;
+    --background-border-shadow-color: #000000;
+    --hover-color: #000022;
+    --focus-outline-color: #0031c4;
 }
 
 .player-list-menu-colors {
-    --background-color: #182c28;
-    --fade-color: #0b1511;
-    --primary-color: #1a3531;
-    --secondary-color: #1f3a35;
-    --text-color: #ffffff;
-    --primary-border-color: #2e5952;
-    --primary-border-shadow-color: #142523;
-    --background-border-color: #2c4d46;
-    --background-border-shadow-color: #121f1c;
-    --hover-color: #1f403b;
-    --focus-outline-color: #84a997;
+    --background-color: #001100;
+    --fade-color: #0a0a0a;
+    --primary-color: #001100;
+    --secondary-color: #001a00;
+    --text-color: white;
+    --primary-border-color: #00c030;
+    --primary-border-shadow-color: #003300;
+    --background-border-color: #007200;
+    --background-border-shadow-color: #000000;
+    --hover-color: #002200;
+    --focus-outline-color: #00c030;
 }
 
 .will-menu-colors {
-    --background-color: #251737;
-    --fade-color: #100b15;
-    --primary-color: #2c1c40;
-    --secondary-color: #332142;
-    --text-color: #ffffff;
-    --primary-border-color: #4c3558;
-    --primary-border-shadow-color: #250d2b;
-    --background-border-color: #352d56;
-    --background-border-shadow-color: #110d18;
-    --hover-color: #38254e;
-    --focus-outline-color: #9c84a9;
+    --background-color: #110011;
+    --fade-color: #0a0a0a;
+    --primary-color: #110011;
+    --secondary-color: #1a001a;
+    --text-color: white;
+    --primary-border-color: #c731c7;
+    --primary-border-shadow-color: #330033;
+    --background-border-color: #aa00aa;
+    --background-border-shadow-color: #330033;
+    --hover-color: #220022;
+    --focus-outline-color: #c731c7;
 }
 
 .role-specific-colors {
-    --background-color: #331c26;
-    --fade-color: #150b12;
-    --primary-color: #422031;
-    --secondary-color: #422137;
-    --text-color: #ffffff;
-    --primary-border-color: #5a3246;
-    --primary-border-shadow-color: #25141d;
-    --background-border-color: #50303e;
-    --background-border-shadow-color: #25131c;
-    --hover-color: #4c2337;
-    --focus-outline-color: #a9849c;
+    --background-color: #110000;
+    --fade-color: #0a0a0a;
+    --primary-color: #110000;
+    --secondary-color: #1a0000;
+    --text-color: white;
+    --primary-border-color: #8d0000;
+    --primary-border-shadow-color: #330000;
+    --background-border-color: #4b0000;
+    --background-border-shadow-color: #000000;
+    --hover-color: #220000;
+    --focus-outline-color: #8d0000;
 }
 
 .graveyard-menu-colors {
-    --background-color: #2c2b3b;
-    --fade-color: #1d1b29;
-    --primary-color: #323142;
-    --secondary-color: #373647;
-    --text-color: #ffffff;
-    --primary-border-color: #49485b;
-    --primary-border-shadow-color: #202027;
-    --background-border-color: #3d3c4d;
-    --background-border-shadow-color: #19181f;
-    --hover-color: #3c3b4d;
-    --focus-outline-color: #9896ae;
+    --background-color: #111111;
+    --fade-color: #0a0a0a;
+    --primary-color: #1a1a1a;
+    --secondary-color: #222222;
+    --text-color: white;
+    --primary-border-color: #eeeeee;
+    --primary-border-shadow-color: #333333;
+    --background-border-color: #aaaaaa;
+    --background-border-shadow-color: #333333;
+    --hover-color: #222222;
+    --focus-outline-color: #eeeeee;
 }
 
 .wiki-menu-colors {
-    --background-color: #2C2124;
-    --fade-color: #0F0D15;
-    --primary-color: #3A2A31;
-    --secondary-color: #3A2A31;
-    --text-color: #ffffff;
-    --primary-border-color: #533C44;
-    --primary-border-shadow-color: #261C26;
-    --background-border-color: #493942;
-    --background-border-shadow-color: #201924;
-    --hover-color: #442F35;
-    --focus-outline-color: #A18E99;
+    --background-color: #110000;
+    --fade-color: #0a0a0a;
+    --primary-color: #110000;
+    --secondary-color: #1a0000;
+    --text-color: white;
+    --primary-border-color: #aa5200;
+    --primary-border-shadow-color: #330000;
+    --background-border-color: #773a00;
+    --background-border-shadow-color: #000000;
+    --hover-color: #220000;
+    --focus-outline-color: #aa5200;
 }
 
 
@@ -415,6 +404,24 @@ code, .code {
         }
         to {
             background-position: 100% 100%;
+        }
+    }
+
+    @keyframes scanline {
+        0% {
+            transform: translateY(-100%);
+        }
+        100% {
+            transform: translateY(100vh);
+        }
+    }
+
+    @keyframes vignette-pulse {
+        0%, 100% {
+            box-shadow: inset 0 0 200px rgba(0, 0, 0, 0.8);
+        }
+        50% {
+            box-shadow: inset 0 0 250px rgba(0, 0, 0, 0.9);
         }
     }
 
@@ -611,6 +618,63 @@ code, .code {
         animation: glitch-anim2 5s infinite linear alternate-reverse;
     }
 }
+@media (prefers-reduced-motion: no-preference) {
+    body::before {
+        content: " ";
+        display: block;
+        position: fixed;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        right: 0;
+        background: linear-gradient(
+            rgba(0, 0, 0, 0) 50%, 
+            rgba(0, 0, 0, 0.1) 50%
+        );
+        background-size: 100% 4px;
+        z-index: 999999;
+        pointer-events: none;
+    }
+}
+
+/* CRT Screen curvature and vignette */
+body {
+    background: radial-gradient(ellipse at center, #000000 0%, #000000 70%, #00000000 100%);
+    animation: vignette-pulse 3s ease-in-out infinite;
+    position: relative;
+}
+
+/* VHS noise overlay */
+body > #root::before {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: 
+        repeating-linear-gradient(
+            0deg,
+            rgba(0, 0, 0, 0.15),
+            rgba(0, 0, 0, 0.15) 1px,
+            transparent 1px,
+            transparent 2px
+        );
+    pointer-events: none;
+    z-index: 999998;
+    opacity: 0.05;
+}
+
+/* Terminal phosphor glow for all elements */
+.chat-message,
+button,
+.button,
+input,
+select,
+textarea {
+    text-shadow: 0 0 1px var(--text-color), 0 0 2px var(--text-color);
+}
+
 .highlighted.highlighted {
     border-color: yellow;
 }

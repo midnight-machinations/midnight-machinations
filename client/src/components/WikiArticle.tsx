@@ -187,11 +187,12 @@ export function PageCollection(props: Readonly<{
         </h3>
         {props.children}
         {props.pages.map((page) => {
-            return <button key={page} className={wikiPageIsEnabled(page, props.enabledRoles, props.enabledModifiers) ? "" : "keyword-disabled"} 
-                onClick={() => GAME_MANAGER.setWikiArticle(page)}
+            return <StyledText 
+                key={page}
+                className={"wiki-page-button" + (wikiPageIsEnabled(page, props.enabledRoles, props.enabledModifiers) ? "" : "keyword-disabled")}
             >
-                <StyledText noLinks={true}>{getArticleTitle(page)}</StyledText>
-            </button>
+                {getArticleTitle(page)}
+            </StyledText>
         })}
     </>
 }
