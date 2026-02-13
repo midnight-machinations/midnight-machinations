@@ -1,6 +1,7 @@
 use crate::{log, websocket_connections::{connection::Connection, ForceLock}, websocket_listener::WebsocketListener};
 use tokio_tungstenite::tungstenite::Message;
-use std::{future::Future, net::SocketAddr, pin::pin, sync::{Arc, Mutex}};
+use std::{future::Future, net::SocketAddr, pin::pin, sync::Arc};
+use tokio::sync::Mutex;
 
 use futures_util::{future::{self, Either}, StreamExt, SinkExt};
 
@@ -27,7 +28,7 @@ pub async fn create_ws_server(server_address: &str) {
         }))
     }
 
-    let event_listener: Arc<Mutex<_>> = Arc::new(Mutex::new(WebsocketListener::new()));
+    let event_listener: Arc<Mutex<_>> = Arc::new(Mutex::new(WebsocketListener::new().await));
     WebsocketListener::start_tick(event_listener.clone());
 
     log!(important "Server"; "Started listening on {server_address}");
@@ -103,11 +104,7 @@ async fn handle_connection(
     let (mut tcp_sender, mut tcp_receiver) = ws_stream.split();
     
     let connection = {
-        let Ok(mut listener) = listener.lock() else {
-            let _ = crash_signal.0.send(());
-            let _ = tcp_sender.close().await;
-            return Err(ConnectionError)
-        };
+        let mut listener = listener.lock().await;
         let connection = Connection::new(mpsc_sender, client_address);
         log!(important "Connection"; "Connected: {}", client_address);
         listener.on_connect(&connection);
@@ -122,10 +119,7 @@ async fn handle_connection(
         ).await {
             NextEvent::TcpRecieved(None) => break, // Channel has been closed
             NextEvent::TcpRecieved(Some(message)) => {
-                let Ok(mut listener) = listener.lock() else {
-                    let _ = crash_signal.0.send(());
-                    break;
-                };
+                let mut listener = listener.lock().await;
 
                 match message {
                     Ok(message) => {
@@ -160,7 +154,7 @@ async fn handle_connection(
 
     let _ = tcp_sender.close().await;
 
-    listener.force_lock().on_disconnect(connection);
+    listener.lock().await.on_disconnect(connection);
     log!(important "Connection"; "Disconnected {}", client_address);
 
     Ok(())

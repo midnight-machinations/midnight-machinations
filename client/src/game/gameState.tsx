@@ -32,6 +32,7 @@ export function createLobbyState(): LobbyState {
         phaseTimes: defaultPhaseTimes(),
         enabledRoles: [],
         modifierSettings: new ListMap<ModifierID, ModifierState>(),
+        voiceChatEnabled: false,
 
         players: new ListMap<LobbyClientID, LobbyClient>(),
         chatMessages: new ListMap(),

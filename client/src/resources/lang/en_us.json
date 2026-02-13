@@ -33,6 +33,8 @@
     "menu.lobby.gameModes": "Game Modes",
     "menu.lobby.timeSettings": "Phase Times",
     "menu.lobby.settings": "Settings:",
+    "menu.lobby.voiceChat": "Voice Chat",
+    "menu.lobby.voiceChatEnabled": "Enable voice chat in lobby",
 
     "importFromClipboard": "Import from clipboard",
     "copyToClipboard": "Copy to clipboard",
@@ -2219,6 +2221,10 @@
     "otherContributors":"Other Contributors",
     "playTesters":"Play Testers",
     
+    "voiceChat.title": "Voice Chat",
+    "voiceChat.micOn": "Mute",
+    "voiceChat.micOff": "Unmute",
+    "voiceChat.playerVolumes": "Player Volumes",
     
     "random.gay":"GAY",
     "random.trans":"TRANS"

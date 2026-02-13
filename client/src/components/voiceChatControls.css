@@ -1,0 +1,68 @@
+.voice-chat-controls {
+    padding: 1rem;
+    background-color: var(--background-color-secondary);
+    border-radius: 8px;
+    margin-bottom: 1rem;
+}
+
+.voice-chat-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.voice-chat-header h3 {
+    margin: 0;
+}
+
+.voice-chat-header button {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.voice-chat-header button.mic-enabled {
+    background-color: var(--color-success, #4caf50);
+}
+
+.voice-chat-header button.mic-disabled {
+    background-color: var(--color-error, #f44336);
+}
+
+.voice-chat-players {
+    margin-top: 1rem;
+}
+
+.voice-chat-players h4 {
+    margin: 0 0 0.5rem 0;
+    font-size: 0.9rem;
+    opacity: 0.8;
+}
+
+.voice-chat-player {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem;
+    border-radius: 4px;
+    background-color: var(--background-color-tertiary, rgba(0, 0, 0, 0.2));
+    margin-bottom: 0.5rem;
+}
+
+.voice-chat-player .player-name {
+    flex: 1;
+    font-weight: 500;
+}
+
+.voice-chat-player .volume-slider {
+    flex: 2;
+    cursor: pointer;
+}
+
+.voice-chat-player .volume-value {
+    min-width: 3rem;
+    text-align: right;
+    font-size: 0.85rem;
+    opacity: 0.7;
+}

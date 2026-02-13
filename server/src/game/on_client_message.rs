@@ -155,6 +155,14 @@ impl Game {
             ToServerPacket::VoteFastForwardPhase { fast_forward } => {
                 sender_player_ref.set_fast_forward_vote(self, fast_forward);
             },
+            ToServerPacket::WebRtcOffer { sdp: _ } => {
+                // WebRTC offers should be handled by the room/lobby level
+                log!(error "Game"; "WebRTC offer received in game state, should be handled at room level");
+            },
+            ToServerPacket::WebRtcIceCandidate { candidate: _, sdp_mid: _, sdp_m_line_index: _ } => {
+                // WebRTC ICE candidates should be handled by the room/lobby level
+                log!(error "Game"; "WebRTC ICE candidate received in game state, should be handled at room level");
+            },
             _ => {
                 log!(error "Game"; "Recieved invalid packet for Game state: {incoming_packet:?}");
             }

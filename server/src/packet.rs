@@ -93,6 +93,8 @@ pub enum ToClientPacket{
     EnabledRoles{roles: Vec<Role>},
     #[serde(rename_all = "camelCase")]
     ModifierSettings{modifier_settings: ModifierSettings},
+    #[serde(rename_all = "camelCase")]
+    VoiceChatEnabled{enabled: bool},
 
     // Host
     HostData { clients: VecMap<RoomClientID, HostDataPacketGameClient> },
@@ -150,6 +152,20 @@ pub enum ToClientPacket{
     NightMessages{chat_messages: Vec<ChatMessage>},
 
     GameOver{reason: GameOverReason},
+
+    // Voice Chat - WebRTC SFU signaling
+    #[serde(rename_all = "camelCase")]
+    WebRtcAnswer{
+        sdp: String,
+    },
+    
+    #[serde(rename_all = "camelCase")]
+    WebRtcIceCandidate{
+        from_player_id: RoomClientID,
+        candidate: String,
+        sdp_mid: Option<String>,
+        sdp_m_line_index: Option<u16>,
+    },
 }
 
 #[derive(Serialize, Debug, Clone, Copy)]
@@ -209,6 +225,8 @@ pub enum ToServerPacket{
     SetEnabledRoles{roles: Vec<Role>},
     #[serde(rename_all = "camelCase")]
     SetModifierSettings{modifier_settings: ModifierSettings},
+    #[serde(rename_all = "camelCase")]
+    SetVoiceChatEnabled{enabled: bool},
 
     // Host
     HostDataRequest,
@@ -242,4 +260,17 @@ pub enum ToServerPacket{
 
     #[serde(rename_all = "camelCase")]
     VoteFastForwardPhase{fast_forward: FastForwardSetting},
+
+    // Voice Chat - WebRTC SFU signaling
+    #[serde(rename_all = "camelCase")]
+    WebRtcOffer{
+        sdp: String,
+    },
+    
+    #[serde(rename_all = "camelCase")]
+    WebRtcIceCandidate{
+        candidate: String,
+        sdp_mid: Option<String>,
+        sdp_m_line_index: Option<u16>,
+    },
 }

@@ -100,6 +100,9 @@ export type ToClientPacket = {
     modifierSettings: {
         modifiers: ListMapData<ModifierID, ModifierState>,
     }
+} | {
+    type: "voiceChatEnabled",
+    enabled: boolean
 } |
 // Game
 {
@@ -168,6 +171,15 @@ export type ToClientPacket = {
 } | {
     type: "yourPitchforkVote",
     player: PlayerIndex | null
+} | {
+    type: "webRtcAnswer",
+    sdp: string
+} | {
+    type: "webRtcIceCandidate",
+    fromPlayerId: LobbyClientID,
+    candidate: string,
+    sdpMid: string | null,
+    sdpMLineIndex: number | null
 }
 
 export type ToServerPacket = {
@@ -245,6 +257,9 @@ export type ToServerPacket = {
 } | {
     type: "disableModifier",
     modifier: ModifierID
+} | {
+    type: "setVoiceChatEnabled",
+    enabled: boolean
 } |
 // Game
 {
@@ -287,4 +302,12 @@ export type ToServerPacket = {
     type: "hostForceSetPlayerName",
     id: number,
     name: string
+} | {
+    type: "webRtcOffer",
+    sdp: string
+} | {
+    type: "webRtcIceCandidate",
+    candidate: string,
+    sdpMid: string | null,
+    sdpMLineIndex: number | null
 }
