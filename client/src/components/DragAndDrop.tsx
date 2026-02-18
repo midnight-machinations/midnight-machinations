@@ -11,7 +11,7 @@ export type DragHandleProps = {
 
 // Adapted from: https://github.com/atlassian/react-beautiful-dnd/issues/316#issuecomment-1860490084
 export function DragAndDrop<T>(props: Readonly<{ 
-    items: T[], 
+    items: T[],
     onDragEnd: (newItems: T[]) => void,
     disabled?: boolean,
 } & (
@@ -78,7 +78,7 @@ function DragAndDropItem<T>(props: Readonly<{
         className={((disabled || props.dragHandle) ? "" : "draggable") + (item === draggedItem ? " dragged" : "")}
         onPointerMove={props.dragHandle ? (
             (e) => {
-                if (e.buttons !== 1) { // If mouse button is not held down
+                if (e.buttons !== 1 && draggedItem !== null) { // If mouse button is not held down
                     onDragEnd(renderedItems);
                     setDraggedItem(null);
                     setTemporaryItems(null);
