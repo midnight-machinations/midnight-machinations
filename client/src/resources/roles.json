@@ -923,6 +923,17 @@
             {"type": "chronokaiserSpeedUp", "percent": "180"}
         ]
     },
+    "merchant": {
+        "mainRoleSet": "neutral",
+        "roleSets": ["neutral"],
+        "armor": false,
+        "aura": null,
+        "maxCount": null,
+        "canWriteDeathNote": true,
+        "canBeConvertedTo": [],
+        "chatMessages":[
+        ]
+    },
     "santaClaus": {
         "mainRoleSet": "neutral",
         "roleSets": ["neutral"],

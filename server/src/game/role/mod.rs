@@ -154,6 +154,7 @@ macros::roles! {
     SantaClaus : santa_claus,
     Krampus : krampus,
     Chronokaiser : chronokaiser,
+    Merchant : merchant,
 
     Witch : witch,
     Scarecrow : scarecrow,

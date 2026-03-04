@@ -491,6 +491,9 @@
     "role.chronokaiser.name": "Chronokaiser",
     "role.chronokaiser.name:var.0": "Chronokaisers",
     
+    "role.merchant.name": "Merchant",
+    "role.merchant.name:var.0": "Merchants",
+
     "role.witch.name": "Witch",
     "role.witch.name:var.0": "Witches",
     "controllerId.role.witch.0.name": "Possess",
@@ -2068,6 +2071,14 @@
     "wiki.article.role.chronokaiser.abilities":"* You passively speed up the game by 60%\n- If you are alive at the end of the game, you win",
     "wiki.article.role.chronokaiser.attributes":"* You have no night time ability\n* Everyone is told how much you sped up the game each day",
     "wiki.article.role.chronokaiser.extra":"* Roleblocking doesn't effect your ability\n If there are multiple Chronokaisers, the message is sent twice during discussion, and the game is sped up twice",
+
+    "wiki.article.role.merchant.reminder": "If you are executed you win, after you are executed, you must kill a player.",
+    "wiki.article.role.merchant.lore": "D:",
+    "wiki.article.role.merchant.guide": "- Get executed during the day to win\n- After you win by getting executed, you can attack any living player who voted you guilty or abstained\n\nTry to look evil so people vote you, without making it obvious that you are the Jester.",
+    "wiki.article.role.merchant.abilities":"* When you are executed, you win\n* On the night after you are executed, attack the player you select\n",
+    "wiki.article.role.merchant.attributes":"* You always have an innocent aura\n* If you select nobody on the night after you are executed, you will attack a random living player who did not vote you innocent\n* You have a protection-piercing attack",
+    "wiki.article.role.merchant.extra":"* Your attack does not visit, so nothing can effect it",
+
 
     "wiki.article.role.martyr.reminder": "If you die, you win, and everyone else dies too, you can shoot yourself.",
     "wiki.article.role.martyr.lore":"An ex-cultist, they rejected you because you told the truth! Surely, when you die everyone will talk about the martyr you were.",

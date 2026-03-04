@@ -98,6 +98,7 @@ impl WinCondition{
         match player.role_state(game) {
             RoleState::Jester(r) => r.won(),
             RoleState::Mercenary(r) => r.won(),
+            RoleState::Merchant(r) => r.won(),
             RoleState::Revolutionary(r) => r.won(),
             RoleState::Chronokaiser(_) => Chronokaiser::won(game, player),
             RoleState::Martyr(r) => r.won(),
