@@ -2142,7 +2142,7 @@
 
     "wiki.article.role.werewolf.reminder": "Each day, track a player. Each night, camp a tracked player to rampage them, if they visit anybody, you also attack them.",
     "wiki.article.role.werewolf.lore":"\"Woof woof ...\"",
-    "wiki.article.role.werewolf.guide": "- Before the start of night, choose a player to sniff\n     - For each sniffed player, you are told who they visit\n    - At the start of night, all sniffed players are told they are sniffed\n- At night, choose a player to camp\n    - If the camped player is already sniffed then you rampage them\n    - If the camped player is already sniffed, and either they visit any player or you are enraged, then you attack them\n    - If the camped player is not already sniffed then you sniff them\n- If at least 2/3rds of living players are either sniffed or are yourself then you are enraged",
+    "wiki.article.role.werewolf.guide": "- Before the start of night, choose a player to sniff\n     - For each sniffed player, you are told who they visit\n    - At the start of night, all sniffed players are told they are sniffed\n- At night, choose a player to camp\n    - If the camped player is already sniffed then you rampage them\n    - If you're enraged, or, the camped player is already sniffed and they visit any player, then you attack them\n    - If the camped player is not already sniffed then you sniff them\n- If at least 2/3rds of living players are either sniffed or are yourself then you are enraged",
     "wiki.article.role.werewolf.abilities":"- You only visit the players you camp\n- Your attack is armor-piercing\n* Appeared visits can change information",
     "wiki.article.role.werewolf.attributes":"",
     "wiki.article.role.werewolf.extra":"",

@@ -23,20 +23,16 @@ impl RoleStateTrait for Werewolf {
             OnMidnightPriority::Deception => {
                 let Some(target) = Visits::default_target(midnight_variables, actor_ref, Role::Werewolf) else {return};
 
-                let enraged = 
-                    Tags::tagged(game, TagSetID::WerewolfTracked(actor_ref))
-                        .count()
-                        .saturating_mul(ENRAGED_DENOMINATOR) >= 
-                    PlayerReference::all_players(game)
-                        .filter(|p|p.alive(game)||*p==actor_ref)
-                        .count()
-                        .saturating_mul(ENRAGED_NUMERATOR);
-
-                if enraged || !Visits::into_iter(midnight_variables)
-                    .with_visitor(target)
-                    .with_direct()
-                    .collect::<Box<[Visit]>>()
-                    .is_empty()
+                if
+                    Werewolf::enraged(game, actor_ref) ||
+                    (
+                        !Visits::into_iter(midnight_variables)
+                            .with_visitor(target)
+                            .with_direct()
+                            .collect::<Box<[Visit]>>()
+                            .is_empty() &&
+                        Tags::has_tag(game, TagSetID::WerewolfTracked(actor_ref), target)
+                    )
                 {
                     Visits::iter_mut(midnight_variables)
                         .default_role_visit(actor_ref, Role::Werewolf)
@@ -81,16 +77,16 @@ impl RoleStateTrait for Werewolf {
                     .into_iter()
                     .for_each(|player_ref|{
 
-                    let mut players: Vec<PlayerReference> = player_ref.tracker_seen_players(midnight_variables).collect();
-                    players.shuffle(&mut game.rng);
+                        let mut players: Vec<PlayerReference> = player_ref.tracker_seen_players(midnight_variables).collect();
+                        players.shuffle(&mut game.rng);
 
-                    actor_ref.push_night_message(midnight_variables, 
-                        ChatMessageVariant::WerewolfTrackingResult{
-                            tracked_player: player_ref, 
-                            players
-                        }
-                    );
-                });
+                        actor_ref.push_night_message(midnight_variables, 
+                            ChatMessageVariant::WerewolfTrackingResult{
+                                tracked_player: player_ref, 
+                                players
+                            }
+                        );
+                    });
             },
             _ => {}
         }
@@ -151,6 +147,15 @@ impl RoleStateTrait for Werewolf {
 impl Werewolf{
     fn track_player(&self, game: &mut Game, actor: PlayerReference, target: PlayerReference){
         Tags::add_tag(game, TagSetID::WerewolfTracked(actor), target);
+    }
+    fn enraged(game: &Game, actor_ref: PlayerReference)->bool{
+        Tags::tagged(game, TagSetID::WerewolfTracked(actor_ref))
+            .count()
+            .saturating_mul(ENRAGED_DENOMINATOR) >= 
+        PlayerReference::all_players(game)
+            .filter(|p|p.alive(game)||*p==actor_ref)
+            .count()
+            .saturating_mul(ENRAGED_NUMERATOR)
     }
 }
 impl GetClientAbilityState<ClientRoleState> for Werewolf {
