@@ -12,9 +12,10 @@ pub struct Revolutionary {
 #[derive(Clone, Serialize, Debug)]
 pub struct ClientRoleState;
 
-#[derive(Clone, Serialize, Debug, PartialEq, Eq)]
+#[derive(Clone, Serialize, Debug, PartialEq, Eq, Default)]
 pub enum RevolutionaryTarget{
     Target(PlayerReference),
+    #[default]
     Won,
 }
 impl RevolutionaryTarget {
@@ -24,11 +25,6 @@ impl RevolutionaryTarget {
         }else{
             None
         }
-    }
-}
-impl Default for RevolutionaryTarget {
-    fn default() -> Self {
-        Self::Won
     }
 }
 

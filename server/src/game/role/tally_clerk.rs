@@ -14,6 +14,13 @@ impl RoleStateTrait for TallyClerk {
     fn on_midnight(self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut OnMidnightFold, priority: OnMidnightPriority) {
         if priority != OnMidnightPriority::Investigative {return;}
 
+        if Visits::into_iter(midnight_variables)
+            .default_role_visits(actor_ref, Role::TallyClerk)
+            .count() == 0
+        {
+            return;
+        }
+
         let targets = Visits::into_iter(midnight_variables)
             .default_role_visits(actor_ref, Role::TallyClerk)
             .map_target()
