@@ -982,6 +982,8 @@
     "phase.recess": "Recess",
 
     "instant.icon": "⚡",
+    "visit.icon.normal": "🧭",
+    "visit.icon.abnormal": "❓",
     "night.icon": "🌙",
     "day.icon": "☀️",
 
@@ -1238,7 +1240,7 @@
     "wiki.article.standard.target.text": "Your target is a player who you visit.\n- A visit targeting someone means that the visitor is visiting that player.",
     "wiki.article.standard.indirect.title": "Indirect",
     "wiki.article.standard.indirect.title:var.0": "Indirectly",
-    "wiki.article.standard.indirect.text": "A visit that is invisibile to many abilities.\n - It doesn't set off engineer traps\n - The visitor won't be attacked by a cop, ambusher, werewolf, uzumaki, veteran, pryolisk, or marksman\n - The visitor won't be doused by an arsonist\n - It won't cause a snoop to be told can't tell",
+    "wiki.article.standard.indirect.text": "A visit that is invisibile to many abilities.\n - It doesn't set off engineer traps\n - The visitor won't be attacked by a cop, ambusher, werewolf, uzumaki, veteran, pyrolisk, or marksman\n - The visitor won't be doused by an arsonist\n - It won't cause a snoop to be told can't tell",
     "wiki.article.standard.transportImmune.title": "Transport Immune",
     "wiki.article.standard.transportImmune.text": "A visit that doesn't register to transport.\n For example: Transporter, Warper, and Porter can't change transport immune visits.",
     "wiki.article.standard.invesitgateImmune.title": "Investigate Immune",
@@ -1550,7 +1552,7 @@
     "wiki.article.standard.gameMode.text":"The game mode menu lets you keep track of the game settings during the game.\n- Outline list\n- Enabled Roles\n- Enabled Modifiers",
     "wiki.article.standard.controller.title":"Controller",
     "wiki.article.standard.controller.title:var.0":"Controllers",
-    "wiki.article.standard.controller.text":"Controllers are elements of the ability menu that are used to control abilities.\n Controllers have many types:\n- Player List: An ordered list of player dropdowns with a maximum length (Roles like detective use this controller type with a maximum length of 1)\n- Two Players: Must choose 0 or 2 players\n- Role list: An ordered list of roles with a maximum (Imposter disguise controller uses this with maximum of 1).\n- Two Roles: Must choose 0 or 2 roles.\n- Checkbox: Yes or no (Veteran rampage uses this).\n- Button: A single button press (Mayor enfranchise uses this)\n- Text Box: (Forger and Reporter use this).\n- Outline List: A depiction of the outline list, with buttons to choose multiple of them (Auditor uses this).\n Options: A list of options with names in a dropdown.\n- Kira: used only for Kira.",
+    "wiki.article.standard.controller.text":"Controllers are elements of the ability menu that are used to control abilities.\n\nControllers have reminder icons.\n - 🌙: The ability happens at night.\n - ⚡: The ability happens the instant the controller value is changed.\n - 🧭: The controller causes visits normally (The player with the controller visits all players chosen).\n - ❓: The controller causes visits in an unusual way, check the manual to see how the ability visits function.\n\n Controllers have many types:\n- Player List: An ordered list of player dropdowns with a maximum length (Roles like detective use this controller type with a maximum length of 1)\n- Two Players: Must choose 0 or 2 players\n- Role list: An ordered list of roles with a maximum (Imposter disguise controller uses this with maximum of 1).\n- Two Roles: Must choose 0 or 2 roles.\n- Checkbox: Yes or no (Veteran rampage uses this).\n- Button: A single button press (Mayor enfranchise uses this)\n- Text Box: (Forger and Reporter use this).\n- Outline List: A depiction of the outline list, with buttons to choose multiple of them (Auditor uses this).\n Options: A list of options with names in a dropdown.\n- Kira: used only for Kira.",
 
     "wiki.article.modifier.obscuredGraves.title":"Obscured Graves",
     "wiki.article.modifier.obscuredGraves.text":"Obscured Graves is a game modifier that makes it so all graves are obscured.",

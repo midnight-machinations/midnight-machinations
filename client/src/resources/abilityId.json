@@ -6,57 +6,95 @@
         "midnight": true
     },
     "role/detective/0": {
-        "midnight": true
+        "midnight": true,
+        "visit": "normal"
     },
     "role/lookout/0": {
-        "midnight": true
+        "midnight": true,
+        "visit": "normal"
     },
     "role/philosopher/0": {
-        "midnight": true
+        "midnight": true,
+        "visit": "normal"
     },
     "role/tracker/0": {
-        "midnight": true
+        "midnight": true,
+        "visit": "normal"
     },
     "role/spy/0": {
-        "midnight": true
+        "midnight": true,
+        "visit": "normal"
     },
     "role/psychic/0": {
-        "midnight": true
+        "midnight": true,
+        "visit": "normal"
     },
     "role/snoop/0": {
-        "midnight": true
+        "midnight": true,
+        "visit": "normal"
     },
-    "role/gossip/0": {
-        "midnight": true
+    "role/tallyClerk/0": {
+        "midnight": true,
+        "visit": "normal"
     },
     "role/auditor/0": {
         "midnight": true,
-        "visible": false
+        "visible": false,
+        "visit": "normal"
+    },
+    "role/doctor/0": {
+        "midnight": true,
+        "visit": "normal"
+    },
+    "role/cop/0": {
+        "midnight": true,
+        "visit": "normal"
+    },
+    "role/engineer/0": {
+        "midnight": true,
+        "visit": "normal"
+    },
+    "role/steward/0": {
+        "midnight": true,
+        "visit": "abnormal"
     },
     "role/bouncer/0": {
-        "midnight": true
+        "midnight": true,
+        "visit": "normal"
     },
     "role/armorsmith/0": {
-        "midnight": true
+        "midnight": true,
+        "visit": "normal"
     },
     "role/vigilante/0": {
-        "midnight": true
+        "midnight": true,
+        "visit": "normal"
     },
     "role/veteran/0": {
         "midnight": true
+    },
+    "role/marksman/0": {
+        "midnight": true
+    },
+    "role/marksman/1": {
+        "midnight": true,
+        "visit": "normal"
     },
     "role/deputy/0": {
         "midnight": false,
         "instant": true
     },
     "role/escort/0": {
-        "midnight": true
+        "midnight": true,
+        "visit": "normal"
     },
     "role/employer/0": {
-        "midnight": true
+        "midnight": true,
+        "visit": "normal"
     },
     "role/courtesan/0": {
-        "midnight": true
+        "midnight": true,
+        "visit": "normal"
     },
     "role/mayor/0": {
         "midnight": false,
@@ -73,10 +111,12 @@
         "midnight": false
     },
     "role/transporter/0": {
-        "midnight": true
+        "midnight": true,
+        "visit": "normal"
     },
     "role/porter/0": {
-        "midnight": true
+        "midnight": true,
+        "visit": "normal"
     },
     "role/reporter/0": {
         "midnight": false
@@ -91,25 +131,35 @@
         "midnight": true
     },
     "role/polymath/1": {
-        "midnight": true
+        "midnight": true,
+        "visit": "normal"
     },
     "role/polymath/2": {
-        "midnight": true
+        "midnight": true,
+        "visit": "normal"
     },
     "role/polymath/3": {
-        "midnight": true
+        "midnight": true,
+        "visit": "normal"
     },
     "role/polymath/4": {
         "midnight": true
     },
+    "role/polymath/5": {
+        "midnight": true,
+        "visit": "normal"
+    },
     "role/godfather/0": {
-        "midnight": true
+        "midnight": true,
+        "visit": "normal"
     },
     "role/impostor/0": {
-        "midnight": true
+        "midnight": true,
+        "visit": "normal"
     },
     "role/counterfeiter/0": {
-        "midnight": true
+        "midnight": true,
+        "visit": "normal"
     },
     "role/counterfeiter/1": {
         "midnight": true
@@ -121,7 +171,8 @@
         "midnight": true
     },
     "role/recruiter/0": {
-        "midnight": true
+        "midnight": true,
+        "visit": "normal"
     },
     "role/recruiter/1": {
         "midnight": true
@@ -130,22 +181,28 @@
         "midnight": false
     },
     "role/framer/0": {
-        "midnight": true
+        "midnight": true,
+        "visit": "normal"
     },
     "role/framer/1": {
-        "midnight": true
+        "midnight": true,
+        "visit": "abnormal"
     },
     "role/informant/0": {
-        "midnight": true
+        "midnight": true,
+        "visit": "normal"
     },
     "role/hypnotist/0": {
-        "midnight": true
+        "midnight": true,
+        "visit": "normal"
     },
     "role/mortician/0": {
-        "midnight": true
+        "midnight": true,
+        "visit": "normal"
     },
     "role/forger/0": {
-        "midnight": true
+        "midnight": true,
+        "visit": "normal"
     },
     "role/forger/1": {
         "midnight": true
@@ -154,13 +211,16 @@
         "midnight": true
     },
     "role/disguiser/0": {
-        "midnight": true
+        "midnight": true,
+        "visit": "normal"
     },
     "role/disguiser/1": {
-        "midnight": false
+        "midnight": true,
+        "visit": "abnormal"
     },
     "role/reeducator/0": {
-        "midnight": true
+        "midnight": true,
+        "visit": "normal"
     },
     "role/reeducator/1": {
         "midnight": true,
@@ -171,37 +231,46 @@
         "instant": true
     },
     "role/blackmailer/0": {
-        "midnight": true
+        "midnight": true,
+        "visit": "normal"
     },
     "role/cerenovous/0": {
-        "midnight": true
+        "midnight": true,
+        "visit": "normal"
     },
     "role/consort/0": {
-        "midnight": true
+        "midnight": true,
+        "visit": "normal"
     },
     "role/necromancer/0": {
-        "midnight": true
+        "midnight": true,
+        "visit": "normal"
     },
     "role/ambusher/0": {
-        "midnight": true
+        "midnight": true,
+        "visit": "normal"
     },
     "role/mafiaSupportWildcard/0": {
         "midnight": false
     },
     "role/jester/0": {
-        "midnight": true
+        "midnight": true,
+        "visit": "normal"
     },
     "role/politician/0": {
-        "midnight": false
+        "midnight": false,
+        "instant": true
     },
     "role/mercenary/0": {
         "midnight": true
     },
     "role/mercenary/1": {
-        "midnight": true
+        "midnight": true,
+        "visit": "normal"
     },
     "role/mercenary/2": {
-        "midnight": true
+        "midnight": true,
+        "visit": "normal"
     },
     "role/santaClaus/0": {
         "midnight": true
@@ -210,16 +279,20 @@
         "midnight": true
     },
     "role/scarecrow/0": {
-        "midnight": true
+        "midnight": true,
+        "visit": "normal"
     },
     "role/witch/0": {
-        "midnight": true
+        "midnight": true,
+        "visit": "abnormal"
     },
     "role/tailor/0": {
-        "midnight": true
+        "midnight": true,
+        "visit": "normal"
     },
     "role/warper/0": {
-        "midnight": true
+        "midnight": true,
+        "visit": "normal"
     },
     "role/kidnapper/0": {
         "midnight": false
@@ -228,31 +301,41 @@
         "midnight": true
     },
     "role/serialKiller/0": {
-        "midnight": true
+        "midnight": true,
+        "visit": "normal"
     },
     "role/juggernaut/0": {
-        "midnight": true
+        "midnight": true,
+        "visit": "normal"
     },
     "role/arsonist/0": {
         "midnight": true
     },
+    "role/arsonist/1": {
+        "midnight": true,
+        "visit": "normal"
+    },
     "role/werewolf/0": {
-        "midnight": true
+        "midnight": true,
+        "visit": "normal"
     },
     "role/werewolf/1": {
         "midnight": false
     },
     "role/puppeteer/0": {
-        "midnight": true
+        "midnight": true,
+        "visit": "normal"
     },
     "role/puppeteer/1": {
         "midnight": true
     },
     "role/pyrolisk/0": {
-        "midnight": true
+        "midnight": true,
+        "visit": "normal"
     },
     "role/spiral/0": {
-        "midnight": true
+        "midnight": true,
+        "visit": "normal"
     },
     "role/warden/0": {
         "midnight": false
@@ -267,7 +350,8 @@
         "midnight": true
     },
     "role/yer/1": {
-        "midnight": true
+        "midnight": true,
+        "visit": "normal"
     },
     "role/yer/2": {
         "midnight": true
@@ -279,10 +363,12 @@
         "midnight": false
     },
     "role/apostle/0": {
-        "midnight": true
+        "midnight": true,
+        "visit": "normal"
     },
     "role/zealot/0": {
-        "midnight": true
+        "midnight": true,
+        "visit": "normal"
     },
     "role/wildcard/0": {
         "midnight": false
@@ -294,10 +380,11 @@
         "midnight": true
     },
     "syndicateGunShoot": {
-        "midnight": true
+        "midnight": true,
+        "visit": "normal"
     },
     "syndicateGunGive": {
-        "midnight": true,
+        "midnight": false,
         "instant": true
     },
     "syndicateChooseBackup": {
@@ -305,7 +392,8 @@
         "instant": true
     },
     "syndicateBackupAttack": {
-        "midnight": true
+        "midnight": true,
+        "visit": "abnormal"
     },
     "forwardMessage": {
         "midnight": false,

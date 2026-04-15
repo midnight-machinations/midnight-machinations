@@ -11,10 +11,11 @@ export type SingleAbilityJsonData = {
     midnight?: boolean,
     visible?: boolean,
     instant?: boolean,
+    visit?: "normal"|"abnormal",
 }
 
 export function allAbilitiesJsonData(): AbilityJsonData {
-    return abilitiesJson;
+    return abilitiesJson as AbilityJsonData;
 }
 export function singleAbilityJsonData(link: ControllerIDLink): SingleAbilityJsonData | null {
     return allAbilitiesJsonData()[link]??null;
