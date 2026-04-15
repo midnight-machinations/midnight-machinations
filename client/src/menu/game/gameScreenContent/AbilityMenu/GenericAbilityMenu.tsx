@@ -179,6 +179,9 @@ function MultipleControllersMenu(props: Readonly<{
     const instantIcon = !props.controllers.keys().some(
         (id)=>!singleAbilityJsonData(controllerIdToLink(id))?.instant
     );
+    const visitIcon = !props.controllers.keys().some(
+        (id)=>!singleAbilityJsonData(controllerIdToLink(id))?.visit
+    );
 
 
     let anyControllerId = props.controllers.keys()[0]
@@ -197,6 +200,7 @@ function MultipleControllersMenu(props: Readonly<{
                 <span>
                     <>{instantIcon ? translate("instant.icon") : ""}</>
                     <>{nightIcon ? translate("night.icon") : ""}</>
+                    <>{visitIcon ? translate("visit.icon."+visitIcon) : ""}</>
                 </span>
             </div>
         }
@@ -222,6 +226,7 @@ function SingleAbilityMenu(props: Readonly<{
 }>): ReactElement {
     const nightIcon = singleAbilityJsonData(controllerIdToLink(props.abilityId))?.midnight;
     const instantIcon = singleAbilityJsonData(controllerIdToLink(props.abilityId))?.instant;
+    const visitIcon = singleAbilityJsonData(controllerIdToLink(props.abilityId))?.visit;
 
     let controllerIdName = translateControllerID(props.abilityId);
     if(props.abilityId.type === "role" && props.includeDropdown === false){
@@ -247,6 +252,7 @@ function SingleAbilityMenu(props: Readonly<{
                     <span>
                         <>{instantIcon ? translate("instant.icon") : ""}</>
                         <>{nightIcon ? translate("night.icon") : ""}</>
+                        <>{visitIcon ? translate("visit.icon."+visitIcon) : ""}</>
                     </span>
                 </div>
             }
@@ -266,6 +272,7 @@ function SingleAbilityMenu(props: Readonly<{
                 <span>
                     <>{instantIcon ? translate("instant.icon") : ""}</>
                     <>{nightIcon ? translate("night.icon") : ""}</>
+                    <>{visitIcon ? translate("visit.icon."+visitIcon) : ""}</>
                 </span>
             </div>
             <>{inner}</>
