@@ -3,5 +3,6 @@ label.checkbox {
     display: inline-flex;
     background-color: var(--secondary-color);
     border: .13rem solid var(--primary-border-color);
-    border-radius: .2rem;
+    border-radius: 0;
+    box-shadow: 0 0 5px rgba(from var(--text-color) / 0.2);
 }

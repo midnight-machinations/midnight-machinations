@@ -1,24 +1,48 @@
 .loading {
-    text-align: center;
+    text-align: left;
     position: absolute;
-    top: 50%;
-    left: 50%;
-    max-width: 90%;
-    transform: translate(-50%, -50%);
+    top: 20%;
+    left: 10%;
+    max-width: 80%;
+    transform: translateY(0);
+    font-family: computer-font, monospace;
+    color: #ffffff;
+    text-shadow: 0 0 5px #ffffff;
 }
 .loading > h1 {
-    font-size: 400%;
-    margin-bottom: 10%;
+    font-size: 200%;
+    margin-bottom: 5%;
+    text-align: left;
+    font-family: computer-font, monospace;
+    letter-spacing: 0.1em;
+}
+.loading > h1::before {
+    content: "> ";
+}
+.loading > h1::after {
+    content: "_";
+    animation: blink 1s infinite;
+}
+
+@keyframes blink {
+    0%, 49% {
+        opacity: 1;
+    }
+    50%, 100% {
+        opacity: 0;
+    }
 }
 .loading-dots {
     display: inline-block;
     width: 80px;
     aspect-ratio: 8/5;
-    --circle: no-repeat radial-gradient(#000 68%,#0000 71%);
+    --circle: no-repeat radial-gradient(var(--text-color) 68%, #0000 71%);
     mask: var(--circle), var(--circle), var(--circle);
     mask-size: 25% 40%;
-    background: white;
+    background: var(--text-color);
     animation: sine 0.75s infinite linear;
+    filter: blur(1px);
+    box-shadow: 0 0 10px var(--text-color);
 }
 
 @media (prefers-reduced-motion) {

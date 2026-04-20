@@ -4,7 +4,6 @@
     "innocentAura": { "style": "keyword-good", "link": "standard/aura"},
     "verdict.guilty": { "style": "keyword-evil", "link": "standard/judgement"},
     "verdict.innocent": { "style": "keyword-good", "link": "standard/judgement"},
-    "verdict.abstain": { "style": "keyword-abstain", "link": "modifier/abstaining"},
     "obscured": { "style": "keyword-hiddenRole","link": "standard/obscured"},
     "suspicious": { "style": "keyword-evil", "link": "standard/enemies"},
     "friends": { "style": "keyword-good", "link": "standard/friends"},

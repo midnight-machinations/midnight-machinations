@@ -9,9 +9,10 @@
     padding-right: .5rem;
     padding-left: .5rem;
     border-bottom: 0;
-    border-radius: .5rem .5rem 0 0;
+    border-radius: 0;
     background-color: var(--primary-color);
     overflow-x: hidden;
+    box-shadow: 0 0 10px rgba(from var(--text-color) / 0.3);
 }
 .menu-buttons button{
     position: relative;
@@ -55,8 +56,9 @@
     border-color: var(--primary-border-color);
     border-width: .13rem;
     border-style: solid;
-    border-radius: .5rem;
+    border-radius: 0;
     padding: .13rem .25rem;
+    box-shadow: 0 0 10px rgba(from var(--text-color) / 0.3);
 }
 
 .header-menu .phase-specific {
@@ -69,8 +71,9 @@
     background-color: var(--background-color);
     border-width: .13rem;
     border-style: solid;
-    border-radius: .5rem;
+    border-radius: 0;
     padding: .13rem .25rem;
+    box-shadow: 0 0 10px rgba(from var(--text-color) / 0.3);
 }
 .header-menu .judgement-info > button{
     width: max-content;
