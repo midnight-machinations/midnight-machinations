@@ -15,6 +15,8 @@ import { partitionWikiPages, WikiCategory } from "./Wiki";
 import { MODIFIERS, ModifierID } from "../game/modifiers";
 import DUMMY_ROLE_LIST from "../resources/dummyRoleList.json";
 import Masonry from "react-responsive-masonry";
+import { getWikiContent, shouldUseNewWikiSystem } from "./wikiIntegration";
+import EnhancedWikiRenderer from "./EnhancedWikiRenderer";
 
 function WikiStyledText(props: Omit<StyledTextProps, 'markdown' | 'playerKeywordData'>): ReactElement {
     return <StyledText {...props} markdown={true} playerKeywordData={DUMMY_NAMES_KEYWORD_DATA} roleListKeywordData={DUMMY_ROLE_LIST_KEYWORD_DATA}/>
@@ -124,10 +126,22 @@ export default function WikiArticle(props: {
         case "standard":
         case "modifier": {
             const articleType = path[0];
+            const articleName = props.article.split("/")[1];
+            const articlePath = `${articleType}/${articleName}`;
+            
+            // Check if we have a new-style wiki page for this article
+            const wikiContent = getWikiContent(articlePath);
+            if (wikiContent) {
+                return <section className="wiki-article">
+                    <EnhancedWikiRenderer content={wikiContent} />
+                </section>;
+            }
+            
+            // Fall back to legacy system
             return <section className="wiki-article">
                 <WikiStyledText className="wiki-article-standard">
-                    {"# "+translate(`wiki.article.${articleType}.${props.article.split("/")[1]}.title`)+"\n"}
-                    {replaceMentions(translate(`wiki.article.${articleType}.${props.article.split("/")[1]}.text`), DUMMY_NAMES, (DUMMY_ROLE_LIST as RoleList)) as string}
+                    {"# "+translate(`wiki.article.${articleType}.${articleName}.title`)+"\n"}
+                    {replaceMentions(translate(`wiki.article.${articleType}.${articleName}.text`), DUMMY_NAMES, (DUMMY_ROLE_LIST as RoleList)) as string}
                 </WikiStyledText>
             </section>
         }

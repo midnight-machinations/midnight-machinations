@@ -1,0 +1,44 @@
+---
+title: "Role Sets"
+category: "generated"
+dynamic: true
+translatable: true
+---
+
+<script>
+// This script will be executed when rendering the wiki page
+export function getRoleSets() {
+  // This will be replaced with actual game data at runtime
+  return window.GAME_MANAGER?.roleSetData || [];
+}
+
+export function getRolesForSet(roleSet) {
+  // Get all roles in a particular role set
+  return window.GAME_MANAGER?.getRolesForSet(roleSet) || [];
+}
+</script>
+
+# {title}
+
+Role sets are collections of roles that share similar characteristics and win conditions. The game has {roleSetCount} different role sets.
+
+## All Role Sets
+
+<DynamicRoleSetList />
+
+---
+
+**Total Roles**: {totalRoleCount}
+
+## About Role Sets
+
+Role sets help organize roles based on their alignment and purpose in the game:
+
+- **Town**: Work together to eliminate threats
+- **Syndicate**: Work together to eliminate town
+- **Neutral**: Have unique win conditions
+- **Cult**: Work together with cult-specific mechanics
+- **Fiends**: Independent threat roles
+- **Minions**: Win when town loses
+
+Each role belongs to one or more role sets, which determines their default alignment and teammates.
