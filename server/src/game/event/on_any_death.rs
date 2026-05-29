@@ -1,3 +1,4 @@
+#[allow(deprecated)]
 use crate::game::{
     abilities_component::Abilities,
     components::{
@@ -5,6 +6,8 @@ use crate::game::{
     },
     event::EventData, modifiers::ModifierSettings, player::PlayerReference,
 };
+
+use super::{EventListenerFunction, LegacyEventData};
 
 #[must_use = "Event must be invoked"]
 pub struct OnAnyDeath{
@@ -17,10 +20,12 @@ impl OnAnyDeath{
 }
 impl EventData for OnAnyDeath{
     type FoldValue = ();
-
+}
+#[allow(deprecated)]
+impl LegacyEventData for OnAnyDeath{
+    type FoldValue = ();
     type Priority = ();
-
-    fn listeners() -> Vec<super::EventListenerFunction<Self>> {vec![
+    fn listeners() -> Vec<EventListenerFunction<Self>> {vec![
         Mafia::on_any_death,
         Cult::on_any_death,
         ModifierSettings::on_any_death,

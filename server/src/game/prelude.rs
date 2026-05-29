@@ -3,7 +3,6 @@ pub use crate::game::{
     player::*,
     attack_power::*,
     event::prelude::*,
-    event::AsInvokable,
     controllers::*,
     abilities_component::{
         ability_id::AbilityID,

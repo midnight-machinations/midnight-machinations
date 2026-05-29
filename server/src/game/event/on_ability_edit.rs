@@ -1,19 +1,14 @@
-use crate::game::{abilities_component::{ability::Ability, ability_id::AbilityID}, components::role::RoleComponent, event::EventData};
+use crate::game::event::EventData;
 
 pub struct OnAbilityEdit{
-    pub id: AbilityID,
-    pub new_ability: Option<Ability>,
+    pub id: crate::game::abilities_component::ability_id::AbilityID,
+    pub new_ability: Option<crate::game::abilities_component::ability::Ability>,
 }
 impl EventData for OnAbilityEdit{
     type FoldValue = ();
-    type Priority = ();
-
-    fn listeners() -> Vec<super::EventListenerFunction<Self>> {vec![
-        RoleComponent::on_ability_edit
-    ]}
 }
 impl OnAbilityEdit{
-    pub fn new(id: AbilityID, new_ability: Option<Ability>)->(Self, ()){
-        (Self { id, new_ability, }, ())
+    pub fn new(id: crate::game::abilities_component::ability_id::AbilityID, new_ability: Option<crate::game::abilities_component::ability::Ability>)->Self{
+        Self { id, new_ability }
     }
 }

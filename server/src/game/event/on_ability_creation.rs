@@ -1,25 +1,19 @@
-use crate::{event_priority, game::{abilities_component::{Abilities, ability::Ability, ability_id::AbilityID}, components::role::RoleComponent, event::EventData}};
+use crate::{event_priority, game::{abilities_component::{ability::Ability, ability_id::AbilityID}, event::EventData}};
 
 pub struct OnAbilityCreation{
     pub id: AbilityID,
     pub ability: Ability,
 }
 event_priority!(OnAbilityCreationPriority{
-    Edit,
-    SetAbility,
-    SideEffect
+    Edit = 0,
+    SetAbility = 1,
+    SideEffect = 2
 });
 pub struct OnAbilityCreationFold{
     pub ability: Ability,
 }
 impl EventData for OnAbilityCreation{
     type FoldValue = OnAbilityCreationFold;
-    type Priority = OnAbilityCreationPriority;
-
-    fn listeners() -> Vec<super::EventListenerFunction<Self>> {vec![
-        RoleComponent::on_ability_creation,
-        Abilities::on_ability_creation,
-    ]}
 }
 impl OnAbilityCreation{
     pub fn new(id: AbilityID, ability: Ability)->(OnAbilityCreation, OnAbilityCreationFold){

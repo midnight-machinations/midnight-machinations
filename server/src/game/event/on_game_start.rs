@@ -1,8 +1,5 @@
-use crate::game::{
-    components::{
-        cult::Cult, enfranchise::EnfranchiseComponent, forfeit_vote::ForfeitNominationVote, mafia::Mafia
-    }, event::EventData, modifiers::ModifierSettings,
-};
+use crate::game::event::EventData;
+use super::{EventListenerFunction, LegacyEventData};
 
 #[must_use = "Event must be invoked"]
 pub struct OnGameStart;
@@ -11,12 +8,16 @@ impl OnGameStart{
 }
 impl EventData for OnGameStart{
     type FoldValue = ();
+}
+#[allow(deprecated)]
+impl LegacyEventData for OnGameStart{
+    type FoldValue = ();
     type Priority = ();
-    fn listeners() -> Vec<super::EventListenerFunction<Self>> {vec![
-        ModifierSettings::on_game_start,
-        Mafia::on_game_start,
-        Cult::on_game_start,
-        EnfranchiseComponent::on_game_start,
-        ForfeitNominationVote::on_game_start,
+    fn listeners() -> Vec<EventListenerFunction<Self>> {vec![
+        crate::game::modifiers::ModifierSettings::on_game_start,
+        crate::game::components::mafia::Mafia::on_game_start,
+        crate::game::components::cult::Cult::on_game_start,
+        crate::game::components::enfranchise::EnfranchiseComponent::on_game_start,
+        crate::game::components::forfeit_vote::ForfeitNominationVote::on_game_start,
     ]}
 }

@@ -1,6 +1,7 @@
 use crate::game::{
-    abilities_component::Abilities, components::mafia::Mafia, controllers::ControllerID, event::{on_controller_changed::OnControllerChanged, AsInvokable as _, EventData, Invokable as _}, Game
+    abilities_component::Abilities, components::mafia::Mafia, controllers::ControllerID, event::EventData,
 };
+use super::{EventListenerFunction, LegacyEventData};
 
 #[must_use = "Event must be invoked"]
 pub struct OnControllerSelectionChanged{
@@ -10,20 +11,15 @@ impl OnControllerSelectionChanged{
     pub fn new(id: ControllerID) -> (Self, ()){
         (Self{id}, ())
     }
-    pub(super) fn on_controller_changed(game: &mut Game, event: &OnControllerChanged, _fold: &mut (), _priority: ()){
-        if
-            event.new.as_ref().map(|c|c.selection()) != 
-            event.old.as_ref().map(|c|c.selection())
-        {
-            Self::new(event.id.clone()).as_invokable().invoke(game);
-        }
-    }
 }
 impl EventData for OnControllerSelectionChanged{
     type FoldValue = ();
+}
+#[allow(deprecated)]
+impl LegacyEventData for OnControllerSelectionChanged{
+    type FoldValue = ();
     type Priority = ();
-
-    fn listeners() -> Vec<super::EventListenerFunction<Self>> {vec![
+    fn listeners() -> Vec<EventListenerFunction<Self>> {vec![
         Mafia::on_controller_selection_changed,
         Abilities::on_controller_selection_changed
     ]}

@@ -1,38 +1,37 @@
-use crate::event_priority;
-use crate::game::prelude::*;
+use crate::{event_priority, game::prelude::*};
 use super::EventData;
 
 ///runs before all players' night actions
 #[must_use = "Event must be invoked"]
 pub struct OnMidnight;
 event_priority!(OnMidnightPriority{
-    InitializeNight,
+    InitializeNight = 0,
 
-    TopPriority,
-    PreWard,
+    TopPriority = 5,
+    PreWard = 10,
 
-    Transporter,
-    Warper,
+    Transporter = 15,
+    Warper = 20,
 
-    Possess,
-    Ward,
-    Roleblock,
+    Possess = 25,
+    Ward = 30,
+    Roleblock = 35,
 
-    Deception,  //set aura //set attack
-    Heal,   //set protection
+    Deception = 40,  //set aura //set attack
+    Heal = 45,   //set protection
 
-    Bodyguard,  //set protection //use attack 
+    Bodyguard = 50,  //set protection //use attack 
     
-    Kill,   //use attack //use protection
-    Convert,    //role swap & win condition change //use protection
-    Poison, //set poison
-    Investigative,  //use aura
+    Kill = 55,   //use attack //use protection
+    Convert = 60,    //role swap & win condition change //use protection
+    Poison = 65, //set poison
+    Investigative = 70,  //use aura
 
-    DeleteMessages, //set messages
+    DeleteMessages = 75, //set messages
 
-    StealMessages,  //use messages + set messages (specficially set stolen messages)
+    StealMessages = 80,  //use messages + set messages (specficially set stolen messages)
 
-    FinalizeNight
+    FinalizeNight = 100
 });
 
 impl OnMidnight{
@@ -40,22 +39,6 @@ impl OnMidnight{
 }
 impl EventData for OnMidnight {
     type FoldValue = OnMidnightFold;
-    type Priority = OnMidnightPriority;
-
-    fn listeners() -> Vec<super::EventListenerFunction<Self>> {
-        vec![
-            Detained::on_midnight,
-            Poison::on_midnight,
-            PuppeteerMarionette::on_midnight,
-            MafiaRecruits::on_midnight,
-            ModifierSettings::on_midnight,
-            Mafia::on_midnight,
-            PlayerReference::on_midnight,
-            Abilities::on_midnight,
-            FragileVestsComponent::on_midnight,
-            Guard::on_midnight,
-        ]
-    }
 }
 
 #[derive(Default, Clone, Debug, PartialEq, Eq)]

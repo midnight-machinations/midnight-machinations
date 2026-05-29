@@ -73,6 +73,7 @@ use player::PlayerReference;
 use player::Player;
 use phase::PhaseStateMachine;
 use settings::Settings;
+use event_macro::EventListenerDispatcher;
 use self::components::{
     cult::Cult,
     puppeteer_marionette::PuppeteerMarionette
@@ -89,6 +90,7 @@ use self::spectator::{
 use self::verdict::Verdict;
 
 
+#[derive(EventListenerDispatcher)]
 pub struct Game {
     room_name: String,
     clients: VecMap<RoomClientID, GameClient>,

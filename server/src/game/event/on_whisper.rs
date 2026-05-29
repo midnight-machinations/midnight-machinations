@@ -1,4 +1,4 @@
-use crate::{event_priority, game::{abilities_component::Abilities, chat::ChatComponent, modifiers::ModifierSettings, player::PlayerReference}};
+use crate::{event_priority, game::player::PlayerReference};
 use super::EventData;
 
 #[derive(Clone)]
@@ -11,7 +11,11 @@ pub struct WhisperFold {
     pub cancelled: bool,
     pub hide_broadcast: bool
 }
-event_priority!(WhisperPriority{Cancel, Broadcast, Send});
+event_priority!(WhisperPriority{
+    Cancel = 0,
+    Broadcast = 1,
+    Send = 2
+});
 
 impl OnWhisper {
     pub fn new(sender: PlayerReference, receiver: PlayerReference, message: String) -> (Self, WhisperFold) {
@@ -31,13 +35,4 @@ impl OnWhisper {
 
 impl EventData for OnWhisper {
     type FoldValue = WhisperFold;
-    type Priority = WhisperPriority;
-
-    fn listeners() -> Vec<super::EventListenerFunction<Self>> {
-        vec![
-            ChatComponent::on_whisper,
-            ModifierSettings::on_whisper,
-            Abilities::on_whisper,
-        ]
-    }
 }

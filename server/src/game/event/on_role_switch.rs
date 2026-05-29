@@ -1,7 +1,5 @@
-use crate::game::{
-    abilities_component::Abilities, components::{cult::Cult, mafia::Mafia, role_reveal::RevealedPlayersComponent, synopsis::SynopsisTracker},
-    event::EventData, player::PlayerReference, role::RoleState,
-};
+use crate::game::{event::EventData, player::PlayerReference, role::RoleState};
+use super::{EventListenerFunction, LegacyEventData};
 
 #[must_use = "Event must be invoked"]
 pub struct OnRoleSwitch{
@@ -16,13 +14,16 @@ impl OnRoleSwitch{
 }
 impl EventData for OnRoleSwitch{
     type FoldValue = ();
+}
+#[allow(deprecated)]
+impl LegacyEventData for OnRoleSwitch{
+    type FoldValue = ();
     type Priority = ();
-
-    fn listeners() -> Vec<super::EventListenerFunction<Self>> {vec![
-        RevealedPlayersComponent::on_role_switch,
-        Cult::on_role_switch,
-        Mafia::on_role_switch,
-        SynopsisTracker::on_role_switch,
-        Abilities::on_role_switch,
+    fn listeners() -> Vec<EventListenerFunction<Self>> {vec![
+        crate::game::components::role_reveal::RevealedPlayersComponent::on_role_switch,
+        crate::game::components::cult::Cult::on_role_switch,
+        crate::game::components::mafia::Mafia::on_role_switch,
+        crate::game::components::synopsis::SynopsisTracker::on_role_switch,
+        crate::game::abilities_component::Abilities::on_role_switch,
     ]}
 }

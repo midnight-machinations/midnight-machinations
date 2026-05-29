@@ -1,8 +1,5 @@
-use crate::game::{ 
-    abilities_component::Abilities, components::{blocked::BlockedComponent, mafia::Mafia}, event::EventData, player::PlayerReference,
-};
-
-use super::on_midnight::OnMidnightFold;
+use crate::game::{event::EventData, player::PlayerReference};
+use super::{EventListenerFunction, LegacyEventData, on_midnight::OnMidnightFold};
 
 #[must_use = "Event must be invoked"]
 pub struct OnPlayerRoleblocked{
@@ -16,11 +13,14 @@ impl OnPlayerRoleblocked{
 }
 impl EventData for OnPlayerRoleblocked{
     type FoldValue = OnMidnightFold;
+}
+#[allow(deprecated)]
+impl LegacyEventData for OnPlayerRoleblocked{
+    type FoldValue = OnMidnightFold;
     type Priority = ();
-
-    fn listeners() -> Vec<super::EventListenerFunction<Self>> {vec![
-        Abilities::on_player_roleblocked,
-        Mafia::on_player_roleblocked,
-        BlockedComponent::on_player_roleblocked,
+    fn listeners() -> Vec<EventListenerFunction<Self>> {vec![
+        crate::game::abilities_component::Abilities::on_player_roleblocked,
+        crate::game::components::mafia::Mafia::on_player_roleblocked,
+        crate::game::components::blocked::BlockedComponent::on_player_roleblocked,
     ]}
 }

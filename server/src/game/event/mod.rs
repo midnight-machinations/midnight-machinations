@@ -1,4 +1,5 @@
 use super::Game;
+
 pub(super) mod on_any_death;
 pub(super) mod on_game_ending;
 pub(super) mod on_phase_start;
@@ -26,26 +27,61 @@ pub(super) mod on_player_possessed;
 
 pub mod prelude;
 
+// ===== NEW EVENT SYSTEM =====
+
+/// Trait for event data types. Each event defines its associated fold value type.
+pub trait EventData: Sized {
+    type FoldValue;
+}
+
+/// Trait for types that can listen to events. Implementations go on identifier types
+/// like `PlayerReference`, `AbilityID`, etc.
+pub trait EventListener<E> 
+where
+    E: EventData,
+{
+    fn on_event(&self, game: &mut Game, event: &E, fold: &mut E::FoldValue);
+}
+
+// ===== LEGACY COMPATIBILITY (deprecated) =====
+
+#[allow(deprecated)]
 pub trait EventPriority: Sized + Copy {
     fn values() -> Vec<Self>;
 }
 
-///
-/// 
-/// 
-/// // Event listener type
-/// // pub type EventListenerFunction<E: Event> = fn(&mut Game, &E, &mut E::FoldValue, E::Priority);
-/// 
-pub trait EventData: Sized {
+#[expect(type_alias_bounds, reason="Legacy compatibility")]
+#[allow(deprecated)]
+pub type EventListenerFunction<E: EventData> = fn(&mut Game, &E, &mut E::FoldValue, E::Priority);
+
+#[allow(deprecated)]
+pub trait LegacyEventData: Sized {
     type FoldValue;
     type Priority: EventPriority;
-
     fn listeners() -> Vec<EventListenerFunction<Self>>;
 }
-pub trait Invokable{
-    fn invoke(self, game: &mut Game)->Self;
+
+/// Blanket impl allows old events to work via `as_invokable().invoke()`
+#[allow(deprecated)]
+pub trait AsInvokable<E: LegacyEventData> {
+    fn as_invokable(&mut self) -> (&E, &mut E::FoldValue);
 }
-impl<E: EventData> Invokable for (&E, &mut E::FoldValue) {
+
+#[allow(deprecated)]
+pub trait Invokable {
+    fn invoke(self, game: &mut Game) -> Self;
+}
+
+#[allow(deprecated)]
+impl<E: LegacyEventData> AsInvokable<E> for (E, E::FoldValue) {
+    fn as_invokable(&mut self) -> (&E, &mut E::FoldValue) {
+        let (ref e, ref mut f) = *self;
+        (e, f)
+    }
+}
+
+#[allow(deprecated)]
+impl<E: LegacyEventData> Invokable for (&E, &mut E::FoldValue) {
     fn invoke(self, game: &mut Game) -> Self {
         for priority in E::Priority::values() {
             for listener in E::listeners() {
@@ -56,45 +92,30 @@ impl<E: EventData> Invokable for (&E, &mut E::FoldValue) {
     }
 }
 
-
-#[expect(type_alias_bounds, reason="This is fine")]
-pub type EventListenerFunction<E: EventData> = fn(&mut Game, &E, &mut E::FoldValue, E::Priority);
-
 impl EventPriority for () {
     fn values() -> Vec<Self> {vec![()]}
 }
-
-
-
 
 #[macro_export]
 macro_rules! event_priority {
     (
         $name:ident{
-            $($variant:ident),*
+            $($variant:ident = $value:expr),* $(,)?
         }
     ) => {
         #[derive(Clone, Copy, PartialEq, Eq, Debug)]
+        #[repr(u8)]
         pub enum $name {
-            $($variant),*
+            $($variant = $value),*
         }
+        impl $name {
+            pub const VALUES: &[$name] = &[$($name::$variant),*];
+        }
+        #[allow(deprecated)]
         impl $crate::game::event::EventPriority for $name {
             fn values() -> Vec<Self> {
                 vec![$(Self::$variant),*]
             }
         }
     };
-}
-
-
-
-
-pub trait AsInvokable<E: EventData>{
-    fn as_invokable(&mut self) -> (&E, &mut E::FoldValue);
-}
-impl<E: EventData> AsInvokable<E> for (E, E::FoldValue) {
-    fn as_invokable(&mut self) -> (&E, &mut E::FoldValue) {
-        let (ref e, ref mut f) = *self;
-        (e, f)
-    }
 }

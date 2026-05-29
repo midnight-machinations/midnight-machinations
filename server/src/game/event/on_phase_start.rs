@@ -1,12 +1,7 @@
 use crate::game::{
-    abilities_component::Abilities,
-    components::{
-        ascend::Ascend, blocked::BlockedComponent, call_witness::CallWitness, detained::Detained, fast_forward::FastForwardComponent, forfeit_vote::ForfeitNominationVote, silenced::Silenced, verdicts_today::VerdictsToday
-    },
-    controllers::Controllers, event::EventData, modifiers::ModifierSettings, phase::PhaseState,
-    Game
+    event::EventData, phase::PhaseState,
 };
-
+use super::{EventListenerFunction, LegacyEventData};
 
 #[must_use = "Event must be invoked"]
 pub struct OnPhaseStart{
@@ -19,20 +14,23 @@ impl OnPhaseStart{
 }
 impl EventData for OnPhaseStart{
     type FoldValue = ();
+}
+#[allow(deprecated)]
+impl LegacyEventData for OnPhaseStart{
+    type FoldValue = ();
     type Priority = ();
-
-    fn listeners() -> Vec<super::EventListenerFunction<Self>> {vec![
-        BlockedComponent::on_phase_start,
-        Abilities::on_phase_start,
-        ForfeitNominationVote::on_phase_start,
-        Detained::on_phase_start,
-        VerdictsToday::on_phase_start,
-        Controllers::on_phase_start,
-        ModifierSettings::on_phase_start,
-        Silenced::on_phase_start,   //silenced needs to go before call witness, I could do priority but erm
-        CallWitness::on_phase_start,    //must go after silenced
-        Game::on_phase_start,
-        FastForwardComponent::on_phase_start,
-        Ascend::on_phase_start,
+    fn listeners() -> Vec<EventListenerFunction<Self>> {vec![
+        crate::game::components::blocked::BlockedComponent::on_phase_start,
+        crate::game::abilities_component::Abilities::on_phase_start,
+        crate::game::components::forfeit_vote::ForfeitNominationVote::on_phase_start,
+        crate::game::components::detained::Detained::on_phase_start,
+        crate::game::components::verdicts_today::VerdictsToday::on_phase_start,
+        crate::game::controllers::Controllers::on_phase_start,
+        crate::game::modifiers::ModifierSettings::on_phase_start,
+        crate::game::components::silenced::Silenced::on_phase_start,
+        crate::game::components::call_witness::CallWitness::on_phase_start,
+        crate::game::Game::on_phase_start,
+        crate::game::components::fast_forward::FastForwardComponent::on_phase_start,
+        crate::game::components::ascend::Ascend::on_phase_start,
     ]}
 }

@@ -1,6 +1,5 @@
-use crate::game::{
-    abilities_component::Abilities, components::insider_group::InsiderGroups, event::EventData, player::PlayerReference
-};
+use crate::game::{event::EventData, player::PlayerReference};
+use super::{EventListenerFunction, LegacyEventData};
 
 #[must_use = "Event must be invoked"]
 pub struct OnConcealRole{
@@ -14,12 +13,15 @@ impl OnConcealRole{
 }
 impl EventData for OnConcealRole{
     type FoldValue = ();
+}
+#[allow(deprecated)]
+impl LegacyEventData for OnConcealRole{
+    type FoldValue = ();
     type Priority = ();
-
-    fn listeners() -> Vec<super::EventListenerFunction<Self>> {
+    fn listeners() -> Vec<EventListenerFunction<Self>> {
         vec![
-            Abilities::on_conceal_role,
-            InsiderGroups::on_conceal_role
+            crate::game::abilities_component::Abilities::on_conceal_role,
+            crate::game::components::insider_group::InsiderGroups::on_conceal_role
         ]
     }
 }

@@ -1,7 +1,9 @@
 use crate::game::{
-    controllers::{ControllerInput, Controllers}, event::EventData,
+    controllers::{ControllerInput, Controllers},
     player::PlayerReference,
 };
+use crate::game::event::EventData;
+use super::{EventListenerFunction, LegacyEventData};
 
 #[must_use = "Event must be invoked"]
 pub struct OnControllerInputReceived{
@@ -15,9 +17,12 @@ impl OnControllerInputReceived{
 }
 impl EventData for OnControllerInputReceived{
     type FoldValue = ();
+}
+#[allow(deprecated)]
+impl LegacyEventData for OnControllerInputReceived{
+    type FoldValue = ();
     type Priority = ();
-
-    fn listeners() -> Vec<super::EventListenerFunction<Self>> {vec![
+    fn listeners() -> Vec<EventListenerFunction<Self>> {vec![
         Controllers::on_controller_input_received
     ]}
 }
