@@ -1,4 +1,4 @@
-import React, { ReactElement, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
+import React, { ReactElement, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import translate from "../game/lang";
 import "./wiki.css";
 import { Role, getMainRoleSetFromRole } from "../game/roleState.d";
@@ -18,7 +18,6 @@ import CheckBox from "./CheckBox";
 import Select from "./Select";
 import { loadGameModesParsed } from "../game/localStorage";
 import { isFailure } from "./gameModeSettings/gameMode/parse";
-import { GameModeContext } from "./gameModeSettings/GameModesEditor";
 import { GameMode } from "./gameModeSettings/gameMode";
 
 
@@ -223,25 +222,21 @@ function WikiSearchResults(props: Readonly<{
 }
 
 function getGameModeEnabledPagesFilter(gameModes: GameMode[], gameModeName: string): WikiDisabledFilter {
-    return function (page: WikiArticleLink) {
-        const gameMode = gameModes.find(mode => mode.name === gameModeName);
-        if (!gameMode) {
-            return true;
-        }
-        const enabledRoles: Role[] = [];
-        const enabledModifiers: ModifierID[] = [];
-        for (const [_number, data] of Object.entries(gameMode.data)) {
-            for (const role of data.enabledRoles) {
-                enabledRoles.push(role);
-            }
-            for (const [key, value] of data.modifierSettings) {
-                if (value) {
-                    enabledModifiers.push(key);
-                }
-            }
-        }
-        return wikiPageIsEnabled(page, enabledRoles, enabledModifiers, "default")
+    const gameMode = gameModes.find(mode => mode.name === gameModeName);
+    if (!gameMode) {
+        return () => true;
     }
+
+    const enabledRoles: Role[] = [];
+    const enabledModifiers: ModifierID[] = [];
+
+    for (const data of Object.values(gameMode.data)) {
+        enabledRoles.push(...data.enabledRoles);
+        for (const [key,] of data.modifierSettings) {
+            enabledModifiers.push(key);
+        }
+    }
+    return (page: WikiArticleLink) => wikiPageIsEnabled(page, enabledRoles, enabledModifiers, "default")
 }
 
 export type WikiDisabledFilter = (page: WikiArticleLink) => boolean;
