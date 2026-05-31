@@ -19,6 +19,7 @@ import Select from "./Select";
 import { loadGameModesParsed } from "../game/localStorage";
 import { isFailure } from "./gameModeSettings/gameMode/parse";
 import { GameModeContext } from "./gameModeSettings/GameModesEditor";
+import { GameMode } from "./gameModeSettings/gameMode";
 
 
 export function setWikiSearchPage(page: WikiArticleLink, anchorController: AnchorController, menuController?: MenuController) {
@@ -159,10 +160,28 @@ function WikiSearchResults(props: Readonly<{
         ["modifierSettings"],
         MODIFIERS as any as ModifierID[]
     )!;
+    const inLobbyOrGame = useLobbyOrGameState(() => true, [], false)!;
 
-    const [hideDisabled, setHideDisabled] = useState(false);
+    const gameModes = useMemo(() => {
+        const gameModes = loadGameModesParsed();
+        if (isFailure(gameModes)) {
+            return [];
+        } else {
+            return gameModes.value.gameModes;
+        }
+    }, []);
+
+    const [hideDisabled, setHideDisabled] = useState(true);
     // Default means to hide pages that are disabled by the current game settings
-    const [wikiDisabledFilter, setWikiDisabledFilter] = useState<WikiDisabledFilter | "default">("default");
+    const [wikiDisabledFilter, setWikiDisabledFilter] = useState<[string, WikiDisabledFilter] | "default">(() => {
+        if (inLobbyOrGame) {
+            return "default";
+        } else if (gameModes.some(mode => mode.name === "Experimental")) {
+            return ["Experimental", getGameModeEnabledPagesFilter(gameModes, "Experimental")];
+        } else {
+            return ["all", () => true];
+        }
+    });
 
     const getSearchResults = useCallback((search: string) => {
         const out = [
@@ -177,7 +196,12 @@ function WikiSearchResults(props: Readonly<{
     [props.searchQuery, getSearchResults])
 
     return <div className="wiki-results" tabIndex={-1}>
-        <WikiDisabledSelector hideDisabled={hideDisabled} setWikiDisabledFilter={setWikiDisabledFilter} setHideDisabled={setHideDisabled} />
+        <WikiDisabledSelector
+            hideDisabled={hideDisabled}
+            setHideDisabled={setHideDisabled}
+            wikiDisabledFilter={wikiDisabledFilter}
+            setWikiDisabledFilter={setWikiDisabledFilter}
+        />
         {props.searchQuery === ""
             ? <WikiMainPage 
                 enabledRoles={enabledRoles} 
@@ -198,12 +222,35 @@ function WikiSearchResults(props: Readonly<{
     </div>
 }
 
+function getGameModeEnabledPagesFilter(gameModes: GameMode[], gameModeName: string): WikiDisabledFilter {
+    return function (page: WikiArticleLink) {
+        const gameMode = gameModes.find(mode => mode.name === gameModeName);
+        if (!gameMode) {
+            return true;
+        }
+        const enabledRoles: Role[] = [];
+        const enabledModifiers: ModifierID[] = [];
+        for (const [_number, data] of Object.entries(gameMode.data)) {
+            for (const role of data.enabledRoles) {
+                enabledRoles.push(role);
+            }
+            for (const [key, value] of data.modifierSettings) {
+                if (value) {
+                    enabledModifiers.push(key);
+                }
+            }
+        }
+        return wikiPageIsEnabled(page, enabledRoles, enabledModifiers, "default")
+    }
+}
+
 export type WikiDisabledFilter = (page: WikiArticleLink) => boolean;
 
 function WikiDisabledSelector(props: Readonly<{
     hideDisabled: boolean,
-    setWikiDisabledFilter: (filter: WikiDisabledFilter | "default") => void
     setHideDisabled: (hide: boolean) => void
+    wikiDisabledFilter: [string, WikiDisabledFilter] | "default",
+    setWikiDisabledFilter: React.Dispatch<React.SetStateAction<[string, WikiDisabledFilter] | "default">>
 }>): ReactElement {
     const inLobbyOrGame = useLobbyOrGameState(() => true, [], false)!;
 
@@ -216,14 +263,14 @@ function WikiDisabledSelector(props: Readonly<{
         }
     }, []);
 
+    const updateWikiDisabledFilter = useCallback((filter: [string, WikiDisabledFilter] | "default") => {
+        props.setWikiDisabledFilter(() => filter);
+    }, [props]);
+
     const optionsSearch = useMemo(() => {
         const options = new Map<string, [React.ReactNode, string]>();
 
         options.set("all", [translate("wiki.disabledSelector.all"), "all"]);
-
-        if (inLobbyOrGame) {
-            options.set("default", [translate("wiki.disabledSelector.enabled"), "enabled"]);
-        }
 
         for (const gameMode of gameModes) {
             options.set(
@@ -238,50 +285,31 @@ function WikiDisabledSelector(props: Readonly<{
         }
 
         return options;
-    }, []);
+    }, [gameModes, inLobbyOrGame]);
 
-    
-    const defaultValue = useMemo(() => {
-        if (gameModes.some(mode => mode.name === "Experimental")) {
-            return "Experimental";
-        }
-        return inLobbyOrGame ? "default" : "all";
-    }, [inLobbyOrGame, gameModes])
+    const selectedValue = useMemo(() => {
+        return typeof props.wikiDisabledFilter === "string" ? props.wikiDisabledFilter : props.wikiDisabledFilter[0]
+    }, [props.wikiDisabledFilter])
 
-    return <label className="centered-label">
-        {translate("hideDisabled")}
-        <CheckBox 
-            checked={props.hideDisabled} 
-            onChange={checked => props.setHideDisabled(checked)}
-        />
-        <Select value={defaultValue} optionsSearch={optionsSearch} onChange={(value) => {
-            if (value === "all") {
-                props.setWikiDisabledFilter(() => true);
-            } else if (value === "default") {
-                props.setWikiDisabledFilter("default");
-            } else {
-                props.setWikiDisabledFilter((page) => {
-                    const gameMode = gameModes.find(mode => mode.name === value);
-                    if (!gameMode) {
-                        return true;
-                    }
-                    const enabledRoles: Role[] = [];
-                    const enabledModifiers: ModifierID[] = [];
-                    for (const [_number, data] of Object.entries(gameMode.data)) {
-                        for (const role of data.enabledRoles) {
-                            enabledRoles.push(role);
-                        }
-                        for (const [key, value] of Object.entries(data.modifierSettings)) {
-                            if (value) {
-                                enabledModifiers.push(key as ModifierID);
-                            }
-                        }
-                    }
-                    return wikiPageIsEnabled(page, enabledRoles, enabledModifiers, "default")
-                });
-            }
-        }} />
-    </label>
+    return <div className="wiki-disabled-selector">
+        {!inLobbyOrGame && <label className="centered-label">
+            {translate("wiki.disabledSelector.gameMode")}
+            <Select value={selectedValue} optionsSearch={optionsSearch} onChange={(value) => {
+                if (value === "all") {
+                    updateWikiDisabledFilter(["all", () => true]);
+                } else {
+                    updateWikiDisabledFilter([value, getGameModeEnabledPagesFilter(gameModes, value)]);
+                }
+            }} />
+        </label>}
+        {selectedValue !== "all" && <label className="centered-label">
+            {translate("hideDisabled")}
+            <CheckBox 
+                checked={props.hideDisabled} 
+                onChange={checked => props.setHideDisabled(checked)}
+            />
+        </label>}
+    </div>
 }
 
 function WikiMainPage(props: Readonly<{
@@ -289,7 +317,7 @@ function WikiMainPage(props: Readonly<{
     enabledRoles: Role[],
     enabledModifiers: ModifierID[],
     hideDisabled: boolean,
-    wikiDisabledFilter: WikiDisabledFilter | "default",
+    wikiDisabledFilter: [string, WikiDisabledFilter] | "default",
     onChooseArticle: (article: WikiArticleLink) => void
 }>): ReactElement {
     const articlePartitions = useMemo(() => 
@@ -329,6 +357,7 @@ function WikiMainPage(props: Readonly<{
                                 .filter(page => !props.hideDisabled || wikiPageIsEnabled(page, props.enabledRoles, props.enabledModifiers, props.wikiDisabledFilter))}
                             enabledRoles={props.enabledRoles}
                             enabledModifiers={props.enabledModifiers}
+                            wikiDisabledFilter={props.wikiDisabledFilter}
                         />
                     </div>
                 })}
@@ -339,6 +368,7 @@ function WikiMainPage(props: Readonly<{
                 .filter(page => !props.hideDisabled || wikiPageIsEnabled(page, props.enabledRoles, props.enabledModifiers, props.wikiDisabledFilter))}
             enabledRoles={props.enabledRoles}
             enabledModifiers={props.enabledModifiers}
+            wikiDisabledFilter={props.wikiDisabledFilter}
         />
     </div>
 }
@@ -474,7 +504,7 @@ function WikiSearchResult(props: Readonly<{
     onChooseArticle: (article: WikiArticleLink) => void
 }>): ReactElement {
     return <button key={props.page} onClick={() => props.onChooseArticle(props.page)}>
-        <StyledText noLinks={true} className={props.className}>
+        <StyledText noLinks={true}  className={props.className}>
             {getArticleTitle(props.page)}
         </StyledText>
 </button>

@@ -108,3 +108,15 @@
 .role-set-article .masonry-item {
     text-align: center;
 }
+.wiki-disabled-selector {
+    display: flex;
+    flex-direction: row;
+    align-items: stretch;
+    justify-content: center;
+    gap: 0.5rem;
+}
+.wiki-disabled-selector > label{
+    background-color: var(--primary-color);
+    border-radius: 0.5rem;
+    padding: 0.25rem 0.5rem;
+}

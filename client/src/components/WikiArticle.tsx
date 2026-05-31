@@ -11,7 +11,7 @@ import "./wiki.css";
 import GAME_MANAGER, { replaceMentions } from "..";
 import { useLobbyOrGameState } from "./useHooks";
 import DetailsSummary from "./DetailsSummary";
-import { partitionWikiPages, WikiCategory } from "./Wiki";
+import { partitionWikiPages, WikiCategory, WikiDisabledFilter } from "./Wiki";
 import { MODIFIERS, ModifierID } from "../game/modifiers";
 import DUMMY_ROLE_LIST from "../resources/dummyRoleList.json";
 import Masonry from "react-responsive-masonry";
@@ -175,7 +175,8 @@ export function PageCollection(props: Readonly<{
     pages: WikiArticleLink[],
     enabledRoles: Role[],
     enabledModifiers: ModifierID[],
-    children?: ReactNode
+    children?: ReactNode,
+    wikiDisabledFilter?: [string, WikiDisabledFilter] | "default"
 }>): ReactElement | null {
     if (props.pages.length === 0) {
         return null;
@@ -187,7 +188,7 @@ export function PageCollection(props: Readonly<{
         </h3>
         {props.children}
         {props.pages.map((page) => {
-            return <button key={page} className={wikiPageIsEnabled(page, props.enabledRoles, props.enabledModifiers) ? "" : "keyword-disabled"} 
+            return <button key={page} className={wikiPageIsEnabled(page, props.enabledRoles, props.enabledModifiers, props.wikiDisabledFilter) ? "" : "keyword-disabled"} 
                 onClick={() => GAME_MANAGER.setWikiArticle(page)}
             >
                 <StyledText noLinks={true}>{getArticleTitle(page)}</StyledText>

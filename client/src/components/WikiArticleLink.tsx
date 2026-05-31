@@ -57,10 +57,10 @@ export function wikiPageIsEnabled(
     page: WikiArticleLink,
     enabledRoles: Role[],
     enabledModifiers: ModifierID[],
-    wikiDisabledFilter: WikiDisabledFilter | "default" = "default"
+    wikiDisabledFilter: [string, WikiDisabledFilter] | "default" = "default"
 ): boolean {
     if (wikiDisabledFilter !== "default") {
-        return wikiDisabledFilter(page);
+        return wikiDisabledFilter[1](page);
     }
 
     switch (page.split("/")[0]) {
