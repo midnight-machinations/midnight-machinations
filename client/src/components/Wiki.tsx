@@ -177,7 +177,7 @@ function WikiSearchResults(props: Readonly<{
         if (inLobbyOrGame) {
             return "default";
         } else if (gameModes.some(mode => mode.name === "Experimental")) {
-            return ["Experimental", getGameModeEnabledPagesFilter(gameModes, "Experimental")];
+            return ["gamemode:Experimental", getGameModeEnabledPagesFilter(gameModes, "Experimental")];
         } else {
             return ["all", () => true];
         }
@@ -274,7 +274,7 @@ function WikiDisabledSelector(props: Readonly<{
 
         for (const gameMode of gameModes) {
             options.set(
-                gameMode.name,
+                "gamemode:" + gameMode.name,
                 [
                     <StyledText key={gameMode.name} noLinks={true}>
                         {gameMode.name}
@@ -298,7 +298,8 @@ function WikiDisabledSelector(props: Readonly<{
                 if (value === "all") {
                     updateWikiDisabledFilter(["all", () => true]);
                 } else {
-                    updateWikiDisabledFilter([value, getGameModeEnabledPagesFilter(gameModes, value)]);
+                    const gameModeName = value.replace("gamemode:", "");
+                    updateWikiDisabledFilter([value, getGameModeEnabledPagesFilter(gameModes, gameModeName)]);
                 }
             }} />
         </label>}
