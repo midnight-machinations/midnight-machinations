@@ -17,7 +17,7 @@ import DUMMY_ROLE_LIST from "../resources/dummyRoleList.json";
 import KEYWORD_DATA_JSON_IMPORT from "../resources/keywords.json" with { type: "json" };
 import Popover from "./Popover";
 import { dropdownPlacementFunction } from "./Select";
-import { getArticleTooltip } from "./WikiArticleTooltip";
+import WikiArticleTooltip, { getArticleTooltip } from "./WikiArticleTooltip";
 
 const KEYWORD_DATA_JSON = KEYWORD_DATA_JSON_IMPORT as { [key: string]: TokenData };
 
@@ -100,15 +100,7 @@ export default function StyledText(props: Readonly<StyledTextProps>): ReactEleme
     const [hovering, setHovering] = React.useState<[WikiArticleLink, HTMLElement] | null>(null);
     const articleToolTip = React.useMemo(() => {
         if (hovering !== null) {
-            const tooltipText = getArticleTooltip(hovering[0]);
-            // Max 300 characters
-            const shortened = tooltipText?.substring(0, 300);
-            // Max 3 lines
-            const truncated = shortened?.split("\n").slice(0, 3).join("\n");
-            // Add ellipsis
-            const hasMore = tooltipText && truncated && truncated.length < tooltipText.length;
-            const ellipsized = hasMore ? (truncated + "...") : tooltipText;
-            return ellipsized;
+            return getArticleTooltip(hovering[0]);
         }
         return null;
     }, [hovering]);
@@ -132,6 +124,8 @@ export default function StyledText(props: Readonly<StyledTextProps>): ReactEleme
         }
     };
 
+    const tooltip = <WikiArticleTooltip tooltip={articleToolTip} />
+
     return <>
         <span
             className={props.className}
@@ -143,17 +137,13 @@ export default function StyledText(props: Readonly<StyledTextProps>): ReactEleme
             dangerouslySetInnerHTML={{__html: jsxString}}>
         </span>
         {shouldHaveToolTip && <Popover
-            open={hovering !== null && articleToolTip !== null}
+            open={hovering !== null && tooltip !== null}
             setOpenOrClosed={(open) => {
                 if (!open) setHovering(null);
             }}
             onRender={(dropdownElement) => dropdownPlacementFunction(dropdownElement, hovering![1])}
         >
-            <div className="wiki-article-tooltip">
-                <StyledText noLinks={true} markdown={true} playerKeywordData={DUMMY_NAMES_KEYWORD_DATA} roleListKeywordData={DUMMY_ROLE_LIST_KEYWORD_DATA}>
-                    {articleToolTip ?? ""}
-                </StyledText>
-            </div>
+            {tooltip}
         </Popover>}
     </>
 }

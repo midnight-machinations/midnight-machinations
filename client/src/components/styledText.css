@@ -151,7 +151,7 @@
         background-position: 6em;
     }
 }
-.wiki-article-tooltip {
+.wiki-article.wiki-article-tooltip {
     background-color: var(--primary-color);
     border: solid .13rem var(--primary-border-color);
     border-radius: 0.5em;
@@ -161,12 +161,20 @@
     text-align: left;
     pointer-events: none;
     animation: fadeIn 0.5s ease-out;
+    height: unset;
+    padding-bottom: unset;
+    overflow-y: hidden;
 }
-.wiki-article-tooltip > span > p {
+.wiki-article-tooltip * {
     text-align: left;
 }
 @keyframes fadeIn {
     0% { opacity: 0; }
     80% { opacity: 0; }
     100% { opacity: 1; }
+}
+@keyframes fadeOut {
+    0% { opacity: 1; }
+    20% { opacity: 1; }
+    100% { opacity: 0; }
 }

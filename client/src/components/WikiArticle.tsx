@@ -17,7 +17,7 @@ import DUMMY_ROLE_LIST from "../resources/dummyRoleList.json";
 import Masonry from "react-responsive-masonry";
 import Popover from "./Popover";
 import { dropdownPlacementFunction } from "./Select";
-import { getArticleTooltip } from "./WikiArticleTooltip";
+import WikiArticleTooltip, { getArticleTooltip } from "./WikiArticleTooltip";
 
 function WikiStyledText(props: Omit<StyledTextProps, 'markdown' | 'playerKeywordData'>): ReactElement {
     return <StyledText {...props} markdown={true} playerKeywordData={DUMMY_NAMES_KEYWORD_DATA} roleListKeywordData={DUMMY_ROLE_LIST_KEYWORD_DATA}/>
@@ -206,15 +206,7 @@ function PageButton(props: Readonly<{
     enabledModifiers: ModifierID[],
 }>): ReactElement {
     const articleToolTip = React.useMemo(() => {
-        const tooltipText = getArticleTooltip(props.page);
-        // Max 300 characters
-        const shortened = tooltipText?.substring(0, 300);
-        // Max 3 lines
-        const truncated = shortened?.split("\n").slice(0, 3).join("\n");
-        // Add ellipsis
-        const hasMore = tooltipText && truncated && truncated.length < tooltipText.length;
-        const ellipsized = hasMore ? (truncated + "...") : tooltipText;
-        return ellipsized;
+        return <WikiArticleTooltip tooltip={getArticleTooltip(props.page)}/>
     }, [props.page]);
 
     const buttonRef = useRef<HTMLButtonElement>(null);
@@ -245,11 +237,7 @@ function PageButton(props: Readonly<{
             anchorForPositionRef={buttonRef}
             onRender={dropdownPlacementFunction}
         >
-            <div className="wiki-article-tooltip">
-                <StyledText noLinks={true} markdown={true} playerKeywordData={DUMMY_NAMES_KEYWORD_DATA} roleListKeywordData={DUMMY_ROLE_LIST_KEYWORD_DATA}>
-                    {articleToolTip ?? ""}
-                </StyledText>
-            </div>
+            {articleToolTip}
         </Popover>}
     </>
 }
