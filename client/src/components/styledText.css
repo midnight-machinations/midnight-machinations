@@ -161,8 +161,8 @@
     text-align: left;
     animation: fadeIn 0.5s ease-out;
 }
-.wiki-article-tooltip .styled-text {
-    max-width: 300px;
+.wiki-article-tooltip > span > p {
+    text-align: left;
 }
 @keyframes fadeIn {
     0% { opacity: 0; }

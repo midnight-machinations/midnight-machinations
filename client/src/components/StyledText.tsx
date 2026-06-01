@@ -17,7 +17,7 @@ import DUMMY_ROLE_LIST from "../resources/dummyRoleList.json";
 import KEYWORD_DATA_JSON_IMPORT from "../resources/keywords.json" with { type: "json" };
 import Popover from "./Popover";
 import { dropdownPlacementFunction } from "./Select";
-import { getArticleTooltip } from "./WikiArticle";
+import { getArticleTooltip } from "./WikiArticleTooltip";
 
 const KEYWORD_DATA_JSON = KEYWORD_DATA_JSON_IMPORT as { [key: string]: TokenData };
 
@@ -132,8 +132,6 @@ export default function StyledText(props: Readonly<StyledTextProps>): ReactEleme
         }
     };
 
-    const ref = React.useRef<HTMLSpanElement>(null);
-
     return <>
         <span
             className={props.className}
@@ -149,11 +147,10 @@ export default function StyledText(props: Readonly<StyledTextProps>): ReactEleme
             setOpenOrClosed={(open) => {
                 if (!open) setHovering(null);
             }}
-            anchorForPositionRef={ref}
             onRender={(dropdownElement) => dropdownPlacementFunction(dropdownElement, hovering![1])}
         >
             <div className="wiki-article-tooltip">
-                <StyledText noLinks={true}>
+                <StyledText noLinks={true} markdown={true} playerKeywordData={DUMMY_NAMES_KEYWORD_DATA} roleListKeywordData={DUMMY_ROLE_LIST_KEYWORD_DATA}>
                     {articleToolTip ?? ""}
                 </StyledText>
             </div>

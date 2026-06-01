@@ -17,6 +17,7 @@ import DUMMY_ROLE_LIST from "../resources/dummyRoleList.json";
 import Masonry from "react-responsive-masonry";
 import Popover from "./Popover";
 import { dropdownPlacementFunction } from "./Select";
+import { getArticleTooltip } from "./WikiArticleTooltip";
 
 function WikiStyledText(props: Omit<StyledTextProps, 'markdown' | 'playerKeywordData'>): ReactElement {
     return <StyledText {...props} markdown={true} playerKeywordData={DUMMY_NAMES_KEYWORD_DATA} roleListKeywordData={DUMMY_ROLE_LIST_KEYWORD_DATA}/>
@@ -245,7 +246,7 @@ function PageButton(props: Readonly<{
             onRender={dropdownPlacementFunction}
         >
             <div className="wiki-article-tooltip">
-                <StyledText noLinks={true}>
+                <StyledText noLinks={true} markdown={true} playerKeywordData={DUMMY_NAMES_KEYWORD_DATA} roleListKeywordData={DUMMY_ROLE_LIST_KEYWORD_DATA}>
                     {articleToolTip ?? ""}
                 </StyledText>
             </div>
@@ -382,23 +383,4 @@ export function getSearchStrings(article: WikiArticleLink): string[]{
         default: // Categories don't show up in search results
             return [];
     }
-}
-
-export function getArticleTooltip(page: WikiArticleLink): string | null {
-    if (page.startsWith("role/")) {
-        const role = page.split("/")[1] as Role;
-        return translateChecked(`wiki.article.role.${role}.reminder`);
-    } else if (page.startsWith("modifier/")) {
-        const modifier = page.split("/")[1] as ModifierID;
-        return translateChecked(`wiki.article.modifier.${modifier}.text`);
-    } else if (page.startsWith("standard/")) {
-        const standard = page.split("/")[1];
-        return translateChecked(`wiki.article.standard.${standard}.text`);
-    } else if (page.startsWith("generated/")) {
-        return null;
-    } else if (page.startsWith("category/")) {
-        const category = page.split("/")[1];
-        return translateChecked(`wiki.category.${category}.text`);
-    }
-    return null;
 }
