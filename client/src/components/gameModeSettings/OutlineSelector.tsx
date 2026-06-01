@@ -6,7 +6,7 @@ import { Role } from "../../game/roleState.d";
 import Icon from "../Icon";
 import { DragAndDrop } from "../DragAndDrop";
 import { GameModeContext } from "./GameModesEditor";
-import Select, { dropdownPlacementFunction, SelectOptionsSearch } from "../Select";
+import Select, { selectPlacementFunction, SelectOptionsSearch } from "../Select";
 import StyledText from "../StyledText";
 import { Button, RawButton } from "../Button";
 import { useLobbyOrGameState, useLobbyState } from "../useHooks";
@@ -244,7 +244,7 @@ function ConclusionsSelectorLabel(props: Readonly<{
             open={popupOpen}
             setOpenOrClosed={setPopupOpen}
             anchorForPositionRef={ref}
-            onRender={dropdownPlacementFunction}
+            onRender={selectPlacementFunction}
         >
             <ConclusionsSelector
                 disabled={props.disabled}
@@ -356,7 +356,7 @@ function InsiderGroupSelectorLabel(props: Readonly<{
             open={popupOpen}
             setOpenOrClosed={setPopupOpen}
             anchorForPositionRef={ref}
-            onRender={dropdownPlacementFunction}
+            onRender={selectPlacementFunction}
         >
             <InsiderGroupSelector
                 disabled={props.disabled}
@@ -488,7 +488,7 @@ function PlayerPoolSelectorLabel(props: Readonly<{
             open={popupOpen}
             setOpenOrClosed={setPopupOpen}
             anchorForPositionRef={ref}
-            onRender={dropdownPlacementFunction}
+            onRender={selectPlacementFunction}
         >
             <PlayerPoolSelector
                 disabled={props.disabled}
