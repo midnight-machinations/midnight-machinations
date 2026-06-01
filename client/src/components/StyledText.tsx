@@ -96,7 +96,8 @@ export default function StyledText(props: Readonly<StyledTextProps>): ReactEleme
         }
     };
 
-    const shouldHaveToolTip = !(props.noLinks ?? false) && tokens.some(token => token.type === "data" && token.link !== undefined);
+    const shouldHaveToolTip = !(props.noLinks ?? false) && tokens.some(token => token.type === "data" && token.link !== undefined);
+    const [hovering, setHovering] = React.useState<[WikiArticleLink, HTMLElement] | null>(null);
     const articleToolTip = React.useMemo(() => {
         if (hovering !== null) {
             const tooltipText = getArticleTooltip(hovering[0]);
