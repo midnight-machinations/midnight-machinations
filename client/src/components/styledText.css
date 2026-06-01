@@ -151,3 +151,21 @@
         background-position: 6em;
     }
 }
+.wiki-article-tooltip {
+    background-color: var(--primary-color);
+    border: solid .13rem var(--primary-border-color);
+    border-radius: 0.5em;
+    padding: 0.3em 0.5em;
+    width: max-content;
+    max-width: 20rem;
+    text-align: left;
+    animation: fadeIn 0.5s ease-out;
+}
+.wiki-article-tooltip .styled-text {
+    max-width: 300px;
+}
+@keyframes fadeIn {
+    0% { opacity: 0; }
+    80% { opacity: 0; }
+    100% { opacity: 1; }
+}

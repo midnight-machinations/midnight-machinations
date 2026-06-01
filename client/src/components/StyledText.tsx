@@ -15,6 +15,9 @@ import { getRoleSetsFromRole, RoleList, translateRoleOutline } from "../game/rol
 import { encodeString } from "./ChatMessage";
 import DUMMY_ROLE_LIST from "../resources/dummyRoleList.json";
 import KEYWORD_DATA_JSON_IMPORT from "../resources/keywords.json" with { type: "json" };
+import Popover from "./Popover";
+import { dropdownPlacementFunction } from "./Select";
+import { getArticleTooltip } from "./WikiArticle";
 
 const KEYWORD_DATA_JSON = KEYWORD_DATA_JSON_IMPORT as { [key: string]: TokenData };
 
@@ -92,12 +95,70 @@ export default function StyledText(props: Readonly<StyledTextProps>): ReactEleme
             }
         }
     };
-    
-    return <span
-        className={props.className}
-        onClick={handleClick}
-        dangerouslySetInnerHTML={{__html: jsxString}}>
-    </span>
+
+    const shouldHaveToolTip = tokens.some(token => token.type === "data" && token.link !== undefined);
+    const [hovering, setHovering] = React.useState<[WikiArticleLink, HTMLElement] | null>(null);
+    const articleToolTip = React.useMemo(() => {
+        if (hovering !== null) {
+            const tooltipText = getArticleTooltip(hovering[0]);
+            // Max 300 characters
+            const shortened = tooltipText?.substring(0, 300);
+            // Max 3 lines
+            const truncated = shortened?.split("\n").slice(0, 3).join("\n");
+            // Add ellipsis
+            const hasMore = tooltipText && truncated && truncated.length < tooltipText.length;
+            const ellipsized = hasMore ? (truncated + "...") : tooltipText;
+            return ellipsized;
+        }
+        return null;
+    }, [hovering]);
+
+    const handleFocus = (event: any) => {
+        const target = event.target as HTMLElement;
+        const anchor = target.closest('a[data-wiki-page]');
+        if (anchor) {
+            const wikiPage = anchor.getAttribute('data-wiki-page') as WikiArticleLink;
+            if (wikiPage) {
+                setHovering([wikiPage, anchor as HTMLElement]);
+            }
+        }
+    };
+
+    const handleUnfocus = (event: any) => {
+        const target = event.target as HTMLElement;
+        const anchor = target.closest('a[data-wiki-page]');
+        if (anchor) {
+            setHovering(null);
+        }
+    };
+
+    const ref = React.useRef<HTMLSpanElement>(null);
+
+    return <>
+        <span
+            className={props.className}
+            onClick={handleClick}
+            onMouseOver={handleFocus}
+            onFocus={handleFocus}
+            onMouseOut={handleUnfocus}
+            onBlur={handleUnfocus}
+            dangerouslySetInnerHTML={{__html: jsxString}}>
+        </span>
+        {shouldHaveToolTip && <Popover
+            open={hovering !== null && articleToolTip !== null}
+            setOpenOrClosed={(open) => {
+                if (!open) setHovering(null);
+            }}
+            anchorForPositionRef={ref}
+            onRender={(dropdownElement) => dropdownPlacementFunction(dropdownElement, hovering![1])}
+        >
+            <div className="wiki-article-tooltip">
+                <StyledText noLinks={true}>
+                    {articleToolTip ?? ""}
+                </StyledText>
+            </div>
+        </Popover>}
+    </>
 }
 
 function mapTokensToHtml(tokens: Token[], noLinks: boolean): string {

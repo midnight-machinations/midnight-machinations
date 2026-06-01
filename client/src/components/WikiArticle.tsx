@@ -15,6 +15,8 @@ import { partitionWikiPages, WikiCategory } from "./Wiki";
 import { MODIFIERS, ModifierID } from "../game/modifiers";
 import DUMMY_ROLE_LIST from "../resources/dummyRoleList.json";
 import Masonry from "react-responsive-masonry";
+import Popover from "./Popover";
+import { dropdownPlacementFunction } from "./Select";
 
 function WikiStyledText(props: Omit<StyledTextProps, 'markdown' | 'playerKeywordData'>): ReactElement {
     return <StyledText {...props} markdown={true} playerKeywordData={DUMMY_NAMES_KEYWORD_DATA} roleListKeywordData={DUMMY_ROLE_LIST_KEYWORD_DATA}/>
@@ -187,12 +189,67 @@ export function PageCollection(props: Readonly<{
         </h3>
         {props.children}
         {props.pages.map((page) => {
-            return <button key={page} className={wikiPageIsEnabled(page, props.enabledRoles, props.enabledModifiers) ? "" : "keyword-disabled"} 
-                onClick={() => GAME_MANAGER.setWikiArticle(page)}
-            >
-                <StyledText noLinks={true}>{getArticleTitle(page)}</StyledText>
-            </button>
+            return <PageButton
+                key={page}
+                page={page}
+                enabledRoles={props.enabledRoles}
+                enabledModifiers={props.enabledModifiers}
+            />
         })}
+    </>
+}
+
+function PageButton(props: Readonly<{
+    page: WikiArticleLink,
+    enabledRoles: Role[],
+    enabledModifiers: ModifierID[],
+}>): ReactElement {
+    const articleToolTip = React.useMemo(() => {
+        const tooltipText = getArticleTooltip(props.page);
+        // Max 300 characters
+        const shortened = tooltipText?.substring(0, 300);
+        // Max 3 lines
+        const truncated = shortened?.split("\n").slice(0, 3).join("\n");
+        // Add ellipsis
+        const hasMore = tooltipText && truncated && truncated.length < tooltipText.length;
+        const ellipsized = hasMore ? (truncated + "...") : tooltipText;
+        return ellipsized;
+    }, [props.page]);
+
+    const buttonRef = useRef<HTMLButtonElement>(null);
+
+    const [hovering, setHovering] = React.useState<boolean>(false);
+
+    const handleFocus = (event: any) => {
+        setHovering(true);
+    };
+
+    const handleUnfocus = (event: any) => {
+        setHovering(false);
+    };
+
+    return <>
+        <button ref={buttonRef} key={props.page} className={wikiPageIsEnabled(props.page, props.enabledRoles, props.enabledModifiers) ? "" : "keyword-disabled"} 
+            onClick={() => GAME_MANAGER.setWikiArticle(props.page)}
+            onMouseEnter={handleFocus}
+            onMouseLeave={handleUnfocus}
+            onFocus={handleFocus}
+            onBlur={handleUnfocus}
+        >
+            <StyledText noLinks={true}>{getArticleTitle(props.page)}</StyledText>
+        </button>
+        {articleToolTip !== null && <Popover
+            open={hovering && articleToolTip !== null}
+            setOpenOrClosed={setHovering}
+            anchorForPositionRef={buttonRef}
+            onRender={dropdownPlacementFunction}
+        >
+            <div className="wiki-article-tooltip">
+                <StyledText noLinks={true}>
+                    {articleToolTip ?? ""}
+                </StyledText>
+            </div>
+        </Popover>}
     </>
 }
 
@@ -325,4 +382,23 @@ export function getSearchStrings(article: WikiArticleLink): string[]{
         default: // Categories don't show up in search results
             return [];
     }
+}
+
+export function getArticleTooltip(page: WikiArticleLink): string | null {
+    if (page.startsWith("role/")) {
+        const role = page.split("/")[1] as Role;
+        return translateChecked(`wiki.article.role.${role}.reminder`);
+    } else if (page.startsWith("modifier/")) {
+        const modifier = page.split("/")[1] as ModifierID;
+        return translateChecked(`wiki.article.modifier.${modifier}.text`);
+    } else if (page.startsWith("standard/")) {
+        const standard = page.split("/")[1];
+        return translateChecked(`wiki.article.standard.${standard}.text`);
+    } else if (page.startsWith("generated/")) {
+        return null;
+    } else if (page.startsWith("category/")) {
+        const category = page.split("/")[1];
+        return translateChecked(`wiki.category.${category}.text`);
+    }
+    return null;
 }

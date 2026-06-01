@@ -13,9 +13,11 @@ export default function Popover<T extends HTMLElement = HTMLElement>(props: Read
     anchorForPositionRef?: React.RefObject<T>,
     className?: string,
     doNotCloseOnOutsideClick?: boolean
+    setPopoverRef?: (ref: HTMLDivElement) => void
 }>): ReactElement {
     const thisRef = useRef<HTMLDivElement>(null);
     const popoverRef = useRef<HTMLDivElement>(document.createElement('div'));
+    props.setPopoverRef?.(popoverRef.current);
 
     const popoverRoot = useMemo(() => {
         const popoverElement = popoverRef.current;
