@@ -159,6 +159,7 @@
     width: max-content;
     max-width: 20rem;
     text-align: left;
+    pointer-events: none;
     animation: fadeIn 0.5s ease-out;
 }
 .wiki-article-tooltip .styled-text {
