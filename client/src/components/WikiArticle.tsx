@@ -25,6 +25,7 @@ function WikiStyledText(props: Omit<StyledTextProps, 'markdown' | 'playerKeyword
 
 export default function WikiArticle(props: {
     article: WikiArticleLink
+    className?: string
 }): ReactElement {
     
     const path = props.article.split('/');
@@ -37,7 +38,7 @@ export default function WikiArticle(props: {
             const exampleAlibi = translateChecked("wiki.article.role."+role+".exampleAlibi");
             const exampleAlibiDescription = translateChecked("wiki.article.role."+role+".exampleAlibi.description");
 
-            return <section className="wiki-article">
+            return <section className={"wiki-article " + (props.className ?? "")}>
                 <div>
                     <WikiStyledText>
                         {"# "+translate("role."+role+".name")+"\n"}
@@ -123,11 +124,11 @@ export default function WikiArticle(props: {
             </section>
         }
         case "category": 
-            return <CategoryArticle category={path[1] as WikiCategory}/>
+            return <CategoryArticle category={path[1] as WikiCategory} className={props.className}/>
         case "standard":
         case "modifier": {
             const articleType = path[0];
-            return <section className="wiki-article">
+            return <section className={"wiki-article " + (props.className ?? "")}>
                 <WikiStyledText className="wiki-article-standard">
                     {"# "+translate(`wiki.article.${articleType}.${props.article.split("/")[1]}.title`)+"\n"}
                     {replaceMentions(translate(`wiki.article.${articleType}.${props.article.split("/")[1]}.text`), DUMMY_NAMES, (DUMMY_ROLE_LIST as RoleList)) as string}
@@ -135,7 +136,7 @@ export default function WikiArticle(props: {
             </section>
         }
         case "generated":
-            return <section className="wiki-article">
+            return <section className={"wiki-article " + (props.className ?? "")}>
                 <GeneratedArticleElement article={path[1] as GeneratedArticle}/>
             </section>
     }
@@ -143,7 +144,7 @@ export default function WikiArticle(props: {
     return <></>;
 }
 
-function CategoryArticle(props: Readonly<{ category: WikiCategory }>): ReactElement {
+function CategoryArticle(props: Readonly<{ category: WikiCategory, className?: string }>): ReactElement {
     const title = translate(`wiki.category.${props.category}`);
     const description = translateChecked(`wiki.category.${props.category}.text`);
 
@@ -159,7 +160,7 @@ function CategoryArticle(props: Readonly<{ category: WikiCategory }>): ReactElem
         MODIFIERS as any as ModifierID[]
     )!;
 
-    return <section className="wiki-article">
+    return <section className={"wiki-article " + (props.className ?? "")}>
         <WikiStyledText className="wiki-article-standard">
             {"# "+title+"\n"}
             {description ? replaceMentions(description, DUMMY_NAMES, (DUMMY_ROLE_LIST as RoleList)) as string : ""}
@@ -205,9 +206,41 @@ function PageButton(props: Readonly<{
     enabledRoles: Role[],
     enabledModifiers: ModifierID[],
 }>): ReactElement {
-    const articleToolTip = React.useMemo(() => {
-        return <WikiArticleTooltip tooltip={getArticleTooltip(props.page)}/>
-    }, [props.page]);
+    const [isCtrlPressed, setIsCtrlPressed] = React.useState(false);
+
+    React.useEffect(() => {
+        const handleKeyDown = (event: any) => {
+            // Check if the pressed key is "Control"
+            if (event.key === 'Control') {
+                setIsCtrlPressed(true);
+            }
+        };
+
+        const handleKeyUp = (event: any) => {
+            // Check if the released key is "Control"
+            if (event.key === 'Control') {
+                setIsCtrlPressed(false);
+            }
+        };
+
+        // Listen to the events globally on the window object
+        window.addEventListener('keydown', handleKeyDown);
+        window.addEventListener('keyup', handleKeyUp);
+
+        // Clean up the event listeners when the component unmounts
+        return () => {
+            window.removeEventListener('keydown', handleKeyDown);
+            window.removeEventListener('keyup', handleKeyUp);
+        };
+    }, []);
+
+    const articleTooltip = React.useMemo(() => {
+        if (isCtrlPressed === true) {
+            return <WikiArticle article={props.page} className="wiki-article-tooltip" />;
+        } else {
+            return <WikiArticleTooltip tooltip={getArticleTooltip(props.page)}/>;
+        }
+    }, [isCtrlPressed, props.page]);   
 
     const buttonRef = useRef<HTMLButtonElement>(null);
 
@@ -231,13 +264,13 @@ function PageButton(props: Readonly<{
         >
             <StyledText noLinks={true}>{getArticleTitle(props.page)}</StyledText>
         </button>
-        {articleToolTip !== null && <Popover
-            open={hovering && articleToolTip !== null}
+        {articleTooltip !== null && <Popover
+            open={hovering && articleTooltip !== null}
             setOpenOrClosed={setHovering}
             anchorForPositionRef={buttonRef}
             onRender={dropdownPlacementFunction}
         >
-            {articleToolTip}
+            {articleTooltip}
         </Popover>}
     </>
 }

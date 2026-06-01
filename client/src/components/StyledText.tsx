@@ -1,5 +1,5 @@
 import { marked } from "marked";
-import React, { ReactElement, useContext } from "react";
+import React, { ReactElement, useContext, useMemo } from "react";
 import ReactDOMServer from "react-dom/server";
 import { find } from "..";
 import translate, { translateChecked } from "../game/lang";
@@ -18,6 +18,7 @@ import KEYWORD_DATA_JSON_IMPORT from "../resources/keywords.json" with { type: "
 import Popover from "./Popover";
 import { dropdownPlacementFunction } from "./Select";
 import WikiArticleTooltip, { getArticleTooltip } from "./WikiArticleTooltip";
+import WikiArticle from "./WikiArticle";
 
 const KEYWORD_DATA_JSON = KEYWORD_DATA_JSON_IMPORT as { [key: string]: TokenData };
 
@@ -124,7 +125,41 @@ export default function StyledText(props: Readonly<StyledTextProps>): ReactEleme
         }
     };
 
-    const tooltip = <WikiArticleTooltip tooltip={articleToolTip} />
+    const [isCtrlPressed, setIsCtrlPressed] = React.useState(false);
+
+    React.useEffect(() => {
+        const handleKeyDown = (event: any) => {
+            // Check if the pressed key is "Control"
+            if (event.key === 'Control') {
+                setIsCtrlPressed(true);
+            }
+        };
+
+        const handleKeyUp = (event: any) => {
+            // Check if the released key is "Control"
+            if (event.key === 'Control') {
+                setIsCtrlPressed(false);
+            }
+        };
+
+        // Listen to the events globally on the window object
+        window.addEventListener('keydown', handleKeyDown);
+        window.addEventListener('keyup', handleKeyUp);
+
+        // Clean up the event listeners when the component unmounts
+        return () => {
+            window.removeEventListener('keydown', handleKeyDown);
+            window.removeEventListener('keyup', handleKeyUp);
+        };
+    }, []);
+
+    const tooltip = useMemo(() => {
+        if (isCtrlPressed === true) {
+            return hovering && <WikiArticle article={hovering[0]} className="wiki-article-tooltip" />;
+        } else {
+            return <WikiArticleTooltip tooltip={articleToolTip} />;
+        }
+    }, [articleToolTip, isCtrlPressed, hovering]);   
 
     return <>
         <span

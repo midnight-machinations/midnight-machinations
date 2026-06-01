@@ -19,6 +19,9 @@ export default function WikiArticleTooltip(props: Readonly<{
         >
             {props.tooltip}
         </StyledText>
+        <div className="wiki-article-tooltip-footer">
+            {translateChecked("wiki.tooltipHint")}
+        </div>
     </div>
 }
 
