@@ -7,7 +7,7 @@ import Icon from "../../components/Icon";
 import { useLobbyOrGameState } from "../../components/useHooks";
 import { Button, RawButton } from "../../components/Button";
 import Popover from "../../components/Popover";
-import { dropdownPlacementFunction } from "../../components/Select";
+import { selectPlacementFunction } from "../../components/Select";
 import StyledText from "../../components/StyledText";
 import { encodeString } from "../../components/ChatMessage";
 
@@ -135,7 +135,7 @@ function LobbyPlayerListPlayer(props: Readonly<{ player: PlayerDisplayData }>): 
                 <Popover
                     open={renameOpen}
                     setOpenOrClosed={setRenameOpen}
-                    onRender={dropdownPlacementFunction}
+                    onRender={selectPlacementFunction}
                     anchorForPositionRef={renameButtonRef}
                 ><LobbyPlayerListPlayerRename {...props}/></Popover>
             </>}

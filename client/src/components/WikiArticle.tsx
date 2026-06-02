@@ -1,4 +1,4 @@
-import { ReactElement, ReactNode, useEffect, useRef, useState } from "react";
+import { ReactElement, ReactNode, useContext, useEffect, useRef, useState } from "react";
 import { Role, roleJsonData } from "../game/roleState.d";
 import React from "react";
 import translate, { langText, translateChecked } from "../game/lang";
@@ -15,6 +15,10 @@ import { partitionWikiPages, WikiCategory, WikiDisabledFilter } from "./Wiki";
 import { MODIFIERS, ModifierID } from "../game/modifiers";
 import DUMMY_ROLE_LIST from "../resources/dummyRoleList.json";
 import Masonry from "react-responsive-masonry";
+import Popover from "./Popover";
+import { dropdownPlacementFunction } from "./Select";
+import WikiArticleTooltip, { getArticleTooltip } from "./WikiArticleTooltip";
+import { CtrlPressedContext } from "../menu/Anchor";
 
 function WikiStyledText(props: Omit<StyledTextProps, 'markdown' | 'playerKeywordData'>): ReactElement {
     return <StyledText {...props} markdown={true} playerKeywordData={DUMMY_NAMES_KEYWORD_DATA} roleListKeywordData={DUMMY_ROLE_LIST_KEYWORD_DATA}/>
@@ -22,6 +26,7 @@ function WikiStyledText(props: Omit<StyledTextProps, 'markdown' | 'playerKeyword
 
 export default function WikiArticle(props: {
     article: WikiArticleLink
+    className?: string
 }): ReactElement {
     
     const path = props.article.split('/');
@@ -34,7 +39,7 @@ export default function WikiArticle(props: {
             const exampleAlibi = translateChecked("wiki.article.role."+role+".exampleAlibi");
             const exampleAlibiDescription = translateChecked("wiki.article.role."+role+".exampleAlibi.description");
 
-            return <section className="wiki-article">
+            return <section className={"wiki-article " + (props.className ?? "")}>
                 <div>
                     <WikiStyledText>
                         {"# "+translate("role."+role+".name")+"\n"}
@@ -120,11 +125,11 @@ export default function WikiArticle(props: {
             </section>
         }
         case "category": 
-            return <CategoryArticle category={path[1] as WikiCategory}/>
+            return <CategoryArticle category={path[1] as WikiCategory} className={props.className}/>
         case "standard":
         case "modifier": {
             const articleType = path[0];
-            return <section className="wiki-article">
+            return <section className={"wiki-article " + (props.className ?? "")}>
                 <WikiStyledText className="wiki-article-standard">
                     {"# "+translate(`wiki.article.${articleType}.${props.article.split("/")[1]}.title`)+"\n"}
                     {replaceMentions(translate(`wiki.article.${articleType}.${props.article.split("/")[1]}.text`), DUMMY_NAMES, (DUMMY_ROLE_LIST as RoleList)) as string}
@@ -132,7 +137,7 @@ export default function WikiArticle(props: {
             </section>
         }
         case "generated":
-            return <section className="wiki-article">
+            return <section className={"wiki-article " + (props.className ?? "")}>
                 <GeneratedArticleElement article={path[1] as GeneratedArticle}/>
             </section>
     }
@@ -140,7 +145,7 @@ export default function WikiArticle(props: {
     return <></>;
 }
 
-function CategoryArticle(props: Readonly<{ category: WikiCategory }>): ReactElement {
+function CategoryArticle(props: Readonly<{ category: WikiCategory, className?: string }>): ReactElement {
     const title = translate(`wiki.category.${props.category}`);
     const description = translateChecked(`wiki.category.${props.category}.text`);
 
@@ -156,7 +161,7 @@ function CategoryArticle(props: Readonly<{ category: WikiCategory }>): ReactElem
         MODIFIERS as any as ModifierID[]
     )!;
 
-    return <section className="wiki-article">
+    return <section className={"wiki-article " + (props.className ?? "")}>
         <WikiStyledText className="wiki-article-standard">
             {"# "+title+"\n"}
             {description ? replaceMentions(description, DUMMY_NAMES, (DUMMY_ROLE_LIST as RoleList)) as string : ""}
@@ -188,12 +193,67 @@ export function PageCollection(props: Readonly<{
         </h3>
         {props.children}
         {props.pages.map((page) => {
-            return <button key={page} className={wikiPageIsEnabled(page, props.enabledRoles, props.enabledModifiers, props.wikiDisabledFilter) ? "" : "keyword-disabled"} 
-                onClick={() => GAME_MANAGER.setWikiArticle(page)}
-            >
-                <StyledText noLinks={true}>{getArticleTitle(page)}</StyledText>
-            </button>
+            return <PageButton
+                key={page}
+                page={page}
+                enabledRoles={props.enabledRoles}
+                enabledModifiers={props.enabledModifiers}
+                wikiDisabledFilter={props.wikiDisabledFilter}
+            />
         })}
+    </>
+}
+
+function PageButton(props: Readonly<{
+    page: WikiArticleLink,
+    enabledRoles: Role[],
+    enabledModifiers: ModifierID[],
+    wikiDisabledFilter?: [string, WikiDisabledFilter] | "default"
+}>): ReactElement {
+    const isCtrlPressed = useContext(CtrlPressedContext) ?? false;
+
+    const articleTooltip = React.useMemo(() => {
+        if (isCtrlPressed === true) {
+            return <WikiArticle article={props.page} className="wiki-article-tooltip" />;
+        } else {
+            const tooltip = getArticleTooltip(props.page);
+            if (tooltip === null) {
+                return null;
+            }
+            return <WikiArticleTooltip tooltip={tooltip} />;
+        }
+    }, [isCtrlPressed, props.page]);   
+
+    const buttonRef = useRef<HTMLButtonElement>(null);
+
+    const [hovering, setHovering] = React.useState<boolean>(false);
+
+    const handleFocus = (event: any) => {
+        setHovering(true);
+    };
+
+    const handleUnfocus = (event: any) => {
+        setHovering(false);
+    };
+
+    return <>
+        <button ref={buttonRef} key={props.page} className={wikiPageIsEnabled(props.page, props.enabledRoles, props.enabledModifiers, props.wikiDisabledFilter) ? "" : "keyword-disabled"} 
+            onClick={() => GAME_MANAGER.setWikiArticle(props.page)}
+            onMouseEnter={handleFocus}
+            onMouseLeave={handleUnfocus}
+            onFocus={handleFocus}
+            onBlur={handleUnfocus}
+        >
+            <StyledText noLinks={true}>{getArticleTitle(props.page)}</StyledText>
+        </button>
+        {articleTooltip !== null && <Popover
+            open={hovering && articleTooltip !== null}
+            setOpenOrClosed={setHovering}
+            anchorForPositionRef={buttonRef}
+            onRender={dropdownPlacementFunction}
+        >
+            {articleTooltip}
+        </Popover>}
     </>
 }
 
