@@ -9,7 +9,7 @@ import DUMMY_NAMES from "../resources/dummyNames.json";
 import { ARTICLES, WikiArticleLink, getArticleLangKey } from "./WikiArticleLink";
 import { MenuControllerContext } from "../menu/game/GameScreen";
 import { Player, UnsafeString } from "../game/gameState.d";
-import { AnchorControllerContext } from "../menu/Anchor";
+import { AnchorControllerContext, CtrlPressedContext } from "../menu/Anchor";
 import { setWikiSearchPage } from "./Wiki";
 import { getRoleSetsFromRole, RoleList, translateRoleOutline } from "../game/roleListState.d";
 import { encodeString } from "./ChatMessage";
@@ -67,6 +67,7 @@ export default function StyledText(props: Readonly<StyledTextProps>): ReactEleme
     const roleListKeywordData = props.roleListKeywordData ?? ROLE_LIST_KEYWORD_DATA;
     const menuController = useContext(MenuControllerContext);
     const anchorController = useContext(AnchorControllerContext)!;
+    const isCtrlPressed = useContext(CtrlPressedContext) ?? false;
 
     let tokens: Token[] = [{
         type: "raw",
@@ -124,34 +125,6 @@ export default function StyledText(props: Readonly<StyledTextProps>): ReactEleme
             setHovering(null);
         }
     };
-
-    const [isCtrlPressed, setIsCtrlPressed] = React.useState(false);
-
-    React.useEffect(() => {
-        const handleKeyDown = (event: any) => {
-            // Check if the pressed key is "Control"
-            if (event.key === 'Control') {
-                setIsCtrlPressed(true);
-            }
-        };
-
-        const handleKeyUp = (event: any) => {
-            // Check if the released key is "Control"
-            if (event.key === 'Control') {
-                setIsCtrlPressed(false);
-            }
-        };
-
-        // Listen to the events globally on the window object
-        window.addEventListener('keydown', handleKeyDown);
-        window.addEventListener('keyup', handleKeyUp);
-
-        // Clean up the event listeners when the component unmounts
-        return () => {
-            window.removeEventListener('keydown', handleKeyDown);
-            window.removeEventListener('keyup', handleKeyUp);
-        };
-    }, []);
 
     const tooltip = useMemo(() => {
         if (isCtrlPressed === true) {

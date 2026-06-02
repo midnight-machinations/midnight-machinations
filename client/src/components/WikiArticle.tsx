@@ -1,4 +1,4 @@
-import { ReactElement, ReactNode, useEffect, useRef, useState } from "react";
+import { ReactElement, ReactNode, useContext, useEffect, useRef, useState } from "react";
 import { Role, roleJsonData } from "../game/roleState.d";
 import React from "react";
 import translate, { langText, translateChecked } from "../game/lang";
@@ -18,6 +18,7 @@ import Masonry from "react-responsive-masonry";
 import Popover from "./Popover";
 import { dropdownPlacementFunction } from "./Select";
 import WikiArticleTooltip, { getArticleTooltip } from "./WikiArticleTooltip";
+import { CtrlPressedContext } from "../menu/Anchor";
 
 function WikiStyledText(props: Omit<StyledTextProps, 'markdown' | 'playerKeywordData'>): ReactElement {
     return <StyledText {...props} markdown={true} playerKeywordData={DUMMY_NAMES_KEYWORD_DATA} roleListKeywordData={DUMMY_ROLE_LIST_KEYWORD_DATA}/>
@@ -206,33 +207,7 @@ function PageButton(props: Readonly<{
     enabledRoles: Role[],
     enabledModifiers: ModifierID[],
 }>): ReactElement {
-    const [isCtrlPressed, setIsCtrlPressed] = React.useState(false);
-
-    React.useEffect(() => {
-        const handleKeyDown = (event: any) => {
-            // Check if the pressed key is "Control"
-            if (event.key === 'Control') {
-                setIsCtrlPressed(true);
-            }
-        };
-
-        const handleKeyUp = (event: any) => {
-            // Check if the released key is "Control"
-            if (event.key === 'Control') {
-                setIsCtrlPressed(false);
-            }
-        };
-
-        // Listen to the events globally on the window object
-        window.addEventListener('keydown', handleKeyDown);
-        window.addEventListener('keyup', handleKeyUp);
-
-        // Clean up the event listeners when the component unmounts
-        return () => {
-            window.removeEventListener('keydown', handleKeyDown);
-            window.removeEventListener('keyup', handleKeyUp);
-        };
-    }, []);
+    const isCtrlPressed = useContext(CtrlPressedContext) ?? false;
 
     const articleTooltip = React.useMemo(() => {
         if (isCtrlPressed === true) {
