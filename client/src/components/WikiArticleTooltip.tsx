@@ -6,10 +6,8 @@ import { WikiArticleLink } from "./WikiArticleLink";
 import StyledText, { DUMMY_NAMES_KEYWORD_DATA, DUMMY_ROLE_LIST_KEYWORD_DATA } from "./StyledText";
 
 export default function WikiArticleTooltip(props: Readonly<{
-    tooltip: string | null
+    tooltip: string
 }>): ReactElement | null {
-    if (!props.tooltip) return null;
-
     return <div className="wiki-article wiki-article-tooltip">
         <StyledText
             noLinks={true}

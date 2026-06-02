@@ -109,7 +109,8 @@
     text-align: center;
 }
 .wiki-article-tooltip {
-    position: relative;
+    position: relative;
+
     background-color: var(--primary-color);
     border: solid .13rem var(--primary-border-color);
     border-radius: 0.5em;
@@ -119,7 +120,7 @@
     pointer-events: none;
     animation: fadeIn 0.5s ease-out;
     height: unset;
-    padding-bottom: 1em;
+    padding-bottom: 0.75em;
     overflow-y: hidden;
 }
 .wiki-article-tooltip * {
@@ -127,7 +128,7 @@
 }
 .wiki-article-tooltip-footer {
     position: absolute;
-    bottom: -0.2em;
+    bottom: -1em;
     right: 0;
     font-size: 0.75em;
     color: rgb(168, 168, 168);

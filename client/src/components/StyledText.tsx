@@ -130,6 +130,9 @@ export default function StyledText(props: Readonly<StyledTextProps>): ReactEleme
         if (isCtrlPressed === true) {
             return hovering && <WikiArticle article={hovering[0]} className="wiki-article-tooltip" />;
         } else {
+            if (articleToolTip === null) {
+                return null;
+            }
             return <WikiArticleTooltip tooltip={articleToolTip} />;
         }
     }, [articleToolTip, isCtrlPressed, hovering]);   

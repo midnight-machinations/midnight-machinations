@@ -213,7 +213,11 @@ function PageButton(props: Readonly<{
         if (isCtrlPressed === true) {
             return <WikiArticle article={props.page} className="wiki-article-tooltip" />;
         } else {
-            return <WikiArticleTooltip tooltip={getArticleTooltip(props.page)}/>;
+            const tooltip = getArticleTooltip(props.page);
+            if (tooltip === null) {
+                return null;
+            }
+            return <WikiArticleTooltip tooltip={tooltip} />;
         }
     }, [isCtrlPressed, props.page]);   
 
