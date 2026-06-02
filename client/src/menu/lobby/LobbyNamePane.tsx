@@ -25,13 +25,17 @@ export default function LobbyNamePane(): ReactElement {
     )!;
 
     // This is an integer so that multiple flashes can overlap
-    const [readyFlashing, setReadyFlashing] = useState(0);
+    const [flashingSince, setFlashingSince] = useState(0);
+    const [now, setNow] = useState(Date.now());
+
+    useEffect(() => {
+        const interval = setInterval(() => setNow(Date.now()), 100);
+        return () => clearInterval(interval);
+    }, []);
 
     useEffect(() => {
         if (ready === "notReady" && !isSpectator) {
-            setReadyFlashing(state => state + 1);
-            const flashTimeout = setTimeout(() => setReadyFlashing(state => Math.max(state - 1, 0)), 3000);
-            return () => clearTimeout(flashTimeout);
+            setFlashingSince(Date.now());
         }
     }, [otherPlayersReady])
 
@@ -47,7 +51,7 @@ export default function LobbyNamePane(): ReactElement {
                 onClick={() => GAME_MANAGER.sendRelinquishHostPacket()}
             ><Icon>remove_moderator</Icon> {translate("menu.lobby.button.relinquishHost")}</button>}
             {ready !== "host" && <Button
-                className={readyFlashing > 0 ? "flashing" : undefined}
+                className={(now < flashingSince + 3000) ? "flashing" : undefined}
                 onClick={() => {GAME_MANAGER.sendReadyUpPacket(ready === "notReady")}}
             >
                 {ready === "ready"
