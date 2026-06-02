@@ -1,7 +1,7 @@
 import { MODIFIERS, ModifierID } from "../game/modifiers";
 import translate, { langJson } from "../game/lang";
 import { Role, roleJsonData } from "../game/roleState.d";
-import { partitionWikiPages, WIKI_CATEGORIES, WikiCategory } from "./Wiki";
+import { partitionWikiPages, WIKI_CATEGORIES, WikiCategory, WikiDisabledFilter } from "./Wiki";
 import "./wiki.css";
 import { getAllRoles } from "../game/roleListState.d"
 
@@ -56,8 +56,13 @@ export function getArticleTitle(page: WikiArticleLink): string {
 export function wikiPageIsEnabled(
     page: WikiArticleLink,
     enabledRoles: Role[],
-    enabledModifiers: ModifierID[]
+    enabledModifiers: ModifierID[],
+    wikiDisabledFilter: [string, WikiDisabledFilter] | "default" = "default"
 ): boolean {
+    if (wikiDisabledFilter !== "default") {
+        return wikiDisabledFilter[1](page);
+    }
+
     switch (page.split("/")[0]) {
         case "role":
             return enabledRoles.map(role => `role/${role}`).includes(page)
@@ -74,7 +79,7 @@ export function wikiPageIsEnabled(
     if (page.startsWith("category/")) {
         return partitionWikiPages(ARTICLES, enabledRoles, enabledModifiers, false)[page.split("/")[1] as any as WikiCategory]
             .filter(p => p !== page)
-            .filter(page => wikiPageIsEnabled(page, enabledRoles, enabledModifiers))
+            .filter(page => wikiPageIsEnabled(page, enabledRoles, enabledModifiers, wikiDisabledFilter))
             .length !== 0
     }
 

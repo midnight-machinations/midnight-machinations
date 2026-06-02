@@ -11,7 +11,7 @@ import "./wiki.css";
 import GAME_MANAGER, { replaceMentions } from "..";
 import { useLobbyOrGameState } from "./useHooks";
 import DetailsSummary from "./DetailsSummary";
-import { partitionWikiPages, WikiCategory } from "./Wiki";
+import { partitionWikiPages, WikiCategory, WikiDisabledFilter } from "./Wiki";
 import { MODIFIERS, ModifierID } from "../game/modifiers";
 import DUMMY_ROLE_LIST from "../resources/dummyRoleList.json";
 import Masonry from "react-responsive-masonry";
@@ -180,7 +180,8 @@ export function PageCollection(props: Readonly<{
     pages: WikiArticleLink[],
     enabledRoles: Role[],
     enabledModifiers: ModifierID[],
-    children?: ReactNode
+    children?: ReactNode,
+    wikiDisabledFilter?: [string, WikiDisabledFilter] | "default"
 }>): ReactElement | null {
     if (props.pages.length === 0) {
         return null;
@@ -197,6 +198,7 @@ export function PageCollection(props: Readonly<{
                 page={page}
                 enabledRoles={props.enabledRoles}
                 enabledModifiers={props.enabledModifiers}
+                wikiDisabledFilter={props.wikiDisabledFilter}
             />
         })}
     </>
@@ -206,6 +208,7 @@ function PageButton(props: Readonly<{
     page: WikiArticleLink,
     enabledRoles: Role[],
     enabledModifiers: ModifierID[],
+    wikiDisabledFilter?: [string, WikiDisabledFilter] | "default"
 }>): ReactElement {
     const isCtrlPressed = useContext(CtrlPressedContext) ?? false;
 
@@ -234,7 +237,7 @@ function PageButton(props: Readonly<{
     };
 
     return <>
-        <button ref={buttonRef} key={props.page} className={wikiPageIsEnabled(props.page, props.enabledRoles, props.enabledModifiers) ? "" : "keyword-disabled"} 
+        <button ref={buttonRef} key={props.page} className={wikiPageIsEnabled(props.page, props.enabledRoles, props.enabledModifiers, props.wikiDisabledFilter) ? "" : "keyword-disabled"} 
             onClick={() => GAME_MANAGER.setWikiArticle(props.page)}
             onMouseEnter={handleFocus}
             onMouseLeave={handleUnfocus}

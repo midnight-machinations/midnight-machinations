@@ -1152,6 +1152,9 @@
 
     "hideDisabled": "Hide Disabled",
 
+    "wiki.disabledSelector.gameMode": "Filter by Game Mode",
+    "wiki.disabledSelector.all": "All",
+    "wiki.disabledSelector.default": "Current Game Mode",
     "wiki.tooltipHint": "(Hold Ctrl to expand)",
 
     "wiki.category.uncategorized": "Other",
