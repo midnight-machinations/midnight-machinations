@@ -135,7 +135,7 @@ export default function Select<K extends { toString(): string}>(props: Readonly<
         <Popover className="custom-select-options-popover"
             open={open}
             setOpenOrClosed={handleSetOpen}
-            onRender={dropdownPlacementFunction}
+            onRender={selectPlacementFunction}
             anchorForPositionRef={ref}
         >
             <div>
@@ -153,12 +153,20 @@ export default function Select<K extends { toString(): string}>(props: Readonly<
     </>
 }
 
+export function selectPlacementFunction(dropdownElement: HTMLElement, buttonElement: HTMLElement | undefined) {
+    if (!buttonElement) return;
+
+    const buttonBounds = buttonElement.getBoundingClientRect();
+    dropdownElement.style.width = `${buttonBounds.width}px`;
+
+    dropdownPlacementFunction(dropdownElement, buttonElement);
+}
+
 /// Assumes there is only 1 element inside Popover
 export function dropdownPlacementFunction(dropdownElement: HTMLElement, buttonElement: HTMLElement | undefined) {
     if (!buttonElement) return;
 
     const buttonBounds = buttonElement.getBoundingClientRect();
-    dropdownElement.style.width = `${buttonBounds.width}px`;
     dropdownElement.style.left = `${buttonBounds.left}px`;
 
     const spaceAbove = buttonBounds.top;
@@ -184,7 +192,7 @@ export function dropdownPlacementFunction(dropdownElement: HTMLElement, buttonEl
     keepPopoverOnScreen(dropdownElement, buttonElement);
 }
 
-function keepPopoverOnScreen(dropdownElement: HTMLElement, buttonElement?: HTMLElement) {
+export function keepPopoverOnScreen(dropdownElement: HTMLElement, buttonElement?: HTMLElement) {
     const dropdownBounds = dropdownElement.getBoundingClientRect();
 
     const modifyTop = dropdownElement.style.bottom === 'unset' || dropdownElement.style.bottom === "";

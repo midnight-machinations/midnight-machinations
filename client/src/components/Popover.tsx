@@ -150,5 +150,5 @@ export default function Popover<T extends HTMLElement = HTMLElement>(props: Read
         }
     }, [props]);
 
-    return <div ref={thisRef} />
+    return <div ref={thisRef} hidden={true}/>
 }

@@ -108,3 +108,30 @@
 .role-set-article .masonry-item {
     text-align: center;
 }
+.wiki-article-tooltip {
+    position: relative;
+
+    background-color: var(--primary-color);
+    border: solid .13rem var(--primary-border-color);
+    border-radius: 0.5em;
+    padding: 0.3em 0.5em;
+    max-width: 20rem;
+    text-align: left;
+    pointer-events: none;
+    animation: fadeIn 0.5s ease-out;
+    height: unset;
+    padding-bottom: 0.75em;
+    overflow-y: hidden;
+}
+.wiki-article-tooltip * {
+    text-align: left;
+}
+.wiki-article-tooltip-footer {
+    position: absolute;
+    bottom: -1em;
+    right: 0;
+    font-size: 0.75em;
+    color: rgb(168, 168, 168);
+    padding: 0 0;
+    margin: 0 0;
+}

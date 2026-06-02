@@ -1152,6 +1152,8 @@
 
     "hideDisabled": "Hide Disabled",
 
+    "wiki.tooltipHint": "(Hold Ctrl to expand)",
+
     "wiki.category.uncategorized": "Other",
     "wiki.category.categories": "Category pages",
     "wiki.category.categories.text": "These are the category pages used to help organize the midnight manual.",
