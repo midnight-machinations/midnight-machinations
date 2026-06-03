@@ -24,6 +24,8 @@ import { UnsafeString } from "../../game/gameState.d";
 import { encodeString } from "../../components/ChatMessage";
 import ListMap from "../../ListMap";
 import RandomSeedSelector from "../../components/gameModeSettings/RandomSeedSelector";
+import { TabbedContent, TabDefinition } from "../../components/TabbedContent";
+import StyledText from "../../components/StyledText";
 
 export default function LobbyMenu(): ReactElement {
     const isSpectator = useLobbyState(
@@ -132,42 +134,67 @@ function LobbyMenuSettings(props: Readonly<{
         return {roleList, enabledRoles, phaseTimes, modifierSettings};
     }, [enabledRoles, phaseTimes, roleList, modifierSettings]);
 
+    const tabs = useMemo(() => [
+        {
+            id: "phaseTimes",
+            label: <StyledText noLinks={true}>{translate("menu.lobby.timeSettings")}</StyledText>,
+            content: <PhaseTimesSelector 
+                disabled={!props.isHost}
+                onChange={pts => GAME_MANAGER.sendSetPhaseTimesPacket(pts)}
+            />
+        },
+        {
+            id: "modifiers",
+            label: <StyledText noLinks={true}>{translate("modifiers")}</StyledText>,
+            content: <ModifiersSelector
+                disabled={!props.isHost}
+                setModifiers={modifiers => GAME_MANAGER.sendModifierSettingsPacket(new ListMap(modifiers))}
+            />
+        },
+        {
+            id: "outlineList",
+            label: <StyledText noLinks={true}>{translate("menu.lobby.roleList")}</StyledText>,
+            content: <OutlineListSelector
+                disabled={!props.isHost}
+                onChangeRolePicker={(value, index) => GAME_MANAGER.sendSetRoleOutlinePacket(index, value)}
+                onAddNewOutline={undefined}
+                onRemoveOutline={undefined}
+                setRoleList={sendRoleList}
+            />
+        },
+        {
+            id: "enabledRoles",
+            label: <StyledText noLinks={true}>{translate("menu.lobby.enabledRoles")}</StyledText>,
+            content: <EnabledRoleSelector
+                onEnableRoles={roles => GAME_MANAGER.sendEnabledRolesPacket([...enabledRoles, ...roles])}
+                onDisableRoles={roles => GAME_MANAGER.sendEnabledRolesPacket(enabledRoles.filter(role => !roles.includes(role)))}
+                onIncludeAll={() => GAME_MANAGER.sendEnabledRolesPacket(getAllRoles())}
+                disabled={!props.isHost}
+            />
+        }
+    ], [props.isHost, enabledRoles, sendRoleList]);
+
     return <GameModeContext.Provider value={context}>
-        {mobile && <h1>{translate("menu.lobby.settings")}</h1>}
-        {props.isHost === true && <GameModeSelector 
-            canModifySavedGameModes={false}
-            loadGameMode={gameMode => {
-                GAME_MANAGER.sendSetPhaseTimesPacket(gameMode.phaseTimes);
-                GAME_MANAGER.sendEnabledRolesPacket(gameMode.enabledRoles);
-                GAME_MANAGER.sendSetRoleListPacket(gameMode.roleList);
-                GAME_MANAGER.sendModifierSettingsPacket(new ListMap(gameMode.modifierSettings));
-            }}
-        />}
-        <ModifiersSelector
-            disabled={!props.isHost}
-            setModifiers={modifiers => GAME_MANAGER.sendModifierSettingsPacket(new ListMap(modifiers))}
-        />
-        <RandomSeedSelector
-            disabled={!props.isHost}
-            onChange={randomSeed => GAME_MANAGER.sendSetRandomSeedPacket(randomSeed)}
-        />
-        <PhaseTimesSelector 
-            disabled={!props.isHost}
-            onChange={pts => GAME_MANAGER.sendSetPhaseTimesPacket(pts)}
-        />
-        <OutlineListSelector
-            disabled={!props.isHost}
-            onChangeRolePicker={(value, index) => GAME_MANAGER.sendSetRoleOutlinePacket(index, value)}
-            onAddNewOutline={undefined}
-            onRemoveOutline={undefined}
-            setRoleList={sendRoleList}
-        />
-        <EnabledRoleSelector
-            onEnableRoles={roles => GAME_MANAGER.sendEnabledRolesPacket([...enabledRoles, ...roles])}
-            onDisableRoles={roles => GAME_MANAGER.sendEnabledRolesPacket(enabledRoles.filter(role => !roles.includes(role)))}
-            onIncludeAll={() => GAME_MANAGER.sendEnabledRolesPacket(getAllRoles())}
-            disabled={!props.isHost}
-        />
+        <div className="lobby-settings-container">
+            {mobile && <h1>{translate("menu.lobby.settings")}</h1>}
+            {props.isHost === true && <GameModeSelector 
+                canModifySavedGameModes={false}
+                loadGameMode={gameMode => {
+                    GAME_MANAGER.sendSetPhaseTimesPacket(gameMode.phaseTimes);
+                    GAME_MANAGER.sendEnabledRolesPacket(gameMode.enabledRoles);
+                    GAME_MANAGER.sendSetRoleListPacket(gameMode.roleList);
+                    GAME_MANAGER.sendModifierSettingsPacket(new ListMap(gameMode.modifierSettings));
+                }}
+            />}
+            <RandomSeedSelector
+                disabled={!props.isHost}
+                onChange={randomSeed => GAME_MANAGER.sendSetRandomSeedPacket(randomSeed)}
+            />
+            <TabbedContent
+                tabs={tabs}
+                defaultTab="phaseTimes"
+            />
+        </div>
     </GameModeContext.Provider>
 }
 

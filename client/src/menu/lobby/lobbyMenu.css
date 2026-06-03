@@ -154,3 +154,9 @@
     50% { outline: .13rem solid yellow; }
     100% { outline: none; }
 }
+
+.lobby-settings-container {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
