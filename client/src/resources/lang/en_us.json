@@ -1384,7 +1384,7 @@
     "wiki.article.standard.transport.title:var.0": "Transported",
     "wiki.article.standard.transport.title:var.1": "Transports",
     "wiki.article.standard.transport.title:var.2": "Transporting",
-    "wiki.article.standard.transport.text": "At midnight, players can be transported. When a player is transported:\n- The transported player is told they are transported.\n- All visits to the transported player are redirected to another player.\n\nOne transport ability can transport multiple players.\n- A visit can not be transported by a single ability more than once.\n- After a transport ability happens, the visits associated with that ability can not be redirected by another transport.",
+    "wiki.article.standard.transport.text": "At midnight, players can be transported. When a player is transported:\n- The transported player is told they are transported.\n- All visits to the transported player are redirected to another player.\n\nOne transport ability can transport multiple players.\n- A visit can not be transported by a single ability more than once.\n\nEach ability that causes a transport happens with a different transport-priority, abilities with a lower transport-priority can not effect the visits associated with transports of an equal or higher transport-priority. The priorities are:\n - Transporter\n - Warper / Porter / Polymath \n - Bodyguard\n\nThis means warper and Porter can not effect the visits of themselves, eachother, or the transporter. However, the transporter can effect the visits of the warper, porter, and bodyguard.",
     "wiki.article.standard.obscured.title": "Obscure",
     "wiki.article.standard.obscured.title:var.0": "Obscured",
     "wiki.article.standard.obscured.title:var.1": "Obscures",
