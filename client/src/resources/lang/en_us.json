@@ -1057,7 +1057,6 @@
     "chatMessage.mediumHauntStarted":"\\0 has brought the dead to haunt \\1!",
     "chatMessage.mediumSeance":"\\0 is preforming a seance on \\1!",
     "chatMessage.mediumExists":"There is some way to communicate with the living so don't leave! Your information could be very important!",
-    "chatMessage.jesterWon":"The Jester will get their revenge from the grave!",
     "chatMessage.revolutionaryWon":"The Revolutionary got their target executed and won!",
     "chatMessage.chronokaiserSpeedUp":"The Chronokaiser speeds up time. Each phase is \\0% faster.",
     "chatMessage.deputyKilled":"The Deputy killed \\0!",
@@ -2054,8 +2053,8 @@
     "wiki.article.role.jester.lore": "D:",
     "wiki.article.role.jester.guide": "- Get executed during the day to win\n- After you win by getting executed, you can attack any living player who voted you guilty or abstained\n\nTry to look evil so people vote you, without making it obvious that you are the Jester.",
     "wiki.article.role.jester.abilities":"* When you are executed, you win\n* On the night after you are executed, attack the player you select\n",
-    "wiki.article.role.jester.attributes":"* You always have an innocent aura\n* If you select nobody on the night after you are executed, you will attack a random living player who did not vote you innocent\n* You have a protection-piercing attack",
-    "wiki.article.role.jester.extra":"* Your attack does not visit, so nothing can effect it",
+    "wiki.article.role.jester.attributes":"* If you select nobody on the night after you are executed, you will attack a random living player who did not vote you innocent\n* You have a protection-piercing attack",
+    "wiki.article.role.jester.extra":"* Your attack does not visit, so transports or engineers and other abiltiies can't effect it",
 
     "wiki.article.role.revolutionary.reminder": "If your target is executed you win, after you win you leave town.",
     "wiki.article.role.revolutionary.guide":"- Get your execution target executed to win\n When you win, you leave town at the start of night\n\nYou should try to claim something that makes people think your target is evil.",

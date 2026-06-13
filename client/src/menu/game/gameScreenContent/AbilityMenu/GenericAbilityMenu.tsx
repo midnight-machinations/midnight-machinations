@@ -173,15 +173,6 @@ function MultipleControllersMenu(props: Readonly<{
     }
 
     const disabled = !props.controllers.values().some((controller)=>!controller.parameters.grayedOut)
-    const nightIcon = !props.controllers.keys().some(
-        (id)=>!singleAbilityJsonData(controllerIdToLink(id))?.midnight
-    );
-    const instantIcon = !props.controllers.keys().some(
-        (id)=>!singleAbilityJsonData(controllerIdToLink(id))?.instant
-    );
-    const visitIcon = !props.controllers.keys().some(
-        (id)=>!singleAbilityJsonData(controllerIdToLink(id))?.visit
-    );
 
 
     let anyControllerId = props.controllers.keys()[0]
@@ -197,11 +188,6 @@ function MultipleControllersMenu(props: Readonly<{
         summary={
             <div className="generic-ability-menu-tab-summary">
                 <StyledText>{groupName}</StyledText>
-                <span>
-                    <>{instantIcon ? translate("instant.icon") : ""}</>
-                    <>{nightIcon ? translate("night.icon") : ""}</>
-                    <>{visitIcon ? translate("visit.icon."+visitIcon) : ""}</>
-                </span>
             </div>
         }
         defaultOpen={true}

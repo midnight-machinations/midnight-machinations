@@ -861,9 +861,7 @@
         "maxCount": null,
         "canWriteDeathNote": true,
         "canBeConvertedTo": [],
-        "chatMessages":[
-            {"type": "jesterWon"}
-        ]
+        "chatMessages":[]
     },
     "revolutionary": {
         "mainRoleSet": "neutral",

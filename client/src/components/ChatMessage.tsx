@@ -861,7 +861,6 @@ export function translateChatMessage(
         case "youGuardedSomeone":
         case "youWereGuarded":
         case "revolutionaryWon":
-        case "jesterWon":
         case "wardblocked":
         case "roleBlocked":
         case "yourConvertFailed":
@@ -1179,8 +1178,6 @@ export type ChatMessageVariant = {
     type: "werewolfTrackingResult",
     trackedPlayer: PlayerIndex
     players: PlayerIndex[]
-} | {
-    type: "jesterWon"
 } | {
     type: "wildcardConvertFailed",
     role: Role
