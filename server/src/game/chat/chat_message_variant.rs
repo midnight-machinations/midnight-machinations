@@ -214,7 +214,6 @@ pub enum ChatMessageVariant {
     #[serde(rename_all = "camelCase")]
     WerewolfTrackingResult{tracked_player: PlayerReference, players: Vec<PlayerReference>},
 
-    JesterWon,
     RevolutionaryWon,
     ChronokaiserSpeedUp{percent: u32},
     MercenaryYouAreAHit,

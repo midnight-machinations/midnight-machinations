@@ -87,14 +87,6 @@ impl RoleStateTrait for Jester {
             _ => {}
         }
     }
-    fn on_any_death(self, game: &mut Game, actor_ref: PlayerReference, dead_player_ref: PlayerReference){
-        if 
-            actor_ref == dead_player_ref && 
-            game.current_phase().phase() == PhaseType::FinalWords
-        {
-            game.add_message_to_chat_group(ChatGroup::All, ChatMessageVariant::JesterWon);
-        }
-    }
 }
 impl GetClientAbilityState<ClientRoleState> for Jester {
     fn get_client_ability_state(self, _game: &Game, _actor_ref: PlayerReference) -> ClientRoleState {
