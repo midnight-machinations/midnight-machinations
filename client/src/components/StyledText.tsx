@@ -354,9 +354,19 @@ function getStyledHtmlFromString(string: string, playerKeywordData: KeywordDataM
 }
 
 function styleKeywords(tokens: Token[], extraData?: KeywordDataMap): Token[] {
-    const keywordDataMap = { ...KEYWORD_DATA, ...extraData };
+    const keywordDataListMap: [string, KeywordData][] = [];
 
-    for(const [keyword, data] of Object.entries(keywordDataMap).sort((a, b) => b[0].length - a[0].length)){
+    for(const [keyword, data] of Object.entries(extraData || {})) {
+        keywordDataListMap.push([keyword, data]);
+    }
+
+    for(const [keyword, data] of Object.entries(KEYWORD_DATA)) {
+        keywordDataListMap.push([keyword, data]);
+    }
+
+    keywordDataListMap.sort((a, b) => b[0].length - a[0].length);
+
+    for(const [keyword, data] of keywordDataListMap){
         for(let index = 0; index < tokens.length; index++) {
             const token = tokens[index];
             if (token.type !== "raw") continue;
