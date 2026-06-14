@@ -37,6 +37,7 @@ export function KiraResultDisplay(props: Readonly<{
     },
     playerKeywordData?: KeywordDataMap,
     playerNames: UnsafeString[],
+    noLinks?: boolean
 }>): ReactElement {
     let guessesMap = new ListMap<PlayerIndex, [KiraGuess, KiraGuessResult]>();
 
@@ -87,6 +88,7 @@ export function KiraResultDisplay(props: Readonly<{
         out.push(<div key={playerIndex} className={"kira-guess-result "+resultStyle}>
             <StyledText
                 playerKeywordData={props.playerKeywordData}
+                noLinks={props.noLinks}
             >
                 {encodeString(props.playerNames[playerIndex])} {kiraGuessTranslate(guess)} {resultIcon} {resultString}
             </StyledText>

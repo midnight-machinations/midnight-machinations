@@ -41,13 +41,14 @@ const ChatElement = React.memo((
         playerSenderKeywordData?: KeywordDataMap
         roleList?: RoleList,
         roleListKeywordData?: KeywordDataMap,
+        noLinks?: boolean
     }, 
 ) => {
     const roleStates = usePlayerState(
         playerState => playerState.roleStates,
         ["yourRoleState"]
     );
-    const canCopyPaste = props.canCopyPaste ?? canCopyPasteChatMessages(roleStates);
+    const canCopyPaste = props.noLinks !== true && (props.canCopyPaste ?? canCopyPasteChatMessages(roleStates));
     const forwardButton = usePlayerState(
         playerState => {
             let controller = new ListMap(playerState.savedControllers, (a,b)=>a.type===b.type)
@@ -56,7 +57,7 @@ const ChatElement = React.memo((
             return controller!==null&&!controller.parameters.grayedOut;
         },
         ["yourPlayerIndex", "yourAllowedControllers", "yourAllowedController"]
-    );
+    ) && props.noLinks !== true;
     const myIndex = usePlayerState(
         playerState => playerState.myIndex,
         ["yourPlayerIndex"]
@@ -102,6 +103,7 @@ const ChatElement = React.memo((
                 playerKeywordData={props.playerKeywordData}
                 playerSenderKeywordData={props.playerSenderKeywordData}
                 roleListKeywordData={props.roleListKeywordData}
+                noLinks={props.noLinks}
             />
         case "normal":
             return <NormalChatMessage
@@ -119,6 +121,7 @@ const ChatElement = React.memo((
                 myIndex={myIndex}
                 forwardButton={forwardButton}
                 roleList={roleList}
+                noLinks={props.noLinks}
             />
         case "playerForwardedMessage":
         case "targetsMessage":
@@ -127,6 +130,7 @@ const ChatElement = React.memo((
                     <StyledText className={"chat-message " + style}
                         playerKeywordData={props.playerKeywordData}
                         roleListKeywordData={props.roleListKeywordData}
+                        noLinks={props.noLinks}
                     >
                         {(chatGroupIcon??"")} {translateChatMessage(message.variant, playerNames, roleList)}
                     </StyledText>
@@ -147,6 +151,7 @@ const ChatElement = React.memo((
                             className="chat-message result"
                             playerKeywordData={props.playerKeywordData}
                             roleListKeywordData={props.roleListKeywordData}
+                            noLinks={props.noLinks}
                         >{chatGroupIcon ?? ""} {translate("chatMessage.kiraSelection")}</StyledText>
                         <KiraResultDisplay 
                             map={{
@@ -155,6 +160,7 @@ const ChatElement = React.memo((
                             }}
                             playerKeywordData={props.playerKeywordData}
                             playerNames={playerNames}
+                            noLinks={props.noLinks}
                         />
                     </div>
                 case "string":
@@ -167,6 +173,7 @@ const ChatElement = React.memo((
                     className="chat-message result"
                     playerKeywordData={props.playerKeywordData}
                     roleListKeywordData={props.roleListKeywordData}
+                    noLinks={props.noLinks}
                 >{chatGroupIcon ?? ""} {translate("chatMessage.kiraResult")}</StyledText>
                 <KiraResultDisplay 
                     map={{
@@ -175,6 +182,7 @@ const ChatElement = React.memo((
                     }}
                     playerKeywordData={props.playerKeywordData}
                     playerNames={playerNames}
+                    noLinks={props.noLinks}
                 />
             </div>
         case "playerDied":
@@ -186,6 +194,7 @@ const ChatElement = React.memo((
                 playerNames={playerNames}
                 roleList={roleList}
                 message={message as any}
+                noLinks={props.noLinks}
             />
     }
 
@@ -197,6 +206,7 @@ const ChatElement = React.memo((
         <StyledText className={"chat-message " + style} 
             playerKeywordData={props.playerKeywordData}
             roleListKeywordData={props.roleListKeywordData}
+            noLinks={props.noLinks}
         >
             {(chatGroupIcon??"")} {translateChatMessage(message.variant, playerNames, roleList)}
         </StyledText>
@@ -233,6 +243,7 @@ function PlayerDiedChatMessage(props: Readonly<{
     playerNames: UnsafeString[],
     roleList: RoleList,
     message: ChatMessage & { variant: { type: "playerDied" } }
+    noLinks?: boolean
 }>): ReactElement {
     let graveRoleString: string;
     switch (props.message.variant.grave.information.type) {
@@ -252,6 +263,7 @@ function PlayerDiedChatMessage(props: Readonly<{
                 <StyledText className={"chat-message " + props.style}
                     playerKeywordData={props.playerKeywordData}
                     roleListKeywordData={props.roleListKeywordData}
+                    noLinks={props.noLinks}
                 >
                     {(props.chatGroupIcon ?? "")} {translate("chatMessage.playerDied",
                         encodeString(props.playerNames[props.message.variant.grave.player]), graveRoleString
@@ -260,7 +272,7 @@ function PlayerDiedChatMessage(props: Readonly<{
             }
             defaultOpen={spectator}
         >
-            <GraveComponent grave={props.message.variant.grave} playerNames={props.playerNames} roleList={props.roleList}/>
+            <GraveComponent noLinks={props.noLinks} grave={props.message.variant.grave} playerNames={props.playerNames} roleList={props.roleList}/>
         </DetailsSummary>
     </div>;
 }
@@ -274,6 +286,7 @@ function LobbyChatMessage(props: Readonly<{
     playerSenderKeywordData: KeywordDataMap | undefined,
     roleListKeywordData: KeywordDataMap | undefined,
     chatGroupIcon: string
+    noLinks?: boolean
 }>): ReactElement {
     let style = props.style;
 
@@ -285,10 +298,12 @@ function LobbyChatMessage(props: Readonly<{
         <StyledText
             playerKeywordData={props.playerSenderKeywordData ?? PLAYER_SENDER_KEYWORD_DATA}
             roleListKeywordData={props.roleListKeywordData}
+            noLinks={props.noLinks}
         >{props.chatGroupIcon ?? ""} {encodeString(props.message.variant.sender)}: </StyledText>
         <StyledText
             playerKeywordData={props.playerKeywordData}
             roleListKeywordData={props.roleListKeywordData}
+            noLinks={props.noLinks}
         >{translateChatMessage(props.message.variant, props.playerNames, props.roleList)}</StyledText>
     </span></div>;
 }
@@ -307,7 +322,8 @@ function NormalChatMessage(props: Readonly<{
     setMouseHovering: (hovering: boolean) => void,
     myIndex: PlayerIndex | undefined,
     forwardButton: boolean | undefined,
-    roleList: RoleList
+    roleList: RoleList,
+    noLinks?: boolean
 }>): ReactElement {
     let style = props.style;
     let chatGroupIcon = props.chatGroupIcon;
@@ -350,11 +366,13 @@ function NormalChatMessage(props: Readonly<{
             <StyledText
                 playerKeywordData={props.playerSenderKeywordData ?? PLAYER_SENDER_KEYWORD_DATA}
                 roleListKeywordData={props.roleListKeywordData}
+                noLinks={props.noLinks}
             >
                 {chatGroupIcon ?? ""} {messageSender}: </StyledText>
             <StyledText
                 playerKeywordData={props.playerKeywordData}
                 roleListKeywordData={props.roleListKeywordData}
+                noLinks={props.noLinks}
             >
                 {translateChatMessage(props.message.variant, props.playerNames, props.roleList)}
             </StyledText>

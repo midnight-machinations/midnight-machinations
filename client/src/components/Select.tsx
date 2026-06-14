@@ -163,7 +163,7 @@ export function selectPlacementFunction(dropdownElement: HTMLElement, buttonElem
 }
 
 /// Assumes there is only 1 element inside Popover
-export function dropdownPlacementFunction(dropdownElement: HTMLElement, buttonElement: HTMLElement | undefined) {
+export function dropdownPlacementFunction(dropdownElement: HTMLElement, buttonElement: HTMLElement | undefined, heightLimitRem: number | null = 25) {
     if (!buttonElement) return;
 
     const buttonBounds = buttonElement.getBoundingClientRect();
@@ -174,16 +174,16 @@ export function dropdownPlacementFunction(dropdownElement: HTMLElement, buttonEl
 
     const oneRem = parseFloat(getComputedStyle(buttonElement).fontSize);
 
-    const maxHeight = (25 - .25) * oneRem;
+    const maxHeight = heightLimitRem === null ? Infinity : (heightLimitRem - .25) * oneRem;
     const optionsHeight = 1 + .5 * oneRem + (dropdownElement.firstElementChild?.clientHeight ?? Infinity);
 
     if (spaceAbove > spaceBelow) {
-        const newHeight = Math.min(maxHeight, spaceAbove - .25 * oneRem, optionsHeight);
+        const newHeight = heightLimitRem === null ? optionsHeight : Math.min(maxHeight, spaceAbove - .25 * oneRem, optionsHeight);
         dropdownElement.style.height = `${newHeight}px`;
         dropdownElement.style.top = `unset`;
         dropdownElement.style.bottom = `${spaceBelow + buttonBounds.height + .25 * oneRem}px`;
     } else {
-        const newHeight = Math.min(maxHeight, spaceBelow - .25 * oneRem, optionsHeight);
+        const newHeight = heightLimitRem === null ? optionsHeight : Math.min(maxHeight, spaceBelow - .25 * oneRem, optionsHeight);
         dropdownElement.style.height = `${newHeight}px`;
         dropdownElement.style.top = `${spaceAbove + buttonBounds.height + .25 * oneRem}px`;
         dropdownElement.style.bottom = `unset`;
@@ -231,7 +231,7 @@ export function keepPopoverOnScreen(dropdownElement: HTMLElement, buttonElement?
         if (modifyTop) {
             dropdownElement.style.top = "0px"
         } else {
-            dropdownElement.style.bottom = `${dropdownBounds.height}px`
+            dropdownElement.style.bottom = `${spaceBelow + spaceAbove}px`
         }
     }
 }
