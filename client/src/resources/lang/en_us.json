@@ -1767,7 +1767,7 @@
     "wiki.article.role.gossip.extra":"- Suspicious aura overrides innocent aura\n- False appeared visits do not mess with your results\n- Your target having aura does not mess with the results, however, their targets having aura does",
 
     "wiki.article.role.tallyClerk.reminder": "Choose any number of players. You are told how many of their targets are town enemies.",
-    "wiki.article.role.tallyClerk.guide": "- At night, select as many players as you want.\n- You are told the number of your targets visits that targeted town enemies.\n - In other words, out osf the players you visit, you are told the total number of their visits targeting town enemies",
+    "wiki.article.role.tallyClerk.guide": "- At night, select as many players as you want.\n- You are told the number of your targets visits that targeted town enemies.\n - In other words, out of the players you visit, you are told the total number of their visits targeting town enemies",
     "wiki.article.role.tallyClerk.abilities":"",
     "wiki.article.role.tallyClerk.attributes":"",
     "wiki.article.role.tallyClerk.extra":"- You can select any living player, except yourself.\n - Innocent aura makes a player appear to be a town friend. Suspicious aura makes a player appear to be a town friend. Suspicious aura overrides innocent aura.\n- Appeared visit effect your information.",
