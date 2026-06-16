@@ -1067,13 +1067,13 @@
     "chatMessage.yourConvertFailed": "You failed to convert your target.",
 
     "chatMessage.youDied":"You died!",
-    "chatMessage.youSurvivedAttack": "You were attacked by someone, but you had defense and survived.",
-    "chatMessage.someoneSurvivedYourAttack": "You attacked someone, but they had defense and survived.",
+    "chatMessage.youSurvivedAttack": "Someone attacked you, but you had defense.",
+    "chatMessage.someoneSurvivedYourAttack": "You attacked someone, but they had defense.",
     "chatMessage.youAttackedSomeone": "You attacked someone.",
-    "chatMessage.youWereAttacked": "You were attacked by someone",
+    "chatMessage.youWereAttacked": "Someone attacked you.",
     
     "chatMessage.youGuardedSomeone":"You guarded someone from at least one attack.",
-    "chatMessage.youWereGuarded": "You were guarded from at least one attack.",
+    "chatMessage.youWereGuarded": "Someone guarded you from at least one attack.",
 
     "chatMessage.wardblocked":"A visit of yours may have been wardblocked. One of your targets was a warded player.",
     "chatMessage.roleBlocked": "Some of your abilities may have been roleblocked.",
