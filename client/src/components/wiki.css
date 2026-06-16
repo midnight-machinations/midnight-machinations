@@ -125,7 +125,7 @@
     border-radius: 0.5rem;
     padding: 0.25rem 0.5rem;
 }
-.wiki-article-tooltip {
+.wiki-article.wiki-article-tooltip {
     position: relative;
 
     background-color: var(--primary-color);
@@ -140,8 +140,13 @@
     padding-bottom: 0.75em;
     overflow-y: hidden;
 }
+.wiki-article-tooltip-popover {
+    pointer-events: none;
+    overflow: hidden;
+}
 .wiki-article-tooltip * {
     text-align: left;
+    pointer-events: none;
 }
 .wiki-article-tooltip-footer {
     position: absolute;
