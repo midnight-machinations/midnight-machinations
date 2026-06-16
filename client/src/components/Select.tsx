@@ -135,7 +135,7 @@ export default function Select<K extends { toString(): string}>(props: Readonly<
         <Popover className="custom-select-options-popover"
             open={open}
             setOpenOrClosed={handleSetOpen}
-            onRender={dropdownPlacementFunction}
+            onRender={selectPlacementFunction}
             anchorForPositionRef={ref}
         >
             <div>
@@ -153,12 +153,20 @@ export default function Select<K extends { toString(): string}>(props: Readonly<
     </>
 }
 
-/// Assumes there is only 1 element inside Popover
-export function dropdownPlacementFunction(dropdownElement: HTMLElement, buttonElement: HTMLElement | undefined) {
+export function selectPlacementFunction(dropdownElement: HTMLElement, buttonElement: HTMLElement | undefined) {
     if (!buttonElement) return;
 
     const buttonBounds = buttonElement.getBoundingClientRect();
     dropdownElement.style.width = `${buttonBounds.width}px`;
+
+    dropdownPlacementFunction(dropdownElement, buttonElement);
+}
+
+/// Assumes there is only 1 element inside Popover
+export function dropdownPlacementFunction(dropdownElement: HTMLElement, buttonElement: HTMLElement | undefined, heightLimitRem: number | null = 25) {
+    if (!buttonElement) return;
+
+    const buttonBounds = buttonElement.getBoundingClientRect();
     dropdownElement.style.left = `${buttonBounds.left}px`;
 
     const spaceAbove = buttonBounds.top;
@@ -166,16 +174,16 @@ export function dropdownPlacementFunction(dropdownElement: HTMLElement, buttonEl
 
     const oneRem = parseFloat(getComputedStyle(buttonElement).fontSize);
 
-    const maxHeight = (25 - .25) * oneRem;
+    const maxHeight = heightLimitRem === null ? Infinity : (heightLimitRem - .25) * oneRem;
     const optionsHeight = 1 + .5 * oneRem + (dropdownElement.firstElementChild?.clientHeight ?? Infinity);
 
     if (spaceAbove > spaceBelow) {
-        const newHeight = Math.min(maxHeight, spaceAbove - .25 * oneRem, optionsHeight);
+        const newHeight = heightLimitRem === null ? optionsHeight : Math.min(maxHeight, spaceAbove - .25 * oneRem, optionsHeight);
         dropdownElement.style.height = `${newHeight}px`;
         dropdownElement.style.top = `unset`;
         dropdownElement.style.bottom = `${spaceBelow + buttonBounds.height + .25 * oneRem}px`;
     } else {
-        const newHeight = Math.min(maxHeight, spaceBelow - .25 * oneRem, optionsHeight);
+        const newHeight = heightLimitRem === null ? optionsHeight : Math.min(maxHeight, spaceBelow - .25 * oneRem, optionsHeight);
         dropdownElement.style.height = `${newHeight}px`;
         dropdownElement.style.top = `${spaceAbove + buttonBounds.height + .25 * oneRem}px`;
         dropdownElement.style.bottom = `unset`;
@@ -184,7 +192,7 @@ export function dropdownPlacementFunction(dropdownElement: HTMLElement, buttonEl
     keepPopoverOnScreen(dropdownElement, buttonElement);
 }
 
-function keepPopoverOnScreen(dropdownElement: HTMLElement, buttonElement?: HTMLElement) {
+export function keepPopoverOnScreen(dropdownElement: HTMLElement, buttonElement?: HTMLElement) {
     const dropdownBounds = dropdownElement.getBoundingClientRect();
 
     const modifyTop = dropdownElement.style.bottom === 'unset' || dropdownElement.style.bottom === "";
@@ -223,7 +231,7 @@ function keepPopoverOnScreen(dropdownElement: HTMLElement, buttonElement?: HTMLE
         if (modifyTop) {
             dropdownElement.style.top = "0px"
         } else {
-            dropdownElement.style.bottom = `${dropdownBounds.height}px`
+            dropdownElement.style.bottom = `${spaceBelow + spaceAbove}px`
         }
     }
 }

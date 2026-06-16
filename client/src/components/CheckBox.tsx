@@ -6,6 +6,7 @@ export default function CheckBox(props: {
     checked: boolean,
     onChange: (checked: boolean) => void
 }) {
+    // TODO: Change to button
     return <label
         className="checkbox"
         onClick={()=>{

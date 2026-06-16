@@ -15,6 +15,7 @@ import AudioController from "./AudioController";
 import { computeKeywordData } from "../components/StyledText";
 
 const MobileContext = createContext<boolean | undefined>(undefined);
+const CtrlPressedContext = createContext<boolean | undefined>(undefined);
 
 export type AnchorController = {
     reload: () => void,
@@ -32,7 +33,7 @@ export type AnchorController = {
 
 const AnchorControllerContext = createContext<AnchorController | undefined>(undefined);
 
-export { MobileContext, AnchorControllerContext };
+export { MobileContext, CtrlPressedContext, AnchorControllerContext };
 
 const MIN_SWIPE_DISTANCE_X = 60;
 const MAX_SWIPE_DISTANCE_Y = 60;
@@ -50,6 +51,7 @@ export default function Anchor(props: Readonly<{
     onMount: (anchorController: AnchorController) => void,
 }>): ReactElement {
     const [mobile, setMobile] = useState<boolean>(false);
+    const [isCtrlPressed, setIsCtrlPressed] = useState<boolean>(false);
 
     useEffect(() => {
         const onResize = () => {setMobile(window.innerWidth <= MOBILE_MAX_WIDTH_PX)}
@@ -57,6 +59,29 @@ export default function Anchor(props: Readonly<{
 
         window.addEventListener("resize", onResize);
         return () => window.removeEventListener("resize", onResize);
+    }, [])
+
+    useEffect(() => {
+        const onKeyDown = (event: KeyboardEvent) => {
+            if (event.key === "Control" || event.ctrlKey) {
+                setIsCtrlPressed(true);
+            }
+        };
+        const onKeyUp = (event: KeyboardEvent) => {
+            setIsCtrlPressed(event.ctrlKey);
+        };
+        const onBlur = () => {
+            setIsCtrlPressed(false);
+        };
+
+        window.addEventListener("keydown", onKeyDown);
+        window.addEventListener("keyup", onKeyUp);
+        window.addEventListener("blur", onBlur);
+        return () => {
+            window.removeEventListener("keydown", onKeyDown);
+            window.removeEventListener("keyup", onKeyUp);
+            window.removeEventListener("blur", onBlur);
+        };
     }, [])
 
     const [children, setChildren] = useState<JSX.Element>(props.children);
@@ -206,52 +231,54 @@ export default function Anchor(props: Readonly<{
 
     return <MobileContext.Provider value={mobile} >
         <AnchorControllerContext.Provider value={anchorController}>
-            <div
-                className="anchor"
-                onTouchStart={(e) => {
-                    setTouchStart([e.targetTouches[0].clientX,e.targetTouches[0].clientY])
-                    setTouchCurrent([e.targetTouches[0].clientX,e.targetTouches[0].clientY])
-                }}
-                onTouchMove={(e) => {
-                    setTouchCurrent([e.targetTouches[0].clientX,e.targetTouches[0].clientY])
-                }}
-                onTouchEnd={(e) => {
-                    if(touchStart !== null && touchCurrent !== null){
+            <CtrlPressedContext.Provider value={isCtrlPressed}>
+                <div
+                    className="anchor"
+                    onTouchStart={(e) => {
+                        setTouchStart([e.targetTouches[0].clientX,e.targetTouches[0].clientY])
+                        setTouchCurrent([e.targetTouches[0].clientX,e.targetTouches[0].clientY])
+                    }}
+                    onTouchMove={(e) => {
+                        setTouchCurrent([e.targetTouches[0].clientX,e.targetTouches[0].clientY])
+                    }}
+                    onTouchEnd={(e) => {
+                        if(touchStart !== null && touchCurrent !== null){
 
-                        if(touchStart[1] - touchCurrent[1] > MAX_SWIPE_DISTANCE_Y) {
-                            return;
-                        }
-                        if(touchStart[0] - touchCurrent[0] > MIN_SWIPE_DISTANCE_X) {
-                            for(let listener of swipeEventListeners) {
-                                listener(false);
+                            if(touchStart[1] - touchCurrent[1] > MAX_SWIPE_DISTANCE_Y) {
+                                return;
                             }
-                        } else if (touchStart[0] - touchCurrent[0] < -MIN_SWIPE_DISTANCE_X) {
-                            for(let listener of swipeEventListeners) {
-                                listener(true);
+                            if(touchStart[0] - touchCurrent[0] > MIN_SWIPE_DISTANCE_X) {
+                                for(let listener of swipeEventListeners) {
+                                    listener(false);
+                                }
+                            } else if (touchStart[0] - touchCurrent[0] < -MIN_SWIPE_DISTANCE_X) {
+                                for(let listener of swipeEventListeners) {
+                                    listener(true);
+                                }
                             }
                         }
-                    }
-            
-                    setTouchStart(null)
-                    setTouchCurrent(null)
-                }}
-            >
-                <Button className="global-menu-button" 
-                    onClick={() => {
-                        if (!globalMenuOpen) {
-                            setGlobalMenuOpen(true)
-                        }
+
+                        setTouchStart(null)
+                        setTouchCurrent(null)
                     }}
                 >
-                    <Icon>menu</Icon>
-                </Button>
-                {globalMenuOpen && <GlobalMenu />}
-                {children}
-                {coverCard && <CoverCard 
-                    theme={coverCardTheme}
-                >{coverCard}</CoverCard>}
-                {errorCard}
-            </div>
+                    <Button className="global-menu-button" 
+                        onClick={() => {
+                            if (!globalMenuOpen) {
+                                setGlobalMenuOpen(true)
+                            }
+                        }}
+                    >
+                        <Icon>menu</Icon>
+                    </Button>
+                    {globalMenuOpen && <GlobalMenu />}
+                    {children}
+                    {coverCard && <CoverCard 
+                        theme={coverCardTheme}
+                    >{coverCard}</CoverCard>}
+                    {errorCard}
+                </div>
+            </CtrlPressedContext.Provider>
         </AnchorControllerContext.Provider>
     </MobileContext.Provider>
 }
@@ -300,6 +327,7 @@ function CoverCard(props: Readonly<{
         </div>
     </div>
 }
+
 
 export type ErrorData = {
     title: string,

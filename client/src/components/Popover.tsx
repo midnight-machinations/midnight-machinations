@@ -126,7 +126,7 @@ export default function Popover<T extends HTMLElement = HTMLElement>(props: Read
         } else {
             popoverElement.hidden = true;
         }
-    }, [props, popoverRoot, anchorControllerContext, menuControllerContext, gameModeContext, mobileContext]);
+    }, [props.children, props.onRender, props.anchorForPositionRef, props.open, popoverRoot, anchorControllerContext, menuControllerContext, gameModeContext, mobileContext]);
 
     //close on click outside
     useEffect(() => {
@@ -150,5 +150,5 @@ export default function Popover<T extends HTMLElement = HTMLElement>(props: Read
         }
     }, [props]);
 
-    return <div ref={thisRef} />
+    return <div ref={thisRef} hidden={true}/>
 }

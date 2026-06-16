@@ -6,3 +6,6 @@
     min-height: 0;
     flex-grow: 1;
 }
+.wiki-menu .wiki-disabled-selector {
+    padding: 0.5rem;
+}

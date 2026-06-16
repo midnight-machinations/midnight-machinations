@@ -308,7 +308,9 @@
         "canBeConvertedTo": [],
         "chatMessages":[
             {"type": "someoneSurvivedYourAttack"},
-            {"type": "youAttackedSomeone"}
+            {"type": "youAttackedSomeone"},
+            {"type": "youWereAttacked"},
+            {"type": "youSurvivedAttack"}
         ]
     },
     "veteran": {
@@ -320,8 +322,9 @@
         "canWriteDeathNote": false,
         "canBeConvertedTo": [],
         "chatMessages":[
-            {"type": "youAttackedSomeone"},
             {"type": "someoneSurvivedYourAttack"},
+            {"type": "youAttackedSomeone"},
+            {"type": "youWereAttacked"},
             {"type": "youSurvivedAttack"}
         ]
     },
@@ -334,8 +337,10 @@
         "canWriteDeathNote": false,
         "canBeConvertedTo": [],
         "chatMessages":[
+            {"type": "someoneSurvivedYourAttack"},
             {"type": "youAttackedSomeone"},
-            {"type": "someoneSurvivedYourAttack"}
+            {"type": "youWereAttacked"},
+            {"type": "youSurvivedAttack"}
         ]
     },
     "deputy": {
@@ -350,7 +355,9 @@
             {"type": "deputyKilled", "shot": 11},
             {"type": "deputyShotYou"},
             {"type": "someoneSurvivedYourAttack"},
-            {"type": "youAttackedSomeone"}
+            {"type": "youAttackedSomeone"},
+            {"type": "youWereAttacked"},
+            {"type": "youSurvivedAttack"}
         ]
     },
     "rabblerouser": {
@@ -861,9 +868,7 @@
         "maxCount": null,
         "canWriteDeathNote": true,
         "canBeConvertedTo": [],
-        "chatMessages":[
-            {"type": "jesterWon"}
-        ]
+        "chatMessages":[]
     },
     "revolutionary": {
         "mainRoleSet": "neutral",

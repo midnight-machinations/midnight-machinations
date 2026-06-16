@@ -426,23 +426,21 @@ fn psychic_auras(){
 
 #[test]
 fn tally_clerk_basic(){
-    kit::scenario!(game in Nomination 2 where
+    kit::scenario!(game in Night 2 where
         fg: TallyClerk,
         townie: Detective,
         mafioso: Mafioso
     );
 
-    fg.vote_for_player(Some(townie));
-    mafioso.vote_for_player(Some(townie));
-
-    game.skip_to(Judgement, 2);
-
-    fg.set_verdict(Verdict::Guilty);
-    mafioso.set_verdict(Verdict::Guilty);
     
-    game.skip_to(Obituary, 3);
+
+    fg.send_ability_input_player_list_typical(vec![townie, mafioso]);
+    townie.send_ability_input_player_list_typical(mafioso);
+    mafioso.send_ability_input_player_list_typical(townie);
+    game.skip_to(Discussion, 3);
+    
     assert_contains!(
-        fg.get_messages_after_night(1),
+        fg.get_messages_after_night(2),
         ChatMessageVariant::TallyClerkResult { evil_count: 1 }
     );
 }
