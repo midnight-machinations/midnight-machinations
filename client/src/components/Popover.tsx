@@ -135,7 +135,11 @@ export default function Popover<T extends HTMLElement = HTMLElement>(props: Read
         }
 
         const handleClickOutside = (event: MouseEvent) => {
-            if (!popoverRef.current?.contains(event.target as Node) && props.open) {
+            if (
+                !popoverRef.current?.contains(event.target as Node) &&
+                !props.anchorForPositionRef?.current?.contains(event.target as Node)
+                && props.open
+            ) {
                 props.setOpenOrClosed(false);
             }
         };
