@@ -7,7 +7,7 @@ import { GameModeContext } from "./GameModesEditor";
 import Popover from "../Popover";
 import { dropdownPlacementFunction } from "../Select";
 import { setWikiSearchPage } from "../Wiki";
-import { AnchorControllerContext } from "../../menu/Anchor";
+import { AnchorControllerContext, MobileContext } from "../../menu/Anchor";
 import { WikiArticleLink } from "../WikiArticleLink";
 import StyledText from "../StyledText";
 import ListMap from "../../ListMap";
@@ -107,17 +107,19 @@ function PhaseTimesVisualizer(props: Readonly<{
     }, [phaseTimes, phaseOrder, totalPhaseTime]);
 
     return <div className="phase-times-visualizer">
-        {phaseEntries.map(([phase, { ratio, baseColor, key }]) => (
-            <PhaseTimesVisualizerPhase
-                key={key}
-                phase={phase}
-                ratio={ratio}
-                baseColor={baseColor}
-                disabled={props.disabled}
-                time={phaseTimes[phase]}
-                onChange={props.onChange}
-            />
-        ))}
+        <div className="phase-times-visualizer-scroll">
+            {phaseEntries.map(([phase, { ratio, baseColor, key }]) => (
+                <PhaseTimesVisualizerPhase
+                    key={key}
+                    phase={phase}
+                    ratio={ratio}
+                    baseColor={baseColor}
+                    disabled={props.disabled}
+                    time={phaseTimes[phase]}
+                    onChange={props.onChange}
+                />
+            ))}
+        </div>
     </div>
 }
 
@@ -176,6 +178,8 @@ function PhaseTimesVisualizerPhase(props: Readonly<{
 }>): ReactElement {
     const anchorController = useContext(AnchorControllerContext)!;
 
+    const isMobile = useContext(MobileContext);
+
     const { phase, ratio, time, baseColor } = props;
     
     const [open, setOpen] = useState<"show" | "edit" | "closed">("closed");
@@ -208,6 +212,10 @@ function PhaseTimesVisualizerPhase(props: Readonly<{
 
     const onClick = useCallback(() => {
         if (props.disabled) {
+            if (isMobile) {
+                setOpen(current => current === "closed" ? "show" : "closed");
+                return;
+            }
             setWikiSearchPage('standard/' + phase as WikiArticleLink, anchorController);
             return;
         }
@@ -216,14 +224,17 @@ function PhaseTimesVisualizerPhase(props: Readonly<{
     }, [props.disabled, phase, anchorController]);
 
     const onMouseEnter = useCallback(() => {
+        if (isMobile) return;
         setOpen(current => current === "closed" ? "show" : current);
     }, []);
 
     const onMouseLeave = useCallback(() => {
+        if (isMobile) return;
         setOpen(current => current === "show" ? "closed" : current);
     }, []);
 
     const handleMouseDown = useDragToChangeValue(time, time => {
+        if (isMobile) return;
         setOpen(current => current === "edit" ? current : "show");
         props.onChange(props.phase, time)
     });
@@ -237,11 +248,18 @@ function PhaseTimesVisualizerPhase(props: Readonly<{
             onMouseEnter={onMouseEnter}
             onMouseLeave={onMouseLeave}
             onMouseDown={(e) => {
+                if (isMobile) return;
                 setOpen(current => current === "closed" ? "show" : current);
                 handleMouseDown(e)
             }}
-            onFocus={() => setOpen(current => current === "closed" ? "show" : current)}
-            onBlur={() => setOpen(current => current === "show" ? "closed" : current)}
+            onFocus={() => {
+                if (isMobile) return;
+                setOpen(current => current === "closed" ? "show" : current)
+            }}
+            onBlur={() => {
+                if (isMobile) return;
+                setOpen(current => current === "show" ? "closed" : current)
+            }}
             ref={ref}
         >{translate(`phase.${phase}`)}</button>
         <Popover

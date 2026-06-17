@@ -40,10 +40,11 @@ export default function LobbyMenu(): ReactElement {
     )!;
     const mobile = useContext(MobileContext)!;
 
-    const [advancedView, setAdvancedView] = useState<boolean>(!mobile);
+    const [advancedView, setAdvancedView] = useState<boolean>(true);
 
     useEffect(() => {
-        setAdvancedView(!mobile)
+        // Reset, since you don't get the button on mobile or when you're the host.
+        setAdvancedView(true);
     }, [mobile, isHost]);
 
     useEffect(() => {

@@ -25,15 +25,19 @@
     appearance: textfield;
 }
 .phase-times-visualizer {
+    width: 100%;
+    height: 1rem;
+    border-radius: 0.25rem;
+    overflow: auto;
+}
+.phase-times-visualizer-scroll {
     display: flex;
     flex-direction: row;
     width: 100%;
-    height: 1rem;
+    height: 100%;
     gap: 0.25rem;
-    border-radius: 0.25rem;
-    overflow: hidden;
 }
-.phase-times-visualizer > button {
+.phase-times-visualizer > .phase-times-visualizer-scroll > button {
     display: flex;
     align-items: center;
     justify-content: start;
@@ -48,4 +52,21 @@
     overflow: hidden;
     contain: size;
     font-size: 0.75rem;
+}
+
+@media (max-width: 600px) {
+    .phase-times-visualizer {
+        height: 1.5rem;
+    }
+
+    .phase-times-visualizer-scroll {
+        width: 300%;
+    }
+
+    .phase-times-visualizer > .phase-times-visualizer-scroll > button {
+        font-size: 0.75rem;
+        min-width: max-content;
+        overflow: unset;
+        contain: unset;
+    }
 }
