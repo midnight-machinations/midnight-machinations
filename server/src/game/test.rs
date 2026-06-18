@@ -51,7 +51,6 @@ pub fn mock_game(settings: Settings, num_players: u8) -> Result<(Game, Assignmen
     let mut game = Game{
         clients: VecMap::new(),
         room_name: "Test".to_string(),
-        // pitchfork: Pitchfork::new(num_players),
         
         assignments: assignments.clone(),
         ticking: true,
@@ -60,11 +59,11 @@ pub fn mock_game(settings: Settings, num_players: u8) -> Result<(Game, Assignmen
         spectator_chat_messages: Vec::new(),
         players: players.into_boxed_slice(),
         phase_machine: PhaseStateMachine::new(settings.phase_times.clone()),
+        abilities: Abilities::new(&assignments, &settings.enabled_roles),
         settings,
 
         player_chat_groups: PlayerChatGroups::new(),
         enfranchise: unsafe{EnfranchiseComponent::new(num_players)},
-        abilities: Abilities::new(&assignments),
         graves: Graves::default(),
         controllers: Controllers::default(),
         cult: Cult::default(),

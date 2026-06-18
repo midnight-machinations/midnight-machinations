@@ -510,11 +510,15 @@
 
     "role.pawn.name": "Pawn",
     "role.pawn.name:var.0": "Pawns",
+    "controllerId.role.pawn.0.name": "Promote",
     
     "role.tailor.name": "Tailor",
     "role.tailor.name:var.0": "Tailors",
     "controllerId.role.tailor.0.name": "Measure",
     "controllerId.role.tailor.1.name": "Fit",
+
+    "role.lackey.name":"Lackey",
+    "role.lackey.name:var.0":"Lackeys",
 
     "role.politician.name": "Politician",
     "role.politician.name:var.0": "Politicians",
@@ -1313,7 +1317,12 @@
     "wiki.article.standard.possess.title:var.5": "Possessor",
     "wiki.article.standard.possess.title:var.6": "Possessee",
     "wiki.article.standard.possess.text": "A player can be possessed into another player, forcing them to use their ability a certain way.\n- Possessed players are told they are possessed but not told who they are possessed into, nor are they told what their ability is forced into doing.\n- Abilities can't be forced into something that they typically can't do (ie, a detective cannot be forced to investigate themself, because a detective is not able to investigate themselves typically)\n- Some abilities are immune to possession, but they are still told they are possessed.\n\nThis is how each controller type is effected when you are possessed:\n- Checkbox: If you are possessed into yourself, the box is force checked, otherwise nothing happens.\n- Player List: The list of players (or the single player slot) is set to contain only the player you are possessed into.\n- Exactly Two Players: The first player choice is set to the player you are possessed into, but the second player choice stays as what it was originally set to.\n\n All unlisted controllers are uneffected by possession. Controllers can't be set to an invalid choice.",
-    
+    "wiki.article.standard.polymorph.title": "Polymorph",
+    "wiki.article.standard.polymorph.title:var.0": "Polymorphing",
+    "wiki.article.standard.polymorph.title:var.1": "Polymorphs",
+    "wiki.article.standard.polymorph.title:var.2": "Polymorphed",
+    "wiki.article.standard.polymorph.text": "A player who gets polymorphed has their ability effectively removed via changing their role.\nIf a player is polymorphed, their role is changed according to the following:\n - If they had a town role, they become villager.\n - If they had a minion role, they become lackey.\n - If they had a fiends role, they become serial killer.\n - If they had a syndicate killing role, they become mafioso.\n - If they had another syndicate role, they become goon.\n\n This means polymorphing a player with a neutral role does nothing.",
+
     "wiki.article.standard.defense.title": "Defense",
     "wiki.article.standard.defense.title:var.0": "Basic",
     "wiki.article.standard.defense.title:var.1": "Armor-piercing",
@@ -2122,8 +2131,9 @@
     "wiki.article.role.warper.attributes":"",
     "wiki.article.role.warper.extra": "- You can't effect the visits of Transporters, Porters, or other Warpers\n - Warper priority is after transporter, but the same as porter\n- You are immune to roleblocks and possession",
 
-    "wiki.article.role.pawn.reminder": "Nobody can ever have this role. Instead, if this role generates, there is a player with a town investigative role who is evil, but is not told that they are evil.",
-    "wiki.article.role.pawn.guide": "- You are never told you are the pawn, instead you are given a random town investigative role.\n - When you become the pawn, all enemies with the town except yourself are told what your role is, but not who you are.",
+    "wiki.article.role.pawn.reminder": "The player with this role has a town investigative role instead. They're never told they're the pawn. They still win if town loses. Each night, any player can choose a minion role, if they're the pawn then they become that minion role, otherwise they are polymorphed.",
+    "wiki.article.role.pawn.lore": "A quick way to lose your job is to ask for a promotion.",
+    "wiki.article.role.pawn.guide": "- You are never told you are the pawn, instead you are given a random town investigative role.\n - When you become the pawn, all enemies with the town except yourself are told what your role is, but not who you are.\n - Each night, any player may choose a non pawn minion role:\n    - If they are the pawn, they become the minion role they chose.\n    - If they are not the pawn, they are polymorphed.",
     "wiki.article.role.pawn.abilities": "",
     "wiki.article.role.pawn.attributes": "",
     "wiki.article.role.pawn.extra": "",
@@ -2133,6 +2143,12 @@
     "wiki.article.role.tailor.abilities": "",
     "wiki.article.role.tailor.attributes": "",
     "wiki.article.role.tailor.extra": "",
+
+    "wiki.article.role.lackey.reminder": "No ability",
+    "wiki.article.role.lackey.guide": "",
+    "wiki.article.role.lackey.abilities": "",
+    "wiki.article.role.lackey.attributes": "",
+    "wiki.article.role.lackey.extra": "",
 
     "wiki.article.role.politician.reminder": "If town is about to win, you win instead, and kill all non-politicians.",
     "wiki.article.role.politician.guide":"* If the town would win, instead the game skips to nomination, if you survive until the next dusk after that dusk, you win (killing all other players)\n* During the day, enfranchise to gain 3x voting power\n    - Everyone is told you enfranchised\n    - From now on, you can't whisper or be whispered to",

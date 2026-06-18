@@ -5,31 +5,30 @@ pub mod event_listeners;
 
 use crate::{
     game::{
-        abilities::{pitchfork::PitchforkAbility, role_abilities::RoleAbility, syndicate_gun::SyndicateGun},
-        abilities_component::{
+        Assignments, Game, abilities::{pawn_convert::PawnConvert, pitchfork::PitchforkAbility, role_abilities::RoleAbility, syndicate_gun::SyndicateGun}, abilities_component::{
             ability::Ability, ability_id::AbilityID
-        },
-        event::{
-            on_ability_creation::OnAbilityCreation,
-            on_ability_deletion::OnAbilityDeletion,
-            on_ability_edit::OnAbilityEdit,
-            Invokable as _, AsInvokable
-        },
-        Assignments,
-        Game
+        }, event::{
+            AsInvokable, Invokable as _, on_ability_creation::OnAbilityCreation,
+            on_ability_deletion::OnAbilityDeletion, on_ability_edit::OnAbilityEdit
+        }, prelude::*
     },
-    vec_map::{vec_map, VecMap}
+    vec_map::{VecMap, vec_map}, vec_set::VecSet
 };
 
 pub struct Abilities{
     abilities: VecMap<AbilityID, Ability>
 }
 impl Abilities{
-    pub fn new(assignments: &Assignments)->Self{
+    pub fn new(assignments: &Assignments, enabled_roles: &VecSet<Role>) -> Self {
         let mut abilities = vec_map!(
             (AbilityID::Pitchfork, Ability::Pitchfork(PitchforkAbility::default())),
             (AbilityID::SyndicateGun, Ability::SyndicateGun(SyndicateGun::default()))
         );
+        if enabled_roles.contains(&Role::Pawn) {
+            abilities.insert(AbilityID::PawnConvert, Ability::PawnConvert(PawnConvert));
+        }
+        
+        
         for (player, o) in assignments.iter(){
             let id = AbilityID::Role { role: o.role, player: *player };
             abilities.insert(id.clone(), Ability::Role(RoleAbility(o.role.default_state())));
@@ -80,6 +79,7 @@ impl AbilityID{
             AbilityID::Role { role, .. } => {RoleAbility(role.new_state(game)).into()},
             AbilityID::Pitchfork => {PitchforkAbility::new_state(game).into()},
             AbilityID::SyndicateGun => {SyndicateGun::default().into()},
+            AbilityID::PawnConvert => {PawnConvert.into()}
         }
     }
 }

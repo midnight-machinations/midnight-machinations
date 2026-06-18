@@ -300,6 +300,9 @@
     "role/kidnapper/1": {
         "midnight": true
     },
+    "role/pawn/0": {
+        "midnight": true
+    },
     "role/serialKiller/0": {
         "midnight": true,
         "visit": "normal"

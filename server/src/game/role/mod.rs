@@ -161,6 +161,7 @@ macros::roles! {
     Kidnapper : kidnapper,
     Pawn : pawn,
     Tailor : tailor,
+    Lackey : lackey,
 
     Arsonist : arsonist,
     Werewolf : werewolf,
