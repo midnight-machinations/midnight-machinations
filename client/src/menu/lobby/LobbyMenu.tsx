@@ -1,4 +1,4 @@
-import React, { ReactElement, useContext, useEffect, useMemo, useState } from "react";
+import React, { ReactElement, useContext, useEffect, useMemo, useRef, useState } from "react";
 import GAME_MANAGER, { DEV_ENV } from "../../index";
 import LobbyPlayerList from "./LobbyPlayerList";
 import "./lobbyMenu.css";
@@ -196,6 +196,34 @@ function LobbyMenuHeader(props: Readonly<{
         return ()=>{GAME_MANAGER.removeStateListener(listener);}
     }, [setLobbyName]);
 
+    const nameInputRef = useRef<HTMLInputElement | null>(null);
+
+    const calculateInputFieldWidth = () => {
+        if (nameInputRef.current === null) return 50;
+
+        const style = globalThis.getComputedStyle(nameInputRef.current);
+
+        // Measure text size using temporary span element
+        const temp = document.createElement("span");
+        temp.style.fontSize = style.fontSize;
+        temp.style.fontFamily = style.fontFamily;
+        temp.style.fontWeight = style.fontWeight;
+        temp.style.whiteSpace = "pre";  // Don't trim whitespace
+        temp.textContent = lobbyName as string;
+        document.body.appendChild(temp);
+        const inputWidth = temp.getBoundingClientRect().width;
+        temp.remove();
+        return inputWidth;
+    };
+
+    const [inputFieldWidth, setInputFieldWidth] = useState(calculateInputFieldWidth());
+
+    useEffect(() => {
+        setInputFieldWidth(calculateInputFieldWidth());
+    }, [lobbyName]);
+
+    const [inputFocused, setInputFocused] = useState(false);
+
     return <header>
         <div>
             <Button disabled={!props.isHost} className="start" onClick={async ()=>{
@@ -214,26 +242,40 @@ function LobbyMenuHeader(props: Readonly<{
             </Button>}
         </div>
         {props.isHost ? 
-            <input 
-                type="text" 
-                value={lobbyName as string}
-                onInput={e => {
-                    setLobbyName((e.target as HTMLInputElement).value);
-                }}
-                onKeyUp={(e)=>{
-                    if(e.key !== 'Enter') return;
-                    
-                    const newLobbyName = (e.target as HTMLInputElement).value;
-                    setLobbyName(newLobbyName);
-                    GAME_MANAGER.sendSetLobbyNamePacket(newLobbyName);
-                    
-                }}
-                onBlur={e => {
-                    const newLobbyName = (e.target as HTMLInputElement).value;
-                    setLobbyName(newLobbyName);
-                    GAME_MANAGER.sendSetLobbyNamePacket(newLobbyName);
-                }}
-            /> : 
+            <div className="lobby-name-input">
+                <input
+                    value={lobbyName as string}
+                    onInput={e => {
+                        setLobbyName((e.target as HTMLInputElement).value);
+                    }}
+                    onKeyUp={(e)=>{
+                        if(e.key !== 'Enter') return;
+                        
+                        const newLobbyName = (e.target as HTMLInputElement).value;
+                        setLobbyName(newLobbyName);
+                        GAME_MANAGER.sendSetLobbyNamePacket(newLobbyName);
+                    }}
+                    onFocus={() => setInputFocused(true)}
+                    onBlur={e => {
+                        const newLobbyName = e.target.value;
+                        setLobbyName(newLobbyName);
+                        GAME_MANAGER.sendSetLobbyNamePacket(newLobbyName);
+                        setInputFocused(false);
+                    }}
+                    ref={(el) => {
+                        nameInputRef.current = el;
+                        setInputFieldWidth(calculateInputFieldWidth());
+                    }}
+                    style={{ width: `${inputFieldWidth}px` }}
+                ></input>
+                {!inputFocused && <button
+                    onClick={() => {
+                        nameInputRef.current?.focus();
+                    }}
+                >
+                    <Icon size="tiny">edit</Icon>
+                </button>}
+            </div> : 
             <h3>{encodeString(lobbyName)}</h3>
         }
         
