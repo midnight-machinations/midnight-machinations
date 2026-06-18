@@ -236,13 +236,15 @@ function GameModeSelectorPanel(props: {
                         saveGameModes(newGameModeStorage);
                         props.reloadGameModeStorage();
                     }}
-                    render={gameMode => 
+                    dragHandle
+                    render={(gameMode, _, dragHandleProps) => 
                         <GameModeLabel
                             gameMode={gameMode}
                             modifiable={props.canModifySavedGameModes ?? true}
                             gameModeStorage={props.gameModeStorage}
                             loadGameMode={loadGameMode}
                             deleteGameMode={deleteGameMode}
+                            dragHandleProps={dragHandleProps}
                         />
                     }
                 />
@@ -261,13 +263,14 @@ function GameModeSelectorPanel(props: {
     </>
 }
 
-function GameModeLabel(props: { 
+function GameModeLabel(props: Readonly<{ 
     gameMode: GameMode,
     modifiable: boolean,
     gameModeStorage: GameModeStorage,
     loadGameMode: (location: GameModeLocation) => boolean, 
-    deleteGameMode: (location: GameModeLocation) => boolean
-}): ReactElement {
+    deleteGameMode: (location: GameModeLocation) => boolean,
+    dragHandleProps?: React.HTMLAttributes<HTMLDivElement>
+}>): ReactElement {
     if (Object.keys(props.gameMode.data).length === 1) {
         return <GameModeSingleLabel 
             location={{ name: props.gameMode.name, players: parseInt(Object.keys(props.gameMode.data)[0]) }}
@@ -275,6 +278,7 @@ function GameModeLabel(props: {
             gameModeStorage={props.gameModeStorage}
             loadGameMode={props.loadGameMode}
             deleteGameMode={props.deleteGameMode}
+            dragHandleProps={props.dragHandleProps}
         />
     } else {
         return <GameModeFolderLabel
@@ -283,6 +287,7 @@ function GameModeLabel(props: {
             gameModeStorage={props.gameModeStorage}
             loadGameMode={props.loadGameMode}
             deleteGameMode={props.deleteGameMode}
+            dragHandleProps={props.dragHandleProps}
         />
     }
 }
@@ -293,6 +298,7 @@ function GameModeFolderLabel(props: {
     gameModeStorage: GameModeStorage,
     loadGameMode: (location: GameModeLocation) => boolean,
     deleteGameMode: (location: GameModeLocation) => boolean,
+    dragHandleProps?: React.HTMLAttributes<HTMLDivElement>
 }): ReactElement {
     const [expanded, setExpanded] = useState<boolean>(false);
 
@@ -303,16 +309,12 @@ function GameModeFolderLabel(props: {
     const gameMode = props.gameModeStorage.gameModes.find(gameMode => gameMode.name === props.gameModeName)!
 
     return <div className="game-mode-label">
-        {props.modifiable && <Icon>drag_indicator</Icon>}
+        {props.modifiable && <div {...props.dragHandleProps}><Icon>drag_indicator</Icon></div>}
         <div className="game-mode-folder">
-            <div className="game-mode-folder-header">
+            <Button onClick={() => setExpanded(!expanded)} className="game-mode-folder-header">
                 <span className="game-mode-name">{props.gameModeName}</span>
-                <div>
-                    <Button
-                        onClick={() => setExpanded(!expanded)}
-                    ><Icon>{expanded ? "expand_less" : "expand_more"}</Icon></Button>
-                </div>
-            </div>
+                <Icon>{expanded ? "expand_less" : "expand_more"}</Icon>
+            </Button>
             {expanded && <div className="game-mode-folder-content">
                 {Object.keys(gameMode.data).map(key => <GameModeSingleLabel
                     location={{ name: props.gameModeName, players: parseInt(key) }}
@@ -331,6 +333,7 @@ function GameModeSingleLabel(props: {
     location: GameModeLocation, 
     gameModeStorage: GameModeStorage,
     loadGameMode: (location: GameModeLocation) => boolean, 
+    dragHandleProps?: React.HTMLAttributes<HTMLDivElement>
 } & (
     {
         modifiable: true,
@@ -341,7 +344,7 @@ function GameModeSingleLabel(props: {
     }
 )): ReactElement {
     return <div className="game-mode-label">
-        {props.modifiable && (props.draggable ?? true) && <Icon>drag_indicator</Icon>}
+        {props.modifiable && (props.draggable ?? true) && <Icon {...props.dragHandleProps}>drag_indicator</Icon>}
         <span className="game-mode-name">{props.location.name}: {props.location.players}</span>
         <div className="game-mode-label-buttons">
             <Button 

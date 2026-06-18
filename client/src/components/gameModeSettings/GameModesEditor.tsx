@@ -113,6 +113,11 @@ export default function GameModesEditor(props: Readonly<{
                             setPhaseTimes(newPhaseTimes);
                         }}            
                     />
+                    <EnabledRoleSelector
+                        onDisableRoles={onDisableRoles}
+                        onEnableRoles={onEnableRoles}
+                        onIncludeAll={onEnableAll}         
+                    />
                 </div>
                 <div>
                     <ModifiersSelector
@@ -124,11 +129,6 @@ export default function GameModesEditor(props: Readonly<{
                         onAddNewOutline={addOutline}
                         onRemoveOutline={removeOutline}
                         setRoleList={setRoleList}
-                    />
-                    <EnabledRoleSelector
-                        onDisableRoles={onDisableRoles}
-                        onEnableRoles={onEnableRoles}
-                        onIncludeAll={onEnableAll}         
                     />
                 </div>
             </main>

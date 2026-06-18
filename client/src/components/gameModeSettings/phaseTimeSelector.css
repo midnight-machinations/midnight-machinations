@@ -18,8 +18,55 @@
 .phase-times-selector > .phase-times > div > span {
     white-space: pre;
 }
-.phase-times-selector > .phase-times > div > input {
+.phase-times-selector > .phase-times > div > input, .phase-time-input {
     width: 3rem;
     margin: 0;
     padding: 0;
+    appearance: textfield;
+}
+.phase-times-visualizer {
+    width: 100%;
+    height: 1rem;
+    border-radius: 0.25rem;
+    overflow: auto;
+}
+.phase-times-visualizer-scroll {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    height: 100%;
+    gap: 0.25rem;
+}
+.phase-times-visualizer > .phase-times-visualizer-scroll > button {
+    display: flex;
+    align-items: center;
+    justify-content: start;
+    height: 100%;
+    min-width: 1rem;
+    border: none;
+    padding: 0;
+    padding-left: 0.25rem;
+    padding-right: 0.25rem;
+    margin: 0;
+    border-radius: 0.25rem;
+    overflow: hidden;
+    contain: size;
+    font-size: 0.75rem;
+}
+
+@media (max-width: 600px) {
+    .phase-times-visualizer {
+        height: 1.5rem;
+    }
+
+    .phase-times-visualizer-scroll {
+        width: 300%;
+    }
+
+    .phase-times-visualizer > .phase-times-visualizer-scroll > button {
+        font-size: 0.75rem;
+        min-width: max-content;
+        overflow: unset;
+        contain: unset;
+    }
 }
