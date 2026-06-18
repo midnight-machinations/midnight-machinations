@@ -74,16 +74,7 @@
     "confirmDelete": "Are you sure you want to delete this?",
     "confirmOverwrite": "Are you sure you want to overwrite?",
 
-    "menu.enabledRoles.include": "Enable",
-    "menu.enabledRoles.exclude": "Disable",
-    "menu.enabledRoles.excludeAll": "Disable All",
-    "menu.enabledRoles.includeAll": "Enable All",
-    "menu.enabledRoles.enabledRoles": "Enabled Roles",
-    "menu.enabledRoles.default": "Default",
-    "menu.enabledRoles.beginner": "Beginner",
-    "menu.enabledRoles.intermediate": "Intermediate",
-    "menu.enabledRoles.classic": "Classic",
-    "menu.enabledRoles.smallGame": "Small Game",
+    "menu.enabledRoles.toggle": "Toggle Roles",
 
     "menu.loading.host": "Starting Server",
     "menu.loading.join": "Connecting to Lobby",

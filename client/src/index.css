@@ -199,6 +199,11 @@ textarea, .textarea {
     background-color: var(--hover-color);
 }
 
+*.fauxcus-visible {
+    outline: var(--focus-outline-color) solid .13rem;
+    background-color: var(--hover-color);
+}
+
 a {
     text-decoration: none .13rem;
 }
@@ -266,7 +271,12 @@ option {
     background-color: var(--background-color);
 }
 
-button:hover:not([disabled]):not(:active), .button:hover:not([disabled]):not(:active), input:hover:not([disabled]):not(:active), select:hover:not([disabled]):not(:active), option:hover:not([disabled]):not(:active), summary:hover:not([disabled]):not(:active) {
+button:hover:not([disabled]):not(:active),
+.button:hover:not([disabled]):not(:active),
+input:hover:not([disabled]):not(:active),
+select:hover:not([disabled]):not(:active),
+option:hover:not([disabled]):not(:active),
+summary:hover:not([disabled]):not(:active) {
     background-color: var(--hover-color);
 }
 
