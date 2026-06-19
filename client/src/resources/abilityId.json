@@ -3,7 +3,8 @@
         "midnight": false
     },
     "role/jailor/1": {
-        "midnight": true
+        "midnight": true,
+        "visit": "none"
     },
     "role/detective/0": {
         "midnight": true,
@@ -71,10 +72,12 @@
         "visit": "normal"
     },
     "role/veteran/0": {
-        "midnight": true
+        "midnight": true,
+        "visit": "none"
     },
     "role/marksman/0": {
-        "midnight": true
+        "midnight": true,
+        "visit": "none"
     },
     "role/marksman/1": {
         "midnight": true,
@@ -122,13 +125,16 @@
         "midnight": false
     },
     "role/reporter/1": {
-        "midnight": true
+        "midnight": true,
+        "visit": "none"
     },
     "role/reporter/2": {
-        "midnight": true
+        "midnight": true,
+        "visit": "none"
     },
     "role/polymath/0": {
-        "midnight": true
+        "midnight": true,
+        "visit": "none"
     },
     "role/polymath/1": {
         "midnight": true,
@@ -143,7 +149,8 @@
         "visit": "normal"
     },
     "role/polymath/4": {
-        "midnight": true
+        "midnight": true,
+        "visit": "none"
     },
     "role/polymath/5": {
         "midnight": true,
@@ -162,20 +169,24 @@
         "visit": "normal"
     },
     "role/counterfeiter/1": {
-        "midnight": true
+        "midnight": true,
+        "visit": "none"
     },
     "role/counterfeiter/2": {
-        "midnight": true
+        "midnight": true,
+        "visit": "none"
     },
     "role/counterfeiter/3": {
-        "midnight": true
+        "midnight": true,
+        "visit": "none"
     },
     "role/recruiter/0": {
         "midnight": true,
         "visit": "normal"
     },
     "role/recruiter/1": {
-        "midnight": true
+        "midnight": true,
+        "visit": "none"
     },
     "role/mafiaKillingWildcard/0": {
         "midnight": false
@@ -205,10 +216,12 @@
         "visit": "normal"
     },
     "role/forger/1": {
-        "midnight": true
+        "midnight": true,
+        "visit": "none"
     },
     "role/forger/2": {
-        "midnight": true
+        "midnight": true,
+        "visit": "none"
     },
     "role/disguiser/0": {
         "midnight": true,
@@ -224,6 +237,7 @@
     },
     "role/reeducator/1": {
         "midnight": true,
+        "visit": "none",
         "instant": true
     },
     "role/reeducator/2": {
@@ -262,7 +276,8 @@
         "instant": true
     },
     "role/mercenary/0": {
-        "midnight": true
+        "midnight": true,
+        "visit": "none"
     },
     "role/mercenary/1": {
         "midnight": true,
@@ -273,10 +288,12 @@
         "visit": "normal"
     },
     "role/santaClaus/0": {
-        "midnight": true
+        "midnight": true,
+        "visit": "none"
     },
     "role/santaClaus/1": {
-        "midnight": true
+        "midnight": true,
+        "visit": "none"
     },
     "role/scarecrow/0": {
         "midnight": true,
@@ -298,10 +315,12 @@
         "midnight": false
     },
     "role/kidnapper/1": {
-        "midnight": true
+        "midnight": true,
+        "visit": "none"
     },
     "role/pawn/0": {
-        "midnight": true
+        "midnight": true,
+        "visit": "none"
     },
     "role/serialKiller/0": {
         "midnight": true,
@@ -312,7 +331,8 @@
         "visit": "normal"
     },
     "role/arsonist/0": {
-        "midnight": true
+        "midnight": true,
+        "visit": "none"
     },
     "role/arsonist/1": {
         "midnight": true,
@@ -330,7 +350,8 @@
         "visit": "normal"
     },
     "role/puppeteer/1": {
-        "midnight": true
+        "midnight": true,
+        "visit": "none"
     },
     "role/pyrolisk/0": {
         "midnight": true,
@@ -344,23 +365,28 @@
         "midnight": false
     },
     "role/warden/1": {
-        "midnight": true
+        "midnight": true,
+        "visit": "none"
     },
     "wardenCooperate": {
-        "midnight": true
+        "midnight": true,
+        "visit": "none"
     },
     "role/yer/0": {
-        "midnight": true
+        "midnight": true,
+        "visit": "none"
     },
     "role/yer/1": {
         "midnight": true,
         "visit": "normal"
     },
     "role/yer/2": {
-        "midnight": true
+        "midnight": true,
+        "visit": "none"
     },
     "role/kira/0": {
-        "midnight": true
+        "midnight": true,
+        "visit": "none"
     },
     "role/fiendsWildcard/0": {
         "midnight": false
@@ -374,13 +400,15 @@
         "visit": "normal"
     },
     "role/wildcard/0": {
-        "midnight": false
+        "midnight": false,
+        "visit": "none"
     },
     "role/trueWildcard/0": {
         "midnight": false
     },
     "pitchforkVote": {
-        "midnight": true
+        "midnight": true,
+        "visit": "abnormal"
     },
     "syndicateGunShoot": {
         "midnight": true,
