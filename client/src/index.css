@@ -228,6 +228,12 @@ button, .button, select, summary {
     border-right-color: var(--primary-border-shadow-color);
     user-select: none;
 }
+button.depressed, .button.depressed {
+    border-bottom-color: var(--primary-border-color);
+    border-right-color: var(--primary-border-color);
+    border-top-color: var(--primary-border-shadow-color);
+    border-left-color: var(--primary-border-shadow-color);
+}
 input, option, textarea, .textarea {
     border-top-color: var(--primary-border-shadow-color);
     border-left-color: var(--primary-border-shadow-color);

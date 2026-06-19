@@ -102,6 +102,10 @@
     gap: 1rem;
 }
 
+.lm > div > main > div:first-child {
+    flex-basis: 27%;
+}
+
 .lm > div .name-box {
     display: flex;
     flex-direction: row;
@@ -114,31 +118,70 @@
 .lobby-name-pane {
     display: flex;
     flex-direction: row;
-    justify-content: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
 }
 .lobby-name-pane > .name-pane-selector {
-    flex-grow: 1;
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
+    justify-content: center;
 }
 .lobby-name-pane > .name-pane-buttons {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
+    justify-self: flex-end;
     align-items: stretch;
-    justify-content: flex-end;
+    justify-content: stretch;
+}
+.lobby-name-pane > .name-pane-buttons > .ready-up-button {
+    border-top-color: #368036;
+    border-left-color: #368036;
+    border-right-color: #003300;
+    border-bottom-color: #003300;
+    background-color: darkgreen;
+}
+.lobby-name-pane > .name-pane-buttons > .ready-up-button:hover {
+    background-color: #007000;
+}
+.lobby-name-pane > .name-pane-buttons > .ready-up-button.depressed {
+    background-color: #004400;
+    border-top-color: var(--primary-border-shadow-color);
+    border-left-color: var(--primary-border-shadow-color);
+    border-right-color: var(--primary-border-color);
+    border-bottom-color: var(--primary-border-color);
 }
 
 .lobby-name {
-    display: flex;
-    width: 100%;
-    justify-content: space-between;
+    position: relative;
 }
-.lobby-name button{
-    flex-shrink: 1;
+.lobby-name input {
+    background: none;
+    border: none;
+    padding: 0;
+    margin: 0;
+    display: block;
+    font-size: 1.5rem;
+    font-weight: bold;
+    overflow: visible;
+    border-radius: 0;
 }
-.lobby-name section{
-    flex-grow: 1;
+
+.lobby-name input:focus {
+    outline: none;
+}
+
+.lobby-name input:hover:not(:disabled):not(:active) {
+    background: none;
+}
+.lobby-name button {
+    border: none;
+    background: none;
+    padding: 0 0.25rem;
+    margin: 0;
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    transform: translate(70%, 50%);
 }
 
 .lobby-player-list {

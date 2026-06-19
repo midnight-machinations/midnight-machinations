@@ -118,7 +118,10 @@ function LobbyPlayerListPlayer(props: Readonly<{ player: PlayerDisplayData }>): 
             {props.player.connection === "disconnected" && <Icon>sentiment_very_dissatisfied</Icon>}
             {props.player.host && <Icon>shield</Icon>}
             {props.player.ready && <Icon>check</Icon>}
-            <StyledText>{props.player.displayName}</StyledText>
+            {(props.player.host === false && props.player.ready === false) && <Icon className="keyword-dead">schedule</Icon>}
+            <StyledText className={(props.player.host === false && props.player.ready === false) ? "keyword-dead" : ""}>
+                {props.player.displayName}
+            </StyledText>
         </div>
         <div>
             {host && !props.player.host && <button
