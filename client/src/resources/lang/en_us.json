@@ -74,6 +74,7 @@
     "confirmDelete": "Are you sure you want to delete this?",
     "confirmOverwrite": "Are you sure you want to overwrite?",
 
+    "menu.enabledRoles.enabledRoles": "Enabled Roles",
     "menu.enabledRoles.toggle": "Toggle Roles",
 
     "menu.loading.host": "Starting Server",

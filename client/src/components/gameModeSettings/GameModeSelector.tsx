@@ -218,7 +218,7 @@ function GameModeSelectorPanel(props: {
                         }
                     }}
                     failureText={() => translate("notification.importGameMode.failure")}
-                >{verbose ? <><Icon>paste</Icon> {translate("importFromClipboard")}</> : undefined}</PasteButton>
+                >{verbose ? <><Icon>content_paste_go</Icon> {translate("importFromClipboard")}</> : <Icon>content_paste_go</Icon>}</PasteButton>
                 <button onClick={props.reloadGameModeStorage}>{translate("refresh")}</button>
             </div>
         </div>
