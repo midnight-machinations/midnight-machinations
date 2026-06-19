@@ -9,7 +9,7 @@ export function defaultPhaseTimes(): PhaseTimes {
         briefing: 45,
         obituary: 20,
         discussion: 100,
-        nomination: 100,
+        nomination: 35,
         adjournment: 60,
         testimony: 30,
         judgement: 30,
@@ -23,7 +23,7 @@ export function createLobbyState(): LobbyState {
     return {
         stateType: "lobby",
         roomCode: 0,
-        lobbyName: "Mafia Lobby",
+        lobbyName: "Midnight Machinations Lobby",
 
         myId: null,
 
