@@ -70,6 +70,7 @@ export type GameManager = {
     sendSetNamePacket(name: string): void;
     sendReadyUpPacket(ready: boolean): void;
     sendSendLobbyMessagePacket(text: string): void;
+    sendSendSpectatorMessagePacket(text: string): void;
     sendSetLobbyNamePacket(name: string): void;
     sendStartGamePacket(): Promise<boolean>;
     sendBackToLobbyPacket(): void;

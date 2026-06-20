@@ -248,6 +248,9 @@ export type ToServerPacket = {
 } |
 // Game
 {
+    type: "sendSpectatorMessage",
+    text: string
+} | {
     type: "saveNotes", 
     notes: string[]
 } | {

@@ -1,8 +1,8 @@
 use crate::{
     game::{
-        abilities::role_abilities::RoleAbility, abilities_component::{ability::Ability, ability_id::AbilityID}, components::fast_forward::FastForwardComponent, event::{AsInvokable as _, Invokable as _}, role::Role
+        abilities::role_abilities::RoleAbility, abilities_component::{ability::Ability, ability_id::AbilityID}, chat::{ChatGroup, ChatMessageVariant, MessageSender}, components::fast_forward::FastForwardComponent, event::{AsInvokable as _, Invokable as _}, role::Role
     }, lobby::{lobby_client::LobbyClient, Lobby}, log, packet::{ToClientPacket, ToServerPacket},
-    room::{RemoveRoomClientResult, RoomClientID, RoomState}, vec_map::VecMap, websocket_connections::connection::ClientSender
+    room::{RemoveRoomClientResult, RoomClientID, RoomState}, strings::TidyableString, vec_map::VecMap, websocket_connections::connection::ClientSender
 };
 
 use super::{
@@ -23,10 +23,25 @@ pub enum GameClientMessageResult {
 }
 
 impl Game {
-    #[expect(clippy::match_single_binding, unused, reason="Surely spectators will do something in the future")]
     pub fn on_spectator_message(&mut self, sender_ref: SpectatorPointer, incoming_packet: ToServerPacket){
-        match incoming_packet {
-            _ => {}
+        if let ToServerPacket::SendSpectatorMessage { text } = incoming_packet {
+            let text = text.trim_newline().trim_whitespace().truncate(600).truncate_lines(35);
+            if text.is_empty() {
+                return;
+            }
+            
+            let Some(name) = sender_ref.name(self) else {
+                return;
+            };
+
+            self.add_message_to_chat_group(
+                ChatGroup::Spectator,
+                ChatMessageVariant::Normal {
+                    message_sender: MessageSender::Spectator { name },
+                    text,
+                    block: false,
+                }
+            );
         }
     }
     

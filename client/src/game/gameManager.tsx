@@ -295,6 +295,12 @@ export function createGameManager(): GameManager {
                 text: text
             });
         },
+        sendSendSpectatorMessagePacket(text) {
+            this.server.sendPacket({
+                type: "sendSpectatorMessage",
+                text: text
+            });
+        },
 
         sendSetLobbyNamePacket(name) {
             this.server.sendPacket({

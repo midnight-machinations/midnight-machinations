@@ -218,6 +218,7 @@ pub enum ToServerPacket{
     HostForceSetPlayerName { id: RoomClientID, name: String },
 
     // Game
+    SendSpectatorMessage{text: String},
     SaveNotes{notes: Vec<String>},
     #[serde(rename_all = "camelCase")]
     SaveCrossedOutOutlines{crossed_out_outlines: Vec<u8>},

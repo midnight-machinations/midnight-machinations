@@ -29,12 +29,10 @@ impl Lobby {
                 let text = text.trim_newline().trim_whitespace().truncate(100);
                 if text.is_empty() {break 'packet_match}
                 
-                let name = if let Some(
-                    LobbyClient { client_type: LobbyClientType::Player { name }, .. }
-                ) = self.clients.get(&room_client_id) {
-                    name.clone()
-                } else {
-                    break 'packet_match
+                let name = match self.clients.get(&room_client_id) {
+                    Some(LobbyClient { client_type: LobbyClientType::Player { name }, .. }) => name.clone(),
+                    Some(LobbyClient { client_type: LobbyClientType::Spectator { name }, .. }) => name.clone(),
+                    _ => break 'packet_match
                 };
 
                 self.send_to_all(ToClientPacket::AddChatMessages { chat_messages: vec_map![(
@@ -47,26 +45,25 @@ impl Lobby {
                 self.chat_message_index = self.chat_message_index.saturating_add(1);
             }
             ToServerPacket::SetSpectator { spectator } => {
-                let player_names = self.clients.values().filter_map(|p| {
-                    if let LobbyClientType::Player { name } = p.client_type.clone() {
-                        Some(name)
-                    } else {
-                        None
+                let all_names = self.clients.values().map(|p| {
+                    match &p.client_type {
+                        LobbyClientType::Player { name } => name.clone(),
+                        LobbyClientType::Spectator { name } => name.clone(),
                     }
                 }).collect::<Vec<_>>();
 
-                let new_name = name_validation::sanitize_name("".to_string(), &player_names);
-
                 if let Some(player) = self.clients.get_mut(&room_client_id){
                     match &player.client_type {
-                        LobbyClientType::Spectator => {
+                        LobbyClientType::Spectator { name } => {
                             if !spectator {
+                                let new_name = name_validation::sanitize_name(name.clone(), &all_names);
                                 player.client_type = LobbyClientType::Player { name: new_name}
                             }
                         },
-                        LobbyClientType::Player { .. } => {
+                        LobbyClientType::Player { name } => {
                             if spectator {
-                                player.client_type = LobbyClientType::Spectator;
+                                let new_name = name_validation::sanitize_name(name.clone(), &all_names);
+                                player.client_type = LobbyClientType::Spectator { name: new_name };
                             }
                         },
                     }
@@ -124,7 +121,7 @@ impl Lobby {
                 for (room_client_id, lobby_client) in self.clients.clone() {
                     
                     game_clients.insert(room_client_id, 
-                        if let LobbyClientType::Spectator = lobby_client.client_type {
+                        if let LobbyClientType::Spectator { .. } = lobby_client.client_type {
                             GameClient {
                                 client_location: GameClientLocation::Spectator(SpectatorPointer::new(next_spectator_index)),
                                 host: lobby_client.is_host(),
@@ -153,10 +150,11 @@ impl Lobby {
                                 break 'packet_match;
                             }
                         },
-                        LobbyClientType::Spectator => {
+                        LobbyClientType::Spectator { ref name } => {
                             game_spectator_params.push(SpectatorInitializeParameters{
                                 host: lobby_client.is_host(),
                                 connection: lobby_client.connection,
+                                name: name.clone(),
                             });
                             if let Some(new_spectator_index) = next_spectator_index.checked_add(1) {
                                 next_spectator_index = new_spectator_index;

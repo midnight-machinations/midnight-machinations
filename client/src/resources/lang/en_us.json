@@ -738,6 +738,8 @@
     "noGroup.icon": "✉️",
     "noAll.icon": "🔇",
     "chatGroup.all.icon": "🔊",
+    "chatGroup.spectator.icon": "👁️",
+    "chatGroup.spectator.name": "Spectator",
     "chatGroup.mafia.icon": "🌹",
     "chatGroup.mafia.name": "Syndicate",
     "chatGroup.cult.icon": "🕯️",

@@ -64,7 +64,7 @@ export default function LobbyMenu(): ReactElement {
                     <div>
                         <LobbyNamePane />
                         <LobbyPlayerList />
-                        <LobbyChatMenu spectator={isSpectator}/>
+                        <LobbyChatMenu />
                     </div>
                     <div>
                         <LobbyMenuSettings isHost={isHost}/>
@@ -76,7 +76,7 @@ export default function LobbyMenu(): ReactElement {
                         <LobbyPlayerList />
                     </div>
                     <div>
-                        <LobbyChatMenu spectator={isSpectator}/>
+                        <LobbyChatMenu />
                     </div>
                 </main>
             }
