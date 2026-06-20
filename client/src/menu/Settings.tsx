@@ -93,7 +93,7 @@ export default function SettingsMenu(): ReactElement {
                             anchorController.reload();
                         }}
                     >
-                        {LANGUAGES.map(lang => <option key={lang} value={lang}>{languageName(lang)}</option>)}
+                        {Object.keys(LANGUAGES).map(lang => <option key={lang} value={lang}>{languageName(lang)}</option>)}
                     </select>
                 </section>
             </div>

@@ -1,5 +1,4 @@
-import React from "react";
-import { ARTICLES, WikiArticleLink } from "./components/WikiArticleLink";
+import { getAllWikiArticles, WikiArticleLink } from "./components/WikiArticleLink";
 import { AnchorController } from "./menu/Anchor";
 import StandaloneWiki from "./menu/main/StandaloneWiki";
 import { deleteReconnectData, loadReconnectData } from "./game/localStorage";
@@ -22,7 +21,7 @@ async function routeWiki(anchorController: AnchorController, page: string) {
 
     if (wikiPage === "") {
         anchorController.setContent(<StandaloneWiki />)
-    } else if (ARTICLES.includes(wikiPage.substring(1) as any)) {
+    } else if (getAllWikiArticles().includes(wikiPage.substring(1) as any)) {
         anchorController.setContent(<StandaloneWiki initialWikiPage={wikiPage.substring(1) as WikiArticleLink}/>)
     } else {
         return await route404(anchorController, `/wiki${page}`);

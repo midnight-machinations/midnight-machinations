@@ -4,7 +4,7 @@ import "./wiki.css";
 import { Role, getMainRoleSetFromRole } from "../game/roleState.d";
 import GAME_MANAGER, { regEscape } from "..";
 import WikiArticle, { getSearchStrings, PageCollection } from "./WikiArticle";
-import { ARTICLES, WikiArticleLink, getArticleTitle, wikiPageIsEnabled } from "./WikiArticleLink";
+import { WikiArticleLink, getAllWikiArticles, getArticleTitle, wikiPageIsEnabled } from "./WikiArticleLink";
 import StyledText from "./StyledText";
 import Icon from "./Icon";
 import { ContentMenu, MenuController } from "../menu/game/GameScreen";
@@ -194,8 +194,8 @@ function WikiSearchResults(props: Readonly<{
 
     const getSearchResults = useCallback((search: string) => {
         const out = [
-            ...ARTICLES.filter((page) => {return RegExp(regEscape(search.trim()), 'i').test(getArticleTitle(page))}), 
-            ...ARTICLES.filter((page) => {return getSearchStrings(page).some((str) => RegExp(regEscape(search.trim()), 'i').test(str))})
+            ...getAllWikiArticles().filter((page) => {return RegExp(regEscape(search.trim()), 'i').test(getArticleTitle(page))}), 
+            ...getAllWikiArticles().filter((page) => {return getSearchStrings(page).some((str) => RegExp(regEscape(search.trim()), 'i').test(str))})
         ];
         return out.filter((item, index) => out.indexOf(item) === index);
     }, []);

@@ -1,5 +1,5 @@
 import { MODIFIERS, ModifierID } from "../game/modifiers";
-import translate, { langJson } from "../game/lang";
+import translate, { customWikiArticles, langJson, translateChecked, translateCustomWikiArticle } from "../game/lang";
 import { Role, roleJsonData } from "../game/roleState.d";
 import { partitionWikiPages, WIKI_CATEGORIES, WikiCategory, WikiDisabledFilter } from "./Wiki";
 import "./wiki.css";
@@ -9,23 +9,27 @@ export type WikiArticleLink =
     `role/${Role}` | 
     `modifier/${ModifierID}` |
     `category/${WikiCategory}` |
-    `standard/${StandardArticle}` |
+    `standard/${string}` |
     `generated/${GeneratedArticle}`;
-
-const STANDARD_ARTICLES = 
-    [...new Set(Object.keys(langJson).filter(key => key.startsWith("wiki.article.standard.")).map(key => key.split(".")[3]))];
-
-export type StandardArticle = typeof STANDARD_ARTICLES[number];
 
 const GENERATED_ARTICLES = ["roleSet", "all_text"] as const;
 export type GeneratedArticle = typeof GENERATED_ARTICLES[number];
 
-export const ARTICLES: WikiArticleLink[] = 
+const CONSTANT_ARTICLES: WikiArticleLink[] = 
     WIKI_CATEGORIES.map(category => `category/${category}`)
-    .concat(getAllRoles().map(role => `role/${role}`))
-    .concat(MODIFIERS.map(modifier => `modifier/${modifier}`))
-    .concat(STANDARD_ARTICLES.map(article => `standard/${article}`))
-    .concat(GENERATED_ARTICLES.map(article => `generated/${article}`)) as WikiArticleLink[];
+        .concat(getAllRoles().map(role => `role/${role}`))
+        .concat(MODIFIERS.map(modifier => `modifier/${modifier}`))
+        .concat(GENERATED_ARTICLES.map(article => `generated/${article}`)) as WikiArticleLink[];
+
+export function getAllWikiArticles(): WikiArticleLink[] {
+    return CONSTANT_ARTICLES.concat(
+        Object.keys(customWikiArticles).map(key => key as WikiArticleLink)
+    ).concat(
+        Object.keys(langJson)
+            .filter(key => key.startsWith("wiki.article.standard.") && key.endsWith(".title"))
+            .map(key => `standard/${key.split(".")[3]}` as WikiArticleLink)
+    );
+}
 
 
 export function getArticleLangKey(page: WikiArticleLink): string {
@@ -50,7 +54,15 @@ export function getArticleLangKey(page: WikiArticleLink): string {
 }
 
 export function getArticleTitle(page: WikiArticleLink): string {
-    return translate(getArticleLangKey(page));
+    const translation = translateChecked(getArticleLangKey(page));
+    if (translation === null) {
+        // This must be a custom article
+        // In which case, the title will be the first line (without any #'s)
+        const body = translateCustomWikiArticle(page);
+        const title = body.split("\n")[0]?.replace(/#* ?/, "").trim();
+        return title;
+    }
+    return translation;
 }
 
 export function wikiPageIsEnabled(
@@ -77,7 +89,7 @@ export function wikiPageIsEnabled(
     }
 
     if (page.startsWith("category/")) {
-        return partitionWikiPages(ARTICLES, enabledRoles, enabledModifiers, false)[page.split("/")[1] as any as WikiCategory]
+        return partitionWikiPages(getAllWikiArticles(), enabledRoles, enabledModifiers, false)[page.split("/")[1] as any as WikiCategory]
             .filter(p => p !== page)
             .filter(page => wikiPageIsEnabled(page, enabledRoles, enabledModifiers, wikiDisabledFilter))
             .length !== 0

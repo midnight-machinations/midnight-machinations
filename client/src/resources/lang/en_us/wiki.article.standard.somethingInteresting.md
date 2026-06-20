@@ -1,0 +1,3 @@
+# Something Interesting
+
+There is something interesting about this wiki article...

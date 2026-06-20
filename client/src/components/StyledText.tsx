@@ -2,11 +2,11 @@ import { marked } from "marked";
 import React, { ReactElement, useCallback, useContext, useEffect, useMemo } from "react";
 import ReactDOMServer from "react-dom/server";
 import { find } from "..";
-import translate, { translateChecked } from "../game/lang";
+import translate, { translateChecked, translateCustomWikiArticle } from "../game/lang";
 import { Role, getMainRoleSetFromRole, roleJsonData } from "../game/roleState.d";
 import "./styledText.css";
 import DUMMY_NAMES from "../resources/dummyNames.json";
-import { ARTICLES, WikiArticleLink, getArticleLangKey } from "./WikiArticleLink";
+import { WikiArticleLink, getAllWikiArticles, getArticleLangKey, getArticleTitle } from "./WikiArticleLink";
 import { MenuControllerContext } from "../menu/game/GameScreen";
 import { Player, UnsafeString } from "../game/gameState.d";
 import { AnchorControllerContext, CtrlPressedContext } from "../menu/Anchor";
@@ -210,15 +210,23 @@ export function computeKeywordData() {
     }
 
     //add article keywords
-    const SortedArticles = [...ARTICLES];
+    const SortedArticles = [...getAllWikiArticles()];
     for (const article of SortedArticles) {
         const keySplit = article.split("/");
         const key = getArticleLangKey(article);
 
-        addTranslatableKeywordData(key, [{
-            style: "keyword-info",
-            link: `${keySplit[0]}/${keySplit[1]}` as WikiArticleLink,
-        }]);
+        if (translateChecked(key) === null) {
+            // This must be a custom article
+            KEYWORD_DATA[getArticleTitle(article)] = [{
+                style: "keyword-info",
+                link: `${keySplit[0]}/${keySplit[1]}` as WikiArticleLink,
+            }];
+        } else {
+            addTranslatableKeywordData(key, [{
+                style: "keyword-info",
+                link: `${keySplit[0]}/${keySplit[1]}` as WikiArticleLink,
+            }]);
+        }
     }
 
     //add role keywords
