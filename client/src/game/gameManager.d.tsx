@@ -66,6 +66,8 @@ export type GameManager = {
     sendKickPlayerPacket(playerId: number): void;
     sendSetPlayerHostPacket(playerId: number): void;
     sendRelinquishHostPacket(): void;
+    sendAddBotPacket(): void;
+    sendRemoveBotPacket(playerId: number): void;
     sendSetSpectatorPacket(spectator: boolean): void;
     sendSetNamePacket(name: string): void;
     sendReadyUpPacket(ready: boolean): void;

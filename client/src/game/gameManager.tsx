@@ -268,6 +268,17 @@ export function createGameManager(): GameManager {
                 type: "relinquishHost",
             });
         },
+        sendAddBotPacket() {
+            this.server.sendPacket({
+                type: "hostAddBot",
+            });
+        },
+        sendRemoveBotPacket(playerId: number) {
+            this.server.sendPacket({
+                type: "hostRemoveBot",
+                playerId: playerId
+            });
+        },
 
         sendSetSpectatorPacket(spectator) {
             this.server.sendPacket({

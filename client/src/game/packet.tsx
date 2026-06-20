@@ -287,4 +287,9 @@ export type ToServerPacket = {
     type: "hostForceSetPlayerName",
     id: number,
     name: string
+} | {
+    type: "hostAddBot"
+} | {
+    type: "hostRemoveBot",
+    playerId: number
 }

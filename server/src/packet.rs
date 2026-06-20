@@ -216,6 +216,10 @@ pub enum ToServerPacket{
     HostForceEndGame,
     HostForceSkipPhase,
     HostForceSetPlayerName { id: RoomClientID, name: String },
+    #[serde(rename_all = "camelCase")]
+    HostAddBot,
+    #[serde(rename_all = "camelCase")]
+    HostRemoveBot { player_id: RoomClientID },
 
     // Game
     SaveNotes{notes: Vec<String>},

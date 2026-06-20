@@ -8,6 +8,7 @@ mod player_event_listeners;
 pub use player_reference::PlayerIndex;
 pub use player_reference::PlayerReference;
 
+use crate::game::bot::BotConnection;
 use crate::{
     client_connection::ClientConnection,
     websocket_connections::connection::ClientSender,
@@ -31,6 +32,18 @@ impl Player {
     pub fn new(name: String, sender: ClientSender) -> Self {
         Self {
             connection: ClientConnection::Connected(sender),
+
+            name,
+            alive: true,
+            notes: vec![],
+            crossed_out_outlines: vec![],
+            death_note: None,
+        }
+    }
+
+    pub fn new_bot(name: String, bot_connection: BotConnection) -> Self {
+        Self {
+            connection: ClientConnection::Bot(bot_connection),
 
             name,
             alive: true,

@@ -23,6 +23,7 @@
     "menu.lobby.button.advanced.false": "Advanced view",
     "menu.lobby.field.namePlaceholder": "Enter name",
     "menu.lobby.button.setName": "Set Name",
+    "menu.lobby.button.addBot": "Add Bot",
     "menu.lobby.button.relinquishHost": "Relinquish Host",
     "menu.lobby.button.readyUp": "Ready Up",
     "menu.lobby.button.unready": "Unready",
