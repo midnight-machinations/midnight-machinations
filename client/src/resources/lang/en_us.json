@@ -19,6 +19,7 @@
     "menu.play.field.playerId": "Player Id",
 
     "menu.lobby.button.start": "Start",
+    "menu.lobby.button.copyLink": "Copy Room Link",
     "menu.lobby.button.advanced.true": "Simple view",
     "menu.lobby.button.advanced.false": "Advanced view",
     "menu.lobby.field.namePlaceholder": "Enter name",
