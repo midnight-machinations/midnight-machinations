@@ -30,7 +30,7 @@ export default function PhaseTimesSelector(props: Readonly<{
     }
 
     return <section className="phase-times-selector will-menu-colors selector-section">
-        <PhaseTimesVisualizer phaseTimes={phaseTimes} disabled={props.disabled} onChange={onChange} />
+        <PhaseTimesVisualizer disabled={props.disabled} onChange={onChange} />
     </section>
 }
 
@@ -71,12 +71,9 @@ function PhaseTimeSelector(props: Readonly<{
 }
 
 function PhaseTimesVisualizer(props: Readonly<{
-    phaseTimes: PhaseTimes
     disabled?: boolean
     onChange: (phase: Exclude<PhaseType, "recess">, time: number) => void
 }>): ReactElement {
-    const { phaseTimes } = props;
-
     const gameModeContext = useContext(GameModeContext);
 
     const modifiers = useMemo(() => {
@@ -86,8 +83,8 @@ function PhaseTimesVisualizer(props: Readonly<{
     const phaseOrder = useMemo(() => getPhaseOrder(modifiers), [modifiers]);
 
     const totalPhaseTime = useMemo(() => {
-        return phaseOrder.reduce((acc, phase) => acc + getRealPhaseTime(phase, phaseTimes, modifiers), 0);
-    }, [phaseTimes, phaseOrder]);
+        return phaseOrder.reduce((acc, phase) => acc + getRealPhaseTime(phase, gameModeContext.phaseTimes, modifiers), 0);
+    }, [gameModeContext.phaseTimes, phaseOrder]);
 
     const phaseEntries = useMemo(() => {
         const entries: [Exclude<PhaseType, "recess">, {
@@ -97,13 +94,13 @@ function PhaseTimesVisualizer(props: Readonly<{
         }][] = [];
 
         for (const { index, phase } of phaseOrder.map((phase, index) => ({ index, phase }))) {
-            const time = getRealPhaseTime(phase, phaseTimes, modifiers);
+            const time = getRealPhaseTime(phase, gameModeContext.phaseTimes, modifiers);
             const baseColor = getPhaseBaseColor(phase);
             entries.push([phase, { ratio: time / totalPhaseTime, baseColor, key: index }]);
         }
 
         return entries;
-    }, [phaseTimes, phaseOrder, totalPhaseTime]);
+    }, [gameModeContext.phaseTimes, phaseOrder, totalPhaseTime]);
 
     return <div className="phase-times-visualizer">
         <div className="phase-times-visualizer-scroll">
@@ -114,7 +111,7 @@ function PhaseTimesVisualizer(props: Readonly<{
                     ratio={ratio}
                     baseColor={baseColor}
                     disabled={props.disabled}
-                    time={phaseTimes[phase]}
+                    time={gameModeContext.phaseTimes[phase]}
                     onChange={props.onChange}
                 />
             ))}

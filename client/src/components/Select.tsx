@@ -15,6 +15,7 @@ export default function Select<K extends { toString(): string}>(props: Readonly<
     onChange?: (value: K)=>void,
     noCloseOnKeyboardSelect?: boolean
     optionsSearch: SelectOptionsSearch<K>,
+    hideArrow?: true
 }>) {
     const optionsSearch: SelectOptionsSearch<K> = useMemo(() => props.optionsSearch, [props]);
 
@@ -127,9 +128,9 @@ export default function Select<K extends { toString(): string}>(props: Readonly<
                 }
             }}
         >
-            {open === true ? 
+            {props.hideArrow !== true && (open === true ? 
                 <Icon>keyboard_arrow_up</Icon> :
-                <Icon>keyboard_arrow_down</Icon>}
+                <Icon>keyboard_arrow_down</Icon>)}
             {value !== undefined?value[0]:props.value.toString()}
         </RawButton>
         <Popover className="custom-select-options-popover"

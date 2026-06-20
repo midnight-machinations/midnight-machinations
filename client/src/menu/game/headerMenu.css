@@ -94,6 +94,7 @@
     position: absolute;
     left: .25rem;
     top: .25rem;
+    font-size: 1.25rem;
 }
 /* .header-menu .fast-forward-button-div > button:first-of-type {
     margin: 0;

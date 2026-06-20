@@ -13,8 +13,10 @@ import { GameMode, GameModeData, GameModeStorage } from "./gameMode";
 import { isFailure, parseJsonObject } from "./gameMode/parse";
 import Select from "../Select";
 import StyledText from "../StyledText";
-import { strictDeepEqual } from "../useHooks";
+import { strictDeepEqual, useLobbyState } from "../useHooks";
 import FlushInput from "../FlushInput";
+import GAME_MANAGER from "../..";
+import { LobbyState } from "../../game/gameState.d";
 
 type GameModeLocation = {
     name: string,
@@ -135,9 +137,13 @@ function GameModeSelectorPanel(props: Readonly<{
         return () => document.removeEventListener('keydown', listener);
     }, [gameModeNameField, anchorController, saveGameMode, props.disabled]);
 
+    const playerCount = useLobbyState((state) => state.players.keys().length);
+
     useEffect(() => {
         const experimental = props.gameModeStorage.gameModes.find(gameMode => gameMode.name === "Experimental");
-        if (experimental) {
+
+        // If there's more than one person in the lobby, we must have come from a game, so don't reset game mode.
+        if (experimental && (playerCount === undefined || playerCount === 1)) {
             let players; 
             if ("15" in experimental.data) {
                 players = 15;

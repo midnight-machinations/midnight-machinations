@@ -51,7 +51,7 @@ export default function PlayMenu(): ReactElement {
                     {translate("menu.play.title")}
                 </h2>
                 <div>
-                    <button onClick={async () => {
+                    <button className="brand" onClick={async () => {
                         setAnchorContent(<LoadingScreen type="host"/>);
                         if (await GAME_MANAGER.sendHostPacket()) {
                             setAnchorContent(<LobbyMenu/>)

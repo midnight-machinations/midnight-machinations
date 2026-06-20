@@ -22,7 +22,7 @@ export function ModifiersSelector(props: Readonly<{
 
     return <div className="graveyard-menu-colors selector-section">
         <div className="selector-section-header">
-            <h2>{translate("modifiers")}</h2>
+            {translate("modifiers")}
             <Button
                 className="flush"
                 onClick={() => setHideDisabled(hideDisabled => !hideDisabled)}

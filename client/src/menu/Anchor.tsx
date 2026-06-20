@@ -314,10 +314,23 @@ function CoverCard(props: Readonly<{
             document.removeEventListener("keydown", escFunction, false);
         };
     }, [escFunction]);
+
+    const [mouseDownOnElement, setMouseDownOnElement] = useState(false);
+
     return <div 
-        className={`anchor-cover-card-background-cover ${props.theme ?? ""}`} 
-        onClick={e => {
-            if (e.target === ref.current) anchorController.clearCoverCard()
+        className={`anchor-cover-card-background-cover ${props.theme ?? ""}`}
+        // Onclick will trigger even when the click is started on a child element
+        // This makes sure it starts and ends on the actual background cover.
+        onMouseDown={e => {
+            if (e.target === e.currentTarget) {
+                setMouseDownOnElement(true)
+            }
+        }}
+        onMouseUp={e => {
+            if (mouseDownOnElement && e.target === e.currentTarget) {
+                anchorController.clearCoverCard()
+            }
+            setMouseDownOnElement(false)
         }}
         ref={ref}
     >
