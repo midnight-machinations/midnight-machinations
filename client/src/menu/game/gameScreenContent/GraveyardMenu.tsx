@@ -1,4 +1,4 @@
-import React, { ReactElement } from "react";
+import { ReactElement, useState } from "react";
 import translate from "../../../game/lang";
 import GAME_MANAGER from "../../../index";
 import { ContentMenu, ContentTab } from "../GameScreen";
@@ -10,6 +10,7 @@ import { translateRoleOutline } from "../../../game/roleListState.d";
 import { Button } from "../../../components/Button";
 import DetailsSummary from "../../../components/DetailsSummary";
 import { ModifierSettingsDisplay } from "../../../components/gameModeSettings/ModifiersSelector";
+import Icon from "../../../components/Icon";
 
 export default function GraveyardMenu(): ReactElement {
     return <div className="graveyard-menu graveyard-menu-colors">
@@ -81,11 +82,21 @@ function EnabledRoles(): ReactElement {
         ["enabledRoles"]
     )!
 
+    const [hideDisabled, setHideDisabled] = useState(true);
+
     return <div className="graveyard-menu-excludedRoles">
         <DetailsSummary
             summary={translate("menu.enabledRoles.enabledRoles")}
         >
-            <EnabledRolesDisplay enabledRoles={enabledRoles}/>
+            <Button
+                className="flush"
+                onClick={() => setHideDisabled(hideDisabled => !hideDisabled)}
+            >
+                <Icon>{hideDisabled ? "visibility" : "visibility_off"}</Icon>
+                {" "}
+                {hideDisabled ? translate("menu.enabledRoles.showDisabled") : translate("menu.enabledRoles.hideDisabled")}
+            </Button>
+            <EnabledRolesDisplay enabledRoles={enabledRoles} hideDisabled={hideDisabled}/>
         </DetailsSummary>
     </div>
 }
@@ -96,11 +107,21 @@ function EnabledModifiers(): ReactElement {
         ["modifierSettings"]
     )!
 
+    const [hideDisabled, setHideDisabled] = useState(true);
+
     return <div className="graveyard-menu-excludedRoles">
         <DetailsSummary
             summary={translate("modifiers")}
         >
-            <ModifierSettingsDisplay disabled={true} modifierSettings={modifierSettings}/>
+            <Button
+                className="flush"
+                onClick={() => setHideDisabled(hideDisabled => !hideDisabled)}
+            >
+                <Icon>{hideDisabled ? "visibility" : "visibility_off"}</Icon>
+                {" "}
+                {hideDisabled ? translate("menu.enabledRoles.showDisabled") : translate("menu.enabledRoles.hideDisabled")}
+            </Button>
+            <ModifierSettingsDisplay disabled={true} modifierSettings={modifierSettings} hideDisabled={hideDisabled}/>
         </DetailsSummary>
     </div>
 }

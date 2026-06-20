@@ -71,6 +71,8 @@
     "confirmOverwrite": "Are you sure you want to overwrite?",
 
     "menu.enabledRoles.enabledRoles": "Enabled Roles",
+    "menu.enabledRoles.hideDisabled": "Hide Disabled",
+    "menu.enabledRoles.showDisabled": "Show Disabled",
     "menu.enabledRoles.toggle": "Toggle Roles",
 
     "menu.loading.host": "Starting Server",
