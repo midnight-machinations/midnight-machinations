@@ -21,6 +21,7 @@ pub mod packet;
 pub mod client_connection;
 pub mod vec_map;
 pub mod vec_set;
+pub mod webrtc_sfu;
 
 pub mod log {
     #[macro_export]

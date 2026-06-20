@@ -247,6 +247,10 @@ impl Lobby {
                 self.settings.modifiers = modifier_settings.clone();
                 self.send_to_all(ToClientPacket::ModifierSettings { modifier_settings });
             }
+            ToServerPacket::SetVoiceChatEnabled { enabled } => {
+                self.settings.voice_chat_enabled = enabled;
+                self.send_to_all(ToClientPacket::VoiceChatEnabled { enabled });
+            }
             ToServerPacket::Leave => {
                 if let RemoveRoomClientResult::RoomShouldClose = self.remove_client(room_client_id) {
                     return LobbyClientMessageResult::Close;
@@ -272,6 +276,23 @@ impl Lobby {
                 }
                 self.ensure_host_exists(Some(room_client_id));
                 self.send_players();
+            }
+            ToServerPacket::WebRtcOffer { sdp: _ } => {
+                // Client is sending an offer to connect to the SFU
+                log!(info "Lobby"; "Received WebRTC offer from client {}", room_client_id);
+                
+                // Note: WebRTC operations are async but we're in a sync context
+                // The actual implementation should spawn a task or use channels
+                // For now, log that this needs to be wired through the WebsocketListener
+                // which has access to the WebRTC manager
+                
+                // Handled at WebsocketListener level where the WebRTC manager is accessible
+            }
+            ToServerPacket::WebRtcIceCandidate { candidate: _, sdp_mid: _, sdp_m_line_index: _ } => {
+                // Forward ICE candidate from client to server's SFU logic
+                log!(info "Lobby"; "Received ICE candidate from client {}", room_client_id);
+                
+                // Handled at WebsocketListener level where the WebRTC manager is accessible
             }
             _ => {
                 log!(error "Lobby"; "{} {:?}", "ToServerPacket not implemented for lobby was sent during lobby: ", incoming_packet);

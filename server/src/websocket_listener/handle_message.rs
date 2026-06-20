@@ -70,6 +70,56 @@ impl WebsocketListener{
                 }
                 
             },
+            ToServerPacket::WebRtcOffer { sdp } => {
+                // Handle WebRTC offer - need async context
+                let Ok((_, _, room_client_id)) = client.get_room_mut(self) else {return};
+                let sender = client.sender(self).clone();
+                let webrtc_manager = self.webrtc_manager.clone();
+                
+                log!(info "WebRTC"; "Received offer from client {}", room_client_id);
+                
+                // Spawn async task to handle the offer
+                tokio::spawn(async move {
+                    let manager = webrtc_manager.lock().await;
+                    
+                    // Create ICE candidate callback
+                    let sender_clone = sender.clone();
+                    let callback = move |candidate: String, sdp_mid: Option<String>, sdp_m_line_index: Option<u16>| {
+                        sender_clone.send(ToClientPacket::WebRtcIceCandidate {
+                            from_player_id: room_client_id,
+                            candidate,
+                            sdp_mid,
+                            sdp_m_line_index,
+                        });
+                    };
+                    
+                    match manager.handle_offer(room_client_id, sdp, callback).await {
+                        Ok(answer_sdp) => {
+                            sender.send(ToClientPacket::WebRtcAnswer { sdp: answer_sdp });
+                            log!(info "WebRTC"; "Sent answer to client {}", room_client_id);
+                        }
+                        Err(e) => {
+                            log!(error "WebRTC"; "Failed to handle offer from client {}: {}", room_client_id, e);
+                        }
+                    }
+                });
+            },
+            ToServerPacket::WebRtcIceCandidate { candidate, sdp_mid, sdp_m_line_index } => {
+                // Handle WebRTC ICE candidate - need async context
+                let Ok((_, _, room_client_id)) = client.get_room_mut(self) else {return};
+                let webrtc_manager = self.webrtc_manager.clone();
+                
+                log!(info "WebRTC"; "Received ICE candidate from client {}", room_client_id);
+                
+                // Spawn async task to add the ICE candidate
+                tokio::spawn(async move {
+                    let manager = webrtc_manager.lock().await;
+                    
+                    if let Err(e) = manager.add_ice_candidate(room_client_id, candidate, sdp_mid, sdp_m_line_index).await {
+                        log!(error "WebRTC"; "Failed to add ICE candidate from client {}: {}", room_client_id, e);
+                    }
+                });
+            },
             _ => {
                 let sender = &client.sender(self);
                 let Ok((room, room_code, id)) = client.get_room_mut(self) else {return};

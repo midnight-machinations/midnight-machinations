@@ -14,6 +14,7 @@ pub struct Settings{
     pub phase_times: PhaseTimeSettings,
     pub enabled_roles: VecSet<Role>,
     pub modifiers: ModifierSettings,
+    pub voice_chat_enabled: bool,
 }
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]

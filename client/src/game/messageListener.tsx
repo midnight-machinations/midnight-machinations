@@ -30,8 +30,10 @@ function sendDefaultName() {
     }
 } 
 
-export default function messageListener(packet: ToClientPacket){
-    console.log(JSON.stringify(packet, null, 2));
+export default async function messageListener(packet: ToClientPacket){
+    if (!(packet.type in ["pong", "voiceData"])) {
+        console.log(JSON.stringify(packet, null, 2));
+    }
 
     switch(packet.type) {
         case "pong":
@@ -243,6 +245,10 @@ export default function messageListener(packet: ToClientPacket){
         break;
         case "startGame": 
             if (GAME_MANAGER.state.stateType === "lobby") {
+                // Clean up lobby voice chat when game starts
+                const { voiceChatManager: vcm } = await import("./voiceChat");
+                vcm.disable();
+                
                 const isSpectator = GAME_MANAGER.state.players.get(GAME_MANAGER.state.myId!)?.clientType.type === "spectator";
                 if(isSpectator){
                     GAME_MANAGER.setSpectatorGameState();
@@ -349,6 +355,10 @@ export default function messageListener(packet: ToClientPacket){
         case "modifierSettings":
             if(GAME_MANAGER.state.stateType === "lobby" || GAME_MANAGER.state.stateType === "game")
                 GAME_MANAGER.state.modifierSettings = new ListMap(packet.modifierSettings.modifiers);
+        break;
+        case "voiceChatEnabled":
+            if(GAME_MANAGER.state.stateType === "lobby")
+                GAME_MANAGER.state.voiceChatEnabled = packet.enabled;
         break;
         case "phase":
             if(GAME_MANAGER.state.stateType === "game"){
@@ -540,6 +550,20 @@ export default function messageListener(packet: ToClientPacket){
                     break;
                 }
             }
+        break;
+        case "webRtcAnswer":
+            // Handle WebRTC answer from server
+            const { voiceChatManager: vcmAnswer } = await import("./voiceChat");
+            vcmAnswer.handleWebRtcSignal("answer", { sdp: packet.sdp });
+        break;
+        case "webRtcIceCandidate":
+            // Handle ICE candidate from server
+            const { voiceChatManager: vcmIce } = await import("./voiceChat");
+            vcmIce.handleWebRtcSignal("iceCandidate", {
+                candidate: packet.candidate,
+                sdpMid: packet.sdpMid,
+                sdpMLineIndex: packet.sdpMLineIndex
+            });
         break;
         default:
             console.error(`incoming message response not implemented: ${(packet as any)?.type}`);
