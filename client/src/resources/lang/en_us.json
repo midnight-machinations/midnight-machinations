@@ -8,7 +8,7 @@
     "menu.start.description": "A game about deception and manipulation",
     "menu.start.button.play": "Play",
 
-    "menu.play.title": "Server Browser",
+    "menu.play.title": "Room Browser",
     "menu.play.button.join": "Join",
     "menu.play.button.host": "Host",
     "menu.play.button.spectate": "Spectate",
@@ -51,9 +51,6 @@
     "menu.hostSettings.skipPhase": "Skip Phase",
 
     "menu.settings.title": "Settings",
-    "menu.settings.general": "General",
-    "menu.settings.gameplay": "Gameplay",
-    "menu.settings.menus": "Menus",
     "menu.settings.maxMenus": "Max Menus Open",
     "menu.settings.menuOrder": "Menu Order",
     "menu.settings.enableHeader": "Enable Header",

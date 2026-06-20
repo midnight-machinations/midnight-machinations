@@ -10,6 +10,7 @@ import Popover from "../../components/Popover";
 import { selectPlacementFunction } from "../../components/Select";
 import StyledText from "../../components/StyledText";
 import { encodeString } from "../../components/ChatMessage";
+import FlushInput from "../../components/FlushInput";
 
 type PlayerDisplayData = {
     id: number,
@@ -108,9 +109,10 @@ function LobbyPlayerListPlayer(props: Readonly<{ player: PlayerDisplayData }>): 
             {props.player.host && <Icon>shield</Icon>}
             {props.player.ready && <Icon>check</Icon>}
             {(props.player.host === false && props.player.ready === false) && <Icon className="keyword-dead">schedule</Icon>}
-            <StyledText className={(props.player.host === false && props.player.ready === false) ? "keyword-dead" : ""}>
+            {!host && <StyledText className={(props.player.host === false && props.player.ready === false) ? "keyword-dead" : ""}>
                 {props.player.displayName}
-            </StyledText>
+            </StyledText>}
+            {host && <LobbyPlayerListPlayerRename {...props}/>}
         </div>
         <div>
             {host && !props.player.host && <button
@@ -119,18 +121,6 @@ function LobbyPlayerListPlayer(props: Readonly<{ player: PlayerDisplayData }>): 
             {host && props.player.connection !== "disconnected" && <button 
                 onClick={() => GAME_MANAGER.sendKickPlayerPacket(props.player.id)}
             ><Icon>person_remove</Icon></button>}
-            {host && props.player.clientType === "player" && <>
-                <RawButton
-                    ref={renameButtonRef}
-                    onClick={() => setRenameOpen(open => !open)}
-                ><Icon>edit</Icon></RawButton>
-                <Popover
-                    open={renameOpen}
-                    setOpenOrClosed={setRenameOpen}
-                    onRender={selectPlacementFunction}
-                    anchorForPositionRef={renameButtonRef}
-                ><LobbyPlayerListPlayerRename {...props}/></Popover>
-            </>}
         </div>
     </li>
 }
@@ -138,20 +128,13 @@ function LobbyPlayerListPlayer(props: Readonly<{ player: PlayerDisplayData }>): 
 function LobbyPlayerListPlayerRename(props: Readonly<{ player: PlayerDisplayData }>): ReactElement {
     const [playerName, setPlayerName] = useState(props.player.name ?? "");
     
-    return <div className="lobby-player-list-player-rename">
-        <input 
-            value={playerName}
-            onInput={e => setPlayerName((e.target as HTMLInputElement).value)}
-            onKeyUp={e => {
-                if (e.key === "Enter") {
-                    const newName = (e.target as HTMLInputElement).value;
-                    setPlayerName(newName);
-                    GAME_MANAGER.sendHostSetPlayerNamePacket(props.player.id, newName);
-                }
-            }}
-        />
-        <Button 
-            onClick={() => GAME_MANAGER.sendHostSetPlayerNamePacket(props.player.id, playerName)}
-        >{translate("menu.lobby.button.setName")}</Button>
-    </div>
+    return <FlushInput 
+        className="lobby-player-list-player-rename"
+        value={playerName}
+        setValue={newName => setPlayerName(newName)}
+        onConfirm={newName => {
+            setPlayerName(newName);
+            GAME_MANAGER.sendHostSetPlayerNamePacket(props.player.id, newName);
+        }}
+    />
 }

@@ -137,7 +137,6 @@ function LobbyMenuSettings(props: Readonly<{
     }, [enabledRoles, phaseTimes, roleList, modifierSettings]);
 
     return <GameModeContext.Provider value={context}>
-        {mobile && <h1>{translate("menu.lobby.settings")}</h1>}
         <GameModeSelector 
             disabled={!props.isHost}
             loadGameMode={gameMode => {

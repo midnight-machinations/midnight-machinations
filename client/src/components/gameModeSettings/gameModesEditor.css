@@ -32,3 +32,7 @@
     max-width: 100%;
     overflow: auto;
 }
+
+.game-modes-editor > main > div > .selector-section:last-child {
+    flex-grow: 1;
+}

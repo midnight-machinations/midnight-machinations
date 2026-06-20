@@ -14,6 +14,9 @@ import WikiArticle from "../components/WikiArticle";
 import AudioController from "./AudioController";
 import { computeKeywordData } from "../components/StyledText";
 import GameModesEditor from "../components/gameModeSettings/GameModesEditor";
+import HostMenu from "./HostMenu";
+import SettingsMenu from "./Settings";
+import NightMessagePopup from "../components/NightMessagePopup";
 
 const MobileContext = createContext<boolean | undefined>(undefined);
 const CtrlPressedContext = createContext<boolean | undefined>(undefined);
@@ -191,8 +194,11 @@ export default function Anchor(props: Readonly<{
             if (coverCard.type === WikiCoverCard || coverCard.type === WikiArticle) {
                 coverCardTheme = "wiki-menu-colors"
             }
-            if (coverCard.type === GameModesEditor) {
+            if (coverCard.type === GameModesEditor || coverCard.type === NightMessagePopup) {
                 coverCardTheme = "chat-menu-colors"
+            }
+            if (coverCard.type === HostMenu || coverCard.type === SettingsMenu) {
+                coverCardTheme = "graveyard-menu-colors"
             }
 
             if (callback) {

@@ -44,12 +44,6 @@ input.lobby-name-field {
     font-weight: bold;
 }
 
-@media only screen and (max-width: 600px) {
-    .lm > div > header {
-        justify-content: center;
-    }
-}
-
 .lm > div > main ol {
     list-style: none;
 }
@@ -59,7 +53,7 @@ input.lobby-name-field {
     flex-direction: row;
     flex-wrap: wrap;
     flex-grow: 1;
-    overflow: hidden;
+    overflow: auto;
     border: 0.13rem solid var(--background-border-color);
     border-bottom: none;
     background-color: var(--background-color);
@@ -180,10 +174,8 @@ input.lobby-name-field {
 }
 
 .lobby-player-list-player-rename {
-    border: .13rem solid var(--background-border-color);
-    background-color: var(--secondary-color);
-    border-radius: .25rem;
-    min-width: min-content;
+    font-weight: bold;
+    font-style: italic;
 }
 
 .lobby-name-pane .flashing {
@@ -192,6 +184,7 @@ input.lobby-name-field {
 
 .lobby-settings {
     overflow: auto;
+    padding-bottom: 3rem;
 }
 
 .lobby-settings > .selector-section {

@@ -32,25 +32,53 @@ export default function SettingsMenu(): ReactElement {
 
     return <div className="settings-menu-card">
         <header>
-            <h1>{translate("menu.settings.title")}</h1>
+            <h2><Icon size="tiny">settings</Icon> {translate("menu.settings.title")}</h2>
         </header>
         
         <main className="settings-menu">
             <div className="graveyard-menu-colors">
-                <h2>{translate("menu.settings.general")}</h2>
-                <section>
-                    <h2><Icon size="small">volume_up</Icon> {translate("menu.settings.volume")}</h2>
-                    <input className="settings-volume" type="range" min="0" max="1" step="0.01" 
-                        value={volume} 
+                <section className="player-list-menu-colors">
+                    <h2>{translate("menu.settings.defaultName")}</h2>
+                    <input type="text"
+                        value={defaultName===null ? "" : encodeString(defaultName)} 
+                        placeholder={translate("menu.lobby.field.namePlaceholder")}
                         onChange={(e) => {
-                            const volume = parseFloat(e.target.value);
-                            saveSettings({volume});
-                            setVolume(volume);
+                            const defaultName = e.target.value === "" ? null : e.target.value;
+                            saveSettings({defaultName});
+                            setDefaultName(defaultName);
                         }
                     }/>
                 </section>
                 <section>
-                    <h2>{translate("menu.settings.font")}</h2>
+                    <div className="settings-volume-container">
+                        <Icon>volume_up</Icon>
+                        <input className="settings-volume" type="range" min="0" max="1" step="0.01" 
+                            value={volume} 
+                            onChange={(e) => {
+                                const volume = parseFloat(e.target.value);
+                                saveSettings({volume});
+                                setVolume(volume);
+                            }
+                        }/>
+                    </div>
+                </section>
+                <section className="wiki-menu-colors">
+                    <div className="settings-language-container">
+                        <Icon>language</Icon>
+                        <select 
+                            name="lang-select" 
+                            defaultValue={loadSettingsParsed().language}
+                            onChange={e => {
+                                const language = e.target.options[e.target.selectedIndex].value as Language;
+                                switchLanguage(language);
+                                saveSettings({language});
+                                computeKeywordData()
+                                anchorController.reload();
+                            }}
+                        >
+                            {LANGUAGES.map(lang => <option key={lang} value={lang}>{languageName(lang)}</option>)}
+                        </select>
+                    </div>
                     <label>
                         {translate("menu.settings.fontSize")}
                         <input type="number" min="0.5" max="2" step="0.1"
@@ -74,53 +102,17 @@ export default function SettingsMenu(): ReactElement {
                     </label>
                     <label>
                         {translate("menu.settings.accessibilityFont")}
+                        {" "}
                         <CheckBox checked={accessibilityFontEnabled} onChange={(checked: boolean) => {
                             setAccessibilityFontEnabled(checked);
                             saveSettings({accessibilityFont: checked});
                         }}></CheckBox>
                     </label>
                 </section>
-                <section>
-                    <h2><Icon size="small">language</Icon> {translate("menu.settings.language")}</h2>
-                    <select 
-                        name="lang-select" 
-                        defaultValue={loadSettingsParsed().language}
-                        onChange={e => {
-                            const language = e.target.options[e.target.selectedIndex].value as Language;
-                            switchLanguage(language);
-                            saveSettings({language});
-                            computeKeywordData()
-                            anchorController.reload();
-                        }}
-                    >
-                        {LANGUAGES.map(lang => <option key={lang} value={lang}>{languageName(lang)}</option>)}
-                    </select>
-                </section>
             </div>
             <div className="chat-menu-colors">
-                <h2>{translate("menu.settings.gameplay")}</h2>
                 <section>
-                    <h2>{translate("menu.settings.menus")}</h2>
-                    <label>
-                        {translate("menu.settings.maxMenus")}
-                        <input type="number" min="1" max="6" step="1"
-                            value={maxMenus}
-                            onChange={(e)=>{
-                                if(e.target.value === "") return;
-                                const maxMenus = parseFloat(e.target.value);
-                                setMaxMenus(maxMenus);
-                            }}
-                            onBlur={()=>{
-                                if(Math.floor(maxMenus) !== maxMenus || maxMenus < 1 || maxMenus > 6) {
-                                    setMaxMenus(6);  
-                                    saveSettings({maxMenus: 6});
-                                }else{
-                                    saveSettings({maxMenus});
-                                }
-                            }}
-                        />
-                    </label>
-                    <div>
+                    <div className="menu-order">
                         {translate("menu.settings.menuOrder")}
                         <div className="menu-list">
                             <DragAndDrop
@@ -147,26 +139,34 @@ export default function SettingsMenu(): ReactElement {
                         </div>
                     </div>
                     <label>
+                        {translate("menu.settings.maxMenus")}
+                        <input type="number" min="1" max="6" step="1"
+                            value={maxMenus}
+                            onChange={(e)=>{
+                                if(e.target.value === "") return;
+                                const maxMenus = parseFloat(e.target.value);
+                                setMaxMenus(maxMenus);
+                            }}
+                            onBlur={()=>{
+                                if(Math.floor(maxMenus) !== maxMenus || maxMenus < 1 || maxMenus > 6) {
+                                    setMaxMenus(6);  
+                                    saveSettings({maxMenus: 6});
+                                }else{
+                                    saveSettings({maxMenus});
+                                }
+                            }}
+                        />
+                    </label>
+                    <label>
                         {translate("menu.settings.enableHeader")}
+                        {" "}
                         <CheckBox checked={headerEnabled} onChange={(checked: boolean) => {
                             setHeaderEnabled(checked);
                             saveSettings({headerEnabled: checked});
                         }}></CheckBox>
                     </label>
                 </section>
-                <section>
-                    <h2>{translate("menu.settings.defaultName")}</h2>
-                    <input type="text"
-                        value={defaultName===null ? "" : encodeString(defaultName)} 
-                        placeholder={translate("menu.lobby.field.namePlaceholder")}
-                        onChange={(e) => {
-                            const defaultName = e.target.value === "" ? null : e.target.value;
-                            saveSettings({defaultName});
-                            setDefaultName(defaultName);
-                        }
-                    }/>
-                </section>
-                <section>
+                <section className="role-specific-colors">
                     <h2><StyledText className="keyword-evil">{translate("menu.settings.dangerZone")}</StyledText></h2>
                     <Button onClick={()=>{
                         if(!window.confirm(translate("confirmDelete"))) return;
