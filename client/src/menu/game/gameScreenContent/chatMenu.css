@@ -57,6 +57,10 @@
     align-items: stretch;
     height: max-content;
 }
+.chat-send-section[hidden] {
+    display: none;
+}
+
 .chat-send-section textarea {
     resize: none;
     width: 100%;

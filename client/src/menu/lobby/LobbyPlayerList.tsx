@@ -68,33 +68,22 @@ export default function LobbyPlayerList(): ReactElement {
         ["playersHost", "lobbyClients", "yourId", "playersReady", "hostData"]
     )!;
 
-    return <section className="player-list-menu-colors selector-section">
-        <h2>{translate("menu.lobby.players")}</h2>
+    return <section className="player-list-menu-colors selector-section lobby-player-list-section">
         <div className="lobby-player-list">
             <ol>
                 {players
                     .filter(player => player.clientType === "player")
                     .map(player => <LobbyPlayerListPlayer key={player.id} player={player}/>)
                 }
-            </ol>
-        </div>
-        {host && <>
-            <h2>{translate("menu.hostSettings.spectators")}</h2>
-            <div className="lobby-player-list">
-                <ol>
+                {players.some(player => player.clientType === "spectator") && <>
+                    <h3><Icon size="small">visibility</Icon> {translate("menu.hostSettings.spectators")}</h3>
                     {players
                         .filter(player => player.clientType === "spectator")
                         .map(player => <LobbyPlayerListPlayer key={player.id} player={player}/>)
                     }
-                </ol>
-            </div>
-        </>}
-        {!host && <div className="spectators-ready">
-            {translate("menu.lobby.spectatorsReady", 
-                [...players.values()].filter(p => p.clientType === "spectator" && p.ready !== null).length,
-                [...players.values()].filter(p => p.clientType === "spectator").length
-            )}
-        </div>}
+                </>}
+            </ol>
+        </div>
     </section>
 }
 

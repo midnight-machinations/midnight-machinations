@@ -23,25 +23,28 @@ export default function RandomSeedSelector(props: Readonly<{
     }
 
     return <div className="chat-menu-colors selector-section">
-        <h2>{translate("wiki.article.standard.randomSeed.title")}</h2>
-        {props.disabled
-            ? (randomSeed??translate("none"))
-            : <input
-                disabled={props.disabled ?? false}
-                type="text"
-                value={localSeed===null ? "" : localSeed}
-                onChange={(e)=>{
-                    if(e.target.value === "") {
-                        setLocalSeed(null);
-                        onChange(null);
-                        return;
-                    }else{
-                        const value = Number(e.target.value);
-                        setLocalSeed(isNaN(value) ? null : value);
-                        onChange(isNaN(value) ? null : value);
-                    }
-                }}
-            /> 
-        }
+        <div className="selector-section-header">
+            {translate("wiki.article.standard.randomSeed.title")}
+            {": "}
+            {props.disabled
+                ? (randomSeed??translate("none"))
+                : <input
+                    disabled={props.disabled ?? false}
+                    type="text"
+                    value={localSeed===null ? "" : localSeed}
+                    onChange={(e)=>{
+                        if(e.target.value === "") {
+                            setLocalSeed(null);
+                            onChange(null);
+                            return;
+                        }else{
+                            const value = Number(e.target.value);
+                            setLocalSeed(isNaN(value) ? null : value);
+                            onChange(isNaN(value) ? null : value);
+                        }
+                    }}
+                /> 
+            }
+        </div>
     </div>
 }

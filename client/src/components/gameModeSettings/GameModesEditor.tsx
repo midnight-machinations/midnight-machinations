@@ -6,7 +6,7 @@ import translate from "../../game/lang";
 import "./gameModesEditor.css";
 import PhaseTimesSelector from "./PhaseTimeSelector";
 import { PhaseTimes } from "../../game/gameState.d";
-import EnabledRolesAndModifiersSelector from "./EnabledRoleSelector";
+import EnabledRoleSelector from "./EnabledRoleSelector";
 import { Role } from "../../game/roleState.d";
 import "./selectorSection.css";
 import { defaultPhaseTimes } from "../../game/gameState";
@@ -94,36 +94,34 @@ export default function GameModesEditor(props: Readonly<{
     
     return <div className="game-modes-editor">
         <header>
-            <h1>{translate("menu.globalMenu.gameSettingsEditor")}</h1>
+            <GameModeSelector 
+                loadGameMode={gameMode => {
+                    setRoleList(gameMode.roleList);
+                    setEnabledRoles(gameMode.enabledRoles);
+                    setPhaseTimes(gameMode.phaseTimes);
+                    setModifierSettings(gameMode.modifierSettings);
+                }}
+            />
+            <PhaseTimesSelector 
+                onChange={(newPhaseTimes) => {
+                    setPhaseTimes(newPhaseTimes);
+                }}            
+            />
         </header>
         <GameModeContext.Provider value={{roleList, phaseTimes, enabledRoles, modifierSettings}}>
             <main>
                 <div>
-                    <GameModeSelector 
-                        canModifySavedGameModes={true}
-                        loadGameMode={gameMode => {
-                            setRoleList(gameMode.roleList);
-                            setEnabledRoles(gameMode.enabledRoles);
-                            setPhaseTimes(gameMode.phaseTimes);
-                            setModifierSettings(gameMode.modifierSettings);
-                        }}
-                    />
-                    <PhaseTimesSelector 
-                        onChange={(newPhaseTimes) => {
-                            setPhaseTimes(newPhaseTimes);
-                        }}            
-                    />
-                    <EnabledRolesAndModifiersSelector
+                    <EnabledRoleSelector
                         onDisableRoles={onDisableRoles}
                         onEnableRoles={onEnableRoles}
                         onIncludeAll={onEnableAll}         
                     />
-                </div>
-                <div>
                     <ModifiersSelector
                         disabled={false}
                         setModifiers={setModifiers}
                     />
+                </div>
+                <div>
                     <OutlineListSelector
                         onChangeRolePicker={onChangeRolePicker}
                         onAddNewOutline={addOutline}

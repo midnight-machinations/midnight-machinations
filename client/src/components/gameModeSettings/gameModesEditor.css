@@ -1,29 +1,26 @@
 .game-modes-editor {
     display: flex;
     flex-direction: column;
-    gap: .5rem;
     width: 100%;
 }
 
 .game-modes-editor > header {
     display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: baseline;
+    flex-direction: column;
+    justify-content: stretch;
+    align-items: stretch;
     flex-wrap: wrap;
-    gap: 0.5rem;
 }
 
-.game-modes-editor input {
-    min-width: 3rem;
+.game-modes-editor > header > .selector-section {
+    flex: 1 1 auto;
 }
 
 .game-modes-editor > main {
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
-    gap: 1rem;
-    overflow-y: scroll;
+    overflow: hidden;
     scrollbar-width: none;
 }
 
@@ -32,6 +29,6 @@
     flex-direction: column;
     flex-basis: 47%;
     flex-grow: 1;
-    gap: .5rem;
     max-width: 100%;
+    overflow: auto;
 }

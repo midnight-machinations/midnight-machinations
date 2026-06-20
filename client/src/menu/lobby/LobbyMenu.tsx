@@ -24,6 +24,7 @@ import { UnsafeString } from "../../game/gameState.d";
 import { encodeString } from "../../components/ChatMessage";
 import ListMap from "../../ListMap";
 import RandomSeedSelector from "../../components/gameModeSettings/RandomSeedSelector";
+import FlushInput from "../../components/FlushInput";
 
 export default function LobbyMenu(): ReactElement {
     const isSpectator = useLobbyState(
@@ -57,29 +58,31 @@ export default function LobbyMenu(): ReactElement {
     }, []);
 
     return <div className="lm">
-        <div>
+        <div className="graveyard-menu-colors">
             <LobbyMenuHeader isHost={isHost} advancedView={advancedView} setAdvancedView={setAdvancedView}/>
             {advancedView 
-                ? <main>
+                ? <main className="chat-menu-colors">
                     <div>
                         <LobbyNamePane />
                         <LobbyPlayerList />
-                        <LobbyChatMenu spectator={isSpectator}/>
                     </div>
+                    <div className="vertical-line-separator" />
                     <div>
                         <LobbyMenuSettings isHost={isHost}/>
                     </div>
                 </main>
-                : <main>
+                : <main className="chat-menu-colors">
                     <div>
                         <LobbyNamePane />
                         <LobbyPlayerList />
                     </div>
+                    <div className="vertical-line-separator" />
                     <div>
                         <LobbyChatMenu spectator={isSpectator}/>
                     </div>
                 </main>
             }
+            <LobbyChatMenu spectator={isSpectator}/>
         </div>
     </div>
 }
@@ -135,40 +138,42 @@ function LobbyMenuSettings(props: Readonly<{
 
     return <GameModeContext.Provider value={context}>
         {mobile && <h1>{translate("menu.lobby.settings")}</h1>}
-        {props.isHost === true && <GameModeSelector 
-            canModifySavedGameModes={false}
+        <GameModeSelector 
+            disabled={!props.isHost}
             loadGameMode={gameMode => {
                 GAME_MANAGER.sendSetPhaseTimesPacket(gameMode.phaseTimes);
                 GAME_MANAGER.sendEnabledRolesPacket(gameMode.enabledRoles);
                 GAME_MANAGER.sendSetRoleListPacket(gameMode.roleList);
                 GAME_MANAGER.sendModifierSettingsPacket(new ListMap(gameMode.modifierSettings));
             }}
-        />}
-        <ModifiersSelector
-            disabled={!props.isHost}
-            setModifiers={modifiers => GAME_MANAGER.sendModifierSettingsPacket(new ListMap(modifiers))}
         />
-        <RandomSeedSelector
-            disabled={!props.isHost}
-            onChange={randomSeed => GAME_MANAGER.sendSetRandomSeedPacket(randomSeed)}
-        />
-        <PhaseTimesSelector 
-            disabled={!props.isHost}
-            onChange={pts => GAME_MANAGER.sendSetPhaseTimesPacket(pts)}
-        />
-        <OutlineListSelector
-            disabled={!props.isHost}
-            onChangeRolePicker={(value, index) => GAME_MANAGER.sendSetRoleOutlinePacket(index, value)}
-            onAddNewOutline={undefined}
-            onRemoveOutline={undefined}
-            setRoleList={sendRoleList}
-        />
-        <EnabledRoleSelector
-            onEnableRoles={roles => GAME_MANAGER.sendEnabledRolesPacket([...enabledRoles, ...roles])}
-            onDisableRoles={roles => GAME_MANAGER.sendEnabledRolesPacket(enabledRoles.filter(role => !roles.includes(role)))}
-            onIncludeAll={() => GAME_MANAGER.sendEnabledRolesPacket(getAllRoles())}
-            disabled={!props.isHost}
-        />
+        <div className="lobby-settings">
+            <PhaseTimesSelector 
+                disabled={!props.isHost}
+                onChange={pts => GAME_MANAGER.sendSetPhaseTimesPacket(pts)}
+            />
+            <OutlineListSelector
+                disabled={!props.isHost}
+                onChangeRolePicker={(value, index) => GAME_MANAGER.sendSetRoleOutlinePacket(index, value)}
+                onAddNewOutline={undefined}
+                onRemoveOutline={undefined}
+                setRoleList={sendRoleList}
+            />
+            <EnabledRoleSelector
+                onEnableRoles={roles => GAME_MANAGER.sendEnabledRolesPacket([...enabledRoles, ...roles])}
+                onDisableRoles={roles => GAME_MANAGER.sendEnabledRolesPacket(enabledRoles.filter(role => !roles.includes(role)))}
+                onIncludeAll={() => GAME_MANAGER.sendEnabledRolesPacket(getAllRoles())}
+                disabled={!props.isHost}
+            />
+            <ModifiersSelector
+                disabled={!props.isHost}
+                setModifiers={modifiers => GAME_MANAGER.sendModifierSettingsPacket(new ListMap(modifiers))}
+            />
+            <RandomSeedSelector
+                disabled={!props.isHost}
+                onChange={randomSeed => GAME_MANAGER.sendSetRandomSeedPacket(randomSeed)}
+            />
+        </div>
     </GameModeContext.Provider>
 }
 
@@ -196,37 +201,9 @@ function LobbyMenuHeader(props: Readonly<{
         return ()=>{GAME_MANAGER.removeStateListener(listener);}
     }, [setLobbyName]);
 
-    const nameInputRef = useRef<HTMLInputElement | null>(null);
-
-    const calculateInputFieldWidth = () => {
-        if (nameInputRef.current === null) return 50;
-
-        const style = globalThis.getComputedStyle(nameInputRef.current);
-
-        // Measure text size using temporary span element
-        const temp = document.createElement("span");
-        temp.style.fontSize = style.fontSize;
-        temp.style.fontFamily = style.fontFamily;
-        temp.style.fontWeight = style.fontWeight;
-        temp.style.whiteSpace = "pre";  // Don't trim whitespace
-        temp.textContent = lobbyName as string;
-        document.body.appendChild(temp);
-        const inputWidth = temp.getBoundingClientRect().width;
-        temp.remove();
-        return inputWidth;
-    };
-
-    const [inputFieldWidth, setInputFieldWidth] = useState(calculateInputFieldWidth());
-
-    useEffect(() => {
-        setInputFieldWidth(calculateInputFieldWidth());
-    }, [lobbyName]);
-
-    const [inputFocused, setInputFocused] = useState(false);
-
     return <header>
         <div>
-            <Button disabled={!props.isHost} className="start" onClick={async ()=>{
+            <Button disabled={!props.isHost} className="start brand" onClick={async ()=>{
                 setAnchorContent(<LoadingScreen type="default"/>);
                 if (!await GAME_MANAGER.sendStartGamePacket()) {
                     setAnchorContent(<LobbyMenu/>)
@@ -235,47 +212,17 @@ function LobbyMenuHeader(props: Readonly<{
                 <Icon>play_arrow</Icon>{translate("menu.lobby.button.start")}
             </Button>
             <RoomLinkButton/>
-            {mobile || props.isHost || <Button
-                onClick={() => props.setAdvancedView(!props.advancedView)}
-            >
-                <Icon>settings</Icon>{translate(`menu.lobby.button.advanced.${props.advancedView}`)}
-            </Button>}
         </div>
         {props.isHost ? 
-            <div className="lobby-name-input">
-                <input
-                    value={lobbyName as string}
-                    onInput={e => {
-                        setLobbyName((e.target as HTMLInputElement).value);
-                    }}
-                    onKeyUp={(e)=>{
-                        if(e.key !== 'Enter') return;
-                        
-                        const newLobbyName = (e.target as HTMLInputElement).value;
-                        setLobbyName(newLobbyName);
-                        GAME_MANAGER.sendSetLobbyNamePacket(newLobbyName);
-                    }}
-                    onFocus={() => setInputFocused(true)}
-                    onBlur={e => {
-                        const newLobbyName = e.target.value;
-                        setLobbyName(newLobbyName);
-                        GAME_MANAGER.sendSetLobbyNamePacket(newLobbyName);
-                        setInputFocused(false);
-                    }}
-                    ref={(el) => {
-                        nameInputRef.current = el;
-                        setInputFieldWidth(calculateInputFieldWidth());
-                    }}
-                    style={{ width: `${inputFieldWidth}px` }}
-                ></input>
-                {!inputFocused && <button
-                    onClick={() => {
-                        nameInputRef.current?.focus();
-                    }}
-                >
-                    <Icon size="tiny">edit</Icon>
-                </button>}
-            </div> : 
+            <FlushInput
+                className="lobby-name-field"
+                value={lobbyName as string}
+                setValue={setLobbyName}
+                onConfirm={(value) => {
+                    setLobbyName(value);
+                    GAME_MANAGER.sendSetLobbyNamePacket(value);
+                }}
+            /> : 
             <h3>{encodeString(lobbyName)}</h3>
         }
         

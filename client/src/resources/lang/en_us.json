@@ -26,8 +26,6 @@
     "menu.lobby.button.relinquishHost": "Relinquish Host",
     "menu.lobby.button.readyUp": "Ready Up",
     "menu.lobby.button.unready": "Cancel",
-    "menu.lobby.players": "Players",
-    "menu.lobby.spectatorsReady": "\\0 out of \\1 spectators are ready.",
     "menu.lobby.roleList": "Outline List",
     "menu.lobby.enabledRoles": "Enabled Roles",
     "menu.lobby.gameModes": "Game Modes",

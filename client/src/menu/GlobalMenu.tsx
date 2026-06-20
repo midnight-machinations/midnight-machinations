@@ -111,7 +111,7 @@ export function RoomLinkButton(): JSX.Element {
         }, ["acceptJoin", "backToLobby"]
     )!;
     
-    return <CopyButton text={code.toString()}>
-        <Icon>link</Icon> {translate("menu.play.field.roomCode")}
+    return <CopyButton className="flush" text={code.toString()}>
+        <Icon>link_2</Icon>
     </CopyButton>
 }

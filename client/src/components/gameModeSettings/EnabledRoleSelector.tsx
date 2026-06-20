@@ -8,6 +8,7 @@ import "./disabledRoleSelector.css"
 import { Button } from "../Button";
 import { GameModeContext } from "./GameModesEditor";
 import CheckBox from "../CheckBox";
+import Icon from "../Icon";
 
 
 
@@ -35,10 +36,12 @@ export default function EnabledRoleSelector(props: Readonly<{
         }
     }, [enabledRoles]);
 
+    const [hideDisabled, setHideDisabled] = useState(props.disabled ?? false);
+
     return <div className="role-specific-colors selector-section">
-        <h2>{translate("menu.lobby.enabledRoles")}</h2>
-        {(props.disabled !== true) && 
-            <RoleOrRoleSetSelector
+        <div className="selector-section-header">
+            {translate("menu.lobby.enabledRoles")}
+            {(props.disabled !== true) && <RoleOrRoleSetSelector
                 disabled={props.disabled}
                 displayValue={["toggle", [
                     <StyledText key="toggle" noLinks={true}>
@@ -49,19 +52,27 @@ export default function EnabledRoleSelector(props: Readonly<{
                 onChange={toggleRoleOrRoleSet}
                 noCloseOnKeyboardSelect
             />}
-
+            <Button
+                className="flush"
+                onClick={() => setHideDisabled(hideDisabled => !hideDisabled)}
+            >
+                <Icon>{hideDisabled ? "visibility" : "visibility_off"}</Icon>
+            </Button>
+        </div>
         <EnabledRolesDisplay 
             enabledRoles={enabledRoles}
             modifiable={!props.disabled}
             onDisableRoles={props.onDisableRoles}
             onEnableRoles={props.onEnableRoles}
             disabled={props.disabled}
+            hideDisabled={hideDisabled}
         />
     </div>
 }
 
 type EnabledRolesDisplayProps = {
     enabledRoles: Role[],
+    hideDisabled: boolean
 } & (
     {
         modifiable: true,
@@ -87,19 +98,10 @@ export function EnabledRolesDisplay(props: EnabledRolesDisplayProps): ReactEleme
         </StyledText>
     }
 
-    const [hideDisabled, setHideDisabled] = useState(true);
-
     return <div>
-        {!props.modifiable && <label className="centered-label">
-            {translate("hideDisabled")}
-            <CheckBox
-                checked={hideDisabled}
-                onChange={checked => setHideDisabled(checked)}
-            />
-        </label>}
-        <div>
+        <div className="enabled-roles-button-panel">
             {getAllRoles()
-                .filter(role => isEnabled(role) || !hideDisabled || props.modifiable)
+                .filter(role => isEnabled(role) || !props.hideDisabled)
                 .sort((a, b) => props.modifiable ? 0 : (isEnabled(a) ? -1 : 1) - (isEnabled(b) ? -1 : 1))
                 .sort((a, b) => ROLE_SETS.indexOf(roleJsonData()[a].mainRoleSet) - ROLE_SETS.indexOf(roleJsonData()[b].mainRoleSet))
                 .map((role, i) => 

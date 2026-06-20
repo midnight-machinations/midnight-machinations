@@ -37,3 +37,15 @@
 .custom-role-limit-selection > input {
     width: 3rem;
 }
+
+.enabled-roles-button-panel {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    margin: 0 0.5rem 0.5rem 0.5rem;
+    border: .13rem solid var(--primary-border-color);
+    border-top-color: var(--primary-border-shadow-color);
+    border-left-color: var(--primary-border-shadow-color);
+    background-color: var(--background-color);
+    border-radius: .25rem;
+}

@@ -30,7 +30,6 @@ export default function PhaseTimesSelector(props: Readonly<{
     }
 
     return <section className="phase-times-selector will-menu-colors selector-section">
-        <h2>{translate("menu.lobby.timeSettings")}</h2>
         <PhaseTimesVisualizer phaseTimes={phaseTimes} disabled={props.disabled} onChange={onChange} />
     </section>
 }

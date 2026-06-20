@@ -13,6 +13,7 @@ import WikiCoverCard from "../components/WikiCoverCard";
 import WikiArticle from "../components/WikiArticle";
 import AudioController from "./AudioController";
 import { computeKeywordData } from "../components/StyledText";
+import GameModesEditor from "../components/gameModeSettings/GameModesEditor";
 
 const MobileContext = createContext<boolean | undefined>(undefined);
 const CtrlPressedContext = createContext<boolean | undefined>(undefined);
@@ -189,6 +190,9 @@ export default function Anchor(props: Readonly<{
             let coverCardTheme: Theme | null = null;
             if (coverCard.type === WikiCoverCard || coverCard.type === WikiArticle) {
                 coverCardTheme = "wiki-menu-colors"
+            }
+            if (coverCard.type === GameModesEditor) {
+                coverCardTheme = "chat-menu-colors"
             }
 
             if (callback) {

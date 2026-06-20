@@ -14,23 +14,9 @@ export default function Select<K extends { toString(): string}>(props: Readonly<
     className?: string,
     onChange?: (value: K)=>void,
     noCloseOnKeyboardSelect?: boolean
-} & ({
     optionsSearch: SelectOptionsSearch<K>,
-} | {
-    optionsNoSearch: SelectOptionsNoSearch<K>,
-})>) {
-    const optionsSearch: SelectOptionsSearch<K> = useMemo(() => {
-        if("optionsSearch" in props) {
-            return props.optionsSearch;
-        } else {
-            let optionsSearch = new Map<K, [React.ReactNode, string]>()
-
-            for(let [key, val] of props.optionsNoSearch.entries()) {
-                optionsSearch.set(key, [val, key.toString()]);
-            }
-            return optionsSearch
-        }
-    }, [props]);
+}>) {
+    const optionsSearch: SelectOptionsSearch<K> = useMemo(() => props.optionsSearch, [props]);
 
     const [open, setOpen] = React.useState(false);
     const [searchString, setSearchString] = React.useState("");

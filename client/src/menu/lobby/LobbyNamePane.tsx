@@ -5,6 +5,7 @@ import Icon from "../../components/Icon";
 import { useLobbyState } from "../../components/useHooks";
 import { Button } from "../../components/Button";
 import { UnsafeString } from "../../game/gameState.d";
+import FlushInput from "../../components/FlushInput";
 
 
 
@@ -39,7 +40,7 @@ export default function LobbyNamePane(): ReactElement {
         }
     }, [otherPlayersReady])
 
-    return <section className="player-list-menu-colors selector-section">
+    return <section className="chat-menu-colors selector-section">
         <div className="lobby-name-pane">
             {!isSpectator && <NameSelector ready={ready}/>}
             <div className="name-pane-buttons">
@@ -52,7 +53,7 @@ export default function LobbyNamePane(): ReactElement {
                     onClick={() => GAME_MANAGER.sendRelinquishHostPacket()}
                 ><Icon>remove_moderator</Icon> {translate("menu.lobby.button.relinquishHost")}</button>}
                 {ready !== "host" && <Button
-                    className={(ready !== "ready" ? "ready-up-button " : "") + (ready === "ready" ? "depressed " : ((now < flashingSince + 2000) ? "flashing" : undefined))}
+                    className={"brand " + (ready === "ready" ? "depressed " : ((now < flashingSince + 2000) ? "flashing" : undefined))}
                     onClick={() => {GAME_MANAGER.sendReadyUpPacket(ready === "notReady")}}
                 >
                     {ready === "ready"
@@ -80,65 +81,13 @@ function NameSelector(props: Readonly<{ ready: "host" | "ready" | "notReady" }>)
         setEnteredName(myName);
     }, [myName]);
 
-    const nameInputRef = useRef<HTMLInputElement | null>(null);
-
-    const calculateInputFieldWidth = () => {
-        if (nameInputRef.current === null) return 50;
-
-        const style = globalThis.getComputedStyle(nameInputRef.current);
-
-        // Measure text size using temporary span element
-        const temp = document.createElement("span");
-        temp.style.fontSize = style.fontSize;
-        temp.style.fontFamily = style.fontFamily;
-        temp.style.fontWeight = style.fontWeight;
-        temp.style.whiteSpace = "pre";  // Don't trim whitespace
-        temp.textContent = enteredName as string;
-        document.body.appendChild(temp);
-        const inputWidth = temp.getBoundingClientRect().width;
-        temp.remove();
-        return inputWidth;
-    };
-
-    const [inputFieldWidth, setInputFieldWidth] = useState(calculateInputFieldWidth());
-
-    useEffect(() => {
-        setInputFieldWidth(calculateInputFieldWidth());
-    }, [enteredName]);
-    
-    const [inputFocused, setInputFocused] = useState(false);
-
     return <div className="name-pane-selector">
         <div className="lobby-name">
-            {props.ready !== "ready" && <>
-                <input type="text" value={enteredName as string}
-                    onChange={(e)=>{setEnteredName(e.target.value)}}
-                    placeholder={translate("menu.lobby.field.namePlaceholder")}
-                    onKeyUp={(e)=>{
-                        if(e.key === 'Enter')
-                            GAME_MANAGER.sendSetNamePacket(enteredName as string);
-                    }}
-                    onFocus={() => setInputFocused(true)}
-                    onBlur={e => {
-                        const newName = e.target.value;
-                        setEnteredName(newName);
-                        GAME_MANAGER.sendSetNamePacket(newName);
-                        setInputFocused(false);
-                    }}
-                    ref={(el) => {
-                        nameInputRef.current = el;
-                        setInputFieldWidth(calculateInputFieldWidth());
-                    }}
-                    style={{ width: `${inputFieldWidth}px` }}
-                />
-                {!inputFocused && <button
-                    onClick={() => {
-                        nameInputRef.current?.focus();
-                    }}
-                >
-                    <Icon size="tiny">edit</Icon>
-                </button>}
-            </>}
+            {props.ready !== "ready" && <FlushInput
+                value={enteredName as string}
+                setValue={name => setEnteredName(name.substring(0, 50))}
+                onConfirm={(value) => GAME_MANAGER.sendSetNamePacket(value)}
+            />}
             {props.ready === "ready" && <h2>{enteredName as string}</h2>}
         </div>
     </div>

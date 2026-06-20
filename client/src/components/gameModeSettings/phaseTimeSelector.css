@@ -1,3 +1,6 @@
+.phase-times-selector {
+    padding: 0.5rem;
+}
 .phase-times-selector > .phase-times {
     max-height: 50vh;
     overflow-y: auto;

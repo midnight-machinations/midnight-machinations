@@ -583,10 +583,12 @@ export function OutlineListSelector(props: Readonly<{
     }
 
     return <section className="graveyard-menu-colors selector-section">
-        <h2>{translate("menu.lobby.roleList")}: {roleList.length}</h2>
-        {(props.disabled !== true) && <Button onClick={simplify}>
-            <Icon>filter_list</Icon> {translate("simplify")}
-        </Button>}
+        <div className="selector-section-header">
+            {translate("menu.lobby.roleList")}
+            {(props.disabled !== true) && <Button onClick={simplify}>
+                <Icon>filter_list</Icon> {translate("simplify")}
+            </Button>}
+        </div>
         <div className="role-list-setter-list">
             <DragAndDrop 
                 items={structuredClone(roleList)}
