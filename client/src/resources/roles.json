@@ -1103,6 +1103,16 @@
             {"type": "roleAssignment", "role":"mayor"}
         ]
     },
+    "lackey":{
+        "mainRoleSet": "minions",
+        "roleSets": ["minions"],
+        "armor": false,
+        "aura": null,
+        "maxCount": null,
+        "canWriteDeathNote": false,
+        "canBeConvertedTo": [],
+        "chatMessages":[]
+    },
     "arsonist": {
         "mainRoleSet": "fiends",
         "roleSets": ["fiends"],

@@ -83,7 +83,7 @@ function PhaseTimesVisualizer(props: Readonly<{
     const phaseOrder = useMemo(() => getPhaseOrder(modifiers), [modifiers]);
 
     const totalPhaseTime = useMemo(() => {
-        return phaseOrder.reduce((acc, phase) => acc + getRealPhaseTime(phase, gameModeContext.phaseTimes, modifiers), 0);
+        return phaseOrder.reduce((acc, phase) => acc + getRealPhaseTime(phase, gameModeContext.phaseTimes), 0);
     }, [gameModeContext.phaseTimes, phaseOrder]);
 
     const phaseEntries = useMemo(() => {
@@ -94,7 +94,7 @@ function PhaseTimesVisualizer(props: Readonly<{
         }][] = [];
 
         for (const { index, phase } of phaseOrder.map((phase, index) => ({ index, phase }))) {
-            const time = getRealPhaseTime(phase, gameModeContext.phaseTimes, modifiers);
+            const time = getRealPhaseTime(phase, gameModeContext.phaseTimes);
             const baseColor = getPhaseBaseColor(phase);
             entries.push([phase, { ratio: time / totalPhaseTime, baseColor, key: index }]);
         }
@@ -119,11 +119,8 @@ function PhaseTimesVisualizer(props: Readonly<{
     </div>
 }
 
-function getRealPhaseTime(phase: Exclude<PhaseType, "recess">, phaseTimes: PhaseTimes, modifiers: ListMap<ModifierID, ModifierState>): number {
+function getRealPhaseTime(phase: Exclude<PhaseType, "recess">, phaseTimes: PhaseTimes): number {
     let time = phaseTimes[phase];
-    if (phase === "nomination" && modifiers.get("unscheduledNominations") === null) {
-        time /= 3;
-    }
     return time;
 }
 
@@ -138,17 +135,6 @@ function getPhaseOrder(modifiers: ListMap<ModifierID, ModifierState>): Exclude<P
 
     if (modifiers.get("noTrialPhases") !== null) {
         return preTrialPhases;
-    }
-
-    if (modifiers.get("unscheduledNominations") !== null) {
-        return [
-            ...preTrialPhases,
-            "nomination",
-            "adjournment",
-            "testimony",
-            "judgement",
-            "finalWords",
-        ]
     }
 
     return [

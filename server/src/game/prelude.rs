@@ -7,7 +7,9 @@ pub use crate::game::{
     controllers::*,
     abilities_component::{
         ability_id::AbilityID,
-        Abilities
+        Abilities,
+        ability::Ability,
+        ability_trait::AbilityTrait
     },
     settings::Settings,
     modifiers::{
