@@ -1,12 +1,12 @@
 import { ReactElement, ReactNode, useContext, useEffect, useRef, useState } from "react";
 import { Role, roleJsonData } from "../game/roleState.d";
 import React from "react";
-import translate, { langText, translateChecked } from "../game/lang";
+import translate, { langText, translateChecked, translateCustomWikiArticle } from "../game/lang";
 import StyledText, { DUMMY_NAMES_KEYWORD_DATA, DUMMY_NAMES_SENDER_KEYWORD_DATA, DUMMY_ROLE_LIST_KEYWORD_DATA, StyledTextProps } from "./StyledText";
 import { ROLE_SETS, RoleList, getAllRoles, getRolesFromRoleSet } from "../game/roleListState.d";
 import ChatElement from "./ChatMessage";
 import DUMMY_NAMES from "../resources/dummyNames.json";
-import { ARTICLES, GeneratedArticle, getArticleTitle, WikiArticleLink, wikiPageIsEnabled } from "./WikiArticleLink";
+import { getAllWikiArticles, GeneratedArticle, getArticleTitle, WikiArticleLink, wikiPageIsEnabled } from "./WikiArticleLink";
 import "./wiki.css";
 import GAME_MANAGER, { replaceMentions } from "..";
 import { useLobbyOrGameState } from "./useHooks";
@@ -132,11 +132,19 @@ export default function WikiArticle(props: {
             return <CategoryArticle noLinks={props.noLinks} category={path[1] as WikiCategory} className={props.className}/>
         case "standard":
         case "modifier": {
-            const articleType = path[0];
+            const title = translateChecked(`wiki.article.${path[0]}.${props.article.split("/")[1]}.title`);
+            const text = translateChecked(`wiki.article.${path[0]}.${props.article.split("/")[1]}.text`);
+
+            let body = "ERROR: Could not find article.";
+
+            if (!title && !text) {
+                body = translateCustomWikiArticle(props.article);
+            } else if (title && text) {
+                body = `# ${title}\n${replaceMentions(text, DUMMY_NAMES, (DUMMY_ROLE_LIST as RoleList)) as string}`;
+            }
             return <section className={"wiki-article " + (props.className ?? "")}>
                 <WikiStyledText className="wiki-article-standard" noLinks={props.noLinks}>
-                    {"# "+translate(`wiki.article.${articleType}.${props.article.split("/")[1]}.title`)+"\n"}
-                    {replaceMentions(translate(`wiki.article.${articleType}.${props.article.split("/")[1]}.text`), DUMMY_NAMES, (DUMMY_ROLE_LIST as RoleList)) as string}
+                    {body}
                 </WikiStyledText>
             </section>
         }
@@ -172,7 +180,7 @@ function CategoryArticle(props: Readonly<{ noLinks?: boolean, category: WikiCate
         </WikiStyledText>
         <PageCollection 
             title={title}
-            pages={partitionWikiPages(ARTICLES, enabledRoles, enabledModifiers)[props.category] ?? []}
+            pages={partitionWikiPages(getAllWikiArticles(), enabledRoles, enabledModifiers)[props.category] ?? []}
             enabledRoles={enabledRoles}
             enabledModifiers={enabledModifiers}
             noLinks={props.noLinks}
@@ -389,10 +397,18 @@ export function getSearchStrings(article: WikiArticleLink): string[]{
         }
         case "modifiers":
         case "standard": {
-            return [
-                translate(`wiki.article.${path[0]}.${path[1]}.title`),
-                translate(`wiki.article.${path[0]}.${path[1]}.text`),
-            ]
+            const title = translateChecked(`wiki.article.${path[0]}.${path[1]}.title`);
+
+            if (title === null) {
+                // This is a custom article
+                return [getArticleTitle(article)];
+            } else {
+                // This is defined in en_us.json
+                return [
+                    title,
+                    translate(`wiki.article.${path[0]}.${path[1]}.text`),
+                ]
+            }
         }
         case "generated":
             return getSearchStringsGenerated(path[1] as GeneratedArticle);
