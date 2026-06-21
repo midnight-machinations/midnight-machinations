@@ -27,6 +27,7 @@ export default function LobbyChatMenu(props: Readonly<{spectator: boolean}>): Re
             }}
         >
             <h2>
+                <Icon size="small">chat</Icon>
                 {translate("menu.chat.title")}
                 {chatNotification && <div className="chat-notification highlighted">!</div>}
             </h2>

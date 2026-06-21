@@ -32,7 +32,13 @@
     justify-content: space-between;
 }
 
-.lobby-chat-menu-header > h2 {
+.lobby-chat-menu-header > div {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.lobby-chat-menu-header  h2 {
     padding-right: 1.5rem;
     display: flex;
     flex-direction: row;
@@ -40,7 +46,7 @@
     align-items: center;
 }
 
-.lobby-chat-menu-header > h2 > .chat-notification {
+.lobby-chat-menu-header  h2 > .chat-notification {
     position: unset;
 }
 
@@ -48,4 +54,5 @@
     height: 20em;
     overflow: auto;
     flex-grow: 1;
+    border-bottom: .13rem solid var(--primary-border-color);
 }

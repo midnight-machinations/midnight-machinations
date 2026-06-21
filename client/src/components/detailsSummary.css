@@ -22,7 +22,7 @@
     border: .13rem solid var(--primary-border-color);
     border-bottom-color: var(--primary-border-shadow-color);
     border-right-color: var(--primary-border-shadow-color);
-    border-radius: 0.5rem;
+    border-radius: 0.4rem;
     /* justify-content: left;
     align-items: center; */
 }
