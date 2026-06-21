@@ -9,7 +9,6 @@
     flex-direction: column;
     justify-content: stretch;
     align-items: stretch;
-    flex-wrap: wrap;
 }
 
 .game-modes-editor > header > .selector-section {
@@ -20,7 +19,7 @@
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
-    overflow: hidden;
+    overflow: auto;
     scrollbar-width: none;
 }
 
@@ -29,8 +28,15 @@
     flex-direction: column;
     flex-basis: 47%;
     flex-grow: 1;
+    min-width: min(20rem, 100%);
     max-width: 100%;
-    overflow: auto;
+    height: 100%;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+.game-modes-editor > main > div > .selector-section {
+    overflow: visible;
 }
 
 .game-modes-editor > main > div > .selector-section:last-child {
