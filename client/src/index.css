@@ -652,3 +652,11 @@ code, .code {
 .highlighted.highlighted {
     border-color: yellow;
 }
+.flush.highlighted {
+    outline: .13rem solid yellow;
+    outline-offset: -.13rem;
+}
+
+button.flush:disabled, .button.flush:disabled {
+    box-shadow: none;
+}

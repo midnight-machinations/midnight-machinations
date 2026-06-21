@@ -272,7 +272,7 @@ export default function Anchor(props: Readonly<{
                         setTouchCurrent(null)
                     }}
                 >
-                    <Button className="global-menu-button" 
+                    <Button className="global-menu-button flush" 
                         onClick={() => {
                             if (!globalMenuOpen) {
                                 setGlobalMenuOpen(true)
@@ -341,7 +341,7 @@ function CoverCard(props: Readonly<{
         ref={ref}
     >
         <div className="anchor-cover-card">
-            <Button className="close-button" onClick={anchorController.clearCoverCard}>
+            <Button className="close-button flush" onClick={anchorController.clearCoverCard}>
                 <Icon>close</Icon>
             </Button>
             <div className="anchor-cover-card-content">
