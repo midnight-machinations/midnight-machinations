@@ -140,27 +140,29 @@ function TextDropdownLabel(
         <StyledText className="label-text">{encodeString(replaceMentions(props.titleString, playerNames, roleList))}</StyledText>
         <span>
             {props.onSubtract ? <Button
+                className="flush"
                 onClick={(e) => {
                     if(props.onSubtract)
                         props.onSubtract();
                     stopBubblingUpDomEvent(e);
                 }}
-                pressedChildren={() => <Icon size="small">done</Icon>}
+                pressedChildren={() => <Icon>done</Icon>}
                 aria-label={translate("menu.will.subtract")}
             >
-                <Icon size="small">delete</Icon>
+                <Icon>delete</Icon>
             </Button> : null}
             <Button
+                className="flush"
                 highlighted={unsaved}
                 onClick={(e) => {
                     save(props.field);
                     stopBubblingUpDomEvent(e);
                     return true;
                 }}
-                pressedChildren={() => <Icon size="small">done</Icon>}
+                pressedChildren={() => <Icon>done</Icon>}
                 aria-label={translate("menu.will.save")}
             >
-                <Icon size="small">save</Icon>
+                <Icon>save</Icon>
             </Button>
             {
                 (props.canPostAs!==undefined)&&(props.canPostAs.length > 0)?
@@ -176,16 +178,17 @@ function TextDropdownLabel(
                 />:null
             }
             <Button
+                className="flush"
                 disabled={props.cantPost}
                 onClick={(e) => {
                     send(props.field);
                     stopBubblingUpDomEvent(e);
                     return true;
                 }}
-                pressedChildren={() => <Icon size="small">done</Icon>}
+                pressedChildren={() => <Icon>done</Icon>}
                 aria-label={translate("menu.will.post")}
             >
-                <Icon size="small">send</Icon>
+                <Icon>send</Icon>
             </Button>
         </span>
     </div>

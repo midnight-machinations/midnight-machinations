@@ -111,6 +111,10 @@
 
     --fade-color: #0e101b;
 
+    --brand-color: oklch(from #c52c2c calc(l - 0.2) c 275);
+    --brand-hover-color: oklch(from #c93838 calc(l - 0.2) c 275);
+    --brand-border-color: oklch(from #d85353 calc(l - 0.2) c 275);
+    --brand-border-shadow-color: oklch(from #842727 calc(l - 0.2) c 275);
     --primary-color: #272b3b;
     --secondary-color: #232754;
     --text-color: #ffffff;
@@ -129,6 +133,24 @@
     --kira-font: game-kira-font;
     --spiral-font: game-spiral-font;
     --title-font: game-title-font;
+}
+
+button.brand, .button.brand {
+    background-color: var(--brand-color);
+    border-color: var(--brand-border-color);
+    border-bottom-color: var(--brand-border-shadow-color);
+    border-right-color: var(--brand-border-shadow-color);
+    padding: .25rem .5rem;
+    font-weight: bold;
+}
+
+button.brand:hover:not(:disabled):not(:active), .button.brand:hover:not(:disabled):not(:active) {
+    background-color: var(--brand-hover-color);
+}
+
+button.flush, .button.flush {
+    border: none;
+    background: none;
 }
 
 s {
@@ -199,6 +221,11 @@ textarea, .textarea {
     background-color: var(--hover-color);
 }
 
+*.fauxcus-visible {
+    outline: var(--focus-outline-color) solid .13rem;
+    background-color: var(--hover-color);
+}
+
 a {
     text-decoration: none .13rem;
 }
@@ -222,6 +249,12 @@ button, .button, select, summary {
     border-bottom-color: var(--primary-border-shadow-color);
     border-right-color: var(--primary-border-shadow-color);
     user-select: none;
+}
+button.depressed, .button.depressed {
+    border-bottom-color: var(--primary-border-color);
+    border-right-color: var(--primary-border-color);
+    border-top-color: var(--primary-border-shadow-color);
+    border-left-color: var(--primary-border-shadow-color);
 }
 input, option, textarea, .textarea {
     border-top-color: var(--primary-border-shadow-color);
@@ -266,7 +299,12 @@ option {
     background-color: var(--background-color);
 }
 
-button:hover:not([disabled]):not(:active), .button:hover:not([disabled]):not(:active), input:hover:not([disabled]):not(:active), select:hover:not([disabled]):not(:active), option:hover:not([disabled]):not(:active), summary:hover:not([disabled]):not(:active) {
+button:hover:not([disabled]):not(:active),
+.button:hover:not([disabled]):not(:active),
+input:hover:not([disabled]):not(:active),
+select:hover:not([disabled]):not(:active),
+option:hover:not([disabled]):not(:active),
+summary:hover:not([disabled]):not(:active) {
     background-color: var(--hover-color);
 }
 
@@ -613,4 +651,12 @@ code, .code {
 }
 .highlighted.highlighted {
     border-color: yellow;
+}
+.flush.highlighted {
+    outline: .13rem solid yellow;
+    outline-offset: -.13rem;
+}
+
+button.flush:disabled, .button.flush:disabled {
+    box-shadow: none;
 }

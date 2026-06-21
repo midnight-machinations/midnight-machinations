@@ -502,9 +502,16 @@ function PlayerPoolSelectorLabel(props: Readonly<{
 
 export function RoleOrRoleSetSelector(props: Readonly<{
     disabled?: boolean,
-    roleOrRoleSet: RoleOrRoleSet,
-    onChange: (value: RoleOrRoleSet) => void,
-}>): ReactElement {
+    noCloseOnKeyboardSelect?: boolean
+} & (
+    {
+        roleOrRoleSet: RoleOrRoleSet,
+        onChange: (value: RoleOrRoleSet) => void,
+    } | {
+        displayValue: [string, [React.ReactNode, string]],
+        onChange: (value: RoleOrRoleSet) => void,
+    }
+)>): ReactElement {
     const enabledRoles = useLobbyOrGameState(
         state => state.enabledRoles,
         ["enabledRoles"],
@@ -515,44 +522,48 @@ export function RoleOrRoleSetSelector(props: Readonly<{
         return enabledRoles.includes(role)
     }, [enabledRoles])
 
-    const optionsSearch: SelectOptionsSearch<string> = new Map();
+    const optionsSearch: SelectOptionsSearch<string> = useMemo(() => {
+        const options = new Map();
 
-    ROLE_SETS.forEach((roleSet) => {
-        optionsSearch.set(JSON.stringify({type: "roleSet", roleSet: roleSet}), [
-            <StyledText
-                key={0}
-                noLinks={!props.disabled}
-                className={getRolesFromRoleSet(roleSet).every(role => !isRoleEnabled(role)) ? "keyword-disabled" : ""}
-            >
-                {translateRoleOrRoleSet({type: "roleSet", roleSet: roleSet})}
-            </StyledText>, 
-            translateRoleOrRoleSet({type: "roleSet", roleSet: roleSet})]
-        );
-    });
-    
-    getAllRoles().forEach((role) => {
-        optionsSearch.set(JSON.stringify({type: "role", role: role}), [
-            <StyledText
-                key={0}
-                noLinks={!props.disabled}
-                className={!isRoleEnabled(role) ? "keyword-disabled" : ""}
-            >
-                {translateRoleOrRoleSet({type: "role", role})}
-            </StyledText>,
-            translateRoleOrRoleSet({type: "role", role})
-        ]);
-    });
+        if ("displayValue" in props) {
+            options.set(props.displayValue[0], props.displayValue[1]);
+        }
+
+        ROLE_SETS.forEach((roleSet) => {
+            options.set(JSON.stringify({type: "roleSet", roleSet: roleSet}), [
+                <StyledText
+                    key={0}
+                    noLinks={!props.disabled}
+                    className={getRolesFromRoleSet(roleSet).every(role => !isRoleEnabled(role)) ? "keyword-disabled" : ""}
+                >
+                    {translateRoleOrRoleSet({type: "roleSet", roleSet: roleSet})}
+                </StyledText>, 
+                translateRoleOrRoleSet({type: "roleSet", roleSet: roleSet})]
+            );
+        });
+        
+        getAllRoles().forEach((role) => {
+            options.set(JSON.stringify({type: "role", role: role}), [
+                <StyledText
+                    key={0}
+                    noLinks={!props.disabled}
+                    className={!isRoleEnabled(role) ? "keyword-disabled" : ""}
+                >
+                    {translateRoleOrRoleSet({type: "role", role})}
+                </StyledText>,
+                translateRoleOrRoleSet({type: "role", role})
+            ]);
+        });
+        return options;
+    }, [props.disabled, isRoleEnabled]);
 
     return <Select
         className="role-outline-option-selector"
         disabled={props.disabled}
-        value={JSON.stringify(props.roleOrRoleSet)}
-        onChange={(value) => {
-            props.onChange(
-                value === "any" ? "any" : JSON.parse(value)
-            );
-        }}
+        value={("roleOrRoleSet" in props) ? JSON.stringify(props.roleOrRoleSet) : props.displayValue[0]}
+        onChange={(value) => props.onChange(JSON.parse(value))}
         optionsSearch={optionsSearch}
+        noCloseOnKeyboardSelect={props.noCloseOnKeyboardSelect}
     />
 }
 
@@ -572,10 +583,12 @@ export function OutlineListSelector(props: Readonly<{
     }
 
     return <section className="graveyard-menu-colors selector-section">
-        <h2>{translate("menu.lobby.roleList")}: {roleList.length}</h2>
-        {(props.disabled !== true) && <Button onClick={simplify}>
-            <Icon>filter_list</Icon> {translate("simplify")}
-        </Button>}
+        <div className="selector-section-header">
+            {translate("menu.lobby.roleList")}
+            {(props.disabled !== true) && <Button onClick={simplify}>
+                <Icon>filter_list</Icon> {translate("simplify")}
+            </Button>}
+        </div>
         <div className="role-list-setter-list">
             <DragAndDrop 
                 items={structuredClone(roleList)}

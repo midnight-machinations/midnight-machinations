@@ -83,6 +83,9 @@
     font-style: italic;
     color: gray;
 }
+.keyword-dead .keyword-player {
+    color: rgb(168, 168, 168);
+}
 .keyword-pride, .keyword-trans, .keyword-christmas {
     background-clip: text;
     color: rgba(255,255,255,.2);

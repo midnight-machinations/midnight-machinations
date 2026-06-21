@@ -1,10 +1,11 @@
-import React, { ReactElement, useEffect, useState } from "react";
+import React, { ReactElement, useEffect, useRef, useState } from "react";
 import GAME_MANAGER from "../..";
 import translate from "../../game/lang";
 import Icon from "../../components/Icon";
 import { useLobbyState } from "../../components/useHooks";
 import { Button } from "../../components/Button";
-import { encodeString } from "../../components/ChatMessage";
+import { UnsafeString } from "../../game/gameState.d";
+import FlushInput from "../../components/FlushInput";
 
 
 
@@ -39,30 +40,32 @@ export default function LobbyNamePane(): ReactElement {
         }
     }, [otherPlayersReady])
 
-    return <section className="player-list-menu-colors selector-section lobby-name-pane">
-        {!isSpectator && <NameSelector/>}
-        <div className="name-pane-buttons">
-            <Button onClick={() => GAME_MANAGER.sendSetSpectatorPacket(!isSpectator)}>
-                {isSpectator
-                    ? <><Icon>sports_esports</Icon> {translate("switchToPlayer")}</>
-                    : <><Icon>visibility</Icon> {translate("switchToSpectator")}</>}
-            </Button>
-            {ready === "host" && <button
-                onClick={() => GAME_MANAGER.sendRelinquishHostPacket()}
-            ><Icon>remove_moderator</Icon> {translate("menu.lobby.button.relinquishHost")}</button>}
-            {ready !== "host" && <Button
-                className={(now < flashingSince + 3000) ? "flashing" : undefined}
-                onClick={() => {GAME_MANAGER.sendReadyUpPacket(ready === "notReady")}}
-            >
-                {ready === "ready"
-                    ? <><Icon>clear</Icon> {translate("menu.lobby.button.unready")}</>
-                    : <><Icon>check</Icon> {translate("menu.lobby.button.readyUp")}</>}
-            </Button>}
+    return <section className="chat-menu-colors selector-section">
+        <div className="lobby-name-pane">
+            {!isSpectator && <NameSelector ready={ready}/>}
+            <div className="name-pane-buttons">
+                {ready !== "ready" && <Button onClick={() => GAME_MANAGER.sendSetSpectatorPacket(!isSpectator)}>
+                    {isSpectator
+                        ? <><Icon>sports_esports</Icon> {translate("switchToPlayer")}</>
+                        : <><Icon>visibility</Icon> {translate("switchToSpectator")}</>}
+                </Button>}
+                {ready === "host" && <button
+                    onClick={() => GAME_MANAGER.sendRelinquishHostPacket()}
+                ><Icon>remove_moderator</Icon> {translate("menu.lobby.button.relinquishHost")}</button>}
+                {ready !== "host" && <Button
+                    className={"brand " + (ready === "ready" ? "depressed " : ((now < flashingSince + 2000) ? "flashing" : undefined))}
+                    onClick={() => {GAME_MANAGER.sendReadyUpPacket(ready === "notReady")}}
+                >
+                    {ready === "ready"
+                        ? <><Icon>clear</Icon> {translate("menu.lobby.button.unready")}</>
+                        : <><Icon>check</Icon> {translate("menu.lobby.button.readyUp")}</>}
+                </Button>}
+            </div>
         </div>
     </section>
 }
 
-function NameSelector(): ReactElement {
+function NameSelector(props: Readonly<{ ready: "host" | "ready" | "notReady" }>): ReactElement {
     const myName = useLobbyState(
         state => {
             const client = state.players.get(state.myId!);
@@ -71,26 +74,21 @@ function NameSelector(): ReactElement {
             return client.clientType.name;
         },
         ["lobbyClients", "yourId"]
-    );
-    const [enteredName, setEnteredName] = React.useState("");
+    )!;
+    const [enteredName, setEnteredName] = React.useState<UnsafeString>(myName);
+
+    useEffect(() => {
+        setEnteredName(myName);
+    }, [myName]);
 
     return <div className="name-pane-selector">
         <div className="lobby-name">
-            {/* This might be a little crazy */}
-            <section><h2 dangerouslySetInnerHTML={{ __html: encodeString(myName ?? "") }} /></section>
-        </div>
-        <div className="name-box">
-            <input type="text" value={enteredName}
-                onChange={(e)=>{setEnteredName(e.target.value)}}
-                placeholder={translate("menu.lobby.field.namePlaceholder")}
-                onKeyUp={(e)=>{
-                    if(e.key === 'Enter')
-                        GAME_MANAGER.sendSetNamePacket(enteredName);
-                }}
-            />
-            <button onClick={()=>{
-                GAME_MANAGER.sendSetNamePacket(enteredName)
-            }}>{translate("menu.lobby.button.setName")}</button>
+            {props.ready !== "ready" && <FlushInput
+                value={enteredName as string}
+                setValue={name => setEnteredName(name.substring(0, 50))}
+                onConfirm={(value) => GAME_MANAGER.sendSetNamePacket(value)}
+            />}
+            {props.ready === "ready" && <h2>{enteredName as string}</h2>}
         </div>
     </div>
 }

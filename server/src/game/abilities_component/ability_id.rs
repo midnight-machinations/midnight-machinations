@@ -7,7 +7,8 @@ use crate::game::{
 pub enum AbilityID{
     Role{role: Role, player: PlayerReference},
     Pitchfork,
-    SyndicateGun
+    SyndicateGun,
+    PawnConvert
 }
 impl AbilityID{
     pub fn exists(&self, game: &Game)->bool{

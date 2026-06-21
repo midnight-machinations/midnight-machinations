@@ -236,8 +236,7 @@ impl Game {
         if start_trial_instantly && let Some(player_on_trial) = voted_player {
             PhaseStateMachine::next_phase(self, Some(PhaseState::Testimony {
                 trials_left: trials_left.saturating_sub(1), 
-                player_on_trial, 
-                nomination_time_remaining: self.phase_machine.get_time_remaining()
+                player_on_trial
             }));
         }
 

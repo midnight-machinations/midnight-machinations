@@ -190,9 +190,10 @@ impl AbilityID{
     
     fn get_dyn_cloned_ability_expect(&self, game: &Game)->Box<dyn AbilityTrait>{
         match self.get_ability(game).expect("Event called on abilityId not in event map should be impossible").clone() {
-            Ability::Role(role_ability) => {Box::new(role_ability)},
-            Ability::Pitchfork(pitchfork_ability) => {Box::new(pitchfork_ability)},
-            Ability::SyndicateGun(syndicate_gun) => {Box::new(syndicate_gun)},
+            Ability::Role(role_ability) => Box::new(role_ability),
+            Ability::Pitchfork(pitchfork_ability) => Box::new(pitchfork_ability),
+            Ability::SyndicateGun(syndicate_gun) => Box::new(syndicate_gun),
+            Ability::PawnConvert(pawn_convert) => Box::new(pawn_convert),
         }
     }
 }
