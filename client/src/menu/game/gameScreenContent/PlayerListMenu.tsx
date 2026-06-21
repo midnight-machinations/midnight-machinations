@@ -40,9 +40,7 @@ export default function PlayerListMenu(): ReactElement {
 
             {graves.entries().length === 0 || 
                 <>
-                    <div className="dead-players-separator">
-                        <StyledText>{translate("grave.icon")} {translate("graveyard")}</StyledText>
-                    </div>
+                    <StyledText>{translate("grave.icon")} {translate("graveyard")}</StyledText>
                     {graves.entries().map(([index, grave]) => <div key={grave.player} className="player-card-holder"><PlayerCard graveIndex={index} playerIndex={grave.player}/></div>)}
                 </>
             }
@@ -53,9 +51,7 @@ export default function PlayerListMenu(): ReactElement {
                     graves.values().find((grave) => grave.player === player.index) === undefined
                 ).length === 0 || 
                 <>
-                    <div className="dead-players-separator">
-                        <StyledText>{translate("grave.icon")} {translate("graveyard")}</StyledText>
-                    </div>
+                    <StyledText>{translate("grave.icon")} {translate("graveyard")}</StyledText>
                     {players
                         .filter(player => !player.alive)
                         .map(player => <div key={player.index} className="player-card-holder"><PlayerCard playerIndex={player.index}/></div>)
