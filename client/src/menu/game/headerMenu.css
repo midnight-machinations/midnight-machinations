@@ -77,7 +77,7 @@
     padding: .13rem .13rem;
     margin: .13rem;
 } 
-.menu-buttons .chat-notification{
+.chat-notification{
     font-size: 0.83rem;
     height: 0.83rem;
     aspect-ratio: 1;
@@ -92,8 +92,10 @@
 }
 .header-menu .fast-forward-button {
     position: absolute;
-    left: .25rem;
-    top: .25rem;
+    left: .5rem;
+    top: .5rem;
+    font-size: 1.25rem;
+    padding: .13rem calc(.5rem - .13rem);
 }
 /* .header-menu .fast-forward-button-div > button:first-of-type {
     margin: 0;

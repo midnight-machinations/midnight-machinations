@@ -22,3 +22,6 @@
     align-items: center;
     justify-content: center;
 }
+.graveyard-menu-excludedRoles .enabled-roles-button-panel {
+    margin: 0;
+}

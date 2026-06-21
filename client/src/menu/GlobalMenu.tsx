@@ -72,7 +72,7 @@ export default function GlobalMenu(): ReactElement {
             {(stateType === "lobby" || stateType === "game") && 
                 <section className="standout">
                     <h2>{encodeString(lobbyName)}</h2>
-                    <RoomLinkButton/>
+                    <RoomLinkButton verbose />
                     {(stateType === "game" && host) && <>
                         <Button onClick={()=>GAME_MANAGER.sendBackToLobbyPacket()}>
                             {translate("backToLobby")}
@@ -101,7 +101,7 @@ export default function GlobalMenu(): ReactElement {
     );
 }
 
-export function RoomLinkButton(): JSX.Element {
+export function RoomLinkButton(props: { verbose?: true }): JSX.Element {
     const code = useLobbyOrGameState(
         state => {
             const code = new URL(window.location.href);
@@ -111,7 +111,7 @@ export function RoomLinkButton(): JSX.Element {
         }, ["acceptJoin", "backToLobby"]
     )!;
     
-    return <CopyButton text={code.toString()}>
-        <Icon>link</Icon> {translate("menu.play.field.roomCode")}
+    return <CopyButton className={props.verbose ? "" : "flush"} text={code.toString()}>
+        <Icon>link_2</Icon> {props.verbose && translate("menu.lobby.button.copyLink")}
     </CopyButton>
 }

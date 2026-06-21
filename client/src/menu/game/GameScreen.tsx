@@ -334,10 +334,10 @@ export function ContentTab(props: Readonly<{
             </StyledText>
         </div>
 
-        {props.close && (!spectator || mobile) && <Button className="close"
+        {props.close && (!spectator || mobile) && <Button className="close flush"
             onClick={()=>menuController.closeMenu(props.close as ContentMenu)}
         >
-            <Icon size="small">close</Icon>
+            <Icon>close</Icon>
         </Button>}
     </div>
 }

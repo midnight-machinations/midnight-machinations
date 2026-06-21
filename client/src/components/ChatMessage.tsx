@@ -223,7 +223,7 @@ const ChatElement = React.memo((
             {
                 myIndex!==undefined && mouseHovering && forwardButton && props.messageIndex !== undefined && 
                 <Button
-                    className="chat-message-div-small-button material-icons-round"
+                    className="chat-message-div-small-button material-symbols-rounded"
                     onClick={()=>props.messageIndex !== undefined?GAME_MANAGER.sendControllerInput({
                         id: {type: "forwardMessage", player: myIndex}, 
                         selection: {type: "chatMessage", selection: props.messageIndex}
@@ -390,7 +390,7 @@ function NormalChatMessage(props: Readonly<{
             {
                 props.myIndex!==undefined && props.mouseHovering && props.forwardButton && props.messageIndex !== undefined
                 && <Button
-                    className="chat-message-div-small-button material-icons-round"
+                    className="chat-message-div-small-button material-symbols-rounded"
                     onClick={()=>props.messageIndex !== undefined?GAME_MANAGER.sendControllerInput({
                         id: {type: "forwardMessage", player: props.myIndex?props.myIndex:0}, 
                         selection: {type: "chatMessage", selection: props.messageIndex}

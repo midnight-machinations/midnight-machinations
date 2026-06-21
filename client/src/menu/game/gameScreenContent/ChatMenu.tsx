@@ -238,6 +238,7 @@ export function ChatTextInput(props: Readonly<{
     disabled?: boolean,
     whispering?: PlayerIndex | null,
     controllingPlayer?: PlayerIndex
+    hidden?: boolean
 }>): ReactElement {
     const [chatBoxText, setChatBoxText] = useState<string>("");
     const [drawAttentionSeconds, setDrawAttentionSeconds] = useState<number>(0);
@@ -379,7 +380,7 @@ export function ChatTextInput(props: Readonly<{
     }
 
     return <>
-        {whisperingPlayerName !== null && <div className="chat-whisper-notification">
+        {whisperingPlayerName !== null && <div className="chat-whisper-notification" hidden={props.hidden}>
             {sendingPlayerName!==null?<StyledText className="discreet">{
                 translate("playerIsWhisperingToPlayer", encodeString(sendingPlayerName), encodeString(whisperingPlayerName))
             }</StyledText>:null}
@@ -390,7 +391,7 @@ export function ChatTextInput(props: Readonly<{
                 {translate("cancelWhisper")}
             </Button>:null}
         </div>}
-        <div className="chat-send-section">
+        <div className="chat-send-section" hidden={props.hidden}>
             <textarea
                 className={drawAttentionSeconds * 2 % 2 === 1 ? "highlighted" : undefined}
                 ref={ref}

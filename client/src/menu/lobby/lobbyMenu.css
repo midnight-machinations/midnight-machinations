@@ -5,16 +5,15 @@
     overflow-y: auto;
     height: 100%;
     align-items: center;
+    position: relative;
 }
 
 .lm > div {
     display: flex;
     flex-direction: column;
-    padding: 1rem;
-    gap: 1rem;
-    width: 100rem;
     max-width: 100%;
     height: 100%;
+    flex-shrink: 1;
 }
 
 .lm > div > header {
@@ -25,6 +24,8 @@
     flex-wrap: wrap;
     gap: 0.5rem;
     font-size: 1.25em;
+    padding: 0.5rem;
+    padding-right: 3rem;
 }
 
 .lm > div > header div{
@@ -32,17 +33,15 @@
     flex-direction: row;
     flex-wrap: wrap;
     justify-content: center;
-    gap: 0.5rem;
 }
 
 .lm > div > header > * {
     max-width: 100%;
 }
 
-@media only screen and (max-width: 600px) {
-    .lm > div > header {
-        justify-content: center;
-    }
+input.lobby-name-field {
+    font-size: 1.4625rem; /* h3 tags by default multiply this 1.25 by 1.17, making 1.4625. */
+    font-weight: bold;
 }
 
 .lm > div > main ol {
@@ -54,8 +53,10 @@
     flex-direction: row;
     flex-wrap: wrap;
     flex-grow: 1;
-    row-gap: 1rem;
-    column-gap: 1rem;
+    overflow: auto;
+    border: 0.13rem solid var(--background-border-color);
+    border-bottom: none;
+    background-color: var(--background-color);
 }
 
 .lm > div > main > div {
@@ -64,7 +65,20 @@
     flex-basis: 47%;
     max-width: 100%;
     flex-grow: 1;
-    gap: 1rem;
+    height: 100%;
+}
+
+.lm > div > main > .vertical-line-separator {
+    border-left: 0.13rem solid var(--background-border-color);
+    height: 100%;
+    margin: 0 0;
+    width: 0;
+    flex-grow: 0;
+    flex-basis: 0;
+}
+
+.lm > div > main > div:first-child {
+    flex-basis: 15rem;
 }
 
 .lm > div .name-box {
@@ -79,43 +93,68 @@
 .lobby-name-pane {
     display: flex;
     flex-direction: row;
-    justify-content: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    margin: 0.5rem;
 }
 .lobby-name-pane > .name-pane-selector {
-    flex-grow: 1;
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
+    justify-content: center;
 }
 .lobby-name-pane > .name-pane-buttons {
     display: flex;
-    flex-direction: column;
-    align-items: stretch;
-    justify-content: flex-end;
+    flex-direction: row;
+    justify-self: flex-end;
+    align-items: center;
+    justify-content: stretch;
+}
+.lobby-name-pane > .name-pane-buttons > .ready-up-button {
+    border-top-color: #368036;
+    border-left-color: #368036;
+    border-right-color: #003300;
+    border-bottom-color: #003300;
+    background-color: darkgreen;
+}
+.lobby-name-pane > .name-pane-buttons > .ready-up-button:hover {
+    background-color: #007000;
+}
+.lobby-name-pane > .name-pane-buttons > .ready-up-button.depressed {
+    background-color: #004400;
+    border-top-color: var(--primary-border-shadow-color);
+    border-left-color: var(--primary-border-shadow-color);
+    border-right-color: var(--primary-border-color);
+    border-bottom-color: var(--primary-border-color);
 }
 
-.lobby-name {
-    display: flex;
-    width: 100%;
-    justify-content: space-between;
+.lobby-name input {
+    font-size: 1.5rem;
+    font-weight: bold;
 }
-.lobby-name button{
+
+.lobby-player-list-section {
+    height: 100%;
     flex-shrink: 1;
-}
-.lobby-name section{
-    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
 }
 
 .lobby-player-list {
-    border: .13rem solid var(--background-border-color);
-    border-top-color: var(--background-border-shadow-color);
-    border-left-color: var(--background-border-shadow-color);
-    border-radius: .5rem;
+    background-color: var(--background-color);
+    overflow: scroll;
+    height: 100%;
+    padding-bottom: 3rem;
+}
+
+.lobby-player-list > ol > h3 {
+    padding: .25rem;
+    background-color: var(--background-color);
 }
 
 .spectators-ready {
-    text-align: left;
-    margin-top: .5rem;
+    text-align: center;
+    margin: .5rem;
 }
 
 .lobby-player-list ol li {
@@ -126,10 +165,11 @@
     gap: .5rem;
     align-items: center;
     min-height: 2em;
+    background-color: var(--primary-color);
 }
 
 .lobby-player-list ol li:nth-of-type(even) {
-    background-color: var(--primary-color);
+    background-color: var(--secondary-color);
 }
 
 .lobby-player-list ol li > div {
@@ -139,14 +179,21 @@
 }
 
 .lobby-player-list-player-rename {
-    border: .13rem solid var(--background-border-color);
-    background-color: var(--secondary-color);
-    border-radius: .25rem;
-    min-width: min-content;
+    font-weight: bold;
+    font-style: italic;
 }
 
 .lobby-name-pane .flashing {
     animation: ready-flash 0.5s infinite;
+}
+
+.lobby-settings {
+    overflow: auto;
+    padding-bottom: 3rem;
+}
+
+.lobby-settings > .selector-section {
+    overflow: hidden;
 }
 
 @keyframes ready-flash {

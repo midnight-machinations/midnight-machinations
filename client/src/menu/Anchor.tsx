@@ -13,6 +13,10 @@ import WikiCoverCard from "../components/WikiCoverCard";
 import WikiArticle from "../components/WikiArticle";
 import AudioController from "./AudioController";
 import { computeKeywordData } from "../components/StyledText";
+import GameModesEditor from "../components/gameModeSettings/GameModesEditor";
+import HostMenu from "./HostMenu";
+import SettingsMenu from "./Settings";
+import NightMessagePopup from "../components/NightMessagePopup";
 
 const MobileContext = createContext<boolean | undefined>(undefined);
 const CtrlPressedContext = createContext<boolean | undefined>(undefined);
@@ -190,6 +194,12 @@ export default function Anchor(props: Readonly<{
             if (coverCard.type === WikiCoverCard || coverCard.type === WikiArticle) {
                 coverCardTheme = "wiki-menu-colors"
             }
+            if (coverCard.type === GameModesEditor || coverCard.type === NightMessagePopup) {
+                coverCardTheme = "chat-menu-colors"
+            }
+            if (coverCard.type === HostMenu || coverCard.type === SettingsMenu) {
+                coverCardTheme = "graveyard-menu-colors"
+            }
 
             if (callback) {
                 setSetCoverCardCallbacks(setCoverCardCallbacks => 
@@ -262,7 +272,7 @@ export default function Anchor(props: Readonly<{
                         setTouchCurrent(null)
                     }}
                 >
-                    <Button className="global-menu-button" 
+                    <Button className="global-menu-button flush" 
                         onClick={() => {
                             if (!globalMenuOpen) {
                                 setGlobalMenuOpen(true)
@@ -310,15 +320,28 @@ function CoverCard(props: Readonly<{
             document.removeEventListener("keydown", escFunction, false);
         };
     }, [escFunction]);
+
+    const [mouseDownOnElement, setMouseDownOnElement] = useState(false);
+
     return <div 
-        className={`anchor-cover-card-background-cover ${props.theme ?? ""}`} 
-        onClick={e => {
-            if (e.target === ref.current) anchorController.clearCoverCard()
+        className={`anchor-cover-card-background-cover ${props.theme ?? ""}`}
+        // Onclick will trigger even when the click is started on a child element
+        // This makes sure it starts and ends on the actual background cover.
+        onMouseDown={e => {
+            if (e.target === e.currentTarget) {
+                setMouseDownOnElement(true)
+            }
+        }}
+        onMouseUp={e => {
+            if (mouseDownOnElement && e.target === e.currentTarget) {
+                anchorController.clearCoverCard()
+            }
+            setMouseDownOnElement(false)
         }}
         ref={ref}
     >
         <div className="anchor-cover-card">
-            <Button className="close-button" onClick={anchorController.clearCoverCard}>
+            <Button className="close-button flush" onClick={anchorController.clearCoverCard}>
                 <Icon>close</Icon>
             </Button>
             <div className="anchor-cover-card-content">

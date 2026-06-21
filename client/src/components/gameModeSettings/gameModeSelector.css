@@ -10,8 +10,23 @@
 }
 .save-menu {
     display: flex;
-    justify-content: center;
+    justify-content: flex-start;
+    align-items: center;
     flex-wrap: wrap;
+    padding: 0.5rem;
+}
+.save-menu .flush-input-container {
+    margin: 0 0 0 1rem;
+}
+.save-menu .vertical-line-separator {
+    border-left: 0.13rem solid var(--primary-border-color);
+    height: 1rem;
+    margin: 0 1rem;
+    width: 0;
+}
+.save-menu .flush-input-container input {
+    font-size: 1.125rem;
+    font-weight: bold;
 }
 .saved-game-modes > div {
     flex-basis: 40%;

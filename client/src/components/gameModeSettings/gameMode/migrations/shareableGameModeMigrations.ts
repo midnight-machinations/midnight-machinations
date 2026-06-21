@@ -38,3 +38,18 @@ registerMigration("ShareableGameMode", {
         });
     }
 });
+
+registerMigration("ShareableGameMode", {
+    id: "2026-06-19-remove-recess-phase-time",
+    description: "Remove recess from phase time settings",
+    matches: (json) => json.format === "2025-10-23-change-to-migration-id-format",
+    transform: (json) => {
+        const { recess, ...phaseTimes } = json.phaseTimes ?? {};
+
+        return Success({
+            ...json,
+            format: "2026-06-19-remove-recess-phase-time",
+            phaseTimes
+        });
+    }
+});

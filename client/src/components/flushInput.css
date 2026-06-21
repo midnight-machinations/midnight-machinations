@@ -1,0 +1,26 @@
+.flush-input-container {
+    display: flex;
+    flex-direction: row;
+    align-items: stretch;
+}
+
+.flush-input {
+    background: none;
+    border: none;
+    padding: 0;
+    margin: 0;
+    display: block;
+    overflow: visible;
+    border-radius: 0;
+}
+
+.flush-input:focus {
+    outline: none;
+}
+
+.flush-input-button {
+    border: none;
+    background: none;
+    padding: 0 0.25rem;
+    margin: 0;
+}

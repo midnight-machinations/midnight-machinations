@@ -1,4 +1,4 @@
-import { ReactElement, createContext, useCallback, useState } from "react";
+import { ReactElement, createContext, useCallback, useMemo, useState } from "react";
 import React from "react";
 import { OutlineListSelector } from "./OutlineSelector";
 import { getAllRoles, RoleList, RoleOutline } from "../../game/roleListState.d";
@@ -91,39 +91,43 @@ export default function GameModesEditor(props: Readonly<{
         setModifierSettings(modifiers);
     }
     
-    
+    const contextValue = useMemo(() => ({
+        roleList,
+        phaseTimes,
+        enabledRoles,
+        modifierSettings
+    }), [roleList, phaseTimes, enabledRoles, modifierSettings]);
+
     return <div className="game-modes-editor">
-        <header>
-            <h1>{translate("menu.globalMenu.gameSettingsEditor")}</h1>
-        </header>
-        <GameModeContext.Provider value={{roleList, phaseTimes, enabledRoles, modifierSettings}}>
+        <GameModeContext.Provider value={contextValue}>
+            <header>
+                <GameModeSelector 
+                    loadGameMode={gameMode => {
+                        setRoleList(gameMode.roleList);
+                        setEnabledRoles(gameMode.enabledRoles);
+                        setPhaseTimes(gameMode.phaseTimes);
+                        setModifierSettings(gameMode.modifierSettings);
+                    }}
+                />
+                <PhaseTimesSelector 
+                    onChange={(newPhaseTimes) => {
+                        setPhaseTimes(newPhaseTimes);
+                    }}            
+                />
+            </header>
             <main>
                 <div>
-                    <GameModeSelector 
-                        canModifySavedGameModes={true}
-                        loadGameMode={gameMode => {
-                            setRoleList(gameMode.roleList);
-                            setEnabledRoles(gameMode.enabledRoles);
-                            setPhaseTimes(gameMode.phaseTimes);
-                            setModifierSettings(gameMode.modifierSettings);
-                        }}
-                    />
-                    <PhaseTimesSelector 
-                        onChange={(newPhaseTimes) => {
-                            setPhaseTimes(newPhaseTimes);
-                        }}            
-                    />
                     <EnabledRoleSelector
                         onDisableRoles={onDisableRoles}
                         onEnableRoles={onEnableRoles}
                         onIncludeAll={onEnableAll}         
                     />
-                </div>
-                <div>
                     <ModifiersSelector
                         disabled={false}
                         setModifiers={setModifiers}
                     />
+                </div>
+                <div>
                     <OutlineListSelector
                         onChangeRolePicker={onChangeRolePicker}
                         onAddNewOutline={addOutline}
