@@ -111,10 +111,16 @@ function GameModeSelectorPanel(props: Readonly<{
 
         saveGameModes(newGameModeStorage);
         props.reloadGameModeStorage();
-        loadGameMode({
-            name: name,
+        
+        const newGameMode = newGameModeStorage.gameModes.find(gameMode => gameMode.name === name)!;
+
+        setGameModeNameField(newGameMode.name)
+        setGameModeLocation({
+            name: newGameMode.name,
             players: roleList.length
         });
+        props.loadGameMode(newGameMode.data[roleList.length]);
+
         return "success";
     }, [enabledRoles, props, phaseTimes, roleList, modifierSettings]);
 
@@ -139,11 +145,11 @@ function GameModeSelectorPanel(props: Readonly<{
 
     const playerCount = useLobbyState((state) => state.players.keys().length);
 
-    useEffect(() => {
+    const returnToDefaultGameMode = () => {
         const experimental = props.gameModeStorage.gameModes.find(gameMode => gameMode.name === "Experimental");
 
         // If there's more than one person in the lobby, we must have come from a game, so don't reset game mode.
-        if (experimental && (playerCount === undefined || playerCount === 1)) {
+        if (experimental) {
             let players; 
             if ("15" in experimental.data) {
                 players = 15;
@@ -156,6 +162,14 @@ function GameModeSelectorPanel(props: Readonly<{
                 name: "Experimental",
                 players
             });
+        } else {
+            setGameModeLocation(null);
+        }
+    }
+
+    useEffect(() => {
+        if (playerCount === undefined || playerCount === 1) {
+            returnToDefaultGameMode();
         }
     }, []);
 
@@ -177,6 +191,8 @@ function GameModeSelectorPanel(props: Readonly<{
 
         saveGameModes(newGameModeStorage);
         props.reloadGameModeStorage();
+
+        returnToDefaultGameMode();
         return true;
     }
 
@@ -264,6 +280,11 @@ function GameModeSelectorPanel(props: Readonly<{
             <CopyButton className="flush" text={shareableGameModeURL.toString()}>
                 <Icon>share</Icon>{verbose ? <> {translate("copyToClipboard")}</> : undefined}
             </CopyButton>
+            {!props.disabled && gameModeLocation && <Button 
+                className="flush"
+                onClick={() => deleteGameMode(gameModeLocation)}
+                pressedChildren={result => <Icon>{result ? "done" : "warning"}</Icon>}
+            ><Icon>delete</Icon></Button>}
         </div>
     </div>
 }
@@ -287,7 +308,6 @@ function GameModeSelectorSelect(props: Readonly<{
     const gameModeContext = useContext(GameModeContext);
 
     useEffect(() => {
-        console.log(gameModeData, gameModeContext);
         setStar(!strictDeepEqual<GameModeData | null>(gameModeData, gameModeContext));
     }, [gameModeData, gameModeContext]);
 

@@ -134,12 +134,17 @@ input.lobby-name-field {
 
 .lobby-player-list-section {
     height: 100%;
+    flex-shrink: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
 }
 
 .lobby-player-list {
     background-color: var(--background-color);
     overflow: scroll;
     height: 100%;
+    padding-bottom: 3rem;
 }
 
 .lobby-player-list > ol > h3 {
