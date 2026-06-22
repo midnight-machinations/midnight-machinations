@@ -6,6 +6,14 @@ use crate::{game::{components::insider_group::InsiderGroupID, event::{on_convert
 
 use super::win_condition::WinCondition;
 
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq)]
+#[serde(rename_all = "camelCase")]
+#[serde(tag = "type", content = "day")]
+pub enum SynopsisTime {
+    Night(u8),
+    Day(u8),
+}
+
 pub struct SynopsisTracker {
     player_synopses: Vec<PartialPlayerSynopsis>
 }
@@ -58,10 +66,10 @@ impl SynopsisTracker {
     }
 
     fn add_crumb_to_player(player: PlayerReference, game: &mut Game) {
-        let night = if matches!(game.current_phase().phase(), PhaseType::Night | PhaseType::Obituary) { 
-            Some(game.day_number())
+        let time = if matches!(game.current_phase().phase(), PhaseType::Night | PhaseType::Obituary) { 
+            SynopsisTime::Night(game.day_number())
         } else {
-            None
+            SynopsisTime::Day(game.day_number())
         };
 
         let role = player.role(game);
@@ -69,7 +77,7 @@ impl SynopsisTracker {
         let insider_groups = InsiderGroupID::all_groups_with_player(game, player);
 
         if let Some(ref mut synopsis) = SynopsisTracker::player_synopses(game).get_mut(player.index() as usize) {
-            synopsis.add_crumb(SynopsisCrumb { night, role, win_condition, insider_groups });
+            synopsis.add_crumb(SynopsisCrumb { time, role, win_condition, insider_groups });
         }
     }
 }
@@ -116,10 +124,10 @@ pub struct PartialPlayerSynopsis {
 
 impl PartialPlayerSynopsis {
     fn add_crumb(&mut self, crumb: SynopsisCrumb) {
-        // Remove duplicates from each night
+        // Remove duplicates from the same time period
         if let Some((index, _)) = self.crumbs.iter()
             .enumerate()
-            .find(|(_, c)| c.night.is_some() && c.night == crumb.night)
+            .find(|(_, c)| c.time == crumb.time)
         {
             self.crumbs.drain(index..);
         }
@@ -142,7 +150,7 @@ impl PartialPlayerSynopsis {
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq)]
 #[serde(rename_all = "camelCase")]
 pub struct SynopsisCrumb {
-    night: Option<u8>,
+    time: SynopsisTime,
     role: Role,
     win_condition: WinCondition,
     insider_groups: VecSet<InsiderGroupID>,
