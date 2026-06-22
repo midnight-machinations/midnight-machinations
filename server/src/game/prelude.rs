@@ -15,7 +15,8 @@ pub use crate::game::{
     modifiers::{
         ModifierID,
         ModifierSettings,
-        ModifierState
+        ModifierState,
+        gravity::{Gravity, GravityLevel}
     },
     role_list::RoleSet,
     phase::*,
