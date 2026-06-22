@@ -3,7 +3,7 @@ use std::time::Duration;
 use crate::{
     client_connection::ClientConnection, 
     game::{
-        chat::{ChatComponent, ChatMessageVariant},
+        chat::{ChatComponent, ChatMessageVariant, ClientChatGroups},
         components::{
             graves::grave_reference::GraveReference, insider_group::InsiderGroups,
             tags::Tags
@@ -92,7 +92,7 @@ impl PlayerReference{
         InsiderGroups::send_player_insider_groups_packet(game, *self);
         InsiderGroups::send_fellow_insiders_packets(game, *self);
         Tags::send_to_client(game, *self);
-        let send_chat_groups = self.get_current_send_chat_groups(game);
+        let send_chat_groups = ClientChatGroups::from(self.get_current_send_chat_groups(game));
 
         self.send_packets(game, vec![
             ToClientPacket::YourSendChatGroups {send_chat_groups},

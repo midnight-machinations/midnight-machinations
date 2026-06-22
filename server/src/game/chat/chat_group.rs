@@ -42,7 +42,7 @@ impl PlayerChatGroups{
 
         if game.player_chat_groups.send != out {
             for player in PlayerReference::all_players(game){
-                player.send_packet(game, ToClientPacket::YourSendChatGroups { send_chat_groups: out.get(player)});
+                player.send_packet(game, ToClientPacket::YourSendChatGroups { send_chat_groups: ClientChatGroups::from(out.get(player)) });
             }
         }
 
@@ -97,6 +97,19 @@ impl PlayerChatGroupMap{
     fn player_in_group(&self, player: PlayerReference, chat_group: ChatGroup)->bool{
         let Some(groups) = self.0.get(&player) else {return false};
         groups.contains(&chat_group)
+    }
+}
+
+#[derive(Serialize, Debug, Clone)]
+#[serde(transparent)]
+pub struct ClientChatGroups(VecSet<ChatGroup>);
+
+impl From<VecSet<ChatGroup>> for ClientChatGroups{
+    fn from(chat_groups: VecSet<ChatGroup>) -> Self {
+        Self(chat_groups.into_iter().map(|g| match g {
+            ChatGroup::Kidnapped => ChatGroup::Jail,
+            other => other
+        }).collect())
     }
 }
 
