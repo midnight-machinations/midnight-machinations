@@ -76,7 +76,8 @@
 }
 
 .player-card .chat-notification{
-    font-size: 0.83rem;
+    font-size: 0.5rem;
+    font-weight: bold;
     height: 0.83rem;
     aspect-ratio: 1;
     background-color: var(--primary-color);
