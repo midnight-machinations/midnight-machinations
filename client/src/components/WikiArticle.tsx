@@ -19,6 +19,7 @@ import Popover from "./Popover";
 import { dropdownPlacementFunction } from "./Select";
 import WikiArticleTooltip, { getArticleTooltip } from "./WikiArticleTooltip";
 import { CtrlPressedContext } from "../menu/Anchor";
+import { Button } from "./Button";
 
 function WikiStyledText(props: Omit<StyledTextProps, 'markdown' | 'playerKeywordData'>): ReactElement {
     return <StyledText {...props} markdown={true} playerKeywordData={DUMMY_NAMES_KEYWORD_DATA} roleListKeywordData={DUMMY_ROLE_LIST_KEYWORD_DATA}/>
@@ -221,52 +222,14 @@ function PageButton(props: Readonly<{
     enabledModifiers: ModifierID[],
     wikiDisabledFilter?: [string, WikiDisabledFilter] | "default"
 }>): ReactElement {
-    const isCtrlPressed = useContext(CtrlPressedContext) ?? false;
-
-    const articleTooltip = React.useMemo(() => {
-        if (isCtrlPressed === true) {
-            return <WikiArticle noLinks={true} article={props.page} className="wiki-article-tooltip" />;
-        } else {
-            const tooltip = getArticleTooltip(props.page);
-            if (tooltip === null) {
-                return null;
-            }
-            return <WikiArticleTooltip tooltip={tooltip} />;
-        }
-    }, [isCtrlPressed, props.page]);   
-
-    const buttonRef = useRef<HTMLButtonElement>(null);
-
-    const [hovering, setHovering] = React.useState<boolean>(false);
-
-    const handleFocus = (event: any) => {
-        setHovering(true);
-    };
-
-    const handleUnfocus = (event: any) => {
-        setHovering(false);
-    };
-
-    return <>
-        <button ref={buttonRef} key={props.page} className={wikiPageIsEnabled(props.page, props.enabledRoles, props.enabledModifiers, props.wikiDisabledFilter) ? "" : "keyword-disabled"} 
-            onClick={() => GAME_MANAGER.setWikiArticle(props.page)}
-            onMouseEnter={handleFocus}
-            onMouseLeave={handleUnfocus}
-            onFocus={handleFocus}
-            onBlur={handleUnfocus}
-        >
-            <StyledText noLinks={true}>{getArticleTitle(props.page)}</StyledText>
-        </button>
-        {articleTooltip !== null && <Popover
-            open={hovering && articleTooltip !== null}
-            setOpenOrClosed={setHovering}
-            anchorForPositionRef={buttonRef}
-            onRender={(popover, anchor) => dropdownPlacementFunction(popover, anchor, null)}
-            className="wiki-article-tooltip-popover"
-        >
-            {articleTooltip}
-        </Popover>}
-    </>
+    return <Button 
+        key={props.page}
+        className={wikiPageIsEnabled(props.page, props.enabledRoles, props.enabledModifiers, props.wikiDisabledFilter) ? "" : "keyword-disabled"} 
+        onClick={() => GAME_MANAGER.setWikiArticle(props.page)}
+        tooltip={props.page}
+    >
+        <StyledText noLinks={true}>{getArticleTitle(props.page)}</StyledText>
+    </Button>
 }
 
 

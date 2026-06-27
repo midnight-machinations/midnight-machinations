@@ -25,3 +25,25 @@
 .graveyard-menu-excludedRoles .enabled-roles-button-panel {
     margin: 0;
 }
+.graveyard-menu-excludedRoles .enabled-roles-button-panel {
+    border-radius: 0;
+    border: none;
+}
+.graveyard-menu-excludedRoles .details-summary-summary-container {
+    display: inline-flex;
+}
+.graveyard-menu-excludedRoles .enabled-roles-summary-span {
+    display: inline-flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    flex-grow: 1;
+}
+.graveyard-menu-excludedRoles .details-summary-summary-container button {
+    visibility: hidden;
+    margin: 0;
+    padding: 0;
+}
+.graveyard-menu-excludedRoles .details-summary-summary-container.open button {
+    visibility: visible;
+}

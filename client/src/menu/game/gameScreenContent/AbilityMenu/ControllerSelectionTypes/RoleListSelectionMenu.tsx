@@ -56,6 +56,7 @@ export default function RoleListSelectionMenu(props: Readonly<{
                 ((props.availableSelection.maxRoles??Infinity) >= props.availableSelection.availableRoles.length) && newChoosableRoles.length !== 0
                 ?
                     <Button
+                        className="flush"
                         onClick={()=>props.onChoose(props.availableSelection.availableRoles)}
                     >
                         <Icon>select_all</Icon>
@@ -68,6 +69,7 @@ export default function RoleListSelectionMenu(props: Readonly<{
                 props.selection.length > 0
                 ?
                     <Button
+                        className="flush"
                         onClick={()=>props.onChoose([])}
                     >
                         <Icon>deselect</Icon>

@@ -1,4 +1,4 @@
-import React, { ReactElement } from "react";
+import React, { ReactElement, useCallback, useMemo } from "react";
 import translate from "../../../game/lang";
 import GAME_MANAGER from "../../../index";
 import "./playerListMenu.css"
@@ -15,7 +15,6 @@ import GraveComponent, { translateGraveRole } from "../../../components/grave";
 import { ChatMessageSection, ChatTextInput } from "./ChatMenu";
 import ListMap from "../../../ListMap";
 import { controllerIdToLinkWithPlayer } from "../../../game/controllerInput";
-import Counter from "../../../components/Counter";
 
 export default function PlayerListMenu(): ReactElement {
     const players = useGameState(
@@ -40,9 +39,7 @@ export default function PlayerListMenu(): ReactElement {
 
             {graves.entries().length === 0 || 
                 <>
-                    <div className="dead-players-separator">
-                        <StyledText>{translate("grave.icon")} {translate("graveyard")}</StyledText>
-                    </div>
+                    <StyledText>{translate("grave.icon")} {translate("graveyard")}</StyledText>
                     {graves.entries().map(([index, grave]) => <div key={grave.player} className="player-card-holder"><PlayerCard graveIndex={index} playerIndex={grave.player}/></div>)}
                 </>
             }
@@ -53,9 +50,7 @@ export default function PlayerListMenu(): ReactElement {
                     graves.values().find((grave) => grave.player === player.index) === undefined
                 ).length === 0 || 
                 <>
-                    <div className="dead-players-separator">
-                        <StyledText>{translate("grave.icon")} {translate("graveyard")}</StyledText>
-                    </div>
+                    <StyledText>{translate("grave.icon")} {translate("graveyard")}</StyledText>
                     {players
                         .filter(player => !player.alive)
                         .map(player => <div key={player.index} className="player-card-holder"><PlayerCard playerIndex={player.index}/></div>)
@@ -92,11 +87,21 @@ function PlayerCard(props: Readonly<{
         ["roleList"]
     )!;
 
-
-    const controllers = new ListMap(
-        usePlayerState(playerState=>playerState.savedControllers, ["yourAllowedControllers", "yourAllowedController"])??[],
-        (k1, k2)=>controllerIdToLinkWithPlayer(k1)===controllerIdToLinkWithPlayer(k2)
+    const myPlayerIndex = usePlayerState(
+        state => state.myIndex,
+        ["yourPlayerIndex"]
     );
+
+    const rawControllers = usePlayerState(
+        playerState => playerState.savedControllers,
+        ["yourAllowedControllers", "yourAllowedController"]
+    );
+
+    const controllers = useMemo(() => new ListMap(
+        rawControllers ?? [],
+        (k1, k2)=>controllerIdToLinkWithPlayer(k1) === controllerIdToLinkWithPlayer(k2)
+    ), [rawControllers]);
+
     const whisperAsPlayers = controllers.list
         .map(([id, _])=>id.type==="whisper"?id.player:null)
         .filter((x)=>x!==null&&x!==undefined);
@@ -154,6 +159,44 @@ function PlayerCard(props: Readonly<{
 
     const spectator = useSpectator();
 
+    const myNominationControllerId = useMemo(() => {
+        if (myPlayerIndex === undefined) return null;
+        return { type: "nominate" as const, player: myPlayerIndex };
+    }, [myPlayerIndex]);
+
+    const myNominationSelection = useMemo(() => {
+        if (myPlayerIndex === undefined) return null;
+        if (!myNominationControllerId) return null;
+
+        const controller = controllers.get(myNominationControllerId);
+
+        if (!controller) return null;
+        if (controller.selection.type !== "playerList") return null;
+        if (controller.selection.selection.length !== 1) return null;
+
+        return controller.selection.selection[0];
+    }, [controllers, myPlayerIndex, myNominationControllerId]);
+
+    const toggleVoteForThisPlayer = useCallback(() => {
+        if (!myNominationControllerId) return;
+        const currentSelection = myNominationSelection;
+
+        let newSelection: number[];
+        if (currentSelection === props.playerIndex) {
+            newSelection = [];
+        } else {
+            newSelection = [props.playerIndex];
+        }
+
+        GAME_MANAGER.sendControllerInput({
+            id: myNominationControllerId,
+            selection: {
+                type: "playerList",
+                selection: newSelection
+            }
+        });
+    }, [controllers, myPlayerIndex, myNominationControllerId, myNominationSelection]);
+
     return <><div
         className={`player-card`}
         key={props.playerIndex}
@@ -182,16 +225,26 @@ function PlayerCard(props: Readonly<{
         : null}
         
         {
-            phaseState.type === "nomination" && playerAlive &&
-            <Counter
-                max={numVoted}
-                current={numVoted}
-            >
-                {numVoted}
-            </Counter>
+            phaseState.type === "nomination" && playerAlive && (
+                spectator ? (
+                    <>
+                        <Icon>how_to_vote</Icon>
+                        {numVoted}
+                    </>
+                ) : (
+                    <Button
+                        className="flush"
+                        onClick={() => toggleVoteForThisPlayer()}
+                    >
+                        <Icon>how_to_vote</Icon>
+                        {numVoted}
+                    </Button>
+                )
+            ) 
         }
         {spectator ||
-            <Button 
+            <Button
+                className="flush"
                 disabled={whispersDisabled}
                 onClick={()=>{
                     setWhisperChatOpen(!whisperChatOpen);
@@ -212,7 +265,7 @@ function PlayerCard(props: Readonly<{
             const isFilterSet = chatFilter?.type === "playerNameInMessage" && (chatFilter.player === filter);
             
             return <Button 
-                className={"filter"} 
+                className="filter flush"
                 highlighted={isFilterSet}
                 onClick={() => {
                     GAME_MANAGER.updateChatFilter(isFilterSet ? null : filter);

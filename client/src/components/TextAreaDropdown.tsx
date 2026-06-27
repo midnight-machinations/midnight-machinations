@@ -23,6 +23,7 @@ export function TextDropdownArea(props: Readonly<{
     onSubtract?: () => void,
     onSave: (text: string) => void,
     cantPost: boolean,
+    className?: string,
 
     canPostAs?: PlayerIndex[]
 }>): ReactElement {
@@ -67,7 +68,7 @@ export function TextDropdownArea(props: Readonly<{
 
     return (
         <DetailsSummary
-            className="text-area-dropdown"
+            className={`text-area-dropdown ${props.className || ''}`}
             dropdownArrow={props.dropdownArrow}
             defaultOpen={props.defaultOpen}
             open={props.open}

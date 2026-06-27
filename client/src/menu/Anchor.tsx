@@ -364,7 +364,7 @@ function ErrorCard(props: Readonly<{
     return <div className="error-card" onClick={() => props.onClose()}>
         <header>
             {props.error.title}
-            <button className="close">✕</button>
+            <button className="close flush">✕</button>
         </header>
         <div>{props.error.body}</div>
     </div>

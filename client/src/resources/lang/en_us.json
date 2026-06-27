@@ -1557,6 +1557,11 @@
     "wiki.article.standard.controller.title":"Controller",
     "wiki.article.standard.controller.title:var.0":"Controllers",
     "wiki.article.standard.controller.text":"Controllers are elements of the ability menu that are used to control abilities.\n\nControllers have reminder icons.\n - 🌙: The ability happens at night.\n - ⚡: The ability happens the instant the controller value is changed.\n - 🧭: The controller causes visits normally (The player with the controller visits all players chosen).\n - ❓: The controller causes visits in an unusual way, check the manual to see how the ability visits function.\n\n Controllers have many types:\n- Player List: An ordered list of player dropdowns with a maximum length (Roles like detective use this controller type with a maximum length of 1)\n- Two Players: Must choose 0 or 2 players\n- Role list: An ordered list of roles with a maximum (Imposter disguise controller uses this with maximum of 1).\n- Two Roles: Must choose 0 or 2 roles.\n- Checkbox: Yes or no (Veteran rampage uses this).\n- Button: A single button press (Mayor enfranchise uses this)\n- Text Box: (Forger and Reporter use this).\n- Outline List: A depiction of the outline list, with buttons to choose multiple of them (Auditor uses this).\n Options: A list of options with names in a dropdown.\n- Kira: used only for Kira.",
+    "wiki.article.standard.controller.tooltip.instant":"⚡: The ability happens the instant the controller value is changed.",
+    "wiki.article.standard.controller.tooltip.night":"🌙: The ability happens at night.",
+    "wiki.article.standard.controller.tooltip.visit.normal":"🧭: The controller causes visits normally (The player with the controller visits all players chosen).",
+    "wiki.article.standard.controller.tooltip.visit.abnormal":"❓: The controller causes visits in an unusual way, check the manual to see how the ability visits function.",
+    "wiki.article.standard.controller.tooltip.visit.none":"⛔: The controller does not cause any visits.",
 
     "wiki.article.modifier.obscuredGraves.title":"Obscured Graves",
     "wiki.article.modifier.obscuredGraves.text":"Obscured Graves is a game modifier that makes it so all graves are obscured.",

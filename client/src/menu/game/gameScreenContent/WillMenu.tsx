@@ -89,9 +89,7 @@ export default function WillMenu(): ReactElement {
                 }}
             />:null}
 
-            <div className="dead-players-separator">
-                <StyledText>{translate("menu.will.notes.icon")} {translate("menu.will.notes")}</StyledText>
-            </div>
+            <StyledText>{translate("menu.will.notes.icon")} {translate("menu.will.notes")}</StyledText>
 
             <DragAndDrop
                 items={(notes.length === 0 ? [["", 0]] : notes.map((note, i) => [note, i])) as [UnsafeString, number][]}
@@ -129,6 +127,7 @@ export default function WillMenu(): ReactElement {
                 }}
             />
             <Button
+                className="flush"
                 onClick={() => {
                     if(GAME_MANAGER.state.stateType === "game" && GAME_MANAGER.state.clientState.type === "player"){
                         const notes = [...GAME_MANAGER.state.clientState.notes];
