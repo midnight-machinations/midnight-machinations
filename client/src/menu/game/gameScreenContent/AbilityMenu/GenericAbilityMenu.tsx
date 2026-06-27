@@ -1,4 +1,4 @@
-import { ReactElement } from "react";
+import { ReactElement, useContext, useMemo } from "react";
 import { 
     TwoPlayerOptionSelection, 
     TwoRoleOptionSelection, 
@@ -39,6 +39,8 @@ import BooleanSelectionMenu from "./ControllerSelectionTypes/BooleanSelectionMen
 import "./ControllerSelectionTypes/genericListController.css"
 import { useGameState, usePlayerState } from "../../../../components/useHooks";
 import { loadSettingsParsed } from "../../../../game/localStorage";
+import { setWikiSearchPage } from "../../../../components/Wiki";
+import { AnchorControllerContext } from "../../../Anchor";
 
 type GroupName = `${PlayerIndex}/${Role}` | 
     "syndicate" | 
@@ -236,9 +238,9 @@ function SingleAbilityMenu(props: Readonly<{
                 <div className="generic-ability-menu-tab-summary">
                     <span><StyledText>{controllerIdName}</StyledText></span>
                     <span>
-                        <>{instantIcon ? translate("instant.icon") : ""}</>
-                        <>{nightIcon ? translate("night.icon") : ""}</>
-                        <>{visitIcon ? translate("visit.icon."+visitIcon) : ""}</>
+                        {instantIcon && <ControllerIcon icon={{ instant: true }} />}
+                        {nightIcon && <ControllerIcon icon={{ night: true }} />}
+                        {visitIcon && <ControllerIcon icon={{ visit: visitIcon }} />}
                     </span>
                 </div>
             }
@@ -249,22 +251,71 @@ function SingleAbilityMenu(props: Readonly<{
         </DetailsSummary>
         
     }else{
-        return <>
-            <div className="generic-ability-menu generic-ability-menu-tab-no-summary">
+        return <div className="generic-ability-menu generic-ability-menu-tab-no-summary">
+            <div className="generic-no-summary">
                 <span>
-
                     <StyledText>{controllerIdName}</StyledText>
                 </span>
                 <span>
-                    <>{instantIcon ? translate("instant.icon") : ""}</>
-                    <>{nightIcon ? translate("night.icon") : ""}</>
-                    <>{visitIcon ? translate("visit.icon."+visitIcon) : ""}</>
+                    {instantIcon && <ControllerIcon icon={{ instant: true }} />}
+                    {nightIcon && <ControllerIcon icon={{ night: true }} />}
+                    {visitIcon && <ControllerIcon icon={{ visit: visitIcon }} />}
                 </span>
             </div>
-            <>{inner}</>
-        </>
+            {inner}
+        </div>
     }
-    
+}
+
+type ControllerIconData = {
+    instant: true
+} | {
+    night: true
+} | {
+    visit: "normal" | "abnormal" | "none"
+};
+
+function ControllerIcon(props: Readonly<{ icon: ControllerIconData }>) {
+    const anchorController = useContext(AnchorControllerContext)!;
+
+    const children = useMemo(() => {
+        if ("instant" in props.icon) {
+            return translate("instant.icon");
+        }
+        if ("night" in props.icon) {
+            return translate("night.icon");
+        }
+        if ("visit" in props.icon) {
+            return translate("visit.icon."+props.icon.visit);
+        }
+        return null;
+    }, [props.icon]);
+
+    const tooltip = useMemo(() => {
+        if ("instant" in props.icon) {
+            return <div className="wiki-article wiki-article-tooltip">
+                {translate("wiki.article.standard.controller.tooltip.instant")}
+            </div>;
+        }
+        if ("night" in props.icon) {
+            return <div className="wiki-article wiki-article-tooltip">
+                {translate("wiki.article.standard.controller.tooltip.night")}
+            </div>;
+        }
+        if ("visit" in props.icon) {
+            return <div className="wiki-article wiki-article-tooltip">
+                {translate(`wiki.article.standard.controller.tooltip.visit.${props.icon.visit}`)}
+            </div>;
+        }
+    }, [props.icon]);
+
+    return <Button
+        className="flush controller-icon"
+        tooltip={tooltip}
+        onClick={() => setWikiSearchPage("standard/controller", anchorController)}
+    >
+        {children}
+    </Button>
 }
 
 

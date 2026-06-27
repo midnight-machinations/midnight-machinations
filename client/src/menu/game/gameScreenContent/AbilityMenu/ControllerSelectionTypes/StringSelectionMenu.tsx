@@ -21,13 +21,12 @@ export default function StringSelectionMenu(props: Readonly<{
         title = translateControllerID(props.id);
     }
 
-    return <div>
-        <TextDropdownArea
-            open={true}
-            titleString={title}
-            savedText={props.selection}
-            onSave={(s) => { props.onChoose(s); } }
-            cantPost={cantPost}
-        />    
-    </div>
+    return <TextDropdownArea
+        className="stuck-open"
+        open={true}
+        titleString={title}
+        savedText={props.selection}
+        onSave={(s) => { props.onChoose(s); } }
+        cantPost={cantPost}
+    />    
 }

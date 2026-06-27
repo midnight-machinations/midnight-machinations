@@ -7,7 +7,11 @@
     text-align: left;
     height: fit-content;
     min-height: 2rem;
-    margin: .13rem;
+    margin: 0;
+    border-radius: 0.27rem;
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+    border: none;
     text-wrap: wrap;
     resize: none;
 }
@@ -36,4 +40,19 @@
     flex-wrap: wrap;
     gap: 0.25rem;
     align-items: center;
+}
+
+.text-area-dropdown.stuck-open {
+    border: none;
+    margin: 0;
+}
+.text-area-dropdown.stuck-open .details-summary-container {
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+}
+.text-area-dropdown.stuck-open .details-summary-summary-container {
+    border-radius: 0;
+}
+.text-area-dropdown.stuck-open > .details-summary-summary-container > .icon {
+    display: none;
 }

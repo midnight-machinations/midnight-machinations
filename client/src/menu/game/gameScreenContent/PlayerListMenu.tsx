@@ -14,8 +14,7 @@ import ChatMessage, { ChatMessageIndex, translateChatMessage } from "../../../co
 import GraveComponent, { translateGraveRole } from "../../../components/grave";
 import { ChatMessageSection, ChatTextInput } from "./ChatMenu";
 import ListMap from "../../../ListMap";
-import { controllerIdToLinkWithPlayer, PlayerListSelection } from "../../../game/controllerInput";
-import Counter from "../../../components/Counter";
+import { controllerIdToLinkWithPlayer } from "../../../game/controllerInput";
 
 export default function PlayerListMenu(): ReactElement {
     const players = useGameState(
