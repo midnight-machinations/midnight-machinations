@@ -314,7 +314,7 @@ function ControllerIcon(props: Readonly<{ icon: ControllerIconData }>) {
     return <Button
         className="flush controller-icon"
         tooltip={tooltip}
-        onClick={() => setWikiSearchPage("standard/controller", anchorController)}
+        onClick={() => setWikiSearchPage("standard/controller", anchorController, menuController)}
     >
         {children}
     </Button>
