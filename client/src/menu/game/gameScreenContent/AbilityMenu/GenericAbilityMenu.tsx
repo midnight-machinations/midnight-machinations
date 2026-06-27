@@ -17,7 +17,6 @@ import {
     IntegerSelection,
     controllerIdToLink
 } from "../../../../game/controllerInput";
-import React from "react";
 import { Button } from "../../../../components/Button";
 import TwoRoleOutlineOptionSelectionMenu from "./ControllerSelectionTypes/TwoRoleOutlineOptionSelectionMenu";
 import GAME_MANAGER from "../../../..";
@@ -41,6 +40,7 @@ import { useGameState, usePlayerState } from "../../../../components/useHooks";
 import { loadSettingsParsed } from "../../../../game/localStorage";
 import { setWikiSearchPage } from "../../../../components/Wiki";
 import { AnchorControllerContext } from "../../../Anchor";
+import { MenuControllerContext } from "../../GameScreen";
 
 type GroupName = `${PlayerIndex}/${Role}` | 
     "syndicate" | 
@@ -277,6 +277,8 @@ type ControllerIconData = {
 
 function ControllerIcon(props: Readonly<{ icon: ControllerIconData }>) {
     const anchorController = useContext(AnchorControllerContext)!;
+    const menuController = useContext(MenuControllerContext)!;
+
 
     const children = useMemo(() => {
         if ("instant" in props.icon) {
