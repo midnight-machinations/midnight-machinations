@@ -1,5 +1,5 @@
 import { GameModeStorage, ShareableGameMode } from "..";
-import { Settings } from "../../../../game/localStorage";
+import { Settings, Streak } from "../../../../game/localStorage";
 import { ParseResult } from "../parse";
 
 /**
@@ -27,13 +27,15 @@ export type MigrationRegistry = {
     GameModeStorage: Migration<GameModeStorage>[];
     ShareableGameMode: Migration<ShareableGameMode>[];
     Settings: Migration<Settings>[];
+    Streak: Migration<Streak>[]
 };
 
 // Registry of all migrations
 export const MIGRATIONS: MigrationRegistry = {
     GameModeStorage: [],
     ShareableGameMode: [],
-    Settings: []
+    Settings: [],
+    Streak: []
 };
 
 /**

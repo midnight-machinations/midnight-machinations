@@ -44,6 +44,55 @@ export function loadReconnectData(): {
     return null;
 }
 
+export type Streak = {
+    format: CurrentFormat,
+    // ms since unix epoch
+    lastPlayed: number | null,
+    length: number
+}
+
+function getDefaultStreak(): Streak {
+    return {
+        format: "initial",
+        lastPlayed: null,
+        length: 0
+    }
+}
+
+export function loadStreak(): unknown {
+    const data = localStorage.getItem("streak");
+    if (data !== null) {
+        try {
+            return JSON.parse(data);
+        } catch {
+            return null;
+        }
+    }
+    return getDefaultStreak();
+}
+export function loadStreakParsed(): Streak {
+    const result = parseFromJson("Streak", loadStreak());
+    if(result.type === "failure") {
+        return getDefaultStreak();
+    }else{
+        return result.value;
+    }
+}
+export function saveStreak(newStreak: Partial<Streak>) {
+    const currentStreak = parseFromJson("Streak", loadStreak());
+
+    if(currentStreak.type === "failure") {
+        localStorage.setItem("streak", JSON.stringify({
+            ...getDefaultStreak(),
+            ...newStreak,
+        }));
+    }else{
+        localStorage.setItem("streak", JSON.stringify({
+            ...currentStreak.value,
+            ...newStreak,
+        }));
+    }
+}
 
 
 export type Settings = {

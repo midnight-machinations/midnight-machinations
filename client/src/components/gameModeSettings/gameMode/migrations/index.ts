@@ -1,7 +1,7 @@
-import { CurrentFormat, GameModeStorage, ShareableGameMode } from "..";
-import { Settings } from "../../../../game/localStorage";
+import { GameModeStorage, ShareableGameMode } from "..";
+import { Settings, Streak } from "../../../../game/localStorage";
 import { ParseResult, Success, Failure, isFailure } from "../parse";
-import { MIGRATIONS, registerMigration } from "./registry";
+import { MIGRATIONS } from "./registry";
 
 // Re-export for convenience
 export type { Migration } from "./registry";
@@ -11,6 +11,7 @@ type ConverterMap = {
     GameModeStorage: GameModeStorage;
     ShareableGameMode: ShareableGameMode;
     Settings: Settings;
+    Streak: Streak;
 };
 
 /**
@@ -90,3 +91,4 @@ export function getLatestFormat<T extends keyof ConverterMap>(type: T): string {
 import "./gameModeStorageMigrations";
 import "./shareableGameModeMigrations";
 import "./settingsMigrations";
+import "./streakMigrations";

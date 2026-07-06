@@ -1,9 +1,7 @@
 use crate::game::{
-    abilities_component::Abilities,
-    components::{
-        cult::Cult, dead_can_still_play_message::DeadCanStillPlayMessage, mafia::Mafia
-    },
-    event::EventData, modifiers::ModifierSettings, player::PlayerReference,
+    abilities_component::Abilities, components::{
+        cult::Cult, dead_can_still_play_message::DeadCanStillPlayMessage, mafia::Mafia, synopsis::SynopsisTracker
+    }, event::EventData, modifiers::ModifierSettings, player::PlayerReference,
 };
 
 #[must_use = "Event must be invoked"]
@@ -25,6 +23,7 @@ impl EventData for OnAnyDeath{
         Cult::on_any_death,
         ModifierSettings::on_any_death,
         Abilities::on_any_death,
-        DeadCanStillPlayMessage::on_any_death
+        DeadCanStillPlayMessage::on_any_death,
+        SynopsisTracker::on_any_death
     ]}
 }

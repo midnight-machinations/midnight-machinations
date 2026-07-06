@@ -88,18 +88,24 @@ export function translatePlayerPool(playerPool: PlayerIndex[], playerNames: Unsa
     return out;
 }
 
+export function translateInsiderGroups(insiderGroups: InsiderGroup[], showName: boolean = false): string {
+    let out = "";
+    if (insiderGroups.length === 0) {
+        out += showName ? translate("none") : translate("chatGroup.all.icon")
+    }
+    out += insiderGroups
+        .map(insiderGroup => translate(`chatGroup.${insiderGroup}.${showName ? 'name' : 'icon'}`))
+        .join(' ' + translate("union") + ' ');
+    return out;
+}
+
 export function translateRoleOutlineOption(roleOutlineOption: RoleOutlineOption, playerNames: UnsafeString[]): string {
     let out = "";
     if (roleOutlineOption.playerPool) {
         out += translatePlayerPool(roleOutlineOption.playerPool, playerNames) + ': ';
     }
     if (roleOutlineOption.insiderGroups) {
-        if (roleOutlineOption.insiderGroups.length === 0) {
-            out += translate("chatGroup.all.icon")
-        }
-        out += roleOutlineOption.insiderGroups
-            .map(insiderGroup => translate(`chatGroup.${insiderGroup}.icon`))
-            .join(' ' + translate("union") + ' ');
+        out += translateInsiderGroups(roleOutlineOption.insiderGroups)
         out += ', '
     }
     if (roleOutlineOption.winIfAny) {

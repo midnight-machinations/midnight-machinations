@@ -2,7 +2,7 @@ use std::cmp::Ordering;
 
 use serde::{Deserialize, Serialize};
 
-use crate::{game::{components::insider_group::InsiderGroupID, event::{on_convert::OnConvert, on_role_switch::OnRoleSwitch}, game_conclusion::GameConclusion, phase::PhaseType, player::PlayerReference, role::Role, role_outline_reference::RoleOutlineReference, Game}, vec_set::VecSet};
+use crate::{game::{Game, chat::{ChatGroup, ChatMessage, ChatMessageVariant, MessageSender}, components::{graves::grave::Grave, insider_group::InsiderGroupID}, event::{on_any_death::OnAnyDeath, on_convert::OnConvert, on_grave_added::OnGraveAdded, on_role_switch::OnRoleSwitch}, game_conclusion::GameConclusion, phase::PhaseType, player::PlayerReference, role::Role, role_list_generation::OutlineAssignment, role_outline_reference::RoleOutlineReference}, vec_set::VecSet};
 
 use super::win_condition::WinCondition;
 
@@ -15,6 +15,7 @@ impl SynopsisTracker {
         SynopsisTracker {
             player_synopses: (0..num_players).map(|_|
                 PartialPlayerSynopsis {
+                    latest_alibi: String::new(),
                     crumbs: Vec::new()
                 }
             ).collect(),
@@ -42,34 +43,57 @@ impl SynopsisTracker {
     }
 
     pub fn on_role_switch(game: &mut Game, event: &OnRoleSwitch, _fold: &mut (), _priority: ()) {
-        SynopsisTracker::add_crumb_to_player(event.player, game);
+        SynopsisTracker::add_crumb_to_player(game, event.player, SynopsisCrumbDatum::RoleChange(event.new.role()));
     }
 
     pub fn on_convert(game: &mut Game, event: &OnConvert, _fold: &mut (), _priority: ()) {
-        SynopsisTracker::add_crumb_to_player(event.player, game);
+        if event.old == event.new {
+            return
+        }
+        SynopsisTracker::add_crumb_to_player(game, event.player, SynopsisCrumbDatum::WinConditionChange(event.new.clone()));
     }
 
     pub fn on_add_insider(game: &mut Game, player: PlayerReference, _: InsiderGroupID) {
-        SynopsisTracker::add_crumb_to_player(player, game);
+        SynopsisTracker::add_crumb_to_player(game, player, SynopsisCrumbDatum::InsiderGroupChange(InsiderGroupID::all_groups_with_player(game, player)));
     }
 
     pub fn on_remove_insider(game: &mut Game, player: PlayerReference, _: InsiderGroupID) {
-        SynopsisTracker::add_crumb_to_player(player, game);
+        SynopsisTracker::add_crumb_to_player(game, player, SynopsisCrumbDatum::InsiderGroupChange(InsiderGroupID::all_groups_with_player(game, player)));
     }
 
-    fn add_crumb_to_player(player: PlayerReference, game: &mut Game) {
+    pub fn on_any_death(game: &mut Game, event: &OnAnyDeath, _fold: &mut (), _priority: ()) {
+        SynopsisTracker::add_crumb_to_player(game, event.dead_player, SynopsisCrumbDatum::Died);
+    }
+
+    pub fn on_grave_added(game: &mut Game, event: &OnGraveAdded, _fold: &mut (), _priority: ()) {
+        SynopsisTracker::add_crumb_to_player(game, event.grave.deref(game).player, SynopsisCrumbDatum::Grave(event.grave.deref(game).clone()));
+    }
+
+    pub fn on_chat_message_added(game: &mut Game, _: PlayerReference, message: ChatMessage) {
+        if 
+            let ChatMessage{
+                variant: ChatMessageVariant::Normal {
+                    message_sender: MessageSender::Player { player },
+                    text,
+                    block: true
+                },
+                chat_group: Some(ChatGroup::All)
+            } = message &&
+            let Some(ref mut synopsis) = SynopsisTracker::player_synopses(game).get_mut(player.index() as usize)
+        {
+            synopsis.latest_alibi = text
+        }
+    }
+
+    fn add_crumb_to_player(game: &mut Game, player: PlayerReference, datum: SynopsisCrumbDatum) {
         let night = if matches!(game.current_phase().phase(), PhaseType::Night | PhaseType::Obituary) { 
             Some(game.day_number())
         } else {
             None
         };
 
-        let role = player.role(game);
-        let win_condition = player.win_condition(game).clone();
-        let insider_groups = InsiderGroupID::all_groups_with_player(game, player);
-
         if let Some(ref mut synopsis) = SynopsisTracker::player_synopses(game).get_mut(player.index() as usize) {
-            synopsis.add_crumb(SynopsisCrumb { night, role, win_condition, insider_groups });
+            synopsis.add_crumb(SynopsisCrumb { night, datum });
         }
     }
 }
@@ -102,39 +126,41 @@ impl Ord for Synopsis {
     }
 }
 
+impl Synopsis {
+    pub fn get_player_synopsis(&self, player_ref: PlayerReference) -> &PlayerSynopsis {
+        self.player_synopses.get(player_ref.index() as usize).expect("Regular player reference stuff")
+    }
+}
+
 #[derive(Clone, Debug, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct PlayerSynopsis {
-    outline_assignment: RoleOutlineReference,
+    outline_assignment: OutlineAssignment,
+    latest_alibi: String,
     crumbs: Vec<SynopsisCrumb>,
+    #[serde(rename = "index")]
+    player: PlayerReference,
     won: bool
 }
 
 pub struct PartialPlayerSynopsis {
+    latest_alibi: String,
     crumbs: Vec<SynopsisCrumb>
 }
 
 impl PartialPlayerSynopsis {
     fn add_crumb(&mut self, crumb: SynopsisCrumb) {
-        // Remove duplicates from each night
-        if let Some((index, _)) = self.crumbs.iter()
-            .enumerate()
-            .find(|(_, c)| c.night.is_some() && c.night == crumb.night)
-        {
-            self.crumbs.drain(index..);
-        }
-        if self.crumbs.last().cloned() == Some(crumb.clone()) {
-            self.crumbs.pop();
-        }
         self.crumbs.push(crumb);
     }
 
     fn get(&self, player_ref: PlayerReference, game: &Game, conclusion: GameConclusion) -> PlayerSynopsis {
         PlayerSynopsis {
             crumbs: self.crumbs.clone(),
+            latest_alibi: self.latest_alibi.clone(),
             won: player_ref.get_won_game(game, conclusion),
+            player: player_ref,
             #[expect(clippy::unwrap_used, reason = "Player must have an assignment")]
-            outline_assignment: game.assignments.get(&player_ref).unwrap().role_outline_reference,
+            outline_assignment: game.assignments.get(&player_ref).unwrap().clone(),
         }
     }
 }
@@ -143,7 +169,16 @@ impl PartialPlayerSynopsis {
 #[serde(rename_all = "camelCase")]
 pub struct SynopsisCrumb {
     night: Option<u8>,
-    role: Role,
-    win_condition: WinCondition,
-    insider_groups: VecSet<InsiderGroupID>,
+    #[serde(flatten)]
+    datum: SynopsisCrumbDatum,
+}
+
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq)]
+#[serde(rename_all = "camelCase")]
+pub enum SynopsisCrumbDatum {
+    RoleChange(Role),
+    WinConditionChange(WinCondition),
+    InsiderGroupChange(VecSet<InsiderGroupID>),
+    Died,
+    Grave(Grave),
 }

@@ -1,8 +1,7 @@
 use crate::{
     game::{
-        abilities::role_abilities::RoleAbility, abilities_component::{ability::Ability, ability_id::AbilityID}, components::fast_forward::FastForwardComponent, event::{AsInvokable as _, Invokable as _}, role::Role
-    }, lobby::{lobby_client::LobbyClient, Lobby}, log, packet::{ToClientPacket, ToServerPacket},
-    room::{RemoveRoomClientResult, RoomClientID, RoomState}, vec_map::VecMap, websocket_connections::connection::ClientSender
+        abilities::role_abilities::RoleAbility, abilities_component::{ability::Ability, ability_id::AbilityID}, components::{fast_forward::FastForwardComponent, synopsis::SynopsisTracker}, event::{AsInvokable as _, Invokable as _}, game_client, role::Role, role_list::RoleList
+    }, lobby::{Lobby, lobby_client::LobbyClient}, log, packet::{ToClientPacket, ToServerPacket}, room::{RemoveRoomClientResult, RoomClientID, RoomState}, vec_map::VecMap, websocket_connections::connection::ClientSender
 };
 
 use super::{
@@ -68,6 +67,20 @@ impl Game {
                 }
 
                 self.send_to_all(ToClientPacket::BackToLobby);
+
+                let conclusion = GameConclusion::get_premature_conclusion(self);
+                let synopsis = SynopsisTracker::get(self, conclusion);
+                for player_ref in PlayerReference::all_players(self) {
+                    let player_synopsis = synopsis.get_player_synopsis(player_ref);
+                    player_ref.send_packet(self, ToClientPacket::GameResults {
+                        player_names: PlayerReference::all_players(self).map(|p|
+                            p.name(self).clone()
+                        ).collect(),
+                        conclusion,
+                        role_list: self.settings.role_list.clone(),
+                        player_synopsis: player_synopsis.clone()
+                    });
+                }
 
                 let lobby = Lobby::new_from_game(self.room_name.clone(), self.settings.clone(), new_clients);
 
