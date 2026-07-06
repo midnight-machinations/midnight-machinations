@@ -1,13 +1,10 @@
-import React, { ReactElement, useRef, useState } from "react";
+import { ReactElement, useEffect, useRef, useState } from "react";
 import translate from "../../game/lang";
 import GAME_MANAGER from "../../index";
 import "./lobbyMenu.css";
-import { ClientConnection } from "../../game/gameState.d";
+import { ClientConnection, UnsafeString } from "../../game/gameState.d";
 import Icon from "../../components/Icon";
 import { useLobbyOrGameState } from "../../components/useHooks";
-import { Button, RawButton } from "../../components/Button";
-import Popover from "../../components/Popover";
-import { selectPlacementFunction } from "../../components/Select";
 import StyledText from "../../components/StyledText";
 import { encodeString } from "../../components/ChatMessage";
 import FlushInput from "../../components/FlushInput";
@@ -18,8 +15,8 @@ type PlayerDisplayData = {
     connection: ClientConnection,
     ready: boolean | null,
     host: boolean,
-    name: string | null,
-    displayName: string,
+    name: UnsafeString | null,
+    displayName: UnsafeString,
 }
 
 export default function LobbyPlayerList(): ReactElement {
@@ -27,7 +24,7 @@ export default function LobbyPlayerList(): ReactElement {
         state => {
             if (state.stateType === "lobby") {
                 return state.players.entries().map(([id, player]) => {
-                    const name = player.clientType.type === "player" ? encodeString(player.clientType.name) : null;
+                    const name = player.clientType.type === "player" ? player.clientType.name : null;
                     return {
                         id,
                         clientType: player.clientType.type,
@@ -47,10 +44,10 @@ export default function LobbyPlayerList(): ReactElement {
                         ready: null,
                         host: player.host,
                         name: player.clientType.type === "player"
-                            ? encodeString(state.players[player.clientType.index].name)
+                            ? state.players[player.clientType.index].name
                             : player.clientType.index.toString(),
                         displayName: player.clientType.type === "player"
-                            ? encodeString(state.players[player.clientType.index].toString())
+                            ? state.players[player.clientType.index].toString()
                             : player.clientType.index.toString(),
                     }
                 })
@@ -58,16 +55,6 @@ export default function LobbyPlayerList(): ReactElement {
         },
         ["playersHost", "playersLostConnection", "lobbyClients", "playersReady", "hostData", "gamePlayers"]
     ) ?? [];
-
-    const host = useLobbyOrGameState(
-        state => {
-            if (state.stateType === "lobby")
-                return state.players.get(state.myId!)?.ready === "host"
-            else
-                return state.host !== null
-        },
-        ["playersHost", "lobbyClients", "yourId", "playersReady", "hostData"]
-    )!;
 
     return <section className="player-list-menu-colors selector-section lobby-player-list-section">
         <div className="lobby-player-list">
@@ -99,9 +86,6 @@ function LobbyPlayerListPlayer(props: Readonly<{ player: PlayerDisplayData }>): 
         ["playersHost", "lobbyClients", "yourId", "playersReady", "hostData"]
     )!;
 
-    const [renameOpen, setRenameOpen] = useState(false);
-    const renameButtonRef = useRef<HTMLButtonElement>(null);
-
     return <li key={props.player.id} className={props.player.connection==="connected" ? "" : "keyword-dead"}>
         <div>
             {props.player.connection === "couldReconnect" && <Icon>signal_cellular_connected_no_internet_4_bar</Icon>}
@@ -110,7 +94,7 @@ function LobbyPlayerListPlayer(props: Readonly<{ player: PlayerDisplayData }>): 
             {props.player.ready && <Icon>check</Icon>}
             {(props.player.host === false && props.player.ready === false) && <Icon className="keyword-dead">schedule</Icon>}
             {!host && <StyledText className={(props.player.host === false && props.player.ready === false) ? "keyword-dead" : ""}>
-                {props.player.displayName}
+                {encodeString(props.player.displayName)}
             </StyledText>}
             {host && <LobbyPlayerListPlayerRename {...props}/>}
         </div>
@@ -127,10 +111,14 @@ function LobbyPlayerListPlayer(props: Readonly<{ player: PlayerDisplayData }>): 
 
 function LobbyPlayerListPlayerRename(props: Readonly<{ player: PlayerDisplayData }>): ReactElement {
     const [playerName, setPlayerName] = useState(props.player.name ?? "");
+
+    useEffect(() => {
+        setPlayerName(props.player.name ?? "")
+    }, [props.player.name])
     
     return <FlushInput 
         className="lobby-player-list-player-rename"
-        value={playerName}
+        value={playerName as string}
         setValue={newName => setPlayerName(newName)}
         onConfirm={newName => {
             setPlayerName(newName);
