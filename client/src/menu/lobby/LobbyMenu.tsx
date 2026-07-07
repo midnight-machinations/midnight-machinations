@@ -209,7 +209,7 @@ function LobbyMenuHeader(props: Readonly<{
             }}>
                 <Icon>play_arrow</Icon>{translate("menu.lobby.button.start")}
             </Button>
-            <RoomLinkButton/>
+            <RoomLinkButton className="flush" />
         </div>
         {props.isHost ? 
             <FlushInput

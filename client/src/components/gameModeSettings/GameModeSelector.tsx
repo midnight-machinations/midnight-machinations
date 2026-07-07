@@ -62,6 +62,8 @@ function GameModeSelectorPanel(props: Readonly<{
     const {roleList, phaseTimes, enabledRoles, modifierSettings} = useContext(GameModeContext);
     const anchorController = useContext(AnchorControllerContext)!;
 
+    const currentGameModeModified = useCurrentGameModeModified(props.gameModeStorage, gameModeLocation);
+
     const validateName = (name: string) => {
         return name.length < 100 && name.length !== 0
     }
@@ -218,6 +220,7 @@ function GameModeSelectorPanel(props: Readonly<{
             reloadGameModeStorage={props.reloadGameModeStorage} 
             loadGameMode={loadGameMode}
             gameModeLocation={gameModeLocation}
+            currentGameModeModified={currentGameModeModified}
         />}
         {!props.disabled && <FlushInput 
             value={gameModeNameField}
@@ -240,10 +243,14 @@ function GameModeSelectorPanel(props: Readonly<{
             >
                 <Icon>save</Icon>
             </Button>}
-            {!props.disabled && gameModeLocation && <Button className="flush" onClick={() => {
-                props.reloadGameModeStorage();
-                loadGameMode(gameModeLocation)
-            }}>
+            {!props.disabled && gameModeLocation && <Button
+                className={"flush"} 
+                highlighted={currentGameModeModified}
+                onClick={() => {
+                    props.reloadGameModeStorage();
+                    loadGameMode(gameModeLocation)
+                }}
+            >
                 <Icon>refresh</Icon>{verbose ? <> {translate("refresh")}</> : undefined}
             </Button>}
             <CopyButton className="flush" text={shareableGameModeJsonString}>
@@ -289,21 +296,16 @@ function GameModeSelectorPanel(props: Readonly<{
     </div>
 }
 
-function GameModeSelectorSelect(props: Readonly<{
-    gameModeStorage: GameModeStorage,
-    reloadGameModeStorage: () => void,
-    loadGameMode: (gameMode: GameModeLocation) => void,
-    gameModeLocation: GameModeLocation | null
-}>): ReactElement {
+function useCurrentGameModeModified(gameModeStorage: GameModeStorage, gameModeLocation: GameModeLocation | null) {
     const [star, setStar] = useState(false);
 
     const gameModeData = useMemo(() => {
-        if (props.gameModeLocation) {
-            const gameMode = props.gameModeStorage.gameModes.find(gm => gm.name === props.gameModeLocation!.name);
-            return gameMode ? gameMode.data[props.gameModeLocation.players] : null;
+        if (gameModeLocation) {
+            const gameMode = gameModeStorage.gameModes.find(gm => gm.name === gameModeLocation.name);
+            return gameMode ? gameMode.data[gameModeLocation.players] : null;
         }
         return null;
-    }, [props.gameModeLocation]);
+    }, [gameModeLocation]);
 
     const gameModeContext = useContext(GameModeContext);
 
@@ -311,6 +313,16 @@ function GameModeSelectorSelect(props: Readonly<{
         setStar(!strictDeepEqual<GameModeData | null>(gameModeData, gameModeContext));
     }, [gameModeData, gameModeContext]);
 
+    return star;
+}
+
+function GameModeSelectorSelect(props: Readonly<{
+    gameModeStorage: GameModeStorage,
+    reloadGameModeStorage: () => void,
+    loadGameMode: (gameMode: GameModeLocation) => void,
+    gameModeLocation: GameModeLocation | null,
+    currentGameModeModified: boolean,
+}>): ReactElement {
     const keyMap = useMemo(() => {
         const map = new Map<string, GameModeLocation>();
 
@@ -349,7 +361,7 @@ function GameModeSelectorSelect(props: Readonly<{
                 const players = Number.parseInt(number);
                 let addStar = false;
                 if (props.gameModeLocation !== null && props.gameModeLocation.name === gameMode.name && props.gameModeLocation.players === players) {
-                    addStar = star;
+                    addStar = props.currentGameModeModified;
                 }
 
                 options.set(
@@ -365,7 +377,7 @@ function GameModeSelectorSelect(props: Readonly<{
         }
 
         return options;
-    }, [props.gameModeStorage, star, props.gameModeLocation]);
+    }, [props.gameModeStorage, props.currentGameModeModified, props.gameModeLocation]);
 
     const selectedValue = useMemo(() => {
         if (props.gameModeLocation === null) {

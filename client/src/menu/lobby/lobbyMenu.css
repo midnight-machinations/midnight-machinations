@@ -35,6 +35,10 @@
     justify-content: center;
 }
 
+.lm > div > header button.room-code-button {
+    font-size: 1.125rem;
+}
+
 .lm > div > header > * {
     max-width: 100%;
 }
