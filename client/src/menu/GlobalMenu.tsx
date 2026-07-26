@@ -1,4 +1,4 @@
-import React, { JSXElementConstructor, ReactElement, useContext, useEffect, useRef } from 'react';
+import { JSXElementConstructor, ReactElement, useContext, useEffect, useRef } from 'react';
 import "./globalMenu.css";
 import translate from '../game/lang';
 import GAME_MANAGER from '..';

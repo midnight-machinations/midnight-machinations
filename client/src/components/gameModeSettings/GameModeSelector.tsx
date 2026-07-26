@@ -4,7 +4,6 @@ import { AnchorControllerContext } from "../../menu/Anchor";
 import { CopyButton, PasteButton } from "../../components/ClipboardButtons";
 import Icon from "../Icon";
 import { Button } from "../Button";
-import { DragAndDrop } from "../DragAndDrop";
 import { GameModeContext } from "./GameModesEditor";
 import translate from "../../game/lang";
 import "./gameModeSelector.css"
@@ -15,8 +14,6 @@ import Select from "../Select";
 import StyledText from "../StyledText";
 import { strictDeepEqual, useLobbyState } from "../useHooks";
 import FlushInput from "../FlushInput";
-import GAME_MANAGER from "../..";
-import { LobbyState } from "../../game/gameState.d";
 
 type GameModeLocation = {
     name: string,

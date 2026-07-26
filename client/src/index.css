@@ -214,6 +214,7 @@ textarea, .textarea {
     white-space: pre;
     overflow-x: hidden;
     overflow-y: hidden;
+    border-radius: 0.25rem;
 }
 
 *:focus-visible {

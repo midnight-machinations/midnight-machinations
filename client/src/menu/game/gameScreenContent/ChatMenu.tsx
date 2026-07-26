@@ -67,7 +67,7 @@ export default function ChatMenu(): ReactElement {
                 const sendChatController = controllers.get({type: "sendChat", player: id.player});
                 if(sendChatController===null){return null}
 
-                return <div key={JSON.stringify(id)}>
+                return <div className="chat-menu-chat-controller" key={JSON.stringify(id)}>
                     <div key={"header: "+JSON.stringify(id)} className="chat-menu-icons">
                         {!sendChatGroups.includes("all") && translate("noAll.icon")}
                         {sendChatGroups.map((group) => {
@@ -376,7 +376,11 @@ export function ChatTextInput(props: Readonly<{
         sendingPlayer!==null &&
         sendingPlayer===whispering
     ){
-        return <></>;
+        return <div className="chat-send-section">
+            <StyledText className="chat-message special">
+                {translate("cannotWhisperYourself")}
+            </StyledText>
+        </div>;
     }
 
     return <>
@@ -398,8 +402,10 @@ export function ChatTextInput(props: Readonly<{
                 value={chatBoxText}
                 onChange={handleInputChange}
                 onKeyDown={handleInputKeyDown}
+                placeholder={translate("menu.chat.placeHolder")}
             />
             <Button 
+                className="flush"
                 disabled={props.disabled}
                 onClick={sendChatField}
                 aria-label={translate("menu.chat.button.send")}

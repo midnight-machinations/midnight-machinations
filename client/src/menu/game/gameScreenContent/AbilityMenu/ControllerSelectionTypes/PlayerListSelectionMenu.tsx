@@ -57,6 +57,7 @@ export default function PlayerListSelectionMenu(props: Readonly<{
                 ((props.availableSelection.maxPlayers??Infinity) >= props.availableSelection.availablePlayers.length) && newChoosablePlayers.length !== 0
                 ?
                     <Button
+                        className="flush"
                         onClick={()=>props.onChoose(props.availableSelection.availablePlayers)}
                     >
                         <Icon>select_all</Icon>
@@ -69,6 +70,7 @@ export default function PlayerListSelectionMenu(props: Readonly<{
                 props.selection.length > 0
                 ?
                     <Button
+                        className="flush"
                         onClick={()=>props.onChoose([])}
                     >
                         <Icon>deselect</Icon>

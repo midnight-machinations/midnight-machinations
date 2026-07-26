@@ -1,4 +1,4 @@
-import { ReactElement, useEffect, useRef, useState } from "react";
+import { ReactElement, useEffect, useState } from "react";
 import translate from "../../game/lang";
 import GAME_MANAGER from "../../index";
 import "./lobbyMenu.css";
@@ -113,7 +113,7 @@ function LobbyPlayerListPlayerRename(props: Readonly<{ player: PlayerDisplayData
     const [playerName, setPlayerName] = useState(props.player.name ?? "");
 
     useEffect(() => {
-        setPlayerName(props.player.name ?? "")
+        setPlayerName(props.player.name ?? "BUG")
     }, [props.player.name])
     
     return <FlushInput 

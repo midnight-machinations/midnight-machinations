@@ -32,9 +32,6 @@
     max-height: 100%;
     
     background-color: var(--background-color);
-    border: .13rem solid var(--background-border-color);
-    border-bottom-color: var(--background-border-shadow-color);
-    border-right-color: var(--background-border-shadow-color);
 
     overflow-y: auto;
     overflow-x: hidden;
@@ -42,7 +39,8 @@
 
 .game-screen .content > .panel-handle[data-resize-handle-state="hover"],
 .game-screen .content > .panel-handle[data-resize-handle-state="drag"] {
-    outline: .13rem solid var(--focus-outline-color);
+    outline: .065rem solid var(--focus-outline-color);
+    z-index: 1;
 }
 
 @media only screen and (max-width: 600px) {
@@ -70,15 +68,12 @@
     border-bottom: .13rem solid var(--background-border-shadow-color);
     width: 100%;
     margin: 0;
-    padding: .15rem .15rem;
-    background-color: var(--primary-color);
+    padding: .25rem .5rem;
+    background-color: var(--background-color);
     justify-content: space-between;
     align-items: center;
     user-select: none;
     position: relative;
-}
-.content-tab > div{
-    flex-grow: 1;
 }
 .content-tab > button {
     width: max-content;
