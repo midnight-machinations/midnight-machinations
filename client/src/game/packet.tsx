@@ -180,7 +180,7 @@ export type PlayerSynopsis = {
     outlineAssignment: {
         role: Role,
         winCondition: WinCondition,
-        insiderGroups: InsiderGroup[]
+        insiderGroups: InsiderGroup[],
         roleOutlineIndex: number,
         player: PlayerIndex
     }

@@ -280,7 +280,6 @@ function isStreakGoal(length: number): boolean {
 
 function getStreakProgress(streak: Streak): StreakProgress {
     const now = Date.now();
-    const todayStart = getDayStart(now);
     const thisWeekStart = getWeekStart(now);
     const lastPlayedWeekStart = streak.lastPlayed === null ? null : getWeekStart(streak.lastPlayed);
 

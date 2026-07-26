@@ -66,7 +66,8 @@ impl SynopsisTracker {
     }
 
     pub fn on_grave_added(game: &mut Game, event: &OnGraveAdded, _fold: &mut (), _priority: ()) {
-        SynopsisTracker::add_crumb_to_player(game, event.grave.deref(game).player, SynopsisCrumbDatum::Grave(event.grave.deref(game).clone()));
+        let grave = event.grave.deref(game);
+        SynopsisTracker::add_crumb_to_player(game, grave.player, SynopsisCrumbDatum::Grave(grave.clone()));
     }
 
     pub fn on_chat_message_added(game: &mut Game, _: PlayerReference, message: ChatMessage) {
@@ -128,7 +129,7 @@ impl Ord for Synopsis {
 
 impl Synopsis {
     pub fn get_player_synopsis(&self, player_ref: PlayerReference) -> &PlayerSynopsis {
-        self.player_synopses.get(player_ref.index() as usize).expect("Regular player reference stuff")
+        self.player_synopses.get(player_ref.index() as usize).expect("Player synopses should be initialized with the same number as amount of players")
     }
 }
 
