@@ -116,7 +116,7 @@ function GameSummary(props: Readonly<{
             <div className="beat graveyard-menu-colors">
                 <StyledText>
                     {translate("menu.gameResults.story.beat.initial",
-                        translateRoleOutline(props.roleList[props.playerSynopsis.outlineAssignment.roleOutlineIndex], props.playerNames),
+                        translateRoleOutline(props.roleList[props.playerSynopsis.outlineAssignment.roleOutlineIndex], playerNames),
                         translate("role." + props.playerSynopsis.outlineAssignment.role + ".name"),
                         translateWinCondition(props.playerSynopsis.outlineAssignment.winCondition),
                         translateInsiderGroups(props.playerSynopsis.outlineAssignment.insiderGroups, true)
