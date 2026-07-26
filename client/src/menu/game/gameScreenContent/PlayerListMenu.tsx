@@ -296,14 +296,13 @@ function PlayerCard(props: Readonly<{
                 if(id.type!=="whisper"){return null}
                 const sendChatController = controllers.get({type: "sendWhisper", player: id.player})!;
 
-                return <>
-                    <ChatTextInput 
-                        key={"input: "+JSON.stringify(id)}
+                return <div className="chat-menu-chat-controller" key={JSON.stringify(id)}>
+                    <ChatTextInput
                         disabled={sendChatController.parameters.grayedOut}
                         whispering={props.playerIndex}
                         controllingPlayer={id.player}
                     />
-                </>
+                </div>
             })
         }
     </div>}

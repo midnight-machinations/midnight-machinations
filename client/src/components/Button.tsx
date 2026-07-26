@@ -2,12 +2,10 @@ import React, { useEffect, useMemo, useRef, ReactElement, useState, forwardRef, 
 import "./button.css";
 import ReactDOM from "react-dom/client";
 import { THEME_CSS_ATTRIBUTES } from "..";
-import { CtrlPressedContext } from "../menu/Anchor";
-import Popover from "./Popover";
+import { CtrlPressedContext, TooltipContext } from "../menu/Anchor";
 import { dropdownPlacementFunction } from "./Select";
 import { WikiArticleLink } from "./WikiArticleLink";
-import WikiArticle from "./WikiArticle";
-import WikiArticleTooltip, { getArticleTooltip } from "./WikiArticleTooltip";
+import WikiArticleTooltip from "./WikiArticleTooltip";
 
 export type ButtonProps<R> = Omit<JSX.IntrinsicElements['button'], 'onClick' | 'ref'> & {
     onClick?: (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => (R | void | Promise<R | void>)
@@ -69,67 +67,53 @@ const RawButton = forwardRef<HTMLButtonElement, ButtonProps<any>>(function RawBu
     }, [props, success]);
     
     const isCtrlPressed = useContext(CtrlPressedContext) ?? false;
+    const tooltipContext = useContext(TooltipContext)!;
     
     const articleTooltip = React.useMemo(() => {
         if (props.tooltip === undefined) return null;
         if (typeof props.tooltip !== "string") return props.tooltip;
 
-        if (isCtrlPressed === true) {
-            return <WikiArticle noLinks={true} article={props.tooltip} className="wiki-article-tooltip" />;
-        } else {
-            const tooltip = getArticleTooltip(props.tooltip);
-            if (tooltip === null) {
-                return null;
-            }
-            return <WikiArticleTooltip tooltip={tooltip} />;
-        }
+        return <WikiArticleTooltip article={props.tooltip} />
     }, [isCtrlPressed, props.tooltip]);
 
-    const [hovering, setHovering] = React.useState<boolean>(false);
-
     const handleFocus = (event: any) => {
-        setHovering(true);
+        if (articleTooltip) {
+            tooltipContext.open(
+                articleTooltip,
+                (popover, anchor) => dropdownPlacementFunction(popover, anchor, null),
+                ref
+            )
+        }
     };
 
     const handleUnfocus = (event: any) => {
-        setHovering(false);
+        tooltipContext.close()
     };
 
-    return <>
-        <button {...reconcileProps(props)} ref={ref}
-            className={
-                "button " + (props.className ?? "") + (props.highlighted ? " highlighted" : "")
+    return <button {...reconcileProps(props)} ref={ref}
+        className={
+            "button " + (props.className ?? "") + (props.highlighted ? " highlighted" : "")
+        }
+        onClick={async e => {
+            if (props.onClick) {
+                const result = await props.onClick(e);
+                if (result === undefined) return;
+
+                setSuccess(result);
+                if (props.pressedText !== undefined) showPopup(props.pressedText(result))
+
+                if (lastTimeout) clearTimeout(lastTimeout);
+                lastTimeout = setTimeout(() => {
+                    setSuccess("unclicked")
+                    hidePopup();
+                }, POPUP_TIMEOUT_MS);
             }
-            onClick={async e => {
-                if (props.onClick) {
-                    const result = await props.onClick(e);
-                    if (result === undefined) return;
-
-                    setSuccess(result);
-                    if (props.pressedText !== undefined) showPopup(props.pressedText(result))
-
-                    if (lastTimeout) clearTimeout(lastTimeout);
-                    lastTimeout = setTimeout(() => {
-                        setSuccess("unclicked")
-                        hidePopup();
-                    }, POPUP_TIMEOUT_MS);
-                }
-            }}
-            onMouseEnter={handleFocus}
-            onMouseLeave={handleUnfocus}
-            onFocus={handleFocus}
-            onBlur={handleUnfocus}
-        >{children}</button>
-        {articleTooltip !== null && <Popover
-            open={hovering && articleTooltip !== null}
-            setOpenOrClosed={setHovering}
-            anchorForPositionRef={ref}
-            onRender={(popover, anchor) => dropdownPlacementFunction(popover, anchor, null)}
-            className="wiki-article-tooltip-popover"
-        >
-            {articleTooltip}
-        </Popover>}
-    </>
+        }}
+        onMouseEnter={handleFocus}
+        onMouseLeave={handleUnfocus}
+        onFocus={handleFocus}
+        onBlur={handleUnfocus}
+    >{children}</button>
 })
 
 export { RawButton };

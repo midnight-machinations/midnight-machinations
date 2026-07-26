@@ -116,6 +116,7 @@
 
     "playerIsWhisperingToPlayer": "\\0 is whispering to \\1.",
     "cancelWhisper": "Cancel whisper",
+    "cannotWhisperYourself": "You can't whisper yourself.",
 
     "button.clear": "Clear",
 

@@ -584,7 +584,7 @@ export function OutlineListSelector(props: Readonly<{
 
     return <section className="graveyard-menu-colors selector-section">
         <div className="selector-section-header">
-            {translate("menu.lobby.roleList")}
+            {translate("menu.lobby.roleList")}: {roleList.length}
             {(props.disabled !== true) && <Button onClick={simplify}>
                 <Icon>filter_list</Icon> {translate("simplify")}
             </Button>}

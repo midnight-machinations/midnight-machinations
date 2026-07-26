@@ -376,7 +376,11 @@ export function ChatTextInput(props: Readonly<{
         sendingPlayer!==null &&
         sendingPlayer===whispering
     ){
-        return <></>;
+        return <div className="chat-send-section">
+            <StyledText className="chat-message special">
+                {translate("cannotWhisperYourself")}
+            </StyledText>
+        </div>;
     }
 
     return <>

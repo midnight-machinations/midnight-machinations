@@ -96,7 +96,7 @@
     left: .5rem;
     top: .5rem;
     font-size: 1.25rem;
-    padding: .13rem calc(.5rem - .13rem);
+    padding: .25rem calc(.5rem - .13rem);
 }
 /* .header-menu .fast-forward-button-div > button:first-of-type {
     margin: 0;

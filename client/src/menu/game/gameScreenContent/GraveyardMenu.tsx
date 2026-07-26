@@ -13,11 +13,16 @@ import { ModifierSettingsDisplay } from "../../../components/gameModeSettings/Mo
 import Icon from "../../../components/Icon";
 
 export default function GraveyardMenu(): ReactElement {
+    const playerCount = useLobbyOrGameState(
+        gameState => gameState.roleList.length,
+        ["roleList"]
+    )!;
+
     return <div className="graveyard-menu graveyard-menu-colors">
         <ContentTab close={ContentMenu.GraveyardMenu}>{translate("menu.gameMode.title")}</ContentTab>
             
         <DetailsSummary
-            summary={translate("menu.lobby.roleList")}
+            summary={translate("menu.lobby.roleList") + ": " + playerCount}
             defaultOpen={true}
         >
             <RoleListDisplay />
