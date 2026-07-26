@@ -70,15 +70,18 @@ impl Game {
 
                 let conclusion = GameConclusion::get_premature_conclusion(self);
                 let synopsis = SynopsisTracker::get(self, conclusion);
+                let player_names: Vec<String> = PlayerReference::all_players(self)
+                    .map(|p| p.name(self).clone())
+                    .collect();
+                let role_list = self.settings.role_list.clone();
+
                 for player_ref in PlayerReference::all_players(self) {
                     let player_synopsis = synopsis.get_player_synopsis(player_ref);
                     player_ref.send_packet(self, ToClientPacket::GameResults {
-                        player_names: PlayerReference::all_players(self).map(|p|
-                            p.name(self).clone()
-                        ).collect(),
+                        player_names: player_names.clone(),
                         conclusion,
-                        role_list: self.settings.role_list.clone(),
-                        player_synopsis: player_synopsis.clone()
+                        role_list: role_list.clone(),
+                        player_synopsis: player_synopsis.clone(),
                     });
                 }
 
