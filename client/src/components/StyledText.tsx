@@ -1,5 +1,5 @@
 import { marked } from "marked";
-import React, { ReactElement, useCallback, useContext, useEffect, useMemo } from "react";
+import React, { ReactElement, useContext } from "react";
 import ReactDOMServer from "react-dom/server";
 import { find } from "..";
 import translate, { translateChecked } from "../game/lang";
@@ -9,16 +9,14 @@ import DUMMY_NAMES from "../resources/dummyNames.json";
 import { ARTICLES, WikiArticleLink, getArticleLangKey } from "./WikiArticleLink";
 import { MenuControllerContext } from "../menu/game/GameScreen";
 import { Player, UnsafeString } from "../game/gameState.d";
-import { AnchorControllerContext, CtrlPressedContext } from "../menu/Anchor";
+import { AnchorControllerContext, CtrlPressedContext, TooltipContext } from "../menu/Anchor";
 import { setWikiSearchPage } from "./Wiki";
 import { getRoleSetsFromRole, RoleList, translateRoleOutline } from "../game/roleListState.d";
 import { encodeString } from "./ChatMessage";
 import DUMMY_ROLE_LIST from "../resources/dummyRoleList.json";
 import KEYWORD_DATA_JSON_IMPORT from "../resources/keywords.json" with { type: "json" };
-import Popover from "./Popover";
 import { dropdownPlacementFunction } from "./Select";
-import WikiArticleTooltip, { getArticleTooltip } from "./WikiArticleTooltip";
-import WikiArticle from "./WikiArticle";
+import WikiArticleTooltip from "./WikiArticleTooltip";
 
 const KEYWORD_DATA_JSON = KEYWORD_DATA_JSON_IMPORT as { [key: string]: TokenData };
 
@@ -86,15 +84,8 @@ export default function StyledText(props: Readonly<StyledTextProps>): ReactEleme
 
     const jsxString = mapTokensToHtml(tokens, props.noLinks ?? false);
 
-    const shouldHaveToolTip = !(props.noLinks ?? false) && tokens.some(token => token.type === "data" && token.link !== undefined);
-    const [hovering, setHovering] = React.useState<[WikiArticleLink, HTMLElement] | null>(null);
-    const articleToolTip = React.useMemo(() => {
-        if (hovering !== null) {
-            return getArticleTooltip(hovering[0]);
-        }
-        return null;
-    }, [hovering]);
-    
+    const tooltipContext = useContext(TooltipContext)!;
+
     const handleClick = (event: React.MouseEvent<HTMLSpanElement>) => {
         const target = event.target as HTMLElement;
         const anchor = target.closest('a[data-wiki-page]');
@@ -103,7 +94,7 @@ export default function StyledText(props: Readonly<StyledTextProps>): ReactEleme
             const wikiPage = anchor.getAttribute('data-wiki-page') as WikiArticleLink;
             if (wikiPage) {
                 setWikiSearchPage(wikiPage, anchorController, menuController);
-                setHovering(null);
+                tooltipContext.close();
             }
         }
     };
@@ -114,7 +105,11 @@ export default function StyledText(props: Readonly<StyledTextProps>): ReactEleme
         if (anchor) {
             const wikiPage = anchor.getAttribute('data-wiki-page') as WikiArticleLink;
             if (wikiPage) {
-                setHovering([wikiPage, anchor as HTMLElement]);
+                tooltipContext.open(
+                    <WikiArticleTooltip article={wikiPage} />,
+                    (dropdownElement, sourceElement) => dropdownPlacementFunction(dropdownElement, sourceElement, null),
+                    { current: anchor as HTMLElement }
+                )
             }
         }
     };
@@ -123,46 +118,19 @@ export default function StyledText(props: Readonly<StyledTextProps>): ReactEleme
         const target = event.target as HTMLElement;
         const anchor = target.closest('a[data-wiki-page]');
         if (anchor) {
-            setHovering(null);
+            tooltipContext.close();
         }
     };
 
-    const tooltip = useMemo(() => {
-        if (isCtrlPressed === true) {
-            return hovering && <WikiArticle noLinks={true} article={hovering[0]} className="wiki-article-tooltip" />;
-        } else {
-            if (articleToolTip === null) {
-                return null;
-            }
-            return <WikiArticleTooltip tooltip={articleToolTip} />;
-        }
-    }, [articleToolTip, isCtrlPressed, hovering]);
-
-    const dropdownPlacement = useCallback((dropdownElement: HTMLElement) => {
-        dropdownPlacementFunction(dropdownElement, hovering![1], null);
-    }, [hovering, tooltip]);
-
-    return <>
-        <span
-            className={props.className}
-            onClick={handleClick}
-            onMouseOver={handleFocus}
-            onFocus={handleFocus}
-            onMouseOut={handleUnfocus}
-            onBlur={handleUnfocus}
-            dangerouslySetInnerHTML={{__html: jsxString}}>
-        </span>
-        {shouldHaveToolTip && <Popover
-            open={hovering !== null && tooltip !== null}
-            setOpenOrClosed={(open) => {
-                if (!open) setHovering(null);
-            }}
-            onRender={dropdownPlacement}
-            className="wiki-article-tooltip-popover"
-        >
-            {tooltip}
-        </Popover>}
-    </>
+    return <span
+        className={props.className}
+        onClick={handleClick}
+        onMouseOver={handleFocus}
+        onFocus={handleFocus}
+        onMouseOut={handleUnfocus}
+        onBlur={handleUnfocus}
+        dangerouslySetInnerHTML={{__html: jsxString}}>
+    </span>
 }
 
 function mapTokensToHtml(tokens: Token[], noLinks: boolean): string {

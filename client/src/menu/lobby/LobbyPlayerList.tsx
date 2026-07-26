@@ -1,13 +1,10 @@
-import React, { ReactElement, useRef, useState } from "react";
+import { ReactElement, useEffect, useState } from "react";
 import translate from "../../game/lang";
 import GAME_MANAGER from "../../index";
 import "./lobbyMenu.css";
 import { ClientConnection } from "../../game/gameState.d";
 import Icon from "../../components/Icon";
 import { useLobbyOrGameState } from "../../components/useHooks";
-import { Button, RawButton } from "../../components/Button";
-import Popover from "../../components/Popover";
-import { selectPlacementFunction } from "../../components/Select";
 import StyledText from "../../components/StyledText";
 import { encodeString } from "../../components/ChatMessage";
 import FlushInput from "../../components/FlushInput";
@@ -59,16 +56,6 @@ export default function LobbyPlayerList(): ReactElement {
         ["playersHost", "playersLostConnection", "lobbyClients", "playersReady", "hostData", "gamePlayers"]
     ) ?? [];
 
-    const host = useLobbyOrGameState(
-        state => {
-            if (state.stateType === "lobby")
-                return state.players.get(state.myId!)?.ready === "host"
-            else
-                return state.host !== null
-        },
-        ["playersHost", "lobbyClients", "yourId", "playersReady", "hostData"]
-    )!;
-
     return <section className="player-list-menu-colors selector-section lobby-player-list-section">
         <div className="lobby-player-list">
             <ol>
@@ -99,9 +86,6 @@ function LobbyPlayerListPlayer(props: Readonly<{ player: PlayerDisplayData }>): 
         ["playersHost", "lobbyClients", "yourId", "playersReady", "hostData"]
     )!;
 
-    const [renameOpen, setRenameOpen] = useState(false);
-    const renameButtonRef = useRef<HTMLButtonElement>(null);
-
     return <li key={props.player.id} className={props.player.connection==="connected" ? "" : "keyword-dead"}>
         <div>
             {props.player.connection === "couldReconnect" && <Icon>signal_cellular_connected_no_internet_4_bar</Icon>}
@@ -127,6 +111,10 @@ function LobbyPlayerListPlayer(props: Readonly<{ player: PlayerDisplayData }>): 
 
 function LobbyPlayerListPlayerRename(props: Readonly<{ player: PlayerDisplayData }>): ReactElement {
     const [playerName, setPlayerName] = useState(props.player.name ?? "");
+
+    useEffect(() => {
+        setPlayerName(props.player.name ?? "BUG")
+    }, [props.player.name])
     
     return <FlushInput 
         className="lobby-player-list-player-rename"

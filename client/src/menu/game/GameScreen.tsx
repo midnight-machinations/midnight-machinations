@@ -328,11 +328,9 @@ export function ContentTab(props: Readonly<{
     const mobile = useContext(MobileContext)!;
 
     return <div className="content-tab">
-        <div>
-            <StyledText>
-                {props.children}
-            </StyledText>
-        </div>
+        <StyledText>
+            {props.children}
+        </StyledText>
 
         {props.close && (!spectator || mobile) && <Button className="close flush"
             onClick={()=>menuController.closeMenu(props.close as ContentMenu)}
