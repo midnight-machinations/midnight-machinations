@@ -370,7 +370,7 @@ function Crumb(props: Readonly<{
         } else {
             return ['', "ERROR"]
         }
-    }, [])
+    }, [crumb, props.playerNames, props.roleList])
 
     return <div className={"beat " + className}>
         {inner}
