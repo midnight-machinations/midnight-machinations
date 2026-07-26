@@ -1,4 +1,4 @@
-import { PhaseType, PlayerIndex, PhaseTimes, Tag, LobbyClientID, ChatGroup, PhaseState, LobbyClient, InsiderGroup, GameClient, UnsafeString, FastForwardSetting } from "./gameState.d"
+import { PhaseType, PlayerIndex, PhaseTimes, Tag, LobbyClientID, ChatGroup, PhaseState, LobbyClient, InsiderGroup, GameClient, UnsafeString, FastForwardSetting, WinCondition, Conclusion } from "./gameState.d"
 import { Grave, GraveIndex } from "./graveState"
 import { ChatMessage, ChatMessageIndex } from "../components/ChatMessage"
 import { RoleList, RoleOutline } from "./roleListState.d"
@@ -166,9 +166,39 @@ export type ToClientPacket = {
     type: "gameOver",
     reason: string
 } | {
+    type: "gameResults",
+    playerNames: string[],
+    conclusion: Conclusion,
+    roleList: RoleList,
+    playerSynopsis: PlayerSynopsis
+} | {
     type: "yourPitchforkVote",
     player: PlayerIndex | null
 }
+
+export type PlayerSynopsis = {
+    outlineAssignment: {
+        role: Role,
+        winCondition: WinCondition,
+        insiderGroups: InsiderGroup[],
+        roleOutlineIndex: number,
+        player: PlayerIndex
+    }
+    latestAlibi: string,
+    crumbs: SynopsisCrumb[],
+    index: number,
+    won: boolean
+}
+
+export type SynopsisCrumb = {
+    night: number | null,
+} & (
+    | { roleChange: Role, }
+    | { winConditionChange: WinCondition, }
+    | { insiderGroupChange: InsiderGroup[] }
+    | { died: null, }
+    | { grave: Grave, }
+)
 
 export type ToServerPacket = {
     type: "ping",

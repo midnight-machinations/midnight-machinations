@@ -22,6 +22,7 @@ import StartMenu from "../menu/main/StartMenu";
 import ListMap from "../ListMap";
 import { controllerIdToLinkWithPlayer, sortControllerIdCompare } from "./controllerInput";
 import { getNamesForPlayerPoolFromLobbyClients } from "../components/gameModeSettings/OutlineSelector";
+import GameResults from "../menu/lobby/GameResults";
 
 function sendDefaultName() {
     const defaultName = loadSettingsParsed().defaultName;
@@ -268,7 +269,10 @@ export default function messageListener(packet: ToClientPacket){
             break;
         case "backToLobby":
             GAME_MANAGER.setLobbyState();
-            ANCHOR_CONTROLLER?.setContent(<LobbyMenu/>);
+            ANCHOR_CONTROLLER?.setContent(<LobbyMenu />);
+        break;
+        case "gameResults":
+            ANCHOR_CONTROLLER?.setCoverCard(<GameResults playerSynopsis={packet.playerSynopsis} playerNames={packet.playerNames} conclusion={packet.conclusion} roleList={packet.roleList}/>);
         break;
         case "gamePlayers":
             if(GAME_MANAGER.state.stateType === "game"){

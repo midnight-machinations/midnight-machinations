@@ -1,0 +1,233 @@
+.game-results {
+    width: 60rem;
+    height: 40rem;
+
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+}
+
+.game-results > .game-summary {
+    flex-basis: 67%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: .5rem;
+}
+
+.game-results > .personal-summary {
+    flex-basis: 27%;
+    min-width: 10rem;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: stretch;
+    flex-grow: 1;
+    height: 100%;
+    background: var(--secondary-color);
+}
+
+.summary-below-indicator {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: 0.25rem;
+    padding-bottom: 0.5rem;
+}
+
+.game-summary-info {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    border-bottom: .13rem solid var(--primary-border-color);
+    background: var(--primary-color)
+}
+
+.game-summary-info > div {
+    display: flex;
+    flex-direction: column;
+    padding: 0.5rem;
+    gap: 0.25rem;
+    flex-grow: 1;
+    align-items: center;
+    justify-content: center;
+}
+
+.game-results .story {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    overflow: auto;
+
+    background-repeat: repeat-y;
+    background-position: center top;
+    background-image: radial-gradient(circle, white .13rem, transparent .13rem);
+    background-size: 4px 20px; 
+    background-attachment: local;
+}
+
+.game-results .story .beat {
+    display: flex;
+    flex-direction: column;
+    border: .13rem solid var(--primary-border-color);
+    border-radius: .5rem;
+    padding: .5rem 1rem;
+    margin: .25rem;
+    background: var(--secondary-color);
+    max-width: 20rem;
+    align-self: center;
+}
+
+.game-results .story .beat.alibi {
+    width: 20rem;
+}
+
+.game-results > .vertical-line-separator {
+    border-left: 0.13rem solid var(--background-border-color);
+    margin: 1rem 0;
+    width: 0;
+    flex-grow: 0;
+    flex-basis: 0;
+}
+
+.streak-tracker {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: .75rem;
+    border-left: .13rem solid var(--primary-border-color);
+    padding: .9rem .75rem;
+    flex-grow: 1;
+}
+
+.streak-flame {
+    width: 4rem;
+    font-size: 4rem;
+}
+
+.streak-count {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    line-height: 1;
+}
+
+.streak-count strong {
+    font-size: 3rem;
+    color: #ffd166;
+}
+
+.streak-count span,
+.streak-status {
+    text-align: center;
+}
+
+.streak-status {
+    min-height: 2.5rem;
+    display: flex;
+    align-items: center;
+    color: #e8e8e8;
+}
+
+.streak-goal {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: .35rem;
+}
+
+.streak-goal-label {
+    display: flex;
+    justify-content: space-between;
+    gap: .5rem;
+}
+
+.streak-goal-label .streak-percentage {
+    font-weight: bold;
+}
+
+.streak-goal-bar {
+    width: 100%;
+    height: 1rem;
+    border: .13rem solid var(--primary-border-color);
+    border-radius: 999rem;
+    background: var(--background-color);
+    overflow: hidden;
+}
+
+.streak-goal-bar-fill {
+    height: 100%;
+    border-radius: inherit;
+    background: linear-gradient(90deg, #f08a22, #ffd166);
+}
+
+.streak-week-track {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: .5rem;
+    padding: 0;
+    list-style: none;
+}
+
+.streak-week {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: .5rem;
+    height: 2.25rem;
+    border: .13rem solid var(--primary-border-color);
+    background: var(--background-color);
+    border-radius: 1.125rem;
+}
+
+.streak-week:not(:last-child) .streak-week-marker::after {
+    content: "";
+    position: absolute;
+    top: calc(100% + .13rem);
+    height: .5rem;
+    border-left: .13rem solid var(--primary-border-color);
+}
+
+.streak-week.complete {
+    background: #f08a22;
+    border-color: #ffd166;
+}
+
+.streak-week.complete::before {
+    content: "";
+    width: .75rem;
+    height: .4rem;
+    border-left: .18rem solid white;
+    border-bottom: .18rem solid white;
+    transform: rotate(-45deg) translate(.05rem, -.05rem);
+}
+
+.streak-week.current {
+    box-shadow: 0 0 0 .18rem #ffd16655;
+}
+
+.streak-week-label {
+    line-height: 1.1;
+}
+
+
+@media only screen and (max-width: 600px) {
+    .game-results > .game-summary {
+        flex-basis: 100%;
+        height: calc(100% + .13rem);
+        border-top: .13rem solid var(--primary-border-color);
+        order: 1;
+    }
+
+    .game-results {
+        overflow: auto;
+    }
+
+    .streak-tracker {
+        border-left: none;
+    }
+}

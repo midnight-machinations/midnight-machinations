@@ -313,7 +313,7 @@ function computeDummyKeywordData() {
     }
 }
 
-function getStyledHtmlFromString(string: string, playerKeywordData: KeywordDataMap, roleListKeywordData: KeywordDataMap): string {
+export function getStyledHtmlFromString(string: string, playerKeywordData: KeywordDataMap, roleListKeywordData: KeywordDataMap): string {
     const tokens = [{ type: "raw" as const, string }];
 
     const styledTokens = styleKeywords(tokens, { ...playerKeywordData, ...roleListKeywordData });

@@ -1,6 +1,7 @@
 use std::collections::VecDeque;
 
 use rand::{rngs::SmallRng, seq::SliceRandom};
+use serde::{Deserialize, Serialize};
 
 use crate::{game::{prelude::*, role_list::RoleOutlineOption, role_outline_reference::RoleOutlineReference}, vec_set::VecSet};
 pub mod criteria;
@@ -194,8 +195,10 @@ pub struct OutlineListAssignment {
     pub assignments: Vec<OutlineAssignment>
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub struct OutlineAssignment {
+    #[serde(rename = "roleOutlineIndex")]
     pub role_outline_reference: RoleOutlineReference,
     pub role: Role,
     pub insider_groups: VecSet<InsiderGroupID>,

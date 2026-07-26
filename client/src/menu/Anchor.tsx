@@ -17,6 +17,7 @@ import GameModesEditor from "../components/gameModeSettings/GameModesEditor";
 import HostMenu from "./HostMenu";
 import SettingsMenu from "./Settings";
 import NightMessagePopup from "../components/NightMessagePopup";
+import GameResults from "./lobby/GameResults";
 import Popover from "../components/Popover";
 import { useLobbyOrGameState } from "../components/useHooks";
 
@@ -244,6 +245,9 @@ export default function Anchor(props: Readonly<{
             }
             if (coverCard.type === HostMenu || coverCard.type === SettingsMenu) {
                 coverCardTheme = "graveyard-menu-colors"
+            }
+            if (coverCard.type === GameResults) {
+                coverCardTheme = "player-list-menu-colors"
             }
 
             if (callback) {

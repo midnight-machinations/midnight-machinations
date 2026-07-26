@@ -6,6 +6,7 @@ use std::collections::VecDeque;
 pub use chat_group::*;
 pub use chat_message::*;
 pub use chat_message_variant::*;
+use crate::game::components::synopsis::SynopsisTracker;
 use crate::game::prelude::*;
 
 use crate::game::{components::player_component::PlayerComponent, player::PlayerReference, Game};
@@ -35,6 +36,7 @@ impl ChatComponent{
         let index = chat_player.messages.len();
         chat_player.messages.push(message.clone());
         chat_player.not_sent_messages.push_back((index, message.clone()));
+        SynopsisTracker::on_chat_message_added(game, player, message);
     }
     pub fn chat_messages(game: &Game, player: PlayerReference) -> &Vec<ChatMessage> {
         &game.chat_messages.get(player).messages
