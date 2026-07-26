@@ -1,13 +1,10 @@
-import React, { ReactElement, useEffect, useRef, useState } from "react";
+import { ReactElement, useEffect, useState } from "react";
 import translate from "../../game/lang";
 import GAME_MANAGER from "../../index";
 import "./lobbyMenu.css";
 import { ClientConnection } from "../../game/gameState.d";
 import Icon from "../../components/Icon";
 import { useLobbyOrGameState } from "../../components/useHooks";
-import { Button, RawButton } from "../../components/Button";
-import Popover from "../../components/Popover";
-import { selectPlacementFunction } from "../../components/Select";
 import StyledText from "../../components/StyledText";
 import { encodeString } from "../../components/ChatMessage";
 import FlushInput from "../../components/FlushInput";

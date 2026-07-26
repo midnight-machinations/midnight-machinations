@@ -1,6 +1,5 @@
-import { ReactElement, ReactNode, useContext, useEffect, useRef, useState } from "react";
+import { ReactElement, ReactNode, useEffect, useRef, useState } from "react";
 import { Role, roleJsonData } from "../game/roleState.d";
-import React from "react";
 import translate, { langText, translateChecked } from "../game/lang";
 import StyledText, { DUMMY_NAMES_KEYWORD_DATA, DUMMY_NAMES_SENDER_KEYWORD_DATA, DUMMY_ROLE_LIST_KEYWORD_DATA, StyledTextProps } from "./StyledText";
 import { ROLE_SETS, RoleList, getAllRoles, getRolesFromRoleSet } from "../game/roleListState.d";
@@ -15,10 +14,6 @@ import { partitionWikiPages, WikiCategory, WikiDisabledFilter } from "./Wiki";
 import { MODIFIERS, ModifierID } from "../game/modifiers";
 import DUMMY_ROLE_LIST from "../resources/dummyRoleList.json";
 import Masonry from "react-responsive-masonry";
-import Popover from "./Popover";
-import { dropdownPlacementFunction } from "./Select";
-import WikiArticleTooltip, { getArticleTooltip } from "./WikiArticleTooltip";
-import { CtrlPressedContext } from "../menu/Anchor";
 import { Button } from "./Button";
 
 function WikiStyledText(props: Omit<StyledTextProps, 'markdown' | 'playerKeywordData'>): ReactElement {

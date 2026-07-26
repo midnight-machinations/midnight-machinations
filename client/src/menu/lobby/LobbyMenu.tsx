@@ -1,4 +1,4 @@
-import React, { ReactElement, useContext, useEffect, useMemo, useRef, useState } from "react";
+import { ReactElement, useContext, useEffect, useMemo, useState } from "react";
 import GAME_MANAGER, { DEV_ENV } from "../../index";
 import LobbyPlayerList from "./LobbyPlayerList";
 import "./lobbyMenu.css";
