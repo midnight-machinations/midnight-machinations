@@ -98,7 +98,7 @@ function GameSummary(props: Readonly<{
                 { style: "keyword-outline", replacement: getStyledHtmlFromString(translateRoleOutline(outline, playerNames), PLAYER_KEYWORD_DATA, {}) },
             ]] as [string, TokenData[]]
         }))
-    }, [props.roleList]);
+    }, [props.roleList, playerNames, PLAYER_KEYWORD_DATA]);
 
     return <div className="game-summary">
         <div className="game-summary-info">
