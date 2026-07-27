@@ -308,17 +308,16 @@ function useDragToChangeValue(startValue: number, onChange: (value: number) => v
         setStartY(e.clientY);
     };
 
-    const handleMouseMove = useCallback((e: MouseEvent) => {
+    const handleMouseMove = (e: MouseEvent) => {
         if (startY === null) return;
         const deltaY = e.clientY - startY;
         onChange(startValue - Math.floor(deltaY / 10));
-    }, [onChange, startValue, startY]);
+    };
 
-    const handleMouseUp = useCallback(() => {
+    const handleMouseUp = () => {
         globalThis.removeEventListener('mousemove', handleMouseMove);
-        // eslint-disable-next-line react-hooks/immutability
         globalThis.removeEventListener('mouseup', handleMouseUp);
-    }, [handleMouseMove]);
+    };
 
     useEffect(() => {
         if (startY === null) return;
@@ -331,7 +330,8 @@ function useDragToChangeValue(startValue: number, onChange: (value: number) => v
             globalThis.removeEventListener('mousemove', handleMouseMove);
             globalThis.removeEventListener('mouseup', handleMouseUp);
         };
-    }, [startY, handleMouseMove, handleMouseUp]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [startY]);
 
     return handleMouseDown;
 }

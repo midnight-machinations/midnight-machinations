@@ -14,7 +14,7 @@ export default function PlayMenuJoinPopup(props: Readonly<{
         <button onClick={() => props.joinGame(props.roomCode)}>{translate("menu.play.button.spectate")}</button>
         
         <div className="rejoinColumn">
-            {props.lobbyData.players.map((player, j)=>{
+            {props.lobbyData.players.map((player)=>{
                 return <button key={player[1] as string} onClick={()=>{
                     props.joinGame(props.roomCode, player[0]);
                 }}>{encodeString(player[1])}</button>
