@@ -14,7 +14,10 @@ impl RoleStateTrait for Framer {
     fn on_midnight(self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut OnMidnightFold, priority: OnMidnightPriority) {
         if priority != OnMidnightPriority::Deception {return}
 
+        Tags::set_tagged(game, TagSetID::Framer(actor_ref), &vec_set![]);
+        
         let Some(framed) = Visits::default_target(midnight_variables, actor_ref, Role::Framer) else {return};
+        if actor_ref.ability_deactivated_from_death(game) {return}
         
         framed.set_night_framed(midnight_variables, true);
         for framed_tagged in Tags::tagged(game, TagSetID::Framer(actor_ref)){
