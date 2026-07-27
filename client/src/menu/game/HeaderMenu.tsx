@@ -273,12 +273,12 @@ export function FastForwardButton(props: { spectatorAndHost: boolean }): ReactEl
         ["phase"]
     )!;
 
-    // eslint-disable-next-line
     const optionMap = new Map();
 
     optionMap.set(
         "none",
         [
+            // eslint-disable-next-line react/jsx-key
             <Icon>play_arrow</Icon>,
             translate("none")
         ]
@@ -286,6 +286,7 @@ export function FastForwardButton(props: { spectatorAndHost: boolean }): ReactEl
     optionMap.set(
         "skip",
         [
+            // eslint-disable-next-line react/jsx-key
             <Icon>fast_forward</Icon>,
             translate("wiki.article.standard.fastForward.title")
         ]

@@ -21,6 +21,8 @@ export default function EnabledRoleSelector(props: Readonly<{
 }>): ReactElement {
     const {enabledRoles} = useContext(GameModeContext);
 
+    const { onDisableRoles, onEnableRoles } = props;
+
     const toggleRoleOrRoleSet = useCallback((roleOrRoleSet: RoleOrRoleSet) => {
         let enabled = false;
         if (roleOrRoleSet.type === "role") {
@@ -30,11 +32,11 @@ export default function EnabledRoleSelector(props: Readonly<{
         }
 
         if (enabled) {
-            props.onDisableRoles(getRolesFromRoleOrRoleSet(roleOrRoleSet));
+            onDisableRoles(getRolesFromRoleOrRoleSet(roleOrRoleSet));
         } else {
-            props.onEnableRoles(getRolesFromRoleOrRoleSet(roleOrRoleSet));
+            onEnableRoles(getRolesFromRoleOrRoleSet(roleOrRoleSet));
         }
-    }, [enabledRoles]);
+    }, [enabledRoles, onDisableRoles, onEnableRoles]);
 
     const [hideDisabled, setHideDisabled] = useState(props.disabled ?? false);
 

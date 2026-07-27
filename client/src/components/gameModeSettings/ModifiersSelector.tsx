@@ -51,6 +51,7 @@ function ModifierButton(props: Readonly<{
 
     useEffect(() => {
         if (props.state === undefined) {
+            // eslint-disable-next-line react-hooks/set-state-in-effect
             setOpen(false);
         }
     }, [props.state]);

@@ -484,7 +484,6 @@ export default function messageListener(packet: ToClientPacket){
                 if(GAME_MANAGER.state.stateType === "game" && packet.chatMessages.length !== 0){
                     GAME_MANAGER.state.missedChatMessages = true;
                     
-                    // eslint-disable-next-line
                     for(let [_index, chatMessage] of packet.chatMessages){
                         if(
                             chatMessage.variant.type === "whisper" &&
@@ -497,7 +496,6 @@ export default function messageListener(packet: ToClientPacket){
                 }
 
                 if (GAME_MANAGER.state.stateType !== "game" || GAME_MANAGER.state.initialized === true) {
-                    // eslint-disable-next-line
                     for(let [_index, chatMessage] of packet.chatMessages){
                         let audioSrc = chatMessageToAudio(chatMessage);
                         if(audioSrc)

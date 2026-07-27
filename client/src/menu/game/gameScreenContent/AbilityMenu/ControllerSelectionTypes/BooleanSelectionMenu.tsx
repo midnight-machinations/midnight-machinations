@@ -47,9 +47,11 @@ function BooleanSelectionMenuNamed(props: Readonly<{
     let optionsSearch = new Map<boolean, [React.ReactNode, string]>();
 
     let trueText = translate("controllerId."+controllerIdToLink(props.id).replace(/\//g, ".") + ".boolean.true");
+    // eslint-disable-next-line react/jsx-key
     optionsSearch.set(true, [<StyledText noLinks={true}>{trueText}</StyledText>, trueText]);
     
     let falseText = translate("controllerId."+controllerIdToLink(props.id).replace(/\//g, ".") + ".boolean.false");
+    // eslint-disable-next-line react/jsx-key
     optionsSearch.set(false, [<StyledText noLinks={true}>{falseText}</StyledText>, falseText]);
     
     return <div>

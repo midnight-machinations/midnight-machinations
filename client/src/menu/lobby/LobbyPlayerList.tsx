@@ -113,7 +113,8 @@ function LobbyPlayerListPlayerRename(props: Readonly<{ player: PlayerDisplayData
     const [playerName, setPlayerName] = useState(props.player.name ?? "");
 
     useEffect(() => {
-        setPlayerName(props.player.name ?? "BUG")
+        // eslint-disable-next-line react-hooks/set-state-in-effect
+        setPlayerName(props.player.name ?? "")
     }, [props.player.name])
     
     return <FlushInput 

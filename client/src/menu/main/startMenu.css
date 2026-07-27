@@ -51,7 +51,7 @@
 .sm > main > .satellite > .center {
     aspect-ratio: 1 / 1;
     min-width: 20rem;
-    background: url('../../../public/images/moon.png') center / 80% no-repeat;
+    background: url('../../../images/moon.png') center / 80% no-repeat;
 }
 
 .sm > main > .satellite > .right {

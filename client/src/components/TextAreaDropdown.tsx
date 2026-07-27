@@ -32,6 +32,7 @@ export function TextDropdownArea(props: Readonly<{
     const myIndex = usePlayerState((p, _)=>p.myIndex);
 
     useEffect(() => {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         setField(props.savedText)
     }, [props.savedText]);
     
@@ -51,6 +52,7 @@ export function TextDropdownArea(props: Readonly<{
 
     useEffect(()=>{
         if(canPostAs === undefined){
+            // eslint-disable-next-line react-hooks/set-state-in-effect
             setPostingAsPlayer(null);
         }else if(postingAsPlayer === null || !canPostAs.includes(postingAsPlayer)){
             setPostingAsPlayer(canPostAs[0]);
@@ -243,6 +245,8 @@ function PrettyTextArea(props: Readonly<{
     return <div
         ref={prettyTextAreaRef}
         className="pretty-text-area"
+        role="textbox"
+        tabIndex={writing ? undefined :0}
         onTouchEnd={() => setWriting(true)}
         onFocus={() => setWriting(true)}
         onBlur={() => setWriting(false)}
@@ -258,9 +262,16 @@ function PrettyTextArea(props: Readonly<{
             :
             <textarea
                 className="textarea"
-                ref={textareaRef}
+                ref={(textarea) => {
+                    textareaRef.current = textarea;
+                    if (textarea && !hover) {
+                        textarea.focus();
+                        textarea.selectionStart = textarea.selectionEnd = textarea?.value.length
+                    }
+                }}
                 value={props.field as string}
                 onChange={e => props.setField(e.target.value)}
+                onFocus={() => setWriting(true)}
                 onKeyDown={(e) => {
                     if (e.ctrlKey) {
                         if (e.key === 's') {

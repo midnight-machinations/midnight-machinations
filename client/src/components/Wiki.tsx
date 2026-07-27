@@ -284,7 +284,7 @@ function WikiDisabledSelector(props: Readonly<{
         }
 
         return options;
-    }, [gameModes, inLobbyOrGame]);
+    }, [gameModes]);
 
     const selectedValue = useMemo(() => {
         return typeof props.wikiDisabledFilter === "string" ? props.wikiDisabledFilter : props.wikiDisabledFilter[0]

@@ -10,18 +10,23 @@ export default function Popover<T extends HTMLElement = HTMLElement>(props: Read
     children: ReactNode,
     setOpenOrClosed: (open: boolean) => void,
     onRender?: (popoverElement: HTMLDivElement, anchorElement?: T | undefined) => void
-    anchorForPositionRef?: React.RefObject<T>,
+    anchorForPositionRef?: React.RefObject<T | null>,
     className?: string,
     doNotCloseOnOutsideClick?: boolean
 }>): ReactElement {
+    const { onRender, anchorForPositionRef, children, open } = props;
+
     const thisRef = useRef<HTMLDivElement>(null);
     const popoverRef = useRef<HTMLDivElement>(document.createElement('div'));
 
     const popoverRoot = useMemo(() => {
         const popoverElement = popoverRef.current;
+        // eslint-disable-next-line react-hooks/refs
         popoverElement.style.position = "absolute";
 
+        // eslint-disable-next-line react-hooks/refs
         document.body.appendChild(popoverElement);
+        // eslint-disable-next-line react-hooks/refs
         return ReactDOM.createRoot(popoverElement);
     }, [])
 
@@ -96,16 +101,16 @@ export default function Popover<T extends HTMLElement = HTMLElement>(props: Read
     //open and set position
     useEffect(() => {
         const popoverElement = popoverRef.current;
-        const anchorElement = props.anchorForPositionRef?.current;
+        const anchorElement = anchorForPositionRef?.current;
 
-        if (props.open) {
+        if (open) {
             popoverRoot.render(
                 <AnchorControllerContext.Provider value={anchorControllerContext}>
                     <MenuControllerContext.Provider value={menuControllerContext}>
                         <GameModeContext.Provider value={gameModeContext}>
                             <MobileContext.Provider value={mobileContext}>
                                 <TooltipContext.Provider value={tooltipContext}>
-                                    {props.children}
+                                    {children}
                                 </TooltipContext.Provider>
                             </MobileContext.Provider>
                         </GameModeContext.Provider>
@@ -122,23 +127,23 @@ export default function Popover<T extends HTMLElement = HTMLElement>(props: Read
             setTimeout(() => {
                 popoverElement.hidden = false;
                 
-                if (props.onRender) {
-                    props.onRender(popoverElement, anchorElement ?? undefined)
+                if (onRender) {
+                    onRender(popoverElement, anchorElement ?? undefined)
                 }
             })
         } else {
             popoverElement.hidden = true;
         }
-    }, [props.children, props.onRender, props.anchorForPositionRef, props.open, popoverRoot, anchorControllerContext, menuControllerContext, gameModeContext, mobileContext, tooltipContext]);
+    }, [children, onRender, anchorForPositionRef, open, popoverRoot, anchorControllerContext, menuControllerContext, gameModeContext, mobileContext, tooltipContext]);
 
     // Resize when children change
     useEffect(() => {
         setTimeout(() => {
-            if (props.onRender) {
-                props.onRender(popoverRef.current, props.anchorForPositionRef?.current ?? undefined)
+            if (onRender) {
+                onRender(popoverRef.current, anchorForPositionRef?.current ?? undefined)
             }
         })
-    }, [props.anchorForPositionRef, props.children, props.onRender, popoverRef])
+    }, [anchorForPositionRef, children, onRender, popoverRef])
 
     //close on click outside
     useEffect(() => {

@@ -24,6 +24,7 @@ export default function PlayerOptionDropdown(props: {
     const optionMap: SelectOptionsSearch<PlayerIndex | "none"> = new Map();
 
     if(props.canChooseNone === true){
+        // eslint-disable-next-line react/jsx-key
         optionMap.set("none", [<StyledText noLinks={true}>{translate("none")}</StyledText>, translate("none")]);
     }
 
@@ -32,6 +33,7 @@ export default function PlayerOptionDropdown(props: {
             props.choosablePlayers === undefined ||
             props.choosablePlayers.includes(index)
         ){
+            // eslint-disable-next-line react/jsx-key
             optionMap.set(index, [<StyledText noLinks={true}>{name.toString()}</StyledText>, name]);
         }
     }

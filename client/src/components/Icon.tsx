@@ -1,4 +1,4 @@
-import { ReactElement } from "react";
+import { JSX, ReactElement } from "react";
 import "./icon.css"
 
 export default function Icon(props: JSX.IntrinsicElements['span'] & { size?: "normal" | "small" | "tiny" }): ReactElement {

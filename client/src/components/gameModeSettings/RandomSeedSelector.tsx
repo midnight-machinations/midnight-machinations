@@ -13,6 +13,7 @@ export default function RandomSeedSelector(props: Readonly<{
     const [localSeed, setLocalSeed] = useState<number | null>(randomSeed);
 
     useEffect(() => {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         setLocalSeed(randomSeed);
     }, [randomSeed]);
 

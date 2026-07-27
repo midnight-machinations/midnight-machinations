@@ -203,17 +203,17 @@ function PhaseTimesVisualizerPhase(props: Readonly<{
         }
 
         setOpen(current => current === "edit" ? "closed" : "edit");
-    }, [props.disabled, phase, anchorController]);
+    }, [props.disabled, isMobile, phase, anchorController]);
 
     const onMouseEnter = useCallback(() => {
         if (isMobile) return;
         setOpen(current => current === "closed" ? "show" : current);
-    }, []);
+    }, [isMobile]);
 
     const onMouseLeave = useCallback(() => {
         if (isMobile) return;
         setOpen(current => current === "show" ? "closed" : current);
-    }, []);
+    }, [isMobile]);
 
     const handleMouseDown = useDragToChangeValue(time, time => {
         if (isMobile) return;
@@ -261,7 +261,6 @@ function PhaseTimesVisualizerPhase(props: Readonly<{
                     style={{ display: open === "edit" ? undefined : "none"}}
                     type="number"
                     ref={focusInput}
-                    autoFocus
                     onKeyUp={(e) => {
                         if (e.key !== "Enter") return;
 
@@ -305,6 +304,22 @@ function getPhaseBaseColor(phase: Exclude<PhaseType, "recess">): string {
 function useDragToChangeValue(startValue: number, onChange: (value: number) => void) {
     const [startY, setStartY] = useState<number | null>(null);
 
+    const handleMouseDown = (e: React.MouseEvent<HTMLButtonElement>) => {
+        setStartY(e.clientY);
+    };
+
+    const handleMouseMove = useCallback((e: MouseEvent) => {
+        if (startY === null) return;
+        const deltaY = e.clientY - startY;
+        onChange(startValue - Math.floor(deltaY / 10));
+    }, [onChange, startValue, startY]);
+
+    const handleMouseUp = useCallback(() => {
+        globalThis.removeEventListener('mousemove', handleMouseMove);
+        // eslint-disable-next-line react-hooks/immutability
+        globalThis.removeEventListener('mouseup', handleMouseUp);
+    }, [handleMouseMove]);
+
     useEffect(() => {
         if (startY === null) return;
         
@@ -316,22 +331,7 @@ function useDragToChangeValue(startValue: number, onChange: (value: number) => v
             globalThis.removeEventListener('mousemove', handleMouseMove);
             globalThis.removeEventListener('mouseup', handleMouseUp);
         };
-    }, [startY]);
-
-    const handleMouseDown = (e: React.MouseEvent<HTMLButtonElement>) => {
-        setStartY(e.clientY);
-    };
-
-    const handleMouseMove = (e: MouseEvent) => {
-        if (startY === null) return;
-        const deltaY = e.clientY - startY;
-        onChange(startValue - Math.floor(deltaY / 10));
-    };
-
-    const handleMouseUp = () => {
-        globalThis.removeEventListener('mousemove', handleMouseMove);
-        globalThis.removeEventListener('mouseup', handleMouseUp);
-    };
+    }, [startY, handleMouseMove, handleMouseUp]);
 
     return handleMouseDown;
 }

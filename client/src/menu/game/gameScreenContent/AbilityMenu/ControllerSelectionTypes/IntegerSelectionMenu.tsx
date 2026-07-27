@@ -26,6 +26,7 @@ export default function IntegerSelectionMenu(props: Readonly<{
             let text = translateChecked("controllerId."+controllerIdToLink(props.id).replace(/\//g, ".") + ".integer." + i);
             
             if(text !== null)
+                // eslint-disable-next-line react/jsx-key
                 out = [<StyledText noLinks={true}>{text}</StyledText>, text];
         }
 

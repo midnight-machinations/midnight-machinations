@@ -25,5 +25,5 @@
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
   },
-  "include": ["src"]
+  "include": ["src", "eslint.config.ts", "vite.config.ts"]
 }

@@ -30,6 +30,15 @@ export default function DetailsSummary(props: Readonly<{
                 setOpen(!open);
                 if(props.onClick) props.onClick();
             }}
+            onKeyUp={(e) => {
+                if (e.key === "Enter") {
+                    if(props.disabled) return;
+                    setOpen(!open);
+                    if(props.onClick) props.onClick();
+                }
+            }}
+            role="button"
+            tabIndex={0}
         >
             {(props.dropdownArrow === undefined || props.dropdownArrow === true) ? 
                 ((props.disabled === undefined || props.disabled===false) ? 

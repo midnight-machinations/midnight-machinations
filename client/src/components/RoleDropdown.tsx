@@ -26,6 +26,7 @@ export default function RoleDropdown(props: RoleDropdownProps): ReactElement {
     if (props.canChooseNone){
         optionMap.set(
             "none", 
+            // eslint-disable-next-line react/jsx-key
             [<StyledText noLinks={true}>{translate("none")}</StyledText>, translate("none")]
         );
     }
@@ -34,6 +35,7 @@ export default function RoleDropdown(props: RoleDropdownProps): ReactElement {
         if (props.enabledRoles === undefined || props.enabledRoles.includes(role)) {
             optionMap.set(
                 role, 
+                // eslint-disable-next-line react/jsx-key
                 [<StyledText noLinks={true}>{translate("role."+role+".name")}</StyledText>, translate("role."+role+".name")]
             );
         }

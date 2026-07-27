@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, ReactElement, useState, forwardRef, useContext } from "react";
+import React, { useEffect, useMemo, useRef, ReactElement, useState, forwardRef, useContext, JSX } from "react";
 import "./button.css";
 import ReactDOM from "react-dom/client";
 import { THEME_CSS_ATTRIBUTES } from "..";
@@ -12,7 +12,7 @@ export type ButtonProps<R> = Omit<JSX.IntrinsicElements['button'], 'onClick' | '
     highlighted?: boolean,
     pressedChildren?: (result: R) => React.ReactNode
     pressedText?: (result: R) => React.ReactNode
-    tooltip?: JSX.Element | WikiArticleLink
+    tooltip?: ReactElement | WikiArticleLink
 };
 
 function reconcileProps<R>(props: ButtonProps<R>): JSX.IntrinsicElements['button'] {
@@ -46,7 +46,7 @@ const RawButton = forwardRef<HTMLButtonElement, ButtonProps<any>>(function RawBu
 
     const popupContainer = useRef<HTMLDivElement>(document.createElement('div'));
 
-    let lastTimeout: NodeJS.Timeout | null = null;
+    const [lastTimeout, setLastTimeout] = useState<NodeJS.Timeout | null>(null);
 
     const showPopup = (content: React.ReactNode) => {
         if (ref.current === null) return;
@@ -66,7 +66,6 @@ const RawButton = forwardRef<HTMLButtonElement, ButtonProps<any>>(function RawBu
         return props.pressedChildren(success) || props.children;
     }, [props, success]);
     
-    const isCtrlPressed = useContext(CtrlPressedContext) ?? false;
     const tooltipContext = useContext(TooltipContext)!;
     
     const articleTooltip = React.useMemo(() => {
@@ -74,7 +73,7 @@ const RawButton = forwardRef<HTMLButtonElement, ButtonProps<any>>(function RawBu
         if (typeof props.tooltip !== "string") return props.tooltip;
 
         return <WikiArticleTooltip article={props.tooltip} />
-    }, [isCtrlPressed, props.tooltip]);
+    }, [props.tooltip]);
 
     const handleFocus = (event: any) => {
         if (articleTooltip) {
@@ -103,10 +102,10 @@ const RawButton = forwardRef<HTMLButtonElement, ButtonProps<any>>(function RawBu
                 if (props.pressedText !== undefined) showPopup(props.pressedText(result))
 
                 if (lastTimeout) clearTimeout(lastTimeout);
-                lastTimeout = setTimeout(() => {
+                setLastTimeout(setTimeout(() => {
                     setSuccess("unclicked")
                     hidePopup();
-                }, POPUP_TIMEOUT_MS);
+                }, POPUP_TIMEOUT_MS));
             }
         }}
         onMouseEnter={handleFocus}

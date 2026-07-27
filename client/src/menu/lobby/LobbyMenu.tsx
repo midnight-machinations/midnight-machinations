@@ -4,7 +4,7 @@ import LobbyPlayerList from "./LobbyPlayerList";
 import "./lobbyMenu.css";
 import translate from "../../game/lang";
 import { StateListener } from "../../game/gameManager.d";
-import { AnchorControllerContext, MobileContext } from "../Anchor";
+import { AnchorControllerContext } from "../Anchor";
 import { RoomLinkButton } from "../GlobalMenu";
 import { RoleList, getAllRoles } from "../../game/roleListState.d";
 import LoadingScreen from "../LoadingScreen";
@@ -39,14 +39,6 @@ export default function LobbyMenu(): ReactElement {
         },
         ["playersHost", "lobbyClients", "yourId"]
     )!;
-    const mobile = useContext(MobileContext)!;
-
-    const [advancedView, setAdvancedView] = useState<boolean>(true);
-
-    useEffect(() => {
-        // Reset, since you don't get the button on mobile or when you're the host.
-        setAdvancedView(true);
-    }, [mobile, isHost]);
 
     useEffect(() => {
         const onBeforeUnload = (e: BeforeUnloadEvent) => {
@@ -59,29 +51,17 @@ export default function LobbyMenu(): ReactElement {
 
     return <div className="lm">
         <div className="graveyard-menu-colors">
-            <LobbyMenuHeader isHost={isHost} advancedView={advancedView} setAdvancedView={setAdvancedView}/>
-            {advancedView 
-                ? <main className="chat-menu-colors">
-                    <div>
-                        <LobbyNamePane />
-                        <LobbyPlayerList />
-                    </div>
-                    <div className="vertical-line-separator" />
-                    <div>
-                        <LobbyMenuSettings isHost={isHost}/>
-                    </div>
-                </main>
-                : <main className="chat-menu-colors">
-                    <div>
-                        <LobbyNamePane />
-                        <LobbyPlayerList />
-                    </div>
-                    <div className="vertical-line-separator" />
-                    <div>
-                        <LobbyChatMenu spectator={isSpectator}/>
-                    </div>
-                </main>
-            }
+            <LobbyMenuHeader isHost={isHost}/>
+            <main className="chat-menu-colors">
+                <div>
+                    <LobbyNamePane />
+                    <LobbyPlayerList />
+                </div>
+                <div className="vertical-line-separator" />
+                <div>
+                    <LobbyMenuSettings isHost={isHost}/>
+                </div>
+            </main>
             <LobbyChatMenu spectator={isSpectator}/>
         </div>
     </div>
@@ -89,7 +69,7 @@ export default function LobbyMenu(): ReactElement {
 
 function LobbyMenuSettings(props: Readonly<{
     isHost: boolean,
-}>): JSX.Element {
+}>): ReactElement {
     const roleList = useLobbyState(
         lobbyState => lobbyState.roleList,
         ["roleList", "roleOutline"]
@@ -107,7 +87,6 @@ function LobbyMenuSettings(props: Readonly<{
         ["modifierSettings"]
     )!;
 
-    const mobile = useContext(MobileContext)!;
     const { setContent: setAnchorContent } = useContext(AnchorControllerContext)!;
 
     useEffect(() => {
@@ -179,9 +158,7 @@ function LobbyMenuSettings(props: Readonly<{
 // There's probably a better way to do this that doesn't need the mobile check.
 function LobbyMenuHeader(props: Readonly<{
     isHost: boolean,
-    advancedView: boolean,
-    setAdvancedView: (advancedView: boolean) => void
-}>): JSX.Element {
+}>): ReactElement {
     const [lobbyName, setLobbyName] = useState<UnsafeString>(GAME_MANAGER.state.stateType === "lobby" ? GAME_MANAGER.state.lobbyName : "Midnight Machinations Lobby");
     const { setContent: setAnchorContent } = useContext(AnchorControllerContext)!;
 
@@ -191,9 +168,6 @@ function LobbyMenuHeader(props: Readonly<{
                 setLobbyName(GAME_MANAGER.state.lobbyName);
             }
         };
-
-        if(GAME_MANAGER.state.stateType === "lobby")
-            setLobbyName(GAME_MANAGER.state.lobbyName);
 
         GAME_MANAGER.addStateListener(listener)
         return ()=>{GAME_MANAGER.removeStateListener(listener);}
