@@ -1,4 +1,4 @@
-import { defineConfig, loadEnv } from 'vite'
+import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import checker from 'vite-plugin-checker'
 
@@ -24,10 +24,13 @@ export default defineConfig(({ mode }) => ({
       // Intercept and handle warnings explicitly
       onwarn(warning, warn) {
         // Throw an error to intentionally crash the build process
-        if (true) {
-          throw new Error(`[Vite Build Warning]: ${warning.message}`);
-        }
+        throw new Error(`[Vite Build Warning]: ${warning.message}`);
       },
+      checks: {
+        // vite-plugin-checker needs to wait for every other plugin, I think,
+        // so it takes a long time. This suppresses the warning.
+        pluginTimings: false
+      }
     },
   }
 }));
