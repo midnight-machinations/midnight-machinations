@@ -17,6 +17,8 @@ import GameModesEditor from "../components/gameModeSettings/GameModesEditor";
 import HostMenu from "./HostMenu";
 import SettingsMenu from "./Settings";
 import NightMessagePopup from "../components/NightMessagePopup";
+import Popover from "../components/Popover";
+import { useLobbyOrGameState } from "../components/useHooks";
 
 const MobileContext = createContext<boolean | undefined>(undefined);
 const CtrlPressedContext = createContext<boolean | undefined>(undefined);
@@ -35,9 +37,20 @@ export type AnchorController = {
     setAccessibilityFontEnabled: (accessibilityFontEnabled: boolean) => void
 }
 
-const AnchorControllerContext = createContext<AnchorController | undefined>(undefined);
+export type TooltipController = {
+    ctrlPressed: boolean,
+    open: (
+        tooltip: JSX.Element,
+        onRender?: (dropdownElement: HTMLElement, sourceElement?: HTMLElement) => void,
+        sourceRef?: React.RefObject<HTMLElement>
+    ) => void,
+    close: () => void,
+}
 
-export { MobileContext, CtrlPressedContext, AnchorControllerContext };
+const AnchorControllerContext = createContext<AnchorController | undefined>(undefined);
+const TooltipContext = createContext<TooltipController | undefined>(undefined);
+
+export { MobileContext, CtrlPressedContext, AnchorControllerContext, TooltipContext };
 
 const MIN_SWIPE_DISTANCE_X = 60;
 const MAX_SWIPE_DISTANCE_Y = 60;
@@ -55,7 +68,39 @@ export default function Anchor(props: Readonly<{
     onMount: (anchorController: AnchorController) => void,
 }>): ReactElement {
     const [mobile, setMobile] = useState<boolean>(false);
+
+    // Tooltip stuff
     const [isCtrlPressed, setIsCtrlPressed] = useState<boolean>(false);
+    const [tooltip, setTooltip] = useState<JSX.Element>(<></>);
+    const [tooltipOnRender, setOnRender] = useState<(dropdownElement: HTMLElement, sourceElement?: HTMLElement) => void>();
+    const [tooltipSourceRef, setSourceRef] = useState<React.RefObject<HTMLElement>>();
+    const [tooltipLastOpened, setLastOpened] = useState<number>(0);
+    const [now, setNow] = useState(Date.now());
+
+    const showTooltip = useMemo(() => !mobile && (now < tooltipLastOpened + 10000), [now, tooltipLastOpened, mobile]);
+
+    useEffect(() => {
+        const interval = setInterval(() => setNow(Date.now()), 100);
+        return () => clearInterval(interval);
+    }, []);
+
+    const openTooltip = useCallback((
+        tooltip: JSX.Element,
+        onRender?: (dropdownElement: HTMLElement, sourceElement?: HTMLElement) => void,
+        sourceRef?: React.RefObject<HTMLElement>
+    ) => {
+        setTooltip(tooltip)
+        // `onRender` is itself a function. Wrap it so React stores the callback
+        // instead of treating it as a state updater and invoking it with the
+        // previous callback value.
+        setOnRender(() => onRender)
+        setSourceRef(sourceRef)
+        setLastOpened(Date.now())
+    }, [])
+
+    const toolTipContext = useMemo(() => {
+        return { ctrlPressed: isCtrlPressed, open: openTooltip, close: () => setLastOpened(0) }
+    }, [isCtrlPressed, openTooltip])
 
     useEffect(() => {
         const onResize = () => {setMobile(window.innerWidth <= MOBILE_MAX_WIDTH_PX)}
@@ -238,10 +283,15 @@ export default function Anchor(props: Readonly<{
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [props])
     
+    const stateType = useLobbyOrGameState(
+        state => state.stateType,
+        ["acceptJoin", "rejectJoin", "rejectStart", "gameInitializationComplete", "startGame", "backToLobby"]
+    )!;
+    
 
     return <MobileContext.Provider value={mobile} >
         <AnchorControllerContext.Provider value={anchorController}>
-            <CtrlPressedContext.Provider value={isCtrlPressed}>
+            <TooltipContext.Provider value={toolTipContext}>
                 <div
                     className="anchor"
                     onTouchStart={(e) => {
@@ -272,7 +322,7 @@ export default function Anchor(props: Readonly<{
                         setTouchCurrent(null)
                     }}
                 >
-                    <Button className="global-menu-button flush" 
+                    <Button className={"global-menu-button " + (stateType === "game" ? "" : "flush")}
                         onClick={() => {
                             if (!globalMenuOpen) {
                                 setGlobalMenuOpen(true)
@@ -287,8 +337,23 @@ export default function Anchor(props: Readonly<{
                         theme={coverCardTheme}
                     >{coverCard}</CoverCard>}
                     {errorCard}
+                    <Popover
+                        open={showTooltip}
+                        setOpenOrClosed={(open) => {
+                            if (open) {
+                                setLastOpened(Date.now())
+                            } else {
+                                setLastOpened(0)
+                            }
+                        }}
+                        anchorForPositionRef={tooltipSourceRef}
+                        onRender={tooltipOnRender}
+                        className="wiki-article-tooltip-popover"
+                    >
+                        {tooltip}
+                    </Popover>
                 </div>
-            </CtrlPressedContext.Provider>
+            </TooltipContext.Provider>
         </AnchorControllerContext.Provider>
     </MobileContext.Provider>
 }
@@ -364,7 +429,7 @@ function ErrorCard(props: Readonly<{
     return <div className="error-card" onClick={() => props.onClose()}>
         <header>
             {props.error.title}
-            <button className="close">✕</button>
+            <button className="close flush">✕</button>
         </header>
         <div>{props.error.body}</div>
     </div>

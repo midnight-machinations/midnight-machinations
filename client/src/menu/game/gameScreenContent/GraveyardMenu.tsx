@@ -13,11 +13,16 @@ import { ModifierSettingsDisplay } from "../../../components/gameModeSettings/Mo
 import Icon from "../../../components/Icon";
 
 export default function GraveyardMenu(): ReactElement {
+    const playerCount = useLobbyOrGameState(
+        gameState => gameState.roleList.length,
+        ["roleList"]
+    )!;
+
     return <div className="graveyard-menu graveyard-menu-colors">
         <ContentTab close={ContentMenu.GraveyardMenu}>{translate("menu.gameMode.title")}</ContentTab>
             
         <DetailsSummary
-            summary={translate("menu.lobby.roleList")}
+            summary={translate("menu.lobby.roleList") + ": " + playerCount}
             defaultOpen={true}
         >
             <RoleListDisplay />
@@ -86,16 +91,19 @@ function EnabledRoles(): ReactElement {
 
     return <div className="graveyard-menu-excludedRoles">
         <DetailsSummary
-            summary={translate("menu.enabledRoles.enabledRoles")}
+            summary={<span className="enabled-roles-summary-span">
+                {translate("menu.enabledRoles.enabledRoles")}
+                <Button
+                    className="flush"
+                    onClick={e => {
+                        e.stopPropagation();
+                        setHideDisabled(hideDisabled => !hideDisabled)
+                    }}
+                >
+                    <Icon>{hideDisabled ? "visibility" : "visibility_off"}</Icon>
+                </Button>
+            </span>}
         >
-            <Button
-                className="flush"
-                onClick={() => setHideDisabled(hideDisabled => !hideDisabled)}
-            >
-                <Icon>{hideDisabled ? "visibility" : "visibility_off"}</Icon>
-                {" "}
-                {hideDisabled ? translate("menu.enabledRoles.showDisabled") : translate("menu.enabledRoles.hideDisabled")}
-            </Button>
             <EnabledRolesDisplay enabledRoles={enabledRoles} hideDisabled={hideDisabled}/>
         </DetailsSummary>
     </div>
@@ -111,16 +119,19 @@ function EnabledModifiers(): ReactElement {
 
     return <div className="graveyard-menu-excludedRoles">
         <DetailsSummary
-            summary={translate("modifiers")}
+            summary={<span className="enabled-roles-summary-span">
+                {translate("modifiers")}
+                <Button
+                    className="flush"
+                    onClick={e => {
+                        e.stopPropagation();
+                        setHideDisabled(hideDisabled => !hideDisabled)
+                    }}
+                >
+                    <Icon>{hideDisabled ? "visibility" : "visibility_off"}</Icon>
+                </Button>
+            </span>}
         >
-            <Button
-                className="flush"
-                onClick={() => setHideDisabled(hideDisabled => !hideDisabled)}
-            >
-                <Icon>{hideDisabled ? "visibility" : "visibility_off"}</Icon>
-                {" "}
-                {hideDisabled ? translate("menu.enabledRoles.showDisabled") : translate("menu.enabledRoles.hideDisabled")}
-            </Button>
             <ModifierSettingsDisplay disabled={true} modifierSettings={modifierSettings} hideDisabled={hideDisabled}/>
         </DetailsSummary>
     </div>

@@ -13,6 +13,9 @@
     display: flex;
     flex-direction: column;
 }
+.player-list-menu .player-list > span {
+    padding: .13rem 0;
+}
 
 
 
@@ -60,6 +63,7 @@
 .player-list-menu .player-list-chat-section{
     border-top: var(--primary-border-color) solid .13rem;
     border-bottom: var(--primary-border-color) solid .13rem;
+    background-color: var(--background-color);
 }
 .player-list-menu .player-list-chat-message-section{
     height: 10rem;
@@ -73,7 +77,8 @@
 }
 
 .player-card .chat-notification{
-    font-size: 0.83rem;
+    font-size: 0.5rem;
+    font-weight: bold;
     height: 0.83rem;
     aspect-ratio: 1;
     background-color: var(--primary-color);

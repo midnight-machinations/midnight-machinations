@@ -1,30 +1,42 @@
-import { ReactElement } from "react";
+import { ReactElement, useContext, useMemo } from "react";
 import { translateChecked } from "../game/lang";
 import { ModifierID } from "../game/modifiers";
 import { Role } from "../game/roleState.d";
 import { WikiArticleLink } from "./WikiArticleLink";
 import StyledText, { DUMMY_NAMES_KEYWORD_DATA, DUMMY_ROLE_LIST_KEYWORD_DATA } from "./StyledText";
+import { TooltipContext } from "../menu/Anchor";
+import WikiArticle from "./WikiArticle";
 
 export default function WikiArticleTooltip(props: Readonly<{
-    tooltip: string
+    article: WikiArticleLink
 }>): ReactElement | null {
-    return <div className="wiki-article wiki-article-tooltip">
-        <StyledText
-            noLinks={true}
-            markdown={true}
-            playerKeywordData={DUMMY_NAMES_KEYWORD_DATA}
-            roleListKeywordData={DUMMY_ROLE_LIST_KEYWORD_DATA}
-        >
-            {props.tooltip}
-        </StyledText>
-        <div className="wiki-article-tooltip-footer">
-            {translateChecked("wiki.tooltipHint")}
-        </div>
-    </div>
+    const isCtrlPressed = useContext(TooltipContext)?.ctrlPressed;
+    const articleTooltip = useMemo(() => {
+        return getArticleTooltip(props.article);
+    }, [props.article]);
+
+    return <>
+        {isCtrlPressed
+            ? <WikiArticle noLinks={true} article={props.article} className="wiki-article-tooltip" />
+            : (articleTooltip && <div className="wiki-article wiki-article-tooltip">
+                <StyledText
+                    noLinks={true}
+                    markdown={true}
+                    playerKeywordData={DUMMY_NAMES_KEYWORD_DATA}
+                    roleListKeywordData={DUMMY_ROLE_LIST_KEYWORD_DATA}
+                >
+                    {articleTooltip}
+                </StyledText>
+                <div className="wiki-article-tooltip-footer">
+                    {translateChecked("wiki.tooltipHint")}
+                </div>
+            </div>)
+        }
+    </>
 }
 
 
-export function getArticleTooltip(page: WikiArticleLink): string | null {
+function getArticleTooltip(page: WikiArticleLink): string | null {
     const tooltipText = getArticleTooltipText(page);
     // Max 300 characters
     const shortened = tooltipText?.substring(0, 300);

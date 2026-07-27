@@ -1,21 +1,16 @@
 .counter {
     display: flex;
     flex-direction: row;
-    background-color: var(--primary-color);
-    border: .13rem solid var(--primary-border-color);
-    border-radius: .25rem;
     justify-content: space-between;
     align-items: center;
 
-    /* margin: 0;
-    padding: 0 .25rem; */
+    padding: 0 .13rem;
 }
 
 .counter-count {
     display: flex;
     flex-direction: row;
     align-items: center;
-    margin: 0 .25rem;
     gap: .25rem;
 }
 

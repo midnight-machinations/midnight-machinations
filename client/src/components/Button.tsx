@@ -1,13 +1,18 @@
-import React, { useEffect, useMemo, useRef, ReactElement, useState, forwardRef } from "react";
+import React, { useEffect, useMemo, useRef, ReactElement, useState, forwardRef, useContext } from "react";
 import "./button.css";
 import ReactDOM from "react-dom/client";
 import { THEME_CSS_ATTRIBUTES } from "..";
+import { CtrlPressedContext, TooltipContext } from "../menu/Anchor";
+import { dropdownPlacementFunction } from "./Select";
+import { WikiArticleLink } from "./WikiArticleLink";
+import WikiArticleTooltip from "./WikiArticleTooltip";
 
 export type ButtonProps<R> = Omit<JSX.IntrinsicElements['button'], 'onClick' | 'ref'> & {
     onClick?: (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => (R | void | Promise<R | void>)
     highlighted?: boolean,
     pressedChildren?: (result: R) => React.ReactNode
     pressedText?: (result: R) => React.ReactNode
+    tooltip?: JSX.Element | WikiArticleLink
 };
 
 function reconcileProps<R>(props: ButtonProps<R>): JSX.IntrinsicElements['button'] {
@@ -16,6 +21,7 @@ function reconcileProps<R>(props: ButtonProps<R>): JSX.IntrinsicElements['button
     delete newProps.highlighted;
     delete newProps.pressedChildren;
     delete newProps.pressedText;
+    delete newProps.tooltip;
 
     return newProps;
 }
@@ -59,6 +65,30 @@ const RawButton = forwardRef<HTMLButtonElement, ButtonProps<any>>(function RawBu
         if (success === "unclicked" || props.pressedChildren === undefined) return props.children;
         return props.pressedChildren(success) || props.children;
     }, [props, success]);
+    
+    const isCtrlPressed = useContext(CtrlPressedContext) ?? false;
+    const tooltipContext = useContext(TooltipContext)!;
+    
+    const articleTooltip = React.useMemo(() => {
+        if (props.tooltip === undefined) return null;
+        if (typeof props.tooltip !== "string") return props.tooltip;
+
+        return <WikiArticleTooltip article={props.tooltip} />
+    }, [isCtrlPressed, props.tooltip]);
+
+    const handleFocus = (event: any) => {
+        if (articleTooltip) {
+            tooltipContext.open(
+                articleTooltip,
+                (popover, anchor) => dropdownPlacementFunction(popover, anchor, null),
+                ref
+            )
+        }
+    };
+
+    const handleUnfocus = (event: any) => {
+        tooltipContext.close()
+    };
 
     return <button {...reconcileProps(props)} ref={ref}
         className={
@@ -79,6 +109,10 @@ const RawButton = forwardRef<HTMLButtonElement, ButtonProps<any>>(function RawBu
                 }, POPUP_TIMEOUT_MS);
             }
         }}
+        onMouseEnter={handleFocus}
+        onMouseLeave={handleUnfocus}
+        onFocus={handleFocus}
+        onBlur={handleUnfocus}
     >{children}</button>
 })
 
