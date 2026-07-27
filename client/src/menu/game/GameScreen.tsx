@@ -295,7 +295,7 @@ export function GameScreenMenus(): ReactElement {
                 const out = [<Panel
                     id={menu}
                     className="panel"
-                    minSize={minSize}
+                    minSize={minSize + "%"}
                     defaultSize={mobile===false?defaultSizes[menu]:undefined}
                     key={`${menu}.panel`}
                 >
