@@ -31,8 +31,14 @@
     flex-wrap: wrap;
     justify-content: center;
 }
-.wiki-search .masonry-item .wiki-search-divider {
+.wiki-search-divider {
     width: 100%;
+}
+.wiki-search .wiki-main-page {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
 }
 .wiki-message-section {
     display: flex;
@@ -110,6 +116,7 @@
     width: 100%;
 }
 .wiki-cover-card {
+    width: 80rem;
     min-height: 60vh;
     display: flex;
     flex-direction: column;
