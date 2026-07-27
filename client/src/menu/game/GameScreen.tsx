@@ -15,7 +15,7 @@ import Icon from "../../components/Icon";
 import { Button } from "../../components/Button";
 import translate from "../../game/lang";
 import { useGameState } from "../../components/useHooks";
-import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
+import { Panel, Group, Separator } from "react-resizable-panels";
 import { loadSettingsParsed } from "../../game/localStorage";
 
 export enum ContentMenu {
@@ -82,6 +82,7 @@ export function useMenuController<C extends Partial<Record<ContentMenu, boolean>
             callback();
         }
         if (callbacks.length !== 0) {
+            // eslint-disable-next-line react-hooks/set-state-in-effect
             setCallbacks([])
         }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -286,16 +287,15 @@ export function GameScreenMenus(): ReactElement {
             return true;
         });
 
-    return <PanelGroup direction="horizontal" className="content">
+    return <Group orientation="horizontal" className="content">
         {visibleMenus
             .flatMap((menu, index) => {
                 const MenuElement = MENU_ELEMENTS[menu];
 
                 const out = [<Panel
                     id={menu}
-                    order={index}
                     className="panel"
-                    minSize={minSize}
+                    minSize={minSize + "%"}
                     defaultSize={mobile===false?defaultSizes[menu]:undefined}
                     key={`${menu}.panel`}
                 >
@@ -304,7 +304,7 @@ export function GameScreenMenus(): ReactElement {
 
                 if(!mobile && visibleMenus.length > index + 1){
                     const nextMenu = visibleMenus[index + 1];
-                    out.push(<PanelResizeHandle key={`${menu}.and.${nextMenu}.handle`} className="panel-handle"/>)
+                    out.push(<Separator key={`${menu}.and.${nextMenu}.handle`} className="panel-handle"/>)
                 }
                 return out;
 
@@ -313,7 +313,7 @@ export function GameScreenMenus(): ReactElement {
         {visibleMenus.length === 0 && <Panel><div className="no-content">
             {translate("menu.gameScreen.noContent")}
         </div></Panel>}
-    </PanelGroup>
+    </Group>
 }
 
 export function ContentTab(props: Readonly<{

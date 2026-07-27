@@ -27,7 +27,7 @@ export default function LobbyNamePane(): ReactElement {
 
     // This is an integer so that multiple flashes can overlap
     const [flashingSince, setFlashingSince] = useState(0);
-    const [now, setNow] = useState(Date.now());
+    const [now, setNow] = useState(() => Date.now());
 
     useEffect(() => {
         const interval = setInterval(() => setNow(Date.now()), 100);
@@ -36,8 +36,10 @@ export default function LobbyNamePane(): ReactElement {
 
     useEffect(() => {
         if (ready === "notReady" && !isSpectator) {
+            // eslint-disable-next-line react-hooks/set-state-in-effect
             setFlashingSince(Date.now());
         }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [otherPlayersReady])
 
     return <section className="chat-menu-colors selector-section">
@@ -78,6 +80,7 @@ function NameSelector(props: Readonly<{ ready: "host" | "ready" | "notReady" }>)
     const [enteredName, setEnteredName] = React.useState<UnsafeString>(myName);
 
     useEffect(() => {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         setEnteredName(myName);
     }, [myName]);
 

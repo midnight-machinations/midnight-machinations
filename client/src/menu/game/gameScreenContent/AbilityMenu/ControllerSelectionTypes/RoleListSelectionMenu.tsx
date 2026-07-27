@@ -35,6 +35,7 @@ export default function RoleListSelectionMenu(props: Readonly<{
     return <div className="generic-list-controller-menu">
         {
             props.selection.map((p,i)=><RoleDropdown
+                key={p}
                 enabledRoles={props.availableSelection.availableRoles.filter((p)=>
                     props.availableSelection.canChooseDuplicates || !props.selection.includes(p) || p === props.selection[i]
                 ) as Role[]}

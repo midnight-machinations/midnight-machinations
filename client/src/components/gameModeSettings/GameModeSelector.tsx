@@ -166,8 +166,10 @@ function GameModeSelectorPanel(props: Readonly<{
 
     useEffect(() => {
         if (playerCount === undefined || playerCount === 1) {
+            // eslint-disable-next-line react-hooks/set-state-in-effect
             returnToDefaultGameMode();
         }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     // Caller must ensure location is valid
@@ -292,20 +294,18 @@ function GameModeSelectorSelect(props: Readonly<{
     loadGameMode: (gameMode: GameModeLocation) => void,
     gameModeLocation: GameModeLocation | null
 }>): ReactElement {
-    const [star, setStar] = useState(false);
-
     const gameModeData = useMemo(() => {
         if (props.gameModeLocation) {
             const gameMode = props.gameModeStorage.gameModes.find(gm => gm.name === props.gameModeLocation!.name);
             return gameMode ? gameMode.data[props.gameModeLocation.players] : null;
         }
         return null;
-    }, [props.gameModeLocation]);
+    }, [props.gameModeLocation, props.gameModeStorage.gameModes]);
 
     const gameModeContext = useContext(GameModeContext);
 
-    useEffect(() => {
-        setStar(!strictDeepEqual<GameModeData | null>(gameModeData, gameModeContext));
+    const star = useMemo(() => {
+        return !strictDeepEqual<GameModeData | null>(gameModeData, gameModeContext);
     }, [gameModeData, gameModeContext]);
 
     const keyMap = useMemo(() => {
@@ -370,7 +370,7 @@ function GameModeSelectorSelect(props: Readonly<{
         } else {
             return props.gameModeLocation.name + ":" + props.gameModeLocation.players;
         }
-    }, [props.gameModeLocation, props.gameModeStorage])
+    }, [props.gameModeLocation])
 
     return <Select className="brand" value={selectedValue} optionsSearch={optionsSearch} onChange={value => {
         if (value === "Custom") {
@@ -411,17 +411,18 @@ function GameModeLabel(props: Readonly<{
     }
 }
 
-function GameModeFolderLabel(props: {
+function GameModeFolderLabel(props: Readonly<{
     gameModeName: string,
     modifiable: boolean,
     gameModeStorage: GameModeStorage,
     loadGameMode: (location: GameModeLocation) => boolean,
     deleteGameMode: (location: GameModeLocation) => boolean,
     dragHandleProps?: React.HTMLAttributes<HTMLDivElement>
-}): ReactElement {
+}>): ReactElement {
     const [expanded, setExpanded] = useState<boolean>(false);
 
     useEffect(() => {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         setExpanded(false)
     }, [props.gameModeName])
     
@@ -436,6 +437,7 @@ function GameModeFolderLabel(props: {
             </Button>
             {expanded && <div className="game-mode-folder-content">
                 {Object.keys(gameMode.data).map(key => <GameModeSingleLabel
+                    key={key}
                     location={{ name: props.gameModeName, players: parseInt(key) }}
                     gameModeStorage={props.gameModeStorage}
                     modifiable={props.modifiable}

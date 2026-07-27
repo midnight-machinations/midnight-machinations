@@ -25,10 +25,10 @@ const CtrlPressedContext = createContext<boolean | undefined>(undefined);
 
 export type AnchorController = {
     reload: () => void,
-    setContent: (content: JSX.Element) => void,
+    setContent: (content: ReactElement) => void,
     contentType: string | JSXElementConstructor<any>,
-    getCoverCard: () => JSX.Element | null,
-    setCoverCard: (content: JSX.Element) => void,
+    getCoverCard: () => ReactElement | null,
+    setCoverCard: (content: ReactElement) => void,
     clearCoverCard: () => void,
     pushErrorCard: (error: ErrorData) => void,
     openGlobalMenu: () => void,
@@ -40,9 +40,9 @@ export type AnchorController = {
 export type TooltipController = {
     ctrlPressed: boolean,
     open: (
-        tooltip: JSX.Element,
+        tooltip: ReactElement,
         onRender?: (dropdownElement: HTMLElement, sourceElement?: HTMLElement) => void,
-        sourceRef?: React.RefObject<HTMLElement>
+        sourceRef?: React.RefObject<HTMLElement | null>
     ) => void,
     close: () => void,
 }
@@ -64,18 +64,18 @@ let ANCHOR_CONTROLLER: AnchorController | null = null;
 export { ANCHOR_CONTROLLER };
 
 export default function Anchor(props: Readonly<{
-    children: JSX.Element
+    children: ReactElement
     onMount: (anchorController: AnchorController) => void,
 }>): ReactElement {
     const [mobile, setMobile] = useState<boolean>(false);
 
     // Tooltip stuff
     const [isCtrlPressed, setIsCtrlPressed] = useState<boolean>(false);
-    const [tooltip, setTooltip] = useState<JSX.Element>(<></>);
+    const [tooltip, setTooltip] = useState<ReactElement>(<></>);
     const [tooltipOnRender, setOnRender] = useState<(dropdownElement: HTMLElement, sourceElement?: HTMLElement) => void>();
-    const [tooltipSourceRef, setSourceRef] = useState<React.RefObject<HTMLElement>>();
+    const [tooltipSourceRef, setSourceRef] = useState<React.RefObject<HTMLElement | null>>();
     const [tooltipLastOpened, setLastOpened] = useState<number>(0);
-    const [now, setNow] = useState(Date.now());
+    const [now, setNow] = useState(() => Date.now());
 
     const showTooltip = useMemo(() => !mobile && (now < tooltipLastOpened + 10000), [now, tooltipLastOpened, mobile]);
 
@@ -85,9 +85,9 @@ export default function Anchor(props: Readonly<{
     }, []);
 
     const openTooltip = useCallback((
-        tooltip: JSX.Element,
+        tooltip: ReactElement,
         onRender?: (dropdownElement: HTMLElement, sourceElement?: HTMLElement) => void,
-        sourceRef?: React.RefObject<HTMLElement>
+        sourceRef?: React.RefObject<HTMLElement | null>
     ) => {
         setTooltip(tooltip)
         // `onRender` is itself a function. Wrap it so React stores the callback
@@ -133,7 +133,7 @@ export default function Anchor(props: Readonly<{
         };
     }, [])
 
-    const [children, setChildren] = useState<JSX.Element>(props.children);
+    const [children, setChildren] = useState<ReactElement>(props.children);
     const [setChildrenCallbacks, setSetChildrenCallbacks] = useState<(() => void)[]>([]);
 
     useEffect(() => {
@@ -141,11 +141,12 @@ export default function Anchor(props: Readonly<{
             callback()
         }
         if (setChildrenCallbacks.length !== 0) {
+            // eslint-disable-next-line react-hooks/set-state-in-effect
             setSetChildrenCallbacks([])
         }
     }, [setChildrenCallbacks])
 
-    const [coverCard, setCoverCard] = useState<JSX.Element | null>(null);
+    const [coverCard, setCoverCard] = useState<ReactElement | null>(null);
     const [coverCardTheme, setCoverCardTheme] = useState<Theme | null>(null);
     const [setCoverCardCallbacks, setSetCoverCardCallbacks] = useState<(() => void)[]>([])
 
@@ -154,11 +155,12 @@ export default function Anchor(props: Readonly<{
             callback()
         }
         if (setCoverCardCallbacks.length !== 0) {
+            // eslint-disable-next-line react-hooks/set-state-in-effect
             setSetCoverCardCallbacks([])
         }
     }, [setCoverCardCallbacks])
 
-    const [errorCard, setErrorCard] = useState<JSX.Element | null>(null);
+    const [errorCard, setErrorCard] = useState<ReactElement | null>(null);
     const [setErrorCardCallbacks, setSetErrorCardCallbacks] = useState<(() => void)[]>([])
 
     useEffect(() => {
@@ -166,6 +168,7 @@ export default function Anchor(props: Readonly<{
             callback()
         }
         if (setErrorCardCallbacks.length !== 0) {
+            // eslint-disable-next-line react-hooks/set-state-in-effect
             setSetErrorCardCallbacks([])
         }
     }, [setErrorCardCallbacks])
@@ -234,7 +237,7 @@ export default function Anchor(props: Readonly<{
         getCoverCard: ()=>{
             return coverCard
         },
-        setCoverCard: (coverCard: JSX.Element, callback?: () => void) => {
+        setCoverCard: (coverCard: ReactElement, callback?: () => void) => {
             let coverCardTheme: Theme | null = null;
             if (coverCard.type === WikiCoverCard || coverCard.type === WikiArticle) {
                 coverCardTheme = "wiki-menu-colors"
@@ -371,7 +374,7 @@ function CoverCard(props: Readonly<{
     children: React.ReactNode,
     theme: Theme | null
 }>): ReactElement {
-    const ref = useRef<HTMLDivElement>(null);
+    const ref = useRef<HTMLButtonElement>(null);
     const anchorController = useContext(AnchorControllerContext)!;
 
     const escFunction = useCallback((event: KeyboardEvent) =>{
@@ -388,7 +391,7 @@ function CoverCard(props: Readonly<{
 
     const [mouseDownOnElement, setMouseDownOnElement] = useState(false);
 
-    return <div 
+    return <button 
         className={`anchor-cover-card-background-cover ${props.theme ?? ""}`}
         // Onclick will trigger even when the click is started on a child element
         // This makes sure it starts and ends on the actual background cover.
@@ -413,7 +416,7 @@ function CoverCard(props: Readonly<{
                 {props.children}
             </div>
         </div>
-    </div>
+    </button>
 }
 
 
@@ -426,13 +429,13 @@ function ErrorCard(props: Readonly<{
     error: ErrorData,
     onClose: () => void
 }>) {
-    return <div className="error-card" onClick={() => props.onClose()}>
+    return <button className="error-card" onClick={() => props.onClose()}>
         <header>
             {props.error.title}
             <button className="close flush">✕</button>
         </header>
         <div>{props.error.body}</div>
-    </div>
+    </button>
 }
 
 

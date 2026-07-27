@@ -167,6 +167,7 @@ function ConclusionsSelector(props: Readonly<{
 
     const optionsSearch = new Map<Conclusion, [ReactElement, string]>(CONCLUSIONS.map(conclusion => [
         conclusion, [
+            // eslint-disable-next-line react/jsx-key
             <StyledText noLinks={true}>{translateConclusion(conclusion)}</StyledText>, 
             translateConclusion(conclusion)
         ]
@@ -275,6 +276,7 @@ function InsiderGroupSelector(props: Readonly<{
 
     const optionsSearch = new Map<InsiderGroup, [ReactElement, string]>(INSIDER_GROUPS.map(insiderGroup => [
         insiderGroup, [
+            // eslint-disable-next-line react/jsx-key
             <StyledText noLinks={true}>{translate(`chatGroup.${insiderGroup}.name`)}</StyledText>,
             translate(`chatGroup.${insiderGroup}.name`)
         ]
@@ -409,6 +411,7 @@ function PlayerPoolSelector(props: Readonly<{
     const playersNotChosen = playerNames.map((_, index)=>index).filter(index => !playerPool.includes(index));
 
     const optionsSearch = new Map<number, [ReactElement, string]>(playerNames.map((name, index) => [
+        // eslint-disable-next-line react/jsx-key
         index, [<StyledText noLinks={true}>{encodeString(name)}</StyledText>, encodeString(name)]
     ]));
 
@@ -555,7 +558,7 @@ export function RoleOrRoleSetSelector(props: Readonly<{
             ]);
         });
         return options;
-    }, [props.disabled, isRoleEnabled]);
+    }, [isRoleEnabled, props]);
 
     return <Select
         className="role-outline-option-selector"

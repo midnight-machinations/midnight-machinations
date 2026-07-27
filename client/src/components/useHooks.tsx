@@ -13,6 +13,7 @@ export function usePacketListener(listener: (type?: StateEventType) => void) {
     };
     GAME_MANAGER.addStateListener(packetQueueListener)
 
+    // eslint-disable-next-line react-hooks/immutability
     useEffect(() => {
         GAME_MANAGER.removeStateListener(packetQueueListener);
 

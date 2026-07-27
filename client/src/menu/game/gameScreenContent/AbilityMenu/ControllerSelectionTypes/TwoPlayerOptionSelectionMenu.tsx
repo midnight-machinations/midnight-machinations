@@ -12,6 +12,7 @@ export default function TwoPlayerOptionSelectionMenu(props: Readonly<{
     
     useEffect(() => {
         if(props.selection === null){
+            // eslint-disable-next-line react-hooks/set-state-in-effect
             setSelectionState([null, null]);
         }else{
             setSelectionState(props.selection);

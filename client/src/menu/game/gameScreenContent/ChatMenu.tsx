@@ -243,7 +243,7 @@ export function ChatTextInput(props: Readonly<{
     const [chatBoxText, setChatBoxText] = useState<string>("");
     const [drawAttentionSeconds, setDrawAttentionSeconds] = useState<number>(0);
     const ref = useRef<HTMLTextAreaElement>(null);
-    const [whisperingState, setWhispering] = useState<PlayerIndex | null>(null);
+    const [whisperingState, setWhisperingState] = useState<PlayerIndex | null>(null);
 
     const whispering = useMemo(() => {
         if (props.whispering === undefined) {
@@ -279,7 +279,7 @@ export function ChatTextInput(props: Readonly<{
     
     const prependWhisper = useCallback((index: PlayerIndex) => {
         if (gamePlayers !== undefined && index < gamePlayers.length && index !== props.controllingPlayer) {
-            setWhispering(index);
+            setWhisperingState(index);
             setDrawAttentionSeconds(1.5);
             ref.current?.focus()
         }
@@ -288,11 +288,9 @@ export function ChatTextInput(props: Readonly<{
     useEffect(() => {
         if (drawAttentionSeconds === 0) {
             return;
-        } else if (drawAttentionSeconds < 0) {
-            setDrawAttentionSeconds(0);
         } else {
             setTimeout(() => {
-                setDrawAttentionSeconds(drawAttentionSeconds - 0.5);
+                setDrawAttentionSeconds(Math.max(drawAttentionSeconds - 0.5, 0));
             }, 500)
         }
     }, [drawAttentionSeconds])
@@ -309,7 +307,7 @@ export function ChatTextInput(props: Readonly<{
 
     const sendChatField = useCallback(() => {
         let text = chatBoxText.trim();
-        setWhispering(null);
+        setWhisperingState(null);
         setChatBoxText("");
         if (text === "") return;
         history.push(text);
@@ -331,10 +329,10 @@ export function ChatTextInput(props: Readonly<{
         if (whispering === null && whisperCommandMatch !== null) {
             const index = parseInt(whisperCommandMatch[1]) - 1;
             if (gamePlayers !== undefined && index < gamePlayers.length && index >= 0 && index !== props.controllingPlayer) {
-                setWhispering(index);
+                setWhisperingState(index);
                 setChatBoxText(text.slice(whisperCommandMatch[0].length));
             } else {
-                setWhispering(null);
+                setWhisperingState(null);
                 setChatBoxText(text);
             }
         } else {
@@ -362,7 +360,7 @@ export function ChatTextInput(props: Readonly<{
             setChatBoxText(text ?? "");
         } else if (event.key === "Escape") {
             event.preventDefault();
-            setWhispering(null);
+            setWhisperingState(null);
         }
     }, [sendChatField, history, historyPoller, chatBoxText]);
 
@@ -390,7 +388,7 @@ export function ChatTextInput(props: Readonly<{
             }</StyledText>:null}
             {props.whispering === undefined ? <Button
                 highlighted={true}
-                onClick={() => setWhispering(null)}
+                onClick={() => setWhisperingState(null)}
             >
                 {translate("cancelWhisper")}
             </Button>:null}

@@ -42,7 +42,7 @@
     gap: .25rem;
 }
 
-@media (prefers-reduced-motion = no-preference) {
+@media (prefers-reduced-motion: no-preference) {
     .global-menu {
         /* Start off the page and slide in */
         transform: translateX(100%);

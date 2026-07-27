@@ -195,7 +195,7 @@ function PlayerCard(props: Readonly<{
                 selection: newSelection
             }
         });
-    }, [controllers, myPlayerIndex, myNominationControllerId, myNominationSelection]);
+    }, [myNominationControllerId, myNominationSelection, props.playerIndex]);
 
     return <><div
         className={`player-card`}
@@ -278,12 +278,12 @@ function PlayerCard(props: Readonly<{
             </Button>
         })()}
     </div>
-    {alibiOpen && mostRecentBlockMessage !== undefined ? <div className="open-alibi" onClick={()=>setAlibiOpen(false)}>
+    {alibiOpen && mostRecentBlockMessage !== undefined ? <button className="open-alibi flush" onClick={()=>setAlibiOpen(false)}>
         <ChatMessage message={mostRecentBlockMessage[1]} messageIndex={mostRecentBlockMessage[0]}/>
-    </div> : null}
-    {graveOpen && grave !== undefined ? <div onClick={()=>setGraveOpen(false)}>
+    </button> : null}
+    {graveOpen && grave !== undefined ? <button className="open-grave flush" onClick={()=>setGraveOpen(false)}>
         <GraveComponent grave={grave}/>
-    </div> : null}
+    </button> : null}
     {whisperChatOpen && <div className="chat-menu-colors player-list-chat-section">
         <div className="player-list-chat-message-section">
             <ChatMessageSection filter={{

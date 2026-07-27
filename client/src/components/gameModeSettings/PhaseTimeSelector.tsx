@@ -203,17 +203,17 @@ function PhaseTimesVisualizerPhase(props: Readonly<{
         }
 
         setOpen(current => current === "edit" ? "closed" : "edit");
-    }, [props.disabled, phase, anchorController]);
+    }, [props.disabled, isMobile, phase, anchorController]);
 
     const onMouseEnter = useCallback(() => {
         if (isMobile) return;
         setOpen(current => current === "closed" ? "show" : current);
-    }, []);
+    }, [isMobile]);
 
     const onMouseLeave = useCallback(() => {
         if (isMobile) return;
         setOpen(current => current === "show" ? "closed" : current);
-    }, []);
+    }, [isMobile]);
 
     const handleMouseDown = useDragToChangeValue(time, time => {
         if (isMobile) return;
@@ -261,7 +261,6 @@ function PhaseTimesVisualizerPhase(props: Readonly<{
                     style={{ display: open === "edit" ? undefined : "none"}}
                     type="number"
                     ref={focusInput}
-                    autoFocus
                     onKeyUp={(e) => {
                         if (e.key !== "Enter") return;
 
@@ -305,19 +304,6 @@ function getPhaseBaseColor(phase: Exclude<PhaseType, "recess">): string {
 function useDragToChangeValue(startValue: number, onChange: (value: number) => void) {
     const [startY, setStartY] = useState<number | null>(null);
 
-    useEffect(() => {
-        if (startY === null) return;
-        
-        // Add global listeners so dragging works even if the cursor leaves the button
-        globalThis.addEventListener('mousemove', handleMouseMove);
-        globalThis.addEventListener('mouseup', handleMouseUp);
-
-        return () => {
-            globalThis.removeEventListener('mousemove', handleMouseMove);
-            globalThis.removeEventListener('mouseup', handleMouseUp);
-        };
-    }, [startY]);
-
     const handleMouseDown = (e: React.MouseEvent<HTMLButtonElement>) => {
         setStartY(e.clientY);
     };
@@ -332,6 +318,20 @@ function useDragToChangeValue(startValue: number, onChange: (value: number) => v
         globalThis.removeEventListener('mousemove', handleMouseMove);
         globalThis.removeEventListener('mouseup', handleMouseUp);
     };
+
+    useEffect(() => {
+        if (startY === null) return;
+        
+        // Add global listeners so dragging works even if the cursor leaves the button
+        globalThis.addEventListener('mousemove', handleMouseMove);
+        globalThis.addEventListener('mouseup', handleMouseUp);
+
+        return () => {
+            globalThis.removeEventListener('mousemove', handleMouseMove);
+            globalThis.removeEventListener('mouseup', handleMouseUp);
+        };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [startY]);
 
     return handleMouseDown;
 }

@@ -26,6 +26,19 @@
 }
 .wiki-search .masonry-item {
     width: 100%;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+.wiki-search-divider {
+    width: 100%;
+}
+.wiki-search .wiki-main-page {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
 }
 .wiki-message-section {
     display: flex;

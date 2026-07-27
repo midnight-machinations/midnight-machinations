@@ -101,7 +101,7 @@ export default function GlobalMenu(): ReactElement {
     );
 }
 
-export function RoomLinkButton(props: { verbose?: true }): JSX.Element {
+export function RoomLinkButton(props: Readonly<{ verbose?: true }>): ReactElement {
     const code = useLobbyOrGameState(
         state => {
             const code = new URL(window.location.href);

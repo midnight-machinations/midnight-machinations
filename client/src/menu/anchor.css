@@ -7,7 +7,7 @@
     width: 100dvw;
 
     background:
-        url('../../public/images/fuzzy-background-alpha.png') center / 10000px,
+        url('../../images/fuzzy-background-alpha.png') center / 10000px,
         var(--background-color);
     animation: background-scroll 9s infinite forwards linear;
 }
@@ -32,6 +32,7 @@
     border-right-color: var(--primary-border-shadow-color);
     border-width: .13rem;
     color: white;
+    white-space: unset;
 }
 
 .error-card > header {
@@ -118,6 +119,13 @@
     width: 100%;
     height: 100%;
     padding: 3rem 1rem;
+    background: none;
+    border: none;
+    margin: none;
+}
+
+.anchor-cover-card-background-cover:hover:not(:disabled):not(:active) {
+    background: none;
 }
 
 .anchor-cover-card-background-cover::before {
@@ -126,7 +134,7 @@
     width: 100%;
     height: 100%;
     background: 
-        url('../../public/images/fuzzy-background-alpha.png'),
+        url('../../images/fuzzy-background-alpha.png'),
         var(--fade-color, var(--background-color));
     background-size: 10000px;
     animation: background-scroll 9s infinite forwards linear;

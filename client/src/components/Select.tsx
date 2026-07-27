@@ -81,7 +81,6 @@ export default function Select<K extends { toString(): string}>(props: Readonly<
                 } else if(allSearchResults[0] !== undefined) {
                     handleOnChange(allSearchResults[0]);
                 }
-                // eslint-disable-next-line no-negated-condition
                 if (props.noCloseOnKeyboardSelect !== true) {
                     handleSetOpen(false);
                 } else {
@@ -115,7 +114,7 @@ export default function Select<K extends { toString(): string}>(props: Readonly<
             disabled={props.disabled}
             onClick={()=>{handleSetOpen(!open)}}
             className={"custom-select "+(props.className?props.className:"")}
-            onKeyDown={(e)=>{
+            onKeyDown={e => {
                 if(props.disabled) return;
                 if(e.key === "Enter" && !open) {
                     e.preventDefault();

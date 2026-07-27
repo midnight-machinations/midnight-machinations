@@ -92,8 +92,8 @@ function PlayMenuFooter(props: Readonly<{
                         setRoomCode(undefined);
                     } else {
                         try {
-                            const code = parseInt(value, 18);
-                            if (!isNaN(code)) {
+                            const code = Number.parseInt(value, 18);
+                            if (!Number.isNaN(code)) {
                                 setRoomCode(code)
                             }
                         } catch (_) {}

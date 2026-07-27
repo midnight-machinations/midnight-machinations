@@ -163,6 +163,7 @@ function KiraGuessPicker(props: {
     const guessOptions: SelectOptionsSearch<KiraGuess> = new Map();
     for(let guess of props.availableGuesses){
         guessOptions.set(guess, [
+            // eslint-disable-next-line react/jsx-key
             <StyledText noLinks={true}>{kiraGuessTranslate(guess)}</StyledText>,
             kiraGuessTranslate(guess)
         ]);

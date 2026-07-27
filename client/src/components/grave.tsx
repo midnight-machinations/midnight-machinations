@@ -50,7 +50,6 @@ function UnobscuredGrave(props: Readonly<{
     grave: Grave & { information: GraveInformation & { type: "normal" } },
     playerNames: UnsafeString[],
     roleList: RoleList,
-    onClick?: () => void
     noLinks?: boolean
 }>): ReactElement {
     const graveDeathCause = useMemo(() => {
@@ -77,11 +76,7 @@ function UnobscuredGrave(props: Readonly<{
     let diedPhaseString = props.grave.diedPhase === "day" ? translate("day") : translate("phase.night");
     let diedPhaseIcon = props.grave.diedPhase === "day" ? translate("day.icon") : translate("night.icon");
 
-    return <div className="grave graveyard-menu-colors" onClick={()=>{
-        if(props.onClick!==undefined)
-            props.onClick();
-        }}
-    >
+    return <div className="grave graveyard-menu-colors">
         <div><StyledText noLinks={props.noLinks}>{`${diedPhaseString+diedPhaseIcon+props.grave.dayNumber}`}</StyledText></div>
         <div><StyledText noLinks={props.noLinks}>{`${props.playerNames[props.grave.player]+" ("+graveRoleString+")"}`}</StyledText></div>
         {graveDeathCause && <div><StyledText noLinks={props.noLinks}>{`${translate("killedBy")+" "+graveDeathCause}`}</StyledText></div>}

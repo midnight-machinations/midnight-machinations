@@ -22,7 +22,7 @@ export default function RoleSpecificSection(): ReactElement{
     )!;
 
     return <>{
-        roleStates.map((roleState)=><OneRoleSpecificSection roleState={roleState}/>)
+        roleStates.map((roleState) => <OneRoleSpecificSection key={JSON.stringify(roleState)} roleState={roleState}/>)
     }</>;
 }
 function OneRoleSpecificSection(props: Readonly<{

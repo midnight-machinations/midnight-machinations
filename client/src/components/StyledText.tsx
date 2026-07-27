@@ -1,4 +1,4 @@
-import { marked } from "marked";
+import { marked, MarkedOptions } from "marked";
 import React, { ReactElement, useContext } from "react";
 import ReactDOMServer from "react-dom/server";
 import { find } from "..";
@@ -32,8 +32,9 @@ const MARKDOWN_OPTIONS = {
     breaks: true,
     mangle: false,
     headerIds: false,
-    gfm: true
-}
+    gfm: true,
+    async: false,
+} as MarkedOptions & { async: false }
 
 type Token = {
     type: "raw"
@@ -65,7 +66,6 @@ export default function StyledText(props: Readonly<StyledTextProps>): ReactEleme
     const roleListKeywordData = props.roleListKeywordData ?? ROLE_LIST_KEYWORD_DATA;
     const menuController = useContext(MenuControllerContext);
     const anchorController = useContext(AnchorControllerContext)!;
-    const isCtrlPressed = useContext(CtrlPressedContext) ?? false;
 
     let tokens: Token[] = [{
         type: "raw",
@@ -75,7 +75,7 @@ export default function StyledText(props: Readonly<StyledTextProps>): ReactEleme
     }];
 
     if (props.markdown) {
-        tokens[0].string = marked.parse(tokens[0].string, MARKDOWN_OPTIONS);
+        tokens[0].string = marked(tokens[0].string, MARKDOWN_OPTIONS);
     } else {
         tokens[0].string = tokens[0].string.replace(/\n/g, '<br>');
     }
@@ -86,7 +86,7 @@ export default function StyledText(props: Readonly<StyledTextProps>): ReactEleme
 
     const tooltipContext = useContext(TooltipContext)!;
 
-    const handleClick = (event: React.MouseEvent<HTMLSpanElement>) => {
+    const handleClick = (event: Event) => {
         const target = event.target as HTMLElement;
         const anchor = target.closest('a[data-wiki-page]');
         if (anchor) {
@@ -124,7 +124,14 @@ export default function StyledText(props: Readonly<StyledTextProps>): ReactEleme
 
     return <span
         className={props.className}
-        onClick={handleClick}
+        onClick={e => handleClick(e.nativeEvent)}
+        onKeyUp={(e: React.KeyboardEvent<HTMLSpanElement>) => {
+            if (e.key === "Enter") {
+                handleClick(e.nativeEvent);
+            }
+        }}
+        role="none"
+        tabIndex={-1}
         onMouseOver={handleFocus}
         onFocus={handleFocus}
         onMouseOut={handleUnfocus}
@@ -344,7 +351,7 @@ function styleKeywords(tokens: Token[], extraData?: KeywordDataMap): Token[] {
             if (stringSplit.length === 1) continue;
 
             // Insert the styled string into where we just removed the unstyled string from
-            let replacement: Token[] = []; 
+            const replacement: Token[] = []; 
             for(const string of stringSplit){
                 if(string === "") continue;
                 if (!find(keyword).test(string)) {

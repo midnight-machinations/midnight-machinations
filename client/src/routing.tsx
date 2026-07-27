@@ -41,7 +41,7 @@ async function routeLobby(anchorController: AnchorController, roomCode: string) 
 
     let success: boolean;
     try {
-        const code = parseInt(roomCode, 18)
+        const code = Number.parseInt(roomCode, 18)
         if (reconnectData) {
             success = await GAME_MANAGER.sendRejoinPacket(code, reconnectData.playerId);
             

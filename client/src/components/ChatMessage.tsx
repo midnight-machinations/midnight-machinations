@@ -31,7 +31,7 @@ function canCopyPasteChatMessages(roleStates?: ListMap<Role, RoleState>): boolea
     return false;
 }
 
-const ChatElement = React.memo((
+const ChatElement = React.memo(function ChatElement(
     props: {
         canCopyPaste?: boolean,
         messageIndex?: ChatMessageIndex,
@@ -43,7 +43,7 @@ const ChatElement = React.memo((
         roleListKeywordData?: KeywordDataMap,
         noLinks?: boolean
     }, 
-) => {
+) {
     const roleStates = usePlayerState(
         playerState => playerState.roleStates,
         ["yourRoleState"]
@@ -202,6 +202,8 @@ const ChatElement = React.memo((
         className={"chat-message-div " + style}
         onMouseOver={() => setMouseHovering(true)}
         onMouseOut={() => setMouseHovering(false)}
+        onFocus={() => setMouseHovering(true)}
+        onBlur={() => setMouseHovering(false)}
     >
         <StyledText className={"chat-message " + style} 
             playerKeywordData={props.playerKeywordData}
@@ -361,6 +363,8 @@ function NormalChatMessage(props: Readonly<{
         className={"chat-message-div"}
         onMouseOver={() => props.setMouseHovering(true)}
         onMouseOut={() => props.setMouseHovering(false)}
+        onFocus={() => props.setMouseHovering(true)}
+        onBlur={() => props.setMouseHovering(false)}
     >
         <span className={`chat-message ${style} will-menu-colors`}>
             <StyledText
