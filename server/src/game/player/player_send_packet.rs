@@ -1,17 +1,13 @@
 use std::time::Duration;
 
 use crate::{
-    client_connection::ClientConnection, 
-    game::{
-        chat::{ChatComponent, ChatMessageVariant},
-        components::{
-            graves::grave_reference::GraveReference, insider_group::InsiderGroups,
-            tags::Tags
-        },
-        Game, GameOverReason
-    },
-    packet::ToClientPacket, websocket_connections::connection::ClientSender
+    client_connection::ClientConnection, game::{
+        Game, GameOverReason, chat::{ChatComponent, ChatMessageVariant}, components::{
+            graves::grave_reference::GraveReference, insider_group::InsiderGroups, role::RoleComponent, tags::Tags
+        }
+    }, packet::ToClientPacket, websocket_connections::connection::ClientSender
 };
+use crate::game::prelude::*;
 
 use super::PlayerReference;
 
@@ -93,6 +89,10 @@ impl PlayerReference{
         InsiderGroups::send_fellow_insiders_packets(game, *self);
         Tags::send_to_client(game, *self);
         let send_chat_groups = self.get_current_send_chat_groups(game);
+        
+        for id in AbilityID::current_used_ids(game) {
+            RoleComponent::send_ability_state(game, id);
+        }
 
         self.send_packets(game, vec![
             ToClientPacket::YourSendChatGroups {send_chat_groups},
@@ -101,9 +101,6 @@ impl PlayerReference{
             },
             ToClientPacket::YourRole {
                 role: self.role(game)
-            },
-            ToClientPacket::YourRoleState {
-                role_state: self.role_state(game).clone().get_client_ability_state(game, *self)
             },
             ToClientPacket::YourRoleLabels { 
                 role_labels: self.revealed_players_map(game) 

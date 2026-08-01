@@ -6,6 +6,27 @@ import { AuditorResult } from "../menu/game/gameScreenContent/AbilityMenu/RoleSp
 import { TwoRoleOptionSelection } from "./controllerInput";
 import { Hypnotist } from "../menu/game/gameScreenContent/AbilityMenu/RoleSpecificMenus/HypnotistMenu";
 
+
+export type AbilityID = {
+    type: "role",
+    role: Role,
+    player: PlayerIndex
+}
+// | {
+//     type: "pitchfork"
+// } | {
+//     type: "syndicateGun"
+// } | {
+//     type: "pawnConvert"
+// }
+
+export function abilityIdToString(id: AbilityID): string {
+    switch(id.type){
+        case "role":
+            return `role/${id.role}/${id.player}`;
+    }
+}
+
 export type RoleState = {
     type: "jailor",
     executionsRemaining: number,

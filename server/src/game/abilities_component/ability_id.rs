@@ -1,10 +1,15 @@
+use serde::{Deserialize, Serialize};
+
 use crate::game::{
     abilities_component::{ability::Ability, Abilities}, player::PlayerReference, role::Role, Game
 };
 
 
-#[derive(Clone, PartialEq, Eq, PartialOrd, Ord, Debug)]
+#[derive(Clone, PartialEq, Eq, PartialOrd, Ord, Debug, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+#[serde(tag = "type")]
 pub enum AbilityID{
+    #[serde(rename_all = "camelCase")]
     Role{role: Role, player: PlayerReference},
     Pitchfork,
     SyndicateGun,

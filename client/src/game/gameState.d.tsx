@@ -1,6 +1,6 @@
 import { Grave, GraveIndex } from "./graveState";
 import { ChatMessage, ChatMessageIndex } from "../components/ChatMessage";
-import { Role, RoleState } from "./roleState.d";
+import { AbilityID, Role, RoleState } from "./roleState.d";
 import { RoleList } from "./roleListState.d";
 import { LobbyPreviewData } from "./packet";
 import { ChatFilter } from "../menu/game/gameScreenContent/ChatMenu";
@@ -111,6 +111,7 @@ export type PlayerGameState = {
     
     myRole: Role,
     roleStates: ListMap<Role, RoleState>,
+    abilityStates: ListMap<AbilityID, RoleState>,
 
     notes: UnsafeString[],
     crossedOutOutlines: number[],
