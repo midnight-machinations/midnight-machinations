@@ -4,8 +4,8 @@ use serde::{Deserialize, Serialize};
 
 use crate::{
     game::{
-        components::{call_witness::CallWitness, insider_group::InsiderGroups, silenced::Silenced}, modifiers::ModifierID, phase::PhaseType, player::PlayerReference, Game
-    }, packet::ToClientPacket, vec_map::VecMap, vec_set::{vec_set, VecSet}
+        Game, abilities_component::Abilities, components::{call_witness::CallWitness, insider_group::InsiderGroups, silenced::Silenced}, modifiers::ModifierID, phase::PhaseType, player::PlayerReference
+    }, packet::ToClientPacket, vec_map::VecMap, vec_set::{VecSet, vec_set}
 };
 
 #[derive(Copy, Clone, Debug, Serialize, Deserialize, PartialEq, Eq, PartialOrd, Ord, Hash)]
@@ -32,12 +32,12 @@ impl PlayerChatGroups{
     pub fn send_player_chat_group_map(game: &mut Game)->PlayerChatGroupMap{
         if game.modifier_settings().is_enabled(ModifierID::NoChat) {return PlayerChatGroupMap::new();}
         
-        let out = PlayerChatGroupMap::combined(
+        let out = PlayerChatGroupMap::combine(
             PlayerReference::all_players(game)
                 .map(|p|p.send_player_chat_group_map(game))
+                .chain(once(Abilities::send_player_chat_group_map(game)))
                 .chain(once(InsiderGroups::send_player_chat_group_map(game)))
                 .chain(once(CallWitness::send_player_chat_group_map(game)))
-                .collect()
         );
 
         if game.player_chat_groups.send != out {
@@ -51,15 +51,15 @@ impl PlayerChatGroups{
         out
     }
     pub fn receive_player_chat_group_map(game: &Game)->PlayerChatGroupMap{
-        PlayerChatGroupMap::combined(
+        PlayerChatGroupMap::combine(
             PlayerReference::all_players(game)
                 .map(|p|p.receive_player_chat_group_map(game))
+                .chain(once(Abilities::receive_player_chat_group_map(game)))
                 .chain(once(InsiderGroups::receive_player_chat_group_map(game)))
-                .collect()
         )
     }
 }
-#[derive(Clone, PartialEq, Eq)]
+#[derive(Clone, PartialEq, Eq, Default)]
 pub struct PlayerChatGroupMap(VecMap<PlayerReference, VecSet<ChatGroup>>);
 impl PlayerChatGroupMap{
     pub fn new()->Self{
@@ -67,7 +67,7 @@ impl PlayerChatGroupMap{
             VecMap::new()
         )
     }
-    pub fn combined(other: Vec<Self>)->Self{
+    pub fn combine(other: impl Iterator<Item = Self>)->Self{
         let mut out = Self::new();
         for other in other {
             for (player, other_chat_groups) in other.0 {
@@ -121,7 +121,7 @@ impl PlayerReference{
             return out;
         }
 
-        let mut out = self.role_state(game).clone().receive_player_chat_group_map(game, *self);
+        let mut out = PlayerChatGroupMap::default();
         out.insert(*self, ChatGroup::All);
         if !self.alive(game) {out.insert(*self, ChatGroup::Dead);}
         out
@@ -137,7 +137,7 @@ impl PlayerReference{
             return PlayerChatGroupMap::new();
         }
 
-        let mut out = self.role_state(game).clone().send_player_chat_group_map(game, *self);
+        let mut out = PlayerChatGroupMap::default();
 
         if 
             !matches!(game.current_phase().phase(), PhaseType::Night|PhaseType::Obituary|PhaseType::Testimony|PhaseType::Briefing|PhaseType::Recess) && 

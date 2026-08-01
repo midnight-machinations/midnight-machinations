@@ -57,7 +57,7 @@ impl RoleStateTrait for Medium {
         ])
     }
     fn send_player_chat_group_map(self, game: &Game, actor_ref: PlayerReference) -> PlayerChatGroupMap {
-        let mut out = PlayerChatGroupMap::new();
+        let mut out = PlayerChatGroupMap::default();
         if 
             !actor_ref.ability_deactivated_from_death(game) &&
             (
@@ -76,7 +76,7 @@ impl RoleStateTrait for Medium {
         out
     }
     fn receive_player_chat_group_map(self, game: &Game, actor_ref: PlayerReference)->crate::game::chat::PlayerChatGroupMap {
-        let mut out = PlayerChatGroupMap::new();
+        let mut out = PlayerChatGroupMap::default();
         if 
             !actor_ref.ability_deactivated_from_death(game) &&
             (

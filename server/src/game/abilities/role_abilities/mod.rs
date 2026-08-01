@@ -74,6 +74,12 @@ impl AbilityTrait for RoleAbility {
     fn controller_parameters_map(&self, game: &Game, id: &AbilityID)  -> crate::game::controllers::ControllerParametersMap {
         self.0.clone().controller_parameters_map(game, id.get_role_actor_expect())
     }
+    fn send_player_chat_group_map(&self, game: &Game, id: &AbilityID)  -> PlayerChatGroupMap {
+        self.0.clone().send_player_chat_group_map(game, id.get_role_actor_expect())
+    }
+    fn receive_player_chat_group_map(&self, game: &Game, id: &AbilityID)  -> PlayerChatGroupMap {
+        self.0.clone().receive_player_chat_group_map(game, id.get_role_actor_expect())
+    }
 }
 impl AbilityID {
     fn get_role_actor_expect(&self)->PlayerReference {

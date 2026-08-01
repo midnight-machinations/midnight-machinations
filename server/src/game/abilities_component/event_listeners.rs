@@ -1,16 +1,7 @@
 use crate::game::{
-    abilities_component::{ability::Ability, ability_id::AbilityID, ability_trait::AbilityTrait, Abilities},
-    controllers::ControllerParametersMap,
-    event::{
-        before_phase_end::BeforePhaseEnd, on_ability_creation::{OnAbilityCreation, OnAbilityCreationFold, OnAbilityCreationPriority},
-        on_ability_deletion::{OnAbilityDeletion, OnAbilityDeletionPriority}, on_ability_edit::OnAbilityEdit, on_add_insider::OnAddInsider,
-        on_any_death::OnAnyDeath, on_conceal_role::OnConcealRole, on_controller_selection_changed::OnControllerSelectionChanged,
-        on_grave_added::OnGraveAdded, on_midnight::{OnMidnightFold, OnMidnight, OnMidnightPriority}, on_phase_start::OnPhaseStart,
-        on_player_possessed::OnPlayerPossessed, on_player_roleblocked::OnPlayerRoleblocked, on_remove_insider::OnRemoveInsider,
-        on_role_switch::OnRoleSwitch, on_validated_ability_input_received::OnValidatedControllerInputReceived, on_visit_wardblocked::OnVisitWardblocked,
-        on_whisper::{OnWhisper, WhisperFold, WhisperPriority}, AsInvokable as _, Invokable as _,
-    },
-    Game
+    Game, abilities_component::{Abilities, ability::Ability, ability_id::AbilityID, ability_trait::AbilityTrait}, chat::PlayerChatGroupMap, controllers::ControllerParametersMap, event::{
+        AsInvokable as _, Invokable as _, before_phase_end::BeforePhaseEnd, on_ability_creation::{OnAbilityCreation, OnAbilityCreationFold, OnAbilityCreationPriority}, on_ability_deletion::{OnAbilityDeletion, OnAbilityDeletionPriority}, on_ability_edit::OnAbilityEdit, on_add_insider::OnAddInsider, on_any_death::OnAnyDeath, on_conceal_role::OnConcealRole, on_controller_selection_changed::OnControllerSelectionChanged, on_grave_added::OnGraveAdded, on_midnight::{OnMidnight, OnMidnightFold, OnMidnightPriority}, on_phase_start::OnPhaseStart, on_player_possessed::OnPlayerPossessed, on_player_roleblocked::OnPlayerRoleblocked, on_remove_insider::OnRemoveInsider, on_role_switch::OnRoleSwitch, on_validated_ability_input_received::OnValidatedControllerInputReceived, on_visit_wardblocked::OnVisitWardblocked, on_whisper::{OnWhisper, WhisperFold, WhisperPriority},
+    }
 };
 
 impl Abilities{
@@ -128,6 +119,22 @@ impl Abilities{
                 .map(|a|a.0.controller_parameters_map(game))
         )
     }
+    pub fn send_player_chat_group_map(game: &Game) -> PlayerChatGroupMap {
+        PlayerChatGroupMap::combine(
+            game.abilities.abilities
+                .clone()
+                .into_iter()
+                .map(|a|a.0.send_player_chat_group_map(game))
+        )
+    }
+    pub fn receive_player_chat_group_map(game: &Game) -> PlayerChatGroupMap {
+        PlayerChatGroupMap::combine(
+            game.abilities.abilities
+                .clone()
+                .into_iter()
+                .map(|a|a.0.receive_player_chat_group_map(game))
+        )
+    }
 }
 impl AbilityID{
     fn on_midnight(&self, game: &mut Game, _event: &OnMidnight, midnight_variables: &mut OnMidnightFold, priority: OnMidnightPriority){
@@ -185,6 +192,12 @@ impl AbilityID{
 
     fn controller_parameters_map(&self, game: &Game) -> ControllerParametersMap {
         self.get_dyn_cloned_ability_expect(game).controller_parameters_map(game, self)
+    }
+    fn send_player_chat_group_map(&self, game: &Game) -> PlayerChatGroupMap {
+        self.get_dyn_cloned_ability_expect(game).send_player_chat_group_map(game, self)
+    }
+    fn receive_player_chat_group_map(&self, game: &Game) -> PlayerChatGroupMap {
+        self.get_dyn_cloned_ability_expect(game).receive_player_chat_group_map(game, self)
     }
 
     
