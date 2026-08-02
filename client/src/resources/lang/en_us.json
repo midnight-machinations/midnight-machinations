@@ -349,6 +349,10 @@
     "role.deputy.name:var.0": "Deputies",
     "controllerId.role.deputy.0.name": "Shoot",
     
+    "role.slayer.name": "Slayer",
+    "role.slayer.name:var.0": "Slayers",
+    "controllerId.role.slayer.0.name": "Shoot",
+    
     "role.rabblerouser.name": "Rabblerouser",
     "role.rabblerouser.name:var.0": "Rabblerousers",
 
@@ -1060,8 +1064,8 @@
     "chatMessage.mediumExists":"There is some way to communicate with the living so don't leave! Your information could be very important!",
     "chatMessage.revolutionaryWon":"The Revolutionary got their target executed and won!",
     "chatMessage.chronokaiserSpeedUp":"The Chronokaiser speeds up time. Each phase is \\0% faster.",
-    "chatMessage.deputyKilled":"The Deputy killed \\0!",
-    "chatMessage.deputyShotYou":"A Deputy shot you!",
+    "chatMessage.deputyKilled":"The Deputy or Slayer killed \\0!",
+    "chatMessage.deputyShotYou":"A Deputy or Slayer shot you!",
     "chatMessage.puppeteerPlayerIsNowMarionette":"The puppeteer strung up \\0 into a marionette. They are now a Fiends Loyalist and Puppeteer Insider. They will be attacked every night.",
     "chatMessage.recruiterPlayerIsNowRecruit":"The recruiter recruited \\0 into the syndicate. They are now a Syndicate Loyalist and Syndicate Insider. They will be attacked every night.",
     "chatMessage.wardenPlayersImprisoned": "The warden has made these players their prisoners: \\0. They will be roleblocked and each must choose cooperate or defect.",
@@ -1921,9 +1925,16 @@
     "wiki.article.role.deputy.reminder": "Once per game, during the day, shoot someone. If you kill a town loyalist you leave town.",
     "wiki.article.role.deputy.lore": "\"When you know, you know.\"",
     "wiki.article.role.deputy.guide":"- Once per game, you can shoot a player during the day\n- If you kill a townie, you instantly leave town\n- If you kill someone, everyone is told that a deputy shot someone\n- If the player you shoot survives your attack, only the player you attacked is told, nobody else is told\n- You can only shoot during discussion, nomination, adjournment, or dusk\n- If you were blocked last night, you can't shoot today.",
-    "wiki.article.role.deputy.abilities":"* Once per game, you may choose a player to attack instantly. You can do this during discussion, nomination, adjournment, or dusk.",
-    "wiki.article.role.deputy.attributes":"* If the player you attack survives, they are told they were attacked by a deputy\n* When you kill someone, everyone is told a deputy shot someone\n* If you kill a town loyalist, you instantly leave town",
+    "wiki.article.role.deputy.abilities":"",
+    "wiki.article.role.deputy.attributes":"* If the player you attack survives, they are told they were attacked by a deputy",
     "wiki.article.role.deputy.extra":"* You have an armor-piercing attack\n* You can not attack day 1",
+
+    "wiki.article.role.slayer.reminder": "Once per game, during the day, shoot someone. If you shoot town loyalist, nothing happens.",
+    "wiki.article.role.slayer.lore": "\"When you know, you know.\"",
+    "wiki.article.role.slayer.guide":"- Once per game, you can shoot a player during the day\n- If you shoot a town loyalist, your bullet is wasted\n- If you kill someone, everyone is told that a slayer shot someone\n- If the player you shoot survives your attack, only the player you attacked is told, nobody else is told\n- You can only shoot during discussion, nomination, adjournment, or dusk\n- If you were blocked last night, you can't shoot today.",
+    "wiki.article.role.slayer.abilities":"",
+    "wiki.article.role.slayer.attributes":"* If the player you attack survives, they are told they were attacked by a slayer",
+    "wiki.article.role.slayer.extra":"* You have an armor-piercing attack\n* You can not attack day 1",
 
     "wiki.article.role.godfather.reminder": "Each night*, select a player to attack. Each night, select a player to appeared visit. You have armor and innocent aura.",
     "wiki.article.role.godfather.guide": "- Each night except the first, select a player to attack\n    - You can't attack night 1\n- Select a player to appear to visit\n - When you are blocked, you don't have innocent aura for the night.",

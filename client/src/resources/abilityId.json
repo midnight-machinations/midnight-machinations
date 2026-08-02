@@ -87,6 +87,10 @@
         "midnight": false,
         "instant": true
     },
+    "role/slayer/0": {
+        "midnight": false,
+        "instant": true
+    },
     "role/escort/0": {
         "midnight": true,
         "visit": "normal"

@@ -105,6 +105,7 @@ macros::roles! {
     Veteran : veteran,
     Marksman: marksman,
     Deputy : deputy,
+    Slayer : slayer,
     Rabblerouser : rabblerouser,
 
     Escort : escort,
