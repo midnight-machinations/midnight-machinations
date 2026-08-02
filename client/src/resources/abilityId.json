@@ -95,6 +95,10 @@
         "midnight": true,
         "visit": "normal"
     },
+    "role/employer/1": {
+        "midnight": true,
+        "visit": "none"
+    },
     "role/courtesan/0": {
         "midnight": true,
         "visit": "normal"
@@ -196,6 +200,14 @@
         "visit": "normal"
     },
     "role/framer/1": {
+        "midnight": true,
+        "visit": "abnormal"
+    },
+    "role/propMaster/0": {
+        "midnight": true,
+        "visit": "normal"
+    },
+    "role/propMaster/1": {
         "midnight": true,
         "visit": "abnormal"
     },
@@ -306,6 +318,10 @@
     "role/tailor/0": {
         "midnight": true,
         "visit": "normal"
+    },
+    "role/tailor/1": {
+        "midnight": true,
+        "visit": "none"
     },
     "role/warper/0": {
         "midnight": true,

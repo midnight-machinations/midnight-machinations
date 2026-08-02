@@ -1,16 +1,12 @@
 use rand::seq::SliceRandom;
 use crate::{
     game::{
-        attack_power::DefensePower,
-        chat::{ChatMessage, ChatMessageVariant}, components::{
-            fragile_vest::FragileVests, graves::{grave::{Grave, GraveKiller}, Graves},
-            insider_group::InsiderGroupID, player_component::PlayerComponent,
-            role::RoleComponent,
+        Game, attack_power::DefensePower, chat::{ChatMessage, ChatMessageVariant}, components::{
+            fragile_vest::FragileVests, graves::{Graves, grave::{Grave, GraveKiller}}, insider_group::InsiderGroupID, player_component::PlayerComponent, role::RoleComponent,
         }, controllers::{ControllerID, PlayerListSelection}, event::{
-            on_any_death::OnAnyDeath, on_midnight::{OnMidnightFold, OnMidnightPriority}, AsInvokable as _, Invokable as _,
-        }, role::{medium::Medium, necromancer::Necromancer, RoleState}, Game
-    },
-    packet::ToClientPacket,
+            AsInvokable as _, Invokable as _, on_any_death::OnAnyDeath, on_midnight::{OnMidnightFold, OnMidnightPriority},
+        }, role::{RoleState, medium::Medium, necromancer::Necromancer, prop_master::PropMaster}
+    }, packet::ToClientPacket,
 };
 
 use super::PlayerReference;
@@ -106,7 +102,8 @@ impl PlayerReference{
             PlayerReference::all_players(game)
                 .any(|medium_player|
                     Medium::get_seanced_targets(game, medium_player).contains(self) ||
-                    Necromancer::get_seanced_targets(game, medium_player).contains(self)
+                    Necromancer::get_seanced_targets(game, medium_player).contains(self) ||
+                    PropMaster::get_seanced_targets(game, medium_player).contains(self)
                 )
             
         )

@@ -129,6 +129,7 @@ macros::roles! {
 
     Goon : made_man,
     Consort : consort,
+    Framer : framer,
     Maverick : maverick,
     
     Hypnotist : hypnotist,
@@ -136,7 +137,7 @@ macros::roles! {
     Cerenovous : cerenovous,
     Informant: informant,
     Mortician : mortician,
-    Framer : framer,
+    PropMaster: prop_master,
     Disguiser : disguiser,
     Forger : forger,
     Reeducator : reeducator,

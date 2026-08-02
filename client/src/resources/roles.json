@@ -793,6 +793,20 @@
             {"type": "seerResult", "enemies": true}
         ]
     },
+    "propMaster": {
+        "mainRoleSet": "mafia",
+        "roleSets": ["mafia", "mafiaSupport"],
+        "armor": false,
+        "aura": null,
+        "maxCount": 1,
+        "canWriteDeathNote": false,
+        "canBeConvertedTo": ["godfather"],
+        "chatMessages":[
+            {"type": "detectiveResult","suspicious": true},
+            {"type": "snoopResult", "townie": false},
+            {"type": "seerResult", "enemies": true}
+        ]
+    },
     "disguiser": {
         "mainRoleSet": "mafia",
         "roleSets": ["mafia", "mafiaSupport"],
