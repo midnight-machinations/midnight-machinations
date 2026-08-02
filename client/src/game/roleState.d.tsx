@@ -101,6 +101,8 @@ export type RoleState = {
 } | {
     type: "deputy"
 } | {
+    type: "slayer"
+} | {
     type: "rabblerouser"
 } | {
     type: "escort"
@@ -163,6 +165,8 @@ export type RoleState = {
     convertRole: Role,
 } | {
     type: "framer"
+} | {
+    type: "propMaster"
 } | {
     type: "necromancer"
 } | {

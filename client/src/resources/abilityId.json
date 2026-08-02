@@ -203,10 +203,6 @@
         "midnight": true,
         "visit": "normal"
     },
-    "role/framer/1": {
-        "midnight": true,
-        "visit": "abnormal"
-    },
     "role/propMaster/0": {
         "midnight": true,
         "visit": "normal"

@@ -700,7 +700,7 @@ fn cop_does_not_kill_framed_player(){
         crus: Cop,
         protected_player: Jester,
         townie: Detective,
-        framer: Framer,
+        framer: PropMaster,
         mafioso: Mafioso
     );
 
@@ -765,7 +765,7 @@ fn ambusher_does_not_kill_framed_player(){
         ambusher: Ambusher,
         protected_player: Jester,
         townie: Detective,
-        framer: Framer,
+        framer: PropMaster,
         mafioso: Mafioso
     );
 
@@ -864,7 +864,7 @@ fn veteran_does_not_kill_framed_player(){
     kit::scenario!(game in Night 2 where
         vet: Veteran,
         townie: Detective,
-        framer: Framer,
+        framer: PropMaster,
         mafioso: Mafioso
     );
 
@@ -1171,30 +1171,6 @@ fn drunk_suspicious_aura() {
     assert_contains!(
         detective.get_messages(),
         ChatMessageVariant::DetectiveResult { suspicious: true }
-    );
-}
-
-#[test]
-fn framer_second_visit_erased() {
-    kit::scenario!(game in Night 1 where
-        framer: Framer,
-        lookout: Lookout,
-        v: Villager
-    );
-
-    framer.send_ability_input_player_list_typical(lookout);
-    framer.send_ability_input_player_list(v, 1);
-    lookout.send_ability_input_player_list_typical(v);
-
-    game.skip_to(Obituary, 2);
-
-    assert_not_contains!(
-        lookout.get_messages(),
-        ChatMessageVariant::LookoutResult { players: vec![framer.player_ref()] }
-    );
-    assert_contains!(
-        lookout.get_messages(),
-        ChatMessageVariant::LookoutResult { players: vec![lookout.player_ref()] }
     );
 }
 

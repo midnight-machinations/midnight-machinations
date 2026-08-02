@@ -444,7 +444,6 @@
     "role.framer.name": "Framer",
     "role.framer.name:var.0": "Framers",
     "controllerId.role.framer.0.name": "Frame",
-    "controllerId.role.framer.1.name": "Appeared Visit",
     
     "role.propMaster.name": "Prop Master",
     "role.propMaster.name:var.0": "Prop Masters",
@@ -2057,11 +2056,11 @@
     "wiki.article.role.forger.attributes":"* You only have X uses of your ability (X = Total players ÷ 5 (round up))\n- You can copy paste chat messages",
     "wiki.article.role.forger.extra":"* If you visit a player to attempt to forge them, it costs an ability use, even if they don't die\n* If you are blocked, it doesn't cost an ability use\n* You can't target other syndicate members",
 
-    "wiki.article.role.framer.reminder": "Each night, frame a player to give them suspicious aura for tonight and tomorrow night. Choose more players to make the newly framed player appear to visit the others.",
-    "wiki.article.role.framer.guide": "- At night, select a player to frame\n    - The player is given the frame tag.\n    - Select more players: the framed player appears to visit the other players.\n - Players with the frame tag have suspicious aura.\n - The frame tag is is removed after the next night, meaning the framed player has the tag for 2 nights.\n- When you are roleblocked or dead, your tags don't give suspicious aura.",
+    "wiki.article.role.framer.reminder": "Each night, frame a player to give them suspicious aura for tonight.",
+    "wiki.article.role.framer.guide": "- At night, select a player to frame\n   - The framed player has suspicious aura for tonight.\n   - The framed player appears to visit nobody.",
     "wiki.article.role.framer.abilities":"",
-    "wiki.article.role.framer.attributes":"- When choosing who to frame, you can select living players who aren't insiders with you\n- You can select anyone for the appeared into visit, even dead players or yourself",
-    "wiki.article.role.framer.extra":"- Your \"appeared into\" visit is wardblock immune, investigate immune, and indirect",
+    "wiki.article.role.framer.attributes":"",
+    "wiki.article.role.framer.extra":"- You can't select dead players, or fellow insiders.",
 
     "wiki.article.role.propMaster.reminder": "At night, give your suspicious prop to a player. The player with the prop has suspicious aura, and appears to visit whoever you choose. You are told what abilities are used on the player with the prop. Seance fellow insiders.",
     "wiki.article.role.propMaster.guide": "While the prop has not been given out:\n   - At night, choose a player to give the prop to.\n   - If you are choosing a player to give the prop to, you may choose to make that player appear to visit other players.\n\nWhile the prop has been given out:\n   - The player with the prop has suspicious aura\n   - At night, choose any players to make the player with the prop appear to visit them.\n   - At night, you are told the abilities used on the player with the prop (per visit).\n   - When the player with the prop dies, you get it back.\n\n- You seance all dead fellow insiders who dont have syndicate killing, fiends, or cult roles.",
