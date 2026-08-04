@@ -99,5 +99,7 @@
     "playersRoleRevealed": "special",
     "playersRoleConcealed": "special",
     "tagAdded": "special",
-    "tagRemoved": "special"
+    "tagRemoved": "special",
+    "gravityFloatedAway": "warning",
+    "gravitySavedPlayer": "important"
 }

@@ -13,10 +13,13 @@ export const MODIFIERS = [
     "unscheduledNominations",
     "hiddenNominationVotes", "hiddenVerdictVotes",
     "forfeitNominationVote", "randomPlayerNames",
-    "customRoleLimits"
+    "customRoleLimits",
+    "gravity"
 ] as const;
 
 export type ModifierID = (typeof MODIFIERS)[number];
+
+export type GravityLevel = "zeroGravity" | "antiGravity";
 
 export type ModifierState = {
     type: "obscuredGraves"
@@ -59,12 +62,17 @@ export type ModifierState = {
 } | {
     type: "customRoleLimits",
     limits: ListMapData<Role, number>
+} | {
+    type: "gravity",
+    level: GravityLevel
 }
 
 export function defaultModifierState(modifierId: ModifierID): ModifierState {
     switch (modifierId) {
         case "customRoleLimits":
             return { type: modifierId, limits: [] };
+        case "gravity":
+            return { type: modifierId, level: "zeroGravity" };
         default:
             return { type: modifierId };
     }
@@ -73,6 +81,7 @@ export function defaultModifierState(modifierId: ModifierID): ModifierState {
 export function isModifierConfigurable(modifierId: ModifierID): boolean {
     switch (modifierId) {
         case "customRoleLimits":
+        case "gravity":
             return true;
         default:
             return false;

@@ -1,6 +1,7 @@
 
 use serde::Serialize;
 use crate::game::components::attack::normal_attack::Attack;
+use crate::game::modifiers::gravity::Gravity;
 use crate::game::prelude::*;
 use crate::vec_set;
 
@@ -29,6 +30,14 @@ impl RoleStateTrait for Deputy {
             ControllerID::role(actor_ref, Role::Deputy, 0)
         )else{return};
         let Some(shot) = target_ref.first() else {return};
+
+        // Anti-gravity: Deputy dies when shooting (leaving house)
+        if Gravity::is_anti_gravity(game) {
+            actor_ref.add_private_chat_message(game, ChatMessageVariant::GravityFloatedAway);
+            actor_ref.die_and_add_grave(game, Grave::from_player_suicide(game, actor_ref));
+            actor_ref.edit_role_ability_helper(game, Deputy{bullets_remaining:self.bullets_remaining.saturating_sub(1)});
+            return;
+        }
 
         let mut grave = Grave::from_player_lynch(game, *shot);
         if let GraveInformation::Normal{death_cause, ..} = &mut grave.information {
