@@ -27,6 +27,13 @@ pub(super) const DEFENSE: DefensePower = DefensePower::None;
 impl RoleStateTrait for PropMaster {
     type ClientAbilityState = PropMaster;
     fn on_midnight(self, game: &mut Game, id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut OnMidnightFold, priority: OnMidnightPriority) {
+        if 
+            actor_ref.ability_deactivated_from_death(game) ||
+            actor_ref.night_blocked(midnight_variables)
+        {
+            return
+        }
+
         match priority {
             OnMidnightPriority::Deception => {
                 if
@@ -118,10 +125,11 @@ impl RoleStateTrait for PropMaster {
         ].into_iter().collect()
     }
 
-    fn on_any_death(self, game: &mut Game, actor_ref: PlayerReference, dead_player_ref: PlayerReference) {
-        if (Prop::Set { target: dead_player_ref }) == self.prop {
-            actor_ref.edit_role_ability_helper(game, PropMaster{prop: Prop::Holding});
-        }
+    fn on_any_death(self, game: &mut Game, actor_ref: PlayerReference, _dead_player_ref: PlayerReference) {
+        self.take_prop(game, actor_ref);
+    }
+    fn on_phase_start(self, game: &mut Game, actor_ref: PlayerReference, _phase: PhaseType) {
+        self.take_prop(game, actor_ref);
     }
 
 
@@ -137,6 +145,18 @@ impl RoleStateTrait for PropMaster {
 
 
 impl PropMaster {
+    pub fn take_prop(self, game: &mut Game, actor_ref: PlayerReference) {
+        if
+            let Prop::Set { target } = self.prop &&
+            (
+                InsiderGroupID::in_same_group(game, actor_ref, target) ||
+                !target.alive(game) ||
+                actor_ref == target
+            )
+        {
+            actor_ref.edit_role_ability_helper(game, PropMaster{prop: Prop::Holding});
+        }
+    }
     pub fn get_seanced_targets(game: &Game, actor_ref: PlayerReference) -> Vec<PlayerReference> {
         if !actor_ref.alive(game) {return vec![]}
         if !(AbilityID::Role { role: Role::PropMaster, player: actor_ref }.exists(game)) {return vec![];}

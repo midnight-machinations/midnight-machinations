@@ -768,7 +768,10 @@
         "chatMessages":[
             {"type": "detectiveResult","suspicious": true},
             {"type": "snoopResult", "townie": false},
-            {"type": "seerResult", "enemies": true}
+            {"type": "seerResult", "enemies": true},
+            {"type": "spyBug", "visitTags": []},
+            {"type": "spyBug", "visitTags": [{"type":"role", "role":"tracker", "id":0}]},
+            {"type": "spyBug", "visitTags": [{"type":"role", "role":"forger", "id":0},{"type":"syndicateGun"}]}
         ]
     },
     "disguiser": {
@@ -1057,6 +1060,7 @@
         "maxCount": null,
         "canWriteDeathNote": false,
         "chatMessages":[
+            {"type": "gainedRoleAbility", "role":"mayor"},
             {"type": "roleAssignment", "role":"mayor"}
         ]
     },
@@ -1194,8 +1198,15 @@
         "maxCount": null,
         "canWriteDeathNote": true,
         "chatMessages":[
+            {"type": "wardblocked"},
+            {"type": "roleAssignment", "role":"mayor"},
+            {"type": "gainedRoleAbility", "role":"mayor"},
             {"type": "transported"},
-            {"type": "mediumExists"}
+            {"type": "mediumExists"},
+            {"type": "someoneSurvivedYourAttack"},
+            {"type": "youAttackedSomeone"},
+            {"type": "youWereAttacked"},
+            {"type": "youSurvivedAttack"}
         ]
     },
     "pyrolisk": {
