@@ -1012,7 +1012,7 @@
 
     "winCondition.loser": "Loser",
     "winCondition.draw": "Draw-monger",
-    "winCondition.evil": "Evil",
+    "winCondition.minion": "Minion",
     "winCondition.independent": "Independent",
 
 
@@ -1032,7 +1032,7 @@
     "chatMessage.phaseChange.nomination.lastTrial":"\\0 \\1\nLast trial",
     "chatMessage.phaseChange.trial":"\\0 \\1\n\\2 is on trial",
     "chatMessage.phaseChange.recess":"Recess",
-    "chatMessage.gameOver.conclusion.town": "The town has expelled the evil!",
+    "chatMessage.gameOver.conclusion.town": "The town has expelled the non-conformists!",
     "chatMessage.gameOver.conclusion.mafia": "The syndicate has taken over!",
     "chatMessage.gameOver.conclusion.cult": "The cult has indoctrinated everyone!",
     "chatMessage.gameOver.conclusion.fiends": "The fiends have won!",
@@ -1424,8 +1424,6 @@
     "wiki.article.standard.obscured.title:var.2": "Obscuring",
     "wiki.article.standard.obscured.text": "A player who is obscured had their role and alibi erased from their grave. A Mortician can tag players for obscuring, then when they die, they are obscured.",
 
-    "wiki.article.standard.evil.title": "Evil",
-    "wiki.article.standard.evil.text": "If a role is evil, it means a role is non-town. A psychic can receive evil visions to learn who is not on town. A detective will see someone as suspicious if they are evil or have a suspicious aura.",
     "wiki.article.standard.roleLimit.title": "Role Limit",
     "wiki.article.standard.roleLimit.text": "A roles limit is the maximum number of that role that can be generated at the start of a regular game. If there is no limit, there can be any number of that role.\n- Veteran has a role limit of 1, there can only be one veteran, if 2 people claim veteran, one must be lying\n- Wildcard must adhere to role limit",
     "wiki.article.standard.douse.title": "Douse",
@@ -2058,16 +2056,16 @@
     "wiki.article.role.cerenovous.extra":"- The brained player is no longer brained at the start of the next night.\n* You can't select other syndicate members",
 
     "wiki.article.role.informant.reminder": "Each night, select 2 players to reveal their role, you are told who visits them, and who they visited. You can see all whispers.",
-    "wiki.article.role.informant.guide": "- At night, select up to 2 players to be told:\n    - Their role (Their role is revealed to you)\n    - Who they visited\n    - Who visited them\n- You can read whispers that were sent to other players\n\nYou should communicate the information you get to the rest of the syndicate. It is fairly easy to fake claim lookout or tracker.\n- When you are roleblocked, you can't read whispers until start of next night.",
-    "wiki.article.role.informant.abilities":"* Visit up to 2 players to\n    * Be told their role (Their role is revealed to you)\n    * Be told who visited them\n    * Be told who they visited\n* All whispers can be read regardless of whether or not they were sent to you\n* Appeared visits can change information",
-    "wiki.article.role.informant.attributes":"* None",
+    "wiki.article.role.informant.guide": "- At night, select up to 2 players to be told:\n    - Their role (Their role is revealed to you)\n    - Who they visited\n    - Who visited them\n    - Their win condition\n- You can read whispers that were sent to other players\n- When you are roleblocked, you can't read whispers until start of next night.",
+    "wiki.article.role.informant.abilities":"",
+    "wiki.article.role.informant.attributes":"",
     "wiki.article.role.informant.extra":"* You can't select other syndicate members\n* Appeared visits can change information",
 
-    "wiki.article.role.mortician.reminder": "Each night, select a player to tag them for obscuring. If they die, their role and alibi are hidden.",
+    "wiki.article.role.mortician.reminder": "Each night, select a player to tag them for obscuring. If they die, their role and alibi are obscured and hidden.",
     "wiki.article.role.mortician.guide": "- At night, select a player to tag them for obscuring\n    - A player who is tagged for obscuring gets obscured when they die, erasing their role and alibi from their grave so nobody knows who they are\n    - You are told the obscured players role and alibi when they die\n- You can tag as many players as you want, but you can only obscure X players (X = Total players ÷ 5 (round up))\n- When you are roleblocked, your tags don't obscure players until the start of next night.",
-    "wiki.article.role.mortician.abilities":"* Visit a player to tag them for obscuring\n* If a player is obscured, that player's role and alibi do not appear in the graveyard\n* You are told the role and alibi of the player you obscured when they die.",
-    "wiki.article.role.mortician.attributes":"* You can only ever obscure X players per game (X = Total players ÷ 5 (round up))\n* You can't select a player who is already tagged\n* You can target other syndicate members",
-    "wiki.article.role.mortician.extra":"* You can target other syndicate members, but not yourself\n* Your ability doesn't work after you are dead\n- You can't select a player who is already tagged",
+    "wiki.article.role.mortician.abilities":"",
+    "wiki.article.role.mortician.attributes":"",
+    "wiki.article.role.mortician.extra":"* You can't select a player who is already tagged\n* You can select other syndicate members, but not yourself.\n* Your ability doesn't work after you are dead\n- You can't select a player who is already tagged",
 
     "wiki.article.role.forger.reminder": "At night, select a player, if they die, their role and alibi on their grave is forged.",
     "wiki.article.role.forger.guide": "- At night, select a player who dies to forge their role and alibi\n- Forging a player on the night they die allows you to edit their role and alibi in their grave\n- You can use your ability X times (X = Total players ÷ 5 (round up))\n\nYou should select the same player as the godfather or syndicate killing so your ability actually works.",
@@ -2236,7 +2234,7 @@
     "wiki.article.role.puppeteer.extra":"- You can't select anybody who is a puppeteer, marionette, or is being strung into a marionette\n- A puppeteer can't be stringed into a marionette\n- A marionette can't be stringed into a marionette twice, if 2 puppeteers choose a player to be turned into a marionette on the same night, they get the message only once",
 
     "wiki.article.role.lich.reminder": "Each night*, dead players vote on who you attack. Each night, you may do one of warp, ward, tailor, roleblock, or transport. You may choose not to attack.",
-    "wiki.article.role.lich.guide":"- Each night except the first, the dead anonymously votes on who you attack\n   - If there is a tie then you attack all tied players.\n- You may choose a player to try to attack\n   - If the dead choses to attack you, then then you attack the player you chose instead.\n   - If you chose nobody, then you attack nobody, even if the dead voted on someone to attack.\n\n- You may choose between transport, warp, ward, roleblock, and tailor.\n   - If you choose transport, choose 2 players to transport.\n   - If you choose warp, choose 2 players to warp the first into the second.\n   - If you choose tailor, choose a player and a town common role, if that player has a town common role then they become the role you chose.\n   - If you choose ward, choose a player to ward off all visitors to them.\n   - If you chose roleblock, choose a player to roleblock.",
+    "wiki.article.role.lich.guide":"- Each night except the first, the dead anonymously votes on who you attack\n   - If there is a tie then you attack all tied players.\n- You may choose a player to try to attack\n   - If the dead choses to attack you, then then you attack the player you chose instead.\n   - If you chose nobody, then you attack nobody, even if the dead voted on someone to attack.\n\n- You may choose between transport, warp, ward, roleblock, and tailor.\n   - If you choose transport, choose 2 players to transport them into eachother.\n   - If you choose warp, choose 2 players to transport the first into the second.\n   - If you choose tailor, choose a player and a town common role, if that player has a town common role then they become the role you chose.\n   - If you choose ward, choose a player to ward off all visitors to them.\n   - If you chose roleblock, choose a player to roleblock.",
     "wiki.article.role.lich.abilities":"",
     "wiki.article.role.lich.attributes":"",
     "wiki.article.role.lich.extra":"- Your attack is armor-piercing",

@@ -230,7 +230,7 @@ export function translateWinCondition(winCondition: WinCondition): string {
         } else if (winCondition.winIfAny.length === 4 && 
             (["mafia", "fiends", "cult", "politician"] as const).every(team => winCondition.winIfAny.includes(team))
         ) {
-            return translate(`winCondition.evil`)
+            return translate(`winCondition.minion`)
         } else {
             return winCondition.winIfAny.map(conclusion => translateConclusion(conclusion)).join(` ${translate('union')} `)
         }
