@@ -33,7 +33,7 @@ impl RoleStateTrait for Lich {
                 let Some(b) = targets.next() else {return};
                 
                 Transport::transport(
-                    midnight_variables, TransportPriority::Transporter, 
+                    midnight_variables, TransportPriority::Transporter,
                     &vec_map![(a, b), (b, a)], |_| true, true
                 );
             },
@@ -50,12 +50,17 @@ impl RoleStateTrait for Lich {
                     midnight_variables, TransportPriority::Warper, 
                     &vec_map![(first_visit, second_visit)], |_| true, true, 
                 );
-                
-                actor_ref.reveal_players_role(game, first_visit);
-                actor_ref.push_night_message(
-                    midnight_variables, ChatMessageVariant::TargetHasRole { role: first_visit.role(game) }
-                );
             },
+            OnMidnightPriority::Roleblock => {
+                if let Some(target_ref) = Visits::into_iter(midnight_variables)
+                    .with_tag(VisitTag::Role { role: Role::Lich, id: Self::ROLEBLOCK_ID.cast_unsigned() })
+                    .with_visitor(actor_ref)
+                    .map_target()
+                    .next()
+                {
+                    target_ref.roleblock(game, midnight_variables, true);
+                }
+            }
             OnMidnightPriority::Convert => {
                 if priority != OnMidnightPriority::Convert {return;}
                 let Some(target) = Visits::into_iter(midnight_variables)
@@ -79,7 +84,6 @@ impl RoleStateTrait for Lich {
                     .map_target()
                     .next()
                 {
-                    
                     NightAttack::new()
                         .attackers([actor_ref])
                         .grave_killer(Role::Lich)
@@ -104,7 +108,7 @@ impl RoleStateTrait for Lich {
                 .id(ControllerID::role(actor_ref, Role::Lich, Self::CHOOSE_ABILITY_ID.cast_unsigned()))
                 .available_selection(AvailableIntegerSelection{
                     min: 2,
-                    max: 5,
+                    max: 6,
                 })
                 .default_selection(IntegerSelection(2))
                 .allow_players([actor_ref])
@@ -181,6 +185,13 @@ impl RoleStateTrait for Lich {
                                 .night_typical(actor_ref)
                                 .build_map()
                     ])),
+                    Some(IntegerSelection(Self::ROLEBLOCK_ID)) => Some(
+                        ControllerParametersMap::builder(game)
+                            .id(ControllerID::role(actor_ref, Role::Lich, Self::ROLEBLOCK_ID.cast_unsigned()))
+                            .single_player_selection_typical(actor_ref, false, true)
+                            .night_typical(actor_ref)
+                            .build_map()
+                    ),
                     _ => None
                 }
             ).flatten()
@@ -235,6 +246,17 @@ impl RoleStateTrait for Lich {
             )
         }
 
+        //ROLEBLOCK
+        out.append(
+            &mut crate::game::role::common_role::convert_controller_selection_to_visits_visit_tag(
+                game,
+                actor_ref,
+                ControllerID::role(actor_ref, Role::Lich, Self::ROLEBLOCK_ID.cast_unsigned()),
+                false,
+                VisitTag::Role { role: Role::Lich, id: Self::ROLEBLOCK_ID.cast_unsigned() }
+            )
+        );
+
         Lich::append_visits_from_votes(game, actor_ref, &mut out);
 
         out
@@ -249,6 +271,7 @@ impl Lich{
     const WARP_ID: i8 = 3;
     const TAILOR_ID: i8 = 4;
     const WARD_ID: i8 = 5;
+    const ROLEBLOCK_ID: i8 = 6;
 
     const TAILOR_ID_ROLE: i8 = 14;
     // const POSSESS_ID: u8 = 6;

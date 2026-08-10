@@ -567,14 +567,17 @@
     "controllerId.role.lich.1.name": "Choose Ability",
     "controllerId.role.lich.2.name": "Transport",
     "controllerId.role.lich.3.name": "Warp",
-    "controllerId.role.lich.4.name": "Tailor",
+    "controllerId.role.lich.4.name": "Measure",
     "controllerId.role.lich.5.name": "Ward",
+    "controllerId.role.lich.6.name": "Roleblock",
+
     "controllerId.role.lich.14.name": "Fit",
 
     "controllerId.role.lich.1.integer.2": "Transport",
     "controllerId.role.lich.1.integer.3": "Warp",
     "controllerId.role.lich.1.integer.4": "Tailor",
     "controllerId.role.lich.1.integer.5": "Ward",
+    "controllerId.role.lich.1.integer.6": "Roleblock",
 
     "role.kira.name": "Kira",
     "role.kira.name:var.0": "Kiras",
@@ -2232,8 +2235,8 @@
     "wiki.article.role.puppeteer.attributes":"- You and the marionettes are all puppeteer insiders\n- Stringing someone up is armor-piercing\n - At night all puppeteers and marionettes can chat in the puppeteer chat, even if dead\n    - The players in the puppeteer chat that are dead can chat during the day or night",
     "wiki.article.role.puppeteer.extra":"- You can't select anybody who is a puppeteer, marionette, or is being strung into a marionette\n- A puppeteer can't be stringed into a marionette\n- A marionette can't be stringed into a marionette twice, if 2 puppeteers choose a player to be turned into a marionette on the same night, they get the message only once",
 
-    "wiki.article.role.lich.reminder": "Each night*, dead players vote on who you attack. Each night, you may do one of warp, ward, tailor, or transport. You may choose not to attack.",
-    "wiki.article.role.lich.guide":"- Each night except the first, the dead anonymously votes on who you attack\n   - If there is a tie then you attack all tied players.\n- You may choose a player to try to attack\n   - If the dead choses to attack you, then then you attack the player you chose instead.\n   - If you chose nobody, then you attack nobody, even if the dead voted on someone to attack.\n\n- You may choose between transport, warp, ward, and tailor.\n   - If you choose transport, choose 2 players to transport.\n   - If you choose warp, choose 2 players to warp the first into the second.\n   - If you choose tailor, choose a player and a town common role, if that player has a town common role then they become the role you chose.\n   - If you choose ward, choose a player to ward.",
+    "wiki.article.role.lich.reminder": "Each night*, dead players vote on who you attack. Each night, you may do one of warp, ward, tailor, roleblock, or transport. You may choose not to attack.",
+    "wiki.article.role.lich.guide":"- Each night except the first, the dead anonymously votes on who you attack\n   - If there is a tie then you attack all tied players.\n- You may choose a player to try to attack\n   - If the dead choses to attack you, then then you attack the player you chose instead.\n   - If you chose nobody, then you attack nobody, even if the dead voted on someone to attack.\n\n- You may choose between transport, warp, ward, roleblock, and tailor.\n   - If you choose transport, choose 2 players to transport.\n   - If you choose warp, choose 2 players to warp the first into the second.\n   - If you choose tailor, choose a player and a town common role, if that player has a town common role then they become the role you chose.\n   - If you choose ward, choose a player to ward off all visitors to them.\n   - If you chose roleblock, choose a player to roleblock.",
     "wiki.article.role.lich.abilities":"",
     "wiki.article.role.lich.attributes":"",
     "wiki.article.role.lich.extra":"- Your attack is armor-piercing",
