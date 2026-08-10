@@ -1199,9 +1199,10 @@
         "canWriteDeathNote": true,
         "chatMessages":[
             {"type": "wardblocked"},
+            {"type": "roleBlocked"},
+            {"type": "transported"},
             {"type": "roleAssignment", "role":"mayor"},
             {"type": "gainedRoleAbility", "role":"mayor"},
-            {"type": "transported"},
             {"type": "mediumExists"},
             {"type": "someoneSurvivedYourAttack"},
             {"type": "youAttackedSomeone"},
