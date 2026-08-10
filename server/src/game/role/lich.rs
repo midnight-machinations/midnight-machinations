@@ -256,6 +256,15 @@ impl Lich{
     fn append_visits_from_votes(game: &Game, actor_ref: PlayerReference, out: &mut Vec<Visit>) {
         if game.day_number() == 1 {return}
 
+        let backup_choice_visits = common_role::convert_controller_selection_to_visits_visit_tag(
+            game,
+            actor_ref,
+            ControllerID::role(actor_ref, Role::Lich, Self::CHOOSE_ATTACK_ID.cast_unsigned()),
+            true,
+            VisitTag::Role { role: Role::Lich, id: Self::CHOOSE_ATTACK_ID.cast_unsigned() }
+        );
+        if backup_choice_visits.is_empty() {return}
+
         //// ATTACK
         // Count votes into map
         let mut target_vote_map = HashMap::<PlayerReference, u8>::default();
@@ -289,13 +298,7 @@ impl Lich{
             
             let mut visits = 
             if players_to_attack.is_empty() {
-                common_role::convert_controller_selection_to_visits_visit_tag(
-                    game,
-                    actor_ref,
-                    ControllerID::role(actor_ref, Role::Lich, Self::CHOOSE_ATTACK_ID.cast_unsigned()),
-                    true,
-                    VisitTag::Role { role: Role::Lich, id: Self::CHOOSE_ATTACK_ID.cast_unsigned() }
-                )
+                backup_choice_visits
             }else{
                 players_to_attack
                     .into_iter()
