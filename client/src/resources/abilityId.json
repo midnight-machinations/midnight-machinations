@@ -369,6 +369,38 @@
         "midnight": true,
         "visit": "none"
     },
+    "role/lich/0": {
+        "midnight": true,
+        "visit": "abnormal"
+    },
+    "role/lich/1": {
+        "midnight": true,
+        "visit": "none"
+    },
+    "role/lich/2": {
+        "midnight": true,
+        "visit": "normal"
+    },
+    "role/lich/3": {
+        "midnight": true,
+        "visit": "normal"
+    },
+    "role/lich/4": {
+        "midnight": true,
+        "visit": "normal"
+    },
+    "role/lich/5": {
+        "midnight": true,
+        "visit": "normal"
+    },
+    "role/lich/14": {
+        "midnight": true,
+        "visit": "none"
+    },
+    "lichVote": {
+        "midnight": true,
+        "visit": "abnormal"
+    },
     "role/pyrolisk/0": {
         "midnight": true,
         "visit": "normal"

@@ -1183,7 +1183,18 @@
                 "text": "Erm... Guys? What do i do, they're gonna catch me!", 
                 "chatGroup": "puppeteer",
                 "block": false
-            },
+            }
+        ]
+    },
+    "lich": {
+        "mainRoleSet": "fiends",
+        "roleSets": ["fiends"],
+        "armor": true,
+        "aura": null,
+        "maxCount": null,
+        "canWriteDeathNote": true,
+        "chatMessages":[
+            {"type": "transported"},
             {"type": "mediumExists"}
         ]
     },

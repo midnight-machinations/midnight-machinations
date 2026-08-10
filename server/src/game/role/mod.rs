@@ -170,6 +170,7 @@ macros::roles! {
     Ojo : ojo,
     Puppeteer: puppeteer,
     Pyrolisk : pyrolisk,
+    Lich : lich,
     Spiral : spiral,
     Kira : kira,
     Warden : warden,

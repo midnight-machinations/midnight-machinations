@@ -561,6 +561,21 @@
     "controllerId.role.puppeteer.1.integer.0": "Kill",
     "controllerId.role.puppeteer.1.integer.1": "Marionette",
     
+    "role.lich.name": "Lich",
+    "role.lich.name:var.0": "Liches",
+    "controllerId.role.lich.0.name": "Backup Attack",
+    "controllerId.role.lich.1.name": "Choose Ability",
+    "controllerId.role.lich.2.name": "Transport",
+    "controllerId.role.lich.3.name": "Warp",
+    "controllerId.role.lich.4.name": "Tailor",
+    "controllerId.role.lich.5.name": "Ward",
+    "controllerId.role.lich.14.name": "Fit",
+
+    "controllerId.role.lich.1.integer.2": "Transport",
+    "controllerId.role.lich.1.integer.3": "Warp",
+    "controllerId.role.lich.1.integer.4": "Tailor",
+    "controllerId.role.lich.1.integer.5": "Ward",
+
     "role.kira.name": "Kira",
     "role.kira.name:var.0": "Kiras",
     "controllerId.role.kira.0.name": "Guess",
@@ -774,6 +789,7 @@
     "controllerId.wardenCooperate.name": "Warden, Cooperate Or Defect",
     "controllerId.wardenCooperate.boolean.true": "Cooperate",
     "controllerId.wardenCooperate.boolean.false": "Defect",
+    "controllerId.lichVote.name":"Lich Vote",
 
 
     "standard":"Uncategorized",
@@ -2210,11 +2226,17 @@
     "wiki.article.role.ojo.attributes":"",
     "wiki.article.role.ojo.extra":"- If you are blocked, you are still told who visits who.\n - You are not fooled by appeared visits",
 
-    "wiki.article.role.puppeteer.reminder": "Each night, select a player to either kill them or recruit them.",
+    "wiki.article.role.puppeteer.reminder": "Each night*, select a player to either kill them or recruit them.",
     "wiki.article.role.puppeteer.guide":"- Each night except the first, you may choose to do one of: \n    - Select and attack a player\n    - Select a player to string up into a marionette\n        - They are told they are strung up, and are now a fiends loyalist\n        - They are attacked the following night, and every night until they die\n - At night all puppeteers and marionettes can chat in the puppeteer chat, even if dead\n    - The players in the puppeteer chat that are dead can chat during the day or night\n- Your attack and convert are both armor-piercing",
     "wiki.article.role.puppeteer.abilities":"- Each night except the first, you may choose to do one of: \n    - Visit a player to attack them\n    - Visit a player to string up into a marionette\n        - They are told they are strung up, and are now a fiends loyalist\n        - They are attacked (protection-piercing) every night by all puppeteers until they die, if there are no puppeteers they are still attacked\n        - You can only use this X times (X = Total players ÷ 5 (round up))\n- Your attack and convert are both armor-piercing",
     "wiki.article.role.puppeteer.attributes":"- You and the marionettes are all puppeteer insiders\n- Stringing someone up is armor-piercing\n - At night all puppeteers and marionettes can chat in the puppeteer chat, even if dead\n    - The players in the puppeteer chat that are dead can chat during the day or night",
     "wiki.article.role.puppeteer.extra":"- You can't select anybody who is a puppeteer, marionette, or is being strung into a marionette\n- A puppeteer can't be stringed into a marionette\n- A marionette can't be stringed into a marionette twice, if 2 puppeteers choose a player to be turned into a marionette on the same night, they get the message only once",
+
+    "wiki.article.role.lich.reminder": "Each night*, dead players vote on who you attack. Each night, you may do one of warp, ward, tailor, possess, transport, roleblock, or guard. You may choose not to attack.",
+    "wiki.article.role.lich.guide":"",
+    "wiki.article.role.lich.abilities":"",
+    "wiki.article.role.lich.attributes":"",
+    "wiki.article.role.lich.extra":"",
 
     "wiki.article.role.kira.reminder": "Each night, guess players roles, if all your guesses are correct, you attack all of the players you guessed.",
     "wiki.article.role.kira.lore": "Do you know? Gods of death who love apples have red hands.",

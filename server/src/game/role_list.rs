@@ -305,7 +305,7 @@ impl RoleSet{
             RoleSet::Fiends =>
                 vec_set![
                     Role::Arsonist, Role::Werewolf, Role::Ojo,
-                    Role::Puppeteer, Role::Pyrolisk, Role::Kira,
+                    Role::Puppeteer, Role::Pyrolisk, Role::Kira, Role::Lich,
                     Role::SerialKiller, Role::FiendsWildcard,
                     Role::Spiral, Role::Warden, Role::Juggernaut, Role::Yer
                 ],
