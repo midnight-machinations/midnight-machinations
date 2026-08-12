@@ -254,7 +254,6 @@ export type SingleRoleJsonData = {
     aura: null | "innocent" | "suspicious",
     maxCount: null | number,
     canWriteDeathNote: boolean,
-    canBeConvertedTo: Role[],
     chatMessages: ChatMessageVariant[] 
 }
 export type RoleJsonData = Record<Role, SingleRoleJsonData>

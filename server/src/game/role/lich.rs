@@ -11,10 +11,10 @@ pub(super) const DEFENSE: DefensePower = DefensePower::Armored;
 
 impl RoleStateTrait for Lich {
     type ClientAbilityState = Lich;
-    fn on_midnight(self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut OnMidnightFold, priority: OnMidnightPriority) {
+    fn on_midnight(self, game: &mut Game, id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut OnMidnightFold, priority: OnMidnightPriority) {
 
         if let Some(target) = Visits::into_iter(midnight_variables)
-            .with_tag(VisitTag::Role { role: Role::Lich, id: Self::WARD_ID.cast_unsigned() })
+            .with_tag(VisitTag::Ability { ability: *id, id: Self::WARD_ID.cast_unsigned() })
             .with_visitor(actor_ref)
             .map_target()
             .next()
@@ -23,9 +23,17 @@ impl RoleStateTrait for Lich {
         }
 
         match priority {
+            OnMidnightPriority::Possess => {
+                Possession::possess_night_action(
+                    game,
+                    midnight_variables,
+                    VisitTag::Ability { ability: *id, id: Self::POSSESS_ID.cast_unsigned() },
+                    VisitTag::Ability { ability: *id, id: Self::POSSESS_INTO_ID.cast_unsigned() },
+                );
+            },
             OnMidnightPriority::Transporter => {
                 let mut targets = Visits::into_iter(midnight_variables)
-                    .with_tag(VisitTag::Role { role: Role::Lich, id: Self::TRANSPORT_ID.cast_unsigned() })
+                    .with_tag(VisitTag::Ability { ability: *id, id: Self::TRANSPORT_ID.cast_unsigned() })
                     .with_visitor(actor_ref)
                     .map_target();
 
@@ -39,7 +47,7 @@ impl RoleStateTrait for Lich {
             },
             OnMidnightPriority::Warper => {
                 let mut transporter_visits = Visits::into_iter(midnight_variables)
-                    .with_tag(VisitTag::Role { role: Role::Lich, id: Self::WARP_ID.cast_unsigned() })
+                    .with_tag(VisitTag::Ability { ability: *id, id: Self::WARP_ID.cast_unsigned() })
                     .with_visitor(actor_ref)
                     .map_target();
 
@@ -53,7 +61,7 @@ impl RoleStateTrait for Lich {
             },
             OnMidnightPriority::Roleblock => {
                 if let Some(target_ref) = Visits::into_iter(midnight_variables)
-                    .with_tag(VisitTag::Role { role: Role::Lich, id: Self::ROLEBLOCK_ID.cast_unsigned() })
+                    .with_tag(VisitTag::Ability { ability: *id, id: Self::ROLEBLOCK_ID.cast_unsigned() })
                     .with_visitor(actor_ref)
                     .map_target()
                     .next()
@@ -64,7 +72,7 @@ impl RoleStateTrait for Lich {
             OnMidnightPriority::Convert => {
                 if priority != OnMidnightPriority::Convert {return;}
                 let Some(target) = Visits::into_iter(midnight_variables)
-                    .with_tag(VisitTag::Role { role: Role::Lich, id: Self::TAILOR_ID.cast_unsigned() })
+                    .with_tag(VisitTag::Ability { ability: *id, id: Self::TAILOR_ID.cast_unsigned() })
                     .with_visitor(actor_ref)
                     .map_target()
                     .next() else {return};
@@ -79,7 +87,7 @@ impl RoleStateTrait for Lich {
                 if game.day_number() == 1 {return}
 
                 if let Some(target) = Visits::into_iter(midnight_variables)
-                    .with_tag(VisitTag::Role { role: Role::Lich, id: Self::CHOOSE_ATTACK_ID.cast_unsigned() })
+                    .with_tag(VisitTag::Ability { ability: *id, id: Self::CHOOSE_ATTACK_ID.cast_unsigned() })
                     .with_visitor(actor_ref)
                     .map_target()
                     .next()
@@ -108,7 +116,7 @@ impl RoleStateTrait for Lich {
                 .id(ControllerID::role(actor_ref, Role::Lich, Self::CHOOSE_ABILITY_ID.cast_unsigned()))
                 .available_selection(AvailableIntegerSelection{
                     min: 2,
-                    max: 6,
+                    max: 7,
                 })
                 .default_selection(IntegerSelection(2))
                 .allow_players([actor_ref])
@@ -192,12 +200,29 @@ impl RoleStateTrait for Lich {
                             .night_typical(actor_ref)
                             .build_map()
                     ),
+                    Some(IntegerSelection(Self::POSSESS_ID)) => Some(
+                        ControllerParametersMap::builder(game)
+                            .id(ControllerID::role(actor_ref, Role::Lich, Self::POSSESS_ID.cast_unsigned()))
+                            .available_selection(AvailableTwoPlayerOptionSelection {
+                                available_first_players: PlayerReference::all_players(game)
+                                    .filter(|p|p.alive(game))
+                                    .filter(|p|*p != actor_ref)
+                                    .collect(),
+                                available_second_players: PlayerReference::all_players(game)
+                                    .filter(|p|p.alive(game))
+                                    .collect(),
+                                can_choose_duplicates: true,
+                                can_choose_none: true
+                            })
+                            .night_typical(actor_ref)
+                            .build_map()
+                    ),
                     _ => None
                 }
             ).flatten()
         ))
     }
-    fn convert_selection_to_visits(self, game: &Game, actor_ref: PlayerReference) -> Vec<Visit> {
+    fn convert_selection_to_visits(self, game: &Game, id: &AbilityID, actor_ref: PlayerReference) -> Vec<Visit> {
 
         //// TRANSPORT
         let mut out = Vec::new();
@@ -207,7 +232,7 @@ impl RoleStateTrait for Lich {
                 actor_ref,
                 ControllerID::role(actor_ref, Role::Lich, Self::TRANSPORT_ID.cast_unsigned()),
                 false,
-                VisitTag::Role { role: Role::Lich, id: Self::TRANSPORT_ID.cast_unsigned() }
+                VisitTag::Ability { ability: *id, id: Self::TRANSPORT_ID.cast_unsigned() }
             )
         );
 
@@ -218,7 +243,7 @@ impl RoleStateTrait for Lich {
             actor_ref,
             ControllerID::role(actor_ref, Role::Lich, Self::WARP_ID.cast_unsigned()),
             false,
-            VisitTag::Role { role: Role::Lich, id: Self::WARP_ID.cast_unsigned() }
+            VisitTag::Ability { ability: *id, id: Self::WARP_ID.cast_unsigned() }
             )
         );
 
@@ -229,7 +254,7 @@ impl RoleStateTrait for Lich {
                 actor_ref,
                 ControllerID::role(actor_ref, Role::Lich, Self::WARD_ID.cast_unsigned()),
                 false,
-                VisitTag::Role { role: Role::Lich, id: Self::WARD_ID.cast_unsigned() }
+                VisitTag::Ability { ability: *id, id: Self::WARD_ID.cast_unsigned() }
             ).into_iter().map(|mut v|{v.wardblock_immune = true; v}).collect()
         );
 
@@ -241,7 +266,7 @@ impl RoleStateTrait for Lich {
                     actor_ref,
                     ControllerID::role(actor_ref, Role::Lich, Self::TAILOR_ID.cast_unsigned()),
                     false,
-                    VisitTag::Role { role: Role::Lich, id: Self::TAILOR_ID.cast_unsigned() }
+                    VisitTag::Ability { ability: *id, id: Self::TAILOR_ID.cast_unsigned() }
                 )
             )
         }
@@ -253,38 +278,73 @@ impl RoleStateTrait for Lich {
                 actor_ref,
                 ControllerID::role(actor_ref, Role::Lich, Self::ROLEBLOCK_ID.cast_unsigned()),
                 false,
-                VisitTag::Role { role: Role::Lich, id: Self::ROLEBLOCK_ID.cast_unsigned() }
+                VisitTag::Ability { ability: *id, id: Self::ROLEBLOCK_ID.cast_unsigned() }
             )
         );
 
-        Lich::append_visits_from_votes(game, actor_ref, &mut out);
+        //POSSESS
+        out.append(
+            &mut common_role::convert_controller_selection_to_visits_possession(
+                game,
+                actor_ref,
+                ControllerID::role(actor_ref, Role::Lich, Self::POSSESS_ID.cast_unsigned()),
+                VisitTag::Ability { ability: AbilityID::Role { role: Role::Lich, player: actor_ref }, id: Self::POSSESS_ID.cast_unsigned() },
+                VisitTag::Ability { ability: AbilityID::Role { role: Role::Lich, player: actor_ref }, id: Self::POSSESS_INTO_ID.cast_unsigned() }
+            )
+        );
+
+        Lich::append_visits_from_votes(id, game, actor_ref, &mut out);
 
         out
+    }
+
+    fn on_visit_wardblocked(self, _game: &mut Game, id: &AbilityID, event: &OnVisitWardblocked, fold: &mut OnMidnightFold, _priority: ()) {
+        if
+            let VisitTag::Ability { ability: visit_ability, id: visit_id } = event.visit.tag &&
+            visit_id == Self::WARD_ID.cast_unsigned() &&
+            visit_ability == *id
+        {
+            return;
+        }
+        common_role::on_visit_wardblocked(id, fold, event.visit);
+    }
+    fn on_player_roleblocked(self, _game: &mut Game, id: &AbilityID, event: &OnPlayerRoleblocked, fold: &mut OnMidnightFold, _priority: ()) {
+        if id.get_player_from_role_id().is_some_and(|actor|actor == event.player) {
+            //all else is roleblock immune lmao, transport ward ward roleblock and possess. Tailor is the only non immune one
+            Visits::retain(fold, |v|
+                if let VisitTag::Ability { ability, id: visit_tag_id } = v.tag {
+                    ability != *id ||
+                    visit_tag_id != Self::TAILOR_ID.cast_unsigned()
+                }else{
+                    true
+                }
+            );
+        }
     }
 }
 
 impl Lich{
-    const CHOOSE_ATTACK_ID: i8 = 0;
+    pub const CHOOSE_ATTACK_ID: i8 = 0;
+    pub const CHOOSE_ABILITY_ID: i8 = 1;
+    pub const TRANSPORT_ID: i8 = 2;
+    pub const WARP_ID: i8 = 3;
+    pub const TAILOR_ID: i8 = 4;
+    pub const WARD_ID: i8 = 5;
+    pub const ROLEBLOCK_ID: i8 = 6;
+    pub const POSSESS_ID: i8 = 7;
 
-    const CHOOSE_ABILITY_ID: i8 = 1;
-    const TRANSPORT_ID: i8 = 2;
-    const WARP_ID: i8 = 3;
-    const TAILOR_ID: i8 = 4;
-    const WARD_ID: i8 = 5;
-    const ROLEBLOCK_ID: i8 = 6;
+    pub const TAILOR_ID_ROLE: i8 = 14;
+    pub const POSSESS_INTO_ID: i8 = 15;
 
-    const TAILOR_ID_ROLE: i8 = 14;
-    // const POSSESS_ID: u8 = 6;
-
-    fn append_visits_from_votes(game: &Game, actor_ref: PlayerReference, out: &mut Vec<Visit>) {
+    fn append_visits_from_votes(id: &AbilityID, game: &Game, actor_ref: PlayerReference, out: &mut Vec<Visit>) {
         if game.day_number() == 1 {return}
 
-        let backup_choice_visits = common_role::convert_controller_selection_to_visits_visit_tag(
+        let mut backup_choice_visits = common_role::convert_controller_selection_to_visits_visit_tag(
             game,
             actor_ref,
             ControllerID::role(actor_ref, Role::Lich, Self::CHOOSE_ATTACK_ID.cast_unsigned()),
             true,
-            VisitTag::Role { role: Role::Lich, id: Self::CHOOSE_ATTACK_ID.cast_unsigned() }
+            VisitTag::Ability { ability: *id, id: Self::CHOOSE_ATTACK_ID.cast_unsigned() }
         );
         if backup_choice_visits.is_empty() {return}
 
@@ -303,7 +363,8 @@ impl Lich{
                 *votes = (*votes).saturating_add(1);
             });
 
-        // Find max votes 
+        // Find max votes
+        let max_votes = 
         if
             let Some((_, &max_votes)) = target_vote_map.iter()
                 .max_by(|a,b|{
@@ -311,36 +372,42 @@ impl Lich{
                 })
             && max_votes >= 1
         {
-            // Create visits
-            let players_to_attack: Vec<PlayerReference> = target_vote_map
-                .into_iter()
-                .filter(|(_,v)|*v == max_votes)
-                .map(|p|p.0)
-                .filter(|p|*p!=actor_ref)
-                .collect();
-            
-            let mut visits = 
-            if players_to_attack.is_empty() {
-                backup_choice_visits
-            }else{
-                players_to_attack
-                    .into_iter()
-                    .map(|target_ref|
-                        Visit{
-                            visitor: actor_ref,
-                            target: target_ref,
-                            tag: VisitTag::Role { role: Role::Lich, id: Self::CHOOSE_ATTACK_ID.cast_unsigned() },
-                            attack: true,
-                            wardblock_immune: false,
-                            transport_immune: false,
-                            investigate_immune: false,
-                            indirect: false
-                        }
-                    )
-                    .collect()
-            };
+            max_votes
+        }else {
+            out.append(&mut backup_choice_visits);
+            return;
+        };
 
-            out.append(&mut visits);
-        }
+        // Create visits
+        let players_to_attack: Vec<PlayerReference> = target_vote_map
+            .into_iter()
+            .filter(|(_,v)|*v == max_votes)
+            .map(|p|p.0)
+            .filter(|p|*p!=actor_ref)
+            .collect();
+            
+        let mut visits = 
+        if players_to_attack.is_empty() {
+            backup_choice_visits
+        }else{
+            players_to_attack
+                .into_iter()
+                .map(|target_ref|
+                    Visit{
+                        visitor: actor_ref,
+                        target: target_ref,
+                        tag: VisitTag::Ability { ability: *id, id: Self::CHOOSE_ATTACK_ID.cast_unsigned() },
+                        attack: true,
+                        wardblock_immune: false,
+                        transport_immune: false,
+                        investigate_immune: false,
+                        indirect: false
+                    }
+                )
+                .collect()
+        };
+
+        out.append(&mut visits);
+        
     }
 }

@@ -25,7 +25,7 @@ impl RoleStateTrait for Necromancer {
             .add_grayed_out_condition(game.day_number() <= 1)
             .build_map()
     }
-    fn convert_selection_to_visits(self, game: &Game, actor_ref: PlayerReference) -> Vec<Visit> {
+    fn convert_selection_to_visits(self, game: &Game, _id: &AbilityID, actor_ref: PlayerReference) -> Vec<Visit> {
         common_role::convert_controller_selection_to_visits(
             game,
             actor_ref,
@@ -33,11 +33,15 @@ impl RoleStateTrait for Necromancer {
             true
         )
     }
-    fn on_player_roleblocked(self, game: &mut Game, midnight_variables: &mut OnMidnightFold, actor_ref: PlayerReference, player: PlayerReference, invisible: bool) {
-        common_role::on_player_roleblocked(Role::Necromancer, midnight_variables, actor_ref, player);
-        if player != actor_ref {return}
-        for seanced in Necromancer::get_seanced_targets(game, actor_ref) {
-            seanced.roleblock(game, midnight_variables, invisible);
+    fn on_player_roleblocked(self, game: &mut Game, id: &AbilityID, event: &OnPlayerRoleblocked, fold: &mut OnMidnightFold, _priority: ()) {
+        common_role::on_player_roleblocked(id, fold, event.player);
+        if
+            let AbilityID::Role { player: actor, .. } = id &&
+            *actor == event.player
+        {
+            for seanced in Necromancer::get_seanced_targets(game, *actor) {
+                seanced.roleblock(game, fold, event.invisible);
+            }
         }
     }
     fn on_any_death(self, game: &mut Game, actor_ref: PlayerReference, dead_player_ref: PlayerReference){

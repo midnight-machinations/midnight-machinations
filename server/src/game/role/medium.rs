@@ -143,11 +143,13 @@ impl RoleStateTrait for Medium {
             _=>{}
         }
     }
-    fn on_player_roleblocked(self, game: &mut Game, midnight_variables: &mut OnMidnightFold, actor_ref: PlayerReference, player: PlayerReference, invisible: bool) {
-        common_role::on_player_roleblocked(Role::Medium, midnight_variables, actor_ref, player);
-        if player != actor_ref {return}
-        if let Some(seanced) = self.seanced_target {
-            seanced.roleblock(game, midnight_variables, invisible);
+    fn on_player_roleblocked(self, game: &mut Game, id: &AbilityID, event: &OnPlayerRoleblocked, fold: &mut OnMidnightFold, _priority: ()) {
+        common_role::on_player_roleblocked(id, fold, event.player);
+        if
+            id.get_player_from_role_id().is_some_and(|actor|actor == event.player) &&
+            let Some(seanced) = self.seanced_target
+        {
+            seanced.roleblock(game, fold, event.invisible);
         }
     }
 }

@@ -63,11 +63,11 @@ impl Abilities{
     pub fn on_ability_creation(game: &mut Game, event: &OnAbilityCreation, fold: &mut OnAbilityCreationFold, priority: OnAbilityCreationPriority) {
         match priority {
             OnAbilityCreationPriority::Edit => {
-                game.abilities.abilities.insert(event.id.clone(), fold.ability.clone());
+                game.abilities.abilities.insert(event.id, fold.ability.clone());
             },
             OnAbilityCreationPriority::SetAbility => {
-                game.abilities.abilities.insert(event.id.clone(), fold.ability.clone());
-                OnAbilityEdit::new(event.id.clone(), Some(fold.ability.clone())).as_invokable().invoke(game);
+                game.abilities.abilities.insert(event.id, fold.ability.clone());
+                OnAbilityEdit::new(event.id, Some(fold.ability.clone())).as_invokable().invoke(game);
             },
             _ => {}
         }
@@ -83,7 +83,7 @@ impl Abilities{
 
         if priority == OnAbilityDeletionPriority::DeleteAbility {
             game.abilities.abilities.remove(&event.id);
-            OnAbilityEdit::new(event.id.clone(), None).as_invokable().invoke(game);
+            OnAbilityEdit::new(event.id, None).as_invokable().invoke(game);
         }   
     }
     pub fn on_role_switch(game: &mut Game, event: &OnRoleSwitch, fold: &mut (), priority: ()){

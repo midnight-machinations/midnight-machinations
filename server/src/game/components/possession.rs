@@ -1,18 +1,16 @@
 use crate::game::{
-    chat::ChatMessageVariant, 
-    controllers::{
+    Game, chat::ChatMessageVariant, components::night_visits::{NightVisitsIterator, Visits, visit::VisitTag}, controllers::{
         BooleanSelection, ControllerID, ControllerSelection, Controllers, PlayerListSelection,
         TwoPlayerOptionSelection
-    },
-    event::{on_midnight::{OnMidnightFold, OnMidnightPriority},
-    on_player_possessed::OnPlayerPossessed, Invokable as _},
-    player::PlayerReference, role::Role, Game
+    }, event::{Invokable as _, on_midnight::{OnMidnightFold, OnMidnightPriority}, on_player_possessed::OnPlayerPossessed},
+    player::PlayerReference, role::Role
 };
 
 pub struct Possession;
 impl Possession {
     pub fn possession_immune(id: &ControllerID)->bool{
         match id {
+            ControllerID::Role { role: Role::Lich, id: 7, .. } => true,
             ControllerID::Role { role, .. } => {
                 matches!(role, 
                     Role::Veteran | Role::Medium
@@ -38,33 +36,52 @@ impl Possession {
     }
     */
     pub fn possess_night_action(
-        possessor: PlayerReference,
         game: &mut Game,
-        midnight_variables: &mut OnMidnightFold,
+        fold: &mut OnMidnightFold,
+
+        tag_possess: VisitTag,
+        tag_possess_into: VisitTag,
+    ) -> Option<PlayerReference> {
+
+        let possessed = Visits::into_iter(fold)
+            .with_tag(tag_possess)
+            .map_target()
+            .next()?;
+
+        let into = Visits::into_iter(fold)
+            .with_tag(tag_possess_into)
+            .map_target()
+            .next()?;
+        
+        possessed.push_night_message(fold, ChatMessageVariant::YouWerePossessed);
+        (
+            &OnPlayerPossessed::new(
+                possessed,
+                into
+            ),
+            fold
+        ).invoke(game);
+
+        Some(possessed)
+    }
+    pub fn possess_night_action_and_steal_messages(
+        actor: PlayerReference,
+        game: &mut Game,
+        fold: &mut OnMidnightFold,
         priority: OnMidnightPriority,
+
         currently_used_player: Option<PlayerReference>,
-        role: Role,
+
+        tag_possess: VisitTag,
+        tag_possess_into: VisitTag,
     )->Option<PlayerReference>{
         match priority {
             OnMidnightPriority::Possess => {
-                let untagged_possessor_visits = possessor.role_night_visits_cloned(midnight_variables, role);
-                let possessed_visit = untagged_possessor_visits.get(0)?;
-                let possessed_into_visit = untagged_possessor_visits.get(1)?;
-                
-                possessed_visit.target.push_night_message(midnight_variables, ChatMessageVariant::YouWerePossessed);
-                (
-                    &OnPlayerPossessed::new(
-                        possessed_visit.target,
-                        possessed_into_visit.target
-                    ),
-                    midnight_variables
-                ).invoke(game);
-
-                Some(possessed_visit.target)
+                Self::possess_night_action(game, fold, tag_possess, tag_possess_into)
             },
             OnMidnightPriority::Investigative => {
                 if let Some(currently_used_player) = currently_used_player {
-                    possessor.push_night_message(midnight_variables,
+                    actor.push_night_message(fold,
                         ChatMessageVariant::TargetHasRole { role: currently_used_player.role(game) }
                     );
                 }
@@ -72,8 +89,8 @@ impl Possession {
             },
             OnMidnightPriority::StealMessages => {
                 if let Some(currently_used_player) = currently_used_player {
-                    for message in currently_used_player.night_messages(midnight_variables).clone() {
-                        possessor.push_night_message(midnight_variables,
+                    for message in currently_used_player.night_messages(fold).clone() {
+                        actor.push_night_message(fold,
                             ChatMessageVariant::TargetsMessage { message: Box::new(message.clone()) }
                         );
                     }

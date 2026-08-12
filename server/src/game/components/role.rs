@@ -22,7 +22,7 @@ impl RoleComponent{
         }
     }
     pub fn on_ability_edit(game: &mut Game, event: &OnAbilityEdit, _fold: &mut (), _priority: ()){
-        Self::send_ability_state(game, event.id.clone());
+        Self::send_ability_state(game, event.id);
     }
 
     pub fn on_ability_creation(game: &mut Game, event: &OnAbilityCreation, _fold: &mut OnAbilityCreationFold, priority: OnAbilityCreationPriority) {

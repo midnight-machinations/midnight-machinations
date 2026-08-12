@@ -570,6 +570,7 @@
     "controllerId.role.lich.4.name": "Measure",
     "controllerId.role.lich.5.name": "Ward",
     "controllerId.role.lich.6.name": "Roleblock",
+    "controllerId.role.lich.7.name": "Possess",
 
     "controllerId.role.lich.14.name": "Fit",
 
@@ -578,6 +579,7 @@
     "controllerId.role.lich.1.integer.4": "Tailor",
     "controllerId.role.lich.1.integer.5": "Ward",
     "controllerId.role.lich.1.integer.6": "Roleblock",
+    "controllerId.role.lich.1.integer.7": "Possess",
 
     "role.kira.name": "Kira",
     "role.kira.name:var.0": "Kiras",

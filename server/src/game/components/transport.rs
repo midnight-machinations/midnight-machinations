@@ -11,7 +11,7 @@ pub enum TransportPriority {
 }
 impl TransportPriority{
     fn from_visit_tag(visit_tag: &VisitTag) -> TransportPriority {
-        let VisitTag::Role{role, ..} = visit_tag else {return TransportPriority::None};
+        let VisitTag::Ability{ability: AbilityID::Role { role, .. }, ..} = visit_tag else {return TransportPriority::None};
         Self::from_role(role)
     }
     fn from_role(role: &Role) -> TransportPriority {

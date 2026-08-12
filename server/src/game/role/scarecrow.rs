@@ -33,7 +33,7 @@ impl RoleStateTrait for Scarecrow {
             
             .build_map()
     }
-    fn convert_selection_to_visits(self, game: &Game, actor_ref: PlayerReference) -> Vec<Visit> {
+    fn convert_selection_to_visits(self, game: &Game, _id: &AbilityID, actor_ref: PlayerReference) -> Vec<Visit> {
         crate::game::role::common_role::convert_controller_selection_to_visits(
             game,
             actor_ref,
@@ -41,6 +41,6 @@ impl RoleStateTrait for Scarecrow {
             false
         ).into_iter().map(|mut v|{v.wardblock_immune = true; v}).collect()
     }
-    fn on_visit_wardblocked(self, _game: &mut Game, _midnight_variables: &mut OnMidnightFold, _actor_ref: PlayerReference, _visit: Visit) {}
-    fn on_player_roleblocked(self, _game: &mut Game, _midnight_variables: &mut OnMidnightFold, _actor_ref: PlayerReference, _player: PlayerReference, _invisible: bool) {}
+    fn on_visit_wardblocked(self, _game: &mut Game, _id: &AbilityID, _event: &OnVisitWardblocked, _fold: &mut OnMidnightFold, _priority: ()) {}
+    fn on_player_roleblocked(self, _game: &mut Game, _id: &AbilityID, _event: &OnPlayerRoleblocked, _fold: &mut OnMidnightFold, _priority: ()) {}
 }

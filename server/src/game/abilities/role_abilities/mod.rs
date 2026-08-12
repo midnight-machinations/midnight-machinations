@@ -7,7 +7,7 @@ impl AbilityTrait for RoleAbility {
         if priority == OnMidnightPriority::InitializeNight { 
             Visits::add_visits(
                 midnight_variables,
-                self.0.clone().convert_selection_to_visits(game, id.get_role_actor_expect())
+                self.0.clone().convert_selection_to_visits(game, id, id.get_role_actor_expect())
             );
         }
         
@@ -53,22 +53,21 @@ impl AbilityTrait for RoleAbility {
                 }
             }
             
-            Visits::retain(fold, |v|
-                if let VisitTag::Role { role, .. } = v.tag {role != self.0.role()} else { true }
-            );
+            common_role::remove_all_visits_associated_with_ability(id, fold);
+            
             Visits::add_visits(
                 fold,
-                self.0.clone().convert_selection_to_visits(game, id.get_role_actor_expect())
+                self.0.clone().convert_selection_to_visits(game, id, id.get_role_actor_expect())
             );
         }
 
         self.0.clone().on_player_possessed(game, id, event, fold, priority);
     }
     fn on_player_roleblocked(&self, game: &mut Game, id: &AbilityID, event: &OnPlayerRoleblocked, fold: &mut OnMidnightFold, _priority: ()) {
-        self.0.clone().on_player_roleblocked(game, fold, id.get_role_actor_expect(), event.player, event.invisible)
+        self.0.clone().on_player_roleblocked(game, id, event, fold, _priority)
     }
     fn on_visit_wardblocked(&self, game: &mut Game, id: &AbilityID, event: &OnVisitWardblocked, fold: &mut OnMidnightFold, _priority: ()) {
-        self.0.clone().on_visit_wardblocked(game, fold, id.get_role_actor_expect(), event.visit)
+        self.0.clone().on_visit_wardblocked(game, id, event, fold, _priority)
     }
 
     fn controller_parameters_map(&self, game: &Game, id: &AbilityID)  -> crate::game::controllers::ControllerParametersMap {

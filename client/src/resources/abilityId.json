@@ -397,6 +397,10 @@
         "midnight": true,
         "visit": "normal"
     },
+    "role/lich/7": {
+        "midnight": true,
+        "visit": "abnormal"
+    },
     "role/lich/14": {
         "midnight": true,
         "visit": "none"

@@ -5,7 +5,7 @@ use crate::game::{
 };
 
 
-#[derive(Clone, PartialEq, Eq, PartialOrd, Ord, Debug, Serialize, Deserialize)]
+#[derive(Copy, Clone, PartialEq, Eq, PartialOrd, Ord, Debug, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 #[serde(tag = "type")]
 pub enum AbilityID{
@@ -35,7 +35,7 @@ impl AbilityID{
         Abilities::edit_ability(game, self, new);
     }
     pub fn current_used_ids(game: &Game)->Box<[Self]>{
-        game.abilities.abilities.iter().map(|(id,_)|id).cloned().collect()
+        game.abilities.abilities.iter().map(|(id,_)|id).copied().collect()
     }
 
     pub fn is_players_role(&self, player: PlayerReference, role: Role)->bool{

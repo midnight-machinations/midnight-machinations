@@ -12,7 +12,7 @@ pub(super) const DEFENSE: DefensePower = DefensePower::Armored;
 
 impl RoleStateTrait for Godfather {
     type ClientAbilityState = Godfather;
-    fn on_midnight(self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut OnMidnightFold, priority: OnMidnightPriority) {
+    fn on_midnight(self, game: &mut Game, id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut OnMidnightFold, priority: OnMidnightPriority) {
         Self::night_kill_ability(game, midnight_variables, actor_ref, priority, Role::Godfather);
 
         if priority != OnMidnightPriority::Deception {return};
@@ -21,7 +21,7 @@ impl RoleStateTrait for Godfather {
         Visits::add_visits(midnight_variables, 
             Visits::into_iter(midnight_variables)
                 .with_visitor(actor_ref)
-                .with_tag(VisitTag::Role { role: Role::Godfather, id: 1 })
+                .with_tag(VisitTag::Ability { ability: *id, id: 1 })
                 .map(|v|Visit::new_appeared(actor_ref, v.target))
         );
     }
@@ -45,7 +45,7 @@ impl RoleStateTrait for Godfather {
                 .build_map(),
         ])
     }
-    fn convert_selection_to_visits(self, game: &Game, actor_ref: PlayerReference) -> Vec<Visit> {
+    fn convert_selection_to_visits(self, game: &Game, id: &AbilityID, actor_ref: PlayerReference) -> Vec<Visit> {
         crate::game::role::common_role::convert_controller_selection_to_visits(
             game,
             actor_ref,
@@ -57,7 +57,7 @@ impl RoleStateTrait for Godfather {
                 actor_ref,
                 ControllerID::role(actor_ref, Role::Godfather, 1),
                 false,
-                VisitTag::Role { role: Role::Godfather, id: 1 }
+                VisitTag::Ability { ability: *id, id: 1 }
             ).into_iter().map(|mut v|{v.indirect=true; v.wardblock_immune=true; v.investigate_immune=true; v})
         ).collect()
     }

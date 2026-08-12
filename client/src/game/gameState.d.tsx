@@ -180,15 +180,15 @@ export type Player = {
 }
 
 export type VisitTag = 
-    {type: "role", role: Role, id: number} |
+    {type: "ability", ability: AbilityID, id: number} |
     {type: "syndicateGun"} | 
     {type: "syndicateBackupAttack"} |
     {type: "appeared"}
 
 export function translateVisitTag(visitTag: VisitTag): string{
     switch(visitTag.type){
-        case "role":
-            return translate(`role.${visitTag.role}.name`);
+        case "ability":
+            return translate(`role.${visitTag.ability.role}.name`);
         case "syndicateGun":
         case "syndicateBackupAttack":
             return translate("visitTag.syndicateGun.name");

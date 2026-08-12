@@ -23,13 +23,6 @@ impl Visits{
 }
 
 impl PlayerReference{
-    pub fn role_night_visits_cloned(&self, midnight_variables: &OnMidnightFold, role: Role) -> Vec<Visit>{
-        Visits::iter(midnight_variables)
-            .with_visitor(*self)
-            .filter(|visit| if let VisitTag::Role { role: r, id: _ } = visit.tag { r == role } else { false })
-            .copied()
-            .collect()
-    }
     /// Returns all vists where the player is the target
     pub fn all_direct_night_visitors_cloned(self, midnight_variables: &OnMidnightFold) -> impl Iterator<Item = PlayerReference> + use<> {
         Visits::into_iter(midnight_variables)
@@ -164,7 +157,14 @@ where
     fn default_role_visits(self, actor: PlayerReference, role: Role) -> impl Iterator<Item = Self::Item>{
         self
             .with_visitor(actor)
-            .filter(move |v|if let VisitTag::Role{role: r, .. } = v.borrow().tag {r == role} else {false})
+            .filter(move |v|
+                if let VisitTag::Ability{
+                    ability: AbilityID::Role { role: r, player },
+                    ..
+                } = v.borrow().tag {
+                    r == role && player == actor
+                } else {false}
+            )
     }
     fn default_target(self, actor: PlayerReference, role: Role) -> Option<PlayerReference>{
         self

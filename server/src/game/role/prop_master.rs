@@ -50,7 +50,7 @@ impl RoleStateTrait for PropMaster {
                 Visits::add_visits(midnight_variables, 
                     Visits::into_iter(midnight_variables)
                         .with_visitor(actor_ref)
-                        .with_tag(VisitTag::Role { role: Role::PropMaster, id: 1 })
+                        .with_tag(VisitTag::Ability { ability: *id, id: 1 })
                         .map(|v|Visit::new_appeared(*target, v.target))
                 );
             },
@@ -60,7 +60,7 @@ impl RoleStateTrait for PropMaster {
                 let mut visit_tags: Vec<VisitTag> = Visits::into_iter(midnight_variables)
                     .with_investigatable()
                     .with_target(target)
-                    .filter(|v|v.tag != VisitTag::Role { role: Role::PropMaster, id: 0 } || v.visitor != actor_ref)
+                    .filter(|v|v.tag != VisitTag::Ability { ability: *id, id: 0 } || v.visitor != actor_ref)
                     .map_tag()
                     .collect();
                 visit_tags.shuffle(&mut game.rng);
@@ -103,7 +103,7 @@ impl RoleStateTrait for PropMaster {
                 .build_map()
         ])
     }
-    fn convert_selection_to_visits(self, game: &Game, actor_ref: PlayerReference) -> Vec<Visit> {
+    fn convert_selection_to_visits(self, game: &Game, id: &AbilityID, actor_ref: PlayerReference) -> Vec<Visit> {
         crate::game::role::common_role::convert_controller_selection_to_visits(
             game,
             actor_ref,
@@ -115,7 +115,7 @@ impl RoleStateTrait for PropMaster {
                 actor_ref,
                 ControllerID::role(actor_ref, Role::PropMaster, 1),
                 false,
-                VisitTag::Role { role: Role::PropMaster, id: 1 }
+                VisitTag::Ability { ability: *id, id: 1 }
             ).into_iter().map(|mut v|{v.indirect=true; v.wardblock_immune=true; v.investigate_immune=true; v})
         ).collect()
     }
@@ -134,11 +134,15 @@ impl RoleStateTrait for PropMaster {
 
 
 
-    fn on_player_roleblocked(self, game: &mut Game, midnight_variables: &mut OnMidnightFold, actor_ref: PlayerReference, player: PlayerReference, invisible: bool) {
-        common_role::on_player_roleblocked(Role::PropMaster, midnight_variables, actor_ref, player);
-        if player != actor_ref {return}
-        for seanced in PropMaster::get_seanced_targets(game, actor_ref) {
-            seanced.roleblock(game, midnight_variables, invisible);
+    fn on_player_roleblocked(self, game: &mut Game, id: &AbilityID, event: &OnPlayerRoleblocked, fold: &mut OnMidnightFold, _priority: ()) {
+        common_role::on_player_roleblocked(id, fold, event.player);
+        if
+            let AbilityID::Role { player: actor, .. } = id &&
+            *actor == event.player
+        {
+            for seanced in PropMaster::get_seanced_targets(game, *actor) {
+                seanced.roleblock(game, fold, event.invisible);
+            }
         }
     }
 }

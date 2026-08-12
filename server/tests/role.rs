@@ -466,7 +466,9 @@ fn spy_basic_transported() {
 
     game.next_phase();
     
-    assert_contains!(spy.get_messages(), ChatMessageVariant::SpyBug { visit_tags: vec![VisitTag::Role{role: Role::Blackmailer, id: 0}] });
+    assert_contains!(spy.get_messages(), ChatMessageVariant::SpyBug { visit_tags: vec![
+        VisitTag::Ability{ ability: AbilityID::Role { role: Role::Blackmailer, player: blackmailer.player_ref() }, id: 0 }
+    ] });
     assert_contains!(spy.get_messages(), ChatMessageVariant::SpyMafiaVisit { players: vec![bugged.player_ref()] });
 }
 
@@ -2264,13 +2266,22 @@ fn apostle_converting_trapped_player_day_later() {
     if
         !engineer
             .get_messages_after_night(4)
-            .contains(&ChatMessageVariant::SpyBug { visit_tags: vec![VisitTag::Role { role: Role::Apostle, id: 0 }, VisitTag::Role { role: Role::Zealot, id: 0 }] })
+            .contains(&ChatMessageVariant::SpyBug { visit_tags: vec![
+                VisitTag::Ability { ability: AbilityID::Role { role: Role::Zealot, player: zealot.player_ref() }, id: 0 },
+                VisitTag::Ability { ability: AbilityID::Role { role: Role::Apostle, player: apostle.player_ref() }, id: 0 }
+            ] })
         &&
         !engineer
             .get_messages_after_night(4)
-            .contains(&ChatMessageVariant::SpyBug { visit_tags: vec![VisitTag::Role { role: Role::Zealot, id: 0 }, VisitTag::Role { role: Role::Apostle, id: 0 }] })
+            .contains(&ChatMessageVariant::SpyBug { visit_tags: vec![
+                VisitTag::Ability { ability: AbilityID::Role { role: Role::Apostle, player: apostle.player_ref() }, id: 0 },
+                VisitTag::Ability { ability: AbilityID::Role { role: Role::Zealot, player: zealot.player_ref() }, id: 0 }
+            ] })
     {
-        panic!("Engineer did not see {:?}", ChatMessageVariant::SpyBug { visit_tags: vec![VisitTag::Role { role: Role::Zealot, id: 0 }, VisitTag::Role { role: Role::Apostle, id: 0 }] });
+        panic!("Engineer did not see {:?}", ChatMessageVariant::SpyBug { visit_tags: vec![
+                VisitTag::Ability { ability: AbilityID::Role { role: Role::Apostle, player: apostle.player_ref() }, id: 0 },
+                VisitTag::Ability { ability: AbilityID::Role { role: Role::Zealot, player: zealot.player_ref() }, id: 0 }
+        ]});
     }
     assert_eq!(trapped.role_state().role(), Role::Detective);
 }
@@ -2301,7 +2312,7 @@ fn apostle_converting_trapped_player_same_day(){
     assert_eq!(trapped.role_state().role(), Role::Detective);
     assert_contains!(
         engineer.get_messages_after_night(4),
-        ChatMessageVariant::SpyBug { visit_tags: vec![VisitTag::Role { role: Role::Apostle, id: 0 }] }
+        ChatMessageVariant::SpyBug { visit_tags: vec![VisitTag::Ability { ability: AbilityID::Role { role: Role::Apostle, player: apostle.player_ref() }, id: 0 }] }
     );
 }
 
@@ -2322,7 +2333,9 @@ fn engineer_day_later(){
 
     game.next_phase();
 
-    assert_contains!(engineer.get_messages_after_night(3), ChatMessageVariant::SpyBug { visit_tags: vec![VisitTag::Role { role: Role::Mafioso, id: 0 }] });
+    assert_contains!(engineer.get_messages_after_night(3), ChatMessageVariant::SpyBug { visit_tags: vec![
+        VisitTag::Ability { ability: AbilityID::Role { role: Role::Mafioso, player: maf.player_ref() }, id: 0 }
+    ] });
     assert!(!maf.alive());
     assert!(trapped.alive());
 }
