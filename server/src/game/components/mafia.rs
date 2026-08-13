@@ -144,10 +144,8 @@ impl Mafia{
                     indirect: false
                 });
             }
-            OnMidnightPriority::Deception => {
-                if Self::syndicate_killing_players(game).into_iter().any(|p|!p.night_blocked(midnight_variables) && p.alive(game)) {
-                    Visits::retain(midnight_variables, |v|v.tag != VisitTag::SyndicateBackupAttack);
-                }
+            OnMidnightPriority::Deception if Self::syndicate_killing_players(game).into_iter().any(|p|!p.night_blocked(midnight_variables) && p.alive(game)) => {
+                Visits::retain(midnight_variables, |v|v.tag != VisitTag::SyndicateBackupAttack);
             }
             OnMidnightPriority::Kill => {
                 for backup_visit in Visits::into_iter(midnight_variables)

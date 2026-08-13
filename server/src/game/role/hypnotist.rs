@@ -42,10 +42,8 @@ impl RoleStateTrait for Hypnotist {
                 hypnotist.ensure_at_least_one_message();
                 actor_ref.edit_role_ability_helper(game, RoleState::Hypnotist(self));
             },
-            OnMidnightPriority::Roleblock => {
-                if self.roleblock {
-                    target_ref.roleblock(game, midnight_variables, false);
-                }
+            OnMidnightPriority::Roleblock if self.roleblock => {
+                target_ref.roleblock(game, midnight_variables, false);
             },
             OnMidnightPriority::Deception => {
                 if actor_ref.night_blocked(midnight_variables) {

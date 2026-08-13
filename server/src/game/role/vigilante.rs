@@ -31,15 +31,13 @@ impl RoleStateTrait for Vigilante {
     type ClientAbilityState = Vigilante;
     fn on_midnight(mut self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut OnMidnightFold, priority: OnMidnightPriority) {
         match priority{
-            OnMidnightPriority::TopPriority => {
-                if VigilanteState::WillSuicide == self.state {
-                    NightAttack::new()
-                        .attackers([actor_ref])
-                        .grave_killer(GraveKiller::Suicide)
-                        .power(AttackPower::ProtectionPiercing)
-                        .attack(game, midnight_variables, actor_ref);
-                    self.state = VigilanteState::Suicided;
-                }
+            OnMidnightPriority::TopPriority if VigilanteState::WillSuicide == self.state => {
+                NightAttack::new()
+                    .attackers([actor_ref])
+                    .grave_killer(GraveKiller::Suicide)
+                    .power(AttackPower::ProtectionPiercing)
+                    .attack(game, midnight_variables, actor_ref);
+                self.state = VigilanteState::Suicided;
             },
             OnMidnightPriority::Kill => {
                 match self.state {
