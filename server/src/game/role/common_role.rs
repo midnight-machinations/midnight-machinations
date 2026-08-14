@@ -7,7 +7,7 @@ pub fn standard_charges(game: &Game)->u8{
 }
 pub fn on_player_roleblocked(id: &AbilityID, midnight_variables: &mut OnMidnightFold, player: PlayerReference){
     if id.get_player_from_role_id().is_some_and(|actor|actor == player) {
-        remove_all_visits_associated_with_ability(id, midnight_variables);
+        remove_all_visits_associated_with_ability(*id, midnight_variables);
     }
 }
 pub fn on_visit_wardblocked(id: &AbilityID, midnight_variables: &mut OnMidnightFold, visit: Visit){
@@ -15,14 +15,14 @@ pub fn on_visit_wardblocked(id: &AbilityID, midnight_variables: &mut OnMidnightF
         let VisitTag::Ability { ability: visit_ability, .. } = visit.tag &&
         visit_ability == *id
     {
-        remove_all_visits_associated_with_ability(id, midnight_variables);
+        remove_all_visits_associated_with_ability(*id, midnight_variables);
     }
 }
 
-pub fn remove_all_visits_associated_with_ability(id: &AbilityID, midnight_variables: &mut OnMidnightFold){
-    Visits::retain(midnight_variables, |v|
+pub fn remove_all_visits_associated_with_ability(id: AbilityID, midnight_variables: &mut OnMidnightFold){
+    Visits::retain(midnight_variables, move |v|
         if let VisitTag::Ability { ability, .. } = v.tag {
-            ability != *id
+            ability != id
         }else{
             true
         }

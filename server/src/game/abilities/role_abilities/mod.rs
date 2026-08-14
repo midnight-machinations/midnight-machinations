@@ -1,13 +1,18 @@
-use crate::game::{abilities_component::{ability::Ability, ability_trait::AbilityTrait}, prelude::*};
+use crate::game::{abilities_component::{ability::Ability, ability_trait::AbilityTrait}, components::night_visits::VisitLedgerEventID, prelude::*};
 
 #[derive(Clone, Debug)]
 pub struct RoleAbility(pub RoleState);
 impl AbilityTrait for RoleAbility {
     fn on_midnight(&self, game: &mut Game, id: &AbilityID, _event: &crate::game::event::on_midnight::OnMidnight, midnight_variables: &mut crate::game::event::on_midnight::OnMidnightFold, priority: crate::game::event::on_midnight::OnMidnightPriority) {
-        if priority == OnMidnightPriority::InitializeNight { 
-            Visits::add_visits(
+        if priority == OnMidnightPriority::InitializeNight {
+            let visits = self.0.clone().convert_selection_to_visits(game, id, id.get_role_actor_expect());
+
+            Visits::push_ledger_event_id(
                 midnight_variables,
-                self.0.clone().convert_selection_to_visits(game, id, id.get_role_actor_expect())
+                VisitLedgerEventID::InitialAddVisit{ability: *id},
+                move |v| {
+                    v.extend(visits.clone())
+                }
             );
         }
         
@@ -52,12 +57,14 @@ impl AbilityTrait for RoleAbility {
                     Possession::possess_controller(game, id.clone(), event.possessed, event.possessed_into)
                 }
             }
-            
-            common_role::remove_all_visits_associated_with_ability(id, fold);
-            
-            Visits::add_visits(
+
+            let visits = self.0.clone().convert_selection_to_visits(game, id, id.get_role_actor_expect());
+            Visits::replace_ledger_event_id(
                 fold,
-                self.0.clone().convert_selection_to_visits(game, id, id.get_role_actor_expect())
+                VisitLedgerEventID::InitialAddVisit { ability: *id },
+                move |v| {
+                    v.extend(visits.clone())
+                }
             );
         }
 

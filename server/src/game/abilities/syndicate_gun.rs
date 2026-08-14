@@ -46,7 +46,10 @@ impl AbilityTrait for SyndicateGun {
         if Possession::possession_immune(&ControllerID::SyndicateGunShoot) { return; }
         Possession::possess_controller(game, ControllerID::SyndicateGunShoot, event.possessed, event.possessed_into);
 
-        Visits::retain(fold, |v|v.tag != VisitTag::SyndicateGun || Some(v.visitor) != self.player_with_gun);
+        let player_with_gun = self.player_with_gun;
+        Visits::retain(fold, move |v|
+            v.tag != VisitTag::SyndicateGun || Some(v.visitor) != player_with_gun
+        );
 
         let Some(player_with_gun) = self.player_with_gun else {return}; 
 
@@ -69,13 +72,15 @@ impl AbilityTrait for SyndicateGun {
     }
     
     fn on_visit_wardblocked(&self, _game: &mut Game, _id: &AbilityID, event: &OnVisitWardblocked, midnight_variables: &mut OnMidnightFold, _priority: ()){
-        Visits::retain(midnight_variables, |v|
-            v.tag != VisitTag::SyndicateGun || v.visitor != event.visit.visitor
+        let visitor = event.visit.visitor;
+        Visits::retain(midnight_variables, move |v|
+            v.tag != VisitTag::SyndicateGun || v.visitor != visitor
         );
     }
     fn on_player_roleblocked(&self, _game: &mut Game, _id: &AbilityID, event: &OnPlayerRoleblocked, midnight_variables: &mut OnMidnightFold, _priority: ()){
-        Visits::retain(midnight_variables, |v|
-            v.tag != VisitTag::SyndicateGun || v.visitor != event.player
+        let player = event.player;
+        Visits::retain(midnight_variables, move |v|
+            v.tag != VisitTag::SyndicateGun || v.visitor != player
         );
     }
     

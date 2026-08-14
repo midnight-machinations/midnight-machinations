@@ -43,7 +43,9 @@ impl RoleStateTrait for Polymath {
                 
                 Transport::transport(
                     midnight_variables, TransportPriority::Warper, 
-                    &vec_map![(from, to)], |_| true, false
+                    vec_map![(from, to)],
+                    |_| true,
+                    false
                 );
             }
             (OnMidnightPriority::Kill, PolymathAbilityType::Kill) => {

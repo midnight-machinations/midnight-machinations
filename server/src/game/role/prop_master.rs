@@ -52,6 +52,8 @@ impl RoleStateTrait for PropMaster {
                         .with_visitor(actor_ref)
                         .with_tag(VisitTag::Ability { ability: *id, id: 1 })
                         .map(|v|Visit::new_appeared(*target, v.target))
+                        .collect::<Vec<_>>()
+                        .into_iter()
                 );
             },
             OnMidnightPriority::Investigative => {

@@ -58,10 +58,10 @@ impl EventData for OnMidnight {
     }
 }
 
-#[derive(Default, Clone, Debug, PartialEq, Eq)]
+#[derive(Default, Clone, Debug)]
 pub struct OnMidnightFold {
     player_data: Vec<PlayerMidnightVariables>,
-    visits: Vec<Visit>,
+    visits: Visits,
 }
 
 impl OnMidnightFold {
@@ -70,7 +70,7 @@ impl OnMidnightFold {
             player_data: PlayerReference::all_players(game)
                 .map(|player_ref| PlayerMidnightVariables::new(game, player_ref))
                 .collect(),
-            visits: Vec::new()
+            visits: Visits::default()
         }
     }
 
@@ -86,10 +86,10 @@ impl OnMidnightFold {
         }
     }
 
-    pub fn visits(&self)->&Vec<Visit>{
+    pub fn visits(&self)->&Visits{
         &self.visits
     }
-    pub fn visits_mut(&mut self)->&mut Vec<Visit>{
+    pub fn visits_mut(&mut self)->&mut Visits{
         &mut self.visits
     }
 }

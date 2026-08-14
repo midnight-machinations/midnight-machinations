@@ -21,7 +21,7 @@ impl RoleStateTrait for Transporter {
         
         Transport::transport(
             midnight_variables, TransportPriority::Transporter, 
-            &vec_map![(a, b), (b, a)], |_| true, true
+            vec_map![(a, b), (b, a)], |_| true, true
         );
     }
     fn controller_parameters_map(self, game: &Game, actor_ref: PlayerReference) -> ControllerParametersMap {

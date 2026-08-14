@@ -18,12 +18,13 @@ impl RoleStateTrait for Godfather {
         if priority != OnMidnightPriority::Deception {return};
 
         actor_ref.set_night_appeared_visits(midnight_variables, true);
-        Visits::add_visits(midnight_variables, 
-            Visits::into_iter(midnight_variables)
-                .with_visitor(actor_ref)
-                .with_tag(VisitTag::Ability { ability: *id, id: 1 })
-                .map(|v|Visit::new_appeared(actor_ref, v.target))
-        );
+        let new_appeared_visits = Visits::into_iter(midnight_variables)
+            .with_visitor(actor_ref)
+            .with_tag(VisitTag::Ability { ability: *id, id: 1 })
+            .map(|v|Visit::new_appeared(actor_ref, v.target))
+            .collect::<Vec<_>>()
+            .into_iter();
+        Visits::add_visits(midnight_variables, new_appeared_visits);
     }
     fn controller_parameters_map(self, game: &Game, actor_ref: PlayerReference) -> super::ControllerParametersMap {
         ControllerParametersMap::combine([

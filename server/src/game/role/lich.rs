@@ -42,7 +42,9 @@ impl RoleStateTrait for Lich {
                 
                 Transport::transport(
                     midnight_variables, TransportPriority::Transporter,
-                    &vec_map![(a, b), (b, a)], |_| true, true
+                    vec_map![(a, b), (b, a)],
+                    |_| true,
+                    true
                 );
             },
             OnMidnightPriority::Warper => {
@@ -56,7 +58,9 @@ impl RoleStateTrait for Lich {
                 
                 Transport::transport(
                     midnight_variables, TransportPriority::Warper, 
-                    &vec_map![(first_visit, second_visit)], |_| true, true, 
+                    vec_map![(first_visit, second_visit)],
+                    |_| true,
+                    true, 
                 );
             },
             OnMidnightPriority::Roleblock => {
@@ -311,9 +315,10 @@ impl RoleStateTrait for Lich {
     fn on_player_roleblocked(self, _game: &mut Game, id: &AbilityID, event: &OnPlayerRoleblocked, fold: &mut OnMidnightFold, _priority: ()) {
         if id.get_player_from_role_id().is_some_and(|actor|actor == event.player) {
             //all else is roleblock immune lmao, transport ward ward roleblock and possess. Tailor is the only non immune one
-            Visits::retain(fold, |v|
+            let id = *id;
+            Visits::retain(fold, move |v|
                 if let VisitTag::Ability { ability, id: visit_tag_id } = v.tag {
-                    ability != *id ||
+                    ability != id ||
                     visit_tag_id != Self::TAILOR_ID.cast_unsigned()
                 }else{
                     true

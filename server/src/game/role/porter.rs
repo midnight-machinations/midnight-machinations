@@ -20,7 +20,7 @@ impl RoleStateTrait for Porter {
         
         Transport::transport(
             midnight_variables, TransportPriority::Warper, 
-            &vec_map![(from, to)], |_| true, true
+            vec_map![(from, to)], |_| true, true
         );
     }
     fn controller_parameters_map(self, game: &Game, actor_ref: PlayerReference) -> super::ControllerParametersMap {

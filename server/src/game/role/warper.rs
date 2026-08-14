@@ -19,7 +19,7 @@ impl RoleStateTrait for Warper {
         
         Transport::transport(
             midnight_variables, TransportPriority::Warper, 
-            &vec_map![(first_visit, second_visit)], |_| true, true, 
+            vec_map![(first_visit, second_visit)], |_| true, true, 
         );
         
         actor_ref.reveal_players_role(game, first_visit);
