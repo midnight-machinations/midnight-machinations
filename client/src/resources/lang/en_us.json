@@ -1836,7 +1836,7 @@
 
     "wiki.article.role.doctor.reminder": "At night, select a player to guard from attacks. You can guard yourself once per game.",
     "wiki.article.role.doctor.lore": "The doctor has such talent that they can cure any physical ailment conceivable. Accoding the Doctor, the influx of \"hypochondriacs\" means its only worth showing up when the patient is on deaths doorstep. But it's nomatter, the doctor never fails.",
-    "wiki.article.role.doctor.guide": "- At night, select a player to guard\n    - Guarding a player gives the protected defense, so most attacks can't kill them.\n- You can select yourself to guard yourself once per game.",
+    "wiki.article.role.doctor.guide": "- At night, select a player to guard\n    - Guarding a player gives them protected defense, so most attacks can't kill them.\n- You can select yourself to guard yourself once per game.",
     "wiki.article.role.doctor.abilities":"* Visit a player to guard for the night",
     "wiki.article.role.doctor.attributes":"* If you visit yourself, you use the self guard charge, and you can't select yourself again",
     "wiki.article.role.doctor.extra":"",
