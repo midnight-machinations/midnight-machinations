@@ -81,9 +81,18 @@ impl RoleStateTrait for Martyr {
             )
             .build_map()
     }
-    fn convert_selection_to_visits(self, game: &Game, actor_ref: PlayerReference) -> Vec<Visit> {
+    fn convert_selection_to_visits(self, game: &Game, id: &AbilityID, actor_ref: PlayerReference) -> Vec<Visit> {
         let Some(BooleanSelection(true)) = ControllerID::role(actor_ref, Role::Martyr, 0).get_boolean_selection(game) else {return Vec::new()};
-        vec![Visit::new_role(actor_ref, actor_ref, true, Role::Martyr, 0)]
+        vec![Visit {
+            visitor: actor_ref,
+            target: actor_ref,
+            tag: VisitTag::Ability{ability: *id, id: 0},
+            attack: true,
+            wardblock_immune: false,
+            transport_immune: false,
+            investigate_immune: false,
+            indirect: false
+        }]
     }
     fn on_phase_start(self,  game: &mut Game, actor_ref: PlayerReference, phase: PhaseType) {
         if phase == PhaseType::Obituary && matches!(self.state, MartyrState::StillPlaying {..}) {

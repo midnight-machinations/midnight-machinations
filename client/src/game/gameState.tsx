@@ -1,7 +1,7 @@
 import ListMap from "../ListMap"
 import GameState, { LobbyClient, LobbyState, PhaseTimes, Player, LobbyClientID, PlayerGameState, UnsafeString } from "./gameState.d"
 import { ModifierID, ModifierState } from "./modifiers"
-import { Role, RoleState } from "./roleState.d"
+import { AbilityID, abilityIdToString, Role, RoleState } from "./roleState.d"
 
 
 export function defaultPhaseTimes(): PhaseTimes {
@@ -83,6 +83,7 @@ export function createPlayerGameState(): PlayerGameState {
         
         myRole: "detective" as Role,
         roleStates: new ListMap<Role, RoleState>(),
+        abilityStates: new ListMap<AbilityID, RoleState>([],(a,b)=>abilityIdToString(a) === abilityIdToString(b)),
 
         savedControllers: [],
 

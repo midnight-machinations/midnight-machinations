@@ -29,7 +29,7 @@ pub enum PhaseType {
     Night,
     Recess
 }
-#[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq)]
+#[derive(Clone, Debug, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 #[serde(tag = "type")]
 pub enum PhaseState {
@@ -52,6 +52,12 @@ pub enum PhaseState {
     Dusk,
     Night,
     Recess
+}
+impl Eq for PhaseState {}
+impl PartialEq for PhaseState {
+    fn eq(&self, other: &Self) -> bool {
+        core::mem::discriminant(self) == core::mem::discriminant(other)
+    }
 }
 impl PartialOrd for PhaseState{
     fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {

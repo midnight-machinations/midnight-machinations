@@ -40,11 +40,26 @@ impl RoleStateTrait for Bodyguard {
             OnMidnightPriority::Bodyguard => {
                 let Some(target_ref) = Visits::default_target(midnight_variables, actor_ref, Role::Bodyguard) else {return};
                 if actor_ref == target_ref {return}
+
+                let players_previously_visiting_me = Visits::into_iter(midnight_variables)
+                    .with_target(actor_ref)
+                    .with_direct()
+                    .map_visitor()
+                    .collect::<Vec<_>>();
                 
-                let redirected_player_refs = Transport::transport(
+                Transport::transport(
                     midnight_variables, TransportPriority::Bodyguard,
-                    &vec_map![(target_ref, actor_ref)], |v| v.attack, false, 
-                ).iter().filter(|v|!v.indirect).map(|v| v.visitor).collect();
+                    vec_map![(target_ref, actor_ref)],
+                    |v| v.attack,
+                    false, 
+                );
+
+                let redirected_player_refs = Visits::into_iter(midnight_variables)
+                    .with_target(actor_ref)
+                    .with_direct()
+                    .map_visitor()
+                    .filter(|new|!players_previously_visiting_me.contains(new))
+                    .collect();
 
                 actor_ref.edit_role_ability_helper(game, Bodyguard {
                     redirected_player_refs,
@@ -85,7 +100,7 @@ impl RoleStateTrait for Bodyguard {
             .add_grayed_out_condition(game.day_number() <= 1)
             .build_map()
     }
-    fn convert_selection_to_visits(self, game: &Game, actor_ref: PlayerReference) -> Vec<Visit> {
+    fn convert_selection_to_visits(self, game: &Game, _id: &AbilityID, actor_ref: PlayerReference) -> Vec<Visit> {
         crate::game::role::common_role::convert_controller_selection_to_visits(
             game,
             actor_ref,

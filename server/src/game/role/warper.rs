@@ -13,13 +13,13 @@ impl RoleStateTrait for Warper {
     fn on_midnight(self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut OnMidnightFold, priority: OnMidnightPriority) {
         if priority != OnMidnightPriority::Warper {return;}
     
-        let mut transporter_visits = Visits::into_iter(midnight_variables).default_role_visits(actor_ref, Role::Warper);
-        let Some(first_visit) = transporter_visits.next().map(|v| v.target) else {return};
-        let Some(second_visit) = transporter_visits.next().map(|v| v.target) else {return};
+        let mut transporter_visits = Visits::into_iter(midnight_variables).default_targets(actor_ref, Role::Warper);
+        let Some(first_visit) = transporter_visits.next() else {return};
+        let Some(second_visit) = transporter_visits.next() else {return};
         
         Transport::transport(
             midnight_variables, TransportPriority::Warper, 
-            &vec_map![(first_visit, second_visit)], |_| true, true, 
+            vec_map![(first_visit, second_visit)], |_| true, true, 
         );
         
         actor_ref.reveal_players_role(game, first_visit);
@@ -44,7 +44,7 @@ impl RoleStateTrait for Warper {
             .night_typical(actor_ref)
             .build_map()
     }
-    fn convert_selection_to_visits(self, game: &Game, actor_ref: PlayerReference) -> Vec<Visit> {
+    fn convert_selection_to_visits(self, game: &Game, _id: &AbilityID, actor_ref: PlayerReference) -> Vec<Visit> {
         common_role::convert_controller_selection_to_visits(
             game,
             actor_ref,
@@ -52,5 +52,5 @@ impl RoleStateTrait for Warper {
             false
         )
     }
-    fn on_player_roleblocked(self, _game: &mut Game, _midnight_variables: &mut OnMidnightFold, _actor_ref: PlayerReference, _player: PlayerReference, _invisible: bool) {}
+    fn on_player_roleblocked(self, _game: &mut Game, _id: &AbilityID, _event: &OnPlayerRoleblocked, _fold: &mut OnMidnightFold, _priority: ()) {}
 }

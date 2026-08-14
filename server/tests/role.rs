@@ -466,7 +466,9 @@ fn spy_basic_transported() {
 
     game.next_phase();
     
-    assert_contains!(spy.get_messages(), ChatMessageVariant::SpyBug { visit_tags: vec![VisitTag::Role{role: Role::Blackmailer, id: 0}] });
+    assert_contains!(spy.get_messages(), ChatMessageVariant::SpyBug { visit_tags: vec![
+        VisitTag::Ability{ ability: AbilityID::Role { role: Role::Blackmailer, player: blackmailer.player_ref() }, id: 0 }
+    ] });
     assert_contains!(spy.get_messages(), ChatMessageVariant::SpyMafiaVisit { players: vec![bugged.player_ref()] });
 }
 
@@ -700,7 +702,7 @@ fn cop_does_not_kill_framed_player(){
         crus: Cop,
         protected_player: Jester,
         townie: Detective,
-        framer: Framer,
+        framer: PropMaster,
         mafioso: Mafioso
     );
 
@@ -765,7 +767,7 @@ fn ambusher_does_not_kill_framed_player(){
         ambusher: Ambusher,
         protected_player: Jester,
         townie: Detective,
-        framer: Framer,
+        framer: PropMaster,
         mafioso: Mafioso
     );
 
@@ -864,7 +866,7 @@ fn veteran_does_not_kill_framed_player(){
     kit::scenario!(game in Night 2 where
         vet: Veteran,
         townie: Detective,
-        framer: Framer,
+        framer: PropMaster,
         mafioso: Mafioso
     );
 
@@ -1171,30 +1173,6 @@ fn drunk_suspicious_aura() {
     assert_contains!(
         detective.get_messages(),
         ChatMessageVariant::DetectiveResult { suspicious: true }
-    );
-}
-
-#[test]
-fn framer_second_visit_erased() {
-    kit::scenario!(game in Night 1 where
-        framer: Framer,
-        lookout: Lookout,
-        v: Villager
-    );
-
-    framer.send_ability_input_player_list_typical(lookout);
-    framer.send_ability_input_player_list(v, 1);
-    lookout.send_ability_input_player_list_typical(v);
-
-    game.skip_to(Obituary, 2);
-
-    assert_not_contains!(
-        lookout.get_messages(),
-        ChatMessageVariant::LookoutResult { players: vec![framer.player_ref()] }
-    );
-    assert_contains!(
-        lookout.get_messages(),
-        ChatMessageVariant::LookoutResult { players: vec![lookout.player_ref()] }
     );
 }
 
@@ -2288,13 +2266,22 @@ fn apostle_converting_trapped_player_day_later() {
     if
         !engineer
             .get_messages_after_night(4)
-            .contains(&ChatMessageVariant::SpyBug { visit_tags: vec![VisitTag::Role { role: Role::Apostle, id: 0 }, VisitTag::Role { role: Role::Zealot, id: 0 }] })
+            .contains(&ChatMessageVariant::SpyBug { visit_tags: vec![
+                VisitTag::Ability { ability: AbilityID::Role { role: Role::Zealot, player: zealot.player_ref() }, id: 0 },
+                VisitTag::Ability { ability: AbilityID::Role { role: Role::Apostle, player: apostle.player_ref() }, id: 0 }
+            ] })
         &&
         !engineer
             .get_messages_after_night(4)
-            .contains(&ChatMessageVariant::SpyBug { visit_tags: vec![VisitTag::Role { role: Role::Zealot, id: 0 }, VisitTag::Role { role: Role::Apostle, id: 0 }] })
+            .contains(&ChatMessageVariant::SpyBug { visit_tags: vec![
+                VisitTag::Ability { ability: AbilityID::Role { role: Role::Apostle, player: apostle.player_ref() }, id: 0 },
+                VisitTag::Ability { ability: AbilityID::Role { role: Role::Zealot, player: zealot.player_ref() }, id: 0 }
+            ] })
     {
-        panic!("Engineer did not see {:?}", ChatMessageVariant::SpyBug { visit_tags: vec![VisitTag::Role { role: Role::Zealot, id: 0 }, VisitTag::Role { role: Role::Apostle, id: 0 }] });
+        panic!("Engineer did not see {:?}", ChatMessageVariant::SpyBug { visit_tags: vec![
+                VisitTag::Ability { ability: AbilityID::Role { role: Role::Apostle, player: apostle.player_ref() }, id: 0 },
+                VisitTag::Ability { ability: AbilityID::Role { role: Role::Zealot, player: zealot.player_ref() }, id: 0 }
+        ]});
     }
     assert_eq!(trapped.role_state().role(), Role::Detective);
 }
@@ -2325,7 +2312,7 @@ fn apostle_converting_trapped_player_same_day(){
     assert_eq!(trapped.role_state().role(), Role::Detective);
     assert_contains!(
         engineer.get_messages_after_night(4),
-        ChatMessageVariant::SpyBug { visit_tags: vec![VisitTag::Role { role: Role::Apostle, id: 0 }] }
+        ChatMessageVariant::SpyBug { visit_tags: vec![VisitTag::Ability { ability: AbilityID::Role { role: Role::Apostle, player: apostle.player_ref() }, id: 0 }] }
     );
 }
 
@@ -2346,7 +2333,9 @@ fn engineer_day_later(){
 
     game.next_phase();
 
-    assert_contains!(engineer.get_messages_after_night(3), ChatMessageVariant::SpyBug { visit_tags: vec![VisitTag::Role { role: Role::Mafioso, id: 0 }] });
+    assert_contains!(engineer.get_messages_after_night(3), ChatMessageVariant::SpyBug { visit_tags: vec![
+        VisitTag::Ability { ability: AbilityID::Role { role: Role::Mafioso, player: maf.player_ref() }, id: 0 }
+    ] });
     assert!(!maf.alive());
     assert!(trapped.alive());
 }

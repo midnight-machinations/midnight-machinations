@@ -34,10 +34,13 @@ impl RoleStateTrait for Werewolf {
                         Tags::has_tag(game, TagSetID::WerewolfTracked(actor_ref), target)
                     )
                 {
-                    Visits::iter_mut(midnight_variables)
-                        .default_role_visit(actor_ref, Role::Werewolf)
-                        .into_iter()
-                        .for_each(|v|v.attack = true);
+                    Visits::push_ledger_event(midnight_variables, move |visits|
+                        visits
+                            .iter_mut()
+                            .default_role_visit(actor_ref, Role::Werewolf)
+                            .into_iter()
+                            .for_each(|v|v.attack = true)
+                    )
                 }
             }
             OnMidnightPriority::Kill => {
@@ -107,7 +110,7 @@ impl RoleStateTrait for Werewolf {
                 .build_map()
         ])
     }
-    fn convert_selection_to_visits(self, game: &Game, actor_ref: PlayerReference) -> Vec<Visit> {
+    fn convert_selection_to_visits(self, game: &Game, _id: &AbilityID, actor_ref: PlayerReference) -> Vec<Visit> {
         crate::game::role::common_role::convert_controller_selection_to_visits(
             game,
             actor_ref,

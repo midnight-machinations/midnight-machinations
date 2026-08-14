@@ -16,13 +16,18 @@ import ChatElement, { encodeString } from "../../../../components/ChatMessage";
     
 
 export default function RoleSpecificSection(): ReactElement{
-    const roleStates = usePlayerState(
-        playerState => [...playerState.roleStates.values()],
-        ["yourRoleState", "tick"]
+    // const roleStates = usePlayerState(
+    //     playerState => [...playerState.roleStates.values()],
+    //     ["yourRoleState", "tick"]
+    // )!;
+
+    const abilityStates = usePlayerState(
+        playerState => [...playerState.abilityStates.values()],
+        ["abilityState", "tick"]
     )!;
 
     return <>{
-        roleStates.map((roleState)=><OneRoleSpecificSection roleState={roleState}/>)
+        abilityStates.map((abilityState)=><OneRoleSpecificSection roleState={abilityState}/>)
     }</>;
 }
 function OneRoleSpecificSection(props: Readonly<{

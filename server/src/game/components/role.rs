@@ -16,29 +16,13 @@ impl RoleComponent{
     }
     pub fn set_role_without_ability(player: PlayerReference, game: &mut Game, role: Role){
         *game.role.get_mut(player) = role;
-        Self::send_your_role_state(game, player, player.role_state_ability(game));
+        player.send_packet(game, ToClientPacket::YourRole {role});
         if role.should_inform_player_of_assignment() {
             player.add_private_chat_message(game, ChatMessageVariant::RoleAssignment{role});
         }
     }
     pub fn on_ability_edit(game: &mut Game, event: &OnAbilityEdit, _fold: &mut (), _priority: ()){
-        let AbilityID::Role{player, ..} = event.id else {return};
-        let Some(ref new_ability) = event.new_ability else {return};
-        Self::send_your_role_state(game, player, new_ability);
-    }
-
-    fn send_your_role_state(game: &Game, player: PlayerReference, new_ability: &Ability){
-        let Ability::Role(RoleAbility(new_role_data)) = new_ability else {return};
-
-        if !new_role_data.role().should_inform_player_of_assignment() {return}
-        player.send_packet(game, ToClientPacket::YourRoleState {
-            role_state: new_role_data.clone().get_client_ability_state(game, player)
-        });
-
-        if player.role(game) != new_role_data.role() {return}
-        player.send_packet(game, ToClientPacket::YourRole {
-            role: new_role_data.role()
-        });
+        Self::send_ability_state(game, event.id);
     }
 
     pub fn on_ability_creation(game: &mut Game, event: &OnAbilityCreation, _fold: &mut OnAbilityCreationFold, priority: OnAbilityCreationPriority) {
@@ -46,6 +30,17 @@ impl RoleComponent{
         if priority != OnAbilityCreationPriority::SideEffect {return}
         if !role.should_inform_player_of_assignment() {return}
         player.add_private_chat_message(game, ChatMessageVariant::GainedRoleAbility{role: *role});
+    }
+
+    pub fn send_ability_state(game: &Game, id: AbilityID){
+        let AbilityID::Role{player, ..} = id else {return};
+        let Some(Ability::Role(RoleAbility(new_role_data))) = id.get_ability(game) else {return};
+
+        if !new_role_data.role().should_inform_player_of_assignment() {return}
+        player.send_packet(game, ToClientPacket::AbilityState {
+            ability_id: id,
+            ability_state: new_role_data.clone().get_client_ability_state(game, player)
+        });
     }
 }
 impl PlayerReference{

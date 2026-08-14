@@ -31,15 +31,13 @@ impl RoleStateTrait for Vigilante {
     type ClientAbilityState = Vigilante;
     fn on_midnight(mut self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut OnMidnightFold, priority: OnMidnightPriority) {
         match priority{
-            OnMidnightPriority::TopPriority => {
-                if VigilanteState::WillSuicide == self.state {
-                    NightAttack::new()
-                        .attackers([actor_ref])
-                        .grave_killer(GraveKiller::Suicide)
-                        .power(AttackPower::ProtectionPiercing)
-                        .attack(game, midnight_variables, actor_ref);
-                    self.state = VigilanteState::Suicided;
-                }
+            OnMidnightPriority::TopPriority if VigilanteState::WillSuicide == self.state => {
+                NightAttack::new()
+                    .attackers([actor_ref])
+                    .grave_killer(GraveKiller::Suicide)
+                    .power(AttackPower::ProtectionPiercing)
+                    .attack(game, midnight_variables, actor_ref);
+                self.state = VigilanteState::Suicided;
             },
             OnMidnightPriority::Kill => {
                 match self.state {
@@ -81,7 +79,7 @@ impl RoleStateTrait for Vigilante {
             .add_grayed_out_condition(!can_shoot)
             .build_map()
     }
-    fn convert_selection_to_visits(self, game: &Game, actor_ref: PlayerReference) -> Vec<Visit> {
+    fn convert_selection_to_visits(self, game: &Game, _id: &AbilityID, actor_ref: PlayerReference) -> Vec<Visit> {
         crate::game::role::common_role::convert_controller_selection_to_visits(
             game,
             actor_ref,

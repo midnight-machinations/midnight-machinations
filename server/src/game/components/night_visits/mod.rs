@@ -1,35 +1,113 @@
 pub mod visit;
-use std::borrow::Borrow;
+use std::{borrow::Borrow, fmt::Debug};
 use crate::game::prelude::*;
 use visit::*;
 
-
-#[derive(Default)]
-pub struct Visits;
-
-
-impl Visits{
-    pub fn add_visit(midnight_variables: &mut OnMidnightFold, visits: Visit){
-        midnight_variables.visits_mut().push(visits);
-    }
-    pub fn add_visits(midnight_variables: &mut OnMidnightFold, visits: impl IntoIterator<Item = Visit>){
-        midnight_variables.visits_mut().extend(visits);
-    }
-
-    //Only keeps elements where f is true
-    pub fn retain(midnight_variables: &mut OnMidnightFold, f: impl FnMut(&Visit) -> bool){
-        midnight_variables.visits_mut().retain(f);
+#[derive(Default, Clone)]
+pub struct Visits{
+    ledger: Vec<VisitLedgerEvent>
+}
+impl Debug for Visits{
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        let visits = self.calculate_visits();
+        f.debug_struct("Visits").field("ledger", &visits).finish()
     }
 }
 
-impl PlayerReference{
-    pub fn role_night_visits_cloned(&self, midnight_variables: &OnMidnightFold, role: Role) -> Vec<Visit>{
-        Visits::iter(midnight_variables)
-            .with_visitor(*self)
-            .filter(|visit| if let VisitTag::Role { role: r, id: _ } = visit.tag { r == role } else { false })
-            .copied()
-            .collect()
+
+trait VisitLedgerEventGenerator: Fn(&mut Vec<Visit>) + Send {
+    fn clone_box(&self) -> Box<dyn VisitLedgerEventGenerator>;
+}
+impl<T> VisitLedgerEventGenerator for T where T: Fn(&mut Vec<Visit>) + Clone + Send + 'static {
+    fn clone_box(&self) -> Box<dyn VisitLedgerEventGenerator> {
+        Box::new(self.clone())
+    } 
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum VisitLedgerEventID{
+    InitialAddVisit{ability: AbilityID}
+}
+pub struct VisitLedgerEvent{
+    id: Option<VisitLedgerEventID>,
+    generator: Box<dyn VisitLedgerEventGenerator>,
+}
+impl Clone for VisitLedgerEvent {
+    fn clone(&self) -> Self {
+        Self { id: self.id, generator: self.generator.clone_box() }
     }
+}
+impl VisitLedgerEvent{
+    fn new<T: VisitLedgerEventGenerator + 'static>(generator: T)->Self{
+        Self { id: None, generator: Box::new(generator) }
+    }
+    fn new_id<T: VisitLedgerEventGenerator + 'static>(id: VisitLedgerEventID, generator: T)->Self{
+        Self { id: Some(id), generator: Box::new(generator) }
+    }
+}
+
+
+
+impl Visits{
+    pub fn replace_ledger_event_id<T: Fn(&mut Vec<Visit>) + Send + Clone + 'static>(
+        midnight_variables: &mut OnMidnightFold,
+        id: VisitLedgerEventID,
+        generator: T
+    ){
+        midnight_variables
+            .visits_mut()
+            .ledger
+            .iter_mut()
+            .filter(|event|event.id == Some(id))
+            .for_each(|event|*event = VisitLedgerEvent::new_id(id, generator.clone()));
+    }
+    pub fn push_ledger_event_id<T: Fn(&mut Vec<Visit>) + Send + Clone + 'static>(midnight_variables: &mut OnMidnightFold, id: VisitLedgerEventID, generator: T){
+        midnight_variables.visits_mut().ledger.push(VisitLedgerEvent::new_id(id, generator));
+    }
+    pub fn push_ledger_event<T: Fn(&mut Vec<Visit>) + Send + Clone + 'static>(midnight_variables: &mut OnMidnightFold, generator: T){
+        midnight_variables.visits_mut().ledger.push(VisitLedgerEvent::new(generator));
+    }
+    pub fn add_visit(midnight_variables: &mut OnMidnightFold, visits: Visit){
+        midnight_variables.visits_mut().ledger.push(VisitLedgerEvent::new(move |v|
+            v.push(visits)
+        ));
+    }
+    pub fn add_visits(midnight_variables: &mut OnMidnightFold, visits: impl Iterator<Item = Visit> + Clone + Send + 'static){
+        midnight_variables.visits_mut().ledger.push(VisitLedgerEvent::new(move |v|
+            v.extend(visits.clone())
+        ));
+    }
+
+    //Only keeps elements where f is true
+    pub fn retain(midnight_variables: &mut OnMidnightFold, f: impl FnMut(&Visit) -> bool + Clone + Send + 'static){
+        midnight_variables.visits_mut().ledger.push(VisitLedgerEvent::new(move |v|
+            v.retain(f.clone())
+        ));
+    }
+
+    fn calculate_visits(&self)->Vec<Visit> {
+        let mut out = Vec::new();
+        for event in self.ledger.iter() {
+            (event.generator)(&mut out);
+        }
+        out
+    }
+
+
+    pub fn into_iter(midnight_variables: &OnMidnightFold) -> impl Iterator<Item = Visit> + use<> {
+        midnight_variables.visits().calculate_visits().into_iter()
+    }
+    // pub fn iter(midnight_variables: &OnMidnightFold) -> impl Iterator<Item = &Visit> {
+    //     midnight_variables.visits().iter()
+    // }
+    // pub fn iter_mut(midnight_variables: &mut OnMidnightFold) -> impl Iterator<Item = &mut Visit>{
+    //     midnight_variables.visits_mut().ledger.push(VisitLedgerEvent::new(move |v|
+    //         v.iter_mut()
+    //     ));
+    // }
+}
+
+impl PlayerReference{
     /// Returns all vists where the player is the target
     pub fn all_direct_night_visitors_cloned(self, midnight_variables: &OnMidnightFold) -> impl Iterator<Item = PlayerReference> + use<> {
         Visits::into_iter(midnight_variables)
@@ -55,17 +133,6 @@ impl PlayerReference{
 
 
 impl Visits{
-    pub fn into_iter(midnight_variables: &OnMidnightFold) -> impl Iterator<Item = Visit> + use<> {
-        midnight_variables.visits().clone().into_iter()
-    }
-    pub fn iter(midnight_variables: &OnMidnightFold) -> impl Iterator<Item = &Visit> {
-        midnight_variables.visits().iter()
-    }
-    pub fn iter_mut(midnight_variables: &mut OnMidnightFold) -> impl Iterator<Item = &mut Visit>{
-        midnight_variables.visits_mut().iter_mut()
-    }
-
-
     pub fn default_target(midnight_variables: &OnMidnightFold, actor: PlayerReference, role: Role) -> Option<PlayerReference>{
         Self::into_iter(midnight_variables)
             .default_target(actor, role)
@@ -164,7 +231,14 @@ where
     fn default_role_visits(self, actor: PlayerReference, role: Role) -> impl Iterator<Item = Self::Item>{
         self
             .with_visitor(actor)
-            .filter(move |v|if let VisitTag::Role{role: r, .. } = v.borrow().tag {r == role} else {false})
+            .filter(move |v|
+                if let VisitTag::Ability{
+                    ability: AbilityID::Role { role: r, player },
+                    ..
+                } = v.borrow().tag {
+                    r == role && player == actor
+                } else {false}
+            )
     }
     fn default_target(self, actor: PlayerReference, role: Role) -> Option<PlayerReference>{
         self

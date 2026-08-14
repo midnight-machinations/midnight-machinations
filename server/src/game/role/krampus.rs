@@ -101,7 +101,7 @@ impl RoleStateTrait for Krampus {
             
             .build_map()
     }
-    fn convert_selection_to_visits(self, game: &Game, actor_ref: PlayerReference) -> Vec<Visit> {
+    fn convert_selection_to_visits(self, game: &Game, _id: &AbilityID, actor_ref: PlayerReference) -> Vec<Visit> {
         let ability_index = match self.ability {
             KrampusAbility::Kill => 0,
             KrampusAbility::DoNothing => 1

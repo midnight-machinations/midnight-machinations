@@ -31,7 +31,7 @@ impl Abilities{
         
         for (player, o) in assignments.iter(){
             let id = AbilityID::Role { role: o.role, player: *player };
-            abilities.insert(id.clone(), Ability::Role(RoleAbility(o.role.default_state())));
+            abilities.insert(id, Ability::Role(RoleAbility(o.role.default_state())));
         }
         abilities.sort();
         Self{abilities}
@@ -55,22 +55,22 @@ impl Abilities{
     }
     pub fn new_ability(game: &mut Game, id: &AbilityID, new: impl Into<Ability>){
         Self::delete_ability(game, id);
-        OnAbilityCreation::new(id.clone(), new.into()).as_invokable().invoke(game);
+        OnAbilityCreation::new(*id, new.into()).as_invokable().invoke(game);
         game.abilities.abilities.sort();
     }
     pub fn delete_ability(game: &mut Game, id: &AbilityID){
         if game.abilities.abilities.contains(id) {
-            OnAbilityDeletion::new(id.clone()).as_invokable().invoke(game);
+            OnAbilityDeletion::new(*id).as_invokable().invoke(game);
         }
     }
     pub fn edit_ability(game: &mut Game, id: &AbilityID, new: impl Into<Ability>){
         let ability = new.into();
-        game.abilities.abilities.insert(id.clone(), ability.clone());
-        OnAbilityEdit::new(id.clone(), Some(ability)).as_invokable().invoke(game);
+        game.abilities.abilities.insert(*id, ability.clone());
+        OnAbilityEdit::new(*id, Some(ability)).as_invokable().invoke(game);
     }
 
     pub fn ids(game: &Game)->Box<[AbilityID]>{
-        game.abilities.abilities.iter().map(|(id,_)|id).cloned().collect()
+        game.abilities.abilities.iter().map(|(id,_)|id).copied().collect()
     }
 }
 impl AbilityID{

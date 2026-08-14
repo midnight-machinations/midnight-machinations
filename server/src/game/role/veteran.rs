@@ -75,7 +75,7 @@ impl RoleStateTrait for Veteran {
             game,
             Veteran { alerts_remaining: self.alerts_remaining, alerting_tonight: false });   
     }
-    fn on_player_roleblocked(self, _game: &mut Game, _midnight_variables: &mut OnMidnightFold, _actor_ref: PlayerReference, _player: PlayerReference, _invisible: bool) {}
+    fn on_player_roleblocked(self, _game: &mut Game, _id: &AbilityID, _event: &OnPlayerRoleblocked, _fold: &mut OnMidnightFold, _priority: ()) {}
 }
 impl GetClientAbilityState<ClientRoleState> for Veteran {
     fn get_client_ability_state(self, _game: &Game, _actor_ref: PlayerReference) -> ClientRoleState {

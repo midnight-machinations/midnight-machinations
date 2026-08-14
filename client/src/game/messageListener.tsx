@@ -465,9 +465,9 @@ export default function messageListener(packet: ToClientPacket){
                 GAME_MANAGER.state.clientState.myRole = packet.role;
             }
         break;
-        case "yourRoleState":
+        case "abilityState":
             if(GAME_MANAGER.state.stateType === "game" && GAME_MANAGER.state.clientState.type === "player"){
-                GAME_MANAGER.state.clientState.roleStates.insert(packet.roleState.type, packet.roleState);
+                GAME_MANAGER.state.clientState.abilityStates.insert(packet.abilityId, packet.abilityState);
             }
         break;
         case "yourVoteFastForwardPhase":

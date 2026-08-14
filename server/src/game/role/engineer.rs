@@ -62,7 +62,7 @@ pub(super) const DEFENSE: DefensePower = DefensePower::None;
 
 impl RoleStateTrait for Engineer {
     type ClientAbilityState = ClientRoleState;
-    fn on_midnight(self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut OnMidnightFold, priority: OnMidnightPriority) {
+    fn on_midnight(self, game: &mut Game, id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut OnMidnightFold, priority: OnMidnightPriority) {
         match priority {
             OnMidnightPriority::Heal => {
                 //upgrade state
@@ -115,7 +115,7 @@ impl RoleStateTrait for Engineer {
                         Visits::into_iter(midnight_variables)
                             .with_target(target)
                             .with_direct()
-                            .filter(|v|v.tag != VisitTag::Role { role: Role::Engineer, id: 0 } || v.visitor != actor_ref)
+                            .filter(|v|v.tag != VisitTag::Ability { ability: *id, id: 0 } || v.visitor != actor_ref)
                             .count() > 0
                     )
                 {
@@ -123,7 +123,7 @@ impl RoleStateTrait for Engineer {
                     let mut visit_tags: Vec<VisitTag> = Visits::into_iter(midnight_variables)
                         .with_investigatable()
                         .with_target(target)
-                        .filter(|v|v.tag != VisitTag::Role { role: Role::Engineer, id: 0 } || v.visitor != actor_ref)
+                        .filter(|v|v.tag != VisitTag::Ability { ability: *id, id: 0 } || v.visitor != actor_ref)
                         .map_tag()
                         .collect();
                     visit_tags.shuffle(&mut game.rng);
@@ -161,7 +161,7 @@ impl RoleStateTrait for Engineer {
             }
         }
     }
-    fn convert_selection_to_visits(self, game: &Game, actor_ref: PlayerReference) -> Vec<Visit> {
+    fn convert_selection_to_visits(self, game: &Game, _id: &AbilityID, actor_ref: PlayerReference) -> Vec<Visit> {
         common_role::convert_controller_selection_to_visits(
             game,
             actor_ref, 

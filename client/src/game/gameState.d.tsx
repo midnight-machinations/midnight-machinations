@@ -1,6 +1,6 @@
 import { Grave, GraveIndex } from "./graveState";
 import { ChatMessage, ChatMessageIndex } from "../components/ChatMessage";
-import { Role, RoleState } from "./roleState.d";
+import { AbilityID, Role, RoleState } from "./roleState.d";
 import { RoleList } from "./roleListState.d";
 import { LobbyPreviewData } from "./packet";
 import { ChatFilter } from "../menu/game/gameScreenContent/ChatMenu";
@@ -111,6 +111,7 @@ export type PlayerGameState = {
     
     myRole: Role,
     roleStates: ListMap<Role, RoleState>,
+    abilityStates: ListMap<AbilityID, RoleState>,
 
     notes: UnsafeString[],
     crossedOutOutlines: number[],
@@ -179,15 +180,15 @@ export type Player = {
 }
 
 export type VisitTag = 
-    {type: "role", role: Role, id: number} |
+    {type: "ability", ability: AbilityID, id: number} |
     {type: "syndicateGun"} | 
     {type: "syndicateBackupAttack"} |
     {type: "appeared"}
 
 export function translateVisitTag(visitTag: VisitTag): string{
     switch(visitTag.type){
-        case "role":
-            return translate(`role.${visitTag.role}.name`);
+        case "ability":
+            return translate(`role.${visitTag.ability.role}.name`);
         case "syndicateGun":
         case "syndicateBackupAttack":
             return translate("visitTag.syndicateGun.name");
@@ -229,7 +230,7 @@ export function translateWinCondition(winCondition: WinCondition): string {
         } else if (winCondition.winIfAny.length === 4 && 
             (["mafia", "fiends", "cult", "politician"] as const).every(team => winCondition.winIfAny.includes(team))
         ) {
-            return translate(`winCondition.evil`)
+            return translate(`winCondition.minion`)
         } else {
             return winCondition.winIfAny.map(conclusion => translateConclusion(conclusion)).join(` ${translate('union')} `)
         }

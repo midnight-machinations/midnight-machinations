@@ -46,7 +46,7 @@ const ChatElement = React.memo((
 ) => {
     const roleStates = usePlayerState(
         playerState => playerState.roleStates,
-        ["yourRoleState"]
+        ["abilityState"]
     );
     const canCopyPaste = props.noLinks !== true && (props.canCopyPaste ?? canCopyPasteChatMessages(roleStates));
     const forwardButton = usePlayerState(
@@ -426,7 +426,7 @@ function useContainsMention(message: ChatMessageVariant & { text: string | Unsaf
                 return undefined
             }
         },
-        ["yourPlayerIndex", "yourRole", "yourRoleState"]
+        ["yourPlayerIndex", "yourRole", "abilityState"]
     );
 
     const text = encodeString(replaceMentions(message.text, playerNames, roleList));
@@ -761,6 +761,12 @@ export function translateChatMessage(
             return translate("chatMessage.gossipResult." + (message.enemies ? "enemies" : "none"));
         case "tallyClerkResult":
             return translate("chatMessage.tallyClerkResult", message.evilCount);
+        case "dreamcatcherTarget":
+            return translate("chatMessage.dreamcatcherTarget", encodeString(playerNames[message.target]));
+        case "dreamcatcherResult":
+            return encodeString(replaceMentions(translate("chatMessage.dreamcatcherResult",
+                message.result.map((role)=>translate("role."+role+".name")).join(", ")
+            ), playerNames, roleList))
         case "lookoutResult":
             return translate("chatMessage.lookoutResult", playerListToString(message.players, playerNames));
         case "spyMafiaVisit":
@@ -1127,6 +1133,12 @@ export type ChatMessageVariant = {
     type: "auditorResult",
     outlineIndex: number,
     result: AuditorResult,
+} | {
+    type: "dreamcatcherResult",
+    result: Role[],
+} | {
+    type: "dreamcatcherTarget",
+    target: PlayerIndex,
 } | {
     type: "engineerVisitorsRole",
     role: Role

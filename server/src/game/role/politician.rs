@@ -91,10 +91,8 @@ impl RoleStateTrait for Politician {
                     self.state = PoliticianState::FinalNomination;
                     actor_ref.edit_role_ability_helper(game, self);
                 },
-                PhaseType::Dusk => {
-                    if self.state == PoliticianState::FinalNomination {
-                        Politician::kill_all(game);
-                    }
+                PhaseType::Dusk if self.state == PoliticianState::FinalNomination => {
+                    Politician::kill_all(game);
                 },
                 _ => {}
             }

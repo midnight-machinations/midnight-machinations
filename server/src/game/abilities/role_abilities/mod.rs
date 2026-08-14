@@ -1,13 +1,18 @@
-use crate::game::{abilities_component::{ability::Ability, ability_trait::AbilityTrait}, prelude::*};
+use crate::game::{abilities_component::{ability::Ability, ability_trait::AbilityTrait}, components::night_visits::VisitLedgerEventID, prelude::*};
 
 #[derive(Clone, Debug)]
 pub struct RoleAbility(pub RoleState);
 impl AbilityTrait for RoleAbility {
     fn on_midnight(&self, game: &mut Game, id: &AbilityID, _event: &crate::game::event::on_midnight::OnMidnight, midnight_variables: &mut crate::game::event::on_midnight::OnMidnightFold, priority: crate::game::event::on_midnight::OnMidnightPriority) {
-        if priority == OnMidnightPriority::InitializeNight { 
-            Visits::add_visits(
+        if priority == OnMidnightPriority::InitializeNight {
+            let visits = self.0.clone().convert_selection_to_visits(game, id, id.get_role_actor_expect());
+
+            Visits::push_ledger_event_id(
                 midnight_variables,
-                self.0.clone().convert_selection_to_visits(game, id.get_role_actor_expect())
+                VisitLedgerEventID::InitialAddVisit{ability: *id},
+                move |v| {
+                    v.extend(visits.clone())
+                }
             );
         }
         
@@ -52,27 +57,34 @@ impl AbilityTrait for RoleAbility {
                     Possession::possess_controller(game, id.clone(), event.possessed, event.possessed_into)
                 }
             }
-            
-            Visits::retain(fold, |v|
-                if let VisitTag::Role { role, .. } = v.tag {role != self.0.role()} else { true }
-            );
-            Visits::add_visits(
+
+            let visits = self.0.clone().convert_selection_to_visits(game, id, id.get_role_actor_expect());
+            Visits::replace_ledger_event_id(
                 fold,
-                self.0.clone().convert_selection_to_visits(game, id.get_role_actor_expect())
+                VisitLedgerEventID::InitialAddVisit { ability: *id },
+                move |v| {
+                    v.extend(visits.clone())
+                }
             );
         }
 
         self.0.clone().on_player_possessed(game, id, event, fold, priority);
     }
     fn on_player_roleblocked(&self, game: &mut Game, id: &AbilityID, event: &OnPlayerRoleblocked, fold: &mut OnMidnightFold, _priority: ()) {
-        self.0.clone().on_player_roleblocked(game, fold, id.get_role_actor_expect(), event.player, event.invisible)
+        self.0.clone().on_player_roleblocked(game, id, event, fold, _priority)
     }
     fn on_visit_wardblocked(&self, game: &mut Game, id: &AbilityID, event: &OnVisitWardblocked, fold: &mut OnMidnightFold, _priority: ()) {
-        self.0.clone().on_visit_wardblocked(game, fold, id.get_role_actor_expect(), event.visit)
+        self.0.clone().on_visit_wardblocked(game, id, event, fold, _priority)
     }
 
     fn controller_parameters_map(&self, game: &Game, id: &AbilityID)  -> crate::game::controllers::ControllerParametersMap {
         self.0.clone().controller_parameters_map(game, id.get_role_actor_expect())
+    }
+    fn send_player_chat_group_map(&self, game: &Game, id: &AbilityID)  -> PlayerChatGroupMap {
+        self.0.clone().send_player_chat_group_map(game, id.get_role_actor_expect())
+    }
+    fn receive_player_chat_group_map(&self, game: &Game, id: &AbilityID)  -> PlayerChatGroupMap {
+        self.0.clone().receive_player_chat_group_map(game, id.get_role_actor_expect())
     }
 }
 impl AbilityID {

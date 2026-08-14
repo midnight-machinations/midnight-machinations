@@ -1,10 +1,15 @@
+use serde::{Deserialize, Serialize};
+
 use crate::game::{
     abilities_component::{ability::Ability, Abilities}, player::PlayerReference, role::Role, Game
 };
 
 
-#[derive(Clone, PartialEq, Eq, PartialOrd, Ord, Debug)]
+#[derive(Copy, Clone, PartialEq, Eq, PartialOrd, Ord, Debug, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+#[serde(tag = "type")]
 pub enum AbilityID{
+    #[serde(rename_all = "camelCase")]
     Role{role: Role, player: PlayerReference},
     Pitchfork,
     SyndicateGun,
@@ -30,7 +35,7 @@ impl AbilityID{
         Abilities::edit_ability(game, self, new);
     }
     pub fn current_used_ids(game: &Game)->Box<[Self]>{
-        game.abilities.abilities.iter().map(|(id,_)|id).cloned().collect()
+        game.abilities.abilities.iter().map(|(id,_)|id).copied().collect()
     }
 
     pub fn is_players_role(&self, player: PlayerReference, role: Role)->bool{

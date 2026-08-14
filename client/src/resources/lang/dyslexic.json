@@ -820,7 +820,7 @@
     "day.icon": "\u2600\ufe0f",
     "winCondition.loser": "Srleo",
     "winCondition.draw": "Mdogrw-near",
-    "winCondition.evil": "Veil",
+    "winCondition.minion": "Veil",
     "winCondition.independent": "Tpnnedeinde",
     "chatMessage.whisper": "\\0 dsiprheew ot \\1: \\2",
     "chatMessage.broadcastWhisper": "\\0 dsiprheew ot \\1.",

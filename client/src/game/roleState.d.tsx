@@ -6,6 +6,27 @@ import { AuditorResult } from "../menu/game/gameScreenContent/AbilityMenu/RoleSp
 import { TwoRoleOptionSelection } from "./controllerInput";
 import { Hypnotist } from "../menu/game/gameScreenContent/AbilityMenu/RoleSpecificMenus/HypnotistMenu";
 
+
+export type AbilityID = {
+    type: "role",
+    role: Role,
+    player: PlayerIndex
+}
+// | {
+//     type: "pitchfork"
+// } | {
+//     type: "syndicateGun"
+// } | {
+//     type: "pawnConvert"
+// }
+
+export function abilityIdToString(id: AbilityID): string {
+    switch(id.type){
+        case "role":
+            return `role/${id.role}/${id.player}`;
+    }
+}
+
 export type RoleState = {
     type: "jailor",
     executionsRemaining: number,
@@ -43,6 +64,8 @@ export type RoleState = {
     type: "auditor",
     previouslyGivenResults: [number, AuditorResult][]
 } | {
+    type: "dreamcatcher"
+} | {
     type: "snoop",
 } | {
     type: "gossip",
@@ -79,6 +102,8 @@ export type RoleState = {
     state: {type:"notLoaded"} | {type:"shotTownie"} | {type: "loaded"}
 } | {
     type: "deputy"
+} | {
+    type: "slayer"
 } | {
     type: "rabblerouser"
 } | {
@@ -142,6 +167,8 @@ export type RoleState = {
     convertRole: Role,
 } | {
     type: "framer"
+} | {
+    type: "propMaster"
 } | {
     type: "necromancer"
 } | {
@@ -229,7 +256,6 @@ export type SingleRoleJsonData = {
     aura: null | "innocent" | "suspicious",
     maxCount: null | number,
     canWriteDeathNote: boolean,
-    canBeConvertedTo: Role[],
     chatMessages: ChatMessageVariant[] 
 }
 export type RoleJsonData = Record<Role, SingleRoleJsonData>

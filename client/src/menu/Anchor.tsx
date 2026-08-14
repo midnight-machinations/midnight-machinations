@@ -438,6 +438,8 @@ function ErrorCard(props: Readonly<{
 
 export type AudioFile = 
     "church_bell.mp3" | 
+    "night_bell.mp3" |
+    "gavel.mp3" | 
     "alarm.mp3" | 
     "vine_boom.mp3" | 
     "sniper_shot.mp3" | 
@@ -463,6 +465,13 @@ export function chatMessageToAudio(msg: ChatMessage): AudioFilePath | null {
             break;
         case "deputyKilled": 
             file = "sniper_shot.mp3";
+            break;
+        case "phaseChange":
+            if(msg.variant.phase.type === "testimony"){
+                file = "gavel.mp3"
+            }else if(msg.variant.phase.type === "night") {
+                file = "night_bell.mp3"
+            }
             break;
     }
 

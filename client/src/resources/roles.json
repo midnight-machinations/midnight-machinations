@@ -6,7 +6,6 @@
         "aura": null,
         "maxCount": 1,
         "canWriteDeathNote": false,
-        "canBeConvertedTo": [],
         "chatMessages":[
             {"type": "jailedTarget","playerIndex": 7},
             {"type": "jailedSomeone","playerIndex": 7},
@@ -40,7 +39,6 @@
         "aura": null,
         "maxCount": null,
         "canWriteDeathNote": false,
-        "canBeConvertedTo": [],
         "chatMessages":[]
     },
     "drunk": {
@@ -50,7 +48,6 @@
         "aura": null,
         "maxCount": null,
         "canWriteDeathNote": false,
-        "canBeConvertedTo": [],
         "chatMessages":[]
     },
     "detective": {
@@ -60,7 +57,6 @@
         "aura": null,
         "maxCount": null,
         "canWriteDeathNote": false,
-        "canBeConvertedTo": [],
         "chatMessages":[
             {"type":"detectiveResult","suspicious":true},
             {"type":"detectiveResult","suspicious":false}
@@ -73,7 +69,6 @@
         "aura": null,
         "maxCount": null,
         "canWriteDeathNote": false,
-        "canBeConvertedTo": [],
         "chatMessages":[
             {"type": "lookoutResult", "players": [9,15,4]},
             {"type": "lookoutResult", "players": []}
@@ -86,7 +81,6 @@
         "aura": null,
         "maxCount": null,
         "canWriteDeathNote": false,
-        "canBeConvertedTo": [],
         "chatMessages":[
             {"type": "seerResult", "enemies": true},
             {"type": "seerResult", "enemies": false}
@@ -99,7 +93,6 @@
         "aura": null,
         "maxCount": null,
         "canWriteDeathNote": false,
-        "canBeConvertedTo": [],
         "chatMessages":[
             {"type": "trackerResult", "players": [20]},
             {"type": "trackerResult", "players": []}
@@ -112,7 +105,6 @@
         "aura": null,
         "maxCount": null,
         "canWriteDeathNote": false,
-        "canBeConvertedTo": [],
         "chatMessages":[
             {"type": "psychicEvil", "first": 19, "second": 27},
             {"type": "psychicGood", "player": 24},
@@ -126,7 +118,6 @@
         "aura": null,
         "maxCount": null,
         "canWriteDeathNote": false,
-        "canBeConvertedTo": [],
         "chatMessages":[
             {"type": "spyBug", "visitTags": []},
             {"type": "spyBug", "visitTags": [{"type":"role", "role":"framer", "id":0}]},
@@ -142,7 +133,6 @@
         "aura": null,
         "maxCount": null,
         "canWriteDeathNote": false,
-        "canBeConvertedTo": [],
         "chatMessages":[
             {"type": "auditorResult", "outlineIndex": 15, "result": ["godfather","jester","apostle","escort"]},
             {"type": "auditorResult", "outlineIndex": 10, "result": ["vigilante"]},
@@ -157,7 +147,6 @@
         "aura": null,
         "maxCount": null,
         "canWriteDeathNote": false,
-        "canBeConvertedTo": [],
         "chatMessages":[
             {"type": "snoopResult", "townie":true},
             {"type": "snoopResult", "townie":false}
@@ -170,7 +159,6 @@
         "aura": null,
         "maxCount": null,
         "canWriteDeathNote": false,
-        "canBeConvertedTo": [],
         "chatMessages":[
             {"type": "gossipResult", "enemies":true},
             {"type": "gossipResult", "enemies":false}
@@ -183,11 +171,23 @@
         "aura": null,
         "maxCount": null,
         "canWriteDeathNote": false,
-        "canBeConvertedTo": [],
         "chatMessages":[
             {"type": "tallyClerkResult", "evilCount": 2},
             {"type": "tallyClerkResult", "evilCount": 1},
             {"type": "tallyClerkResult", "evilCount": 0}
+        ]
+    },
+    "dreamcatcher": {
+        "mainRoleSet": "town",
+        "roleSets": ["town", "townCommon", "townInvestigative"],
+        "armor": false,
+        "aura": null,
+        "maxCount": null,
+        "canWriteDeathNote": false,
+        "chatMessages":[
+            {"type": "dreamcatcherResult", "result": ["godfather","jester","apostle","escort"]},
+            {"type": "dreamcatcherResult", "result": ["godfather"]},
+            {"type": "dreamcatcherTarget", "target": 7}
         ]
     },
     "doctor": {
@@ -197,7 +197,6 @@
         "aura": null,
         "maxCount": null,
         "canWriteDeathNote": false,
-        "canBeConvertedTo": [],
         "chatMessages":[
             {"type": "youGuardedSomeone"},
             {"type": "youWereGuarded"},
@@ -211,7 +210,6 @@
         "aura": null,
         "maxCount": null,
         "canWriteDeathNote": false,
-        "canBeConvertedTo": [],
         "chatMessages":[
             {"type": "youAttackedSomeone"},
             {"type": "youGuardedSomeone"},
@@ -227,7 +225,6 @@
         "aura": null,
         "maxCount": 1,
         "canWriteDeathNote": false,
-        "canBeConvertedTo": [],
         "chatMessages":[
             {"type": "wardblocked"}
         ]
@@ -239,7 +236,6 @@
         "aura": null,
         "maxCount": null,
         "canWriteDeathNote": false,
-        "canBeConvertedTo": [],
         "chatMessages":[
             {"type": "trapState", "state":{"type":"dismantled"}},
             {"type": "trapState", "state":{"type":"ready"}},
@@ -264,7 +260,6 @@
         "aura": null,
         "maxCount": null,
         "canWriteDeathNote": false,
-        "canBeConvertedTo": [],
         "chatMessages":[
             {"type": "youGuardedSomeone"},
             {"type": "youWereGuarded"},
@@ -279,7 +274,6 @@
         "aura": null,
         "maxCount": null,
         "canWriteDeathNote": false,
-        "canBeConvertedTo": [],
         "chatMessages":[
             {"type": "fragileVestBreak", "playerWithVest": 29, "defense":"protected"},
             {"type": "youGuardedSomeone"},
@@ -295,7 +289,6 @@
         "aura": null,
         "maxCount": null,
         "canWriteDeathNote": false,
-        "canBeConvertedTo": [],
         "chatMessages":[]
     },
     "vigilante": {
@@ -305,7 +298,6 @@
         "aura": null,
         "maxCount": null,
         "canWriteDeathNote": false,
-        "canBeConvertedTo": [],
         "chatMessages":[
             {"type": "someoneSurvivedYourAttack"},
             {"type": "youAttackedSomeone"},
@@ -320,7 +312,6 @@
         "aura": null,
         "maxCount": 1,
         "canWriteDeathNote": false,
-        "canBeConvertedTo": [],
         "chatMessages":[
             {"type": "someoneSurvivedYourAttack"},
             {"type": "youAttackedSomeone"},
@@ -335,7 +326,6 @@
         "aura": null,
         "maxCount": 1,
         "canWriteDeathNote": false,
-        "canBeConvertedTo": [],
         "chatMessages":[
             {"type": "someoneSurvivedYourAttack"},
             {"type": "youAttackedSomeone"},
@@ -350,7 +340,22 @@
         "aura": null,
         "maxCount": 1,
         "canWriteDeathNote": false,
-        "canBeConvertedTo": [],
+        "chatMessages":[
+            {"type": "deputyKilled", "shot": 11},
+            {"type": "deputyShotYou"},
+            {"type": "someoneSurvivedYourAttack"},
+            {"type": "youAttackedSomeone"},
+            {"type": "youWereAttacked"},
+            {"type": "youSurvivedAttack"}
+        ]
+    },
+    "slayer": {
+        "mainRoleSet": "town",
+        "roleSets": ["town", "townCommon", "townKilling"],
+        "armor": false,
+        "aura": null,
+        "maxCount": null,
+        "canWriteDeathNote": false,
         "chatMessages":[
             {"type": "deputyKilled", "shot": 11},
             {"type": "deputyShotYou"},
@@ -367,7 +372,6 @@
         "aura": null,
         "maxCount": null,
         "canWriteDeathNote": false,
-        "canBeConvertedTo": [],
         "chatMessages":[
             {"type": "someoneSurvivedYourAttack"},
             {"type": "youAttackedSomeone"}
@@ -380,7 +384,6 @@
         "aura": null,
         "maxCount": null,
         "canWriteDeathNote": false,
-        "canBeConvertedTo": [],
         "chatMessages":[
             {"type": "roleBlocked"}
         ]
@@ -392,7 +395,6 @@
         "aura": null,
         "maxCount": null,
         "canWriteDeathNote": false,
-        "canBeConvertedTo": [],
         "chatMessages":[
             {"type": "roleAssignment", "role":"mayor"},
             {"type": "gainedRoleAbility", "role":"mayor"}
@@ -405,7 +407,6 @@
         "aura": null,
         "maxCount": null,
         "canWriteDeathNote": false,
-        "canBeConvertedTo": [],
         "chatMessages":[
             {"type": "roleBlocked"}
         ]
@@ -417,7 +418,6 @@
         "aura": null,
         "maxCount": null,
         "canWriteDeathNote": false,
-        "canBeConvertedTo": [],
         "chatMessages":[
             {"type": "mediumExists"},
             {"type": "mediumHauntStarted", "medium":32, "player":10},
@@ -451,7 +451,6 @@
         "aura": null,
         "maxCount": 1,
         "canWriteDeathNote": false,
-        "canBeConvertedTo": [],
         "chatMessages":[
             {"type": "playerEnfranchised","playerIndex": 3},
             {"type": "invalidWhisper"}
@@ -464,7 +463,6 @@
         "aura": null,
         "maxCount": 1,
         "canWriteDeathNote": false,
-        "canBeConvertedTo": [],
         "chatMessages":[
             {"type": "playerEnfranchised","playerIndex": 3},
             {"type": "invalidWhisper"}
@@ -477,7 +475,6 @@
         "aura": null,
         "maxCount": 1,
         "canWriteDeathNote": false,
-        "canBeConvertedTo": [],
         "chatMessages":[
             {"type": "playerIsBeingInterviewed","playerIndex": 1},
             {
@@ -512,7 +509,6 @@
         "aura": null,
         "maxCount": null,
         "canWriteDeathNote": false,
-        "canBeConvertedTo": [],
         "chatMessages":[
             {"type": "transported"}
         ]
@@ -524,7 +520,6 @@
         "aura": null,
         "maxCount": null,
         "canWriteDeathNote": false,
-        "canBeConvertedTo": [],
         "chatMessages":[
             {"type": "transported"}
         ]
@@ -536,7 +531,6 @@
         "aura": null,
         "maxCount": null,
         "canWriteDeathNote": false,
-        "canBeConvertedTo": [],
         "chatMessages":[
             {"type": "polymathSnoopResult", "inno": true},
             {"type": "polymathSnoopResult", "inno": false},
@@ -552,7 +546,6 @@
         "aura": "innocent",
         "maxCount": 1,
         "canWriteDeathNote": false,
-        "canBeConvertedTo": [],
         "chatMessages":[
             {"type": "godfatherBackup", "backup": null},
             {"type": "godfatherBackup", "backup": 26},
@@ -568,7 +561,6 @@
         "aura": null,
         "maxCount": 1,
         "canWriteDeathNote": false,
-        "canBeConvertedTo": [],
         "chatMessages":[
             {"type": "godfatherBackup", "backup": null},
             {"type": "godfatherBackup", "backup": 26},
@@ -584,7 +576,6 @@
         "aura": null,
         "maxCount": 1,
         "canWriteDeathNote": false,
-        "canBeConvertedTo": ["godfather"],
         "chatMessages":[
             {"type": "godfatherBackup", "backup": null},
             {"type": "godfatherBackup", "backup": 26},
@@ -606,7 +597,6 @@
         "aura": null,
         "maxCount": 1,
         "canWriteDeathNote": false,
-        "canBeConvertedTo": ["godfather"],
         "chatMessages":[
             {"type": "godfatherBackup", "backup": null},
             {"type": "godfatherBackup", "backup": 26},
@@ -622,7 +612,6 @@
         "aura": null,
         "maxCount": 1,
         "canWriteDeathNote": false,
-        "canBeConvertedTo": ["godfather"],
         "chatMessages":[
             {"type": "godfatherBackup", "backup": null},
             {"type": "godfatherBackup", "backup": 26},
@@ -637,7 +626,6 @@
         "aura": null,
         "maxCount": 1,
         "canWriteDeathNote": false,
-        "canBeConvertedTo": ["godfather"],
         "chatMessages":[
             {"type": "someoneSurvivedYourAttack"}
         ]
@@ -649,7 +637,6 @@
         "aura": null,
         "maxCount": null,
         "canWriteDeathNote": false,
-        "canBeConvertedTo": [],
         "chatMessages":[
             {"type": "roleAssignment", "role":"mafiaKillingWildcard"},
             {"type": "wildcardConvertFailed", "role": "godfather"}
@@ -662,7 +649,6 @@
         "aura": null,
         "maxCount": null,
         "canWriteDeathNote": false,
-        "canBeConvertedTo": ["godfather"],
         "chatMessages":[]
     },
     "maverick": {
@@ -672,7 +658,6 @@
         "aura": null,
         "maxCount": null,
         "canWriteDeathNote": false,
-        "canBeConvertedTo": [],
         "chatMessages":[
             {"type": "someoneSurvivedYourAttack"},
             {"type": "youSurvivedAttack"},
@@ -686,7 +671,6 @@
         "aura": null,
         "maxCount": 1,
         "canWriteDeathNote": false,
-        "canBeConvertedTo": ["godfather"],
         "chatMessages":[
             {"type": "roleBlocked"},
             {"type": "youSurvivedAttack"},
@@ -703,7 +687,6 @@
         "aura": null,
         "maxCount": 1,
         "canWriteDeathNote": false,
-        "canBeConvertedTo": ["godfather"],
         "chatMessages":[
             {"type": "roleBlocked"}
         ]
@@ -715,7 +698,6 @@
         "aura": null,
         "maxCount": 1,
         "canWriteDeathNote": false,
-        "canBeConvertedTo": ["godfather"],
         "chatMessages":[
             {"type":"silenced"},
             {"type":"witnessesCalled", "playerOnTrial":51, "witnesses":[1,2,3]},
@@ -729,7 +711,6 @@
         "aura": null,
         "maxCount": 1,
         "canWriteDeathNote": false,
-        "canBeConvertedTo": ["godfather"],
         "chatMessages":[
             {"type":"brained"},
             {"type":"witnessesCalled", "playerOnTrial":51, "witnesses":[1,2,3]},
@@ -743,7 +724,6 @@
         "aura": null,
         "maxCount": 1,
         "canWriteDeathNote": false,
-        "canBeConvertedTo": ["godfather"],
         "chatMessages":[
             {"type": "informantResult", "player": 10, "role": "arsonist", "visitedBy":[31,32], "visited":[33], "winCondition": { 
                 "type": "gameConclusionReached",
@@ -769,7 +749,6 @@
         "aura": null,
         "maxCount": 1,
         "canWriteDeathNote": false,
-        "canBeConvertedTo": ["godfather"],
         "chatMessages":[
             {
                 "type": "playerRoleAndAlibi",
@@ -786,11 +765,26 @@
         "aura": null,
         "maxCount": 1,
         "canWriteDeathNote": false,
-        "canBeConvertedTo": ["godfather"],
         "chatMessages":[
             {"type": "detectiveResult","suspicious": true},
             {"type": "snoopResult", "townie": false},
             {"type": "seerResult", "enemies": true}
+        ]
+    },
+    "propMaster": {
+        "mainRoleSet": "mafia",
+        "roleSets": ["mafia", "mafiaSupport"],
+        "armor": false,
+        "aura": null,
+        "maxCount": 1,
+        "canWriteDeathNote": false,
+        "chatMessages":[
+            {"type": "detectiveResult","suspicious": true},
+            {"type": "snoopResult", "townie": false},
+            {"type": "seerResult", "enemies": true},
+            {"type": "spyBug", "visitTags": []},
+            {"type": "spyBug", "visitTags": [{"type":"role", "role":"tracker", "id":0}]},
+            {"type": "spyBug", "visitTags": [{"type":"role", "role":"forger", "id":0},{"type":"syndicateGun"}]}
         ]
     },
     "disguiser": {
@@ -800,7 +794,6 @@
         "aura": "innocent",
         "maxCount": 1,
         "canWriteDeathNote": false,
-        "canBeConvertedTo": ["godfather"],
         "chatMessages":[]
     },
     "reeducator": {
@@ -810,7 +803,6 @@
         "aura": null,
         "maxCount": 1,
         "canWriteDeathNote": false,
-        "canBeConvertedTo": ["godfather"],
         "chatMessages":[
             {"type": "yourConvertFailed"},
             {"type": "roleBlocked"}
@@ -823,7 +815,6 @@
         "aura": null,
         "maxCount": 1,
         "canWriteDeathNote": false,
-        "canBeConvertedTo": ["godfather"],
         "chatMessages":[
             {
                 "type": "playerRoleAndAlibi",
@@ -840,7 +831,6 @@
         "aura": null,
         "maxCount": 1,
         "canWriteDeathNote": false,
-        "canBeConvertedTo": ["godfather"],
         "chatMessages":[
             {"type": "someoneSurvivedYourAttack"},
             {"type": "youAttackedSomeone"},
@@ -854,7 +844,6 @@
         "aura": null,
         "maxCount": null,
         "canWriteDeathNote": false,
-        "canBeConvertedTo": [],
         "chatMessages":[
             {"type": "roleAssignment", "role":"framer"},
             {"type": "wildcardConvertFailed", "role": "framer"}
@@ -867,7 +856,6 @@
         "aura": null,
         "maxCount": null,
         "canWriteDeathNote": true,
-        "canBeConvertedTo": [],
         "chatMessages":[]
     },
     "revolutionary": {
@@ -877,7 +865,6 @@
         "aura": null,
         "maxCount": null,
         "canWriteDeathNote": false,
-        "canBeConvertedTo": ["jester"],
         "chatMessages":[
             {"type": "revolutionaryWon"},
             {"type": "youSurvivedAttack"}
@@ -890,7 +877,6 @@
         "aura": null,
         "maxCount": null,
         "canWriteDeathNote": true,
-        "canBeConvertedTo": ["jester"],
         "chatMessages":[
             {"type": "politicianCountdownStarted"},
             {"type": "playerEnfranchised","playerIndex": 1},
@@ -905,7 +891,6 @@
         "aura": null,
         "maxCount": null,
         "canWriteDeathNote": true,
-        "canBeConvertedTo": [],
         "chatMessages":[
             {"type": "mercenaryHits", "roles":["vigilante", "godfather", "witch"]},
             {"type": "mercenaryHits", "roles":["informant", "arsonist"]},
@@ -921,7 +906,6 @@
         "aura": null,
         "maxCount": null,
         "canWriteDeathNote": false,
-        "canBeConvertedTo": [],
         "chatMessages":[
             {"type": "chronokaiserSpeedUp", "percent": "60"},
             {"type": "chronokaiserSpeedUp", "percent": "120"},
@@ -935,7 +919,6 @@
         "aura": null,
         "maxCount": 1,
         "canWriteDeathNote": false,
-        "canBeConvertedTo": [],
         "chatMessages":[
             {"type": "nextSantaAbility", "ability": "nice"},
             {"type": "nextSantaAbility", "ability": "naughty"},
@@ -951,7 +934,6 @@
         "aura": null,
         "maxCount": null,
         "canWriteDeathNote": true,
-        "canBeConvertedTo": [],
         "chatMessages":[
             {"type": "nextKrampusAbility", "ability": "kill"},
             {"type": "youAttackedSomeone"},
@@ -972,7 +954,6 @@
         "aura": null,
         "maxCount": 1,
         "canWriteDeathNote": true,
-        "canBeConvertedTo": [],
         "chatMessages":[
             {"type": "martyrRevealed", "martyr": 30},
             {"type": "martyrWon"},
@@ -986,7 +967,6 @@
         "aura": null,
         "maxCount": null,
         "canWriteDeathNote": false,
-        "canBeConvertedTo": [],
         "chatMessages":[
             {"type": "roleAssignment", "role":"wildcard"},
             {"type": "wildcardConvertFailed", "role": "veteran"}
@@ -999,7 +979,6 @@
         "aura": null,
         "maxCount": null,
         "canWriteDeathNote": false,
-        "canBeConvertedTo": [],
         "chatMessages":[
             {"type": "roleAssignment", "role":"trueWildcard"},
             {"type": "wildcardConvertFailed", "role": "apostle"}
@@ -1012,7 +991,6 @@
         "aura": null,
         "maxCount": null,
         "canWriteDeathNote": false,
-        "canBeConvertedTo": [],
         "chatMessages":[
             {"type": "targetsMessage", "message": 
                 {"type": "detectiveResult","suspicious":true}
@@ -1028,7 +1006,6 @@
         "aura": null,
         "maxCount": null,
         "canWriteDeathNote": false,
-        "canBeConvertedTo": [],
         "chatMessages":[
             {"type": "wardblocked"},
             {"type": "targetHasRole", "role":"detective"}
@@ -1041,7 +1018,6 @@
         "aura": null,
         "maxCount": null,
         "canWriteDeathNote": false,
-        "canBeConvertedTo": [],
         "chatMessages":[
             {"type": "transported"},
             {"type": "targetHasRole", "role":"detective"}
@@ -1054,7 +1030,6 @@
         "aura": null,
         "maxCount": 1,
         "canWriteDeathNote": true,
-        "canBeConvertedTo": [],
         "chatMessages":[
             {"type": "jailedTarget","playerIndex": 7},
             {"type": "jailedSomeone","playerIndex": 7},
@@ -1086,7 +1061,6 @@
         "aura": null,
         "maxCount": 1,
         "canWriteDeathNote": false,
-        "canBeConvertedTo": [],
         "chatMessages":[
             {"type": "pawnRole", "role": "detective"}
         ]
@@ -1098,8 +1072,8 @@
         "aura": null,
         "maxCount": null,
         "canWriteDeathNote": false,
-        "canBeConvertedTo": [],
         "chatMessages":[
+            {"type": "gainedRoleAbility", "role":"mayor"},
             {"type": "roleAssignment", "role":"mayor"}
         ]
     },
@@ -1110,7 +1084,6 @@
         "aura": null,
         "maxCount": null,
         "canWriteDeathNote": false,
-        "canBeConvertedTo": [],
         "chatMessages":[]
     },
     "arsonist": {
@@ -1120,7 +1093,6 @@
         "aura": null,
         "maxCount": null,
         "canWriteDeathNote": true,
-        "canBeConvertedTo": [],
         "chatMessages":[
             {"type": "someoneSurvivedYourAttack"},
             {"type": "youSurvivedAttack"}
@@ -1133,7 +1105,6 @@
         "aura": null,
         "maxCount": null,
         "canWriteDeathNote": true,
-        "canBeConvertedTo": [],
         "chatMessages":[
             {
                 "type":"werewolfTrackingResult",
@@ -1162,7 +1133,6 @@
         "aura": null,
         "maxCount": null,
         "canWriteDeathNote": true,
-        "canBeConvertedTo": [],
         "chatMessages":[
             {"type": "playersRoleConcealed","player": 5},
             {"type": "playersRoleRevealed","role": "detective","player": 5},
@@ -1218,7 +1188,6 @@
         "aura": null,
         "maxCount": null,
         "canWriteDeathNote": true,
-        "canBeConvertedTo": [],
         "chatMessages":[
             {"type": "puppeteerPlayerIsNowMarionette","player": 32},
             {"type": "yourConvertFailed"},
@@ -1231,8 +1200,27 @@
                 "text": "Erm... Guys? What do i do, they're gonna catch me!", 
                 "chatGroup": "puppeteer",
                 "block": false
-            },
-            {"type": "mediumExists"}
+            }
+        ]
+    },
+    "lich": {
+        "mainRoleSet": "fiends",
+        "roleSets": ["fiends"],
+        "armor": true,
+        "aura": null,
+        "maxCount": null,
+        "canWriteDeathNote": true,
+        "chatMessages":[
+            {"type": "wardblocked"},
+            {"type": "roleBlocked"},
+            {"type": "transported"},
+            {"type": "roleAssignment", "role":"mayor"},
+            {"type": "gainedRoleAbility", "role":"mayor"},
+            {"type": "mediumExists"},
+            {"type": "someoneSurvivedYourAttack"},
+            {"type": "youAttackedSomeone"},
+            {"type": "youWereAttacked"},
+            {"type": "youSurvivedAttack"}
         ]
     },
     "pyrolisk": {
@@ -1242,7 +1230,6 @@
         "aura": null,
         "maxCount": null,
         "canWriteDeathNote": true,
-        "canBeConvertedTo": [],
         "chatMessages":[
             {
                 "type": "playerRoleAndAlibi",
@@ -1262,7 +1249,6 @@
         "aura": null,
         "maxCount": null,
         "canWriteDeathNote": true,
-        "canBeConvertedTo": [],
         "chatMessages":[
             {"type": "someoneSurvivedYourAttack"},
             {"type": "youSurvivedAttack"},
@@ -1276,7 +1262,6 @@
         "aura": null,
         "maxCount": null,
         "canWriteDeathNote": true,
-        "canBeConvertedTo": [],
         "chatMessages":[
             {"type": "someoneSurvivedYourAttack"},
             {"type": "youSurvivedAttack"},
@@ -1290,7 +1275,6 @@
         "aura": null,
         "maxCount": null,
         "canWriteDeathNote": true,
-        "canBeConvertedTo": [],
         "chatMessages":[
             {
                 "type": "kiraResult",
@@ -1315,7 +1299,6 @@
         "aura": null,
         "maxCount": null,
         "canWriteDeathNote": true,
-        "canBeConvertedTo": [],
         "chatMessages":[
             {"type": "someoneSurvivedYourAttack"}
         ]
@@ -1327,7 +1310,6 @@
         "aura": null,
         "maxCount": 1,
         "canWriteDeathNote": true,
-        "canBeConvertedTo": [],
         "chatMessages":[
             {"type": "wardenPlayersImprisoned", "players": [5,2,10]},
             {"type": "youAttackedSomeone"},
@@ -1342,7 +1324,6 @@
         "aura": null,
         "maxCount": null,
         "canWriteDeathNote": true,
-        "canBeConvertedTo": [],
         "chatMessages":[
             {"type": "youAttackedSomeone"},
             {"type": "someoneSurvivedYourAttack"}
@@ -1355,7 +1336,6 @@
         "aura": null,
         "maxCount": null,
         "canWriteDeathNote": false,
-        "canBeConvertedTo": [],
         "chatMessages":[
             {"type": "roleAssignment", "role":"fiendsWildcard"},
             {"type": "wildcardConvertFailed", "role": "werewolf"}
@@ -1368,7 +1348,6 @@
         "aura": null,
         "maxCount": 1,
         "canWriteDeathNote": true,
-        "canBeConvertedTo": ["zealot","disciple"],
         "chatMessages":[
             {"type": "yourConvertFailed"},
             {"type": "cultSacrificeCount", "count":0},
@@ -1382,7 +1361,6 @@
         "aura": null,
         "maxCount": null,
         "canWriteDeathNote": false,
-        "canBeConvertedTo": ["zealot","apostle"],
         "chatMessages":[
             {"type": "yourConvertFailed"}
         ]
@@ -1394,7 +1372,6 @@
         "aura": null,
         "maxCount": 1,
         "canWriteDeathNote": true,
-        "canBeConvertedTo": ["disciple","apostle"],
         "chatMessages":[
             {"type": "someoneSurvivedYourAttack"}
         ]

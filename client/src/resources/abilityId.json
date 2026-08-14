@@ -38,6 +38,14 @@
         "midnight": true,
         "visit": "normal"
     },
+    "role/dreamcatcher/0": {
+        "midnight": false,
+        "visit": "abnormal"
+    },
+    "role/dreamcatcher/1": {
+        "midnight": true,
+        "visit": "none"
+    },
     "role/auditor/0": {
         "midnight": true,
         "visible": false,
@@ -87,6 +95,10 @@
         "midnight": false,
         "instant": true
     },
+    "role/slayer/0": {
+        "midnight": false,
+        "instant": true
+    },
     "role/escort/0": {
         "midnight": true,
         "visit": "normal"
@@ -94,6 +106,10 @@
     "role/employer/0": {
         "midnight": true,
         "visit": "normal"
+    },
+    "role/employer/1": {
+        "midnight": true,
+        "visit": "none"
     },
     "role/courtesan/0": {
         "midnight": true,
@@ -195,7 +211,11 @@
         "midnight": true,
         "visit": "normal"
     },
-    "role/framer/1": {
+    "role/propMaster/0": {
+        "midnight": true,
+        "visit": "normal"
+    },
+    "role/propMaster/1": {
         "midnight": true,
         "visit": "abnormal"
     },
@@ -307,6 +327,10 @@
         "midnight": true,
         "visit": "normal"
     },
+    "role/tailor/1": {
+        "midnight": true,
+        "visit": "none"
+    },
     "role/warper/0": {
         "midnight": true,
         "visit": "normal"
@@ -352,6 +376,46 @@
     "role/puppeteer/1": {
         "midnight": true,
         "visit": "none"
+    },
+    "role/lich/0": {
+        "midnight": true,
+        "visit": "abnormal"
+    },
+    "role/lich/1": {
+        "midnight": true,
+        "visit": "none"
+    },
+    "role/lich/2": {
+        "midnight": true,
+        "visit": "normal"
+    },
+    "role/lich/3": {
+        "midnight": true,
+        "visit": "normal"
+    },
+    "role/lich/4": {
+        "midnight": true,
+        "visit": "normal"
+    },
+    "role/lich/5": {
+        "midnight": true,
+        "visit": "normal"
+    },
+    "role/lich/6": {
+        "midnight": true,
+        "visit": "normal"
+    },
+    "role/lich/7": {
+        "midnight": true,
+        "visit": "abnormal"
+    },
+    "role/lich/14": {
+        "midnight": true,
+        "visit": "none"
+    },
+    "lichVote": {
+        "midnight": true,
+        "visit": "abnormal"
     },
     "role/pyrolisk/0": {
         "midnight": true,

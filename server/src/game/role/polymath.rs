@@ -43,7 +43,9 @@ impl RoleStateTrait for Polymath {
                 
                 Transport::transport(
                     midnight_variables, TransportPriority::Warper, 
-                    &vec_map![(from, to)], |_| true, false
+                    vec_map![(from, to)],
+                    |_| true,
+                    false
                 );
             }
             (OnMidnightPriority::Kill, PolymathAbilityType::Kill) => {
@@ -137,7 +139,7 @@ impl RoleStateTrait for Polymath {
         }
         ctrl
     }
-    fn convert_selection_to_visits(self, game: &Game, actor_ref: PlayerReference) -> Vec<Visit> {
+    fn convert_selection_to_visits(self, game: &Game, _id: &AbilityID, actor_ref: PlayerReference) -> Vec<Visit> {
         let type_selection = Self::ability_type_selection(game, actor_ref);
         match type_selection {
             PolymathAbilityType::None => Vec::new(),
