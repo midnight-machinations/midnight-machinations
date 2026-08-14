@@ -664,7 +664,7 @@ fn witch_basic(){
 fn cop_basic(){
     kit::scenario!(game in Night 2 where
         crus: Cop,
-        protected_player: Jester,
+        protected_player: Detective,
         townie1: Detective,
         townie2: Detective,
         mafioso: Mafioso,
@@ -723,7 +723,7 @@ fn cop_does_not_kill_framed_player(){
 fn ambusher_basic(){
     kit::scenario!(game in Night 2 where
         ambusher: Ambusher,
-        protected_player: Jester,
+        protected_player: Detective,
         townie1: Detective,
         townie2: Detective,
         blackmailer: Informant

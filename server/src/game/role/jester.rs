@@ -6,6 +6,8 @@ use crate::game::{components::attack::night_attack::NightAttack, prelude::*, ver
 pub struct Jester {
     executed_yesterday: bool,
     won: bool,
+
+    num_deaths_before_lose: u8,
 }
 
 #[derive(Clone, Serialize, Debug)]
@@ -17,6 +19,18 @@ pub(super) const DEFENSE: DefensePower = DefensePower::None;
 
 impl RoleStateTrait for Jester {
     type ClientAbilityState = ClientRoleState;
+    fn new_state(game: &mut Game) -> Self {
+        Self {
+            executed_yesterday: false,
+            won: false,
+            num_deaths_before_lose: PlayerReference::all_players(game)
+                .filter(|p|!p.win_condition(game).friends_with_conclusion(GameConclusion::Town))
+                .count()
+                .div_ceil(3)
+                .try_into()
+                .unwrap_or(u8::MAX),
+            }
+    }
     fn on_midnight(self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut OnMidnightFold, priority: OnMidnightPriority) {
         if priority != OnMidnightPriority::TopPriority {return;}
         if actor_ref.alive(game) {return;}
@@ -73,7 +87,8 @@ impl RoleStateTrait for Jester {
             PhaseState::FinalWords { player_on_trial } if *player_on_trial == actor_ref => {
                 actor_ref.edit_role_ability_helper(game, Jester { 
                     executed_yesterday: true,
-                    won: true
+                    won: true,
+                    ..self
                 });
             }
             PhaseState::Obituary { .. } => {
@@ -83,6 +98,19 @@ impl RoleStateTrait for Jester {
                 });
             }
             _ => {}
+        }
+    }
+    fn on_any_death(self, game: &mut Game, actor_ref: PlayerReference, dead_player_ref: PlayerReference) {
+        if dead_player_ref.win_condition(game).friends_with_conclusion(GameConclusion::Town) {return}
+
+        let new_num_deaths_before_lose = self.num_deaths_before_lose.saturating_sub(1);
+        actor_ref.edit_role_ability_helper(game, Jester { 
+            num_deaths_before_lose: new_num_deaths_before_lose,
+            ..self
+        });
+        
+        if new_num_deaths_before_lose == 0 {
+            actor_ref.die_and_add_grave(game, Grave::from_player_suicide(game, actor_ref));
         }
     }
 }

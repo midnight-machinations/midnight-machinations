@@ -120,8 +120,8 @@
         "canWriteDeathNote": false,
         "chatMessages":[
             {"type": "spyBug", "visitTags": []},
-            {"type": "spyBug", "visitTags": [{"type":"role", "role":"framer", "id":0}]},
-            {"type": "spyBug", "visitTags": [{"type":"role", "role":"hypnotist", "id":0},{"type":"syndicateGun"}]},
+            {"type": "spyBug", "visitTags": [{"type":"ability", "ability":{"type": "role","role": "framer","player": 0}, "id":0}]},
+            {"type": "spyBug", "visitTags": [{"type":"ability", "ability":{"type": "role","role": "hypnotist","player": 0}, "id":0},{"type":"syndicateGun"}]},
             {"type": "spyMafiaVisit", "players": [16,17,18,16]},
             {"type": "spyMafiaVisit", "players": []}
         ]
@@ -185,7 +185,8 @@
         "maxCount": null,
         "canWriteDeathNote": false,
         "chatMessages":[
-            {"type": "dreamcatcherResult", "result": ["godfather","jester","apostle","escort"]},
+            {"type": "dreamcatcherResult", "result": ["godfather","jester","pyrolisk","escort","medium"]},
+            {"type": "dreamcatcherResult", "result": []},
             {"type": "dreamcatcherResult", "result": ["godfather"]},
             {"type": "dreamcatcherTarget", "target": 7}
         ]
@@ -243,9 +244,9 @@
             {"type": "trapStateEndOfNight", "state":{"type":"dismantled"}},
             {"type": "trapStateEndOfNight", "state":{"type":"ready"}},
             {"type": "trapStateEndOfNight", "state":{"type":"set"}},
+            {"type": "spyBug", "visitTags": [{"type":"ability", "ability":{"type": "role","role": "tracker","player": 0}, "id":0}]},
             {"type": "spyBug", "visitTags": []},
-            {"type": "spyBug", "visitTags": [{"type":"role", "role":"tracker", "id":0}]},
-            {"type": "spyBug", "visitTags": [{"type":"role", "role":"forger", "id":0},{"type":"syndicateGun"}]},
+            {"type": "spyBug", "visitTags": [{"type":"ability", "ability":{"type": "role","role": "cop","player": 0}, "id":0},{"type":"syndicateGun"}]},
             {"type": "youAttackedSomeone"},
             {"type": "youGuardedSomeone"},
             {"type": "youWereGuarded"},
@@ -782,9 +783,9 @@
             {"type": "detectiveResult","suspicious": true},
             {"type": "snoopResult", "townie": false},
             {"type": "seerResult", "enemies": true},
+            {"type": "spyBug", "visitTags": [{"type":"ability", "ability":{"type": "role","role": "tracker","player": 0}, "id":0}]},
             {"type": "spyBug", "visitTags": []},
-            {"type": "spyBug", "visitTags": [{"type":"role", "role":"tracker", "id":0}]},
-            {"type": "spyBug", "visitTags": [{"type":"role", "role":"forger", "id":0},{"type":"syndicateGun"}]}
+            {"type": "spyBug", "visitTags": [{"type":"ability", "ability":{"type": "role","role": "cop","player": 0}, "id":0},{"type":"syndicateGun"}]}
         ]
     },
     "disguiser": {
@@ -1062,7 +1063,7 @@
         "maxCount": 1,
         "canWriteDeathNote": false,
         "chatMessages":[
-            {"type": "pawnRole", "role": "detective"}
+            {"type": "pawnVisitedYou"}
         ]
     },
     "tailor":{
@@ -1214,6 +1215,7 @@
             {"type": "wardblocked"},
             {"type": "roleBlocked"},
             {"type": "transported"},
+            {"type": "youWerePossessed"},
             {"type": "roleAssignment", "role":"mayor"},
             {"type": "gainedRoleAbility", "role":"mayor"},
             {"type": "mediumExists"},

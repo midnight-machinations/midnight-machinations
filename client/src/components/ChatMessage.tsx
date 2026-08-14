@@ -764,9 +764,13 @@ export function translateChatMessage(
         case "dreamcatcherTarget":
             return translate("chatMessage.dreamcatcherTarget", encodeString(playerNames[message.target]));
         case "dreamcatcherResult":
-            return encodeString(replaceMentions(translate("chatMessage.dreamcatcherResult",
-                message.result.map((role)=>translate("role."+role+".name")).join(", ")
-            ), playerNames, roleList))
+            if (message.result.length == 0) {
+                return translate("chatMessage.dreamcatcherResult.none");
+            }else{
+                return encodeString(replaceMentions(translate("chatMessage.dreamcatcherResult",
+                    message.result.map((role)=>translate("role."+role+".name")).join(", ")
+                ), playerNames, roleList))
+            }
         case "lookoutResult":
             return translate("chatMessage.lookoutResult", playerListToString(message.players, playerNames));
         case "spyMafiaVisit":
@@ -819,8 +823,6 @@ export function translateChatMessage(
             return translate("chatMessage.mercenaryHits", roleListToString(message.roles));
         case "mercenaryResult":
             return translate("chatMessage.mercenaryResult."+(message.hit?"hit":"notHit"));
-        case "pawnRole":
-            return translate("chatMessage.pawnRole", translate("role."+message.role+".name"));
         case "mediumHauntStarted":
             return translate("chatMessage.mediumHauntStarted", encodeString(playerNames[message.medium]), encodeString(playerNames[message.player]));
         case "mediumSeance":
@@ -899,6 +901,7 @@ export function translateChatMessage(
         case "targetsMessage":
         case "psychicFailed":
         case "phaseFastForwarded":
+        case "pawnVisitedYou":
         case "invalidWhisper":
         case "politicianCountdownStarted":
         case "youAttackedSomeone":
@@ -1225,8 +1228,7 @@ export type ChatMessageVariant = {
 } | {
     type: "mercenaryYouAreAHit"
 } | {
-    type: "pawnRole",
-    role: Role
+    type: "pawnVisitedYou"
 } | {
     type: "kiraResult",
     result: {

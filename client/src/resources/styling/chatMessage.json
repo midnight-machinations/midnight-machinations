@@ -95,7 +95,7 @@
     "mercenaryResult": "result",
     "mercenaryHits": "special",
     "mercenaryYouAreAHit": "special",
-    "pawnRole": "special",
+    "pawnVisitedYou": "result",
     "martyrFailed": "result",
     "martyrWon": "special",
     "playersRoleRevealed": "special",
