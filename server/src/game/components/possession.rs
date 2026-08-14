@@ -17,6 +17,7 @@ impl Possession {
                     | Role::Bouncer | Role::Scarecrow
                     | Role::Transporter  | Role::Warper | Role::Porter
                     | Role::Witch
+                    | Role::Dreamcatcher
                 )
             },
             ControllerID::SyndicateGunShoot => false,

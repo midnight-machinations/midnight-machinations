@@ -29,13 +29,21 @@ impl RoleStateTrait for Dreamcatcher {
         if !matches!(priority, OnMidnightPriority::Investigative) {return};
 
         let Some((target, _nightmare)) = self.target_nightmare else {return};
+        let Some(visit_target) = Visits::default_target(midnight_variables, actor_ref, Role::Dreamcatcher) else {return};
+        
+        if visit_target != target {return}; 
+        
         self.target_nightmare = None;
         actor_ref.edit_role_ability_helper(game, self.clone());
 
         let Some(result) = self.results.get(&target).cloned().or(
             ControllerID::role(actor_ref, Role::Dreamcatcher, 1)
                 .get_role_list_selection(game).map(|r|{
-                    r.0.clone().into_iter().chain(iter::once(target.role(game))).collect::<VecSet<Role>>()
+                    if Aura::any(game, midnight_variables, target) {
+                        r.0.clone().into_iter().collect::<VecSet<Role>>()
+                    }else{
+                        r.0.clone().into_iter().chain(iter::once(target.role(game))).collect::<VecSet<Role>>()
+                    }
                 })
         ) else {return};
             
@@ -54,7 +62,7 @@ impl RoleStateTrait for Dreamcatcher {
                     .available_selection(AvailableRoleListSelection{
                         available_roles: game.settings.enabled_roles.clone(),
                         can_choose_duplicates: false,
-                        max_roles: Some(3)
+                        max_roles: Some(4)
                     })
                     .reset_on_phase_start(PhaseType::Obituary)
                     .allow_players([nightmare])
@@ -109,6 +117,7 @@ impl RoleStateTrait for Dreamcatcher {
             v
         }).collect()
     }
+    fn on_player_possessed(self, _game: &mut Game, _id: &AbilityID, _event: &OnPlayerPossessed, _fold: &mut OnMidnightFold, _priority: ()) {}
 }
 
 impl Dreamcatcher {
