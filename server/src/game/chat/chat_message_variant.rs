@@ -169,6 +169,9 @@ pub enum ChatMessageVariant {
     PsychicFailed,
     #[serde(rename_all = "camelCase")]
     AuditorResult{outline_index: OutlineIndex, result: AuditorResult},
+    #[serde(rename_all = "camelCase")]
+    DreamcatcherResult{result: VecSet<Role>},
+    DreamcatcherTarget{target: PlayerReference},
     SnoopResult{townie: bool},
     PolymathSnoopResult{inno: bool},
     GossipResult{enemies: bool},

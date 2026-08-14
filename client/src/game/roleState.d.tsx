@@ -64,6 +64,8 @@ export type RoleState = {
     type: "auditor",
     previouslyGivenResults: [number, AuditorResult][]
 } | {
+    type: "dreamcatcher"
+} | {
     type: "snoop",
 } | {
     type: "gossip",

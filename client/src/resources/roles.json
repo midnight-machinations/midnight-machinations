@@ -177,6 +177,19 @@
             {"type": "tallyClerkResult", "evilCount": 0}
         ]
     },
+    "dreamcatcher": {
+        "mainRoleSet": "town",
+        "roleSets": ["town", "townCommon", "townInvestigative"],
+        "armor": false,
+        "aura": null,
+        "maxCount": null,
+        "canWriteDeathNote": false,
+        "chatMessages":[
+            {"type": "dreamcatcherResult", "result": ["godfather","jester","apostle","escort"]},
+            {"type": "dreamcatcherResult", "result": ["godfather"]},
+            {"type": "dreamcatcherTarget", "target": 7}
+        ]
+    },
     "doctor": {
         "mainRoleSet": "town",
         "roleSets": ["town", "townCommon", "townProtective"],

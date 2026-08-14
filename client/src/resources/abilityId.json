@@ -38,6 +38,14 @@
         "midnight": true,
         "visit": "normal"
     },
+    "role/dreamcatcher/0": {
+        "midnight": false,
+        "visit": "abnormal"
+    },
+    "role/dreamcatcher/1": {
+        "midnight": true,
+        "visit": "none"
+    },
     "role/auditor/0": {
         "midnight": true,
         "visible": false,

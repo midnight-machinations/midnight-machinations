@@ -227,6 +227,11 @@
     "role.tallyClerk.name:var.0": "Tally Clerks",
     "controllerId.role.tallyClerk.0.name": "Tally",
 
+    "role.dreamcatcher.name": "Dreamcatcher",
+    "role.dreamcatcher.name:var.0": "Dreamcatchers",
+    "controllerId.role.dreamcatcher.0.name": "Dream",
+    "controllerId.role.dreamcatcher.1.name": "Nightmare",
+
     "role.doctor.name": "Doctor",
     "role.doctor.name:var.0": "Doctors",
     "role.doctor.roleDataText": "\\0 self-heals remaining",
@@ -1122,6 +1127,8 @@
     "chatMessage.gossipResult.none": "Your target didn't visit a player that is enemies with town.",
     "chatMessage.gossipResult.enemies": "Your target visited a player that is enemies with town.",
     "chatMessage.tallyClerkResult": "\\0 of your targets visits targeted town enemies.",
+    "chatMessage.dreamcatcherResult": "Your target is one of: \\0.",
+    "chatMessage.dreamcatcherTarget": "A dreamcatcher selected \\0 and you are their nightmares.",
     "chatMessage.playerForwardedMessage":"\\0 forwarded:",
     "chatMessage.targetsMessage":"Your target got the following message:",
     "chatMessage.youWerePossessed":"You were possessed. Some of your choices may have been secretly changed.",
@@ -1811,13 +1818,21 @@
     "wiki.article.role.gossip.attributes":"- If any player your target visits has a suspicious aura, then you are told they visited a town enemy",
     "wiki.article.role.gossip.extra":"- Suspicious aura overrides innocent aura\n- False appeared visits do not mess with your results\n- Your target having aura does not mess with the results, however, their targets having aura does",
 
-    "wiki.article.role.tallyClerk.reminder": "Choose any number of players. You are told how many of their targets are town enemies.",
+    "wiki.article.role.tallyClerk.reminder": "At night, select any number of players. You are told how many of their targets are town enemies.",
     "wiki.article.role.tallyClerk.guide": "- At night, select as many players as you want.\n- You are told the number of your targets visits that targeted town enemies.\n - In other words, out of the players you visit, you are told the total number of their visits targeting town enemies",
     "wiki.article.role.tallyClerk.abilities":"",
     "wiki.article.role.tallyClerk.attributes":"",
     "wiki.article.role.tallyClerk.extra":"- You can select any living player, except yourself.\n - Innocent aura makes a player appear to be a town friend. Suspicious aura makes a player appear to be a town friend. Suspicious aura overrides innocent aura.\n- Appeared visit effect your information.",
     "wiki.article.role.tallyClerk.exampleAlibi":"Tally Clerk\nN1: 2 \n@16 (visited @5?)\n@1 (visited @5?)",
     "wiki.article.role.tallyClerk.exampleAlibi.description":"On night 1 the tally clerk chose @16 and @1 and was told 2. @16 said they visited @5 and @1 said they visited @5, so 2 visits targeted @5. This seems to imply @5 is a town enemy.\n Although, @16 or @1 could be lying about who they visited, @16 or @1 could have appeared visits, or @5 could have suspicious aura.",
+
+    "wiki.article.role.dreamcatcher.reminder": "Before night, select a player. At night, a town enemy selects up to 3 roles. You are told that your target is one of up to 4 roles.",
+    "wiki.article.role.dreamcatcher.guide": "- Before night, select a player to dream about.\n   - You are told 1-4 roles, the player you selected has 1 of those 4 roles.\n- At night, a town enemy is chosen at random to be the nightmare.\n   - At the start of night, the nightmare is told who you selected, and may choose up to 3 roles to show in your results.",
+    "wiki.article.role.dreamcatcher.abilities":"",
+    "wiki.article.role.dreamcatcher.attributes":"- The random nightmare selection priorities specific players\n   - If you select a town enemy, that town enemy is the nightmare\n   - If you don't select a town enemy, the nightmare is chosen at random from the living town enemies who have been your nightmare the fewest times.\n   - A player with the pawn ability cannot be your nightmare, even if you select them.",
+    "wiki.article.role.dreamcatcher.extra":"- Aura and appeared visits don't effect your results.\n- Your visits are transport immune.\n- The nightmare can only choose enabled roles.\n- Your dream cannot contain multiple instances of the same role.",
+    "wiki.article.role.dreamcatcher.exampleAlibi":"Dreamcatcher\nN1: @2 - Gossip, Cop, Prop Master, Pyrolisk",
+    "wiki.article.role.dreamcatcher.exampleAlibi.description":"On night 1 the Dreamcatcher chose @2 and was told that they were either the gossip cop prop master or pyrolisk.\nTherefore a town enemy chose 3 of the roles \"gossip cop prop master or pyrolisk\" when prompted, and one of those roles is the real role of @2.",
 
     "wiki.article.role.doctor.reminder": "At night, select a player to guard from attacks. You can guard yourself once per game.",
     "wiki.article.role.doctor.lore": "The doctor has such talent that they can cure any physical ailment conceivable. Accoding the Doctor, the influx of \"hypochondriacs\" means its only worth showing up when the patient is on deaths doorstep. But it's nomatter, the doctor never fails.",

@@ -49,6 +49,8 @@
     "polymathSnoopResult": "result",
     "gossipResult": "result",
     "tallyClerkResult": "result",
+    "dreamcatcherResult": "result",
+    "dreamcatcherTarget": "special",
     "playerRoleAndAlibi": "result",
     "informantResult": "result",
     "ambusherCaught": "result",
