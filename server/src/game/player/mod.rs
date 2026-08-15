@@ -42,16 +42,13 @@ impl Player {
 }
 
 pub mod test {
-    use std::time::Duration;
-
     use crate::client_connection::ClientConnection;
 
     use super::Player;
 
     pub fn mock_player(name: String) -> Player {
         Player {
-            // Since `tick` is never called in tests, this will never decrement.
-            connection: ClientConnection::CouldReconnect { disconnect_timer: Duration::from_secs(1) },
+            connection: ClientConnection::CouldReconnect { disconnect_timer: None },
 
             name,
             alive: true,

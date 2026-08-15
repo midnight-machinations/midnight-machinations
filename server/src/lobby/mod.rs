@@ -215,7 +215,7 @@ impl RoomState for Lobby {
         }
 
         client.connection = ClientConnection::CouldReconnect { 
-            disconnect_timer: Duration::from_secs(Self::DISCONNECT_TIMER_SECS)
+            disconnect_timer: Some(Duration::from_secs(Self::DISCONNECT_TIMER_SECS))
         };
 
         self.ensure_host_exists(None);
@@ -255,7 +255,7 @@ impl RoomState for Lobby {
         let mut to_remove = vec![];
 
         for client in self.clients.iter_mut() {
-            if let ClientConnection::CouldReconnect { disconnect_timer } = &mut client.1.connection {
+            if let ClientConnection::CouldReconnect { disconnect_timer: Some(disconnect_timer) } = &mut client.1.connection {
                 if let Some(time_remaining) = disconnect_timer.checked_sub(time_passed) {
                     *disconnect_timer = time_remaining;
                 } else {

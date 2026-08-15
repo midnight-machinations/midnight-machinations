@@ -7,7 +7,7 @@ use crate::{packet::ToClientPacket, websocket_connections::connection::ClientSen
 #[derive(Clone, Debug)]
 pub enum ClientConnection {
     Connected(ClientSender),
-    CouldReconnect { disconnect_timer: Duration },
+    CouldReconnect { disconnect_timer: Option<Duration> },
     Disconnected
 }
 impl ClientConnection {

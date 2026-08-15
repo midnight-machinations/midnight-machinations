@@ -1053,7 +1053,7 @@
     "chatMessage.gameOver.player.crumb": "\\0, \\1, \\2",
     "chatMessage.playerWon":"\\0 won! They were the \\1.",
     "chatMessage.playerLost":"\\0 lost! They were the \\1.",
-    "chatMessage.playerQuit": "\\0 has left the lobby and will certainly die at the end of the next night.",
+    "chatMessage.playerQuit": "\\0 has left the lobby, they will take a protection piercing attack every midnight while alive.",
     "chatMessage.playerQuit.gameOver": "\\0 has left the lobby.",
 
     "chatMessage.trialInformation":"\\0 votes are needed for a trial. There are \\1 trials left today.",
