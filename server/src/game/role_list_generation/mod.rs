@@ -110,15 +110,31 @@ impl RoleListGenerator {
     /// That's true when it comes to filling in roles, and that pattern continues for the following order of precedence:
     /// outline options, players, win conditions, insider groups, then all other criteria.
     fn neighbors_of(&mut self, node: &PartialOutlineListAssignmentNode) -> NeighborsResult {
-        if let Some(mut neighbors_to_add) = self.criteria
-            .iter()
-            .copied()
+
+        
+
+        if let Some(mut neighbors_to_add) =
+        //reeducator first
+        vec![]
+            .into_iter()
             .chain(
                 // Add criteria from the roles in the node.
                 node.assignments.iter()
                     .filter_map(|assignment| assignment.role)
                     .flat_map(|role| role.role_list_generation_criteria())
             )
+            .chain(self.criteria.iter().copied())
+        //reeducator last
+            self.criteria
+                .iter()
+                .copied()
+                .chain(
+                    // Add criteria from the roles in the node.
+                    node.assignments.iter()
+                        .filter_map(|assignment| assignment.role)
+                        .flat_map(|role| role.role_list_generation_criteria())
+                )
+        //the rest
             .find_map(|criterion| {
                 let result = (criterion.evaluate)(node, &self.settings);
                 if let GenerationCriterionResult::Unmet(neighbors) = result {

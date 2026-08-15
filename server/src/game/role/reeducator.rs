@@ -112,44 +112,27 @@ pub const ENSURE_ONE_FEWER_SYNDICATE_PER_REEDUCATOR: GenerationCriterion = Gener
         let syndicate_roles = RoleSet::Mafia.get_roles().intersection(enabled_roles);
         let town_common_roles = RoleSet::TownCommon.get_roles().intersection(enabled_roles);
 
-        // There are currently no role sets which have mafia roles and town roles at the same time,
-        // but if there were, this check says "uhh sure let's just say this is fine".
-        if node.assignments
-            .iter()
-            .any(|assignment| 
-                assignment.outline_option
-                    .as_ref()
-                    .is_some_and(|o| {
-                        let outline_roles = o.roles.get_roles().intersection(enabled_roles);
-
-                        !outline_roles.intersection(&syndicate_roles).is_empty() &&
-                        !outline_roles.sub(&syndicate_roles).is_empty()
-                    })
-            )
-        {
-            return GenerationCriterionResult::Met;
-        }
-
         // Which assignments are supposed to generate syndicate?
-        let expected_syndicate_members = node.assignments.iter()
+        let num_of_syndicate_role_slots = node.assignments.iter()
             .filter(|assignment| assignment.outline_option.as_ref().is_some_and(|o| {
                 let outline_roles = o.roles.get_roles().intersection(enabled_roles);
 
-                !outline_roles.is_empty() && outline_roles.is_subset(&syndicate_roles)
+                !outline_roles.is_empty() && outline_roles.intersection(&syndicate_roles).count() > 0
             }))
             .count();
 
         // Which assignments are actually populated with syndicate roles?
-        let actual_syndicate_members = node.assignments.iter()
+        let actual_syndicate_roles = node.assignments.iter()
             .filter(|assignment| assignment.role.is_some_and(|role| syndicate_roles.contains(&role)))
             .count();
 
-        let number_of_recruiters = node.assignments.iter()
+        let number_of_reeducators = node.assignments.iter()
             .filter(|assignment| assignment.role == Some(Role::Reeducator))
             .count();
 
-        // For each recruiter, we should have one fewer syndicate member.
-        if actual_syndicate_members.saturating_add(number_of_recruiters) <= expected_syndicate_members {
+        // For each reeducator, we should have one fewer syndicate member.
+        // syndicate generated <= maybe syndicate slots - reeducators
+        if actual_syndicate_roles.saturating_add(number_of_reeducators) <= num_of_syndicate_role_slots {
             GenerationCriterionResult::Met
         } else {
             let mut new_neighbors = Vec::new();
