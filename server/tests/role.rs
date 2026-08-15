@@ -661,6 +661,31 @@ fn witch_basic(){
 }
 
 #[test]
+fn witch_cant_make_vigilante_visit_night_1(){
+    kit::scenario!(game in Night 1 where
+        witch: Witch,
+        vigi: Vigilante,
+        informant: Informant
+    );
+
+    witch.send_ability_input_two_player_typical(vigi, witch);
+    informant.send_ability_input_player_list_typical(vigi);
+
+    game.next_phase();
+
+    assert_contains!(informant.get_messages(), ChatMessageVariant::InformantResult
+        {
+            player: vigi.player_ref(),
+            role: Role::Vigilante,
+            visited_by: vec![witch.player_ref()],
+            visited: vec![],
+            win_condition: WinCondition::GameConclusionReached { win_if_any: vec_set![GameConclusion::Town] }
+        }
+    );
+}
+
+
+#[test]
 fn cop_basic(){
     kit::scenario!(game in Night 2 where
         crus: Cop,
@@ -850,11 +875,7 @@ fn veteran_basic(){
         townie.get_messages().contains(&ChatMessageVariant::LookoutResult { players: vec![framer.player_ref(), tracker.player_ref()] }) ||
         townie.get_messages().contains(&ChatMessageVariant::LookoutResult { players: vec![tracker.player_ref(), framer.player_ref()] })
     );
-
-    // assert_contains!(
-    //     townie.get_messages(),
-    //     ChatMessageVariant::LookoutResult { players: vec![framer.index(), tracker.index()] }
-    // );
+    
     assert_contains!(
         tracker.get_messages(),
         ChatMessageVariant::TrackerResult { players: vec![] }

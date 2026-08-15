@@ -113,7 +113,7 @@ impl Possession {
                         Some(possessed),
                         id,
                         BooleanSelection(true),
-                        true
+                        false
                     );
                 }
             },
@@ -129,7 +129,7 @@ impl Possession {
                     Some(possessed),
                     id,
                     TwoPlayerOptionSelection(selection),
-                    true
+                    false
                 );
             },
             ControllerSelection::PlayerList(selection) => {
@@ -146,7 +146,7 @@ impl Possession {
                     Some(possessed),
                     id,
                     PlayerListSelection(selection),
-                    true
+                    false
                 );
             },
             ControllerSelection::Unit(..) |

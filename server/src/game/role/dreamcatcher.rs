@@ -31,23 +31,27 @@ impl RoleStateTrait for Dreamcatcher {
         let Some((target, _nightmare)) = self.target_nightmare else {return};
         let Some(visit_target) = Visits::default_target(midnight_variables, actor_ref, Role::Dreamcatcher) else {return};
         
-        if visit_target != target {return}; 
+        if visit_target != target {return};
         
         self.target_nightmare = None;
         actor_ref.edit_role_ability_helper(game, self.clone());
 
-        let Some(result) = self.results.get(&target).cloned().or(
+        let Some(mut result) = self.results.get(&target).cloned().or(
             ControllerID::role(actor_ref, Role::Dreamcatcher, 1)
                 .get_role_list_selection(game).map(|r|{
+                    let nightmare = r.0.clone().into_iter();
                     if Aura::any(game, midnight_variables, target) {
-                        r.0.clone().into_iter().collect::<VecSet<Role>>()
+                        nightmare.collect::<VecSet<Role>>()
                     }else{
-                        r.0.clone().into_iter().chain(iter::once(target.role(game))).collect::<VecSet<Role>>()
+                        nightmare.chain(iter::once(target.role(game))).collect::<VecSet<Role>>()
                     }
                 })
         ) else {return};
-            
+
+        result.shuffle(&mut game.rng);
+
         self.results.insert(target, result.clone());
+
         actor_ref.push_night_message(midnight_variables, ChatMessageVariant::DreamcatcherResult { result });
         actor_ref.edit_role_ability_helper(game, self);
     }
