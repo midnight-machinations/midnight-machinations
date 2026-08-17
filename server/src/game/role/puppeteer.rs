@@ -48,7 +48,7 @@ impl RoleStateTrait for Puppeteer {
                     .attackers([actor_ref])
                     .grave_killer(Role::Puppeteer)
                     .power(AttackPower::ArmorPiercing)
-                    .leave_death_note()
+                    .leave_calling_card()
                     .attack(game, midnight_variables, target);
             }
         }

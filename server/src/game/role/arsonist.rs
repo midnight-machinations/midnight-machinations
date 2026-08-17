@@ -98,7 +98,7 @@ impl Arsonist{
                 .attackers([igniter])
                 .grave_killer(Role::Arsonist)
                 .power(AttackPower::ProtectionPiercing)
-                .leave_death_note()
+                .leave_calling_card()
                 .attack(game, midnight_variables, player);
         }
     }

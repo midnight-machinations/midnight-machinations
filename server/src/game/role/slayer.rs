@@ -33,8 +33,8 @@ impl RoleStateTrait for Slayer {
 
         if !shot.win_condition(game).is_loyalist_for(GameConclusion::Town) {
             let mut grave = Grave::from_player_lynch(game, *shot);
-            if let GraveInformation::Normal{death_cause, ..} = &mut grave.information {
-                *death_cause = GraveDeathCause::Killers(vec![GraveKiller::Role(Role::Slayer)]);
+            if let GraveInformation::Normal{death_causes: death_cause, ..} = &mut grave.information {
+                *death_cause = vec![GraveDeathCause::Role(Role::Slayer)];
             }
 
             shot.add_private_chat_message(game, ChatMessageVariant::DeputyShotYou);

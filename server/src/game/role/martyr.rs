@@ -51,8 +51,8 @@ impl RoleStateTrait for Martyr {
             if target_ref == actor_ref {
                 if NightAttack::new()
                     .attackers([actor_ref])
-                    .grave_killer(GraveKiller::Suicide)
-                    .leave_death_note()
+                    .grave_killer(GraveDeathCause::Suicide)
+                    .leave_calling_card()
                     .attack(game, midnight_variables, target_ref)
                 {
                     self.state = MartyrState::Won;
@@ -61,7 +61,7 @@ impl RoleStateTrait for Martyr {
                 NightAttack::new()
                     .attackers([actor_ref])
                     .grave_killer(Role::Martyr)
-                    .leave_death_note()
+                    .leave_calling_card()
                     .attack(game, midnight_variables, target_ref);
             }
         };
@@ -114,8 +114,8 @@ impl RoleStateTrait for Martyr {
     fn on_any_death(self, game: &mut Game, actor_ref: PlayerReference, dead_player_ref: PlayerReference) {
         let left_town = GraveReference::all_graves(game).any(|grave| 
             grave.deref(game).player == dead_player_ref &&
-            if let GraveInformation::Normal { death_cause, .. } = &grave.deref(game).information {
-                *death_cause == GraveDeathCause::Ascension
+            if let GraveInformation::Normal { death_causes, .. } = &grave.deref(game).information {
+                death_causes.contains(&GraveDeathCause::Ascension)
             } else {false}
         );
 

@@ -48,7 +48,7 @@ impl RoleStateTrait for Mercenary {
                 NightAttack::new()
                     .attackers([actor_ref])
                     .grave_killer(Role::Mercenary)
-                    .leave_death_note()
+                    .leave_calling_card()
                     .attack(game, midnight_variables, visit.target);
 
                 actor_ref.edit_role_ability_helper(game, Self{attacks_remaining: self.attacks_remaining.saturating_sub(1), ..self});

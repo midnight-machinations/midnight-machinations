@@ -1,5 +1,3 @@
-use std::time::Duration;
-
 use crate::{
     client_connection::ClientConnection, game::{
         Game, GameOverReason, chat::{ChatComponent, ChatMessageVariant}, components::{
@@ -17,7 +15,7 @@ impl PlayerReference{
         self.send_join_game_data(game);
     }
     pub fn lose_connection(&self, game: &mut Game){
-        self.deref_mut(game).connection = ClientConnection::CouldReconnect { disconnect_timer: Duration::from_secs(Game::DISCONNECT_TIMER_SECS as u64) };
+        self.deref_mut(game).connection = ClientConnection::CouldReconnect { disconnect_timer: None };
     }
     pub fn quit(&self, game: &mut Game) {
         self.deref_mut(game).connection = ClientConnection::Disconnected;

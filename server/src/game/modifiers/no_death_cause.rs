@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 
-use crate::game::{components::graves::{grave::{GraveDeathCause, GraveInformation}}, event::on_grave_added::OnGraveAdded, Game};
+use crate::game::{components::graves::{grave::GraveInformation}, event::on_grave_added::OnGraveAdded, Game};
 
 use super::{ModifierStateImpl, ModifierID};
 
@@ -16,12 +16,12 @@ impl ModifierStateImpl for NoDeathCause{
     fn on_grave_added(self, game: &mut Game, event: &OnGraveAdded, _fold: &mut (), _priority: ()) {
         match event.grave.deref(game).information.clone() {
             GraveInformation::Obscured => {},
-            GraveInformation::Normal { role, will, death_notes, .. } => {
+            GraveInformation::Normal { role, alibi: will, calling_cards, .. } => {
                 event.grave.deref_mut(game).information = GraveInformation::Normal{
                     role,
-                    will,
-                    death_cause: GraveDeathCause::None,
-                    death_notes
+                    alibi: will,
+                    death_causes: vec![],
+                    calling_cards
                 }
             },
         }

@@ -1,11 +1,11 @@
-use crate::{game::{Game, attack_power::AttackPower, chat::ChatMessageVariant, components::graves::grave::GraveKiller, event::on_midnight::OnMidnightFold, player::PlayerReference, prelude::{NightVisitsIterator, Visit, Visits}}, vec_set::VecSet};
+use crate::{game::{Game, attack_power::AttackPower, chat::ChatMessageVariant, components::graves::grave::GraveDeathCause, event::on_midnight::OnMidnightFold, player::PlayerReference, prelude::{NightVisitsIterator, Visit, Visits}}, vec_set::VecSet};
 
 #[derive(Debug, Clone, PartialEq, Eq)]
-pub struct NightAttack<GK = GraveKiller> {
+pub struct NightAttack<GK = GraveDeathCause> {
     send_messages: bool,
     attackers: VecSet<PlayerReference>,
     attack_power: AttackPower,
-    leave_death_note: bool,
+    leave_calling_card: bool,
     grave_killer: GK
 }
 
@@ -15,7 +15,7 @@ impl NightAttack<()> {
             send_messages: true,
             attackers: VecSet::new(),
             attack_power: AttackPower::default(),
-            leave_death_note: false,
+            leave_calling_card: false,
             grave_killer: (),
         }
     }
@@ -34,25 +34,25 @@ impl<G> NightAttack<G> {
         self.attack_power = attack_power;
         self
     }
-    pub fn leave_death_note(mut self) -> Self {
-        self.leave_death_note = true;
+    pub fn leave_calling_card(mut self) -> Self {
+        self.leave_calling_card = true;
         self
     }
 }
 
 impl NightAttack<()> {
-    pub fn grave_killer(self, grave_killer: impl Into<GraveKiller>) -> NightAttack<GraveKiller> {
+    pub fn grave_killer(self, grave_killer: impl Into<GraveDeathCause>) -> NightAttack<GraveDeathCause> {
         NightAttack {
             send_messages: self.send_messages,
             attackers: self.attackers,
             attack_power: self.attack_power,
-            leave_death_note: self.leave_death_note,
+            leave_calling_card: self.leave_calling_card,
             grave_killer: grave_killer.into(),
         }
     }
 }
 
-impl NightAttack<GraveKiller> {
+impl NightAttack<GraveDeathCause> {
     pub fn rampage(self, game: &mut Game, fold: &mut OnMidnightFold, target: PlayerReference, filter_visit: impl FnMut(&Visit) -> bool) {
         Visits::into_iter(fold)
             .filter(filter_visit)
@@ -64,7 +64,7 @@ impl NightAttack<GraveKiller> {
                     send_messages: self.send_messages,
                     attackers: self.attackers.clone(),
                     attack_power: self.attack_power,
-                    leave_death_note: self.leave_death_note,
+                    leave_calling_card: self.leave_calling_card,
                     grave_killer: self.grave_killer.clone(),
                 }.attack(game, fold, p);
             });
@@ -77,10 +77,10 @@ impl NightAttack<GraveKiller> {
 
         defender.push_night_grave_killers(fold, self.grave_killer.clone());
 
-        if self.leave_death_note {
+        if self.leave_calling_card {
             for attacker in self.attackers.iter() {
-                if let Some(note) = attacker.death_note(game) {
-                    defender.push_night_grave_death_notes(fold, note.clone());
+                if let Some(note) = attacker.calling_card(game) {
+                    defender.push_night_grave_calling_cards(fold, note.clone());
                 }
             }
         }

@@ -58,7 +58,7 @@ impl RoleStateTrait for Werewolf {
                         .attackers([actor_ref])
                         .grave_killer(Role::Werewolf)
                         .power(AttackPower::ArmorPiercing)
-                        .leave_death_note()
+                        .leave_calling_card()
                         .rampage(game, midnight_variables, my_visit.target, |v| *v != my_visit);
                     
                     //If target visits or you are enraged, attack them
@@ -67,7 +67,7 @@ impl RoleStateTrait for Werewolf {
                             .attackers([actor_ref])
                             .grave_killer(Role::Werewolf)
                             .power(AttackPower::ArmorPiercing)
-                            .leave_death_note()
+                            .leave_calling_card()
                             .attack(game, midnight_variables, my_visit.target);
                     } 
                 }

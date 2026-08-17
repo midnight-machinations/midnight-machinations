@@ -32,7 +32,7 @@ impl RoleStateTrait for Pyrolisk {
                 .attackers([actor_ref])
                 .grave_killer(Role::Pyrolisk)
                 .power(AttackPower::ArmorPiercing)
-                .leave_death_note()
+                .leave_calling_card()
                 .attack(game, midnight_variables, other_player_ref)
             {
                 tagged_for_obscure.insert(other_player_ref);
@@ -47,7 +47,7 @@ impl RoleStateTrait for Pyrolisk {
                 .attackers([actor_ref])
                 .grave_killer(Role::Pyrolisk)
                 .power(AttackPower::ArmorPiercing)
-                .leave_death_note()
+                .leave_calling_card()
                 .attack(game, midnight_variables, target_ref)
         {
             tagged_for_obscure.insert(target_ref);

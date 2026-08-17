@@ -22,7 +22,7 @@ impl RoleStateTrait for SerialKiller {
                 .attackers([actor_ref])
                 .grave_killer(Role::SerialKiller)
                 .power(AttackPower::ArmorPiercing)
-                .leave_death_note()
+                .leave_calling_card()
                 .attack(game, midnight_variables, target_ref);
         }
     }

@@ -133,7 +133,7 @@ pub enum ToClientPacket{
     #[serde(rename_all = "camelCase")]
     YourCrossedOutOutlines{crossed_out_outlines: Vec<u8>},
     #[serde(rename_all = "camelCase")]
-    YourDeathNote{death_note: Option<String>},
+    YourCallingCard{calling_card: Option<String>},
     #[serde(rename_all = "camelCase")]
     YourRole{role: Role},
 
@@ -224,7 +224,7 @@ pub enum ToServerPacket{
     #[serde(rename_all = "camelCase")]
     SaveCrossedOutOutlines{crossed_out_outlines: Vec<u8>},
     #[serde(rename_all = "camelCase")]
-    SaveDeathNote{death_note: Option<String>},
+    SaveCallingCard{calling_card: Option<String>},
 
     // ControllerInput
     #[serde(rename_all = "camelCase")]

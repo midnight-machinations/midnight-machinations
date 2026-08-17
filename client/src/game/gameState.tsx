@@ -89,7 +89,7 @@ export function createPlayerGameState(): PlayerGameState {
 
         notes: [],
         crossedOutOutlines: [],
-        deathNote: "",
+        callingCard: "",
 
         fellowInsiders: [],
 

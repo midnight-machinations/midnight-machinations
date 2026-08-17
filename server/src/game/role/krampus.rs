@@ -32,7 +32,7 @@ impl RoleStateTrait for Krampus {
                     NightAttack::new()
                         .attackers([actor_ref])
                         .grave_killer(Role::Krampus)
-                        .leave_death_note()
+                        .leave_calling_card()
                         .attack(game, midnight_variables, target_ref);
 
                     actor_ref.edit_role_ability_helper(game, Krampus {

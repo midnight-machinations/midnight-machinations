@@ -60,7 +60,7 @@ impl PuppeteerMarionette{
                 .attackers(puppeteers.clone())
                 .grave_killer(Role::Puppeteer)
                 .power(attack_power)
-                .leave_death_note()
+                .leave_calling_card()
                 .attack(game, midnight_variables, player);
         }
     }

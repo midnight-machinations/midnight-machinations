@@ -141,8 +141,8 @@ export type ToClientPacket = {
     type: "yourCrossedOutOutlines",
     crossedOutOutlines: number[]
 } | {
-    type: "yourDeathNote", 
-    deathNote: UnsafeString | null
+    type: "yourCallingCard", 
+    callingCard: UnsafeString | null
 } | {
     type: "yourRole",
     role: Role    
@@ -258,8 +258,8 @@ export type ToServerPacket = {
     type: "saveCrossedOutOutlines",
     crossedOutOutlines: number[]
 } | {
-    type: "saveDeathNote", 
-    deathNote: string | null
+    type: "saveCallingCard", 
+    callingCard: string | null
 } | {
     type: "leave",
 } | {

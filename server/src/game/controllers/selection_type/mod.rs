@@ -6,6 +6,7 @@ pub mod kira_selection; pub use kira_selection::*;
 pub mod player_list_selection; pub use player_list_selection::*;
 pub mod integer_selection; pub use integer_selection::*;
 pub mod chat_message_selection; pub use chat_message_selection::*;
+pub mod grave_death_causes_selection; pub use grave_death_causes_selection::*;
 
 use serde::{Deserialize, Serialize};
 

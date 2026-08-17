@@ -22,7 +22,7 @@ impl RoleStateTrait for Ojo {
                 NightAttack::new()
                     .attackers([actor_ref])
                     .grave_killer(Role::Ojo)
-                    .leave_death_note()
+                    .leave_calling_card()
                     .attack(game, midnight_variables, target_ref);
             },
             OnMidnightPriority::Investigative => {

@@ -106,12 +106,12 @@ impl RoleStateTrait for Disguiser {
         if actor_ref == grave.deref(game).player && actor_ref.alive(game) {
             let mut grave = grave_ref.deref(game).clone();
             *grave_ref.deref_mut(game) = match grave.information {
-                GraveInformation::Normal{role: _, will, death_cause, death_notes} => {
+                GraveInformation::Normal{role: _, alibi: will, death_causes, calling_cards} => {
                     grave.information = GraveInformation::Normal{
                         role: Self::disguised_role(&self, game, actor_ref),
-                        will,
-                        death_cause,
-                        death_notes
+                        alibi: will,
+                        death_causes,
+                        calling_cards
                     };
                     grave
                 },

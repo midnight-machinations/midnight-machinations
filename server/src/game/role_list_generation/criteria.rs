@@ -65,12 +65,10 @@ pub const REJECT_EXCEEDED_ROLE_LIMITS: GenerationCriterion = GenerationCriterion
             let mut neighbors_to_add = Vec::new();
 
             for role in exceeded_roles {
-                for assignment in node.assignments.iter() {
+                for (idx, assignment) in node.assignments.iter().enumerate() {
                     if assignment.role == Some(role) {
                         let mut new_node = node.clone();
-                        new_node.assignments.iter_mut()
-                            .filter(|a| a.role == Some(role))
-                            .for_each(|a| a.role = None);
+                        new_node.assignments[idx].role = None;
                         neighbors_to_add.push(new_node);
                     }
                 }

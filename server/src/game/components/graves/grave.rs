@@ -23,40 +23,33 @@ pub enum GraveInformation {
     #[serde(rename_all = "camelCase")]
     Normal{
         role: Role,
-        will: String,
-        death_cause: GraveDeathCause,
-        death_notes: Vec<String>,
+        alibi: String,
+        death_causes: Vec<GraveDeathCause>,
+        calling_cards: Vec<String>,
     }
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq, PartialOrd, Ord)]
 #[serde(rename_all = "camelCase")]
-#[serde(tag = "type", content = "killers")]
+#[serde(tag = "type", content = "value")]
 pub enum GraveDeathCause {
-    None,
     Execution,
     Ascension,
-    Killers(Vec<GraveKiller>)
-}
-#[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq, PartialOrd, Ord, Hash)]
-#[serde(rename_all = "camelCase")]
-#[serde(tag = "type", content = "value")]
-pub enum GraveKiller {
     RoleSet(RoleSet),
     Role(Role),
     Suicide,
     Quit,
 }
 
-impl From<Role> for GraveKiller {
+impl From<Role> for GraveDeathCause {
     fn from(value: Role) -> Self {
-        GraveKiller::Role(value)
+        GraveDeathCause::Role(value)
     }
 }
 
-impl From<RoleSet> for GraveKiller {
+impl From<RoleSet> for GraveDeathCause {
     fn from(value: RoleSet) -> Self {
-        GraveKiller::RoleSet(value)
+        GraveDeathCause::RoleSet(value)
     }
 }
 
@@ -86,17 +79,17 @@ impl Grave{
 
 
     pub fn from_player_night(game: &Game, midnight_variables: &OnMidnightFold, player_ref: PlayerReference) -> Grave {
-        let mut killers = player_ref.night_grave_killers(midnight_variables).clone();
-        killers.shuffle(&mut rng());
+        let mut death_causes = player_ref.night_grave_killers(midnight_variables).clone();
+        death_causes.shuffle(&mut rng());
         Grave {
             player: player_ref,
             died_phase: GravePhase::Night,
             day_number:  game.phase_machine.day_number,
             information: GraveInformation::Normal{
                 role: player_ref.night_grave_role(midnight_variables).unwrap_or(player_ref.role(game)),
-                will: player_ref.night_grave_will(midnight_variables).clone(),
-                death_cause: GraveDeathCause::Killers(killers),
-                death_notes: player_ref.night_grave_death_notes(midnight_variables).clone()
+                alibi: player_ref.night_grave_will(midnight_variables).clone(),
+                death_causes,
+                calling_cards: player_ref.night_grave_calling_cards(midnight_variables).clone()
             },
         }
     }
@@ -107,9 +100,9 @@ impl Grave{
             day_number: game.phase_machine.day_number,
             information: GraveInformation::Normal{
                 role: player_ref.role(game), 
-                death_cause: GraveDeathCause::Execution, 
-                will: player_ref.alibi(game).to_owned(), 
-                death_notes: vec![]
+                death_causes: vec![GraveDeathCause::Execution], 
+                alibi: player_ref.alibi(game).to_owned(), 
+                calling_cards: vec![]
             }
         }
     }
@@ -121,26 +114,25 @@ impl Grave{
             day_number: game.phase_machine.day_number,
             information: GraveInformation::Normal { 
                 role: player_ref.role(game), 
-                death_cause: GraveDeathCause::Killers(vec![GraveKiller::Suicide]), 
-                death_notes: vec![],
-                will: player_ref.alibi(game).to_owned(), 
+                death_causes: vec![GraveDeathCause::Suicide], 
+                calling_cards: vec![],
+                alibi: player_ref.alibi(game).to_owned(), 
 
             }
         }
     }
 
-    pub fn from_player_leave_town(game: &Game, player_ref: PlayerReference) -> Grave {
+    pub fn from_player_ascend(game: &Game, player_ref: PlayerReference) -> Grave {
         Grave {
             player: player_ref,
             died_phase: GravePhase::from_phase_type(game.current_phase().phase()), 
             day_number: game.phase_machine.day_number,
             information: GraveInformation::Normal { 
                 role: player_ref.role(game), 
-                death_cause: GraveDeathCause::Ascension, 
-                will: player_ref.alibi(game).to_owned(), 
-                death_notes: vec![]
+                death_causes: vec![GraveDeathCause::Ascension], 
+                alibi: player_ref.alibi(game).to_owned(), 
+                calling_cards: vec![]
             }
         }
     }
 }
-

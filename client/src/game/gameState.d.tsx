@@ -115,7 +115,7 @@ export type PlayerGameState = {
 
     notes: UnsafeString[],
     crossedOutOutlines: number[],
-    deathNote: UnsafeString,
+    callingCard: UnsafeString,
 
     savedControllers: ListMapData<ControllerID, SavedController>,
 

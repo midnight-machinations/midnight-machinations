@@ -43,6 +43,9 @@ export function getRoleSetsFromRole(role: Role): RoleSet[] {
     const ROLES = roleJsonData();
     return [...ROLES[role].roleSets, "any"]
 }
+export function getAllRoleSets(): RoleSet[] {
+    return ROLE_SETS as unknown as RoleSet[];
+}
 
 
 export type RoleOutline = RoleOutlineOption[];

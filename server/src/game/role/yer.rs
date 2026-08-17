@@ -46,7 +46,7 @@ impl RoleStateTrait for Yer {
                     .attackers([actor_ref])
                     .grave_killer(Role::Yer)
                     .power(AttackPower::ArmorPiercing)
-                    .leave_death_note()
+                    .leave_calling_card()
                     .attack(game, midnight_variables, target_ref);
             } else {
                 if priority != OnMidnightPriority::Convert {return}
@@ -78,7 +78,7 @@ impl RoleStateTrait for Yer {
                     .attackers([actor_ref])
                     .grave_killer(Role::Yer)
                     .power(AttackPower::ProtectionPiercing)
-                    .leave_death_note()
+                    .leave_calling_card()
                     .attack(game, midnight_variables, actor_ref);
 
                 actor_ref.edit_role_ability_helper(game, self);

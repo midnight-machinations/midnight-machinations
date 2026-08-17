@@ -160,10 +160,6 @@ pub enum GameOverReason {
 type Assignments = VecMap<PlayerReference, OutlineAssignment>;
 
 impl Game {
-    pub const DISCONNECT_TIMER_SECS: u16 = 60 * 2;
-
-    
-
     #[expect(clippy::cast_possible_truncation, reason = "Game can only have 255 players maximum")]
     pub fn num_players(&self) -> u8 {
         self.players.len() as u8
