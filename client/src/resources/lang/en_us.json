@@ -430,6 +430,7 @@
     "role.cerenovous.name:var.0": "Cerenovouses",
     "role.cerenovous.roleDataText": "\\0 brains remaining",
     "controllerId.role.cerenovous.0.name": "Brain",
+    "controllerId.role.cerenovous.1.name": "Hide votes",
     
     "role.informant.name": "Informant",
     "role.informant.name:var.0": "Informants",
