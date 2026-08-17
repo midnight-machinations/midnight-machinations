@@ -705,6 +705,15 @@
             {"type":"witnessesCalled", "playerOnTrial":51, "witnesses":[]}
         ]
     },
+    "pyrotechnician": {
+        "mainRoleSet": "mafia",
+        "roleSets": ["mafia", "mafiaSupport"],
+        "armor": false,
+        "aura": null,
+        "maxCount": 1,
+        "canWriteCallingCard": false,
+        "chatMessages":[]
+    },
     "cerenovous": {
         "mainRoleSet": "mafia",
         "roleSets": ["mafia", "mafiaSupport"],

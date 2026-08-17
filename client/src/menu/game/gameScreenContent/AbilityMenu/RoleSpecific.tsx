@@ -74,8 +74,8 @@ function roleSpecificSectionInner(
     let maxChargesCounter = abilityChargesCounter(numPlayers);
 
     switch(roleState.type){
-        case "auditor":
-            return <AuditorMenu roleState={roleState}/>;
+        // case "auditor":
+        //     return <AuditorMenu roleState={roleState}/>;
         case "hypnotist":
             return <HypnotistMenu roleState={roleState}/>;
         case "jailor": 

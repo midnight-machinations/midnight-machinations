@@ -1,4 +1,5 @@
 use serde::Serialize;
+use crate::game::components::hide_votes_message::HideVotesMessage;
 use crate::game::prelude::*;
 use crate::game::Game;
 
@@ -27,21 +28,30 @@ impl RoleStateTrait for Blackmailer {
         actor_ref.edit_role_ability_helper(game, self);
     }
     fn controller_parameters_map(self, game: &Game, actor_ref: PlayerReference) -> ControllerParametersMap {
-        ControllerParametersMap::builder(game)
-            .id(ControllerID::role(actor_ref, Role::Blackmailer, 0))
-            .available_selection(AvailablePlayerListSelection {
-                available_players: PlayerReference::all_players(game)
-                    .filter(|player|
-                        !(!player.alive(game) || 
-                        *player == actor_ref ||
-                        InsiderGroupID::in_same_group(game, actor_ref, *player) ||
-                        Some(*player) == self.previous)
-                    )
-                    .collect(),
-                can_choose_duplicates: false,
-                max_players: Some(1)
-            }).night_typical(actor_ref)
-            .build_map()
+        ControllerParametersMap::combine([
+            ControllerParametersMap::builder(game)
+                .id(ControllerID::role(actor_ref, Role::Blackmailer, 0))
+                .available_selection(AvailablePlayerListSelection {
+                    available_players: PlayerReference::all_players(game)
+                        .filter(|player|
+                            !(!player.alive(game) || 
+                            *player == actor_ref ||
+                            InsiderGroupID::in_same_group(game, actor_ref, *player) ||
+                            Some(*player) == self.previous)
+                        )
+                        .collect(),
+                    can_choose_duplicates: false,
+                    max_players: Some(1)
+                })
+                .night_typical(actor_ref)
+                .build_map(),
+            
+            ControllerParametersMap::builder(game)
+                .id(ControllerID::role(actor_ref, Role::Blackmailer, 1))
+                .available_selection(AvailableBooleanSelection)
+                .allow_players(vec![actor_ref])
+                .build_map()
+        ])
     }
     fn convert_selection_to_visits(self, game: &Game, _id: &AbilityID, actor_ref: PlayerReference) -> Vec<Visit> {
         crate::game::role::common_role::convert_controller_selection_to_visits(
@@ -50,6 +60,11 @@ impl RoleStateTrait for Blackmailer {
             ControllerID::role(actor_ref, Role::Blackmailer, 0),
             false
         )
+    }
+    fn on_validated_ability_input_received(self, game: &mut Game, actor_ref: PlayerReference, _input_player: PlayerReference, ability_input: ControllerInput) {
+        if ability_input.id() == ControllerID::role(actor_ref, Role::Blackmailer, 1) {
+            HideVotesMessage::update_hidden_votes(game)
+        }
     }
     fn default_revealed_groups(self) -> crate::vec_set::VecSet<crate::game::components::insider_group::InsiderGroupID> {
         vec![

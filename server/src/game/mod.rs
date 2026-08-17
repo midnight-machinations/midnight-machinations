@@ -31,6 +31,7 @@ use crate::game::abilities_component::Abilities;
 use crate::game::chat::PlayerChatGroups;
 use crate::game::components::blocked::BlockedComponent;
 use crate::game::components::fast_forward::FastForwardComponent;
+use crate::game::components::hide_votes_message::HideVotesMessage;
 use crate::game::components::pitchfork_item::PitchforkItemComponent;
 use crate::game::components::role::RoleComponent;
 use crate::game::components::role_reveal::RevealedPlayersComponent;
@@ -111,6 +112,7 @@ pub struct Game {
     
     
     //components with data
+    pub hide_votes_message: HideVotesMessage,
     pub player_chat_groups: PlayerChatGroups,
     pub revealed_players: RevealedPlayersComponent,
     pub graves: Graves,

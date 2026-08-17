@@ -1,21 +1,11 @@
 use rand::{rngs::SmallRng, SeedableRng};
 
 use crate::{
-    client_connection::ClientConnection,
-    game::{
-        abilities_component::Abilities, chat::{ChatComponent, PlayerChatGroups},
-        components::{
-            blocked::BlockedComponent, confused::Confused, cult::Cult, detained::Detained, enfranchise::EnfranchiseComponent, fast_forward::FastForwardComponent, fragile_vest::FragileVestsComponent, graves::Graves, insider_group::{InsiderGroupID, InsiderGroups}, mafia::Mafia, mafia_recruits::MafiaRecruits, pitchfork_item::PitchforkItemComponent, poison::Poison, puppeteer_marionette::PuppeteerMarionette, role::RoleComponent, role_reveal::RevealedPlayersComponent, silenced::Silenced, synopsis::SynopsisTracker, tags::Tags, verdicts_today::VerdictsToday, win_condition::WinConditionComponent
-        },
-        controllers::Controllers,
-        event::{on_game_start::OnGameStart, AsInvokable as _, Invokable as _}, game_client::GameClient, modifiers::ModifierID, phase::PhaseStateMachine,
-        player::{Player, PlayerInitializeParameters, PlayerReference},
-        role_list_generation::{OutlineListAssignment, RoleListGenerator}, settings::Settings,
-        spectator::{spectator_pointer::SpectatorPointer, Spectator, SpectatorInitializeParameters}, Assignments,
-        Game, RejectStartReason
-    },
-    packet::ToClientPacket, room::{name_validation::generate_random_name, RoomClientID},
-    vec_map::VecMap
+    client_connection::ClientConnection, game::{
+        Assignments, Game, RejectStartReason, abilities_component::Abilities, chat::{ChatComponent, PlayerChatGroups}, components::{
+            blocked::BlockedComponent, confused::Confused, cult::Cult, detained::Detained, enfranchise::EnfranchiseComponent, fast_forward::FastForwardComponent, fragile_vest::FragileVestsComponent, graves::Graves, hide_votes_message::HideVotesMessage, insider_group::{InsiderGroupID, InsiderGroups}, mafia::Mafia, mafia_recruits::MafiaRecruits, pitchfork_item::PitchforkItemComponent, poison::Poison, puppeteer_marionette::PuppeteerMarionette, role::RoleComponent, role_reveal::RevealedPlayersComponent, silenced::Silenced, synopsis::SynopsisTracker, tags::Tags, verdicts_today::VerdictsToday, win_condition::WinConditionComponent
+        }, controllers::Controllers, event::{AsInvokable as _, Invokable as _, on_game_start::OnGameStart}, game_client::GameClient, modifiers::ModifierID, phase::PhaseStateMachine, player::{Player, PlayerInitializeParameters, PlayerReference}, role_list_generation::{OutlineListAssignment, RoleListGenerator}, settings::Settings, spectator::{Spectator, SpectatorInitializeParameters, spectator_pointer::SpectatorPointer}
+    }, packet::ToClientPacket, room::{RoomClientID, name_validation::generate_random_name}, vec_map::VecMap
 };
 
 impl Game{
@@ -106,6 +96,7 @@ impl Game{
                 settings,
 
                 player_chat_groups: PlayerChatGroups::new(),
+                hide_votes_message: HideVotesMessage::default(),
                 enfranchise: unsafe{EnfranchiseComponent::new(num_players)},
                 revealed_players: unsafe{RevealedPlayersComponent::new(num_players)},
                 controllers: Controllers::default(),

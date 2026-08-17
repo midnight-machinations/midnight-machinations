@@ -45,6 +45,7 @@
     "psychicEvil":"result",
     "psychicGood":"result",
     "auditorResult": "result",
+    "votesHidden": "special",
     "snoopResult": "result",
     "polymathSnoopResult": "result",
     "gossipResult": "result",
