@@ -37,7 +37,6 @@ impl RoleStateTrait for Slayer {
                 *death_cause = vec![GraveDeathCause::Role(Role::Slayer)];
             }
 
-            shot.add_private_chat_message(game, ChatMessageVariant::DeputyShotYou);
             let killed = Attack::new_attack(
                 game,
                 true,
