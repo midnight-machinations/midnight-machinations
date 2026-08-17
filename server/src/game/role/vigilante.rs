@@ -34,7 +34,7 @@ impl RoleStateTrait for Vigilante {
             OnMidnightPriority::TopPriority if VigilanteState::WillSuicide == self.state => {
                 NightAttack::new()
                     .attackers([actor_ref])
-                    .grave_killer(GraveKiller::Suicide)
+                    .grave_killer(Role::Vigilante)
                     .power(AttackPower::ProtectionPiercing)
                     .attack(game, midnight_variables, actor_ref);
                 self.state = VigilanteState::Suicided;

@@ -422,10 +422,10 @@ export function createGameManager(): GameManager {
                 crossedOutOutlines: crossedOutOutlines
             });
         },
-        sendSaveDeathNotePacket(notes) {
+        sendSaveCallingCardPacket(notes) {
             this.server.sendPacket({
-                type: "saveDeathNote",
-                deathNote: notes.trim().length === 0 ? null : notes
+                type: "saveCallingCard",
+                callingCard: notes.trim().length === 0 ? null : notes
             });
         },
         sendSendChatMessagePacket(text, block, controllingPlayer) {

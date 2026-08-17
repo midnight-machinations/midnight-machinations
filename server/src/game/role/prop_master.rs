@@ -1,5 +1,3 @@
-use std::matches;
-
 use rand::seq::SliceRandom as _;
 use serde::Serialize;
 use crate::game::abilities::role_abilities::RoleAbility;
@@ -77,7 +75,14 @@ impl RoleStateTrait for PropMaster {
 
 
 
-    fn controller_parameters_map(self, game: &Game, actor_ref: PlayerReference) -> ControllerParametersMap {       
+    fn controller_parameters_map(self, game: &Game, actor_ref: PlayerReference) -> ControllerParametersMap {  
+        let player_with_prop_selected_or_chosen = match self.prop {
+            Prop::Set{target} => Some(target),
+            Prop::Holding => ControllerID::role(actor_ref, Role::PropMaster, 0)
+                .get_player_list_selection(game)
+                .and_then(|selection| selection.0.first().copied())
+        };
+
         ControllerParametersMap::combine([
             ControllerParametersMap::builder(game)
                 .id(ControllerID::role(actor_ref, Role::PropMaster, 0))
@@ -97,10 +102,16 @@ impl RoleStateTrait for PropMaster {
                 .night_typical(actor_ref)
                 .add_grayed_out_condition(
                     // Framed player is not selected
-                    !matches!(self.prop, Prop::Set{..}) &&
-                    ControllerID::role(actor_ref, Role::PropMaster, 0)
-                        .get_player_list_selection(game)
-                        .is_none_or(|selection| selection.0.is_empty())
+                    player_with_prop_selected_or_chosen.is_none()
+                )
+                .build_map(),
+            ControllerParametersMap::builder(game)
+                .id(ControllerID::role(actor_ref, Role::PropMaster, 2))
+                .available_selection(AvailableGraveDeathCausesSelection)
+                .add_grayed_out_condition(actor_ref.ability_deactivated_from_death(game) || Detained::is_detained(game, actor_ref))
+                .allow_players([actor_ref])
+                .add_grayed_out_condition(
+                    player_with_prop_selected_or_chosen.is_none()
                 )
                 .build_map()
         ])
@@ -130,6 +141,30 @@ impl RoleStateTrait for PropMaster {
     fn on_any_death(self, game: &mut Game, actor_ref: PlayerReference, _dead_player_ref: PlayerReference) {
         self.take_prop(game, actor_ref);
     }
+    fn on_grave_added(self, game: &mut Game, actor_ref: PlayerReference, grave: GraveReference) {
+        if BlockedComponent::blocked(game, actor_ref) {return;}
+        if actor_ref.ability_deactivated_from_death(game) {return;}
+        let grave_ref = grave;
+        
+        if self.has_prop(grave.deref(game).player) {
+            let mut grave = grave_ref.deref(game).clone();
+            *grave_ref.deref_mut(game) = match grave.information {
+                GraveInformation::Normal{role, alibi, death_causes, calling_cards} => {
+                    grave.information = GraveInformation::Normal{
+                        role,
+                        alibi,
+                        death_causes: ControllerID::role(actor_ref, Role::PropMaster, 2)
+                            .get_grave_death_causes_selection(game)
+                            .map(|selection| selection.0.clone())
+                            .unwrap_or(death_causes),
+                        calling_cards
+                    };
+                    grave
+                },
+                _ => grave
+            };
+        }
+    }
     fn on_phase_start(self, game: &mut Game, actor_ref: PlayerReference, _phase: PhaseType) {
         self.take_prop(game, actor_ref);
     }
@@ -151,6 +186,10 @@ impl RoleStateTrait for PropMaster {
 
 
 impl PropMaster {
+    fn has_prop(&self, player: PlayerReference)->bool{
+        let Prop::Set { target } = self.prop else {return false};
+        player == target
+    }
     pub fn take_prop(self, game: &mut Game, actor_ref: PlayerReference) {
         if
             let Prop::Set { target } = self.prop &&

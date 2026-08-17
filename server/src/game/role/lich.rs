@@ -100,7 +100,7 @@ impl RoleStateTrait for Lich {
                         .attackers([actor_ref])
                         .grave_killer(Role::Lich)
                         .power(AttackPower::ArmorPiercing)
-                        .leave_death_note()
+                        .leave_calling_card()
                         .attack(game, midnight_variables, target);
                 }
             },

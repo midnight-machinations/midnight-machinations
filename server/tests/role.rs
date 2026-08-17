@@ -1159,9 +1159,9 @@ fn grave_contains_multiple_killers() {
             day_number: 2,
             information: GraveInformation::Normal{
                 role: Role::Detective,
-                death_cause: GraveDeathCause::Killers(vec![GraveKiller::RoleSet(RoleSet::Mafia), GraveKiller::Role(Role::Vigilante)]),
-                will: "".to_string(),
-                death_notes: vec![],
+                death_causes: vec![GraveDeathCause::RoleSet(RoleSet::Mafia), GraveDeathCause::Role(Role::Vigilante)],
+                alibi: "".to_string(),
+                calling_cards: vec![],
             }
         } ||
         *unsafe{GraveReference::new_unchecked(0)}.deref(&game) ==
@@ -1171,9 +1171,9 @@ fn grave_contains_multiple_killers() {
             day_number: 2,
             information: GraveInformation::Normal{
                 role: Role::Detective,
-                death_cause: GraveDeathCause::Killers(vec![GraveKiller::Role(Role::Vigilante), GraveKiller::RoleSet(RoleSet::Mafia)]),
-                will: "".to_string(),
-                death_notes: vec![],
+                death_causes: vec![GraveDeathCause::Role(Role::Vigilante), GraveDeathCause::RoleSet(RoleSet::Mafia)],
+                alibi: "".to_string(),
+                calling_cards: vec![],
             }
         }
     )
@@ -2415,9 +2415,9 @@ fn yer() {
         day_number: 2,
         information: GraveInformation::Normal { 
             role: Role::Detective, 
-            will: "".to_string(), 
-            death_cause: GraveDeathCause::Killers(vec![GraveKiller::Role(Role::Yer)]), 
-            death_notes: Vec::new(),
+            alibi: "".to_string(), 
+            death_causes: vec![GraveDeathCause::Role(Role::Yer)], 
+            calling_cards: Vec::new(),
         },
         
     }};
@@ -2454,9 +2454,9 @@ fn yer() {
         day_number: 3,
         information: GraveInformation::Normal { 
             role: Role::Zealot, 
-            will: "".to_string(), 
-            death_cause: GraveDeathCause::Killers(vec![GraveKiller::Role(Role::Yer)]), 
-            death_notes: Vec::new(),
+            alibi: "".to_string(), 
+            death_causes: vec![GraveDeathCause::Role(Role::Yer)], 
+            calling_cards: Vec::new(),
         },
     }};
 
@@ -2494,9 +2494,9 @@ fn yer() {
         day_number: 4,
         information: GraveInformation::Normal { 
             role: Role::Engineer, 
-            will: "".to_string(), 
-            death_cause: GraveDeathCause::Killers(vec![GraveKiller::Role(Role::Yer)]), 
-            death_notes: Vec::new(),
+            alibi: "".to_string(), 
+            death_causes: vec![GraveDeathCause::Role(Role::Yer)], 
+            calling_cards: Vec::new(),
         },
     }};
 

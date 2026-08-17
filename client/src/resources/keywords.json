@@ -41,8 +41,8 @@
     "neutral": { "style": "keyword-neutral", "link": "category/neutral"},
     "cult": { "style": "keyword-cult", "link": "category/cult"},
 
-    "grave.killer.suicide": { "style": "keyword-info"},
-    "grave.killer.quit": { "style": "keyword-info"},
+    "grave.deathCause.suicide": { "style": "keyword-info"},
+    "grave.deathCause.quit": { "style": "keyword-info"},
     "random.gay": { "style": "keyword-pride","replacement": "random.gay","link": "role/transporter"},
     "random.trans": { "style": "keyword-trans","replacement": "random.trans","link": "role/transporter"},
     "role.wildcard.name": { "style": "keyword-pride", "replacement": "role.wildcard.name", "link":"role/wildcard"},
@@ -67,7 +67,7 @@
     "day": {"link":"category/phases", "style": "keyword-info"},
 
     "menu.will.notes": {"link":"standard/howToPlay", "style": "keyword-info"},
-    "menu.will.deathNote": {"link":"standard/howToPlay", "style": "keyword-info"},
+    "menu.will.callingCard": {"link":"standard/howToPlay", "style": "keyword-info"},
     
     "language":{ "link": "generated/all_text"}
 }

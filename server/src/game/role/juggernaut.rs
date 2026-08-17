@@ -24,7 +24,7 @@ impl RoleStateTrait for Juggernaut {
             .attackers([actor_ref])
             .grave_killer(Role::Juggernaut)
             .power(AttackPower::ArmorPiercing)
-            .leave_death_note()
+            .leave_calling_card()
             .attack(game, midnight_variables, target_ref);
     }
     fn controller_parameters_map(self, game: &Game, actor_ref: PlayerReference) -> ControllerParametersMap {

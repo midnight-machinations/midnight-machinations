@@ -219,6 +219,10 @@
         "midnight": true,
         "visit": "abnormal"
     },
+    "role/propMaster/2": {
+        "midnight": false,
+        "visit": "none"
+    },
     "role/informant/0": {
         "midnight": true,
         "visit": "normal"

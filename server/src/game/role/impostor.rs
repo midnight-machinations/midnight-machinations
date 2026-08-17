@@ -53,8 +53,8 @@ impl RoleStateTrait for Impostor {
             let grave = grave.deref_mut(game);
             grave.information = match grave.information.clone() {
                 GraveInformation::Obscured => GraveInformation::Obscured,
-                GraveInformation::Normal {will, death_cause, death_notes, .. } => {
-                    GraveInformation::Normal { role, will, death_cause, death_notes } 
+                GraveInformation::Normal {alibi: will, death_causes: death_cause, calling_cards, .. } => {
+                    GraveInformation::Normal { role, alibi: will, death_causes: death_cause, calling_cards } 
                 },
             };
         }

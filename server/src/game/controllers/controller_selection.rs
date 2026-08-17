@@ -71,6 +71,7 @@ selection_kinds! {
     TwoRoleOption: AvailableTwoRoleOptionSelection, TwoRoleOptionSelection;
 
     TwoRoleOutlineOption: AvailableTwoRoleOutlineOptionSelection, TwoRoleOutlineOptionSelection;
+    GraveDeathCauses: AvailableGraveDeathCausesSelection, GraveDeathCausesSelection;    
     String: AvailableStringSelection, StringSelection;
     Integer: AvailableIntegerSelection, IntegerSelection;
     Kira: AvailableKiraSelection, KiraSelection;

@@ -156,6 +156,7 @@ impl Possession {
             ControllerSelection::TwoRoleOutlineOption(..) |
             ControllerSelection::String(..) |
             ControllerSelection::Integer(..) |
+            ControllerSelection::GraveDeathCauses(..) |
             ControllerSelection::Kira(..) => {}
         }
     }

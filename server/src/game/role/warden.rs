@@ -164,7 +164,7 @@ impl Warden {
                 .attackers([actor_ref])
                 .grave_killer(Role::Warden)
                 .power(AttackPower::ArmorPiercing)
-                .leave_death_note()
+                .leave_calling_card()
                 .attack(game, midnight_variables, *player);
         }
     }

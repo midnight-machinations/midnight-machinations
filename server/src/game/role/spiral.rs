@@ -22,7 +22,7 @@ impl RoleStateTrait for Spiral {
                     .attackers([actor_ref])
                     .grave_killer(Role::Spiral)
                     .power(AttackPower::ArmorPiercing)
-                    .leave_death_note()
+                    .leave_calling_card()
                     .attack(game, midnight_variables, target_ref);
                 Spiral::spiral_visitors(game, midnight_variables, actor_ref, target_ref);
             }
@@ -70,7 +70,7 @@ impl Spiral {
                 .attackers([actor_ref])
                 .grave_killer(Role::Spiral)
                 .power(AttackPower::ArmorPiercing)
-                .leave_death_note(),
+                .leave_calling_card(),
             PoisonAlert::NoAlert,
         );
 

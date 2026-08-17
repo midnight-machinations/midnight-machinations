@@ -25,7 +25,7 @@ pub struct Player {
     alive: bool,
     notes: Vec<String>,
     crossed_out_outlines: Vec<u8>,
-    death_note: Option<String>,
+    calling_card: Option<String>,
 }
 impl Player {
     pub fn new(name: String, sender: ClientSender) -> Self {
@@ -36,7 +36,7 @@ impl Player {
             alive: true,
             notes: vec![],
             crossed_out_outlines: vec![],
-            death_note: None,
+            calling_card: None,
         }
     }
 }
@@ -54,7 +54,7 @@ pub mod test {
             alive: true,
             notes: vec![],
             crossed_out_outlines: vec![],
-            death_note: None,
+            calling_card: None,
         }
     }
 }

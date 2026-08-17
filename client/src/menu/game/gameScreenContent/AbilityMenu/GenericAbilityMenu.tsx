@@ -15,7 +15,8 @@ import {
     translateControllerIDNoRole,
     PlayerListSelection,
     IntegerSelection,
-    controllerIdToLink
+    controllerIdToLink,
+    GraveDeathCausesSelection
 } from "../../../../game/controllerInput";
 import { Button } from "../../../../components/Button";
 import TwoRoleOutlineOptionSelectionMenu from "./ControllerSelectionTypes/TwoRoleOutlineOptionSelectionMenu";
@@ -41,6 +42,7 @@ import { loadSettingsParsed } from "../../../../game/localStorage";
 import { setWikiSearchPage } from "../../../../components/Wiki";
 import { AnchorControllerContext } from "../../../Anchor";
 import { MenuControllerContext } from "../../GameScreen";
+import GraveDeathCausesSelectionMenu from "./ControllerSelectionTypes/GraveDeathCausesSelectionMenu";
 
 type GroupName = `${PlayerIndex}/${Role}` | 
     "syndicate" | 
@@ -464,6 +466,30 @@ function SwitchSingleAbilityMenuType(props: Readonly<{
                     });
                 }}
             />;
+        }
+        case "graveDeathCauses": {
+            let input: GraveDeathCausesSelection;
+            if(
+                props.selected === null ||
+                props.selected.type !== "graveDeathCauses"
+            ){
+                input = [];
+            }else{
+                input = props.selected.selection;
+            }
+
+            return <GraveDeathCausesSelectionMenu
+                selection={input}
+                onChoose={(selection) => {
+                    GAME_MANAGER.sendControllerInput({
+                        id,
+                        selection: {
+                            type: "graveDeathCauses",
+                            selection: selection
+                        }
+                    });
+                }}
+            />
         }
         case "twoRoleOutlineOption":{
             let input: TwoRoleOutlineOptionSelection;

@@ -109,9 +109,9 @@ pub struct PlayerMidnightVariables {
     pub messages: Vec<ChatMessageVariant>,
 
     pub grave_role: Option<Role>,
-    pub grave_killers: Vec<GraveKiller>,
-    pub grave_will: String,
-    pub grave_death_notes: Vec<String>,
+    pub grave_death_causes: Vec<GraveDeathCause>,
+    pub grave_alibi: String,
+    pub grave_calling_cards: Vec<String>,
 
     pub guarded_players: Vec<PlayerReference>
 }
@@ -125,9 +125,9 @@ impl PartialEq for PlayerMidnightVariables {
         self.framed == other.framed && 
         self.messages == other.messages && 
         self.grave_role == other.grave_role && 
-        self.grave_killers == other.grave_killers && 
-        self.grave_will == other.grave_will && 
-        self.grave_death_notes == other.grave_death_notes
+        self.grave_death_causes == other.grave_death_causes && 
+        self.grave_alibi == other.grave_alibi && 
+        self.grave_calling_cards == other.grave_calling_cards
     }
 }
 
@@ -148,9 +148,9 @@ impl PlayerMidnightVariables {
             messages: Vec::new(),
 
             grave_role: None,
-            grave_killers: Vec::new(),
-            grave_will: player_ref.alibi(game).to_owned(),
-            grave_death_notes: Vec::new(),
+            grave_death_causes: Vec::new(),
+            grave_alibi: player_ref.alibi(game).to_owned(),
+            grave_calling_cards: Vec::new(),
             guarded_players: Vec::new(),
         }
     }
@@ -223,30 +223,30 @@ impl PlayerReference {
         midnight_variables.get_mut(self).grave_role = grave_role;
     }
 
-    pub fn night_grave_killers(self, midnight_variables: &OnMidnightFold) -> &Vec<GraveKiller> {
-        &midnight_variables.get(self).grave_killers
+    pub fn night_grave_killers(self, midnight_variables: &OnMidnightFold) -> &Vec<GraveDeathCause> {
+        &midnight_variables.get(self).grave_death_causes
     }
-    pub fn push_night_grave_killers(self, midnight_variables: &mut OnMidnightFold, grave_killer: GraveKiller){
-        midnight_variables.get_mut(self).grave_killers.push(grave_killer);
+    pub fn push_night_grave_killers(self, midnight_variables: &mut OnMidnightFold, grave_killer: GraveDeathCause){
+        midnight_variables.get_mut(self).grave_death_causes.push(grave_killer);
     }
-    pub fn set_night_grave_killers(self, midnight_variables: &mut OnMidnightFold, grave_killers: Vec<GraveKiller>){
-        midnight_variables.get_mut(self).grave_killers = grave_killers;
+    pub fn set_night_grave_killers(self, midnight_variables: &mut OnMidnightFold, grave_killers: Vec<GraveDeathCause>){
+        midnight_variables.get_mut(self).grave_death_causes = grave_killers;
     }
 
     pub fn night_grave_will(self, midnight_variables: &OnMidnightFold) -> &String {
-        &midnight_variables.get(self).grave_will
+        &midnight_variables.get(self).grave_alibi
     }
     pub fn set_night_grave_will(self, midnight_variables: &mut OnMidnightFold, grave_will: String){
-        midnight_variables.get_mut(self).grave_will = grave_will;
+        midnight_variables.get_mut(self).grave_alibi = grave_will;
     }
 
-    pub fn night_grave_death_notes(self, midnight_variables: &OnMidnightFold) -> &Vec<String> {
-        &midnight_variables.get(self).grave_death_notes
+    pub fn night_grave_calling_cards(self, midnight_variables: &OnMidnightFold) -> &Vec<String> {
+        &midnight_variables.get(self).grave_calling_cards
     }
-    pub fn push_night_grave_death_notes(self, midnight_variables: &mut OnMidnightFold, death_note: String){
-        midnight_variables.get_mut(self).grave_death_notes.push(death_note);
+    pub fn push_night_grave_calling_cards(self, midnight_variables: &mut OnMidnightFold, calling_card: String){
+        midnight_variables.get_mut(self).grave_calling_cards.push(calling_card);
     }
-    pub fn set_night_grave_death_notes(self, midnight_variables: &mut OnMidnightFold, grave_death_notes: Vec<String>){
-        midnight_variables.get_mut(self).grave_death_notes = grave_death_notes;
+    pub fn set_night_grave_calling_cards(self, midnight_variables: &mut OnMidnightFold, grave_calling_cards: Vec<String>){
+        midnight_variables.get_mut(self).grave_calling_cards = grave_calling_cards;
     }
 }

@@ -5,6 +5,7 @@ import translate, { translateChecked } from "./lang";
 import { Role } from "./roleState.d";
 import abilitiesJson from "../resources/abilityId.json";
 import { ChatMessageIndex } from "../components/ChatMessage";
+import { GraveDeathCause } from "./graveState";
 
 export type AbilityJsonData = Partial<Record<ControllerIDLink, SingleAbilityJsonData>>;
 export type SingleAbilityJsonData = {
@@ -223,6 +224,9 @@ export type ControllerSelection = {
     type: "twoRoleOption"
     selection: TwoRoleOptionSelection
 } | {
+    type: "graveDeathCauses",
+    selection: GraveDeathCausesSelection
+} | {
     type: "twoRoleOutlineOption"
     selection: TwoRoleOutlineOptionSelection
 } | {
@@ -255,6 +259,8 @@ export function defaultControllerSelection(available: AvailableControllerSelecti
             return {type: "twoRoleOption", selection: [null, null]};
         case "twoRoleOutlineOption":
             return {type: "twoRoleOutlineOption", selection: [null, null]};
+        case "graveDeathCauses":
+            return {type: "graveDeathCauses", selection: []};
         case "string":
             return {type: "string", selection: ""};
         case "integer":
@@ -286,6 +292,8 @@ export type AvailableControllerSelection = {
 } | {
     type: "twoRoleOutlineOption"
     selection: AvailableTwoRoleOutlineOptionSelection,
+} | {
+    type: "graveDeathCauses"
 } | {
     type: "string"
 } | {
@@ -330,6 +338,8 @@ export type AvailableTwoRoleOptionSelection = {
     availableRoles: (Role | null)[],
     canChooseDuplicates: boolean
 };
+
+export type GraveDeathCausesSelection = GraveDeathCause[];
 
 export type TwoRoleOutlineOptionSelection = [PlayerIndex | null, PlayerIndex | null];
 export type AvailableTwoRoleOutlineOptionSelection = (number | null)[];

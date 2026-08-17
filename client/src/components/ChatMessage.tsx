@@ -5,7 +5,7 @@ import StyledText, { KeywordDataMap, PLAYER_SENDER_KEYWORD_DATA } from "./Styled
 import "./chatMessage.css"
 import { ChatGroup, Conclusion, DefensePower, InsiderGroup, PhaseState, PlayerIndex, Tag, translateConclusion, translateVisitTag, translateWinCondition, UnsafeString, Verdict, VisitTag, WinCondition } from "../game/gameState.d";
 import { Role, RoleState } from "../game/roleState.d";
-import { Grave } from "../game/graveState";
+import { Grave, translateGraveDeathCauses } from "../game/graveState";
 import GraveComponent from "./grave";
 import { RoleList, translateRoleOutline } from "../game/roleListState.d";
 import { CopyButton } from "./ClipboardButtons";
@@ -664,6 +664,11 @@ export function translateChatMessage(
                     out = translate("chatMessage.abilityUsed.selection.twoRoleOption",
                         message.selection.selection[0]===null?translate("none"):translate("role."+message.selection.selection[0]+".name"),
                         message.selection.selection[1]===null?translate("none"):translate("role."+message.selection.selection[1]+".name"),
+                    );
+                    break;
+                case "graveDeathCauses":
+                    out = translate("chatMessage.abilityUsed.selection.graveDeathCauses",
+                        translateGraveDeathCauses(message.selection.selection)
                     );
                     break;
                 case "twoRoleOutlineOption":                    

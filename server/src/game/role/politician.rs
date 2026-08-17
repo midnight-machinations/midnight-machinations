@@ -182,8 +182,8 @@ impl Politician {
             if !player.alive(game) || player.win_condition(game).is_loyalist_for(GameConclusion::Politician) {continue}
             
             let mut grave = Grave::from_player_lynch(game, player);
-            if let GraveInformation::Normal{death_cause, ..} = &mut grave.information {
-                *death_cause = GraveDeathCause::Killers(vec![GraveKiller::Role(Role::Politician)]);
+            if let GraveInformation::Normal{death_causes, ..} = &mut grave.information {
+                *death_causes = vec![GraveDeathCause::Role(Role::Politician)];
             }
             player.die_and_add_grave(game, grave);
             

@@ -2,7 +2,7 @@ use rand::seq::SliceRandom;
 use crate::{
     game::{
         Game, attack_power::{AttackPower, DefensePower}, chat::{ChatMessage, ChatMessageVariant}, components::{
-            attack::night_attack::NightAttack, fragile_vest::FragileVests, graves::{Graves, grave::{Grave, GraveKiller}}, insider_group::InsiderGroupID, player_component::PlayerComponent, role::RoleComponent,
+            attack::night_attack::NightAttack, fragile_vest::FragileVests, graves::{Graves, grave::{Grave, GraveDeathCause}}, insider_group::InsiderGroupID, player_component::PlayerComponent, role::RoleComponent,
         }, controllers::{ControllerID, PlayerListSelection}, event::{
             AsInvokable as _, Invokable as _, on_any_death::OnAnyDeath, on_midnight::{OnMidnightFold, OnMidnightPriority},
         }, role::{RoleState, medium::Medium, necromancer::Necromancer, prop_master::PropMaster}
@@ -118,7 +118,7 @@ impl PlayerReference{
     pub fn on_midnight_one_player(&self, game: &mut Game, fold: &mut OnMidnightFold, priority: OnMidnightPriority) {
         if self.is_disconnected(game) && self.alive(game) && priority == OnMidnightPriority::Kill {
             NightAttack::new()
-                .grave_killer(GraveKiller::Quit)
+                .grave_killer(GraveDeathCause::Quit)
                 .power(AttackPower::ProtectionPiercing)
                 .attack(game, fold, *self);
         }

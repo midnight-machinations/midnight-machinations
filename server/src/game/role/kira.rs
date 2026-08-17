@@ -107,7 +107,7 @@ impl RoleStateTrait for Kira {
                             .attackers([actor_ref])
                             .grave_killer(Role::Kira)
                             .power(AttackPower::ArmorPiercing)
-                            .leave_death_note()
+                            .leave_calling_card()
                             .attack(game, midnight_variables, *player);
                     }
                 }
