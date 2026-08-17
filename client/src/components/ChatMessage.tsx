@@ -572,7 +572,12 @@ export function translateChatMessage(
                         message.dayNumber
                     );
             }
-            
+        case "votesHidden":
+            if(message.value){
+                return translate("chatMessage.votesHidden.true");
+            }else{
+                return translate("chatMessage.votesHidden.false");
+            }
         case "trialInformation":
             return translate("chatMessage.trialInformation",
                 message.requiredVotes,
@@ -1001,6 +1006,9 @@ export type ChatMessageVariant = {
 } | 
 // Trial
 {
+    type: "votesHidden",
+    value: boolean
+} | {
     type: "trialInformation", 
     requiredVotes: number, 
     trialsLeft: number

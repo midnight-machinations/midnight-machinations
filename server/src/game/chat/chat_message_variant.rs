@@ -122,6 +122,7 @@ pub enum ChatMessageVariant {
     MediumHauntStarted{medium: PlayerReference, player: PlayerReference},
     MediumSeance{medium: PlayerReference, player: PlayerReference},
     MediumExists,
+    VotesHidden{value: bool},
     #[serde(rename_all = "camelCase")]
     DeputyKilled{shot: PlayerReference},
     #[serde(rename_all = "camelCase")]
@@ -152,7 +153,7 @@ pub enum ChatMessageVariant {
     YouArePoisoned,
 
     /*
-    Night Information
+        Night Information
     */
     RoleBlocked,
     Wardblocked,

@@ -1,7 +1,7 @@
 
 use serde::{Deserialize, Serialize};
 
-use crate::game::{abilities_component::{ability_id::AbilityID, Abilities}, components::blocked::BlockedComponent, role::Role, Game};
+use crate::game::{Game, abilities_component::{Abilities, ability_id::AbilityID}, components::blocked::BlockedComponent, controllers::ControllerID, role::Role};
 
 use super::{ModifierStateImpl, ModifierID};
 
@@ -21,10 +21,13 @@ impl HiddenVerdictVotes {
         Abilities::ids(game)
             .into_iter()
             .any(|id|{
-                let AbilityID::Role { player, role } = id else {return false};
+                let AbilityID::Role { player, role: _ } = id else {return false};
                 if BlockedComponent::blocked(game, player) {return false}
                 if player.ability_deactivated_from_death(game) {return false}
-                role == Role::Cerenovous || role == Role::Blackmailer
+                ControllerID::role(player, Role::Blackmailer, 1).get_boolean_selection(game).map(|o|o.0).unwrap_or(false) ||
+                ControllerID::role(player, Role::Pyrotechnician, 1).get_boolean_selection(game).map(|o|o.0).unwrap_or(false) ||
+                ControllerID::role(player, Role::Cerenovous, 1).get_boolean_selection(game).map(|o|o.0).unwrap_or(false)
+
             })
     }
 }

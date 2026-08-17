@@ -135,6 +135,7 @@ macros::roles! {
     Maverick : maverick,
     
     Hypnotist : hypnotist,
+    Pyrotechnician : pyrotechnician,
     Blackmailer : blackmailer,
     Cerenovous : cerenovous,
     Informant: informant,

@@ -1,5 +1,5 @@
 use crate::game::{
-    components::ascend::Ascend, controllers::Controllers, event::EventData,
+    components::{ascend::Ascend, hide_votes_message::HideVotesMessage}, controllers::Controllers, event::EventData,
 };
 
 pub struct OnTick;
@@ -15,6 +15,7 @@ impl EventData for OnTick{
 
     fn listeners() -> Vec<super::EventListenerFunction<Self>> {vec![
         Controllers::on_tick,
-        Ascend::on_tick
+        Ascend::on_tick,
+        HideVotesMessage::on_tick
     ]}
 }

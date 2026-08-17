@@ -144,6 +144,8 @@ export type RoleState = {
     type: "blackmailer",
     previous: PlayerIndex | null
 } | {
+    type: "pyrotechnician"
+} | {
     type: "cerenovous",
     previous: PlayerIndex | null,
     currentlyBrained: PlayerIndex | null,

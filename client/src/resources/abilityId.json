@@ -48,7 +48,6 @@
     },
     "role/auditor/0": {
         "midnight": true,
-        "visible": false,
         "visit": "normal"
     },
     "role/doctor/0": {
@@ -272,9 +271,28 @@
         "midnight": true,
         "visit": "normal"
     },
+    "role/blackmailer/1": {
+        "midnight": false,
+        "visit": "none",
+        "instant": true
+    },
+    "role/pyrotechnician/0": {
+        "midnight": true,
+        "visit": "normal"
+    },
+    "role/pyrotechnician/1": {
+        "midnight": false,
+        "visit": "none",
+        "instant": true
+    },
     "role/cerenovous/0": {
         "midnight": true,
         "visit": "normal"
+    },
+    "role/cerenovous/1": {
+        "midnight": false,
+        "visit": "none",
+        "instant": true
     },
     "role/consort/0": {
         "midnight": true,
@@ -500,7 +518,8 @@
         "instant": true
     },
     "nominate": {
-        "midnight": false
+        "midnight": false,
+        "visible": false
     },
     "judge": {
         "midnight": false,

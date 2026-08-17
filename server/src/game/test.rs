@@ -2,12 +2,8 @@ use rand::{rngs::SmallRng, SeedableRng as _};
 
 use crate::{
     game::{
-        abilities_component::Abilities, chat::{ChatComponent, PlayerChatGroups}, components::{blocked::BlockedComponent,
-        enfranchise::EnfranchiseComponent, fast_forward::FastForwardComponent, graves::Graves, pitchfork_item::PitchforkItemComponent,
-        role::RoleComponent, role_reveal::RevealedPlayersComponent}, event::{AsInvokable as _, Invokable as _},
-        role_list_generation::RoleListGenerator
-    },
-    vec_map::VecMap
+        abilities_component::Abilities, chat::{ChatComponent, PlayerChatGroups}, components::{blocked::BlockedComponent, enfranchise::EnfranchiseComponent, fast_forward::FastForwardComponent, graves::Graves, hide_votes_message::HideVotesMessage, pitchfork_item::PitchforkItemComponent, role::RoleComponent, role_reveal::RevealedPlayersComponent}, event::{AsInvokable as _, Invokable as _}, role_list_generation::RoleListGenerator
+    }, vec_map::VecMap
 };
 
 use super::{
@@ -63,6 +59,7 @@ pub fn mock_game(settings: Settings, num_players: u8) -> Result<(Game, Assignmen
         settings,
 
         player_chat_groups: PlayerChatGroups::new(),
+        hide_votes_message: HideVotesMessage::default(),
         enfranchise: unsafe{EnfranchiseComponent::new(num_players)},
         graves: Graves::default(),
         controllers: Controllers::default(),

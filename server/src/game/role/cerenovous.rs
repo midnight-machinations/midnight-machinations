@@ -1,5 +1,5 @@
 use serde::Serialize;
-use crate::game::{prelude::*, role::informant::Informant};
+use crate::game::{components::hide_votes_message::HideVotesMessage, prelude::*, role::informant::Informant};
 
 
 #[derive(Clone, Debug, Serialize, Default)]
@@ -40,23 +40,31 @@ impl RoleStateTrait for Cerenovous {
         actor_ref.edit_role_ability_helper(game, self);
     }
     fn controller_parameters_map(self, game: &Game, actor_ref: PlayerReference) -> ControllerParametersMap {
-        ControllerParametersMap::builder(game)
-            .id(ControllerID::role(actor_ref, Role::Cerenovous, 0))
-            .available_selection(AvailablePlayerListSelection {
-                available_players: PlayerReference::all_players(game)
-                    .filter(|player|
-                        !(!player.alive(game) || 
-                        *player == actor_ref ||
-                        InsiderGroupID::in_same_group(game, actor_ref, *player) ||
-                        Some(*player) == self.previous)
-                    )
-                    .collect(),
-                can_choose_duplicates: false,
-                max_players: Some(1)
-            })
-            .night_typical(actor_ref)
-            .add_grayed_out_condition(self.charges == 0)
-            .build_map()
+        ControllerParametersMap::combine([
+            ControllerParametersMap::builder(game)
+                .id(ControllerID::role(actor_ref, Role::Cerenovous, 0))
+                .available_selection(AvailablePlayerListSelection {
+                    available_players: PlayerReference::all_players(game)
+                        .filter(|player|
+                            !(!player.alive(game) || 
+                            *player == actor_ref ||
+                            InsiderGroupID::in_same_group(game, actor_ref, *player) ||
+                            Some(*player) == self.previous)
+                        )
+                        .collect(),
+                    can_choose_duplicates: false,
+                    max_players: Some(1)
+                })
+                .night_typical(actor_ref)
+                .add_grayed_out_condition(self.charges == 0)
+                .build_map(),
+            
+            ControllerParametersMap::builder(game)
+                .id(ControllerID::role(actor_ref, Role::Cerenovous, 1))
+                .available_selection(AvailableBooleanSelection)
+                .allow_players(vec![actor_ref])
+                .build_map()
+        ])
     }
     fn convert_selection_to_visits(self, game: &Game, _id: &AbilityID, actor_ref: PlayerReference) -> Vec<Visit> {
         crate::game::role::common_role::convert_controller_selection_to_visits(
@@ -75,6 +83,11 @@ impl RoleStateTrait for Cerenovous {
         if matches!(phase, PhaseType::Night) {
             self.currently_brained = None;
             actor_ref.edit_role_ability_helper(game, self);
+        }
+    }
+    fn on_validated_ability_input_received(self, game: &mut Game, actor_ref: PlayerReference, _input_player: PlayerReference, ability_input: ControllerInput) {
+        if ability_input.id() == ControllerID::role(actor_ref, Role::Cerenovous, 1) {
+            HideVotesMessage::update_hidden_votes(game)
         }
     }
     fn on_whisper(self, game: &mut Game, actor_ref: PlayerReference, event: &OnWhisper, fold: &mut WhisperFold, priority: WhisperPriority) {

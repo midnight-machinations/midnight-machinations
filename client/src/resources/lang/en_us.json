@@ -419,11 +419,18 @@
     "role.blackmailer.name": "Blackmailer",
     "role.blackmailer.name:var.0": "Blackmailers",
     "controllerId.role.blackmailer.0.name": "Silence",
+    "controllerId.role.blackmailer.1.name": "Hide votes",
     
+    "role.pyrotechnician.name": "Pyrotechnician",
+    "role.pyrotechnician.name:var.0": "Pyrotechnicians",
+    "controllerId.role.pyrotechnician.0.name": "Smoke Bomb",
+    "controllerId.role.pyrotechnician.1.name": "Fireworks",
+
     "role.cerenovous.name": "Cerenovous",
     "role.cerenovous.name:var.0": "Cerenovouses",
     "role.cerenovous.roleDataText": "\\0 brains remaining",
     "controllerId.role.cerenovous.0.name": "Brain",
+    "controllerId.role.cerenovous.1.name": "Hide votes",
     
     "role.informant.name": "Informant",
     "role.informant.name:var.0": "Informants",
@@ -1179,6 +1186,8 @@
     "chatMessage.pawnVisitedYou": "A pawn visited you.",
     "chatMessage.martyrFailed": "The martyr lives, and we endure for another day.",
     "chatMessage.martyrWon": "The messiah has been killed! May we all enter the kingdom of heaven.",
+    "chatMessage.votesHidden.true": "Nomination or Verdict votes are now hidden",
+    "chatMessage.votesHidden.false": "Nomination and Verdict votes aren't hidden",
 
     "kiraResult.correct": "Correct",
     "kiraResult.wrongSpot": "Somebody has this role, but not this player",
@@ -1924,15 +1933,15 @@
 
     "wiki.article.role.polymath.reminder": "Each night, choose between using one of a weaker Detective, Doctor, Marksman or Porter ability.",
     "wiki.article.role.polymath.guide": "- At night, choose one of the following abilities to use:\n    - Select 1 player to investigate.\n        - You are told can't tell if you are visited by anybody or a detective would find them suspicous. Otherwise you are told that your target is friends with town.\n    - Select 1 player to guard.\n        - If they visit you, you guard them.\n    - Select 2 players to transport the first one to the second one.\n        - Transport all visits from the first player to the second.\n        - The transported player is not told they were transported.\n    - Select 1 player to mark. Select 1 player to camp.\n        -  If the marked player visits the camped player, you attack the marked player with a basic attack.\n        - You can't use the Killing ability night 1.",
-    "wiki.article.role.polymath.abilities":"- None",
+    "wiki.article.role.polymath.abilities":"",
     "wiki.article.role.polymath.attributes":"- You visit players you select to investigate, guard, transport, and camp.\n- You don't visit players you select to mark.",
     "wiki.article.role.polymath.extra":"* You can't choose yourself with any ability except you can transport someone into yourself.",
     
     "wiki.article.role.vigilante.reminder": "Each night, select a player to attack. If you kill a town loyalist, you die the following night.",
-    "wiki.article.role.vigilante.guide": "- At night, select a player to attack\n- If you kill a town loyalist, you will commit suicide on the following night (and probably cause town to lose)\n- You have X bullets (X = Total players ÷ 5 (round up))\n- You can't shoot on night one\n\n If you attack someone and they survive it is likely that they were either protected by a protective role, or they are a role that is armored. Most roles that are armored are evil.",
-    "wiki.article.role.vigilante.abilities":"* Visit a player to attack and spend a bullet\n* If you kill a town loyalist you will commit suicide on the following night\n* You have three bullets",
-    "wiki.article.role.vigilante.attributes":"* If your attack overpowers a town loyalist's defense and they die, you commit suicide on the following night\n* When it is night one, when you have 0 bullets left, when you are going to commit suicide, or when you have already committed suicide, you can not select or attack anyone",
-    "wiki.article.role.vigilante.extra": "* You only have a basic attack\n* Even while dead, killing someone requires and spends a bullet (such as when you get possessed)",
+    "wiki.article.role.vigilante.guide": "- At night, select a player to attack\n- If you kill a town loyalist, you lose all charges, and commit suicide on the following night\n- You have X bullets (X = Total players ÷ 5 (round up))\n- You can't shoot on your 1st night.",
+    "wiki.article.role.vigilante.abilities":"",
+    "wiki.article.role.vigilante.attributes":"",
+    "wiki.article.role.vigilante.extra": "* You only have a basic attack",
     "wiki.article.role.vigilante.exampleAlibi":"Vigilante\nN1: n/a\nN2: [roleblocked]\nN3: @21 [attacked soemone but they had defense]\nN4: @21 [attack someone] (they died)",
     "wiki.article.role.vigilante.exampleAlibi.description":"On night 1, they had to wait.\nOn night 2, they didnt try to shoot anyone, but got roleblocked anyway, so they wrote it down.\nOn night 3, they tried to kill @21 but couldn't because @21 had defense.\nOn night 4, they tried to kill @21 again and it worked this time.",
 
@@ -1944,10 +1953,10 @@
 
     "wiki.article.role.veteran.reminder":"Each night, you may choose to alert, killing all visitors to you, and giving you protected defense.",
     "wiki.article.role.veteran.lore": "The Veteran claims a war fought long ago. Don't ask—they won't tell, and it's far too dangerous to pry.",
-    "wiki.article.role.veteran.guide": "- At night, you can choose to alert\n- Rampage yourself, attacking everyone who visits you\n- gain protected defense for the night\n- You can only use your ability X times (X = Total players ÷ 5 (round up))\n- You can't use your ability on night 1",
-    "wiki.article.role.veteran.abilities":"* You are told when a visitor is attacked by your rampage",
-    "wiki.article.role.veteran.attributes":"* You are immune to getting roleblocked and getting possessed\n* You have an armor-piercing attack\n* You don't visit",
-    "wiki.article.role.veteran.extra":"",
+    "wiki.article.role.veteran.guide": "- At night, you may choose to alert\n   - Rampage yourself, attacking everyone who visits you\n   - gain protected defense for the night\n- You can only alert X times (X = Total players ÷ 5 (round up))\n- You can't use your ability on night 1",
+    "wiki.article.role.veteran.abilities":"",
+    "wiki.article.role.veteran.attributes":"",
+    "wiki.article.role.veteran.extra":"- You are roleblock immune\n* You have an armor-piercing attack\n* You don't visit",
     "wiki.article.role.veteran.exampleAlibi":"veteran\nN1: n/a\nN2: \nN3: alert [attacked soemone but they had defense] [attack someone] [attack someone]",
     "wiki.article.role.veteran.exampleAlibi.description":"On night 1, they had to wait.\nOn night 2, they didnt try to rampage anyone.\nOn night 3, they rampaged, and 3 players visited them. 2 Of those players died, 1 of them somehow had defense so they did not, likely protected by a doctor or similar.",
 
@@ -1969,9 +1978,9 @@
 
     "wiki.article.role.slayer.reminder": "Once per game, during the day, shoot someone. If you shoot town loyalist, nothing happens.",
     "wiki.article.role.slayer.lore": "\"When you know, you know.\"",
-    "wiki.article.role.slayer.guide":"- Once per game, you can shoot a player during the day\n- If you shoot a town loyalist, your bullet is wasted\n- If you kill someone, everyone is told that a slayer shot someone\n- If the player you shoot survives your attack, only the player you attacked is told, nobody else is told\n- You can only shoot during discussion, nomination, adjournment, or dusk\n- If you were blocked last night, you can't shoot today.",
+    "wiki.article.role.slayer.guide":"- Once per game, you can shoot a player during the day\n- If you shoot a town loyalist, nothing happens\n- If you kill someone, everyone is told that a slayer shot someone\n- You can only shoot during discussion, nomination, adjournment, or dusk\n- If you were blocked last night, you can't shoot today.",
     "wiki.article.role.slayer.abilities":"",
-    "wiki.article.role.slayer.attributes":"* If the player you attack survives, they are told they were attacked by a slayer",
+    "wiki.article.role.slayer.attributes":"",
     "wiki.article.role.slayer.extra":"* You have an armor-piercing attack\n* You can not attack day 1",
 
     "wiki.article.role.godfather.reminder": "Each night*, select a player to attack. Each night, select a player to appeared visit. You have armor and innocent aura.",
@@ -2065,15 +2074,21 @@
     "wiki.article.role.consort.attributes":"* You can't be roleblocked\n* Your target is told when they are roleblocked, even if they are immune to being roleblocked",
     "wiki.article.role.consort.extra":"* When someone is roleblocked, their visits are wiped, so they don't visit anyone\n* You can't select other syndicate members",
 
-    "wiki.article.role.blackmailer.reminder": "Each night, select a player to silence until the next night. All votes are hidden while you are alive.",
-    "wiki.article.role.blackmailer.guide": "- At night, select a player to silence\n- The silenced player can't speak during the next day.\n- While a blackmailer is alive, nomination votes are hidden and verdict votes are hidden.\n- You can't choose to silence the player you silenced yesterday.\n- Silenced players call all witnesses at the start of testimony.",
-    "wiki.article.role.blackmailer.abilities":"* Visit a player to silence them during the next day",
+    "wiki.article.role.blackmailer.reminder": "Each night, select a player to silence until the next night. You may choose to hide all votes during the day.",
+    "wiki.article.role.blackmailer.guide": "- At night, select a player to silence\n- The silenced player can't speak during the next day.\n- You may choose hide nomination votes and verdict votes.\n- You can't choose to silence the player you silenced yesterday.\n- Silenced players call all witnesses at the start of testimony.",
+    "wiki.article.role.blackmailer.abilities":"",
     "wiki.article.role.blackmailer.attributes":"- Silenced players can not talk in chat or out loud during the entire next day.",
     "wiki.article.role.blackmailer.extra":"* The silenced player is no longer be silenced at the start of the next night\n* You can't select other syndicate members",
 
-    "wiki.article.role.cerenovous.reminder": "Each night, select a player to brain, you can chat as that player until the next night.",
-    "wiki.article.role.cerenovous.guide": "- At night, select a player to brain\n- The brained player can't chat during the next day, instead you can chat as them.\n    - You can send block messages as them.\n    - You can whisper as them.\n- While a cerenovous is alive, nomination votes are hidden and verdict votes are hidden.\n- You can read whispers sent to other players.\n- You can't choose to brain the player you brained yesterday.\n- You can only brain X times (X = Total players ÷ 5 (round up))\n- When you are roleblocked, you can't read whispers until start of next night.",
-    "wiki.article.role.cerenovous.abilities":"* Visit a player to brain them during the next day\n - When a player is brained, they are told they are brained, and their chat box dissapears.",
+    "wiki.article.role.pyrotechnician.reminder": "Each night, select a player to delete their night result messages. You may choose to hide all votes during the day.",
+    "wiki.article.role.pyrotechnician.guide": "- At night, select a player to smoke bomb\n   - The smoke bombed player sees no night result chat messages.\n- You may choose hide nomination votes and verdict votes.",
+    "wiki.article.role.pyrotechnician.abilities":"",
+    "wiki.article.role.pyrotechnician.attributes":"",
+    "wiki.article.role.pyrotechnician.extra":"* You can't select other syndicate members",
+
+    "wiki.article.role.cerenovous.reminder": "Each night, select a player to brain, you can chat as that player until the next night. You may choose to hide all votes during the day.",
+    "wiki.article.role.cerenovous.guide": "- At night, select a player to brain\n- The brained player can't chat during the next day, instead you can chat as them.\n    - You can send block messages as them.\n    - You can whisper as them.\n- You may choose hide nomination votes and verdict votes.\n- You can read whispers sent to other players.\n- You can't choose to brain the player you brained yesterday.\n- You can only brain X times (X = Total players ÷ 5 (round up))\n- When you are roleblocked, you can't read whispers until start of next night.",
+    "wiki.article.role.cerenovous.abilities":"\n - When a player is brained, they are told they are brained, and their chat box dissapears.",
     "wiki.article.role.cerenovous.attributes":"",
     "wiki.article.role.cerenovous.extra":"- The brained player is no longer brained at the start of the next night.\n* You can't select other syndicate members",
 
