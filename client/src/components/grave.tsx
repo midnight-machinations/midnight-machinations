@@ -54,7 +54,7 @@ function UnobscuredGrave(props: Readonly<{
     noLinks?: boolean
 }>): ReactElement {
     const graveDeathCause = useMemo(() => {
-        return translateGraveDeathCauses(props.grave.information.deathCauses, props.playerNames, props.roleList);
+        return translateGraveDeathCauses(props.grave.information.deathCauses);
     }, [props.grave.information.deathCauses]);
 
     let graveRoleString = useMemo(() => {
