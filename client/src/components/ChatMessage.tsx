@@ -917,7 +917,10 @@ export function translateChatMessage(
         case "youAttackedSomeone":
         case "youWereAttacked":
         case "werewolfTracked":
+        case "gravityFloatedAway":
             return translate("chatMessage."+message.type);
+        case "gravitySavedPlayer":
+            return translate("chatMessage.gravitySavedPlayer", encodeString(playerNames[message.player]));
         case "playerDied":
         case "kiraResult":
         default:
@@ -1272,6 +1275,11 @@ export type ChatMessageVariant = {
 } | {
     type: "cultSacrificeCount",
     count: number
+} | {
+    type: "gravityFloatedAway"
+} | {
+    type: "gravitySavedPlayer",
+    player: PlayerIndex
 }
 
 export type MessageSender = {

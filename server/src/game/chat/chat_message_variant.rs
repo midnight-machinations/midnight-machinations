@@ -229,4 +229,7 @@ pub enum ChatMessageVariant {
     MartyrWon,
     MartyrFailed,
     WildcardConvertFailed{ role: Role },
+
+    GravityFloatedAway,
+    GravitySavedPlayer { player: PlayerReference },
 }
