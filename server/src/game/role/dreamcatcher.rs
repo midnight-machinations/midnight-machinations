@@ -36,17 +36,20 @@ impl RoleStateTrait for Dreamcatcher {
         self.target_nightmare = None;
         actor_ref.edit_role_ability_helper(game, self.clone());
 
-        let Some(mut result) = self.results.get(&target).cloned().or(
-            ControllerID::role(actor_ref, Role::Dreamcatcher, 1)
-                .get_role_list_selection(game).map(|r|{
-                    let nightmare = r.0.clone().into_iter();
-                    if Aura::any(game, midnight_variables, target) {
-                        nightmare.collect::<VecSet<Role>>()
-                    }else{
-                        nightmare.chain(iter::once(target.role(game))).collect::<VecSet<Role>>()
-                    }
-                })
-        ) else {return};
+        let mut result = match self.results.get(&target) {
+            Some(result) => result.clone(),
+            None => {
+                let nightmare = ControllerID::role(actor_ref, Role::Dreamcatcher, 1)
+                    .get_role_list_selection(game)
+                    .map(|r| r.0.clone().into_iter().collect::<VecSet<Role>>())
+                    .unwrap_or_default();
+                if Aura::any(game, midnight_variables, target) {
+                    nightmare
+                } else {
+                    nightmare.into_iter().chain(iter::once(target.role(game))).collect::<VecSet<Role>>()
+                }
+            }
+        };
 
         result.shuffle(&mut game.rng);
 
