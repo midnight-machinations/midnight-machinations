@@ -1156,7 +1156,7 @@
     "chatMessage.trapStateEndOfNight.set": "Your trap is set.",
     
     
-    "chatMessage.transported": "You were transported!",
+    "chatMessage.transported": "You were transported! Players targeting you are now targeting someone else.",
     "chatMessage.godfatherBackup": "The Syndicate has selected \\0 to be their backup.",
     "chatMessage.godfatherBackup.nobody": "The Syndicate has deselected a backup.",
     "chatMessage.godfatherBackupKilled": "The Syndicate was blocked, so \\0 attacked for the Syndicate.",
