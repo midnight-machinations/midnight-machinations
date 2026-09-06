@@ -41,7 +41,7 @@ impl RoleStateTrait for Spiral {
             .add_grayed_out_condition(game.day_number() <= 1 || !Tags::tagged(game, TagSetID::UzumakiSpiral(actor_ref)).is_empty())
             .build_map()
     }
-    fn convert_selection_to_visits(self, game: &Game, _id: &AbilityID, actor_ref: PlayerReference) -> Vec<Visit> {
+    fn create_visits_initialize_night(self, game: &Game, _id: &AbilityID, actor_ref: PlayerReference) -> Vec<Visit> {
         crate::game::role::common_role::convert_controller_selection_to_visits(
             game,
             actor_ref,

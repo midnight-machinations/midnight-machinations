@@ -5,7 +5,7 @@ pub struct RoleAbility(pub RoleState);
 impl AbilityTrait for RoleAbility {
     fn on_midnight(&self, game: &mut Game, id: &AbilityID, _event: &crate::game::event::on_midnight::OnMidnight, midnight_variables: &mut crate::game::event::on_midnight::OnMidnightFold, priority: crate::game::event::on_midnight::OnMidnightPriority) {
         if priority == OnMidnightPriority::InitializeNight {
-            let visits = self.0.clone().convert_selection_to_visits(game, id, id.get_role_actor_expect());
+            let visits = self.0.clone().create_visits_initialize_night(game, id, id.get_role_actor_expect());
 
             Visits::push_ledger_event_id(
                 midnight_variables,
@@ -58,7 +58,7 @@ impl AbilityTrait for RoleAbility {
                 }
             }
 
-            let visits = self.0.clone().convert_selection_to_visits(game, id, id.get_role_actor_expect());
+            let visits = self.0.clone().create_visits_initialize_night(game, id, id.get_role_actor_expect());
             Visits::replace_ledger_event_id(
                 fold,
                 VisitLedgerEventID::InitialAddVisit { ability: *id },

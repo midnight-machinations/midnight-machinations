@@ -43,6 +43,7 @@ impl RoleStateTrait for Dreamcatcher {
                     .get_role_list_selection(game)
                     .map(|r| r.0.clone().into_iter().collect::<VecSet<Role>>())
                     .unwrap_or_default();
+                
                 if Aura::any(game, midnight_variables, target) {
                     nightmare
                 } else {
@@ -89,40 +90,51 @@ impl RoleStateTrait for Dreamcatcher {
         ].into_iter().chain(nightmare_controller))
     }
     fn on_phase_start(mut self, game: &mut Game, actor_ref: PlayerReference, phase: PhaseType) {
-        if phase != PhaseType::Night {return}
+        match phase {
+            PhaseType::Night => {
+                if let Some(target) = ControllerID::role(actor_ref, Role::Dreamcatcher, 0)
+                    .get_player_list_selection(game)
+                    .iter()
+                    .filter_map(|o|o.0.first())
+                    .copied()
+                    .next()
+                {
+                    let nightmare = Self::find_nightmare(&self, game, target);
+                    self.target_nightmare = Some((target, nightmare));
+                    if let Some(nightmare) = nightmare {
+                        let count = self.nightmares.get_mut(&nightmare)
+                            .expect("self.nightmares is full due to the new_state function creating a full VecMap");
+                        *count = count.saturating_add(1);
+                        nightmare.add_private_chat_message(game, ChatMessageVariant::DreamcatcherTarget { target });
+                    }
+                    
+                }else{
+                    self.target_nightmare = None;
+                }
 
-        if let Some(target) = ControllerID::role(actor_ref, Role::Dreamcatcher, 0)
-            .get_player_list_selection(game)
-            .iter()
-            .filter_map(|o|o.0.first())
-            .copied()
-            .next()
-        {
-            let nightmare = Self::find_nightmare(&self, game, target);
-            self.target_nightmare = Some((target, nightmare));
-            if let Some(nightmare) = nightmare {
-                let count = self.nightmares.get_mut(&nightmare)
-                    .expect("self.nightmares is full due to the new_state function creating a full VecMap");
-                *count = count.saturating_add(1);
-                nightmare.add_private_chat_message(game, ChatMessageVariant::DreamcatcherTarget { target });
-            }
-            
-        }else{
-            self.target_nightmare = None;
+                actor_ref.edit_role_ability_helper(game, self);
+            },
+            PhaseType::Obituary => {
+                self.target_nightmare = None;
+                actor_ref.edit_role_ability_helper(game, self);
+            },
+            _ => {}
         }
-
-        actor_ref.edit_role_ability_helper(game, self);
     }
-    fn convert_selection_to_visits(self, game: &Game, _id: &AbilityID, actor_ref: PlayerReference) -> Vec<Visit> {
-        crate::game::role::common_role::convert_controller_selection_to_visits(
-            game,
-            actor_ref,
-            ControllerID::role(actor_ref, Role::Dreamcatcher, 0),
-            false
-        ).into_iter().map(|mut v|{
-            v.transport_immune = true;
-            v
-        }).collect()
+    fn create_visits_initialize_night(self, _game: &Game, _id: &AbilityID, actor_ref: PlayerReference) -> Vec<Visit> {
+        let Some(target) = self.target_nightmare.map(|(target, _)|target) else {return Vec::new()};
+        vec![
+            Visit{
+                visitor: actor_ref,
+                target,
+                tag: VisitTag::Ability { ability: AbilityID::Role { role: Role::Dreamcatcher, player: actor_ref }, id: 0 },
+                attack: false,
+                wardblock_immune: false,
+                transport_immune: true,
+                investigate_immune: false,
+                indirect: false
+            }
+        ]
     }
     fn on_player_possessed(self, _game: &mut Game, _id: &AbilityID, _event: &OnPlayerPossessed, _fold: &mut OnMidnightFold, _priority: ()) {}
 }

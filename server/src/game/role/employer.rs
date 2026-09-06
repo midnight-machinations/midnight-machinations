@@ -47,7 +47,7 @@ impl RoleStateTrait for Employer {
                 .build_map()
         ])
     }
-    fn convert_selection_to_visits(self, game: &Game, _id: &AbilityID, actor_ref: PlayerReference) -> Vec<Visit> {
+    fn create_visits_initialize_night(self, game: &Game, _id: &AbilityID, actor_ref: PlayerReference) -> Vec<Visit> {
         if ControllerID::role(actor_ref, Role::Employer, 1).get_role_list_selection_first(game).is_none() {return Vec::new()}
         crate::game::role::common_role::convert_controller_selection_to_visits(
             game,

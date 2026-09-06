@@ -235,6 +235,7 @@ function PlayerCard(props: Readonly<{
                     <Button
                         className="flush"
                         onClick={() => toggleVoteForThisPlayer()}
+                        highlighted={myNominationSelection === props.playerIndex}
                     >
                         <Icon>how_to_vote</Icon>
                         {numVoted}
