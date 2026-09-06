@@ -36,36 +36,55 @@ impl RoleStateTrait for Veteran {
     }
     fn on_midnight(self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut OnMidnightFold, priority: OnMidnightPriority) {
         match priority {
-            OnMidnightPriority::TopPriority => {
+            OnMidnightPriority::Heal=>{
                 let can_alert = self.alerts_remaining > 0 && game.day_number() > 1;
-                let chose_to_alert = matches!(ControllerID::role(actor_ref, Role::Veteran, 0).get_boolean_selection(game), Some(BooleanSelection(true)));
+                let chose_to_alert = ControllerID::role(actor_ref, Role::Veteran, 0)
+                    .get_player_list_selection(game)
+                    .and_then(|players|players.0.first())
+                    .is_some();
+                
+                
                 if can_alert && chose_to_alert{
                     actor_ref.edit_role_ability_helper(game, Veteran { 
                         alerts_remaining: self.alerts_remaining.saturating_sub(1), 
                         alerting_tonight: true 
                     });
                 }
-            }
-            OnMidnightPriority::Heal=>{
+
                 if !self.alerting_tonight {return}
                 actor_ref.increase_defense_to(game, midnight_variables, DefensePower::Protected);
             }
             OnMidnightPriority::Kill => {
                 if !self.alerting_tonight {return}
 
+                let Some(target) = Visits::default_target(midnight_variables, actor_ref, Role::Veteran) else {return};
+
                 NightAttack::new()
                     .attackers([actor_ref])
                     .grave_killer(Role::Veteran)
                     .power(AttackPower::ArmorPiercing)
-                    .rampage(game, midnight_variables, actor_ref, |_| true);
+                    .rampage(
+                        game,
+                        midnight_variables,
+                        actor_ref,
+                        |v| v.visitor != target
+                    );
             }
             _=>{}
         }
     }
+    fn create_visits_initialize_night(self, game: &Game, _id: &AbilityID, actor_ref: PlayerReference) -> Vec<Visit> {
+        common_role::convert_controller_selection_to_visits(
+            game,
+            actor_ref,
+            ControllerID::role(actor_ref, Role::Veteran, 0),
+            false
+        )
+    }
     fn controller_parameters_map(self, game: &Game, actor_ref: PlayerReference) -> super::ControllerParametersMap {
         ControllerParametersMap::builder(game)
             .id(ControllerID::role(actor_ref, Role::Veteran, 0))
-            .available_selection(AvailableBooleanSelection)
+            .single_player_selection_typical(actor_ref, true, true)
             .night_typical(actor_ref)
             .add_grayed_out_condition(self.alerts_remaining == 0 || game.day_number() <= 1)
             .build_map()

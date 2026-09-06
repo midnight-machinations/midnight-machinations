@@ -252,7 +252,7 @@ impl RoleSet{
                     Role::Detective, Role::Philosopher, Role::Gossip, 
                     Role::Psychic, Role::Auditor, Role::Spy, 
                     Role::Lookout, Role::Tracker, Role::Snoop,
-                    Role::TallyClerk, Role::Dreamcatcher
+                    Role::TallyClerk, Role::Dreamwalker
                 ],
             RoleSet::TownProtective => 
                 vec_set![

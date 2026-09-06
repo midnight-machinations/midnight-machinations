@@ -771,13 +771,13 @@ export function translateChatMessage(
             return translate("chatMessage.gossipResult." + (message.enemies ? "enemies" : "none"));
         case "tallyClerkResult":
             return translate("chatMessage.tallyClerkResult", message.evilCount);
-        case "dreamcatcherTarget":
-            return translate("chatMessage.dreamcatcherTarget", encodeString(playerNames[message.target]));
-        case "dreamcatcherResult":
+        case "dreamwalkerTarget":
+            return translate("chatMessage.dreamwalkerTarget", encodeString(playerNames[message.target]));
+        case "dreamwalkerResult":
             if (message.result.length == 0) {
-                return translate("chatMessage.dreamcatcherResult.none");
+                return translate("chatMessage.dreamwalkerResult.none");
             }else{
-                return encodeString(replaceMentions(translate("chatMessage.dreamcatcherResult",
+                return encodeString(replaceMentions(translate("chatMessage.dreamwalkerResult",
                     message.result.map((role)=>translate("role."+role+".name")).join(", ")
                 ), playerNames, roleList))
             }
@@ -1150,10 +1150,10 @@ export type ChatMessageVariant = {
     outlineIndex: number,
     result: AuditorResult,
 } | {
-    type: "dreamcatcherResult",
+    type: "dreamwalkerResult",
     result: Role[],
 } | {
-    type: "dreamcatcherTarget",
+    type: "dreamwalkerTarget",
     target: PlayerIndex,
 } | {
     type: "engineerVisitorsRole",
