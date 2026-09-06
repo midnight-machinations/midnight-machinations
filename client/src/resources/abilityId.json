@@ -38,11 +38,11 @@
         "midnight": true,
         "visit": "normal"
     },
-    "role/dreamcatcher/0": {
+    "role/dreamwalker/0": {
         "midnight": false,
         "visit": "abnormal"
     },
-    "role/dreamcatcher/1": {
+    "role/dreamwalker/1": {
         "midnight": true,
         "visit": "none"
     },

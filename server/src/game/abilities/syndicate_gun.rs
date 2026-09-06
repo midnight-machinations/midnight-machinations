@@ -72,12 +72,14 @@ impl AbilityTrait for SyndicateGun {
     }
     
     fn on_visit_wardblocked(&self, _game: &mut Game, _id: &AbilityID, event: &OnVisitWardblocked, midnight_variables: &mut OnMidnightFold, _priority: ()){
+        if event.visit.tag != VisitTag::SyndicateGun {return};
         let visitor = event.visit.visitor;
         Visits::retain(midnight_variables, move |v|
             v.tag != VisitTag::SyndicateGun || v.visitor != visitor
         );
     }
     fn on_player_roleblocked(&self, _game: &mut Game, _id: &AbilityID, event: &OnPlayerRoleblocked, midnight_variables: &mut OnMidnightFold, _priority: ()){
+        if Some(event.player) != self.player_with_gun {return};
         let player = event.player;
         Visits::retain(midnight_variables, move |v|
             v.tag != VisitTag::SyndicateGun || v.visitor != player

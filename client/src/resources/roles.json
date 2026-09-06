@@ -177,7 +177,7 @@
             {"type": "tallyClerkResult", "evilCount": 0}
         ]
     },
-    "dreamcatcher": {
+    "dreamwalker": {
         "mainRoleSet": "town",
         "roleSets": ["town", "townCommon", "townInvestigative"],
         "armor": false,
@@ -185,10 +185,10 @@
         "maxCount": null,
         "canWriteCallingCard": false,
         "chatMessages":[
-            {"type": "dreamcatcherResult", "result": ["godfather","jester","pyrolisk","escort","medium"]},
-            {"type": "dreamcatcherResult", "result": []},
-            {"type": "dreamcatcherResult", "result": ["godfather"]},
-            {"type": "dreamcatcherTarget", "target": 7}
+            {"type": "dreamwalkerResult", "result": ["godfather","jester","pyrolisk","escort","medium"]},
+            {"type": "dreamwalkerResult", "result": []},
+            {"type": "dreamwalkerResult", "result": ["godfather"]},
+            {"type": "dreamwalkerTarget", "target": 7}
         ]
     },
     "doctor": {

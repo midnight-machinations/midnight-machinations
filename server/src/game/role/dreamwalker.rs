@@ -9,15 +9,15 @@ pub(super) const MAXIMUM_COUNT: Option<u8> = None;
 pub(super) const DEFENSE: DefensePower = DefensePower::None;
 
 #[derive(Clone, Debug, Serialize, Default)]
-pub struct Dreamcatcher{
+pub struct Dreamwalker{
     target_nightmare: Option<(PlayerReference, Option<PlayerReference>)>,
     results: VecMap<PlayerReference, VecSet<Role>>,
 
     nightmares: VecMap<PlayerReference, u8>
 }
 
-impl RoleStateTrait for Dreamcatcher {
-    type ClientAbilityState = Dreamcatcher;
+impl RoleStateTrait for Dreamwalker {
+    type ClientAbilityState = Dreamwalker;
     fn new_state(game: &mut Game) -> Self {
         Self {
             target_nightmare: None,
@@ -29,7 +29,7 @@ impl RoleStateTrait for Dreamcatcher {
         if !matches!(priority, OnMidnightPriority::Investigative) {return};
 
         let Some((target, _nightmare)) = self.target_nightmare else {return};
-        let Some(visit_target) = Visits::default_target(midnight_variables, actor_ref, Role::Dreamcatcher) else {return};
+        let Some(visit_target) = Visits::default_target(midnight_variables, actor_ref, Role::Dreamwalker) else {return};
         
         if visit_target != target {return};
         
@@ -39,7 +39,7 @@ impl RoleStateTrait for Dreamcatcher {
         let mut result = match self.results.get(&target) {
             Some(result) => result.clone(),
             None => {
-                let nightmare = ControllerID::role(actor_ref, Role::Dreamcatcher, 1)
+                let nightmare = ControllerID::role(actor_ref, Role::Dreamwalker, 1)
                     .get_role_list_selection(game)
                     .map(|r| r.0.clone().into_iter().collect::<VecSet<Role>>())
                     .unwrap_or_default();
@@ -56,7 +56,7 @@ impl RoleStateTrait for Dreamcatcher {
 
         self.results.insert(target, result.clone());
 
-        actor_ref.push_night_message(midnight_variables, ChatMessageVariant::DreamcatcherResult { result });
+        actor_ref.push_night_message(midnight_variables, ChatMessageVariant::DreamwalkerResult { result });
         actor_ref.edit_role_ability_helper(game, self);
     }
     fn controller_parameters_map(self, game: &Game, actor_ref: PlayerReference) -> ControllerParametersMap {
@@ -66,7 +66,7 @@ impl RoleStateTrait for Dreamcatcher {
             .filter_map(|(_target, nightmare)|*nightmare)
             .map(|nightmare|
                 ControllerParametersMap::builder(game)
-                    .id(ControllerID::role(actor_ref, Role::Dreamcatcher, 1))
+                    .id(ControllerID::role(actor_ref, Role::Dreamwalker, 1))
                     .available_selection(AvailableRoleListSelection{
                         available_roles: game.settings.enabled_roles.clone(),
                         can_choose_duplicates: false,
@@ -79,7 +79,7 @@ impl RoleStateTrait for Dreamcatcher {
 
         ControllerParametersMap::combine([
             ControllerParametersMap::builder(game)
-                .id(ControllerID::role(actor_ref, Role::Dreamcatcher, 0))
+                .id(ControllerID::role(actor_ref, Role::Dreamwalker, 0))
                 .single_player_selection_typical(actor_ref, false, true)
                 
                 .add_grayed_out_condition(actor_ref.ability_deactivated_from_death(game))
@@ -92,7 +92,7 @@ impl RoleStateTrait for Dreamcatcher {
     fn on_phase_start(mut self, game: &mut Game, actor_ref: PlayerReference, phase: PhaseType) {
         match phase {
             PhaseType::Night => {
-                if let Some(target) = ControllerID::role(actor_ref, Role::Dreamcatcher, 0)
+                if let Some(target) = ControllerID::role(actor_ref, Role::Dreamwalker, 0)
                     .get_player_list_selection(game)
                     .iter()
                     .filter_map(|o|o.0.first())
@@ -105,7 +105,7 @@ impl RoleStateTrait for Dreamcatcher {
                         let count = self.nightmares.get_mut(&nightmare)
                             .expect("self.nightmares is full due to the new_state function creating a full VecMap");
                         *count = count.saturating_add(1);
-                        nightmare.add_private_chat_message(game, ChatMessageVariant::DreamcatcherTarget { target });
+                        nightmare.add_private_chat_message(game, ChatMessageVariant::DreamwalkerTarget { target });
                     }
                     
                 }else{
@@ -127,7 +127,7 @@ impl RoleStateTrait for Dreamcatcher {
             Visit{
                 visitor: actor_ref,
                 target,
-                tag: VisitTag::Ability { ability: AbilityID::Role { role: Role::Dreamcatcher, player: actor_ref }, id: 0 },
+                tag: VisitTag::Ability { ability: AbilityID::Role { role: Role::Dreamwalker, player: actor_ref }, id: 0 },
                 attack: false,
                 wardblock_immune: false,
                 transport_immune: true,
@@ -139,7 +139,7 @@ impl RoleStateTrait for Dreamcatcher {
     fn on_player_possessed(self, _game: &mut Game, _id: &AbilityID, _event: &OnPlayerPossessed, _fold: &mut OnMidnightFold, _priority: ()) {}
 }
 
-impl Dreamcatcher {
+impl Dreamwalker {
     fn find_nightmare(&self, game: &mut Game, target: PlayerReference) -> Option<PlayerReference> {
         if self.results.contains(&target) {return None}
 

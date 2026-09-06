@@ -13,11 +13,11 @@ impl Possession {
             ControllerID::Role { role: Role::Lich, id: 7, .. } => true,
             ControllerID::Role { role, .. } => {
                 matches!(role, 
-                    Role::Veteran | Role::Medium
+                    Role::Medium
                     | Role::Bouncer | Role::Scarecrow
                     | Role::Transporter  | Role::Warper | Role::Porter
                     | Role::Witch
-                    | Role::Dreamcatcher
+                    | Role::Dreamwalker
                 )
             },
             ControllerID::SyndicateGunShoot => false,
