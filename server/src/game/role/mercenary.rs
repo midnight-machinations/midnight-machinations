@@ -83,7 +83,7 @@ impl RoleStateTrait for Mercenary {
         );
         ctrl
     }
-    fn convert_selection_to_visits(self, game: &Game, id: &AbilityID, actor_ref: PlayerReference) -> Vec<Visit> {
+    fn create_visits_initialize_night(self, game: &Game, id: &AbilityID, actor_ref: PlayerReference) -> Vec<Visit> {
         let controller_id = Self::controller_selection_controller_id(actor_ref, game);
         crate::game::role::common_role::convert_controller_selection_to_visits_visit_tag(
             game,

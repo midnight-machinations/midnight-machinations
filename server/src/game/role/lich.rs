@@ -226,7 +226,7 @@ impl RoleStateTrait for Lich {
             ).flatten()
         ))
     }
-    fn convert_selection_to_visits(self, game: &Game, id: &AbilityID, actor_ref: PlayerReference) -> Vec<Visit> {
+    fn create_visits_initialize_night(self, game: &Game, id: &AbilityID, actor_ref: PlayerReference) -> Vec<Visit> {
 
         //// TRANSPORT
         let mut out = Vec::new();

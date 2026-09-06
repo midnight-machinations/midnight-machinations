@@ -33,7 +33,7 @@ impl RoleStateTrait for Apostle {
 
         target.set_role_win_con_insider_group_midnight(game, midnight_variables, Role::Zealot.default_state());
     }
-    fn convert_selection_to_visits(self, game: &Game, _id: &AbilityID, actor_ref: PlayerReference) -> Vec<Visit> {
+    fn create_visits_initialize_night(self, game: &Game, _id: &AbilityID, actor_ref: PlayerReference) -> Vec<Visit> {
         common_role::convert_controller_selection_to_visits(
             game,
             actor_ref, 
