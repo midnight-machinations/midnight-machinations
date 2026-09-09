@@ -584,6 +584,7 @@
     "controllerId.role.lich.5.name": "Ward",
     "controllerId.role.lich.6.name": "Roleblock",
     "controllerId.role.lich.7.name": "Possess",
+    "controllerId.role.lich.8.name": "Pierce",
 
     "controllerId.role.lich.14.name": "Fit",
 
@@ -593,6 +594,7 @@
     "controllerId.role.lich.1.integer.5": "Ward",
     "controllerId.role.lich.1.integer.6": "Roleblock",
     "controllerId.role.lich.1.integer.7": "Possess",
+    "controllerId.role.lich.1.integer.8": "Pierce",
 
     "role.kira.name": "Kira",
     "role.kira.name:var.0": "Kiras",
@@ -1965,7 +1967,7 @@
 
     "wiki.article.role.marksman.reminder": "Each night, select 2 pairs of players. If the first player visits the second player, you attack the first player.",
     "wiki.article.role.marksman.lore": "Order demands precision. The Marksman established curfews and checkpoints, watching every route through town. \"Stay compliant. Stay alive.\"",
-    "wiki.article.role.marksman.guide": "- Each night, choose 2 pairs of players\n    - If the first player in a pair visits the second player in that pair, you attack the first player.\n   - You can attack up to one player per night.\n      - If you attack the first player from the first pair, you can't attack the first player from the second pair. (It prioritizes the first pair)\n- You can't use your ability on the night 1\n- If you kill a town loyalist, you can't use your ability again",
+    "wiki.article.role.marksman.guide": "- Each night, choose 2 pairs of players\n    - If the first player in a pair directly visits the second player in that pair, you attack the first player.\n   - You can attack up to one player per night.\n      - If you attack the first player from the first pair, you can't attack the first player from the second pair. (It prioritizes the first pair)\n- You can't use your ability on the night 1\n- If you kill a town loyalist, you can't use your ability again",
     "wiki.article.role.marksman.abilities":"",
     "wiki.article.role.marksman.attributes":"",
     "wiki.article.role.marksman.extra":"* You can't mark or camp yourself\n* You have a basic attack",
@@ -2272,11 +2274,11 @@
     "wiki.article.role.puppeteer.attributes":"- You and the marionettes are all puppeteer insiders\n- Stringing someone up is armor-piercing\n - At night all puppeteers and marionettes can chat in the puppeteer chat, even if dead\n    - The players in the puppeteer chat that are dead can chat during the day or night",
     "wiki.article.role.puppeteer.extra":"- You can't select anybody who is a puppeteer, marionette, or is being strung into a marionette\n- A puppeteer can't be stringed into a marionette\n- A marionette can't be stringed into a marionette twice, if 2 puppeteers choose a player to be turned into a marionette on the same night, they get the message only once",
 
-    "wiki.article.role.lich.reminder": "Each night*, dead players vote on who you attack. Each night, you may do one of warp, ward, tailor, roleblock, or transport. You may choose not to attack.",
-    "wiki.article.role.lich.guide":"- Each night except the first, the dead anonymously votes on who you attack\n   - If there is a tie then you attack all tied players.\n- You may choose a player to try to attack\n   - If the dead choses to attack you (or nobody), then then you attack the player you chose instead.\n   - If you chose nobody, then you attack nobody, even if the dead voted on someone to attack.\n\n- You may choose between transport, warp, ward, roleblock, possess, and tailor.\n   - If you choose transport, choose 2 players to transport them into eachother.\n   - If you choose warp, choose 2 players to transport the first into the second.\n   - If you choose tailor, choose a player and a town common role, if that player has a town common role then they become the role you chose.\n   - If you choose ward, choose a player to ward off all visitors to them.\n   - If you chose roleblock, choose a player to roleblock.\n   - If you choose possess, choose 2 players and possess the first into the second.",
+    "wiki.article.role.lich.reminder": "Each night*, dead players vote on who you attack. Each night, you may do one of warp, ward, tailor, roleblock, transport, or upgrade your attack to protection-piercing. You may choose not to attack.",
+    "wiki.article.role.lich.guide":"- Each night except the first, the dead anonymously votes on who you attack\n   - If there is a tie then you attack all tied players.\n- You may choose a player to try to attack\n   - If the dead choses to attack you (or nobody), then then you attack the player you chose instead.\n   - If you chose nobody, then you attack nobody, even if the dead voted on someone to attack.\n\n- You may choose between transport, warp, ward, roleblock, possess, tailor, and pierce.\n   - If you choose transport, choose 2 players to transport them into eachother.\n   - If you choose warp, choose 2 players to transport the first into the second.\n   - If you choose tailor, choose a player and a town common role, if that player has a town common role then they become the role you chose.\n   - If you choose ward, choose a player to ward off all visitors to them.\n   - If you chose roleblock, choose a player to roleblock.\n   - If you choose possess, choose 2 players and possess the first into the second.\n   - If you choose pierce, your attack becomes protection-piercing.\n- The dead are only given the ability to vote on who you attack if there is a lich in the game, and they are given a seperate vote controller for each alive lich in the game.",
     "wiki.article.role.lich.abilities":"",
     "wiki.article.role.lich.attributes":"",
-    "wiki.article.role.lich.extra":"- Your attack is armor-piercing",
+    "wiki.article.role.lich.extra":"- Your attack is armor-piercing by default",
 
     "wiki.article.role.kira.reminder": "Each night, guess players roles, if all your guesses are correct, you attack all of the players you guessed.",
     "wiki.article.role.kira.lore": "Do you know? Gods of death who love apples have red hands.",
