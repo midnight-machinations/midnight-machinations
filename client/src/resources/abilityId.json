@@ -82,11 +82,11 @@
         "midnight": true,
         "visit": "none"
     },
-    "role/marksman/0": {
-        "midnight": true,
-        "visit": "none"
-    },
     "role/marksman/1": {
+        "midnight": true,
+        "visit": "normal"
+    },
+    "role/marksman/0": {
         "midnight": true,
         "visit": "normal"
     },

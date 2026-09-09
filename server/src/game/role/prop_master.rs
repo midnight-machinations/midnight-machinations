@@ -139,7 +139,7 @@ impl RoleStateTrait for PropMaster {
     }
 
     fn on_any_death(self, game: &mut Game, actor_ref: PlayerReference, _dead_player_ref: PlayerReference) {
-        self.take_prop(game, actor_ref);
+        self.take_prop_if_on_invalid(game, actor_ref);
     }
     fn on_grave_added(self, game: &mut Game, actor_ref: PlayerReference, grave: GraveReference) {
         if BlockedComponent::blocked(game, actor_ref) {return;}
@@ -166,7 +166,7 @@ impl RoleStateTrait for PropMaster {
         }
     }
     fn on_phase_start(self, game: &mut Game, actor_ref: PlayerReference, _phase: PhaseType) {
-        self.take_prop(game, actor_ref);
+        self.take_prop_if_on_invalid(game, actor_ref);
     }
 
 
@@ -190,7 +190,7 @@ impl PropMaster {
         let Prop::Set { target } = self.prop else {return false};
         player == target
     }
-    pub fn take_prop(self, game: &mut Game, actor_ref: PlayerReference) {
+    pub fn take_prop_if_on_invalid(self, game: &mut Game, actor_ref: PlayerReference) {
         if
             let Prop::Set { target } = self.prop &&
             (
