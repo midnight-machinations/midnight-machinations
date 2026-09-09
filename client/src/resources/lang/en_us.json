@@ -1750,10 +1750,10 @@
     "wiki.article.role.nepotist.extra": "- If your role changes, you unenfranchise.",
 
     "wiki.article.role.transporter.reminder": "At night, select 2 players to transport them with each other, swapping all visits to them.",
-    "wiki.article.role.transporter.guide": "- At night, select 2 players\n    - If somebody else tries to visit the first player, they will instead visit the second player, and vice versa\n\n _For example_\n- If a godfather tries to attack @1, but you transported @1 and @4, then @4 will die instead\n\nIts often a good strategy to transport innocent looking players with suspicious looking ones to divert a potential attack from the innocent player onto the suspicious player.\n\n",
-    "wiki.article.role.transporter.abilities":"* Visit 2 players to transport them",
-    "wiki.article.role.transporter.attributes":"* All visits to first player instead visit the second player\n* All visits to the second player instead visit first player\n* The players you visit get a message saying that they were transported",
-    "wiki.article.role.transporter.extra": "* Some abilities are not affected by yours due to the priority system.\n* A transporters visits can not be changed by another transporter",
+    "wiki.article.role.transporter.guide": "- At night, select 2 players\n    - Transport both of them with eachother: If somebody else tries to visit the first player, they instead visit the second player, and vice versa.",
+    "wiki.article.role.transporter.abilities":"",
+    "wiki.article.role.transporter.attributes":"* The players you visit get a message saying that they were transported\n* You can choose yourself.",
+    "wiki.article.role.transporter.extra": "* Some abilities are not affected transport.\n* A transporters visits can not be changed by another transporter, or warper, or porter, or lich, or polymath",
 
     "wiki.article.role.porter.reminder": "Each night, select two players, all visits to the first player are redirected to the second.",
     "wiki.article.role.porter.guide": "- At night, choose two players\n    - All visits to the first player are redirected to the second\n     - The first player is told they are transported",
@@ -1917,7 +1917,7 @@
     "wiki.article.role.courtesan.attributes":"* You can't be roleblocked\n* Your targets are told when they are roleblocked, even if they are immune to being roleblocked",
     "wiki.article.role.courtesan.extra":"* When someone is roleblocked, their visits are wiped, so they don't visit anyone",
 
-    "wiki.article.role.medium.reminder":"During the night, you can speak with the dead. Each day cycle, you can choose to seance a player, giving them their ability back for next the day cycle. After you're dead, you can haunt a living player to speak with them.",
+    "wiki.article.role.medium.reminder":"During the night, you can speak with the dead. Each day cycle, you can choose to seance a player, giving them their ability back for the next day cycle. After you're dead, you can haunt a living player to speak with them.",
     "wiki.article.role.medium.guide":"- During night and obituary, speak in dead chat.\n- While alive, before night, choose to seance a player, from the start of night until the start of the next night that player can use their abilities dispite being dead.\n- While dead, before night, haunt a player to bring all dead players to chat with them during night and obituary\n    - You can haunt up to X times (X = Total players ÷ 5 (round up)).",
     "wiki.article.role.medium.abilities":"",
     "wiki.article.role.medium.attributes":"",
