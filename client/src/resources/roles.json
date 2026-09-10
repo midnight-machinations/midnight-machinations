@@ -401,17 +401,6 @@
             {"type": "gainedRoleAbility", "role":"mayor"}
         ]
     },
-    "courtesan": {
-        "mainRoleSet": "town",
-        "roleSets": ["town", "townCommon", "townSupport"],
-        "armor": false,
-        "aura": null,
-        "maxCount": null,
-        "canWriteCallingCard": false,
-        "chatMessages":[
-            {"type": "roleBlocked"}
-        ]
-    },
     "medium": {
         "mainRoleSet": "town",
         "roleSets": ["town", "townCommon", "townSupport"],
@@ -1019,6 +1008,17 @@
         "chatMessages":[
             {"type": "wardblocked"},
             {"type": "targetHasRole", "role":"detective"}
+        ]
+    },
+    "courtesan": {
+        "mainRoleSet": "minions",
+        "roleSets": ["minions"],
+        "armor": false,
+        "aura": null,
+        "maxCount": null,
+        "canWriteCallingCard": false,
+        "chatMessages":[
+            {"type": "roleBlocked"}
         ]
     },
     "warper":{

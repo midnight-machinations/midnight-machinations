@@ -1918,12 +1918,12 @@
 
     "wiki.article.role.courtesan.reminder": "At night, select two players to roleblock them, stopping them from visiting anyone.",
     "wiki.article.role.courtesan.guide": "- At night, select two players to roleblock them, stopping them from using their ability\n - Your targets are told they are roleblocked.\n - You can't choose to roleblock a player that you roleblocked last night",
-    "wiki.article.role.courtesan.abilities":"* Visit two players to roleblock them",
+    "wiki.article.role.courtesan.abilities":"",
     "wiki.article.role.courtesan.attributes":"* You can't be roleblocked\n* Your targets are told when they are roleblocked, even if they are immune to being roleblocked",
-    "wiki.article.role.courtesan.extra":"* When someone is roleblocked, their visits are wiped, so they don't visit anyone",
+    "wiki.article.role.courtesan.extra":"",
 
     "wiki.article.role.medium.reminder":"During the night, you can speak with the dead. Each day cycle, you can choose to seance a player, giving them their ability back for the next day cycle. After you're dead, you can haunt a living player to speak with them.",
-    "wiki.article.role.medium.guide":"- During night and obituary, speak in dead chat.\n- While alive, before night, choose to seance a player, from the start of night until the start of the next night that player can use their abilities dispite being dead.\n- While dead, before night, haunt a player to bring all dead players to chat with them during night and obituary\n    - You can haunt up to X times (X = Total players ÷ 5 (round up)).",
+    "wiki.article.role.medium.guide":"- During night and obituary, speak in dead chat.\n- While alive, before night, choose to seance a player, from the start of night until the start of the next night that player can use their abilities dispite being dead.\n- While dead, before night, haunt a player to bring all dead players to chat with them during night and obituary\n    - You can haunt up to X times (X = Total players ÷ 5 (round up)).\n- You visit the player you seance or haunt with a transport immune visit.",
     "wiki.article.role.medium.abilities":"",
     "wiki.article.role.medium.attributes":"",
     "wiki.article.role.medium.extra":"- You can't chat with the dead while in jail, but a haunted player can.\n- You are immune to possession",
