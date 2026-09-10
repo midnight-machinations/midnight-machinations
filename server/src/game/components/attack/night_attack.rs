@@ -70,6 +70,7 @@ impl NightAttack<GraveDeathCause> {
             });
     }
 
+    //returns true if attack pierced defense
     pub fn attack(&self, game: &mut Game, fold: &mut OnMidnightFold, defender: PlayerReference)->bool{
 
         defender.set_night_attacked(fold, true);
