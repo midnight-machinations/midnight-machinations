@@ -49,10 +49,10 @@ impl RoleStateTrait for Veteran {
                         alerts_remaining: self.alerts_remaining.saturating_sub(1), 
                         alerting_tonight: true 
                     });
+                    
+                    actor_ref.increase_defense_to(game, midnight_variables, DefensePower::Protected);
                 }
 
-                if !self.alerting_tonight {return}
-                actor_ref.increase_defense_to(game, midnight_variables, DefensePower::Protected);
             }
             OnMidnightPriority::Kill => {
                 if !self.alerting_tonight {return}

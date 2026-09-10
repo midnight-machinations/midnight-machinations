@@ -860,7 +860,7 @@ fn veteran_basic(){
         tracker: Tracker
     );
 
-    assert!(vet.send_ability_input_boolean_typical(true));
+    assert!(vet.send_ability_input_player_list_typical(vet));
     assert!(framer.send_ability_input_player_list_typical(vet));
     assert!(townie.send_ability_input_player_list_typical(vet));
     assert!(tracker.send_ability_input_player_list_typical(vet));
@@ -984,14 +984,7 @@ fn marksman_basic() {
     );
 
     assert!(dt.send_ability_input_player_list_typical(gf));
-    mk.send_ability_input(ControllerInput::new(
-        ControllerID::role(mk.player_ref(), Role::Marksman, 0),
-        PlayerListSelection(vec!(dt.player_ref()))
-    ));
-    mk.send_ability_input(ControllerInput::new(
-        ControllerID::role(mk.player_ref(), Role::Marksman, 1),
-        PlayerListSelection(vec!(gf.player_ref()))
-    ));
+    assert!(mk.send_ability_input_two_player_typical(dt, gf));
 
     game.next_phase();
 
@@ -2516,7 +2509,7 @@ fn godfather_dies_to_veteran(){
     );
 
     assert!(gf.send_ability_input_player_list_typical(vet));
-    assert!(vet.send_ability_input_boolean_typical(true));
+    assert!(vet.send_ability_input_player_list_typical(vet));
 
     game.next_phase();
 
@@ -2643,7 +2636,7 @@ fn godfather_dies_to_veteran_after_possessed(){
     );
 
     assert!(min.send_ability_input_two_player_typical(gf, vet));
-    assert!(vet.send_ability_input_boolean_typical(true));
+    assert!(vet.send_ability_input_player_list_typical(vet));
 
     game.next_phase();
 
