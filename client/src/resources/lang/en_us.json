@@ -347,8 +347,8 @@
     "role.marksman.roleDataText.loaded": "Your gun is loaded. If a marked player visits a camped player, the marked player is attacked.",
     "role.marksman.roleDataText.shotTownie": "You shot a townie, and threw away your gun.",
     "role.marksman.roleDataText.notLoaded": "You are reloading your gun. You can not shoot yet.",
-    "controllerId.role.marksman.0.name": "Mark",
-    "controllerId.role.marksman.1.name": "Camp",
+    "controllerId.role.marksman.0.name": "Mark & Camp",
+    "controllerId.role.marksman.1.name": "Mark & Camp",
 
     "role.deputy.name": "Deputy",
     "role.deputy.name:var.0": "Deputies",
@@ -584,6 +584,7 @@
     "controllerId.role.lich.5.name": "Ward",
     "controllerId.role.lich.6.name": "Roleblock",
     "controllerId.role.lich.7.name": "Possess",
+    "controllerId.role.lich.8.name": "Pierce",
 
     "controllerId.role.lich.14.name": "Fit",
 
@@ -593,6 +594,7 @@
     "controllerId.role.lich.1.integer.5": "Ward",
     "controllerId.role.lich.1.integer.6": "Roleblock",
     "controllerId.role.lich.1.integer.7": "Possess",
+    "controllerId.role.lich.1.integer.8": "Pierce",
 
     "role.kira.name": "Kira",
     "role.kira.name:var.0": "Kiras",
@@ -897,6 +899,7 @@
     "forfeitNominationVote": "Forfeit Nomination Vote",
     "randomPlayerNames": "Random Player Names",
     "customRoleLimits": "Custom Role Limits",
+    "lessFeedback": "Less Feedback",
 
     "syndicateGun": "Syndicate Gun",
     "nightMessages": "Night Messages",
@@ -1661,6 +1664,8 @@
     "wiki.article.modifier.randomPlayerNames.text": "Random Player Names is a modifier that randomizes players names when the game starts, allowing anonymous games.",
     "wiki.article.modifier.customRoleLimits.title": "Custom Role Limits",
     "wiki.article.modifier.customRoleLimits.text": "Custom Role Limits is a modifier that allows the host to set custom limits for each role. For example, the host could allow for infinite Jailors or restrict the number of Detectives to 1.",
+    "wiki.article.modifier.lessFeedback.title": "Less Feedback",
+    "wiki.article.modifier.lessFeedback.text": "Less Feedback is a modifier. With this modifier, players can not receive these chat messages:\n- You were transported.\n- You were roleblocked\n- You were wardblocked.\n- You were attacked.\n- You were attacked but had defense.\n- You were guarded from at least one attack.",
     
     "wiki.article.standard.syndicateGun.title":"Syndicate Gun",
     "wiki.article.standard.syndicateGun.text":"Syndicate Gun is an ability a syndicate member gets when theres no syndicate killing role present\n- A syndicate member is given a gun they can use to kill a player with a basic attack at night\n- The gun can't be used on the first night\n- The gun can be passed around between syndicate members, so a different syndicate member can shoot it every night\n- The gun still uses visits, so getting roleblocked still erases that visit, and transports still move it\n- The killer appears to be syndicate on the grave of the player who died to the gun\n- When the game starts, the player with the gun is given an armored fragile vest, and that player is told if it breaks.\n    - The vest does not move when the gun moves, so the player who starts with the vest keeps it.",
@@ -1750,10 +1755,10 @@
     "wiki.article.role.nepotist.extra": "- If your role changes, you unenfranchise.",
 
     "wiki.article.role.transporter.reminder": "At night, select 2 players to transport them with each other, swapping all visits to them.",
-    "wiki.article.role.transporter.guide": "- At night, select 2 players\n    - If somebody else tries to visit the first player, they will instead visit the second player, and vice versa\n\n _For example_\n- If a godfather tries to attack @1, but you transported @1 and @4, then @4 will die instead\n\nIts often a good strategy to transport innocent looking players with suspicious looking ones to divert a potential attack from the innocent player onto the suspicious player.\n\n",
-    "wiki.article.role.transporter.abilities":"* Visit 2 players to transport them",
-    "wiki.article.role.transporter.attributes":"* All visits to first player instead visit the second player\n* All visits to the second player instead visit first player\n* The players you visit get a message saying that they were transported",
-    "wiki.article.role.transporter.extra": "* Some abilities are not affected by yours due to the priority system.\n* A transporters visits can not be changed by another transporter",
+    "wiki.article.role.transporter.guide": "- At night, select 2 players\n    - Transport both of them with eachother: If somebody else tries to visit the first player, they instead visit the second player, and vice versa.",
+    "wiki.article.role.transporter.abilities":"",
+    "wiki.article.role.transporter.attributes":"* The players you visit get a message saying that they were transported\n* You can choose yourself.",
+    "wiki.article.role.transporter.extra": "* Some abilities are not affected transport.\n* A transporters visits can not be changed by another transporter, or warper, or porter, or lich, or polymath",
 
     "wiki.article.role.porter.reminder": "Each night, select two players, all visits to the first player are redirected to the second.",
     "wiki.article.role.porter.guide": "- At night, choose two players\n    - All visits to the first player are redirected to the second\n     - The first player is told they are transported",
@@ -1913,12 +1918,12 @@
 
     "wiki.article.role.courtesan.reminder": "At night, select two players to roleblock them, stopping them from visiting anyone.",
     "wiki.article.role.courtesan.guide": "- At night, select two players to roleblock them, stopping them from using their ability\n - Your targets are told they are roleblocked.\n - You can't choose to roleblock a player that you roleblocked last night",
-    "wiki.article.role.courtesan.abilities":"* Visit two players to roleblock them",
+    "wiki.article.role.courtesan.abilities":"",
     "wiki.article.role.courtesan.attributes":"* You can't be roleblocked\n* Your targets are told when they are roleblocked, even if they are immune to being roleblocked",
-    "wiki.article.role.courtesan.extra":"* When someone is roleblocked, their visits are wiped, so they don't visit anyone",
+    "wiki.article.role.courtesan.extra":"",
 
-    "wiki.article.role.medium.reminder":"During the night, you can speak with the dead. Each day cycle, you can choose to seance a player, giving them their ability back for next the day cycle. After you're dead, you can haunt a living player to speak with them.",
-    "wiki.article.role.medium.guide":"- During night and obituary, speak in dead chat.\n- While alive, before night, choose to seance a player, from the start of night until the start of the next night that player can use their abilities dispite being dead.\n- While dead, before night, haunt a player to bring all dead players to chat with them during night and obituary\n    - You can haunt up to X times (X = Total players ÷ 5 (round up)).",
+    "wiki.article.role.medium.reminder":"During the night, you can speak with the dead. Each day cycle, you can choose to seance a player, giving them their ability back for the next day cycle. After you're dead, you can haunt a living player to speak with them.",
+    "wiki.article.role.medium.guide":"- During night and obituary, speak in dead chat.\n- While alive, before night, choose to seance a player, from the start of night until the start of the next night that player can use their abilities dispite being dead.\n- While dead, before night, haunt a player to bring all dead players to chat with them during night and obituary\n    - You can haunt up to X times (X = Total players ÷ 5 (round up)).\n- You visit the player you seance or haunt with a transport immune visit.",
     "wiki.article.role.medium.abilities":"",
     "wiki.article.role.medium.attributes":"",
     "wiki.article.role.medium.extra":"- You can't chat with the dead while in jail, but a haunted player can.\n- You are immune to possession",
@@ -1960,14 +1965,14 @@
     "wiki.article.role.veteran.exampleAlibi":"veteran\nN1: n/a\nN2: \nN3: @5 [attacked soemone but they had defense] [attack someone] [attack someone]",
     "wiki.article.role.veteran.exampleAlibi.description":"On night 1, they had to wait.\nOn night 2, they didnt try to rampage anyone.\nOn night 3, they rampaged, and at least 3 players visited them. 2 Of those players died, 1 of them somehow had defense so they did not, likely protected by a doctor or similar.",
 
-    "wiki.article.role.marksman.reminder": "Each night, mark up to 3 players and camp up to 3 players. If a marked player visits a camped player, you attack the marked player.",
+    "wiki.article.role.marksman.reminder": "Each night, select 2 pairs of players. If the first player visits the second player, you attack the first player.",
     "wiki.article.role.marksman.lore": "Order demands precision. The Marksman established curfews and checkpoints, watching every route through town. \"Stay compliant. Stay alive.\"",
-    "wiki.article.role.marksman.guide": "- Each night, choose up to three players to mark, and camp up to three players to camp\n    - If a marked player visits a camped player, you attack the marked player\n- You can't do anything on the first night\n- If you kill a townie, you can't use your ability again\n- You should try to mark players who act suspicious, and camp players that they would only visit if they're evil",
-    "wiki.article.role.marksman.abilities":"* Choose to mark up to 3 players\n* Select up to 3 players, if you have nobody marked, you can't camp anyone\n    - If a marked player visits any of your targets, you attack them",
-    "wiki.article.role.marksman.attributes":"* You can't mark or camp to camp on night 1\n* If you kill a town loyalist, you can't mark or camp again\n* You have a basic attack",
-    "wiki.article.role.marksman.extra":"* You can't mark or camp yourself\n- You only visit the players you camp, not the players you mark, even if you attack the marked players",
-    "wiki.article.role.marksman.exampleAlibi":"Marksman\nN1: n/a\nN2: [attacked someone with defense]\nMark:\n@8 @19 @4\nCamp:\n@7 @23",
-    "wiki.article.role.marksman.exampleAlibi.description":"Here is an example of an alibi from a Marksman who, on night 2, marked @8 @19 and @4, and camped @7 and @23. They also were told a message saying they attacked a player who had defense and survived.",
+    "wiki.article.role.marksman.guide": "- Each night, choose 2 pairs of players\n    - If the first player in a pair directly visits the second player in that pair, you attack the first player.\n   - You can attack up to one player per night.\n      - If you attack the first player from the first pair, you can't attack the first player from the second pair. (It prioritizes the first pair)\n- You can't use your ability on the night 1\n- If you kill a town loyalist, you can't use your ability again",
+    "wiki.article.role.marksman.abilities":"",
+    "wiki.article.role.marksman.attributes":"",
+    "wiki.article.role.marksman.extra":"* You can't mark or camp yourself\n* You have a basic attack",
+    "wiki.article.role.marksman.exampleAlibi":"Marksman\nN1: n/a\nN2: [attacked someone with defense]\n@8 -> @9\n @19 -> @19",
+    "wiki.article.role.marksman.exampleAlibi.description":"Here is an example of an alibi from a Marksman.\n- On night 2, they chose @8 and @9 as a pair, and chose @19 and @19 as a pair.\n- They were told a message saying they attacked a player who had defense and survived.\n- So they either attacked @8 (who would need to have visited @9 in order to be attacked) or @19 (who would need to have visited themselves in order to be attacked).\n - They don't know which player they attacked, but they know that at least one of the first players visited the second player in their pair.",
 
     "wiki.article.role.deputy.reminder": "Once per game, during the day, shoot someone. If you kill a town loyalist you leave town.",
     "wiki.article.role.deputy.lore": "\"When you know, you know.\"",
@@ -2075,20 +2080,20 @@
     "wiki.article.role.consort.extra":"* When someone is roleblocked, their visits are wiped, so they don't visit anyone\n* You can't select other syndicate members",
 
     "wiki.article.role.blackmailer.reminder": "Each night, select a player to silence until the next night. You may choose to hide all votes during the day.",
-    "wiki.article.role.blackmailer.guide": "- At night, select a player to silence\n- The silenced player can't speak during the next day.\n- You may choose hide nomination votes and verdict votes.\n- You can't choose to silence the player you silenced yesterday.\n- Silenced players call all witnesses at the start of testimony.",
+    "wiki.article.role.blackmailer.guide": "- At night, select a player to silence\n- The silenced player can't speak during the next day.\n- You may choose hide nomination votes and verdict votes.\n- You can't choose to silence the player you silenced yesterday.\n- When roleblocked, you can't hide votes until start of next night.",
     "wiki.article.role.blackmailer.abilities":"",
-    "wiki.article.role.blackmailer.attributes":"- Silenced players can not talk in chat or out loud during the entire next day.",
+    "wiki.article.role.blackmailer.attributes":"",
     "wiki.article.role.blackmailer.extra":"* The silenced player is no longer be silenced at the start of the next night\n* You can't select other syndicate members",
 
     "wiki.article.role.pyrotechnician.reminder": "Each night, select a player to delete their night result messages. You may choose to hide all votes during the day.",
-    "wiki.article.role.pyrotechnician.guide": "- At night, select a player to smoke bomb\n   - The smoke bombed player sees no night result chat messages.\n- You may choose hide nomination votes and verdict votes.",
+    "wiki.article.role.pyrotechnician.guide": "- At night, select a player to smoke bomb\n   - The smoke bombed player sees no night result chat messages.\n- You may choose hide nomination votes and verdict votes.\n- When roleblocked, you can't hide votes until start of next night.",
     "wiki.article.role.pyrotechnician.abilities":"",
     "wiki.article.role.pyrotechnician.attributes":"",
     "wiki.article.role.pyrotechnician.extra":"* You can't select other syndicate members",
 
-    "wiki.article.role.cerenovous.reminder": "Each night, select a player to brain, you can chat as that player until the next night. You may choose to hide all votes during the day.",
-    "wiki.article.role.cerenovous.guide": "- At night, select a player to brain\n- The brained player can't chat during the next day, instead you can chat as them.\n    - You can send block messages as them.\n    - You can whisper as them.\n- You may choose hide nomination votes and verdict votes.\n- You can read whispers sent to other players.\n- You can't choose to brain the player you brained yesterday.\n- You can only brain X times (X = Total players ÷ 5 (round up))\n- When you are roleblocked, you can't read whispers until start of next night.",
-    "wiki.article.role.cerenovous.abilities":"\n - When a player is brained, they are told they are brained, and their chat box dissapears.",
+    "wiki.article.role.cerenovous.reminder": "Once per game at night, select a player to brain, you can chat as that player until the next night. You may choose to hide all votes during the day.",
+    "wiki.article.role.cerenovous.guide": "- Once per game at night, select a player to brain\n   - The brained player can't chat during the next day, instead you can chat as them.\n    - You can send block-style messages as them.\n    - You can whisper as them.\n   - You can call witnessess as them.\n- You may choose hide nomination votes and verdict votes.\n- You can read whispers sent to other players.\n- When you are roleblocked, you can't read whispers or hide votes until start of next night.",
+    "wiki.article.role.cerenovous.abilities":"",
     "wiki.article.role.cerenovous.attributes":"",
     "wiki.article.role.cerenovous.extra":"- The brained player is no longer brained at the start of the next night.\n* You can't select other syndicate members",
 
@@ -2131,7 +2136,7 @@
 
     "wiki.article.role.reeducator.reminder": "Once per game at night*, choose a player to join the syndicate. At night you can instantly change the role of fellow insiders.",
     "wiki.article.role.reeducator.lore": "Formerly an acclaimed instructor but condemned after questioning the Town's curriculum. The Syndicate's \"propaganda,\" they called it. Though the Reeducator insists they were teaching truth. Their lectures continue as whispers across unstable connections.\n",
-    "wiki.article.role.reeducator.guide": "- Once per game, on any night except the first, select a player and syndicate support role. If they have no defense:\n    - Their role switches to the role you choose\n    - They become a syndicate insider\n    - They become a syndicate loyalist\n - During night, choose a fellow insider or yourself to instantly change to the syndicate support role you chose.\n - For each reeducator that generates at the start of the game, one less syndicate support generates.",
+    "wiki.article.role.reeducator.guide": "- Once per game, on any night except the first, select a player and syndicate support role. If they have protected defense or lower:\n    - Their role switches to the role you choose\n    - They become a syndicate insider\n    - They become a syndicate loyalist\n - During night, choose a fellow insider or yourself to instantly change them to the syndicate support role you chose.\n- You have innocent aura on night 1, even if blocked.\n - For each reeducator that generates at the start of the game, one less syndicate support generates, and 1 extra town common generates in its place.",
     "wiki.article.role.reeducator.abilities": "",
     "wiki.article.role.reeducator.attributes": "",
     "wiki.article.role.reeducator.extra": "- It is possible to create roles that exceed role limits with this ability\n- You can't select roles that aren't enabled\n- If the convert is blocked by defense, the charge is not used.",
@@ -2269,11 +2274,11 @@
     "wiki.article.role.puppeteer.attributes":"- You and the marionettes are all puppeteer insiders\n- Stringing someone up is armor-piercing\n - At night all puppeteers and marionettes can chat in the puppeteer chat, even if dead\n    - The players in the puppeteer chat that are dead can chat during the day or night",
     "wiki.article.role.puppeteer.extra":"- You can't select anybody who is a puppeteer, marionette, or is being strung into a marionette\n- A puppeteer can't be stringed into a marionette\n- A marionette can't be stringed into a marionette twice, if 2 puppeteers choose a player to be turned into a marionette on the same night, they get the message only once",
 
-    "wiki.article.role.lich.reminder": "Each night*, dead players vote on who you attack. Each night, you may do one of warp, ward, tailor, roleblock, or transport. You may choose not to attack.",
-    "wiki.article.role.lich.guide":"- Each night except the first, the dead anonymously votes on who you attack\n   - If there is a tie then you attack all tied players.\n- You may choose a player to try to attack\n   - If the dead choses to attack you (or nobody), then then you attack the player you chose instead.\n   - If you chose nobody, then you attack nobody, even if the dead voted on someone to attack.\n\n- You may choose between transport, warp, ward, roleblock, possess, and tailor.\n   - If you choose transport, choose 2 players to transport them into eachother.\n   - If you choose warp, choose 2 players to transport the first into the second.\n   - If you choose tailor, choose a player and a town common role, if that player has a town common role then they become the role you chose.\n   - If you choose ward, choose a player to ward off all visitors to them.\n   - If you chose roleblock, choose a player to roleblock.\n   - If you choose possess, choose 2 players and possess the first into the second.",
+    "wiki.article.role.lich.reminder": "Each night*, dead players vote on who you attack. Each night, you may do one of warp, ward, tailor, roleblock, transport, or upgrade your attack to protection-piercing. You may choose not to attack.",
+    "wiki.article.role.lich.guide":"- Each night except the first, the dead anonymously votes on who you attack\n   - If there is a tie then you attack all tied players.\n- You may choose a player to try to attack\n   - If the dead choses to attack you (or nobody), then then you attack the player you chose instead.\n   - If you chose nobody, then you attack nobody, even if the dead voted on someone to attack.\n\n- You may choose between transport, warp, ward, roleblock, possess, tailor, and pierce.\n   - If you choose transport, choose 2 players to transport them into eachother.\n   - If you choose warp, choose 2 players to transport the first into the second.\n   - If you choose tailor, choose a player and a town common role, if that player has a town common role then they become the role you chose.\n   - If you choose ward, choose a player to ward off all visitors to them.\n   - If you chose roleblock, choose a player to roleblock.\n   - If you choose possess, choose 2 players and possess the first into the second.\n   - If you choose pierce, your attack becomes protection-piercing.\n- The dead are only given the ability to vote on who you attack if there is a lich in the game, and they are given a seperate vote controller for each alive lich in the game.",
     "wiki.article.role.lich.abilities":"",
     "wiki.article.role.lich.attributes":"",
-    "wiki.article.role.lich.extra":"- Your attack is armor-piercing",
+    "wiki.article.role.lich.extra":"- Your attack is armor-piercing by default",
 
     "wiki.article.role.kira.reminder": "Each night, guess players roles, if all your guesses are correct, you attack all of the players you guessed.",
     "wiki.article.role.kira.lore": "Do you know? Gods of death who love apples have red hands.",
@@ -2295,7 +2300,7 @@
     "wiki.article.role.spiral.extra":"- You can't cause yourself to spiral\n- If a dead player is spiraling, they stay spiraling, and you attack them again, even while they are dead. Although they cannot die after already dead.",
 
     "wiki.article.role.warden.reminder": "Each night*, put up to 3 players in your prison who each must choose to either cooperate or defect. If they all cooperate they all live, otherwise, defectors live and cooperates die. If everyone defects then they all die.",
-    "wiki.article.role.warden.guide":"- Each day except the first, choose up to 3 players to put in prison\n    - The prisoners much each secretly choose to cooperate or defect\n        - If all prisoners choose defect, you attack each of them.\n        - If all prisoners choose cooperate, you don't attack, but you gain charges equal to the number of prisoners - 1\n        - Otherwise, you attack the prisoners who chose cooperate.\n    - Prisoners can chat in a private chat group at night.\n        - You can read the private chat group.\n    - Prisoners are roleblocked.\n    - You may choose to make yourself a prisoner.\n - If either of the following are true, then you attack your prisoners regardless of their choices.\n    - There is only 1 prisoner.\n    - Your charges are greater than or equal to half the number of players in the lobby rounded up.",
+    "wiki.article.role.warden.guide":"- Each day except the first, choose up to 3 players to put in prison\n    - The prisoners much each secretly choose to cooperate or defect\n        - If all prisoners choose defect, you attack each of them.\n        - If all prisoners choose cooperate, you don't attack\n        - Otherwise, you attack the prisoners who chose cooperate.\n    - Prisoners can chat in a private chat group at night.\n        - You can read the private chat group.\n    - You may choose to make yourself a prisoner. (But you might die)\n- Each night, if you dont pierce anybodys defense, you gain 1 charge.\n   - You don't gain charge while blocked.\n   - You don't gain charge on night 1.\n- If either of the following are true, then you attack your prisoners regardless of their choices.\n    - There is only 1 prisoner.\n    - Your charges are greater than or equal to half the number of players in the lobby rounded up.",
     "wiki.article.role.warden.abilities":"",
     "wiki.article.role.warden.attributes":"",
     "wiki.article.role.warden.extra":" - You don't visit anybody due to your own ability.\n - Your attack is armor piercing.\n - You can't roleblock yourself.",

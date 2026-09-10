@@ -20,37 +20,26 @@ impl RoleStateTrait for Warden {
     type ClientAbilityState = Warden;
     fn on_midnight(mut self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut OnMidnightFold, priority: OnMidnightPriority) {
         if game.day_number() == 1 {return}
+        if priority != OnMidnightPriority::Kill {return}
+        if actor_ref.night_blocked(midnight_variables) {return}
 
-        match priority {
-            OnMidnightPriority::Roleblock => {
-                self.players_in_prison
-                    .into_iter()
-                    .filter(|p|*p != actor_ref)
-                    .for_each(|p|p.roleblock(game, midnight_variables, true));
+        let players_to_kill = self.players_to_kill(game, actor_ref);
+
+        let any_attack_pierced_defense = Self::kill_players(
+            game,
+            midnight_variables,
+            actor_ref, 
+            if self.reached_charges_threshold(game) || self.players_in_prison.count() == 1 {
+                &self.players_in_prison
+            }else{
+                &players_to_kill
             }
-            OnMidnightPriority::Kill => {
-                if actor_ref.night_blocked(midnight_variables) {return}
+        );
 
-                let players_to_kill = self.players_to_kill(game, actor_ref);
+        if !any_attack_pierced_defense {
+            self.charges = self.charges.saturating_add(1);
 
-                Self::kill_players(
-                    game,
-                    midnight_variables,
-                    actor_ref, 
-                    if self.reached_charges_threshold(game) || self.players_in_prison.count() == 1 {
-                        &self.players_in_prison
-                    }else{
-                        &players_to_kill
-                    }
-                );
-
-                if self.all_prisoners_cooperated(&players_to_kill) {
-                    self.increment_charges();
-
-                    actor_ref.edit_role_ability_helper(game, self);
-                }
-            },
-            _ => {}
+            actor_ref.edit_role_ability_helper(game, self);
         }
     }
     fn send_player_chat_group_map(self, game: &Game, _actor_ref: PlayerReference) -> PlayerChatGroupMap {
@@ -147,26 +136,22 @@ impl Warden {
     fn reached_charges_threshold(&self, game: &Game)->bool{
         self.charges >= game.num_players().div_ceil(2)
     }
-    fn all_prisoners_cooperated(&self, players_to_kill: &VecSet<PlayerReference>) -> bool {
-        players_to_kill.count() == 0 && self.players_in_prison.count() != 0
-    }
-    fn increment_charges(&mut self){
-        self.charges = self.players_in_prison
-            .count()
-            .saturating_sub(1)
-            .saturating_add(self.charges.into())
-            .try_into()
-            .unwrap_or(u8::MAX);
-    }
-    fn kill_players(game: &mut Game, midnight_variables: &mut OnMidnightFold, actor_ref: PlayerReference, players: &VecSet<PlayerReference>){
+    /// returns true if any attack pierced a defense, false if all attacks were blocked
+    fn kill_players(game: &mut Game, midnight_variables: &mut OnMidnightFold, actor_ref: PlayerReference, players: &VecSet<PlayerReference>) -> bool {
+        let mut any_attack_pierced_defense = false;
         for player in players.iter() {
-            NightAttack::new()
-                .attackers([actor_ref])
-                .grave_killer(Role::Warden)
-                .power(AttackPower::ArmorPiercing)
-                .leave_calling_card()
-                .attack(game, midnight_variables, *player);
+            if 
+                NightAttack::new()
+                    .attackers([actor_ref])
+                    .grave_killer(Role::Warden)
+                    .power(AttackPower::ArmorPiercing)
+                    .leave_calling_card()
+                    .attack(game, midnight_variables, *player)
+            {
+                any_attack_pierced_defense = true;
+            }
         }
+        any_attack_pierced_defense
     }
     fn players_to_kill(&self, game: &Game, actor_ref: PlayerReference)->VecSet<PlayerReference>{
         let players_cooperate_map: VecMap<PlayerReference, bool> = self.players_in_prison

@@ -4,7 +4,8 @@ use crate::{
     game::{
         chat::{ChatGroup, ChatMessageVariant, PlayerChatGroupMap}, components::silenced::Silenced,
         controllers::{AvailablePlayerListSelection, ControllerID, ControllerParametersMap, PlayerListSelection},
-        event::{on_phase_start::OnPhaseStart, on_validated_ability_input_received::OnValidatedControllerInputReceived}, phase::{PhaseState, PhaseType}, player::PlayerReference, role::RoleState, Game
+        event::{on_phase_start::OnPhaseStart, on_validated_ability_input_received::OnValidatedControllerInputReceived},
+        phase::PhaseState, player::PlayerReference, role::RoleState, Game
     },
     vec_set::VecSet
 };
@@ -40,6 +41,12 @@ impl CallWitness{
             allowed_players.insert(actor);
         }
 
+        let im_on_trial = if let PhaseState::Testimony { player_on_trial, .. } = game.current_phase() {
+            *player_on_trial == actor
+        }else{
+            false
+        };
+
         ControllerParametersMap::builder(game)
             .id(crate::game::controllers::ControllerID::CallWitness { player: actor })
             .available_selection(AvailablePlayerListSelection {
@@ -50,7 +57,7 @@ impl CallWitness{
                 can_choose_duplicates: false,
                 max_players: None
             })
-            .add_grayed_out_condition(!matches!(game.current_phase().phase(), PhaseType::Nomination|PhaseType::Testimony))
+            .add_grayed_out_condition(!im_on_trial)
             .reset_on_phase_start(crate::game::phase::PhaseType::Judgement)
             .allow_players(allowed_players)
             .build_map()

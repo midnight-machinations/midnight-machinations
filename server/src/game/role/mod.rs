@@ -116,7 +116,6 @@ macros::roles! {
     Transporter : transporter,
     Porter : porter,
     Polymath : polymath,
-    Courtesan : courtesan,
     Nepotist : nepotist,
     Employer : employer,
 
@@ -166,6 +165,7 @@ macros::roles! {
     Pawn : pawn,
     Tailor : tailor,
     Lackey : lackey,
+    Courtesan : courtesan,
 
     Arsonist : arsonist,
     Werewolf : werewolf,

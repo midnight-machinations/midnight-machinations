@@ -96,10 +96,20 @@ impl RoleStateTrait for Lich {
                     .map_target()
                     .next()
                 {
+                    let attack_power = 
+                    if ControllerID::role(actor_ref, Role::Lich, Self::CHOOSE_ABILITY_ID.cast_unsigned())
+                        .get_integer_selection(game)
+                        .is_some_and(|IntegerSelection(i)|*i == Self::PIERCE)
+                    {
+                        AttackPower::ProtectionPiercing
+                    }else{
+                        AttackPower::ArmorPiercing
+                    };
+
                     NightAttack::new()
                         .attackers([actor_ref])
                         .grave_killer(Role::Lich)
-                        .power(AttackPower::ArmorPiercing)
+                        .power(attack_power)
                         .leave_calling_card()
                         .attack(game, midnight_variables, target);
                 }
@@ -120,7 +130,7 @@ impl RoleStateTrait for Lich {
                 .id(ControllerID::role(actor_ref, Role::Lich, Self::CHOOSE_ABILITY_ID.cast_unsigned()))
                 .available_selection(AvailableIntegerSelection{
                     min: 2,
-                    max: 7,
+                    max: if game.day_number() == 1 {7} else {8},
                 })
                 .default_selection(IntegerSelection(2))
                 .allow_players([actor_ref])
@@ -137,6 +147,7 @@ impl RoleStateTrait for Lich {
                         .reset_on_phase_start(PhaseType::Obituary)
                         .allow_players([player])
                         .add_grayed_out_condition(game.day_number() <= 1)
+                        .add_grayed_out_condition(actor_ref.ability_deactivated_from_death(game))
                         .build_map()
                 )
         ).chain(iter::once(
@@ -337,6 +348,7 @@ impl Lich{
     pub const WARD_ID: i8 = 5;
     pub const ROLEBLOCK_ID: i8 = 6;
     pub const POSSESS_ID: i8 = 7;
+    pub const PIERCE: i8 = 8;
 
     pub const TAILOR_ID_ROLE: i8 = 14;
     pub const POSSESS_INTO_ID: i8 = 15;

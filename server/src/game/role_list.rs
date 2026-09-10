@@ -269,7 +269,7 @@ impl RoleSet{
                     Role::Medium,
                     Role::Transporter, Role::Porter,
                     Role::Mayor, Role::Nepotist, Role::Reporter,
-                    Role::Courtesan, Role::Escort,
+                    Role::Escort,
                     Role::Polymath, Role::Employer
                 ],
             RoleSet::Mafia =>
@@ -295,7 +295,7 @@ impl RoleSet{
                 ],
             RoleSet::Minions => 
                 vec_set![
-                    Role::Witch, Role::Scarecrow, Role::Warper,
+                    Role::Witch, Role::Scarecrow, Role::Warper, Role::Courtesan,
                     Role::Kidnapper, Role::Pawn, Role::Tailor, Role::Lackey
                 ],
             RoleSet::Neutral =>

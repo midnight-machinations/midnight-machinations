@@ -82,11 +82,11 @@
         "midnight": true,
         "visit": "none"
     },
-    "role/marksman/0": {
-        "midnight": true,
-        "visit": "none"
-    },
     "role/marksman/1": {
+        "midnight": true,
+        "visit": "normal"
+    },
+    "role/marksman/0": {
         "midnight": true,
         "visit": "normal"
     },
@@ -430,6 +430,10 @@
     "role/lich/7": {
         "midnight": true,
         "visit": "abnormal"
+    },
+    "role/lich/8": {
+        "midnight": true,
+        "visit": "none"
     },
     "role/lich/14": {
         "midnight": true,

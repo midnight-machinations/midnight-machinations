@@ -5,7 +5,7 @@ use crate::{
             attack::night_attack::NightAttack, fragile_vest::FragileVests, graves::{Graves, grave::{Grave, GraveDeathCause}}, insider_group::InsiderGroupID, player_component::PlayerComponent, role::RoleComponent,
         }, controllers::{ControllerID, PlayerListSelection}, event::{
             AsInvokable as _, Invokable as _, on_any_death::OnAnyDeath, on_midnight::{OnMidnightFold, OnMidnightPriority},
-        }, role::{RoleState, medium::Medium, necromancer::Necromancer, prop_master::PropMaster}
+        }, modifiers::{ModifierID, less_feedback::LessFeedback}, role::{RoleState, medium::Medium, necromancer::Necromancer, prop_master::PropMaster}
     }, packet::ToClientPacket,
 };
 
@@ -82,9 +82,21 @@ impl PlayerReference{
         let mut messages = self.night_messages(midnight_variables).to_vec();
         messages.shuffle(&mut game.rng);
         messages.sort();
-        self.send_packet(game, ToClientPacket::NightMessages { chat_messages: 
-            messages.iter().map(|msg|ChatMessage::new_private(msg.clone())).collect()
-        });
+
+        let night_messages = messages.iter()
+            .map(|msg|ChatMessage::new_private(msg.clone()));
+        // if less feedback is enabled, filter out messages that should be blocked, I do this in 2 places, once here just for the nightMessages packet
+        let night_messages =
+        if game.modifier_settings().is_enabled(ModifierID::LessFeedback) {
+                night_messages
+                .filter(|msg|!LessFeedback::should_block_message(msg))
+                .collect()
+        }else{
+            night_messages
+                .collect()
+        };
+
+        self.send_packet(game, ToClientPacket::NightMessages { chat_messages: night_messages });
         self.add_private_chat_messages(game, messages);
     }
 

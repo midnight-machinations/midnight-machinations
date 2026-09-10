@@ -16,9 +16,10 @@ pub(super) const DEFENSE: DefensePower = DefensePower::None;
 
 impl RoleStateTrait for Cerenovous {
     type ClientAbilityState = Cerenovous;
-    fn new_state(game: &mut Game) -> Self {
+    fn new_state(_game: &mut Game) -> Self {
         Self{
-            charges: crate::game::role::common_role::standard_charges(game),
+            // charges: crate::game::role::common_role::standard_charges(game),
+            charges: 1,
             ..Self::default()
         }
     }

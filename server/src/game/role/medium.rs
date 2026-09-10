@@ -94,6 +94,38 @@ impl RoleStateTrait for Medium {
         }
         out
     }
+    fn create_visits_initialize_night(self, _game: &Game, _id: &AbilityID, actor_ref: PlayerReference) -> Vec<Visit> {
+        Vec::new()
+            .into_iter()
+            .chain(
+                self.seanced_target.map(|target|
+                    Visit{
+                        visitor: actor_ref,
+                        target,
+                        tag: VisitTag::Ability { ability: AbilityID::Role { role: Role::Medium, player: actor_ref }, id: 0 },
+                        attack: false,
+                        wardblock_immune: false,
+                        transport_immune: true,
+                        investigate_immune: false,
+                        indirect: false
+                    }
+                )
+            ).chain(
+                self.haunted_target.map(|target|
+                    Visit{
+                        visitor: actor_ref,
+                        target,
+                        tag: VisitTag::Ability { ability: AbilityID::Role { role: Role::Medium, player: actor_ref }, id: 1 },
+                        attack: false,
+                        wardblock_immune: false,
+                        transport_immune: true,
+                        investigate_immune: false,
+                        indirect: false
+                    }
+                )
+            )
+            .collect()
+    }
     fn on_phase_start(mut self, game: &mut Game, actor_ref: PlayerReference, phase: PhaseType){
         match phase {
             PhaseType::Discussion => {
