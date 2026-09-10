@@ -75,7 +75,7 @@ impl ChatComponent{
                     !event.receiver.alive(game) ||
                     !event.sender.alive(game) ||
                     event.receiver == event.sender || 
-                    !event.sender.get_current_send_chat_groups(game).contains(&ChatGroup::All) ||
+                    Silenced::silenced(game, event.sender) ||
                     event.message.replace(['\n', '\r'], "").trim().is_empty()
                 {
                     fold.cancelled = true;
