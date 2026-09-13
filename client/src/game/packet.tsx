@@ -1,4 +1,4 @@
-import { PhaseType, PlayerIndex, PhaseTimes, Tag, LobbyClientID, ChatGroup, PhaseState, LobbyClient, InsiderGroup, GameClient, UnsafeString, FastForwardSetting } from "./gameState.d"
+import { PhaseType, PlayerIndex, PhaseTimes, Tag, LobbyClientID, ChatGroup, PhaseState, LobbyClient, InsiderGroup, GameClient, UnsafeString, FastForwardSetting, Conclusion } from "./gameState.d"
 import { Grave, GraveIndex } from "./graveState"
 import { ChatMessage, ChatMessageIndex } from "../components/ChatMessage"
 import { RoleList, RoleOutline } from "./roleListState.d"
@@ -7,11 +7,22 @@ import { KiraGuess } from "../menu/game/gameScreenContent/AbilityMenu/Controller
 import { ControllerInput, ControllerID, SavedController } from "./controllerInput"
 import { ListMapData } from "../ListMap"
 import { ModifierID, ModifierState } from "./modifiers"
+import { GameLogRecording } from "./replay/replayLog.d"
 
 export type LobbyPreviewData = {
     name: UnsafeString,
     inGame : boolean,
     players: [LobbyClientID, UnsafeString][]
+}
+
+/// One row of the replay browser. Mirrors LobbyPreviewData so both can be drawn the same way.
+export type ReplayPreviewData = {
+    fileName: string,
+    roomName: UnsafeString,
+    startedAt: string,
+    endedAt: string,
+    conclusion: Conclusion | null,
+    players: [PlayerIndex, UnsafeString][]
 }
 
 export type ToClientPacket = {
@@ -37,6 +48,18 @@ export type ToClientPacket = {
 } | {
     type: "rejectJoin",
     reason: string
+} |
+// Replays
+{
+    type: "replayList",
+    replays: ReplayPreviewData[]
+} | {
+    type: "replay",
+    fileName: string,
+    log: GameLogRecording
+} | {
+    type: "replayNotFound",
+    fileName: string
 } | 
 // Lobby
 {
@@ -176,6 +199,11 @@ export type ToClientPacket = {
 
 export type ToServerPacket = {
     type: "ping",
+} | {
+    type: "replayListRequest",
+} | {
+    type: "replayRequest",
+    fileName: string,
 } | {
     type: "lobbyListRequest",
 } | {

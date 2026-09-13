@@ -2,7 +2,7 @@ import { Grave, GraveIndex } from "./graveState";
 import { ChatMessage, ChatMessageIndex } from "../components/ChatMessage";
 import { AbilityID, Role, RoleState } from "./roleState.d";
 import { RoleList } from "./roleListState.d";
-import { LobbyPreviewData } from "./packet";
+import { LobbyPreviewData, ReplayPreviewData } from "./packet";
 import { ChatFilter } from "../menu/game/gameScreenContent/ChatMenu";
 import { ControllerID, SavedController } from "./controllerInput";
 import translate from "./lang";
@@ -20,6 +20,8 @@ export type OutsideLobbyState = {
 
     selectedRoomCode: string | null,
     lobbies: Map<number, LobbyPreviewData>,
+    /** The games that can be watched as a replay, newest first. */
+    replays: ReplayPreviewData[],
 }
 
 
@@ -72,6 +74,12 @@ type GameState = {
     lobbyName: UnsafeString,
     
     initialized: boolean,
+
+    /**
+     * Whether this game is a replay being played back from a log rather than a live game.
+     * A replay has no server room behind it, so nothing may be sent for it.
+     */
+    isReplay: boolean,
 
     myId: number | null,
 

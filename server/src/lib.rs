@@ -18,6 +18,7 @@ pub mod websocket_listener;
 pub mod room;
 pub mod lobby;
 pub mod packet;
+pub mod replay;
 pub mod client_connection;
 pub mod vec_map;
 pub mod vec_set;

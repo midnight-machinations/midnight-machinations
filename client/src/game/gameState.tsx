@@ -45,6 +45,7 @@ export function createGameState(): GameState {
         lobbyName: "",
 
         initialized: false,
+        isReplay: false,
 
         myId: null,
 

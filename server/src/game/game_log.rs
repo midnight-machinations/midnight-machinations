@@ -3,7 +3,7 @@ use chrono::{DateTime, Utc};
 use serde::Serialize;
 use serde_json::Value;
 
-use crate::log;
+use crate::{log, replay::LOGS_DIRECTORY};
 
 /// The full recording of a game, including the initial setup, the timeline of events and chat messages, and the final result.
 
@@ -96,6 +96,7 @@ impl GameLog {
 
     /// Serializes the full recording (setup, timeline, result) and
     /// writes it to `logs/<room_name>_<started_at>.json`.
+    /// The file written here is exactly what the replay feature reads back, see [`crate::replay`].
     pub fn write_to_disk(&self, room_name: &str, result: GameResult) {
         let recording = GameRecording {
             room_name,
@@ -114,7 +115,7 @@ impl GameLog {
             }
         };
 
-        let dir = PathBuf::from("logs");
+        let dir = PathBuf::from(LOGS_DIRECTORY);
         if let Err(error) = fs::create_dir_all(&dir) {
             log!(error "GameLog"; "Failed to create logs directory: {error}");
             return;

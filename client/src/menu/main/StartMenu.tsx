@@ -13,6 +13,7 @@ import StandaloneWiki from "./StandaloneWiki";
 import { Button } from "../../components/Button";
 import Credits from "./Credits";
 import StyledText from "../../components/StyledText";
+import ReplayMenu from "../replay/ReplayMenu";
 
 export default function StartMenu(): ReactElement {
     const { setContent: setAnchorContent, setCoverCard } = useContext(AnchorControllerContext)!;
@@ -59,6 +60,16 @@ export default function StartMenu(): ReactElement {
             </Button>
             <Button onClick={()=>{setAnchorContent(<Credits/>)}}>{translate("credits")}</Button>
             <a className="button" href="https://mafia.dev.jackpapel.com">Dev (Experimental)</a>
+            <Button onClick={async () => {
+                setAnchorContent(<LoadingScreen type="default"/>);
+                if (await GAME_MANAGER.setOutsideLobbyState()) {
+                    setAnchorContent(<ReplayMenu/>);
+                } else {
+                    setAnchorContent(<StartMenu/>);
+                }
+            }}>
+                <Icon>movie</Icon> {translate("menu.replay.title")}
+            </Button>
         </footer>
     </div>
 }

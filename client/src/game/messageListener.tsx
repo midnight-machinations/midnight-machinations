@@ -30,8 +30,19 @@ function sendDefaultName() {
     }
 } 
 
+/**
+ * Set while a replay is feeding synthesized packets through this listener. Seeking in a replay can
+ * apply hundreds of packets at once, which would otherwise flood the console.
+ */
+let applyingReplay = false;
+export function setApplyingReplay(value: boolean) {
+    applyingReplay = value;
+}
+
 export default function messageListener(packet: ToClientPacket){
-    console.log(JSON.stringify(packet, null, 2));
+    if (!applyingReplay) {
+        console.log(JSON.stringify(packet, null, 2));
+    }
 
     switch(packet.type) {
         case "pong":
@@ -59,6 +70,17 @@ export default function messageListener(packet: ToClientPacket){
                 for(let [lobbyId, lobbyData] of Object.entries(packet.lobbies))
                     GAME_MANAGER.state.lobbies.set(Number.parseInt(lobbyId), lobbyData);
             }
+        break;
+        case "replayList":
+            if(GAME_MANAGER.state.stateType === "outsideLobby"){
+                GAME_MANAGER.state.replays = packet.replays;
+            }
+        break;
+        case "replay":
+            GAME_MANAGER.lastReceivedReplay = {fileName: packet.fileName, log: packet.log};
+        break;
+        case "replayNotFound":
+            GAME_MANAGER.lastReceivedReplay = null;
         break;
         case "acceptJoin":
             if(packet.inGame && packet.spectator){

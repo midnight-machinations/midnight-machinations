@@ -10,7 +10,7 @@ import { HistoryPoller, HistoryQueue } from "../../../history";
 import { Button } from "../../../components/Button";
 import Icon from "../../../components/Icon";
 import StyledText, { KeywordDataMap, PLAYER_KEYWORD_DATA, PLAYER_SENDER_KEYWORD_DATA, ROLE_LIST_KEYWORD_DATA } from "../../../components/StyledText";
-import { useGameState, useLobbyOrGameState, usePlayerNames, usePlayerState } from "../../../components/useHooks";
+import { useGameState, useLobbyOrGameState, usePacketListener, usePlayerNames, usePlayerState } from "../../../components/useHooks";
 import { Virtuoso } from 'react-virtuoso';
 import ListMap from "../../../ListMap";
 import { controllerIdToLinkWithPlayer } from "../../../game/controllerInput";
@@ -178,6 +178,15 @@ export function ChatMessageSection(props: Readonly<{
         ["roleList"]
     ) ?? [];
 
+    // Jumping around in a replay rewrites the whole chat, which would otherwise leave the view
+    // stranded wherever it happened to be - jump to the end of a game and you'd be looking at its
+    // first night. Keying the list on a seek counter restarts it at the newest message, which is
+    // where `initialTopMostItemIndex` below puts it.
+    const [seekCount, setSeekCount] = useState(0);
+    usePacketListener((type) => {
+        if (type === "replaySeek") setSeekCount(count => count + 1);
+    });
+
     const allMessages = messages
         .filter((msg)=>filterMessage(filter, msg[1], players.map((p)=>p.toString()), roleList))
         .filter((msg, index, array)=>{
@@ -225,6 +234,7 @@ export function ChatMessageSection(props: Readonly<{
         })
 
     return <div className="chat-message-section"><Virtuoso
+        key={seekCount}
         alignToBottom={true}
         totalCount={allMessages.length}
         followOutput={true}

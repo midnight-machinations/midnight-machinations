@@ -21,7 +21,9 @@ use std::collections::HashMap;
 use serde::{Deserialize, Serialize};
 use vec1::Vec1;
 
-use crate::{client_connection::ClientConnection, game::{GameOverReason, RejectStartReason, abilities_component::ability_id::AbilityID, chat::{ChatGroup, ChatMessage, ChatMessageIndex}, components::{fast_forward::FastForwardSetting, graves::{grave::Grave, grave_reference::GraveReference}, insider_group::InsiderGroupID, tags::Tag}, controllers::{Controller, ControllerID, ControllerInput}, game_client::GameClientLocation, modifiers::ModifierSettings, phase::{PhaseState, PhaseType}, player::{PlayerIndex, PlayerReference}, role::{ClientRoleStateEnum, Role}, role_list::{RoleList, RoleOutline}, settings::PhaseTimeSettings}, lobby::lobby_client::LobbyClient, room::RoomClientID, vec_map::VecMap, vec_set::VecSet, websocket_listener::RoomCode};
+use serde_json::value::RawValue;
+
+use crate::{client_connection::ClientConnection, replay::ReplayPreviewData, game::{GameOverReason, RejectStartReason, abilities_component::ability_id::AbilityID, chat::{ChatGroup, ChatMessage, ChatMessageIndex}, components::{fast_forward::FastForwardSetting, graves::{grave::Grave, grave_reference::GraveReference}, insider_group::InsiderGroupID, tags::Tag}, controllers::{Controller, ControllerID, ControllerInput}, game_client::GameClientLocation, modifiers::ModifierSettings, phase::{PhaseState, PhaseType}, player::{PlayerIndex, PlayerReference}, role::{ClientRoleStateEnum, Role}, role_list::{RoleList, RoleOutline}, settings::PhaseTimeSettings}, lobby::lobby_client::LobbyClient, room::RoomClientID, vec_map::VecMap, vec_set::VecSet, websocket_listener::RoomCode};
 
 
 #[derive(Serialize, Debug, Clone)]
@@ -62,6 +64,15 @@ pub enum ToClientPacket{
     #[serde(rename_all = "camelCase")]
     AcceptJoin{room_code: RoomCode, in_game: bool, player_id: RoomClientID, spectator: bool},
     RejectJoin{reason: RejectJoinReason},
+
+    // Replays
+    #[serde(rename_all = "camelCase")]
+    ReplayList{replays: Vec<ReplayPreviewData>},
+    /// `log` is the recording exactly as it was written to disk.
+    #[serde(rename_all = "camelCase")]
+    Replay{file_name: String, log: Box<RawValue>},
+    #[serde(rename_all = "camelCase")]
+    ReplayNotFound{file_name: String},
     
     // Lobby
     #[serde(rename = "lobbyName")]
@@ -184,6 +195,11 @@ pub enum ToServerPacket{
     #[serde(rename_all = "camelCase")]
     SetPlayerHost{player_id: RoomClientID},
     RelinquishHost,
+
+    // Replays
+    ReplayListRequest,
+    #[serde(rename_all = "camelCase")]
+    ReplayRequest{file_name: String},
 
     // Lobby
     SendLobbyMessage{text: String},

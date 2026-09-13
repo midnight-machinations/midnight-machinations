@@ -14,6 +14,8 @@ import { deleteReconnectData } from "./localStorage";
 import AudioController from "../menu/AudioController";
 import ListMap from "../ListMap";
 import { defaultAlibi } from "../menu/game/gameScreenContent/WillMenu";
+import { GameLogRecording } from "./replay/replayLog.d";
+import { setReplayController } from "./replay/replayController";
 
 export function createGameManager(): GameManager {
 
@@ -106,7 +108,8 @@ export function createGameManager(): GameManager {
             GAME_MANAGER.state = {
                 stateType: "outsideLobby",
                 selectedRoomCode: null,
-                lobbies: new Map<number, LobbyPreviewData>()
+                lobbies: new Map<number, LobbyPreviewData>(),
+                replays: []
             };
 
             return true;
@@ -130,6 +133,8 @@ export function createGameManager(): GameManager {
         server: createServer(),
 
         listeners: [],
+
+        lastReceivedReplay: null,
 
         addStateListener(listener) {
             gameManager.listeners.push(listener);
@@ -167,6 +172,11 @@ export function createGameManager(): GameManager {
 
 
         leaveGame() {
+            // A replay has no room on the server, so there is nothing to leave.
+            if (this.state.stateType === "game" && this.state.isReplay) {
+                setReplayController(null);
+                return;
+            }
             if (this.state.stateType !== "disconnected") {
                 this.server.sendPacket({ type: "leave" });
             }
@@ -177,6 +187,33 @@ export function createGameManager(): GameManager {
 
         sendLobbyListRequest() {
             this.server.sendPacket({ type: "lobbyListRequest" });
+        },
+        sendReplayListRequest() {
+            this.server.sendPacket({ type: "replayListRequest" });
+        },
+        sendReplayRequest(fileName: string) {
+            let completePromise: (log: GameLogRecording | null) => void;
+            const promise = new Promise<GameLogRecording | null>((resolver) => {
+                completePromise = resolver;
+            });
+            const onReplay: StateListener = (type) => {
+                if (type === "replay") {
+                    const received = GAME_MANAGER.lastReceivedReplay;
+                    // Another request could have been answered first; wait for ours.
+                    if (received === null || received.fileName !== fileName) return;
+                    completePromise(received.log);
+                } else if (type === "replayNotFound" || type === "connectionClosed") {
+                    completePromise(null);
+                } else {
+                    return;
+                }
+                GAME_MANAGER.removeStateListener(onReplay);
+            };
+            GAME_MANAGER.addStateListener(onReplay);
+
+            this.server.sendPacket({ type: "replayRequest", fileName });
+
+            return promise;
         },
         sendHostPacket() {
             let completePromise: (success: boolean) => void;

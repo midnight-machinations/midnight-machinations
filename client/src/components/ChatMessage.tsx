@@ -91,6 +91,11 @@ const ChatElement = React.memo((
         chatGroupIcon = translate("noGroup.icon");
     }
 
+    // In a replay, say who a private message went to, since messages to every player are shown.
+    if(message.replayRecipient !== undefined){
+        chatGroupIcon = `${chatGroupIcon ?? ""}${encodeString(playerNames[message.replayRecipient])}`;
+    }
+
     // Special chat messages that don't play by the rules
     switch (message.variant.type) {
         case "lobbyMessage":
@@ -930,6 +935,12 @@ export type ChatMessageIndex = number;
 export type ChatMessage = {
     variant: ChatMessageVariant
     chatGroup: ChatGroup | null
+    /**
+     * Only set by a replay, for a message that was sent privately to one player. A live game only
+     * ever receives its own private messages, but a replay watches every player at once, so the
+     * recipient has to be shown.
+     */
+    replayRecipient?: PlayerIndex
 }
 export type ChatMessageVariant = {
     type: "lobbyMessage",

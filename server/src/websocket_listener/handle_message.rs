@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 
-use crate::{game::on_client_message::GameClientMessageResult, lobby::on_client_message::LobbyClientMessageResult, log, packet::{RoomPreviewData, RejectJoinReason, ToClientPacket, ToServerPacket}, room::{on_client_message::RoomClientMessageResult, RemoveRoomClientResult, Room, RoomState}};
+use crate::{game::on_client_message::GameClientMessageResult, lobby::on_client_message::LobbyClientMessageResult, log, packet::{RoomPreviewData, RejectJoinReason, ToClientPacket, ToServerPacket}, replay, room::{on_client_message::RoomClientMessageResult, RemoveRoomClientResult, Room, RoomState}};
 
 use super::{client::{ClientLocation, ClientReference}, RoomCode, WebsocketListener};
 
@@ -20,6 +20,16 @@ impl WebsocketListener{
                         .collect::<HashMap<RoomCode, RoomPreviewData>>()
                     }
                 );
+            },
+            ToServerPacket::ReplayListRequest => {
+                client.send(self, ToClientPacket::ReplayList { replays: replay::list_replays() });
+            },
+            ToServerPacket::ReplayRequest { file_name } => {
+                let packet = match replay::read_replay(&file_name) {
+                    Some(log) => ToClientPacket::Replay { file_name, log },
+                    None => ToClientPacket::ReplayNotFound { file_name },
+                };
+                client.send(self, packet);
             },
             ToServerPacket::ReJoin {room_code, player_id } => {
                 self.set_client_in_room_reconnect(client, room_code, player_id);

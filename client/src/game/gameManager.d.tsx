@@ -3,6 +3,7 @@ import ListMap from "../ListMap";
 import { ControllerInput } from "./controllerInput";
 import { PhaseType, PhaseTimes, PlayerIndex, State, Verdict, FastForwardSetting } from "./gameState.d";
 import { ToClientPacket, ToServerPacket } from "./packet";
+import { GameLogRecording } from "./replay/replayLog.d";
 import { RoleList, RoleOutline } from "./roleListState.d";
 import { Role } from "./roleState.d";
 import { ModifierID, ModifierState } from "./modifiers";
@@ -15,7 +16,7 @@ export type Server = {
     close(): void;
 }
 
-export type StateEventType = ToClientPacket["type"] | "tick" | "filterUpdate" | "openGameMenu" | "closeGameMenu" | "whisperChatOpenOrClose" | "connectionClosed";
+export type StateEventType = ToClientPacket["type"] | "tick" | "filterUpdate" | "openGameMenu" | "closeGameMenu" | "whisperChatOpenOrClose" | "connectionClosed" | "replaySeek";
 export type StateListener = (type?: StateEventType) => void;
 
 export type GameManager = {
@@ -33,6 +34,9 @@ export type GameManager = {
     server: Server,
     listeners: StateListener[],
 
+    /** The log from the most recent `replay` packet, read by {@link GameManager.sendReplayRequest}. */
+    lastReceivedReplay: {fileName: string, log: GameLogRecording} | null,
+
     addStateListener(listener: StateListener): void;
     removeStateListener(listener: StateListener): void;
     invokeStateListeners(type?: StateEventType): void;
@@ -48,6 +52,12 @@ export type GameManager = {
     leaveGame(): void;
 
     sendLobbyListRequest(): void;
+    sendReplayListRequest(): void;
+    /**
+     * @returns A promise fulfilled with the requested game log, or null if the server couldn't
+     *          read it.
+     */
+    sendReplayRequest(fileName: string): Promise<GameLogRecording | null>;
     /**
      * @returns A promise that will be fulfilled as true if the join was 
      *          successful and false if the join was unsuccessful
