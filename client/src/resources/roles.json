@@ -74,6 +74,18 @@
             {"type": "lookoutResult", "players": []}
         ]
     },
+    "spotter": {
+        "mainRoleSet": "town",
+        "roleSets": ["town", "townCommon", "townInvestigative"],
+        "armor": false,
+        "aura": null,
+        "maxCount": null,
+        "canWriteCallingCard": false,
+        "chatMessages":[
+            {"type": "lookoutResult", "players": [9,15,4]},
+            {"type": "lookoutResult", "players": []}
+        ]
+    },
     "philosopher": {
         "mainRoleSet": "town",
         "roleSets": ["town", "townCommon", "townInvestigative"],

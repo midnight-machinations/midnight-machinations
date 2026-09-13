@@ -49,6 +49,8 @@ export type RoleState = {
 } | {
     type: "lookout"
 } | {
+    type: "spotter"
+} | {
     type: "spy"
 } | {
     type: "pyrolisk"
@@ -93,7 +95,7 @@ export type RoleState = {
     previousRoleChosen: TwoRoleOptionSelection
 } | {
     type: "vigilante",
-    state: {type:"notLoaded"} | {type:"willSuicide"} | {type:"loaded",bullets:number} | {type:"suicided"}
+    state: {type:"notLoaded"} | {type:"killedTownie"} | {type:"loaded",bullets:number}
 } | {
     type: "veteran"
     alertsRemaining: number,

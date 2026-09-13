@@ -26,12 +26,18 @@ pub(super) const DEFENSE: DefensePower = DefensePower::None;
 impl RoleStateTrait for Marksman {
     type ClientAbilityState = Marksman;
     fn on_midnight(self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut OnMidnightFold, priority: OnMidnightPriority) {
-        if game.day_number() <= 1 {return};
-        self.clone().midnight(actor_ref, game, midnight_variables, priority, 0, 1);
-        self.clone().midnight(actor_ref, game, midnight_variables, priority, 2, 3);
+
+        if matches!(self.state, MarksmanState::ShotTownie | MarksmanState::NotLoaded) {
+            self.clone().midnight(actor_ref, game, midnight_variables, priority, 0, 1);
+            self.clone().midnight(actor_ref, game, midnight_variables, priority, 2, 3);
+        }
+
+        if matches!(self.state, MarksmanState::NotLoaded) && matches!(priority, OnMidnightPriority::Kill) {
+            actor_ref.edit_role_ability_helper(game, Marksman{state: MarksmanState::Loaded});
+        }
     }
     fn controller_parameters_map(self, game: &Game, actor_ref: PlayerReference) -> super::ControllerParametersMap {
-        if game.day_number() <= 1 || self.state == MarksmanState::ShotTownie {return ControllerParametersMap::default()};
+        if matches!(self.state, MarksmanState::ShotTownie | MarksmanState::NotLoaded) {return ControllerParametersMap::default()};
 
         let available_players: VecSet<PlayerReference> = PlayerReference::all_players(game)
             .filter(|p| p.alive(game))
@@ -66,14 +72,6 @@ impl RoleStateTrait for Marksman {
         let visits_1 = Self::one_controller_to_visits(game, actor_ref, ControllerID::role(actor_ref, Role::Marksman, 0), 0, 1);
         let visits_2 = Self::one_controller_to_visits(game, actor_ref, ControllerID::role(actor_ref, Role::Marksman, 1), 2, 3);
         [visits_1, visits_2].concat()
-    }
-    fn on_phase_start(self, game: &mut Game, actor_ref: PlayerReference, phase: PhaseType) {
-        if 
-            matches!(phase, PhaseType::Obituary) && 
-            matches!(self.state, MarksmanState::NotLoaded)
-        {
-            actor_ref.edit_role_ability_helper(game, Marksman{state: MarksmanState::Loaded})
-        }
     }
 }
 

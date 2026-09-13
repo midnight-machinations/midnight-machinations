@@ -191,6 +191,11 @@
     "role.lookout.name:var.0": "Lookouts",
     "controllerId.role.lookout.0.name": "Watch",
     
+    "role.spotter.name": "Spotter",
+    "role.spotter.name:var.0": "Spotters",
+    "controllerId.role.spotter.0.name": "Watch",
+    "controllerId.role.spotter.1.name": "Spottable",
+
     "role.philosopher.name": "Philosopher",
     "role.philosopher.name:var.0": "Philosophers",
     "controllerId.role.philosopher.0.name": "Consider",
@@ -331,7 +336,7 @@
 
     "role.vigilante.name": "Vigilante",
     "role.vigilante.name:var.0": "Vigilantes",
-    "role.vigilante.roleDataText.suicide": "You killed an innocent townie and will commit suicide tonight",
+    "role.vigilante.roleDataText.killedTownie": "You killed a townie and cant shoot again.",
     "role.vigilante.roleDataText": "\\0 bullets remaining",
     "role.vigilante.roleDataText.notLoaded": "You are reloading your gun. You can not shoot yet.",
     "controllerId.role.vigilante.0.name": "Shoot",
@@ -344,8 +349,8 @@
 
     "role.marksman.name": "Marksman",
     "role.marksman.name:var.0": "Marksmen",
-    "role.marksman.roleDataText.loaded": "Your gun is loaded. If a marked player visits a camped player, the marked player is attacked.",
-    "role.marksman.roleDataText.shotTownie": "You shot a townie, and threw away your gun.",
+    "role.marksman.roleDataText.loaded": "Your gun is loaded.",
+    "role.marksman.roleDataText.shotTownie": "You killed a townie, and threw away your gun.",
     "role.marksman.roleDataText.notLoaded": "You are reloading your gun. You can not shoot yet.",
     "controllerId.role.marksman.0.name": "Mark & Camp",
     "controllerId.role.marksman.1.name": "Mark & Camp",
@@ -1105,7 +1110,7 @@
     "chatMessage.deputyShotYou":"A Deputy or Slayer shot you!",
     "chatMessage.puppeteerPlayerIsNowMarionette":"The puppeteer strung up \\0 into a marionette. They are now a Fiends Loyalist and Puppeteer Insider. They will be attacked every night.",
     "chatMessage.recruiterPlayerIsNowRecruit":"The recruiter recruited \\0 into the syndicate. They are now a Syndicate Loyalist and Syndicate Insider. They will be attacked every night.",
-    "chatMessage.wardenPlayersImprisoned": "The warden has made these players their prisoners: \\0. They will be roleblocked and each must choose cooperate or defect.",
+    "chatMessage.wardenPlayersImprisoned": "The warden has made these players their prisoners: \\0. Each must choose cooperate or defect, if they all cooperate they will be released!",
     "chatMessage.yourConvertFailed": "You failed to convert your target.",
 
     "chatMessage.youDied":"You died!",
@@ -1728,7 +1733,7 @@
     "wiki.article.role.noExtra": "There is no extras section written for this role.",
     "wiki.article.role.details": "Details",
 
-    "wiki.article.role.jailor.reminder": "Each day, choose a player to detain. At night, talk to your prisoner, and decide weather or not kill them.",
+    "wiki.article.role.jailor.reminder": "Each day, choose a player to detain. At night, talk to your prisoner, and decide wheather or not kill them.",
     "wiki.article.role.jailor.guide": "- Each day, choose a player to detain. At night, you interrogate them in text chat\n- You can kill your prisoner up to X times (X = Total players ÷ 5 (round up))\n- You can talk to your prisoner during the night, and they are not told who you are\n- If you kill a townie, you lose the ability to kill your prisoner",
     "wiki.article.role.jailor.abilities":"* Choose one player to detain during the day\n* Choose to attack your prisoner up to X times (X = Total players ÷ 5 (round up)).",
     "wiki.article.role.jailor.attributes":"* If you kill a town loyalist, you forfeit the ability to execute prisoners",
@@ -1764,7 +1769,7 @@
     "wiki.article.role.porter.guide": "- At night, choose two players\n    - All visits to the first player are redirected to the second\n     - The first player is told they are transported",
     "wiki.article.role.porter.abilities":"",
     "wiki.article.role.porter.attributes":"",
-    "wiki.article.role.porter.extra": "- You can't effect the visits of Transporters, Warpers, or other Porters\n- Porter priority is after transporter, but the same as warper\n- You are immune to roleblocks and possession",
+    "wiki.article.role.porter.extra": "- You can't effect the visits of Transporters, Warpers, or other Porters\n- Porter priority is after transporter, but the same as warper\n- You are immune to roleblocks and possession.\n- You can choose yourself as the second player but not the first.",
 
     "wiki.article.role.detective.reminder": "At night, select a player to find if they're friends or enemies with the town.",
     "wiki.article.role.detective.guide": "- At night, select a player to find if they're friends or enemies with the town\n- If a player registers as suspicious, they are enemies with town. You most likely want them voted out.\n- Auras can mess with your results\n    - Godfathers have innocent aura",
@@ -1777,10 +1782,18 @@
     "wiki.article.role.lookout.reminder": "At night, select a player to find out who visits them.",
     "wiki.article.role.lookout.guide": "- At night, select a player to find out who visits them\n\n_For Example_\n- If you select @1 on the night they die, and @2 visited them then it's likely @2 killed them.",
     "wiki.article.role.lookout.abilities":"",
-    "wiki.article.role.lookout.attributes":"* You can't see yourself visit with this ability\n * Appeared visits can change information",
+    "wiki.article.role.lookout.attributes":"* You can't see yourself visit with this ability\n * Appeared visits can change information\n- If a player visits the player you watch multiple times, you are told their name that many times.",
     "wiki.article.role.lookout.extra": "",
     "wiki.article.role.lookout.exampleAlibi":"Lookout\nN1: @5 vb @1\nN2: @1 nv",
     "wiki.article.role.lookout.exampleAlibi.description":"Here is an example of an alibi from a lookout who, on night 1, saw that @5 was visited by @1, and on night 2, found that @1 was not visited by anyone.",
+    
+    "wiki.article.role.spotter.reminder": "At night, select a player to find out who visits them.",
+    "wiki.article.role.spotter.guide": "- At night, select a player to watch, and up to 3 players to spot.\n   - You are told who visits the player you watch from the list of spottable players.",
+    "wiki.article.role.spotter.abilities":"",
+    "wiki.article.role.spotter.attributes":"* You can't see yourself visit with this ability\n * Appeared visits can change information\n- You can spot the player you watch.\n- If a spottable player visits the player you watch multiple times, you are told their name that many times.",
+    "wiki.article.role.spotter.extra": "",
+    "wiki.article.role.spotter.exampleAlibi":"Spotter\nN1: watch @5 (spot @1 @4 @2) - @1\nN2: watch @1 (spot @5 @2 @1) - nv",
+    "wiki.article.role.spotter.exampleAlibi.description":"Here is an example of an alibi from a spotter who, on night 1, saw that @5 was visited by @1, and on night 2, found that @1 was not visited by any spottable players.",
 
     "wiki.article.role.spy.reminder": "At night, you are told who syndicate insiders visit, and what happens to your bug target.",
     "wiki.article.role.spy.guide": "- At night, select a player to bug\n    - You are told what roles of syndicate insiders visited your target\n- You are told a list of players that syndicate insiders visited, counting a player for each time they were visited..",
@@ -1882,10 +1895,10 @@
     "wiki.article.role.bouncer.extra":"* You can't select yourself\n* You are immune to roleblocks, wardblocks, and possession",
 
     "wiki.article.role.engineer.reminder": "At night, after building your trap, set a trap on a player. When the trap triggers, it kills attackers, and gives investigative results.",
-    "wiki.article.role.engineer.guide": "You have a trap that you can set on players to guard them, attack attackers, and give investigative results.\n- While the trap is dismantled:\n    - You can't do anything, the trap will become ready the next night.\n    - If you are blocked, the trap will stay dismantled.\n- While the trap is ready:\n    - You can set the trap on a player.\n    - If you are blocked, the trap will stay ready.\n    - The trap could potentially trigger on the same night that it is first set.\n- While the trap is set:\n    - The trap triggers if the player with the trap is either attacked, or directly visited by anyone except yourself.\n    - The player with the trap is guarded by you.\n    - You can choose to dismantle it, if you do, it can't trigger tonight, but will be ready the next night.\n    - If you are blocked, the ability works normally.\n- When the trap triggers:\n    - You are told the abilities of all visits targeting the player with the trap, even if they are not attacking. (You can't see investigate immune visits with this)\n    - You attack every direct attacking visitor to the player with the trap with an armor-piercing attack\n",
+    "wiki.article.role.engineer.guide": "You have a trap that you can set on players to guard them, attack attackers, and give investigative results.\n- While the trap is dismantled:\n    - You can't do anything, the trap will become ready the next night.\n    - If you are blocked, the trap will stay dismantled.\n- While the trap is ready:\n    - You can set the trap on a player.\n    - If you are blocked, the trap will stay ready.\n    - The trap could potentially trigger on the same night that it is first set.\n- While the trap is set:\n    - The trap triggers if the player with the trap is either attacked, or directly visited by anyone except yourself.\n    - The player with the trap is guarded by you.\n    - You can choose to dismantle it, if you do, it can't trigger tonight, but will be ready the next night.\n    - If you are blocked, the ability works normally.\n- When the trap triggers:\n    - You are told the abilities of all visits targeting the player with the trap, where the visitor is a town enemy, even if they are not attacking. (You can't see investigate immune visits with this)\n    - You attack every direct attacking visitor to the player with the trap with an armor-piercing attack\n",
     "wiki.article.role.engineer.abilities":"",
     "wiki.article.role.engineer.attributes":"",
-    "wiki.article.role.engineer.extra":"- You are told the state of your trap at the start of every night and at the end of every night, even while dead.\n- Appeared visits do not change your information",
+    "wiki.article.role.engineer.extra":"- You are told the state of your trap at the start of every night and at the end of every night, even while dead.\n- Appeared visits can change your information",
 
     "wiki.article.role.armorsmith.reminder": "At night, open shop to guard yourself and all visitors to you. Give one visitor a protected fragile vest.",
     "wiki.article.role.armorsmith.guide": "- At night, visit a player to open shop, up to X times per game (X = Total players ÷ 5 (round up))\n    - You and all visitors to you are guarded for the night\n    - One random visitor to you is given protected fragile vest, prioritizing the player you visited.",
@@ -1942,8 +1955,8 @@
     "wiki.article.role.polymath.attributes":"- You visit players you select to investigate, guard, transport, and camp.\n- You don't visit players you select to mark.",
     "wiki.article.role.polymath.extra":"* You can't choose yourself with any ability except you can transport someone into yourself.",
     
-    "wiki.article.role.vigilante.reminder": "Each night, select a player to attack. If you kill a town loyalist, you die the following night.",
-    "wiki.article.role.vigilante.guide": "- At night, select a player to attack\n- If you kill a town loyalist, you lose all charges, and commit suicide on the following night\n- You have X bullets (X = Total players ÷ 5 (round up))\n- You can't shoot on your 1st night.",
+    "wiki.article.role.vigilante.reminder": "Each night, select a player to attack. If you kill a town loyalist, you cant shoot again.",
+    "wiki.article.role.vigilante.guide": "- At night, select a player to attack\n- If you kill a town loyalist, you cant shoot again.\n- You have X bullets (X = Total players ÷ 5 (round up))\n- You can't shoot on your 1st night.",
     "wiki.article.role.vigilante.abilities":"",
     "wiki.article.role.vigilante.attributes":"",
     "wiki.article.role.vigilante.extra": "* You only have a basic attack",
@@ -1967,7 +1980,7 @@
 
     "wiki.article.role.marksman.reminder": "Each night, select 2 pairs of players. If the first player visits the second player, you attack the first player.",
     "wiki.article.role.marksman.lore": "Order demands precision. The Marksman established curfews and checkpoints, watching every route through town. \"Stay compliant. Stay alive.\"",
-    "wiki.article.role.marksman.guide": "- Each night, choose 2 pairs of players\n    - If the first player in a pair directly visits the second player in that pair, you attack the first player.\n   - You can attack up to one player per night.\n      - If you attack the first player from the first pair, you can't attack the first player from the second pair. (It prioritizes the first pair)\n- You can't use your ability on the night 1\n- If you kill a town loyalist, you can't use your ability again",
+    "wiki.article.role.marksman.guide": "- Each night, choose 2 pairs of players\n    - If the first player in a pair directly visits the second player in that pair, you attack the first player.\n   - You can attack up to one player per night.\n      - If you attack the first player from the first pair, you can't attack the first player from the second pair. (It prioritizes the first pair)\n- You can't use your ability on your first night.\n- If you kill a town loyalist, you can't use your ability again.",
     "wiki.article.role.marksman.abilities":"",
     "wiki.article.role.marksman.attributes":"",
     "wiki.article.role.marksman.extra":"* You can't mark or camp yourself\n* You have a basic attack",

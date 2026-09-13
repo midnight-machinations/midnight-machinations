@@ -121,9 +121,10 @@ impl RoleStateTrait for Engineer {
                 {
                     actor_ref.edit_role_ability_helper(game, RoleState::Engineer(Engineer {trap: Trap::Dismantled}));
                     let mut visit_tags: Vec<VisitTag> = Visits::into_iter(midnight_variables)
-                        .with_investigatable()
+                        .with_appeared(midnight_variables)
                         .with_target(target)
                         .filter(|v|v.tag != VisitTag::Ability { ability: *id, id: 0 } || v.visitor != actor_ref)
+                        .filter(|v|!v.visitor.win_condition(game).friends_with_conclusion(GameConclusion::Town))
                         .map_tag()
                         .collect();
                     visit_tags.shuffle(&mut game.rng);

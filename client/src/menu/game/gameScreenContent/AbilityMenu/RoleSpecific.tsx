@@ -120,9 +120,9 @@ function roleSpecificSectionInner(
             </div>;
         case "vigilante":
             switch(roleState.state.type){
-                case "willSuicide":
+                case "killedTownie":
                     return <div className="role-information">
-                        <StyledText>{translate("role.vigilante.roleDataText.suicide")}</StyledText>
+                        <StyledText>{translate("role.vigilante.roleDataText.killedTownie")}</StyledText>
                     </div>
                 case "notLoaded":
                     return <div className="role-information">
