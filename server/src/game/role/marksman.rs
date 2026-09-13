@@ -27,7 +27,7 @@ impl RoleStateTrait for Marksman {
     type ClientAbilityState = Marksman;
     fn on_midnight(self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut OnMidnightFold, priority: OnMidnightPriority) {
 
-        if matches!(self.state, MarksmanState::ShotTownie | MarksmanState::NotLoaded) {
+        if !matches!(self.state, MarksmanState::ShotTownie | MarksmanState::NotLoaded) {
             self.clone().midnight(actor_ref, game, midnight_variables, priority, 0, 1);
             self.clone().midnight(actor_ref, game, midnight_variables, priority, 2, 3);
         }
