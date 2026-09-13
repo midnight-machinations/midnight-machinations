@@ -14,6 +14,14 @@
         "midnight": true,
         "visit": "normal"
     },
+    "role/spotter/0": {
+        "midnight": true,
+        "visit": "normal"
+    },
+    "role/spotter/1": {
+        "midnight": true,
+        "visit": "none"
+    },
     "role/philosopher/0": {
         "midnight": true,
         "visit": "normal"

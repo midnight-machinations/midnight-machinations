@@ -93,6 +93,7 @@ macros::roles! {
     Gossip : gossip,
     TallyClerk : tally_clerk,
     Dreamwalker : dreamwalker,
+    Spotter : spotter,
 
     Doctor : doctor,
     Bodyguard : bodyguard,
