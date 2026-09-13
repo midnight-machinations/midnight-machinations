@@ -2,7 +2,7 @@ use crate::game::{
     abilities_component::Abilities,
     components::verdicts_today::VerdictsToday,
     event::EventData, modifiers::ModifierSettings,
-    phase::PhaseType
+    phase::PhaseType, Game
 };
 
 #[must_use = "Event must be invoked"]
@@ -24,4 +24,8 @@ impl EventData for BeforePhaseEnd{
         Abilities::before_phase_end,
         ModifierSettings::before_phase_end,
     ]}
+
+    fn log(&self, _game: &Game, _fold: &()) -> Option<serde_json::Value> {
+        Some(serde_json::json!({ "phase": self.phase }))
+    }
 }

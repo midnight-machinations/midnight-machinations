@@ -1,6 +1,6 @@
 use crate::game::{
     abilities_component::Abilities, components::graves::{grave_reference::GraveReference, Graves},
-    event::EventData, modifiers::ModifierSettings
+    event::EventData, modifiers::ModifierSettings, Game
 };
 
 #[must_use = "Event must be invoked"]
@@ -22,4 +22,8 @@ impl EventData for OnGraveAdded{
         ModifierSettings::on_grave_added,
         Graves::on_grave_added
     ]}
+
+    fn log(&self, game: &Game, _fold: &()) -> Option<serde_json::Value> {
+        Some(serde_json::json!({ "grave": self.grave.deref(game) }))
+    }
 }

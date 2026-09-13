@@ -19,4 +19,12 @@ impl EventData for OnVisitWardblocked{
         Mafia::on_visit_wardblocked,
         BlockedComponent::on_visit_wardblocked,
     ]}
+
+    fn log(&self, _game: &Game, _fold: &OnMidnightFold) -> Option<serde_json::Value> {
+        Some(serde_json::json!({
+            "visitor": self.visit.visitor,
+            "target": self.visit.target,
+            "attack": self.visit.attack,
+        }))
+    }
 }

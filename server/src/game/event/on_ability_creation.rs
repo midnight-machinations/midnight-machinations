@@ -1,4 +1,4 @@
-use crate::{event_priority, game::{abilities_component::{Abilities, ability::Ability, ability_id::AbilityID}, components::role::RoleComponent, event::EventData}};
+use crate::{event_priority, game::{abilities_component::{Abilities, ability::Ability, ability_id::AbilityID}, components::role::RoleComponent, event::EventData, Game}};
 
 pub struct OnAbilityCreation{
     pub id: AbilityID,
@@ -20,6 +20,11 @@ impl EventData for OnAbilityCreation{
         RoleComponent::on_ability_creation,
         Abilities::on_ability_creation,
     ]}
+
+    fn log(&self, game: &Game, _fold: &OnAbilityCreationFold) -> Option<serde_json::Value> {
+        if !game.game_log.is_initialized() { return None; }
+        Some(serde_json::json!({ "id": self.id }))
+    }
 }
 impl OnAbilityCreation{
     pub fn new(id: AbilityID, ability: Ability)->(OnAbilityCreation, OnAbilityCreationFold){

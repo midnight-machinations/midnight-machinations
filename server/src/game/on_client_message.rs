@@ -9,6 +9,7 @@ use super::{
     event::on_game_ending::OnGameEnding,
     game_client::GameClientLocation,
     game_conclusion::GameConclusion,
+    game_log::GameResult,
     player::PlayerReference,
     role::RoleState,
     spectator::spectator_pointer::SpectatorPointer, Game
@@ -80,6 +81,7 @@ impl Game {
                 let conclusion = GameConclusion::get_premature_conclusion(self);
 
                 OnGameEnding::new(conclusion).as_invokable().invoke(self);
+                self.game_log.write_to_disk(&self.room_name, GameResult::capture(self, conclusion));
             }
             ToServerPacket::HostForceSkipPhase => {
                 if let Some(player) = self.clients.get(&room_client_id)

@@ -13,6 +13,7 @@ pub mod game_conclusion;
 pub mod components;
 pub mod on_client_message;
 pub mod event;
+pub mod game_log;
 pub mod spectator;
 pub mod game_listeners;
 pub mod attack_power;
@@ -137,7 +138,8 @@ pub struct Game {
     pub win_condition: WinConditionComponent,
     pub role: RoleComponent,
     pub fast_forward: FastForwardComponent,
-    pub chat_messages: ChatComponent
+    pub chat_messages: ChatComponent,
+    pub game_log: game_log::GameLog
 }
 
 #[derive(Serialize, Debug, Clone, Copy)]
@@ -287,6 +289,8 @@ impl Game {
     }
 
     pub fn add_message_to_chat_group(&mut self, group: ChatGroup, variant: ChatMessageVariant){
+        self.game_log.push_chat_message(game_log::ChatAudience::Group { group }, variant.clone());
+
         let message = ChatMessage::new_non_private(variant.clone(), group);
 
         for player_ref in group.all_players_in_group(self){

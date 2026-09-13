@@ -3,7 +3,7 @@ use crate::game::{
     components::{
         call_witness::CallWitness, forward_messages::ForwardMessages, nomination_controller::NominationController,
     },
-    controllers::ControllerInput, event::EventData, player::PlayerReference,
+    controllers::ControllerInput, event::EventData, player::PlayerReference, Game
 };
 
 #[must_use = "Event must be invoked"]
@@ -28,5 +28,9 @@ impl EventData for OnValidatedControllerInputReceived{
             ChatComponent::on_validated_ability_input_received,
             CallWitness::on_validated_ability_input_received
         ]
+    }
+
+    fn log(&self, _game: &Game, _fold: &()) -> Option<serde_json::Value> {
+        Some(serde_json::json!({ "actor": self.actor_ref, "input": self.input.clone() }))
     }
 }

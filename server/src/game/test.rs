@@ -82,7 +82,8 @@ pub fn mock_game(settings: Settings, num_players: u8) -> Result<(Game, Assignmen
         win_condition: unsafe{PlayerComponent::<WinCondition>::new(num_players, &assignments)},
         fast_forward: unsafe{FastForwardComponent::new(num_players)},
         chat_messages: unsafe{ChatComponent::new(num_players)},
-        revealed_players: unsafe{RevealedPlayersComponent::new(num_players)}
+        revealed_players: unsafe{RevealedPlayersComponent::new(num_players)},
+        game_log: crate::game::game_log::GameLog::new()
     };
 
 

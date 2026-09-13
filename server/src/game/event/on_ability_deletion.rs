@@ -1,5 +1,5 @@
 use crate::{event_priority, game::{
-    abilities_component::{ability_id::AbilityID, Abilities}, event::EventData
+    abilities_component::{ability_id::AbilityID, Abilities}, event::EventData, Game
 }};
 event_priority!(OnAbilityDeletionPriority{
     BeforeSideEffect,
@@ -22,4 +22,9 @@ impl EventData for OnAbilityDeletion {
     fn listeners() -> Vec<super::EventListenerFunction<Self>> {vec![
         Abilities::on_ability_deletion
     ]}
+
+    fn log(&self, game: &Game, _fold: &()) -> Option<serde_json::Value> {
+        if !game.game_log.is_initialized() { return None; }
+        Some(serde_json::json!({ "id": self.id }))
+    }
 }

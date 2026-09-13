@@ -1,7 +1,7 @@
 use crate::game::{
     abilities_component::Abilities, components::{
         cult::Cult, insider_group::InsiderGroupID, mafia::Mafia, mafia_recruits::MafiaRecruits, puppeteer_marionette::PuppeteerMarionette
-    }, player::PlayerReference,
+    }, player::PlayerReference, Game
 };
 use super::EventData;
 
@@ -35,5 +35,9 @@ impl EventData for OnRemoveInsider {
             Mafia::on_remove_insider,
             MafiaRecruits::on_remove_insider,
         ]
+    }
+
+    fn log(&self, _game: &Game, _fold: &()) -> Option<serde_json::Value> {
+        Some(serde_json::json!({ "player": self.player, "group": self.group }))
     }
 }

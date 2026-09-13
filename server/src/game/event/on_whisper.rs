@@ -1,4 +1,4 @@
-use crate::{event_priority, game::{abilities_component::Abilities, chat::ChatComponent, modifiers::ModifierSettings, player::PlayerReference}};
+use crate::{event_priority, game::{abilities_component::Abilities, chat::ChatComponent, modifiers::ModifierSettings, player::PlayerReference, Game}};
 use super::EventData;
 
 #[derive(Clone)]
@@ -39,5 +39,15 @@ impl EventData for OnWhisper {
             ModifierSettings::on_whisper,
             Abilities::on_whisper,
         ]
+    }
+
+    fn log(&self, _game: &Game, fold: &WhisperFold) -> Option<serde_json::Value> {
+        Some(serde_json::json!({
+            "sender": self.sender,
+            "receiver": self.receiver,
+            "message": self.message.clone(),
+            "cancelled": fold.cancelled,
+            "hideBroadcast": fold.hide_broadcast,
+        }))
     }
 }

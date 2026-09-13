@@ -27,4 +27,9 @@ impl EventData for OnControllerSelectionChanged{
         Mafia::on_controller_selection_changed,
         Abilities::on_controller_selection_changed
     ]}
+
+    /// No log needed, keeping this for consistency with the other events? feel free 2 delete
+    fn log(&self, _game: &Game, _fold: &()) -> Option<serde_json::Value> {
+        None
+    }
 }

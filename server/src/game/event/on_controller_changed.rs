@@ -1,6 +1,7 @@
 use crate::game::{
     controllers::{ControllerID, Controller, Controllers},
-    event::{on_controller_selection_changed::OnControllerSelectionChanged, EventData}
+    event::{on_controller_selection_changed::OnControllerSelectionChanged, EventData},
+    Game
 };
 
 pub struct OnControllerChanged{
@@ -17,6 +18,13 @@ impl EventData for OnControllerChanged {
             Controllers::send_controller_to_client,
             OnControllerSelectionChanged::on_controller_changed
         ]
+    }
+
+    /// activates on every change to a controller's value (including clienside edits a
+    /// player never submits). Submitted actions are already logged in
+    /// `OnControllerInputReceived`/`OnValidatedControllerInputReceived`
+    fn log(&self, _game: &Game, _fold: &()) -> Option<serde_json::Value> {
+        None
     }
 }
 impl OnControllerChanged{

@@ -35,4 +35,8 @@ impl EventData for OnPhaseStart{
         FastForwardComponent::on_phase_start,
         Ascend::on_phase_start,
     ]}
+
+    fn log(&self, _game: &Game, _fold: &()) -> Option<serde_json::Value> {
+        Some(serde_json::json!({ "phase": self.phase.clone() }))
+    }
 }

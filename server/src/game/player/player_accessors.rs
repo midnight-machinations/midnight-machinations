@@ -64,6 +64,8 @@ impl PlayerReference{
     }
 
     pub fn add_private_chat_message(&self, game: &mut Game, message: ChatMessageVariant) {
+        game.game_log.push_chat_message(crate::game::game_log::ChatAudience::Player { player: *self }, message.clone());
+
         let message = ChatMessage::new_private(message);
 
         self.add_chat_message(game, message.clone());

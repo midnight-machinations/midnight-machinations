@@ -4,7 +4,7 @@ use crate::{
     client_connection::ClientConnection, game::{
         Assignments, Game, RejectStartReason, abilities_component::Abilities, chat::{ChatComponent, PlayerChatGroups}, components::{
             blocked::BlockedComponent, confused::Confused, cult::Cult, detained::Detained, enfranchise::EnfranchiseComponent, fast_forward::FastForwardComponent, fragile_vest::FragileVestsComponent, graves::Graves, hide_votes_message::HideVotesMessage, insider_group::{InsiderGroupID, InsiderGroups}, mafia::Mafia, mafia_recruits::MafiaRecruits, pitchfork_item::PitchforkItemComponent, poison::Poison, puppeteer_marionette::PuppeteerMarionette, role::RoleComponent, role_reveal::RevealedPlayersComponent, silenced::Silenced, synopsis::SynopsisTracker, tags::Tags, verdicts_today::VerdictsToday, win_condition::WinConditionComponent
-        }, controllers::Controllers, event::{AsInvokable as _, Invokable as _, on_game_start::OnGameStart}, game_client::GameClient, modifiers::ModifierID, phase::PhaseStateMachine, player::{Player, PlayerInitializeParameters, PlayerReference}, role_list_generation::{OutlineListAssignment, RoleListGenerator}, settings::Settings, spectator::{Spectator, SpectatorInitializeParameters, spectator_pointer::SpectatorPointer}
+        }, controllers::Controllers, event::{AsInvokable as _, Invokable as _, on_game_start::OnGameStart}, game_client::GameClient, game_log::{GameLog, GameSetup}, modifiers::ModifierID, phase::PhaseStateMachine, player::{Player, PlayerInitializeParameters, PlayerReference}, role_list_generation::{OutlineListAssignment, RoleListGenerator}, settings::Settings, spectator::{Spectator, SpectatorInitializeParameters, spectator_pointer::SpectatorPointer}
     }, packet::ToClientPacket, room::{RoomClientID, name_validation::generate_random_name}, vec_map::VecMap
 };
 
@@ -119,7 +119,8 @@ impl Game{
                 win_condition: unsafe{WinConditionComponent::new(num_players, &assignments)},
                 role: unsafe{RoleComponent::new(num_players, &assignments)},
                 fast_forward: unsafe{FastForwardComponent::new(num_players)},
-                chat_messages: unsafe{ChatComponent::new(num_players)}
+                chat_messages: unsafe{ChatComponent::new(num_players)},
+                game_log: GameLog::new()
             };
 
             for player in PlayerReference::all_players(&game){
@@ -166,6 +167,10 @@ impl Game{
         for group in InsiderGroupID::all() {
             group.reveal_group_players(&mut game);
         }
+
+        //capture the game's starting setup for the game log, now that every
+        //player's role, win condition, and insider groups are assigned
+        game.game_log.set_setup(GameSetup::capture(&game));
 
         //on game start needs to be called after all players have joined
         OnGameStart::new().as_invokable().invoke(&mut game);

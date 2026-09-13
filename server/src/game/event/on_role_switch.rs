@@ -1,6 +1,6 @@
 use crate::game::{
     abilities_component::Abilities, components::{cult::Cult, mafia::Mafia, role_reveal::RevealedPlayersComponent, synopsis::SynopsisTracker},
-    event::EventData, player::PlayerReference, role::RoleState,
+    event::EventData, player::PlayerReference, role::RoleState, Game
 };
 
 #[must_use = "Event must be invoked"]
@@ -25,4 +25,12 @@ impl EventData for OnRoleSwitch{
         SynopsisTracker::on_role_switch,
         Abilities::on_role_switch,
     ]}
+
+    fn log(&self, game: &Game, _fold: &()) -> Option<serde_json::Value> {
+        Some(serde_json::json!({
+            "player": self.player,
+            "old": self.old.clone().get_client_ability_state(game, self.player),
+            "new": self.new.clone().get_client_ability_state(game, self.player),
+        }))
+    }
 }

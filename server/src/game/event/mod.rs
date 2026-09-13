@@ -41,6 +41,17 @@ pub trait EventData: Sized {
     type Priority: EventPriority;
 
     fn listeners() -> Vec<EventListenerFunction<Self>>;
+
+    /// for recording the name of the event in the game log. Will default to struct name.
+    fn name() -> &'static str {
+        std::any::type_name::<Self>().rsplit("::").next().unwrap_or("Unknown")
+    }
+
+    /// The function that logs the event. Logs the events name, and can be overridden to store extra data or silence an event in the log.
+    #[expect(unused_variables, reason="Overriders need these; the default doesn't")]
+    fn log(&self, game: &Game, fold: &Self::FoldValue) -> Option<serde_json::Value> {
+        Some(serde_json::Value::Null)
+    }
 }
 pub trait Invokable{
     fn invoke(self, game: &mut Game)->Self;
@@ -51,6 +62,9 @@ impl<E: EventData> Invokable for (&E, &mut E::FoldValue) {
             for listener in E::listeners() {
                 listener(game, self.0, self.1, priority);
             }
+        }
+        if let Some(data) = self.0.log(game, self.1) {
+            game.game_log.push_event(E::name(), data);
         }
         self
     }

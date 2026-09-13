@@ -3,7 +3,7 @@ use crate::game::{
     components::{
         cult::Cult, dead_can_still_play_message::DeadCanStillPlayMessage, mafia::Mafia
     },
-    event::EventData, modifiers::ModifierSettings, player::PlayerReference,
+    event::EventData, modifiers::ModifierSettings, player::PlayerReference, Game
 };
 
 #[must_use = "Event must be invoked"]
@@ -27,4 +27,8 @@ impl EventData for OnAnyDeath{
         Abilities::on_any_death,
         DeadCanStillPlayMessage::on_any_death
     ]}
+
+    fn log(&self, _game: &Game, _fold: &()) -> Option<serde_json::Value> {
+        Some(serde_json::json!({ "deadPlayer": self.dead_player }))
+    }
 }

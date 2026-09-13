@@ -56,6 +56,38 @@ impl EventData for OnMidnight {
             Guard::on_midnight,
         ]
     }
+
+    /// Logs a summary of rhe resolution of each night. Includes:
+    /// every visit that ended up happening (who visited whom, and whether it was an attack)
+    /// for every player something notable happened to, what happened. 
+    fn log(&self, game: &Game, fold: &OnMidnightFold) -> Option<serde_json::Value> {
+        let visits: Vec<serde_json::Value> = Visits::into_iter(fold).map(|visit| serde_json::json!({
+            "visitor": visit.visitor,
+            "target": visit.target,
+            "attack": visit.attack,
+        })).collect();
+
+        let players: Vec<serde_json::Value> = PlayerReference::all_players(game).filter_map(|player| {
+            let variables = fold.get(player);
+            if
+                variables.died || variables.attacked || variables.blocked ||
+                variables.framed || !variables.guarded_players.is_empty()
+            {
+                Some(serde_json::json!({
+                    "player": player,
+                    "died": variables.died,
+                    "attacked": variables.attacked,
+                    "blocked": variables.blocked,
+                    "framed": variables.framed,
+                    "guarded": variables.guarded_players.clone(),
+                }))
+            } else {
+                None
+            }
+        }).collect();
+
+        Some(serde_json::json!({ "visits": visits, "players": players }))
+    }
 }
 
 #[derive(Default, Clone, Debug)]

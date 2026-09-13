@@ -18,4 +18,8 @@ impl EventData for OnGameEnding{
     fn listeners() -> Vec<super::EventListenerFunction<Self>> {vec![
         Game::on_game_ending,
     ]}
+
+    fn log(&self, _game: &Game, _fold: &()) -> Option<serde_json::Value> {
+        Some(serde_json::json!({ "conclusion": self.conclusion }))
+    }
 }

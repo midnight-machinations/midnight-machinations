@@ -10,6 +10,7 @@ use crate::game::event::Invokable as _;
 use crate::game::game_client::GameClient;
 use crate::game::game_client::GameClientLocation;
 use crate::game::game_conclusion::GameConclusion;
+use crate::game::game_log::GameResult;
 use crate::game::phase::PhaseStateMachine;
 use crate::game::player::PlayerReference;
 use crate::game::spectator::spectator_pointer::SpectatorPointer;
@@ -34,6 +35,7 @@ impl RoomState for Game {
 
         if let Some(conclusion) = GameConclusion::game_is_over_game(self) {
             OnGameEnding::new(conclusion).as_invokable().invoke(self);
+            self.game_log.write_to_disk(&self.room_name, GameResult::capture(self, conclusion));
         }
 
         if self.phase_machine.day_number == u8::MAX {

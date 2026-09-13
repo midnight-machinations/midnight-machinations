@@ -1,5 +1,5 @@
-use crate::game::{ 
-    abilities_component::Abilities, components::{blocked::BlockedComponent, mafia::Mafia}, event::EventData, player::PlayerReference,
+use crate::game::{
+    abilities_component::Abilities, components::{blocked::BlockedComponent, mafia::Mafia}, event::EventData, player::PlayerReference, Game
 };
 
 use super::on_midnight::OnMidnightFold;
@@ -23,4 +23,8 @@ impl EventData for OnPlayerRoleblocked{
         Mafia::on_player_roleblocked,
         BlockedComponent::on_player_roleblocked,
     ]}
+
+    fn log(&self, _game: &Game, _fold: &OnMidnightFold) -> Option<serde_json::Value> {
+        Some(serde_json::json!({ "player": self.player, "invisible": self.invisible }))
+    }
 }
