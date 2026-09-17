@@ -334,6 +334,10 @@
     "controllerId.role.polymath.4.name": "Mark",
     "controllerId.role.polymath.5.name": "Camp",
 
+    "role.intern.name": "Intern",
+    "role.intern.name:var.0": "Interns",
+    "controllerId.role.intern.0.name": "Choose Ability",
+
     "role.vigilante.name": "Vigilante",
     "role.vigilante.name:var.0": "Vigilantes",
     "role.vigilante.roleDataText.killedTownie": "You killed a townie and cant shoot again.",
@@ -1779,16 +1783,16 @@
     "wiki.article.role.detective.exampleAlibi":"Detective\nN1: @5 - friend\nN2: @2 - enemies",
     "wiki.article.role.detective.exampleAlibi.description":"Here is an example of an alibi from a detective who, on night 1, saw that @5 is friends with town, and on night 2, found that @2 is enemies with town.",
 
-    "wiki.article.role.lookout.reminder": "At night, select a player to find out who visits them.",
-    "wiki.article.role.lookout.guide": "- At night, select a player to find out who visits them\n\n_For Example_\n- If you select @1 on the night they die, and @2 visited them then it's likely @2 killed them.",
+    "wiki.article.role.lookout.reminder": "At night, watch a player to find out who visits them.",
+    "wiki.article.role.lookout.guide": "- At night, watch a player to find out who visits them\n\n_For Example_\n- If you watch @1 on the night they die, and @2 visited them then it's likely @2 killed them.",
     "wiki.article.role.lookout.abilities":"",
     "wiki.article.role.lookout.attributes":"* You can't see yourself visit with this ability\n * Appeared visits can change information\n- If a player visits the player you watch multiple times, you are told their name that many times.",
     "wiki.article.role.lookout.extra": "",
     "wiki.article.role.lookout.exampleAlibi":"Lookout\nN1: @5 vb @1\nN2: @1 nv",
     "wiki.article.role.lookout.exampleAlibi.description":"Here is an example of an alibi from a lookout who, on night 1, saw that @5 was visited by @1, and on night 2, found that @1 was not visited by anyone.",
     
-    "wiki.article.role.spotter.reminder": "At night, select a player to find out who visits them.",
-    "wiki.article.role.spotter.guide": "- At night, select a player to watch, and up to 3 players to spot.\n   - You are told who visits the player you watch from the list of spottable players.",
+    "wiki.article.role.spotter.reminder": "At night, watch a player to find out which spottable players visit them.",
+    "wiki.article.role.spotter.guide": "- At night, watch a player to spot visitors.\n   - You are told who visits the player you watch from the list of spottable players.",
     "wiki.article.role.spotter.abilities":"",
     "wiki.article.role.spotter.attributes":"* You can't see yourself visit with this ability\n * Appeared visits can change information\n- You can spot the player you watch.\n- If a spottable player visits the player you watch multiple times, you are told their name that many times.",
     "wiki.article.role.spotter.extra": "",
@@ -1803,8 +1807,8 @@
     "wiki.article.role.spy.exampleAlibi":"Spy\nN1:\nBug @8 - Mortician, Informant\nSyndicate Visited: @1, @8, @8\nN2:\nBug @13 [I was roleblocked]",
     "wiki.article.role.spy.exampleAlibi.description":"On night 1, saw that @8 was visited by a Mortician and an Informant, and the syndicate visited @1 and @8 twice\n On night 2, the spy was roleblocked, so their ability did not work.",
 
-    "wiki.article.role.tracker.reminder": "At night, select a player to find out who they visited.",
-    "wiki.article.role.tracker.guide": "- At night select a player to find out who they visited\n\n_For example_\n- If you select @5 and they visited @10 on the night @10 died, @5 might have attacked @10",
+    "wiki.article.role.tracker.reminder": "At night, watch a player to find out who they visited.",
+    "wiki.article.role.tracker.guide": "- At night, watch a player to find out who they visited\n\n_For example_\n- If you watch @5 and they visited @10 on the night @10 died, @5 might have attacked @10",
     "wiki.article.role.tracker.abilities":"",
     "wiki.article.role.tracker.attributes":"",
     "wiki.article.role.tracker.extra": "* Appeared visits can make you get false information, _for example_ a Framer makes their target player appear to visit someone else (See appeared visits)",
@@ -1834,9 +1838,9 @@
     "wiki.article.role.auditor.exampleAlibi":"Auditor\nN1:\n@o8 -> Gossip, Detective, Snoop, Philosopher\n@o15 -> Lookout, Escort, Doctor, Cop\nN2:\n@o3 -> Hypnotist, Informant, Framer, Mortician\n@o6 -> Jester, Witch, Mercenary, Scarecrow",
     "wiki.article.role.auditor.exampleAlibi.description":"The auditor gets a lot of information, so make sure to format your alibi so it is as easy to read as possible. Here's an example:",
 
-    "wiki.article.role.snoop.reminder": "At night, select a player to learn if they are a town loyalist, but you can't tell if you are visited a player who doesn't have your \"buddy role\"",
+    "wiki.article.role.snoop.reminder": "At night, select a player to learn if they are a town loyalist. You are told that you can't tell if you are visited any player who isn't your buddy, or if your target is not a town loyalist.",
     "wiki.article.role.snoop.lore":"\"Dude! Dude! Check this out!\". Accidentally uncovering the syndicate's secrets with their buddy. Sometimes tattling, but not always.",
-    "wiki.article.role.snoop.guide": "- At night, select a player to snoop, and a role to buddy. You are either told that the player you chose is a town loyalist, or that you can't tell\n    - You can't tell what your target was if:\n        - They aren't a town loyalist\n        - You are visited by a non-buddy player (visited by any player who doesn't have the role you chose).\n        - They have a suspicious aura\n\n    - Otherwise, you are told they are a town loyalist",
+    "wiki.article.role.snoop.guide": "- At night, select a player to snoop, and a role to \"buddy\". You are either told that the player you chose is a town loyalist, or that you can't tell\n    - You can't tell what your target was if:\n        - They aren't a town loyalist\n        - You are visited by any player who doesn't have the role you chose to \"buddy\".\n        - They have suspicious aura\n\n    - Otherwise, you are told they are a town loyalist",
     "wiki.article.role.snoop.abilities":"",
     "wiki.article.role.snoop.attributes":"- innocent aura & appeared visits don't effect your results.",
     "wiki.article.role.snoop.extra":"",
@@ -1954,6 +1958,12 @@
     "wiki.article.role.polymath.abilities":"",
     "wiki.article.role.polymath.attributes":"- You visit players you select to investigate, guard, transport, and camp.\n- You don't visit players you select to mark.",
     "wiki.article.role.polymath.extra":"* You can't choose yourself with any ability except you can transport someone into yourself.",
+    
+    "wiki.article.role.intern.reminder": "Each obituary, choose between 3 random town common roles, you gain that ability, lose the previous one, and are given a new random 3 town common roles.",
+    "wiki.article.role.intern.guide": "- Each obituary, choose between 3 random town common roles, you gain that ability, lose the previous one, and are given a new random 3 town common roles.\n   - If you don't choose a role, you get a random one from the 3.\n- When you first become the intern, you are given a random town common ability (so you don't need to wait for obituary to get an internship).\n- While blocked or dead, you aren't given a new ability with this ability, and you don't get a new random 3 town common roles to choose from.",
+    "wiki.article.role.intern.abilities":"",
+    "wiki.article.role.intern.attributes":"",
+    "wiki.article.role.intern.extra":"- You can't be given engineer as a random town common role.\n- You **can** be given intern as a random town common role.\n- The intern ability doesn't create visits.",
     
     "wiki.article.role.vigilante.reminder": "Each night, select a player to attack. If you kill a town loyalist, you cant shoot again.",
     "wiki.article.role.vigilante.guide": "- At night, select a player to attack\n- If you kill a town loyalist, you cant shoot again.\n- You have X bullets (X = Total players ÷ 5 (round up))\n- You can't shoot on your 1st night.",

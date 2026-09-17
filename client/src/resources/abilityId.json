@@ -179,6 +179,10 @@
         "midnight": true,
         "visit": "normal"
     },
+    "role/intern/0": {
+        "midnight": true,
+        "visit": "none"
+    },
     "role/godfather/0": {
         "midnight": true,
         "visit": "normal"

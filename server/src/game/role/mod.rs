@@ -119,6 +119,7 @@ macros::roles! {
     Polymath : polymath,
     Nepotist : nepotist,
     Employer : employer,
+    Intern : intern,
 
     // Mafia
     Godfather : godfather,

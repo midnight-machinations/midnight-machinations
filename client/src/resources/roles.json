@@ -541,6 +541,17 @@
             {"type": "youGuardedSomeone"}
         ]
     },
+    "intern": {
+        "mainRoleSet": "town",
+        "roleSets": ["town", "townCommon", "townSupport"],
+        "armor": false,
+        "aura": null,
+        "maxCount": null,
+        "canWriteCallingCard": false,
+        "chatMessages":[
+            {"type": "gainedRoleAbility", "role":"mayor"}
+        ]
+    },
     "godfather": {
         "mainRoleSet": "mafia",
         "roleSets": ["mafia", "mafiaKilling"],
