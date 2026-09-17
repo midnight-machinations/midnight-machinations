@@ -183,6 +183,10 @@
         "midnight": true,
         "visit": "none"
     },
+    "role/townCommonWildcard/0": {
+        "midnight": false,
+        "instant": true
+    },
     "role/godfather/0": {
         "midnight": true,
         "visit": "normal"
@@ -216,7 +220,8 @@
         "visit": "none"
     },
     "role/mafiaKillingWildcard/0": {
-        "midnight": false
+        "midnight": false,
+        "instant": true
     },
     "role/framer/0": {
         "midnight": true,
@@ -319,7 +324,8 @@
         "visit": "normal"
     },
     "role/mafiaSupportWildcard/0": {
-        "midnight": false
+        "midnight": false,
+        "instant": true
     },
     "role/jester/0": {
         "midnight": true,
@@ -491,7 +497,8 @@
         "visit": "none"
     },
     "role/fiendsWildcard/0": {
-        "midnight": false
+        "midnight": false,
+        "instant": true
     },
     "role/apostle/0": {
         "midnight": true,
@@ -503,10 +510,11 @@
     },
     "role/wildcard/0": {
         "midnight": false,
-        "visit": "none"
+        "instant": true
     },
     "role/trueWildcard/0": {
-        "midnight": false
+        "midnight": false,
+        "instant": true
     },
     "pitchforkVote": {
         "midnight": true,

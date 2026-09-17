@@ -370,6 +370,10 @@
     "role.rabblerouser.name": "Rabblerouser",
     "role.rabblerouser.name:var.0": "Rabblerousers",
 
+    "role.townCommonWildcard.name": "Town Common Wildcard",
+    "role.townCommonWildcard.name:var.0": "Town Common Wildcard",
+    "controllerId.role.townCommonWildcard.0.name": "Choose Role",
+
     "role.godfather.name": "Godfather",
     "role.godfather.name:var.0": "Godfathers",
     "controllerId.role.godfather.0.name": "Attack",
@@ -2011,6 +2015,13 @@
     "wiki.article.role.slayer.attributes":"",
     "wiki.article.role.slayer.extra":"* You have an armor-piercing attack\n* You can not attack day 1",
 
+    "wiki.article.role.townCommonWildcard.reminder": "Choose a town common role to become that role, gain its win condition, and insider groups.",
+    "wiki.article.role.townCommonWildcard.lore": "",
+    "wiki.article.role.townCommonWildcard.guide": "- Choose a town common role, become that role instantly, gain its default win condition, and default insider groups.\n- If you chose a role with a role limit that already is at capacity, your convert fails.",
+    "wiki.article.role.townCommonWildcard.abilities": "",
+    "wiki.article.role.townCommonWildcard.attributes": "",
+    "wiki.article.role.townCommonWildcard.extra": "",
+
     "wiki.article.role.godfather.reminder": "Each night*, select a player to attack. Each night, select a player to appeared visit. You have armor and innocent aura.",
     "wiki.article.role.godfather.guide": "- Each night except the first, select a player to attack\n    - You can't attack night 1\n- Select a player to appear to visit\n - When you are blocked, you don't have innocent aura for the night.",
     "wiki.article.role.godfather.abilities":"* Visit a player to attack\n- Appeared visit any other player\n - You can appeared visit yourself, or other syndicate insiders",
@@ -2071,11 +2082,11 @@
     "wiki.article.role.juggernaut.attributes":"",
     "wiki.article.role.juggernaut.extra":"- Your ability breaks role limits, you can be given an ability with role limit 1, even if there is a player with that ability in the game.",
     
-    "wiki.article.role.mafiaKillingWildcard.reminder": "Choose a syndicate killing role to become that role when dusk starts.",
-    "wiki.article.role.mafiaKillingWildcard.guide": "* Choose a syndicate killing role to become that role\n    * You become that role when dusk starts\n* You likely can't become a role if someone already has that role (You can't become a role that has exceeded its role limit)",
-    "wiki.article.role.mafiaKillingWildcard.abilities":"* Become a role you choose at the start of dusk",
-    "wiki.article.role.mafiaKillingWildcard.attributes":"* You can not become a role that iuides disabled\n* You can not become a role that is taken by too many players",
-    "wiki.article.role.mafiaKillingWildcard.extra":"* If you choose a role that was disabled you stay as the Syndicate Killing Wildcard\n* You can choose Syndicate Killing Wildcard to stay as Syndicate Killing Wildcard\n* You can't become a role that is at its role limit, for example, you can't become a godfather even if there is already one in the game, even if that godfather is dead",
+    "wiki.article.role.mafiaKillingWildcard.reminder": "Choose a syndicate killing role to become that role, gain its win condition, and insider groups.",
+    "wiki.article.role.mafiaKillingWildcard.guide": "- Choose a syndicate killing role, become that role instantly, gain its default win condition, and default insider groups.\n- If you chose a role with a role limit that already is at capacity, your convert fails.",
+    "wiki.article.role.mafiaKillingWildcard.abilities": "",
+    "wiki.article.role.mafiaKillingWildcard.attributes": "",
+    "wiki.article.role.mafiaKillingWildcard.extra": "",
 
     "wiki.article.role.goon.reminder": "No ability besides being a syndicate insider.",
     "wiki.article.role.goon.guide": "You have no night time ability besides chatting with the syndicate. Try to help the syndicate come up with lies and come up with a fake claim.",
@@ -2170,10 +2181,11 @@
     "wiki.article.role.ambusher.attributes":"- The ambushers attack has an attack power of basic\n- You can attack yourself if you somehow visit yourself with another ability (for exmaple: syndicate gun)\n - If another player visits your target twice, they could potentially get the message saying they caught an ambusher twice, or get attacked and get the message once.",
     "wiki.article.role.ambusher.extra":"- You can't select yourself or other syndicate members\n - You don't visit the player you attack",
 
-    "wiki.article.role.mafiaSupportWildcard.guide": "* Choose a syndicate support role to become that role\n    * You become that role when dusk starts\n* You likely can't become a role if someone already has that role (You can't become a role that has exceeded its role limit)",
-    "wiki.article.role.mafiaSupportWildcard.abilities":"* Become a role you choose at the start of dusk",
-    "wiki.article.role.mafiaSupportWildcard.attributes":"* You can not become a role that is disabled\n* You can not become a role that is taken by too many players",
-    "wiki.article.role.mafiaSupportWildcard.extra":"* If you choose a role that was disabled you stay as the Syndicate Support Wildcard\n* You can choose Syndicate Wildcard to stay as Syndicate Wildcard\n* You can't become a role that is at its role limit, for example, you can't become a witch even if there is already one in the game, even if that witch is dead",
+    "wiki.article.role.mafiaSupportWildcard.reminder": "Choose a syndicate support role to become that role, gain its win condition, and insider groups.",
+    "wiki.article.role.mafiaSupportWildcard.guide": "- Choose a syndicate support role, become that role instantly, gain its default win condition, and default insider groups.\n- If you chose a role with a role limit that already is at capacity, your convert fails.",
+    "wiki.article.role.mafiaSupportWildcard.abilities": "",
+    "wiki.article.role.mafiaSupportWildcard.attributes": "",
+    "wiki.article.role.mafiaSupportWildcard.extra": "",
 
     "wiki.article.role.jester.reminder": "If you are executed you win, after you are executed, you must kill a player. After 1/3 (round up) of town enemies die, you die.",
     "wiki.article.role.jester.lore": "D:",
@@ -2214,15 +2226,17 @@
     "wiki.article.role.drunk.attributes": "",
     "wiki.article.role.drunk.extra": "",
 
-    "wiki.article.role.wildcard.guide": "* Choose a role to become that role\n    * You become that role when dusk starts\n* You can't become a role that is disabled or taken by too many players",
-    "wiki.article.role.wildcard.abilities":"* Become a role you choose at the start of dusk",
-    "wiki.article.role.wildcard.attributes":"* You can not become a role that is disabled\n* You can not become a role that is taken by too many players",
-    "wiki.article.role.wildcard.extra":"* If you choose a role that was disabled you stay as the Wildcard\n* You can choose wildcard to stay as wildcard\n* You can't become a role that is at its role limit, if there is a veteran in the game, you can't become one, even if the veteran is dead",
-    
-    "wiki.article.role.trueWildcard.guide": "* Choose a role to become that role\n    * You become that role when dusk starts\n* You can't become a role that is disabled, but you can become a role that is taken, so there can be 2 veterans",
-    "wiki.article.role.trueWildcard.abilities":"* Become a role you choose at the start of dusk",
-    "wiki.article.role.trueWildcard.attributes":"* You can not become a role that is disabled\n* You can become a role that is taken by too many players",
-    "wiki.article.role.trueWildcard.extra":"* If you choose a role that was disabled you stay as the True Wildcard\n* You can choose true wildcard to stay as true wildcard\n* You can become a role that is at its role limit, if there is a veteran in the game, you still can become one",
+    "wiki.article.role.wildcard.reminder": "Choose a role to become that role, gain its win condition, and insider groups.",
+    "wiki.article.role.wildcard.guide": "- Choose a role, become that role instantly, gain its default win condition, and default insider groups.\n- If you chose a role with a role limit that already is at capacity, your convert fails.",
+    "wiki.article.role.wildcard.abilities": "",
+    "wiki.article.role.wildcard.attributes": "",
+    "wiki.article.role.wildcard.extra": "",
+
+    "wiki.article.role.trueWildcard.reminder": "Choose a role to become that role, gain its win condition, and insider groups.",
+    "wiki.article.role.trueWildcard.guide": "- Choose a role, become that role instantly, gain its default win condition, and default insider groups.",
+    "wiki.article.role.trueWildcard.abilities": "",
+    "wiki.article.role.trueWildcard.attributes": "",
+    "wiki.article.role.trueWildcard.extra": "",
 
     "wiki.article.role.witch.reminder": "Each night, possess a player.",
     "wiki.article.role.witch.guide": "- You win if town loses, when town loses you leave town\n- At night, possess a player by selecting 2 players\n\n_For example_\n- You can posses a vigilante to attack another townie by selecting the vigilante first and the townie second",
@@ -2334,11 +2348,11 @@
     "wiki.article.role.yer.attributes":"",
     "wiki.article.role.yer.extra":"- You visit the player you choose\n- You can't attack or convert night 1",
 
-    "wiki.article.role.fiendsWildcard.reminder": "Choose a fiends role to become at start of dusk.",
-    "wiki.article.role.fiendsWildcard.guide": "* Choose a fiends role to become that role\n    * You become that role when dusk starts\n* You can't become a role that has exceeded its role limit",
-    "wiki.article.role.fiendsWildcard.abilities":"* Become a role you choose at the start of dusk",
-    "wiki.article.role.fiendsWildcard.attributes":"* You can not become a role that is disabled\n* You can not become a role that is taken by too many players",
-    "wiki.article.role.fiendsWildcard.extra":"* If you choose a role that was disabled you stay as the Fiends Wildcard\n* You can choose Fiends Wildcard to stay as Fiends Wildcard\n* You can't become a role that is at its role limit",
+    "wiki.article.role.fiendsWildcard.reminder": "Choose a fiends role to become that role, gain its win condition, and insider groups.",
+    "wiki.article.role.fiendsWildcard.guide": "- Choose a fiends killing role, become that role instantly, gain its default win condition, and default insider groups.\n- If you chose a role with a role limit that already is at capacity, your convert fails.",
+    "wiki.article.role.fiendsWildcard.abilities": "",
+    "wiki.article.role.fiendsWildcard.attributes": "",
+    "wiki.article.role.fiendsWildcard.extra": "",
 
     "wiki.article.role.apostle.reminder": "Each night*, If the cult has at least 2 sacrifices, choose a player to become the new zealot.",
     "wiki.article.role.apostle.guide": "- At night if the cult has at least 2 sacrifices, choose a player.\n    - If that player has defense, you are told your convert failed and nothing happens, otherwise:\n        - The target becomes a zealot, cult insider, and cult loyalist\n        - All previous cult insider zealots become disciples.\n        - The cult uses 2 sacrifices.",

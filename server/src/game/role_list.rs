@@ -233,7 +233,7 @@ impl RoleSet{
             RoleSet::Any => Role::values(),
             RoleSet::Town => 
                 vec![
-                    Role::Jailor, Role::Villager, Role::Drunk
+                    Role::Jailor, Role::Villager, Role::Drunk, Role::TownCommonWildcard
                 ].into_iter().chain(
                     RoleSet::TownCommon.get_roles()
                 ).collect(),

@@ -1,7 +1,7 @@
 use serde::{Serialize, Deserialize};
 
+use crate::game::components::blocked::BlockedComponent;
 use crate::game::{attack_power::DefensePower, role_list::RoleSet};
-use crate::game::phase::PhaseType;
 use crate::game::player::PlayerReference;
 use crate::game::Game;
 
@@ -16,11 +16,11 @@ pub(super) const DEFENSE: DefensePower = DefensePower::None;
 
 impl RoleStateTrait for MafiaKillingWildcard {
     type ClientAbilityState = MafiaKillingWildcard;
-    fn on_phase_start(self, game: &mut Game, actor_ref: PlayerReference, phase: PhaseType) {
-        if phase == PhaseType::Dusk {
-            if actor_ref.ability_deactivated_from_death(game) {return;}
-            Wildcard::become_role(game, actor_ref, Role::MafiaKillingWildcard);
-        }
+    fn on_validated_ability_input_received(self, game: &mut Game, actor_ref: PlayerReference, _input_player: PlayerReference, ability_input: crate::game::prelude::ControllerInput) {
+        if BlockedComponent::blocked(game, actor_ref) {return}
+        if actor_ref.ability_deactivated_from_death(game) {return}
+        if ability_input.id() != (ControllerID::Role { player: actor_ref, role: Role::MafiaKillingWildcard, id: 0 }) {return}
+        Wildcard::become_role(game, actor_ref, Role::MafiaKillingWildcard);
     }
      fn default_revealed_groups(self) -> crate::vec_set::VecSet<crate::game::components::insider_group::InsiderGroupID> {
         vec![

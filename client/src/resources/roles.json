@@ -552,6 +552,19 @@
             {"type": "gainedRoleAbility", "role":"mayor"}
         ]
     },
+    "townCommonWildcard": {
+        "mainRoleSet": "town",
+        "roleSets": ["town"],
+        "armor": false,
+        "aura": null,
+        "maxCount": null,
+        "canWriteCallingCard": false,
+        "chatMessages":[
+            {"type": "roleAssignment", "role":"mayor"},
+            {"type": "wildcardConvertFailed", "role": "mayor"},
+            {"type": "gainedRoleAbility", "role":"mayor"}
+        ]
+    },
     "godfather": {
         "mainRoleSet": "mafia",
         "roleSets": ["mafia", "mafiaKilling"],

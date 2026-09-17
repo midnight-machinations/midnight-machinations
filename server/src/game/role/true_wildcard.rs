@@ -1,8 +1,7 @@
 use serde::{Serialize, Deserialize};
 
-use crate::game::attack_power::DefensePower;
+use crate::game::{attack_power::DefensePower, components::blocked::BlockedComponent};
 use crate::game::chat::ChatMessageVariant;
-use crate::game::phase::PhaseType;
 use crate::game::player::PlayerReference;
 use crate::game::role_list::role_enabled_and_not_taken;
 use crate::game::Game;
@@ -19,11 +18,11 @@ pub(super) const DEFENSE: DefensePower = DefensePower::None;
 
 impl RoleStateTrait for TrueWildcard {
     type ClientAbilityState = TrueWildcard;
-    fn on_phase_start(self, game: &mut Game, actor_ref: PlayerReference, phase: PhaseType) {
-        if phase == PhaseType::Dusk {
-            if actor_ref.ability_deactivated_from_death(game) {return;}
-            self.become_role(game, actor_ref);
-        }
+    fn on_validated_ability_input_received(self, game: &mut Game, actor_ref: PlayerReference, _input_player: PlayerReference, ability_input: crate::game::prelude::ControllerInput) {
+        if BlockedComponent::blocked(game, actor_ref) {return}
+        if actor_ref.ability_deactivated_from_death(game) {return}
+        if ability_input.id() != (ControllerID::Role { player: actor_ref, role: Role::TrueWildcard, id: 0 }) {return}
+        self.become_role(game, actor_ref);
     }
     fn controller_parameters_map(self, game: &Game, actor_ref: PlayerReference) -> super::ControllerParametersMap {
         ControllerParametersMap::builder(game)

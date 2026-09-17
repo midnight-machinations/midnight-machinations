@@ -121,6 +121,8 @@ macros::roles! {
     Employer : employer,
     Intern : intern,
 
+    TownCommonWildcard : town_common_wildcard,
+
     // Mafia
     Godfather : godfather,
     Counterfeiter : counterfeiter,
