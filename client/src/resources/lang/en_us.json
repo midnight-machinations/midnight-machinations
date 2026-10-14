@@ -334,6 +334,10 @@
     "controllerId.role.polymath.4.name": "Mark",
     "controllerId.role.polymath.5.name": "Camp",
 
+    "role.intern.name": "Intern",
+    "role.intern.name:var.0": "Interns",
+    "controllerId.role.intern.0.name": "Choose Ability",
+
     "role.vigilante.name": "Vigilante",
     "role.vigilante.name:var.0": "Vigilantes",
     "role.vigilante.roleDataText.killedTownie": "You killed a townie and cant shoot again.",
@@ -365,6 +369,10 @@
     
     "role.rabblerouser.name": "Rabblerouser",
     "role.rabblerouser.name:var.0": "Rabblerousers",
+
+    "role.townCommonWildcard.name": "Town Common Wildcard",
+    "role.townCommonWildcard.name:var.0": "Town Common Wildcard",
+    "controllerId.role.townCommonWildcard.0.name": "Choose Role",
 
     "role.godfather.name": "Godfather",
     "role.godfather.name:var.0": "Godfathers",
@@ -1779,16 +1787,16 @@
     "wiki.article.role.detective.exampleAlibi":"Detective\nN1: @5 - friend\nN2: @2 - enemies",
     "wiki.article.role.detective.exampleAlibi.description":"Here is an example of an alibi from a detective who, on night 1, saw that @5 is friends with town, and on night 2, found that @2 is enemies with town.",
 
-    "wiki.article.role.lookout.reminder": "At night, select a player to find out who visits them.",
-    "wiki.article.role.lookout.guide": "- At night, select a player to find out who visits them\n\n_For Example_\n- If you select @1 on the night they die, and @2 visited them then it's likely @2 killed them.",
+    "wiki.article.role.lookout.reminder": "At night, watch a player to find out who visits them.",
+    "wiki.article.role.lookout.guide": "- At night, watch a player to find out who visits them\n\n_For Example_\n- If you watch @1 on the night they die, and @2 visited them then it's likely @2 killed them.",
     "wiki.article.role.lookout.abilities":"",
     "wiki.article.role.lookout.attributes":"* You can't see yourself visit with this ability\n * Appeared visits can change information\n- If a player visits the player you watch multiple times, you are told their name that many times.",
     "wiki.article.role.lookout.extra": "",
     "wiki.article.role.lookout.exampleAlibi":"Lookout\nN1: @5 vb @1\nN2: @1 nv",
     "wiki.article.role.lookout.exampleAlibi.description":"Here is an example of an alibi from a lookout who, on night 1, saw that @5 was visited by @1, and on night 2, found that @1 was not visited by anyone.",
     
-    "wiki.article.role.spotter.reminder": "At night, select a player to find out who visits them.",
-    "wiki.article.role.spotter.guide": "- At night, select a player to watch, and up to 3 players to spot.\n   - You are told who visits the player you watch from the list of spottable players.",
+    "wiki.article.role.spotter.reminder": "At night, watch a player to find out which spottable players visit them.",
+    "wiki.article.role.spotter.guide": "- At night, watch a player to spot visitors.\n   - You are told who visits the player you watch from the list of spottable players.",
     "wiki.article.role.spotter.abilities":"",
     "wiki.article.role.spotter.attributes":"* You can't see yourself visit with this ability\n * Appeared visits can change information\n- You can spot the player you watch.\n- If a spottable player visits the player you watch multiple times, you are told their name that many times.",
     "wiki.article.role.spotter.extra": "",
@@ -1803,8 +1811,8 @@
     "wiki.article.role.spy.exampleAlibi":"Spy\nN1:\nBug @8 - Mortician, Informant\nSyndicate Visited: @1, @8, @8\nN2:\nBug @13 [I was roleblocked]",
     "wiki.article.role.spy.exampleAlibi.description":"On night 1, saw that @8 was visited by a Mortician and an Informant, and the syndicate visited @1 and @8 twice\n On night 2, the spy was roleblocked, so their ability did not work.",
 
-    "wiki.article.role.tracker.reminder": "At night, select a player to find out who they visited.",
-    "wiki.article.role.tracker.guide": "- At night select a player to find out who they visited\n\n_For example_\n- If you select @5 and they visited @10 on the night @10 died, @5 might have attacked @10",
+    "wiki.article.role.tracker.reminder": "At night, watch a player to find out who they visited.",
+    "wiki.article.role.tracker.guide": "- At night, watch a player to find out who they visited\n\n_For example_\n- If you watch @5 and they visited @10 on the night @10 died, @5 might have attacked @10",
     "wiki.article.role.tracker.abilities":"",
     "wiki.article.role.tracker.attributes":"",
     "wiki.article.role.tracker.extra": "* Appeared visits can make you get false information, _for example_ a Framer makes their target player appear to visit someone else (See appeared visits)",
@@ -1834,9 +1842,9 @@
     "wiki.article.role.auditor.exampleAlibi":"Auditor\nN1:\n@o8 -> Gossip, Detective, Snoop, Philosopher\n@o15 -> Lookout, Escort, Doctor, Cop\nN2:\n@o3 -> Hypnotist, Informant, Framer, Mortician\n@o6 -> Jester, Witch, Mercenary, Scarecrow",
     "wiki.article.role.auditor.exampleAlibi.description":"The auditor gets a lot of information, so make sure to format your alibi so it is as easy to read as possible. Here's an example:",
 
-    "wiki.article.role.snoop.reminder": "At night, select a player to learn if they are a town loyalist, but you can't tell if you are visited a player who doesn't have your \"buddy role\"",
+    "wiki.article.role.snoop.reminder": "At night, select a player to learn if they are a town loyalist. You are told that you can't tell if you are visited any player who isn't your buddy, or if your target is not a town loyalist.",
     "wiki.article.role.snoop.lore":"\"Dude! Dude! Check this out!\". Accidentally uncovering the syndicate's secrets with their buddy. Sometimes tattling, but not always.",
-    "wiki.article.role.snoop.guide": "- At night, select a player to snoop, and a role to buddy. You are either told that the player you chose is a town loyalist, or that you can't tell\n    - You can't tell what your target was if:\n        - They aren't a town loyalist\n        - You are visited by a non-buddy player (visited by any player who doesn't have the role you chose).\n        - They have a suspicious aura\n\n    - Otherwise, you are told they are a town loyalist",
+    "wiki.article.role.snoop.guide": "- At night, select a player to snoop, and a role to \"buddy\". You are either told that the player you chose is a town loyalist, or that you can't tell\n    - You can't tell what your target was if:\n        - They aren't a town loyalist\n        - You are visited by any player who doesn't have the role you chose to \"buddy\".\n        - They have suspicious aura\n\n    - Otherwise, you are told they are a town loyalist",
     "wiki.article.role.snoop.abilities":"",
     "wiki.article.role.snoop.attributes":"- innocent aura & appeared visits don't effect your results.",
     "wiki.article.role.snoop.extra":"",
@@ -1955,6 +1963,12 @@
     "wiki.article.role.polymath.attributes":"- You visit players you select to investigate, guard, transport, and camp.\n- You don't visit players you select to mark.",
     "wiki.article.role.polymath.extra":"* You can't choose yourself with any ability except you can transport someone into yourself.",
     
+    "wiki.article.role.intern.reminder": "Each obituary, choose between 3 random town common roles, you gain that ability, lose the previous one, and are given a new random 3 town common roles.",
+    "wiki.article.role.intern.guide": "- Each obituary, choose between 3 random town common roles, you gain that ability, lose the previous one, and are given a new random 3 town common roles.\n   - If you don't choose a role, you get a random one from the 3.\n- When you first become the intern, you are given a random town common ability (so you don't need to wait for obituary to get an internship).\n- While blocked or dead, you aren't given a new ability with this ability, and you don't get a new random 3 town common roles to choose from.",
+    "wiki.article.role.intern.abilities":"",
+    "wiki.article.role.intern.attributes":"",
+    "wiki.article.role.intern.extra":"- You can't be given engineer as a random town common role.\n- You **can** be given intern as a random town common role.\n- The intern ability doesn't create visits.",
+    
     "wiki.article.role.vigilante.reminder": "Each night, select a player to attack. If you kill a town loyalist, you cant shoot again.",
     "wiki.article.role.vigilante.guide": "- At night, select a player to attack\n- If you kill a town loyalist, you cant shoot again.\n- You have X bullets (X = Total players ÷ 5 (round up))\n- You can't shoot on your 1st night.",
     "wiki.article.role.vigilante.abilities":"",
@@ -2000,6 +2014,13 @@
     "wiki.article.role.slayer.abilities":"",
     "wiki.article.role.slayer.attributes":"",
     "wiki.article.role.slayer.extra":"* You have an armor-piercing attack\n* You can not attack day 1",
+
+    "wiki.article.role.townCommonWildcard.reminder": "Choose a town common role to become that role, gain its win condition, and insider groups.",
+    "wiki.article.role.townCommonWildcard.lore": "",
+    "wiki.article.role.townCommonWildcard.guide": "- Choose a town common role, become that role instantly, gain its default win condition, and default insider groups.\n- If you chose a role with a role limit that already is at capacity, your convert fails.",
+    "wiki.article.role.townCommonWildcard.abilities": "",
+    "wiki.article.role.townCommonWildcard.attributes": "",
+    "wiki.article.role.townCommonWildcard.extra": "",
 
     "wiki.article.role.godfather.reminder": "Each night*, select a player to attack. Each night, select a player to appeared visit. You have armor and innocent aura.",
     "wiki.article.role.godfather.guide": "- Each night except the first, select a player to attack\n    - You can't attack night 1\n- Select a player to appear to visit\n - When you are blocked, you don't have innocent aura for the night.",
@@ -2061,11 +2082,11 @@
     "wiki.article.role.juggernaut.attributes":"",
     "wiki.article.role.juggernaut.extra":"- Your ability breaks role limits, you can be given an ability with role limit 1, even if there is a player with that ability in the game.",
     
-    "wiki.article.role.mafiaKillingWildcard.reminder": "Choose a syndicate killing role to become that role when dusk starts.",
-    "wiki.article.role.mafiaKillingWildcard.guide": "* Choose a syndicate killing role to become that role\n    * You become that role when dusk starts\n* You likely can't become a role if someone already has that role (You can't become a role that has exceeded its role limit)",
-    "wiki.article.role.mafiaKillingWildcard.abilities":"* Become a role you choose at the start of dusk",
-    "wiki.article.role.mafiaKillingWildcard.attributes":"* You can not become a role that iuides disabled\n* You can not become a role that is taken by too many players",
-    "wiki.article.role.mafiaKillingWildcard.extra":"* If you choose a role that was disabled you stay as the Syndicate Killing Wildcard\n* You can choose Syndicate Killing Wildcard to stay as Syndicate Killing Wildcard\n* You can't become a role that is at its role limit, for example, you can't become a godfather even if there is already one in the game, even if that godfather is dead",
+    "wiki.article.role.mafiaKillingWildcard.reminder": "Choose a syndicate killing role to become that role, gain its win condition, and insider groups.",
+    "wiki.article.role.mafiaKillingWildcard.guide": "- Choose a syndicate killing role, become that role instantly, gain its default win condition, and default insider groups.\n- If you chose a role with a role limit that already is at capacity, your convert fails.",
+    "wiki.article.role.mafiaKillingWildcard.abilities": "",
+    "wiki.article.role.mafiaKillingWildcard.attributes": "",
+    "wiki.article.role.mafiaKillingWildcard.extra": "",
 
     "wiki.article.role.goon.reminder": "No ability besides being a syndicate insider.",
     "wiki.article.role.goon.guide": "You have no night time ability besides chatting with the syndicate. Try to help the syndicate come up with lies and come up with a fake claim.",
@@ -2160,10 +2181,11 @@
     "wiki.article.role.ambusher.attributes":"- The ambushers attack has an attack power of basic\n- You can attack yourself if you somehow visit yourself with another ability (for exmaple: syndicate gun)\n - If another player visits your target twice, they could potentially get the message saying they caught an ambusher twice, or get attacked and get the message once.",
     "wiki.article.role.ambusher.extra":"- You can't select yourself or other syndicate members\n - You don't visit the player you attack",
 
-    "wiki.article.role.mafiaSupportWildcard.guide": "* Choose a syndicate support role to become that role\n    * You become that role when dusk starts\n* You likely can't become a role if someone already has that role (You can't become a role that has exceeded its role limit)",
-    "wiki.article.role.mafiaSupportWildcard.abilities":"* Become a role you choose at the start of dusk",
-    "wiki.article.role.mafiaSupportWildcard.attributes":"* You can not become a role that is disabled\n* You can not become a role that is taken by too many players",
-    "wiki.article.role.mafiaSupportWildcard.extra":"* If you choose a role that was disabled you stay as the Syndicate Support Wildcard\n* You can choose Syndicate Wildcard to stay as Syndicate Wildcard\n* You can't become a role that is at its role limit, for example, you can't become a witch even if there is already one in the game, even if that witch is dead",
+    "wiki.article.role.mafiaSupportWildcard.reminder": "Choose a syndicate support role to become that role, gain its win condition, and insider groups.",
+    "wiki.article.role.mafiaSupportWildcard.guide": "- Choose a syndicate support role, become that role instantly, gain its default win condition, and default insider groups.\n- If you chose a role with a role limit that already is at capacity, your convert fails.",
+    "wiki.article.role.mafiaSupportWildcard.abilities": "",
+    "wiki.article.role.mafiaSupportWildcard.attributes": "",
+    "wiki.article.role.mafiaSupportWildcard.extra": "",
 
     "wiki.article.role.jester.reminder": "If you are executed you win, after you are executed, you must kill a player. After 1/3 (round up) of town enemies die, you die.",
     "wiki.article.role.jester.lore": "D:",
@@ -2204,15 +2226,17 @@
     "wiki.article.role.drunk.attributes": "",
     "wiki.article.role.drunk.extra": "",
 
-    "wiki.article.role.wildcard.guide": "* Choose a role to become that role\n    * You become that role when dusk starts\n* You can't become a role that is disabled or taken by too many players",
-    "wiki.article.role.wildcard.abilities":"* Become a role you choose at the start of dusk",
-    "wiki.article.role.wildcard.attributes":"* You can not become a role that is disabled\n* You can not become a role that is taken by too many players",
-    "wiki.article.role.wildcard.extra":"* If you choose a role that was disabled you stay as the Wildcard\n* You can choose wildcard to stay as wildcard\n* You can't become a role that is at its role limit, if there is a veteran in the game, you can't become one, even if the veteran is dead",
-    
-    "wiki.article.role.trueWildcard.guide": "* Choose a role to become that role\n    * You become that role when dusk starts\n* You can't become a role that is disabled, but you can become a role that is taken, so there can be 2 veterans",
-    "wiki.article.role.trueWildcard.abilities":"* Become a role you choose at the start of dusk",
-    "wiki.article.role.trueWildcard.attributes":"* You can not become a role that is disabled\n* You can become a role that is taken by too many players",
-    "wiki.article.role.trueWildcard.extra":"* If you choose a role that was disabled you stay as the True Wildcard\n* You can choose true wildcard to stay as true wildcard\n* You can become a role that is at its role limit, if there is a veteran in the game, you still can become one",
+    "wiki.article.role.wildcard.reminder": "Choose a role to become that role, gain its win condition, and insider groups.",
+    "wiki.article.role.wildcard.guide": "- Choose a role, become that role instantly, gain its default win condition, and default insider groups.\n- If you chose a role with a role limit that already is at capacity, your convert fails.",
+    "wiki.article.role.wildcard.abilities": "",
+    "wiki.article.role.wildcard.attributes": "",
+    "wiki.article.role.wildcard.extra": "",
+
+    "wiki.article.role.trueWildcard.reminder": "Choose a role to become that role, gain its win condition, and insider groups.",
+    "wiki.article.role.trueWildcard.guide": "- Choose a role, become that role instantly, gain its default win condition, and default insider groups.",
+    "wiki.article.role.trueWildcard.abilities": "",
+    "wiki.article.role.trueWildcard.attributes": "",
+    "wiki.article.role.trueWildcard.extra": "",
 
     "wiki.article.role.witch.reminder": "Each night, possess a player.",
     "wiki.article.role.witch.guide": "- You win if town loses, when town loses you leave town\n- At night, possess a player by selecting 2 players\n\n_For example_\n- You can posses a vigilante to attack another townie by selecting the vigilante first and the townie second",
@@ -2324,11 +2348,11 @@
     "wiki.article.role.yer.attributes":"",
     "wiki.article.role.yer.extra":"- You visit the player you choose\n- You can't attack or convert night 1",
 
-    "wiki.article.role.fiendsWildcard.reminder": "Choose a fiends role to become at start of dusk.",
-    "wiki.article.role.fiendsWildcard.guide": "* Choose a fiends role to become that role\n    * You become that role when dusk starts\n* You can't become a role that has exceeded its role limit",
-    "wiki.article.role.fiendsWildcard.abilities":"* Become a role you choose at the start of dusk",
-    "wiki.article.role.fiendsWildcard.attributes":"* You can not become a role that is disabled\n* You can not become a role that is taken by too many players",
-    "wiki.article.role.fiendsWildcard.extra":"* If you choose a role that was disabled you stay as the Fiends Wildcard\n* You can choose Fiends Wildcard to stay as Fiends Wildcard\n* You can't become a role that is at its role limit",
+    "wiki.article.role.fiendsWildcard.reminder": "Choose a fiends role to become that role, gain its win condition, and insider groups.",
+    "wiki.article.role.fiendsWildcard.guide": "- Choose a fiends killing role, become that role instantly, gain its default win condition, and default insider groups.\n- If you chose a role with a role limit that already is at capacity, your convert fails.",
+    "wiki.article.role.fiendsWildcard.abilities": "",
+    "wiki.article.role.fiendsWildcard.attributes": "",
+    "wiki.article.role.fiendsWildcard.extra": "",
 
     "wiki.article.role.apostle.reminder": "Each night*, If the cult has at least 2 sacrifices, choose a player to become the new zealot.",
     "wiki.article.role.apostle.guide": "- At night if the cult has at least 2 sacrifices, choose a player.\n    - If that player has defense, you are told your convert failed and nothing happens, otherwise:\n        - The target becomes a zealot, cult insider, and cult loyalist\n        - All previous cult insider zealots become disciples.\n        - The cult uses 2 sacrifices.",

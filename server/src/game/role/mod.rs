@@ -119,6 +119,9 @@ macros::roles! {
     Polymath : polymath,
     Nepotist : nepotist,
     Employer : employer,
+    Intern : intern,
+
+    TownCommonWildcard : town_common_wildcard,
 
     // Mafia
     Godfather : godfather,
