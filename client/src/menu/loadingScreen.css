@@ -7,7 +7,6 @@
     transform: translateY(0);
     font-family: computer-font, monospace;
     color: #ffffff;
-    text-shadow: 0 0 5px #ffffff;
 }
 .loading > h1 {
     font-size: 200%;

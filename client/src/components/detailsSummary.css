@@ -4,7 +4,6 @@
     justify-content: left;
     align-items: center;
     padding: .13rem;
-    background-color: var(--primary-color);
     border-radius: 0;
 }
 .details-summary-summary-container.open {

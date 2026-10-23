@@ -110,21 +110,18 @@
     /* Analog Horror Terminal Color Scheme */
     --background-color: #000000;
     --fade-color: #0a0a0a;
+    --scanline-opacity: 0.05;
 
-    --primary-color: #111111;
-    --secondary-color: #1a1a1a;
-    --text-color: white;
-
-    --primary-border-color: #ffffff;
+    --primary-border-color: #888888;
     --primary-border-shadow-color: #333333;
-    --background-border-color: #aaaaaa;
+    --background-border-color: #777777;
     --background-border-shadow-color: #000000;
-    --brand-color: oklch(from #c52c2c calc(l - 0.2) c 275);
-    --brand-hover-color: oklch(from #c93838 calc(l - 0.2) c 275);
-    --brand-border-color: oklch(from #d85353 calc(l - 0.2) c 275);
-    --brand-border-shadow-color: oklch(from #842727 calc(l - 0.2) c 275);
-    --primary-color: #272b3b;
-    --secondary-color: #232754;
+    --brand-color: oklch(from #580d0d calc(l - 0.2) c 275);
+    --brand-hover-color: oklch(from #834b4b calc(l - 0.2) c 275);
+    --brand-border-color: oklch(from #f05151 calc(l - 0.2) c 275);
+    --brand-border-shadow-color: oklch(from #8d2020 calc(l - 0.2) c 275);
+    --primary-color: #1d1d1d;
+    --secondary-color: #222222;
     --text-color: #ffffff;
 
     --hover-color: #222222;
@@ -179,7 +176,6 @@ s {
     color: var(--text-color);
 
     font-family: var(--game-font, Arial);
-    text-shadow: 0 0 5px var(--text-color);
 }
 .timer-box{
     width: 100%;
@@ -199,7 +195,7 @@ s {
 button, .button, input, select, option, textarea, .textarea, summary {
     border-radius: 0;
     margin: .13rem;
-    background-color: var(--secondary-color);
+    background-color: var(--background-color);
     border-color: var(--primary-border-color);
     border-style: solid;
     border-width: .13rem;
@@ -223,7 +219,7 @@ textarea, .textarea {
     white-space: pre;
     overflow-x: hidden;
     overflow-y: hidden;
-    border-radius: 0.25rem;
+    border-radius: 0;
 }
 
 *:focus-visible {
@@ -252,7 +248,7 @@ a:focus-visible {
 
 button, .button, summary {
     cursor: default;
-    background-color: var(--primary-color);
+    background-color: var(--background-color);
     white-space: nowrap;
 }
 button, .button, select, summary {
@@ -354,21 +350,21 @@ code, .code {
     --primary-color: #00001a;
     --secondary-color: #000022;
     --text-color: white;
-    --primary-border-color: #0031c4;
-    --primary-border-shadow-color: #000033;
-    --background-border-color: #000081;
+    --primary-border-color: #0f33a0;
+    --primary-border-shadow-color: #0e0e40;
+    --background-border-color: #0d0d5a;
     --background-border-shadow-color: #000000;
-    --hover-color: #000022;
+    --hover-color: #16164b;
     --focus-outline-color: #0031c4;
 }
 
 .player-list-menu-colors {
     --background-color: #001100;
     --fade-color: #0a0a0a;
-    --primary-color: #001100;
-    --secondary-color: #001a00;
+    --primary-color: #001a00;
+    --secondary-color: #001f00;
     --text-color: white;
-    --primary-border-color: #00c030;
+    --primary-border-color: #156d2b;
     --primary-border-shadow-color: #003300;
     --background-border-color: #007200;
     --background-border-shadow-color: #000000;
@@ -377,15 +373,15 @@ code, .code {
 }
 
 .will-menu-colors {
-    --background-color: #110011;
+    --background-color: #100310;
     --fade-color: #0a0a0a;
     --primary-color: #110011;
     --secondary-color: #1a001a;
     --text-color: white;
-    --primary-border-color: #c731c7;
+    --primary-border-color: #6b1f6b;
     --primary-border-shadow-color: #330033;
     --background-border-color: #aa00aa;
-    --background-border-shadow-color: #330033;
+    --background-border-shadow-color: #110011;
     --hover-color: #220022;
     --focus-outline-color: #c731c7;
 }
@@ -393,10 +389,10 @@ code, .code {
 .role-specific-colors {
     --background-color: #110000;
     --fade-color: #0a0a0a;
-    --primary-color: #110000;
-    --secondary-color: #1a0000;
+    --primary-color: #1c0000;
+    --secondary-color: #200000;
     --text-color: white;
-    --primary-border-color: #8d0000;
+    --primary-border-color: #6e0606;
     --primary-border-shadow-color: #330000;
     --background-border-color: #4b0000;
     --background-border-shadow-color: #000000;
@@ -410,10 +406,10 @@ code, .code {
     --primary-color: #1a1a1a;
     --secondary-color: #222222;
     --text-color: white;
-    --primary-border-color: #eeeeee;
+    --primary-border-color: #565656;
     --primary-border-shadow-color: #333333;
-    --background-border-color: #aaaaaa;
-    --background-border-shadow-color: #333333;
+    --background-border-color: #4e4e4e;
+    --background-border-shadow-color: #1b1b1b;
     --hover-color: #222222;
     --focus-outline-color: #eeeeee;
 }
@@ -424,7 +420,7 @@ code, .code {
     --primary-color: #110000;
     --secondary-color: #1a0000;
     --text-color: white;
-    --primary-border-color: #aa5200;
+    --primary-border-color: #9a5311;
     --primary-border-shadow-color: #330000;
     --background-border-color: #773a00;
     --background-border-shadow-color: #000000;
@@ -671,7 +667,7 @@ code, .code {
         right: 0;
         background: linear-gradient(
             rgba(0, 0, 0, 0) 50%, 
-            rgba(0, 0, 0, 0.1) 50%
+            rgba(0, 0, 0, var(--scanline-opacity)) 50%
         );
         background-size: 100% 4px;
         z-index: 999999;
@@ -705,16 +701,6 @@ body > #root::before {
     pointer-events: none;
     z-index: 999998;
     opacity: 0.05;
-}
-
-/* Terminal phosphor glow for all elements */
-.chat-message,
-button,
-.button,
-input,
-select,
-textarea {
-    text-shadow: 0 0 1px var(--text-color), 0 0 2px var(--text-color);
 }
 
 .highlighted.highlighted {

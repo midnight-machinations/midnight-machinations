@@ -68,7 +68,7 @@ export default function GlobalMenu(): ReactElement {
     const quitButtonBlacklist: (string | JSXElementConstructor<any>)[] = [StartMenu, LoadingScreen];
 
     return (
-        <div className="chat-menu-colors global-menu slide-in" ref={ref}>
+        <div className="global-menu slide-in" ref={ref}>
             {(stateType === "lobby" || stateType === "game") && 
                 <section className="standout">
                     <h2>{encodeString(lobbyName)}</h2>

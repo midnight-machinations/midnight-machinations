@@ -22,6 +22,7 @@ export default function SettingsMenu(): ReactElement {
     const [headerEnabled, setHeaderEnabled] = useState(loadSettingsParsed().headerEnabled ?? true);
     const [menuOrder, setMenuOrder] = useState(loadSettingsParsed().menuOrder);
     const [maxMenus, setMaxMenus] = useState(loadSettingsParsed().maxMenus);
+    const [scanlineIntensity, setScanlineIntensity] = useState(loadSettingsParsed().scanlineIntensity);
     const anchorController = useContext(AnchorControllerContext)!;
 
     useEffect(() => {
@@ -29,6 +30,10 @@ export default function SettingsMenu(): ReactElement {
         ANCHOR_CONTROLLER?.setFontSize(fontSizeState);
         ANCHOR_CONTROLLER?.setAccessibilityFontEnabled(accessibilityFontEnabled);
     }, [volume, fontSizeState, accessibilityFontEnabled]);
+
+    useEffect(() => {
+        document.documentElement.style.setProperty('--scanline-opacity', `${scanlineIntensity / 100 * 0.2}`);
+    }, [scanlineIntensity]);
 
     return <div className="settings-menu-card">
         <header>
@@ -61,6 +66,19 @@ export default function SettingsMenu(): ReactElement {
                             }
                         }/>
                     </div>
+                </section>
+                <section>
+                    <label>
+                        {translate("menu.settings.scanlineIntensity")} ({scanlineIntensity}%)
+                        <input type="range" min="0" max="100" step="1"
+                            value={scanlineIntensity}
+                            onChange={(e) => {
+                                const scanlineIntensity = parseInt(e.target.value, 10);
+                                saveSettings({scanlineIntensity});
+                                setScanlineIntensity(scanlineIntensity);
+                            }}
+                        />
+                    </label>
                 </section>
                 <section className="wiki-menu-colors">
                     <div className="settings-language-container">

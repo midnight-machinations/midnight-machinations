@@ -68,7 +68,7 @@
     border: .13rem solid var(--primary-border-color);
     border-top-color: var(--primary-border-shadow-color);
     border-left-color: var(--primary-border-shadow-color);
-    border-radius: 0.25rem;
+    border-radius: 0;
     gap: 0.25rem;
     padding: 0.25rem;
 }

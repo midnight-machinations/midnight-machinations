@@ -36,7 +36,6 @@
 }
 .wiki-search .wiki-page-button {
     display: inline-block;
-    padding: .25rem .5rem;
 }
 .wiki-message-section {
     display: flex;
@@ -104,10 +103,10 @@
 }
 .wiki-search-divider {
     margin: 0.5rem;
-    padding: 0.3rem;
+    padding: 0.13rem 0.25rem;
     border-radius: 0;
     background-color: var(--secondary-color);
-    border: 1px solid var(--primary-border-color);
+    border-bottom: .13rem solid var(--primary-border-color);
     box-shadow: 0 0 10px rgba(from var(--text-color) / 0.2);
 }
 .wiki-article-standard {
@@ -137,7 +136,7 @@
 }
 .wiki-disabled-selector > label{
     background-color: var(--primary-color);
-    border-radius: 0.5rem;
+    border-radius: 0;
     padding: 0.25rem 0.5rem;
 }
 .wiki-article.wiki-article-tooltip {
@@ -145,7 +144,7 @@
 
     background-color: var(--primary-color);
     border: solid .13rem var(--primary-border-color);
-    border-radius: 0.5em;
+    border-radius: 0;
     padding: 0.3em 0.5em;
     max-width: 20rem;
     text-align: left;

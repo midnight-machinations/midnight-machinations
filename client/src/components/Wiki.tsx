@@ -350,6 +350,9 @@ function WikiMainPage(props: Readonly<{
             {Object.entries(articlePartitions)
                 .filter(([category]) => category !== "uncategorized")
                 .map(([category, pages]) => {
+                    if (pages.filter(page => wikiPageIsEnabled(page, props.enabledRoles, props.enabledModifiers, props.wikiDisabledFilter)).length === 0) {
+                        return null;
+                    }
                     return <div className="masonry-item" key={category}>
                         <PageCollection 
                             title={translate(`wiki.category.${category}`)}
@@ -362,14 +365,16 @@ function WikiMainPage(props: Readonly<{
                     </div>
                 })}
         </Masonry>
-        <PageCollection 
-            title={translate(`wiki.category.uncategorized`)}
-            pages={articlePartitions["uncategorized"]
-                .filter(page => !props.hideDisabled || wikiPageIsEnabled(page, props.enabledRoles, props.enabledModifiers, props.wikiDisabledFilter))}
-            enabledRoles={props.enabledRoles}
-            enabledModifiers={props.enabledModifiers}
-            wikiDisabledFilter={props.wikiDisabledFilter}
-        />
+        <div className="masonry-item">
+            <PageCollection 
+                title={translate(`wiki.category.uncategorized`)}
+                pages={articlePartitions["uncategorized"]
+                    .filter(page => !props.hideDisabled || wikiPageIsEnabled(page, props.enabledRoles, props.enabledModifiers, props.wikiDisabledFilter))}
+                enabledRoles={props.enabledRoles}
+                enabledModifiers={props.enabledModifiers}
+                wikiDisabledFilter={props.wikiDisabledFilter}
+            />
+        </div>
     </div>
 }
 

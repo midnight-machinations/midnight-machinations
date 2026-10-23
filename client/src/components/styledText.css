@@ -38,61 +38,49 @@
     color: #aaaaaa;
     font-style: italic; 
     font-weight: bold;
-    text-shadow: 0 0 5px #aaaaaa;
 }
 .keyword-player-important {
     border-bottom-color: #ffaa00;
     border-right-color: #ffaa00;
     color: #ffff00;
-    text-shadow: 0 0 5px #ffff00;
 }
 .keyword-player {
     color: #ffffff;
     font-style: italic; 
     font-weight: bold;
-    text-shadow: 0 0 5px #ffffff;
 }
 .keyword-outline.keyword-outline {
     display: inline;
 }
 .keyword-evil {
     color: #ff0000;
-    text-shadow: 0 0 5px #ff0000;
 }
 .keyword-good {
     color: #00ff00;
-    text-shadow: 0 0 5px #00ff00;
 }
 .keyword-neutral {
     color: #ff00ff;
-    text-shadow: 0 0 5px #ff00ff;
 }
 .keyword-minions {
     color: #aa00ff;
-    text-shadow: 0 0 5px #aa00ff;
 }
 .keyword-fiends {
     color: #ff8800;
-    text-shadow: 0 0 5px #ff8800;
 }
 .keyword-cult {
     color: #ff0088;
-    text-shadow: 0 0 5px #ff0088;
 }
 .keyword-info {
     color: #00ffff;
-    text-shadow: 0 0 5px #00ffff;
 }
 .keyword-hiddenRole {
     color: #ffffff;
     font-style: italic;
     font-weight: bold;
-    text-shadow: 0 0 5px #ffffff;
 }
 .keyword-dead {
     font-style: italic;
     color: #aaaaaa;
-    text-shadow: 0 0 5px #aaaaaa;
 }
 .keyword-dead .keyword-player {
     color: rgb(168, 168, 168);

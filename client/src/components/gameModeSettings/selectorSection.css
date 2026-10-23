@@ -11,7 +11,7 @@
     font-size: 1.125rem;
 }
 .selector-section-header > button:first-of-type {
-    margin-left: 0.5rem;
+    margin-left: auto;
 }
 
 .selector-section-header > * {

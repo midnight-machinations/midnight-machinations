@@ -8,7 +8,7 @@
     margin: .13rem;
     background-color: var(--primary-color);
     border: .13rem solid var(--primary-border-color);
-    border-radius: .5rem;
+    border-radius: 0;
     border-bottom-color: var(--primary-border-shadow-color);
     border-right-color: var(--primary-border-shadow-color);
     white-space: nowrap;
@@ -39,7 +39,7 @@
 .role-list-setter-list {
     background-color: var(--primary-color);
     border: .13rem solid var(--primary-border-color);
-    border-radius: .25rem;
+    border-radius: 0;
     border-top-color: var(--background-border-shadow-color);
     border-left-color: var(--background-border-shadow-color);
     margin: 0 0.5rem 0.5rem 0.5rem;
@@ -64,6 +64,6 @@
 
     padding: .13rem .13rem;
     background-color: var(--secondary-color);
-    border-radius: .25rem;
+    border-radius: 0;
     border: .13rem solid var(--primary-border-color);
 }

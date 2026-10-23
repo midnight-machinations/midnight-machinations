@@ -192,6 +192,9 @@ export default function Anchor(props: Readonly<{
         document.documentElement.style.setProperty('--legible-computer-font', getFont('legible-computer-font', enabled));
         document.documentElement.style.setProperty('--icon-factor', iconFactor);
     }
+    const setScanlineIntensity = (intensity: number) => {
+        document.documentElement.style.setProperty('--scanline-opacity', `${intensity / 100 * 0.2}`);
+    }
 
     // Load settings
     useEffect(() => {
@@ -200,6 +203,7 @@ export default function Anchor(props: Readonly<{
         AudioController.setVolume(settings.volume);
         setFontSize(settings.fontSize);
         setAccessibilityFontEnabled(settings.accessibilityFont);
+        setScanlineIntensity(settings.scanlineIntensity);
         switchLanguage(settings.language)
         computeKeywordData()
     }, [])

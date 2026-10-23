@@ -11,10 +11,10 @@
     padding: 0;
 }
 .role-list-button:nth-last-child(even) {
-    background-color: var(--primary-color);
+    background-color: var(--background-color);
 }
 .role-list-button:nth-last-child(odd) {
-    background-color: var(--secondary-color);
+    background-color: var(--primary-color);
 }
 .graveyard-menu label {
     display: flex;

@@ -57,6 +57,7 @@
     "menu.settings.enableHeader": "Enable Header",
     "menu.settings.dangerZone": "Danger zone",
     "menu.settings.volume": "Volume",
+    "menu.settings.scanlineIntensity": "Scanline Intensity",
     "menu.settings.font": "Font",
     "menu.settings.fontSize": "Font Size",
     "menu.settings.accessibilityFont": "Accessibility Font",
