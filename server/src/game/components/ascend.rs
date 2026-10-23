@@ -14,7 +14,7 @@ impl Ascend{
     
     fn ascend_player(game: &mut Game, player: PlayerReference){
         if !Self::should_ascend(game, player) {return}
-        player.die_and_add_grave(game, Grave::from_player_leave_town(game, player));
+        player.die_and_add_grave(game, Grave::from_player_ascend(game, player));
     }
     fn should_ascend(game: &Game, player: PlayerReference)->bool{
         if !player.alive(game) {return false}

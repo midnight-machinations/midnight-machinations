@@ -12,11 +12,11 @@ pub(super) const DEFENSE: DefensePower = DefensePower::None;
 
 impl RoleStateTrait for FiendsWildcard {
     type ClientAbilityState = FiendsWildcard;
-    fn on_phase_start(self, game: &mut Game, actor_ref: PlayerReference, phase: PhaseType) {
-        if phase == PhaseType::Dusk {
-            if actor_ref.ability_deactivated_from_death(game) {return;}
-            Wildcard::become_role(game, actor_ref, Role::FiendsWildcard);
-        }
+    fn on_validated_ability_input_received(self, game: &mut Game, actor_ref: PlayerReference, _input_player: PlayerReference, ability_input: crate::game::prelude::ControllerInput) {
+        if BlockedComponent::blocked(game, actor_ref) {return}
+        if actor_ref.ability_deactivated_from_death(game) {return}
+        if ability_input.id() != (ControllerID::Role { player: actor_ref, role: Role::FiendsWildcard, id: 0 }) {return}
+        Wildcard::become_role(game, actor_ref, Role::FiendsWildcard);
     }
     fn controller_parameters_map(self, game: &Game, actor_ref: PlayerReference) -> super::ControllerParametersMap {
         ControllerParametersMap::builder(game)

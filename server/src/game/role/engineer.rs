@@ -1,6 +1,6 @@
 use rand::seq::SliceRandom as _;
 use serde::{Deserialize, Serialize};
-use crate::game::prelude::*;
+use crate::game::{components::attack::night_attack::NightAttack, prelude::*};
 use super::common_role;
 
 #[derive(Default, Clone, Debug)]
@@ -62,7 +62,7 @@ pub(super) const DEFENSE: DefensePower = DefensePower::None;
 
 impl RoleStateTrait for Engineer {
     type ClientAbilityState = ClientRoleState;
-    fn on_midnight(self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut OnMidnightFold, priority: OnMidnightPriority) {
+    fn on_midnight(self, game: &mut Game, id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut OnMidnightFold, priority: OnMidnightPriority) {
         match priority {
             OnMidnightPriority::Heal => {
                 //upgrade state
@@ -98,7 +98,11 @@ impl RoleStateTrait for Engineer {
                             visit.visitor != actor_ref &&
                             !visit.indirect
                         {
-                            visit.visitor.try_night_kill_single_attacker(actor_ref, game, midnight_variables, GraveKiller::Role(Role::Engineer), AttackPower::ArmorPiercing, false);
+                            NightAttack::new()
+                                .attackers([actor_ref])
+                                .grave_killer(Role::Engineer)
+                                .power(AttackPower::ArmorPiercing)
+                                .attack(game, midnight_variables, visit.visitor);
                         }
                     }
                 }
@@ -111,15 +115,16 @@ impl RoleStateTrait for Engineer {
                         Visits::into_iter(midnight_variables)
                             .with_target(target)
                             .with_direct()
-                            .filter(|v|v.tag != VisitTag::Role { role: Role::Engineer, id: 0 } || v.visitor != actor_ref)
+                            .filter(|v|v.tag != VisitTag::Ability { ability: *id, id: 0 } || v.visitor != actor_ref)
                             .count() > 0
                     )
                 {
                     actor_ref.edit_role_ability_helper(game, RoleState::Engineer(Engineer {trap: Trap::Dismantled}));
                     let mut visit_tags: Vec<VisitTag> = Visits::into_iter(midnight_variables)
-                        .with_investigatable()
+                        .with_appeared(midnight_variables)
                         .with_target(target)
-                        .filter(|v|v.tag != VisitTag::Role { role: Role::Engineer, id: 0 } || v.visitor != actor_ref)
+                        .filter(|v|v.tag != VisitTag::Ability { ability: *id, id: 0 } || v.visitor != actor_ref)
+                        .filter(|v|!v.visitor.win_condition(game).friends_with_conclusion(GameConclusion::Town))
                         .map_tag()
                         .collect();
                     visit_tags.shuffle(&mut game.rng);
@@ -157,7 +162,7 @@ impl RoleStateTrait for Engineer {
             }
         }
     }
-    fn convert_selection_to_visits(self, game: &Game, actor_ref: PlayerReference) -> Vec<Visit> {
+    fn create_visits_initialize_night(self, game: &Game, _id: &AbilityID, actor_ref: PlayerReference) -> Vec<Visit> {
         common_role::convert_controller_selection_to_visits(
             game,
             actor_ref, 

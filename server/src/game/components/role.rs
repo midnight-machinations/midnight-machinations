@@ -1,6 +1,5 @@
 use crate::{game::{
-    abilities::role_abilities::RoleAbility, abilities_component::{ability::Ability, ability_id::AbilityID}, chat::ChatMessageVariant,
-    components::player_component::PlayerComponent, event::{on_ability_edit::OnAbilityEdit, on_role_switch::OnRoleSwitch, AsInvokable as _, Invokable as _}, player::PlayerReference, role::{Role, RoleState}, Assignments, Game
+    Assignments, Game, abilities::role_abilities::RoleAbility, abilities_component::{ability::Ability, ability_id::AbilityID}, chat::ChatMessageVariant, components::player_component::PlayerComponent, event::{AsInvokable as _, Invokable as _, on_ability_edit::OnAbilityEdit, on_role_switch::OnRoleSwitch}, player::PlayerReference, prelude::{OnAbilityCreation, OnAbilityCreationFold, OnAbilityCreationPriority}, role::{Role, RoleState}
 }, packet::ToClientPacket};
 
 pub type RoleComponent = PlayerComponent::<Role>;
@@ -17,28 +16,30 @@ impl RoleComponent{
     }
     pub fn set_role_without_ability(player: PlayerReference, game: &mut Game, role: Role){
         *game.role.get_mut(player) = role;
-        Self::send_your_role_state(game, player, player.role_state_ability(game));
+        player.send_packet(game, ToClientPacket::YourRole {role});
         if role.should_inform_player_of_assignment() {
             player.add_private_chat_message(game, ChatMessageVariant::RoleAssignment{role});
         }
     }
     pub fn on_ability_edit(game: &mut Game, event: &OnAbilityEdit, _fold: &mut (), _priority: ()){
-        let AbilityID::Role{player, ..} = event.id else {return};
-        let Some(ref new_ability) = event.new_ability else {return};
-        Self::send_your_role_state(game, player, new_ability);
+        Self::send_ability_state(game, event.id);
     }
 
-    fn send_your_role_state(game: &Game, player: PlayerReference, new_ability: &Ability){
-        let Ability::Role(RoleAbility(new_role_data)) = new_ability else {return};
+    pub fn on_ability_creation(game: &mut Game, event: &OnAbilityCreation, _fold: &mut OnAbilityCreationFold, priority: OnAbilityCreationPriority) {
+        let AbilityID::Role{player, role} = &event.id else {return};
+        if priority != OnAbilityCreationPriority::SideEffect {return}
+        if !role.should_inform_player_of_assignment() {return}
+        player.add_private_chat_message(game, ChatMessageVariant::GainedRoleAbility{role: *role});
+    }
+
+    pub fn send_ability_state(game: &Game, id: AbilityID){
+        let AbilityID::Role{player, ..} = id else {return};
+        let Some(Ability::Role(RoleAbility(new_role_data))) = id.get_ability(game) else {return};
 
         if !new_role_data.role().should_inform_player_of_assignment() {return}
-        player.send_packet(game, ToClientPacket::YourRoleState {
-            role_state: new_role_data.clone().get_client_ability_state(game, player)
-        });
-
-        if player.role(game) != new_role_data.role() {return}
-        player.send_packet(game, ToClientPacket::YourRole {
-            role: new_role_data.role()
+        player.send_packet(game, ToClientPacket::AbilityState {
+            ability_id: id,
+            ability_state: new_role_data.clone().get_client_ability_state(game, player)
         });
     }
 }
@@ -52,10 +53,11 @@ impl PlayerReference{
         if delete_old {
             AbilityID::Role { role: old.role(), player: *self }.delete_ability(game);
         }
-        
+
         AbilityID::Role { role: new_role_data.role(), player: *self }
             .new_role_ability(game, new_role_data.clone());
-    
+
+        //this line must come after new_role_ability because the role requires the ability to exist
         RoleComponent::set_role_without_ability(*self, game, new_role_data.role());
 
         OnRoleSwitch::new(*self, old, self.role_state(game).clone()).as_invokable().invoke(game);
@@ -64,7 +66,7 @@ impl PlayerReference{
     pub fn role_state_ability<'a>(&self, game: &'a Game) -> &'a Ability {
         AbilityID::Role { role: self.role(game), player: *self }
             .get_ability(game)
-            .expect("every player must have a role ability")
+            .expect("Every player must have a role ability corresponding to their current role.")
     }
     pub fn role_state<'a>(&self, game: &'a Game) -> &'a RoleState {
         let Ability::Role(RoleAbility(role_state)) = self.role_state_ability(game) else { unreachable!("AbilityID::Role must correspond to a role") };

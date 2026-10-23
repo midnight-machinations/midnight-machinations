@@ -1,11 +1,7 @@
 .role-information {
     display: flex;
     flex-direction: row;
-    background-color: var(--primary-color);
-    border: .13rem solid var(--primary-border-color);
-    border-radius: .25rem;
-    padding: .25rem;
-    margin: .13rem;
+    padding: .13rem;
     align-items: center;
     justify-content: space-between;
 }

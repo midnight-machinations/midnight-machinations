@@ -6,6 +6,27 @@ import { AuditorResult } from "../menu/game/gameScreenContent/AbilityMenu/RoleSp
 import { TwoRoleOptionSelection } from "./controllerInput";
 import { Hypnotist } from "../menu/game/gameScreenContent/AbilityMenu/RoleSpecificMenus/HypnotistMenu";
 
+
+export type AbilityID = {
+    type: "role",
+    role: Role,
+    player: PlayerIndex
+}
+// | {
+//     type: "pitchfork"
+// } | {
+//     type: "syndicateGun"
+// } | {
+//     type: "pawnConvert"
+// }
+
+export function abilityIdToString(id: AbilityID): string {
+    switch(id.type){
+        case "role":
+            return `role/${id.role}/${id.player}`;
+    }
+}
+
 export type RoleState = {
     type: "jailor",
     executionsRemaining: number,
@@ -28,6 +49,8 @@ export type RoleState = {
 } | {
     type: "lookout"
 } | {
+    type: "spotter"
+} | {
     type: "spy"
 } | {
     type: "pyrolisk"
@@ -42,6 +65,8 @@ export type RoleState = {
 } | {
     type: "auditor",
     previouslyGivenResults: [number, AuditorResult][]
+} | {
+    type: "dreamwalker"
 } | {
     type: "snoop",
 } | {
@@ -70,7 +95,7 @@ export type RoleState = {
     previousRoleChosen: TwoRoleOptionSelection
 } | {
     type: "vigilante",
-    state: {type:"notLoaded"} | {type:"willSuicide"} | {type:"loaded",bullets:number} | {type:"suicided"}
+    state: {type:"notLoaded"} | {type:"killedTownie"} | {type:"loaded",bullets:number}
 } | {
     type: "veteran"
     alertsRemaining: number,
@@ -79,6 +104,8 @@ export type RoleState = {
     state: {type:"notLoaded"} | {type:"shotTownie"} | {type: "loaded"}
 } | {
     type: "deputy"
+} | {
+    type: "slayer"
 } | {
     type: "rabblerouser"
 } | {
@@ -119,6 +146,8 @@ export type RoleState = {
     type: "blackmailer",
     previous: PlayerIndex | null
 } | {
+    type: "pyrotechnician"
+} | {
     type: "cerenovous",
     previous: PlayerIndex | null,
     currentlyBrained: PlayerIndex | null,
@@ -142,6 +171,8 @@ export type RoleState = {
     convertRole: Role,
 } | {
     type: "framer"
+} | {
+    type: "propMaster"
 } | {
     type: "necromancer"
 } | {
@@ -228,8 +259,7 @@ export type SingleRoleJsonData = {
     armor: boolean,
     aura: null | "innocent" | "suspicious",
     maxCount: null | number,
-    canWriteDeathNote: boolean,
-    canBeConvertedTo: Role[],
+    canWriteCallingCard: boolean,
     chatMessages: ChatMessageVariant[] 
 }
 export type RoleJsonData = Record<Role, SingleRoleJsonData>

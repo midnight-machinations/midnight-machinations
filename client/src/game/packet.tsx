@@ -2,7 +2,7 @@ import { PhaseType, PlayerIndex, PhaseTimes, Tag, LobbyClientID, ChatGroup, Phas
 import { Grave, GraveIndex } from "./graveState"
 import { ChatMessage, ChatMessageIndex } from "../components/ChatMessage"
 import { RoleList, RoleOutline } from "./roleListState.d"
-import { Role, RoleState } from "./roleState.d"
+import { AbilityID, Role, RoleState } from "./roleState.d"
 import { KiraGuess } from "../menu/game/gameScreenContent/AbilityMenu/ControllerSelectionTypes/KiraSelectionMenu"
 import { ControllerInput, ControllerID, SavedController } from "./controllerInput"
 import { ListMapData } from "../ListMap"
@@ -141,14 +141,18 @@ export type ToClientPacket = {
     type: "yourCrossedOutOutlines",
     crossedOutOutlines: number[]
 } | {
-    type: "yourDeathNote", 
-    deathNote: UnsafeString | null
+    type: "yourCallingCard", 
+    callingCard: UnsafeString | null
 } | {
     type: "yourRole",
     role: Role    
 } | {
-    type: "yourRoleState",
-    roleState: RoleState
+//     type: "yourRoleState",
+//     roleState: RoleState
+// } | {
+    type: "abilityState",
+    abilityId: AbilityID,
+    abilityState: RoleState
 } | {
     type: "yourVoteFastForwardPhase",
     fastForward: FastForwardSetting
@@ -254,8 +258,8 @@ export type ToServerPacket = {
     type: "saveCrossedOutOutlines",
     crossedOutOutlines: number[]
 } | {
-    type: "saveDeathNote", 
-    deathNote: string | null
+    type: "saveCallingCard", 
+    callingCard: string | null
 } | {
     type: "leave",
 } | {

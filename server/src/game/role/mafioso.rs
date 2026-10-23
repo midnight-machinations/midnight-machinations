@@ -1,5 +1,5 @@
 use serde::Serialize;
-use crate::game::prelude::*;
+use crate::game::{components::attack::night_attack::NightAttack, prelude::*};
 
 
 #[derive(Debug, Clone, Serialize, Default)]
@@ -15,7 +15,10 @@ impl RoleStateTrait for Mafioso {
         if priority != OnMidnightPriority::Kill {return}
         if game.day_number() == 1 {return}
         let Some(target_ref) = Visits::default_target(midnight_variables, actor_ref, Role::Mafioso) else {return};
-        target_ref.try_night_kill_single_attacker(actor_ref, game, midnight_variables, GraveKiller::RoleSet(RoleSet::Mafia), AttackPower::Basic, false);
+        NightAttack::new()
+            .attackers([actor_ref])
+            .grave_killer(RoleSet::Mafia)
+            .attack(game, midnight_variables, target_ref);
     }
     fn controller_parameters_map(self, game: &Game, actor_ref: PlayerReference) -> super::ControllerParametersMap {
         ControllerParametersMap::builder(game)
@@ -25,7 +28,7 @@ impl RoleStateTrait for Mafioso {
             .add_grayed_out_condition(game.day_number() <= 1)
             .build_map()
     }
-    fn convert_selection_to_visits(self, game: &Game, actor_ref: PlayerReference) -> Vec<Visit> {
+    fn create_visits_initialize_night(self, game: &Game, _id: &AbilityID, actor_ref: PlayerReference) -> Vec<Visit> {
         common_role::convert_controller_selection_to_visits(
             game,
             actor_ref,

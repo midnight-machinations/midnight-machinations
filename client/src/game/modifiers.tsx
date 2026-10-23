@@ -13,7 +13,7 @@ export const MODIFIERS = [
     "unscheduledNominations",
     "hiddenNominationVotes", "hiddenVerdictVotes",
     "forfeitNominationVote", "randomPlayerNames",
-    "customRoleLimits"
+    "customRoleLimits", "lessFeedback"
 ] as const;
 
 export type ModifierID = (typeof MODIFIERS)[number];
@@ -56,6 +56,8 @@ export type ModifierState = {
     type: "forfeitNominationVote"
 } | {
     type: "randomPlayerNames"
+} | {
+    type: "lessFeedback"
 } | {
     type: "customRoleLimits",
     limits: ListMapData<Role, number>

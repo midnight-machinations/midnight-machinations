@@ -1,12 +1,9 @@
 use crate::{
     game::{
-        controllers::{ControllerID, ControllerInput, Controllers}, 
-        event::{
-            on_controller_changed::OnControllerChanged, on_controller_input_received::OnControllerInputReceived, on_phase_start::OnPhaseStart, on_tick::OnTick, on_validated_ability_input_received::OnValidatedControllerInputReceived, AsInvokable as _, Invokable as _
-        }, 
-        Game
-    }, 
-    packet::ToClientPacket, vec_set::VecSet
+        Game, controllers::{ControllerID, ControllerInput, Controllers}, event::{
+            AsInvokable as _, Invokable as _, on_controller_changed::OnControllerChanged, on_controller_input_received::OnControllerInputReceived, on_phase_start::OnPhaseStart, on_tick::OnTick, on_validated_ability_input_received::OnValidatedControllerInputReceived
+        }
+    }, packet::ToClientPacket, vec_set::VecSet
 };
 
 impl Controllers{

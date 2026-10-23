@@ -1,11 +1,13 @@
 use rand::seq::IndexedRandom;
 use serde::Serialize;
-use crate::game::{prelude::*, verdict::Verdict};
+use crate::game::{components::attack::night_attack::NightAttack, prelude::*, verdict::Verdict};
 
 #[derive(Clone, Debug, Default)]
 pub struct Jester {
     executed_yesterday: bool,
     won: bool,
+
+    num_deaths_before_lose: u8,
 }
 
 #[derive(Clone, Serialize, Debug)]
@@ -17,6 +19,18 @@ pub(super) const DEFENSE: DefensePower = DefensePower::None;
 
 impl RoleStateTrait for Jester {
     type ClientAbilityState = ClientRoleState;
+    fn new_state(game: &mut Game) -> Self {
+        Self {
+            executed_yesterday: false,
+            won: false,
+            num_deaths_before_lose: PlayerReference::all_players(game)
+                .filter(|p|!p.win_condition(game).friends_with_conclusion(GameConclusion::Town))
+                .count()
+                .div_ceil(3)
+                .try_into()
+                .unwrap_or(u8::MAX),
+            }
+    }
     fn on_midnight(self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut OnMidnightFold, priority: OnMidnightPriority) {
         if priority != OnMidnightPriority::TopPriority {return;}
         if actor_ref.alive(game) {return;}
@@ -42,10 +56,12 @@ impl RoleStateTrait for Jester {
             *target_ref
         };
         
-        
-        target_ref.try_night_kill_single_attacker(actor_ref, game, midnight_variables,
-            GraveKiller::Role(super::Role::Jester), AttackPower::ProtectionPiercing, true
-        );
+        NightAttack::new()
+            .attackers([actor_ref])
+            .grave_killer(Role::Jester)
+            .power(AttackPower::ProtectionPiercing)
+            .leave_calling_card()
+            .attack(game, midnight_variables, target_ref);
     }
     fn controller_parameters_map(self, game: &Game, actor_ref: PlayerReference) -> ControllerParametersMap {
         ControllerParametersMap::builder(game)
@@ -68,13 +84,12 @@ impl RoleStateTrait for Jester {
     }
     fn on_phase_start(self, game: &mut Game, actor_ref: PlayerReference, _phase: PhaseType){
         match game.current_phase() {
-            PhaseState::FinalWords { player_on_trial } => {
-                if *player_on_trial == actor_ref {
-                    actor_ref.edit_role_ability_helper(game, Jester { 
-                        executed_yesterday: true,
-                        won: true
-                    });
-                }
+            PhaseState::FinalWords { player_on_trial } if *player_on_trial == actor_ref => {
+                actor_ref.edit_role_ability_helper(game, Jester { 
+                    executed_yesterday: true,
+                    won: true,
+                    ..self
+                });
             }
             PhaseState::Obituary { .. } => {
                 actor_ref.edit_role_ability_helper(game, Jester { 
@@ -85,12 +100,17 @@ impl RoleStateTrait for Jester {
             _ => {}
         }
     }
-    fn on_any_death(self, game: &mut Game, actor_ref: PlayerReference, dead_player_ref: PlayerReference){
-        if 
-            actor_ref == dead_player_ref && 
-            game.current_phase().phase() == PhaseType::FinalWords
-        {
-            game.add_message_to_chat_group(ChatGroup::All, ChatMessageVariant::JesterWon);
+    fn on_any_death(self, game: &mut Game, actor_ref: PlayerReference, dead_player_ref: PlayerReference) {
+        if dead_player_ref.win_condition(game).friends_with_conclusion(GameConclusion::Town) {return}
+
+        let new_num_deaths_before_lose = self.num_deaths_before_lose.saturating_sub(1);
+        actor_ref.edit_role_ability_helper(game, Jester { 
+            num_deaths_before_lose: new_num_deaths_before_lose,
+            ..self
+        });
+        
+        if new_num_deaths_before_lose == 0 {
+            actor_ref.die_and_add_grave(game, Grave::from_player_suicide(game, actor_ref));
         }
     }
 }

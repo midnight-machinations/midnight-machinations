@@ -36,8 +36,8 @@
     justify-content: left;
     align-items: center;
     padding: 0 .5rem;
-    border-top: .13rem solid var(--primary-border-color);
-    background-color: var(--secondary-color);
+    background-color: var(--background-color);
+    gap: .25rem;
 }
 .chat-whisper-notification {
     display: flex;
@@ -46,20 +46,31 @@
     padding: 0 .25rem;
     gap: .25rem;
     text-align: left;
-    border-top: .13rem solid var(--primary-border-color);
-    background-color: var(--secondary-color);
+    background-color: var(--background-color);
 }
 .chat-send-section {
     display: flex;
     flex-direction: row;
-    border-top: .13rem solid var(--primary-border-color);
     background-color: var(--background-color);
     align-items: stretch;
     height: max-content;
 }
+.chat-send-section[hidden] {
+    display: none;
+}
+
 .chat-send-section textarea {
     resize: none;
     width: 100%;
     text-align: left;
     text-wrap: wrap;
+    height: 2rem;
+    flex-grow: 1;
+}
+.chat-menu-chat-controller {
+    border: .13rem solid var(--primary-border-color);
+    padding-top: .13rem;
+    padding-bottom: .13rem;
+    margin: .13rem;
+    border-radius: .25rem;
 }

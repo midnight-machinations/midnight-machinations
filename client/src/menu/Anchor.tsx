@@ -13,8 +13,15 @@ import WikiCoverCard from "../components/WikiCoverCard";
 import WikiArticle from "../components/WikiArticle";
 import AudioController from "./AudioController";
 import { computeKeywordData } from "../components/StyledText";
+import GameModesEditor from "../components/gameModeSettings/GameModesEditor";
+import HostMenu from "./HostMenu";
+import SettingsMenu from "./Settings";
+import NightMessagePopup from "../components/NightMessagePopup";
+import Popover from "../components/Popover";
+import { useLobbyOrGameState } from "../components/useHooks";
 
 const MobileContext = createContext<boolean | undefined>(undefined);
+const CtrlPressedContext = createContext<boolean | undefined>(undefined);
 
 export type AnchorController = {
     reload: () => void,
@@ -30,9 +37,20 @@ export type AnchorController = {
     setAccessibilityFontEnabled: (accessibilityFontEnabled: boolean) => void
 }
 
-const AnchorControllerContext = createContext<AnchorController | undefined>(undefined);
+export type TooltipController = {
+    ctrlPressed: boolean,
+    open: (
+        tooltip: JSX.Element,
+        onRender?: (dropdownElement: HTMLElement, sourceElement?: HTMLElement) => void,
+        sourceRef?: React.RefObject<HTMLElement>
+    ) => void,
+    close: () => void,
+}
 
-export { MobileContext, AnchorControllerContext };
+const AnchorControllerContext = createContext<AnchorController | undefined>(undefined);
+const TooltipContext = createContext<TooltipController | undefined>(undefined);
+
+export { MobileContext, CtrlPressedContext, AnchorControllerContext, TooltipContext };
 
 const MIN_SWIPE_DISTANCE_X = 60;
 const MAX_SWIPE_DISTANCE_Y = 60;
@@ -51,12 +69,68 @@ export default function Anchor(props: Readonly<{
 }>): ReactElement {
     const [mobile, setMobile] = useState<boolean>(false);
 
+    // Tooltip stuff
+    const [isCtrlPressed, setIsCtrlPressed] = useState<boolean>(false);
+    const [tooltip, setTooltip] = useState<JSX.Element>(<></>);
+    const [tooltipOnRender, setOnRender] = useState<(dropdownElement: HTMLElement, sourceElement?: HTMLElement) => void>();
+    const [tooltipSourceRef, setSourceRef] = useState<React.RefObject<HTMLElement>>();
+    const [tooltipLastOpened, setLastOpened] = useState<number>(0);
+    const [now, setNow] = useState(Date.now());
+
+    const showTooltip = useMemo(() => !mobile && (now < tooltipLastOpened + 10000), [now, tooltipLastOpened, mobile]);
+
+    useEffect(() => {
+        const interval = setInterval(() => setNow(Date.now()), 100);
+        return () => clearInterval(interval);
+    }, []);
+
+    const openTooltip = useCallback((
+        tooltip: JSX.Element,
+        onRender?: (dropdownElement: HTMLElement, sourceElement?: HTMLElement) => void,
+        sourceRef?: React.RefObject<HTMLElement>
+    ) => {
+        setTooltip(tooltip)
+        // `onRender` is itself a function. Wrap it so React stores the callback
+        // instead of treating it as a state updater and invoking it with the
+        // previous callback value.
+        setOnRender(() => onRender)
+        setSourceRef(sourceRef)
+        setLastOpened(Date.now())
+    }, [])
+
+    const toolTipContext = useMemo(() => {
+        return { ctrlPressed: isCtrlPressed, open: openTooltip, close: () => setLastOpened(0) }
+    }, [isCtrlPressed, openTooltip])
+
     useEffect(() => {
         const onResize = () => {setMobile(window.innerWidth <= MOBILE_MAX_WIDTH_PX)}
         onResize();
 
         window.addEventListener("resize", onResize);
         return () => window.removeEventListener("resize", onResize);
+    }, [])
+
+    useEffect(() => {
+        const onKeyDown = (event: KeyboardEvent) => {
+            if (event.key === "Control" || event.ctrlKey) {
+                setIsCtrlPressed(true);
+            }
+        };
+        const onKeyUp = (event: KeyboardEvent) => {
+            setIsCtrlPressed(event.ctrlKey);
+        };
+        const onBlur = () => {
+            setIsCtrlPressed(false);
+        };
+
+        window.addEventListener("keydown", onKeyDown);
+        window.addEventListener("keyup", onKeyUp);
+        window.addEventListener("blur", onBlur);
+        return () => {
+            window.removeEventListener("keydown", onKeyDown);
+            window.removeEventListener("keyup", onKeyUp);
+            window.removeEventListener("blur", onBlur);
+        };
     }, [])
 
     const [children, setChildren] = useState<JSX.Element>(props.children);
@@ -165,6 +239,12 @@ export default function Anchor(props: Readonly<{
             if (coverCard.type === WikiCoverCard || coverCard.type === WikiArticle) {
                 coverCardTheme = "wiki-menu-colors"
             }
+            if (coverCard.type === GameModesEditor || coverCard.type === NightMessagePopup) {
+                coverCardTheme = "chat-menu-colors"
+            }
+            if (coverCard.type === HostMenu || coverCard.type === SettingsMenu) {
+                coverCardTheme = "graveyard-menu-colors"
+            }
 
             if (callback) {
                 setSetCoverCardCallbacks(setCoverCardCallbacks => 
@@ -203,55 +283,77 @@ export default function Anchor(props: Readonly<{
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [props])
     
+    const stateType = useLobbyOrGameState(
+        state => state.stateType,
+        ["acceptJoin", "rejectJoin", "rejectStart", "gameInitializationComplete", "startGame", "backToLobby"]
+    )!;
+    
 
     return <MobileContext.Provider value={mobile} >
         <AnchorControllerContext.Provider value={anchorController}>
-            <div
-                className="anchor"
-                onTouchStart={(e) => {
-                    setTouchStart([e.targetTouches[0].clientX,e.targetTouches[0].clientY])
-                    setTouchCurrent([e.targetTouches[0].clientX,e.targetTouches[0].clientY])
-                }}
-                onTouchMove={(e) => {
-                    setTouchCurrent([e.targetTouches[0].clientX,e.targetTouches[0].clientY])
-                }}
-                onTouchEnd={(e) => {
-                    if(touchStart !== null && touchCurrent !== null){
+            <TooltipContext.Provider value={toolTipContext}>
+                <div
+                    className="anchor"
+                    onTouchStart={(e) => {
+                        setTouchStart([e.targetTouches[0].clientX,e.targetTouches[0].clientY])
+                        setTouchCurrent([e.targetTouches[0].clientX,e.targetTouches[0].clientY])
+                    }}
+                    onTouchMove={(e) => {
+                        setTouchCurrent([e.targetTouches[0].clientX,e.targetTouches[0].clientY])
+                    }}
+                    onTouchEnd={(e) => {
+                        if(touchStart !== null && touchCurrent !== null){
 
-                        if(touchStart[1] - touchCurrent[1] > MAX_SWIPE_DISTANCE_Y) {
-                            return;
-                        }
-                        if(touchStart[0] - touchCurrent[0] > MIN_SWIPE_DISTANCE_X) {
-                            for(let listener of swipeEventListeners) {
-                                listener(false);
+                            if(touchStart[1] - touchCurrent[1] > MAX_SWIPE_DISTANCE_Y) {
+                                return;
                             }
-                        } else if (touchStart[0] - touchCurrent[0] < -MIN_SWIPE_DISTANCE_X) {
-                            for(let listener of swipeEventListeners) {
-                                listener(true);
+                            if(touchStart[0] - touchCurrent[0] > MIN_SWIPE_DISTANCE_X) {
+                                for(let listener of swipeEventListeners) {
+                                    listener(false);
+                                }
+                            } else if (touchStart[0] - touchCurrent[0] < -MIN_SWIPE_DISTANCE_X) {
+                                for(let listener of swipeEventListeners) {
+                                    listener(true);
+                                }
                             }
                         }
-                    }
-            
-                    setTouchStart(null)
-                    setTouchCurrent(null)
-                }}
-            >
-                <Button className="global-menu-button" 
-                    onClick={() => {
-                        if (!globalMenuOpen) {
-                            setGlobalMenuOpen(true)
-                        }
+
+                        setTouchStart(null)
+                        setTouchCurrent(null)
                     }}
                 >
-                    <Icon>menu</Icon>
-                </Button>
-                {globalMenuOpen && <GlobalMenu />}
-                {children}
-                {coverCard && <CoverCard 
-                    theme={coverCardTheme}
-                >{coverCard}</CoverCard>}
-                {errorCard}
-            </div>
+                    <Button className={"global-menu-button " + (stateType === "game" ? "" : "flush")}
+                        onClick={() => {
+                            if (!globalMenuOpen) {
+                                setGlobalMenuOpen(true)
+                            }
+                        }}
+                    >
+                        <Icon>menu</Icon>
+                    </Button>
+                    {globalMenuOpen && <GlobalMenu />}
+                    {children}
+                    {coverCard && <CoverCard 
+                        theme={coverCardTheme}
+                    >{coverCard}</CoverCard>}
+                    {errorCard}
+                    <Popover
+                        open={showTooltip}
+                        setOpenOrClosed={(open) => {
+                            if (open) {
+                                setLastOpened(Date.now())
+                            } else {
+                                setLastOpened(0)
+                            }
+                        }}
+                        anchorForPositionRef={tooltipSourceRef}
+                        onRender={tooltipOnRender}
+                        className="wiki-article-tooltip-popover"
+                    >
+                        {tooltip}
+                    </Popover>
+                </div>
+            </TooltipContext.Provider>
         </AnchorControllerContext.Provider>
     </MobileContext.Provider>
 }
@@ -283,15 +385,28 @@ function CoverCard(props: Readonly<{
             document.removeEventListener("keydown", escFunction, false);
         };
     }, [escFunction]);
+
+    const [mouseDownOnElement, setMouseDownOnElement] = useState(false);
+
     return <div 
-        className={`anchor-cover-card-background-cover ${props.theme ?? ""}`} 
-        onClick={e => {
-            if (e.target === ref.current) anchorController.clearCoverCard()
+        className={`anchor-cover-card-background-cover ${props.theme ?? ""}`}
+        // Onclick will trigger even when the click is started on a child element
+        // This makes sure it starts and ends on the actual background cover.
+        onMouseDown={e => {
+            if (e.target === e.currentTarget) {
+                setMouseDownOnElement(true)
+            }
+        }}
+        onMouseUp={e => {
+            if (mouseDownOnElement && e.target === e.currentTarget) {
+                anchorController.clearCoverCard()
+            }
+            setMouseDownOnElement(false)
         }}
         ref={ref}
     >
         <div className="anchor-cover-card">
-            <Button className="close-button" onClick={anchorController.clearCoverCard}>
+            <Button className="close-button flush" onClick={anchorController.clearCoverCard}>
                 <Icon>close</Icon>
             </Button>
             <div className="anchor-cover-card-content">
@@ -300,6 +415,7 @@ function CoverCard(props: Readonly<{
         </div>
     </div>
 }
+
 
 export type ErrorData = {
     title: string,
@@ -313,7 +429,7 @@ function ErrorCard(props: Readonly<{
     return <div className="error-card" onClick={() => props.onClose()}>
         <header>
             {props.error.title}
-            <button className="close">✕</button>
+            <button className="close flush">✕</button>
         </header>
         <div>{props.error.body}</div>
     </div>
@@ -322,6 +438,8 @@ function ErrorCard(props: Readonly<{
 
 export type AudioFile = 
     "church_bell.mp3" | 
+    "night_bell.mp3" |
+    "gavel.mp3" | 
     "alarm.mp3" | 
     "vine_boom.mp3" | 
     "sniper_shot.mp3" | 
@@ -347,6 +465,13 @@ export function chatMessageToAudio(msg: ChatMessage): AudioFilePath | null {
             break;
         case "deputyKilled": 
             file = "sniper_shot.mp3";
+            break;
+        case "phaseChange":
+            if(msg.variant.phase.type === "testimony"){
+                file = "gavel.mp3"
+            }else if(msg.variant.phase.type === "night") {
+                file = "night_bell.mp3"
+            }
             break;
     }
 

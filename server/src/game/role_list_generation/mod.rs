@@ -56,15 +56,7 @@ impl RoleListGenerator {
         // This is a list of indices of the nodes in self.nodes that we still need to visit.
         let mut nodes_to_visit = VecDeque::new();
         nodes_to_visit.push_back(0);
-        self.nodes.push(PartialOutlineListAssignmentNode {
-            assignments: vec![PartialOutlineAssignment {
-                outline_option: None,
-                role: None,
-                insider_groups: None,
-                win_condition: None,
-                player: None
-            }; self.settings.role_list.0.len()]
-        });
+        self.nodes.push(PartialOutlineListAssignmentNode::new(self.settings.role_list.0.len()));
         let mut seen = VecSet::new();
         let mut depth = 0;
 
@@ -173,6 +165,19 @@ impl RoleListGenerator {
 #[derive(Clone, Debug)]
 pub struct PartialOutlineListAssignmentNode {
     pub assignments: Vec<PartialOutlineAssignment>
+}
+impl PartialOutlineListAssignmentNode {
+    pub fn new(player_count: usize)->Self{
+        PartialOutlineListAssignmentNode {
+            assignments: vec![PartialOutlineAssignment {
+                outline_option: None,
+                role: None,
+                insider_groups: None,
+                win_condition: None,
+                player: None
+            }; player_count]
+        }
+    }
 }
 
 #[derive(Clone, Debug)]

@@ -18,6 +18,7 @@ pub mod hidden_verdict_votes;
 pub mod forfeit_vote;
 pub mod random_player_names;
 pub mod no_majority;
+pub mod less_feedback;
 
 use crate::{
     game::event::{
@@ -66,7 +67,8 @@ macros::modifiers! {
     hidden_verdict_votes: HiddenVerdictVotes,
     forfeit_vote: ForfeitNominationVote,
     random_player_names: RandomPlayerNames,
-    custom_role_limits: CustomRoleLimits
+    custom_role_limits: CustomRoleLimits,
+    less_feedback: LessFeedback
 }
 
 

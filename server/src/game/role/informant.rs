@@ -14,7 +14,7 @@ impl RoleStateTrait for Informant {
     fn on_midnight(self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut OnMidnightFold, priority: OnMidnightPriority) {
         if priority != OnMidnightPriority::Investigative {return}
 
-        for visit in Visits::into_iter(midnight_variables).default_visits(actor_ref, Role::Informant){
+        for visit in Visits::into_iter(midnight_variables).default_role_visits(actor_ref, Role::Informant){
             let target_ref = visit.target;
             let mut visited_by: Vec<PlayerReference> = target_ref.lookout_seen_players(midnight_variables, visit).collect();
             visited_by.shuffle(&mut game.rng);
@@ -26,7 +26,8 @@ impl RoleStateTrait for Informant {
                 player: target_ref,
                 role: target_ref.role(game), 
                 visited_by,
-                visited
+                visited,
+                win_condition: target_ref.win_condition(game).clone()
             };
             actor_ref.push_night_message(midnight_variables, message);
             actor_ref.reveal_players_role(game, target_ref);
@@ -40,7 +41,7 @@ impl RoleStateTrait for Informant {
             
             .build_map()
     }
-    fn convert_selection_to_visits(self, game: &Game, actor_ref: PlayerReference) -> Vec<Visit> {
+    fn create_visits_initialize_night(self, game: &Game, _id: &AbilityID, actor_ref: PlayerReference) -> Vec<Visit> {
         crate::game::role::common_role::convert_controller_selection_to_visits(
             game,
             actor_ref,

@@ -2,7 +2,7 @@ use crate::vec_map::VecMap;
 use crate::game::prelude::*;
 
 
-#[derive(PartialOrd, Ord, PartialEq, Eq)]
+#[derive(Clone, Copy, PartialOrd, Ord, PartialEq, Eq)]
 pub enum TransportPriority {
     Transporter = 0,
     Warper = 1,
@@ -11,7 +11,7 @@ pub enum TransportPriority {
 }
 impl TransportPriority{
     fn from_visit_tag(visit_tag: &VisitTag) -> TransportPriority {
-        let VisitTag::Role{role, ..} = visit_tag else {return TransportPriority::None};
+        let VisitTag::Ability{ability: AbilityID::Role { role, .. }, ..} = visit_tag else {return TransportPriority::None};
         Self::from_role(role)
     }
     fn from_role(role: &Role) -> TransportPriority {
@@ -34,9 +34,12 @@ impl TransportPriority{
 pub struct Transport;
 impl Transport{
     pub fn transport(
-        midnight_variables: &mut OnMidnightFold, transport_priority: TransportPriority, 
-        player_map: &VecMap<PlayerReference, PlayerReference>, filter: impl Fn(&Visit) -> bool, send_message: bool, 
-    ) -> Vec<Visit> {
+        midnight_variables: &mut OnMidnightFold,
+        transport_priority: TransportPriority, 
+        player_map: VecMap<PlayerReference, PlayerReference>,
+        filter: impl Fn(&Visit) -> bool + Clone + Send + 'static,
+        send_message: bool, 
+    ) {
 
         if send_message {
             player_map
@@ -45,19 +48,18 @@ impl Transport{
                     p.push_night_message(midnight_variables, ChatMessageVariant::Transported)
                 );
         }
-        let mut out = vec![];
         
-        Visits::iter_mut(midnight_variables)
-            .filter(|v|filter(v))
-            .filter(|v|!v.transport_immune)
-            .filter(|v|transport_priority.can_transport(&TransportPriority::from_visit_tag(&v.tag)))
-            .for_each(|v|
-                if let Some(new_target) = player_map.get(&v.target){
-                    v.target = *new_target;
-                    out.push(*v);
-                }
-            );
-    
-        out
+        Visits::push_ledger_event(midnight_variables, move |visits|{
+            visits
+                .iter_mut()
+                .filter(|v|filter(v))
+                .filter(|v|!v.transport_immune)
+                .filter(|v|transport_priority.can_transport(&TransportPriority::from_visit_tag(&v.tag)))
+                .for_each(|v|
+                    if let Some(new_target) = player_map.get(&v.target){
+                        v.target = *new_target;
+                    }
+                );
+        });
     }
 }

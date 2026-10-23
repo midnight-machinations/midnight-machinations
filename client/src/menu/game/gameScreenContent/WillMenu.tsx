@@ -50,9 +50,9 @@ export default function WillMenu(): ReactElement {
         playerState => playerState.notes,
         ["yourNotes"]
     )!;
-    const deathNote = usePlayerState(
-        playerState => playerState.deathNote,
-        ["yourDeathNote"]
+    const callingCard = usePlayerState(
+        playerState => playerState.callingCard,
+        ["yourCallingCard"]
     )!;
 
     const cantPost = useMemo(() => {
@@ -80,18 +80,16 @@ export default function WillMenu(): ReactElement {
                     GAME_MANAGER.sendSaveWillPacket(text);
                 }}
             />
-            {getSingleRoleJsonData(myRole).canWriteDeathNote===true ? <TextDropdownArea
-                titleString={translate("menu.will.deathNote")}
-                savedText={deathNote}
+            {getSingleRoleJsonData(myRole).canWriteCallingCard===true ? <TextDropdownArea
+                titleString={translate("menu.will.callingCard")}
+                savedText={callingCard}
                 cantPost={cantPost}
                 onSave={(text) => {
-                    GAME_MANAGER.sendSaveDeathNotePacket(text);
+                    GAME_MANAGER.sendSaveCallingCardPacket(text);
                 }}
             />:null}
 
-            <div className="dead-players-separator">
-                <StyledText>{translate("menu.will.notes.icon")} {translate("menu.will.notes")}</StyledText>
-            </div>
+            <StyledText>{translate("menu.will.notes.icon")} {translate("menu.will.notes")}</StyledText>
 
             <DragAndDrop
                 items={(notes.length === 0 ? [["", 0]] : notes.map((note, i) => [note, i])) as [UnsafeString, number][]}
@@ -129,6 +127,7 @@ export default function WillMenu(): ReactElement {
                 }}
             />
             <Button
+                className="flush"
                 onClick={() => {
                     if(GAME_MANAGER.state.stateType === "game" && GAME_MANAGER.state.clientState.type === "player"){
                         const notes = [...GAME_MANAGER.state.clientState.notes];

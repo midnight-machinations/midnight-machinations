@@ -34,3 +34,4 @@ pub mod attack;
 pub mod blocked;
 pub mod ascend;
 pub mod possession;
+pub mod hide_votes_message;

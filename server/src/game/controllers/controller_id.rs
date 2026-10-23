@@ -49,6 +49,10 @@ pub enum ControllerID{
     WardenCooperate{
         warden: PlayerReference,
         player: PlayerReference,
+    },
+    LichVote{
+        lich: PlayerReference,
+        player: PlayerReference,
     }
 }
 impl ControllerID{

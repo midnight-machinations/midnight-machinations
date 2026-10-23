@@ -1,4 +1,4 @@
-import { ReactElement } from "react";
+import { ReactElement, useContext, useMemo } from "react";
 import { 
     TwoPlayerOptionSelection, 
     TwoRoleOptionSelection, 
@@ -15,9 +15,9 @@ import {
     translateControllerIDNoRole,
     PlayerListSelection,
     IntegerSelection,
-    controllerIdToLink
+    controllerIdToLink,
+    GraveDeathCausesSelection
 } from "../../../../game/controllerInput";
-import React from "react";
 import { Button } from "../../../../components/Button";
 import TwoRoleOutlineOptionSelectionMenu from "./ControllerSelectionTypes/TwoRoleOutlineOptionSelectionMenu";
 import GAME_MANAGER from "../../../..";
@@ -39,6 +39,10 @@ import BooleanSelectionMenu from "./ControllerSelectionTypes/BooleanSelectionMen
 import "./ControllerSelectionTypes/genericListController.css"
 import { useGameState, usePlayerState } from "../../../../components/useHooks";
 import { loadSettingsParsed } from "../../../../game/localStorage";
+import { setWikiSearchPage } from "../../../../components/Wiki";
+import { AnchorControllerContext } from "../../../Anchor";
+import { MenuControllerContext } from "../../GameScreen";
+import GraveDeathCausesSelectionMenu from "./ControllerSelectionTypes/GraveDeathCausesSelectionMenu";
 
 type GroupName = `${PlayerIndex}/${Role}` | 
     "syndicate" | 
@@ -173,12 +177,6 @@ function MultipleControllersMenu(props: Readonly<{
     }
 
     const disabled = !props.controllers.values().some((controller)=>!controller.parameters.grayedOut)
-    const nightIcon = !props.controllers.keys().some(
-        (id)=>!singleAbilityJsonData(controllerIdToLink(id))?.midnight
-    );
-    const instantIcon = !props.controllers.keys().some(
-        (id)=>!singleAbilityJsonData(controllerIdToLink(id))?.instant
-    );
 
 
     let anyControllerId = props.controllers.keys()[0]
@@ -194,10 +192,6 @@ function MultipleControllersMenu(props: Readonly<{
         summary={
             <div className="generic-ability-menu-tab-summary">
                 <StyledText>{groupName}</StyledText>
-                <span>
-                    <>{instantIcon ? translate("instant.icon") : ""}</>
-                    <>{nightIcon ? translate("night.icon") : ""}</>
-                </span>
             </div>
         }
         defaultOpen={true}
@@ -222,6 +216,7 @@ function SingleAbilityMenu(props: Readonly<{
 }>): ReactElement {
     const nightIcon = singleAbilityJsonData(controllerIdToLink(props.abilityId))?.midnight;
     const instantIcon = singleAbilityJsonData(controllerIdToLink(props.abilityId))?.instant;
+    const visitIcon = singleAbilityJsonData(controllerIdToLink(props.abilityId))?.visit;
 
     let controllerIdName = translateControllerID(props.abilityId);
     if(props.abilityId.type === "role" && props.includeDropdown === false){
@@ -245,8 +240,9 @@ function SingleAbilityMenu(props: Readonly<{
                 <div className="generic-ability-menu-tab-summary">
                     <span><StyledText>{controllerIdName}</StyledText></span>
                     <span>
-                        <>{instantIcon ? translate("instant.icon") : ""}</>
-                        <>{nightIcon ? translate("night.icon") : ""}</>
+                        {instantIcon && <ControllerIcon icon={{ instant: true }} />}
+                        {nightIcon && <ControllerIcon icon={{ night: true }} />}
+                        {visitIcon && <ControllerIcon icon={{ visit: visitIcon }} />}
                     </span>
                 </div>
             }
@@ -257,21 +253,73 @@ function SingleAbilityMenu(props: Readonly<{
         </DetailsSummary>
         
     }else{
-        return <>
-            <div className="generic-ability-menu generic-ability-menu-tab-no-summary">
+        return <div className="generic-ability-menu generic-ability-menu-tab-no-summary">
+            <div className="generic-no-summary">
                 <span>
-
                     <StyledText>{controllerIdName}</StyledText>
                 </span>
                 <span>
-                    <>{instantIcon ? translate("instant.icon") : ""}</>
-                    <>{nightIcon ? translate("night.icon") : ""}</>
+                    {instantIcon && <ControllerIcon icon={{ instant: true }} />}
+                    {nightIcon && <ControllerIcon icon={{ night: true }} />}
+                    {visitIcon && <ControllerIcon icon={{ visit: visitIcon }} />}
                 </span>
             </div>
-            <>{inner}</>
-        </>
+            {inner}
+        </div>
     }
-    
+}
+
+type ControllerIconData = {
+    instant: true
+} | {
+    night: true
+} | {
+    visit: "normal" | "abnormal" | "none"
+};
+
+function ControllerIcon(props: Readonly<{ icon: ControllerIconData }>) {
+    const anchorController = useContext(AnchorControllerContext)!;
+    const menuController = useContext(MenuControllerContext)!;
+
+
+    const children = useMemo(() => {
+        if ("instant" in props.icon) {
+            return translate("instant.icon");
+        }
+        if ("night" in props.icon) {
+            return translate("night.icon");
+        }
+        if ("visit" in props.icon) {
+            return translate("visit.icon."+props.icon.visit);
+        }
+        return null;
+    }, [props.icon]);
+
+    const tooltip = useMemo(() => {
+        if ("instant" in props.icon) {
+            return <div className="wiki-article wiki-article-tooltip">
+                {translate("wiki.article.standard.controller.tooltip.instant")}
+            </div>;
+        }
+        if ("night" in props.icon) {
+            return <div className="wiki-article wiki-article-tooltip">
+                {translate("wiki.article.standard.controller.tooltip.night")}
+            </div>;
+        }
+        if ("visit" in props.icon) {
+            return <div className="wiki-article wiki-article-tooltip">
+                {translate(`wiki.article.standard.controller.tooltip.visit.${props.icon.visit}`)}
+            </div>;
+        }
+    }, [props.icon]);
+
+    return <Button
+        className="flush controller-icon"
+        tooltip={tooltip}
+        onClick={() => setWikiSearchPage("standard/controller", anchorController, menuController)}
+    >
+        {children}
+    </Button>
 }
 
 
@@ -418,6 +466,30 @@ function SwitchSingleAbilityMenuType(props: Readonly<{
                     });
                 }}
             />;
+        }
+        case "graveDeathCauses": {
+            let input: GraveDeathCausesSelection;
+            if(
+                props.selected === null ||
+                props.selected.type !== "graveDeathCauses"
+            ){
+                input = [];
+            }else{
+                input = props.selected.selection;
+            }
+
+            return <GraveDeathCausesSelectionMenu
+                selection={input}
+                onChoose={(selection) => {
+                    GAME_MANAGER.sendControllerInput({
+                        id,
+                        selection: {
+                            type: "graveDeathCauses",
+                            selection: selection
+                        }
+                    });
+                }}
+            />
         }
         case "twoRoleOutlineOption":{
             let input: TwoRoleOutlineOptionSelection;

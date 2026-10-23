@@ -121,8 +121,8 @@ impl Game {
             ToServerPacket::SaveCrossedOutOutlines { crossed_out_outlines } => {
                 sender_player_ref.set_crossed_out_outlines(self, crossed_out_outlines);
             },
-            ToServerPacket::SaveDeathNote { death_note } => {
-                sender_player_ref.set_death_note(self, death_note);
+            ToServerPacket::SaveCallingCard { calling_card } => {
+                sender_player_ref.set_calling_card(self, calling_card);
             },
             ToServerPacket::ControllerInput { controller_input: ability_input } => 
                 ability_input.on_client_message(self, sender_player_ref),

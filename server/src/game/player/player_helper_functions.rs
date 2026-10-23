@@ -1,16 +1,12 @@
 use rand::seq::SliceRandom;
 use crate::{
     game::{
-        attack_power::DefensePower,
-        chat::{ChatMessage, ChatMessageVariant}, components::{
-            fragile_vest::FragileVests, graves::{grave::{Grave, GraveKiller}, Graves},
-            insider_group::InsiderGroupID, player_component::PlayerComponent,
-            role::RoleComponent,
+        Game, attack_power::{AttackPower, DefensePower}, chat::{ChatMessage, ChatMessageVariant}, components::{
+            attack::night_attack::NightAttack, fragile_vest::FragileVests, graves::{Graves, grave::{Grave, GraveDeathCause}}, insider_group::InsiderGroupID, player_component::PlayerComponent, role::RoleComponent,
         }, controllers::{ControllerID, PlayerListSelection}, event::{
-            on_any_death::OnAnyDeath, on_midnight::{OnMidnightFold, OnMidnightPriority}, AsInvokable as _, Invokable as _,
-        }, role::{medium::Medium, necromancer::Necromancer, RoleState}, Game
-    },
-    packet::ToClientPacket,
+            AsInvokable as _, Invokable as _, on_any_death::OnAnyDeath, on_midnight::{OnMidnightFold, OnMidnightPriority},
+        }, modifiers::{ModifierID, less_feedback::LessFeedback}, role::{RoleState, medium::Medium, necromancer::Necromancer, prop_master::PropMaster}
+    }, packet::ToClientPacket,
 };
 
 use super::PlayerReference;
@@ -34,7 +30,11 @@ impl PlayerReference{
             InsiderGroupID::all_groups_with_player(game, *self), 
             game, *self
         );
-        if self.chat_messages(game).iter().all(|m|*m.variant() != ChatMessageVariant::RoleAssignment { role: self.role(game) }) {
+        //if they werent told their current role yet, set their role, which sends the chat message
+        if self.chat_messages(game)
+            .iter()
+            .all(|m|*m.variant() != ChatMessageVariant::RoleAssignment { role: self.role(game) })
+        {
             RoleComponent::set_role_without_ability(*self, game, self.role(game));
         }
     }
@@ -82,9 +82,21 @@ impl PlayerReference{
         let mut messages = self.night_messages(midnight_variables).to_vec();
         messages.shuffle(&mut game.rng);
         messages.sort();
-        self.send_packet(game, ToClientPacket::NightMessages { chat_messages: 
-            messages.iter().map(|msg|ChatMessage::new_private(msg.clone())).collect()
-        });
+
+        let night_messages = messages.iter()
+            .map(|msg|ChatMessage::new_private(msg.clone()));
+        // if less feedback is enabled, filter out messages that should be blocked, I do this in 2 places, once here just for the nightMessages packet
+        let night_messages =
+        if game.modifier_settings().is_enabled(ModifierID::LessFeedback) {
+                night_messages
+                .filter(|msg|!LessFeedback::should_block_message(msg))
+                .collect()
+        }else{
+            night_messages
+                .collect()
+        };
+
+        self.send_packet(game, ToClientPacket::NightMessages { chat_messages: night_messages });
         self.add_private_chat_messages(game, messages);
     }
 
@@ -102,7 +114,8 @@ impl PlayerReference{
             PlayerReference::all_players(game)
                 .any(|medium_player|
                     Medium::get_seanced_targets(game, medium_player).contains(self) ||
-                    Necromancer::get_seanced_targets(game, medium_player).contains(self)
+                    Necromancer::get_seanced_targets(game, medium_player).contains(self) ||
+                    PropMaster::get_seanced_targets(game, medium_player).contains(self)
                 )
             
         )
@@ -114,10 +127,12 @@ impl PlayerReference{
     */
 
     
-    pub fn on_midnight_one_player(&self, game: &mut Game, midnight_variables: &mut OnMidnightFold, _priority: OnMidnightPriority) {
-        if self.is_disconnected(game) && self.alive(game) {
-            midnight_variables.get_mut(*self).died = true;
-            midnight_variables.get_mut(*self).grave_killers = vec![GraveKiller::Quit]
+    pub fn on_midnight_one_player(&self, game: &mut Game, fold: &mut OnMidnightFold, priority: OnMidnightPriority) {
+        if self.is_disconnected(game) && self.alive(game) && priority == OnMidnightPriority::Kill {
+            NightAttack::new()
+                .grave_killer(GraveDeathCause::Quit)
+                .power(AttackPower::ProtectionPiercing)
+                .attack(game, fold, *self);
         }
     }
 }

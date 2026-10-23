@@ -1,6 +1,6 @@
 
 import { replaceMentions } from "..";
-import { Grave, GraveInformation } from "../game/graveState";
+import { Grave, GraveInformation, translateGraveDeathCauses } from "../game/graveState";
 import translate from "../game/lang";
 import { encodeString } from "./ChatMessage";
 import StyledText from "./StyledText";
@@ -22,7 +22,8 @@ export default function GraveComponent(props: Readonly<{
     grave: Grave, 
     playerNames?: UnsafeString[],
     roleList?: RoleList,
-    onClick?: () => void
+    onClick?: () => void,
+    noLinks?: boolean
 }>): ReactElement {
     const gamePlayerNames = useGameState(
         gameState => gameState.players.map(player => encodeString(player.toString())),
@@ -39,9 +40,9 @@ export default function GraveComponent(props: Readonly<{
     const roleList = props.roleList ?? gameRoleList;
 
     if(props.grave.information.type === "obscured") {
-        return <ObscuredGrave grave={props.grave} playerNames={playerNames}/>
+        return <ObscuredGrave noLinks={props.noLinks} grave={props.grave} playerNames={playerNames}/>
     } else {
-        return <UnobscuredGrave grave={props.grave as any} playerNames={playerNames} roleList={roleList}/>;
+        return <UnobscuredGrave noLinks={props.noLinks} grave={props.grave as any} playerNames={playerNames} roleList={roleList}/>;
     }
 }
 
@@ -50,45 +51,38 @@ function UnobscuredGrave(props: Readonly<{
     playerNames: UnsafeString[],
     roleList: RoleList,
     onClick?: () => void
+    noLinks?: boolean
 }>): ReactElement {
     const graveDeathCause = useMemo(() => {
-        if(props.grave.information.deathCause.type === "killers") {
-            return props.grave.information.deathCause.killers.map((killer)=>{
-                switch(killer.type){
-                    case "role":
-                        return translate("role."+killer.value+".name");
-                    case "roleSet":
-                        return translate(killer.value);
-                    default:
-                        return translate("grave.killer."+killer.type);
-                }
-            }).join(", ") + ".";
-        } else if (props.grave.information.deathCause.type === "none") {
-            return null;
-        } else {
-            return translate("grave.deathCause."+props.grave.information.deathCause.type);
-        }
-    }, [props.grave.information.deathCause]);
+        return translateGraveDeathCauses(props.grave.information.deathCauses);
+    }, [props.grave.information.deathCauses]);
 
-    let graveRoleString = translate(`role.${props.grave.information.role}.name`);
+    let graveRoleString = useMemo(() => {
+        return translate(`role.${props.grave.information.role}.name`);
+    }, [props.grave.information.role]);
 
-    let diedPhaseString = props.grave.diedPhase === "day" ? translate("day") : translate("phase.night");
-    let diedPhaseIcon = props.grave.diedPhase === "day" ? translate("day.icon") : translate("night.icon");
+    let diedPhaseString = useMemo(() => {
+        return props.grave.diedPhase === "day" ? translate("day") : translate("phase.night");
+    }, [props.grave.diedPhase]);
+
+    let diedPhaseIcon = useMemo(() => {
+        return props.grave.diedPhase === "day" ? translate("day.icon") : translate("night.icon");
+    }, [props.grave.diedPhase]);
 
     return <div className="grave graveyard-menu-colors" onClick={()=>{
         if(props.onClick!==undefined)
             props.onClick();
         }}
     >
-        <div><StyledText>{`${diedPhaseString+diedPhaseIcon+props.grave.dayNumber}`}</StyledText></div>
-        <div><StyledText>{`${props.playerNames[props.grave.player]+" ("+graveRoleString+")"}`}</StyledText></div>
-        {graveDeathCause && <div><StyledText>{`${translate("killedBy")+" "+graveDeathCause}`}</StyledText></div>}
-        {(props.grave.information.will as string).length === 0 || <>
+        <div><StyledText noLinks={props.noLinks}>{`${diedPhaseString+diedPhaseIcon+props.grave.dayNumber}`}</StyledText></div>
+        <div><StyledText noLinks={props.noLinks}>{`${props.playerNames[props.grave.player]+" ("+graveRoleString+")"}`}</StyledText></div>
+        {graveDeathCause && <div><StyledText noLinks={props.noLinks}>{`${translate("killedBy")+" "+graveDeathCause}`}</StyledText></div>}
+        {(props.grave.information.alibi as string).length === 0 || <>
             {translate("alibi")}
             <div className="note-area">
-                <StyledText>
+                <StyledText noLinks={props.noLinks}>
                     {encodeString(replaceMentions(
-                        props.grave.information.will,
+                        props.grave.information.alibi,
                         props.playerNames,
                         props.roleList
                     ))}
@@ -96,10 +90,10 @@ function UnobscuredGrave(props: Readonly<{
             </div>
         </>}
         {
-            (props.grave.information.deathNotes.length === 0 || props.grave.information.deathNotes.map(note => <>
-                {translate("grave.deathNote")}
+            (props.grave.information.callingCards.length === 0 || props.grave.information.callingCards.map(note => <>
+                {translate("grave.callingCard")}
                 <div className="note-area">
-                    <StyledText>
+                    <StyledText noLinks={props.noLinks}>
                         {encodeString(replaceMentions(
                             note,
                             props.playerNames,
@@ -113,14 +107,14 @@ function UnobscuredGrave(props: Readonly<{
 }
 
 
-function ObscuredGrave(props: Readonly<{grave: Grave, playerNames: UnsafeString[]}>): ReactElement {
+function ObscuredGrave(props: Readonly<{noLinks?: boolean, grave: Grave, playerNames: UnsafeString[]}>): ReactElement {
 
     let diedPhaseString = props.grave.diedPhase === "day" ? translate("day") : translate("phase.night");
     let diedPhaseIcon = props.grave.diedPhase === "day" ? translate("day.icon") : translate("night.icon");
     let graveRoleString = translate("obscured");
 
     return <div className="grave graveyard-menu-colors">
-        <div><StyledText>{`${diedPhaseString+diedPhaseIcon+props.grave.dayNumber}`}</StyledText></div>
-        <div><StyledText>{`${props.playerNames[props.grave.player]+" ("+graveRoleString+")"}`}</StyledText></div>
+        <div><StyledText noLinks={props.noLinks}>{`${diedPhaseString+diedPhaseIcon+props.grave.dayNumber}`}</StyledText></div>
+        <div><StyledText noLinks={props.noLinks}>{`${props.playerNames[props.grave.player]+" ("+graveRoleString+")"}`}</StyledText></div>
     </div>;
 }

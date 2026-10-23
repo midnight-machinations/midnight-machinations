@@ -18,13 +18,24 @@ export function ModifiersSelector(props: Readonly<{
 }>): ReactElement {
     const { modifierSettings } = useContext(GameModeContext);
 
-    return <div className="chat-menu-colors selector-section">
-        <h2>{translate("modifiers")}</h2>
+    const [hideDisabled, setHideDisabled] = useState(false);
+
+    return <div className="graveyard-menu-colors selector-section">
+        <div className="selector-section-header">
+            {translate("modifiers")}
+            <Button
+                className="flush"
+                onClick={() => setHideDisabled(hideDisabled => !hideDisabled)}
+            >
+                <Icon>{hideDisabled ? "visibility" : "visibility_off"}</Icon>
+            </Button>
+        </div>
         <ModifierSettingsDisplay
             disabled={props.disabled ?? false}
             modifiable={!props.disabled}
             modifierSettings={modifierSettings}
             setModifiers={props.setModifiers!}
+            hideDisabled={hideDisabled}
         />
     </div>
 }
@@ -99,6 +110,7 @@ function ModifierButton(props: Readonly<{
 
 type ModifierSettingsDisplayProps = {
     modifierSettings: ListMapData<ModifierID, ModifierState>,
+    hideDisabled: boolean
 } & (
     {
         modifiable: true,
@@ -124,19 +136,10 @@ export function ModifierSettingsDisplay(props: ModifierSettingsDisplayProps): Re
         </StyledText>
     }
 
-    const [hideDisabled, setHideDisabled] = useState(true);
-
     return <div>
-        {!props.modifiable && <label className="centered-label">
-            {translate("hideDisabled")}
-            <CheckBox
-                checked={hideDisabled}
-                onChange={checked => setHideDisabled(checked)}
-            />
-        </label>}
-        <div className="modifier-settings-display">
+        <div className="enabled-roles-button-panel">
             {MODIFIERS
-                .filter(role => isEnabled(role) || !hideDisabled || props.modifiable)
+                .filter(role => isEnabled(role) || !props.hideDisabled)
                 .sort((a, b) => props.modifiable ? 0 : (isEnabled(a) ? -1 : 1) - (isEnabled(b) ? -1 : 1))
                 .map((modifier) => 
                     (props.modifiable || isModifierConfigurable(modifier)) 

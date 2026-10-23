@@ -1,5 +1,5 @@
 use serde::Serialize;
-use crate::game::prelude::*;
+use crate::game::{components::attack::night_attack::NightAttack, prelude::*};
 
 #[derive(Debug, Clone, Default)]
 pub struct Spiral;
@@ -18,14 +18,12 @@ impl RoleStateTrait for Spiral {
         
         if Tags::tagged(game, TagSetID::UzumakiSpiral(actor_ref)).is_empty() && game.day_number() > 1 {
             if let Some(target_ref) = Visits::default_target(midnight_variables, actor_ref, Role::Spiral) {
-                target_ref.try_night_kill_single_attacker(
-                    actor_ref,
-                    game,
-                    midnight_variables,
-                    GraveKiller::Role(Role::Spiral),
-                    AttackPower::ArmorPiercing,
-                    true
-                );
+                NightAttack::new()
+                    .attackers([actor_ref])
+                    .grave_killer(Role::Spiral)
+                    .power(AttackPower::ArmorPiercing)
+                    .leave_calling_card()
+                    .attack(game, midnight_variables, target_ref);
                 Spiral::spiral_visitors(game, midnight_variables, actor_ref, target_ref);
             }
         } else {
@@ -43,7 +41,7 @@ impl RoleStateTrait for Spiral {
             .add_grayed_out_condition(game.day_number() <= 1 || !Tags::tagged(game, TagSetID::UzumakiSpiral(actor_ref)).is_empty())
             .build_map()
     }
-    fn convert_selection_to_visits(self, game: &Game, actor_ref: PlayerReference) -> Vec<Visit> {
+    fn create_visits_initialize_night(self, game: &Game, _id: &AbilityID, actor_ref: PlayerReference) -> Vec<Visit> {
         crate::game::role::common_role::convert_controller_selection_to_visits(
             game,
             actor_ref,
@@ -51,8 +49,8 @@ impl RoleStateTrait for Spiral {
             true
         )
     }
-    fn on_ability_creation(self, game: &mut Game, actor_ref: PlayerReference, event: &OnAbilityCreation, fold: &mut OnAbilityCreationFold, priority: OnAbilityCreationPriority) {
-        if priority != OnAbilityCreationPriority::SideEffect || !event.id.is_players_role(actor_ref, Role::Spiral) || fold.cancelled {return}
+    fn on_ability_creation(self, game: &mut Game, actor_ref: PlayerReference, event: &OnAbilityCreation, _fold: &mut OnAbilityCreationFold, priority: OnAbilityCreationPriority) {
+        if priority != OnAbilityCreationPriority::SideEffect || !event.id.is_players_role(actor_ref, Role::Spiral) {return}
         Tags::add_viewer(game, TagSetID::UzumakiSpiral(actor_ref), actor_ref);
     }
     fn on_ability_deletion(self, game: &mut Game, actor_ref: PlayerReference, event: &OnAbilityDeletion, _fold: &mut (), priority: OnAbilityDeletionPriority) {
@@ -64,14 +62,15 @@ impl RoleStateTrait for Spiral {
 impl Spiral {
     fn start_player_spiraling(game: &mut Game, midnight_variables: &mut OnMidnightFold, actor_ref: PlayerReference, target_ref: PlayerReference) {
         if target_ref == actor_ref {return}
-        let attackers = vec![actor_ref].into_iter().collect();
+
         Poison::poison_player(game,
             midnight_variables,
             target_ref, 
-            AttackPower::ArmorPiercing, 
-            GraveKiller::Role(Role::Spiral), 
-            attackers, 
-            true, 
+            NightAttack::new()
+                .attackers([actor_ref])
+                .grave_killer(Role::Spiral)
+                .power(AttackPower::ArmorPiercing)
+                .leave_calling_card(),
             PoisonAlert::NoAlert,
         );
 

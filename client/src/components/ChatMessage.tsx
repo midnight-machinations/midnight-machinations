@@ -5,7 +5,7 @@ import StyledText, { KeywordDataMap, PLAYER_SENDER_KEYWORD_DATA } from "./Styled
 import "./chatMessage.css"
 import { ChatGroup, Conclusion, DefensePower, InsiderGroup, PhaseState, PlayerIndex, Tag, translateConclusion, translateVisitTag, translateWinCondition, UnsafeString, Verdict, VisitTag, WinCondition } from "../game/gameState.d";
 import { Role, RoleState } from "../game/roleState.d";
-import { Grave } from "../game/graveState";
+import { Grave, translateGraveDeathCauses } from "../game/graveState";
 import GraveComponent from "./grave";
 import { RoleList, translateRoleOutline } from "../game/roleListState.d";
 import { CopyButton } from "./ClipboardButtons";
@@ -41,13 +41,14 @@ const ChatElement = React.memo((
         playerSenderKeywordData?: KeywordDataMap
         roleList?: RoleList,
         roleListKeywordData?: KeywordDataMap,
+        noLinks?: boolean
     }, 
 ) => {
     const roleStates = usePlayerState(
         playerState => playerState.roleStates,
-        ["yourRoleState"]
+        ["abilityState"]
     );
-    const canCopyPaste = props.canCopyPaste ?? canCopyPasteChatMessages(roleStates);
+    const canCopyPaste = props.noLinks !== true && (props.canCopyPaste ?? canCopyPasteChatMessages(roleStates));
     const forwardButton = usePlayerState(
         playerState => {
             let controller = new ListMap(playerState.savedControllers, (a,b)=>a.type===b.type)
@@ -56,7 +57,7 @@ const ChatElement = React.memo((
             return controller!==null&&!controller.parameters.grayedOut;
         },
         ["yourPlayerIndex", "yourAllowedControllers", "yourAllowedController"]
-    );
+    ) && props.noLinks !== true;
     const myIndex = usePlayerState(
         playerState => playerState.myIndex,
         ["yourPlayerIndex"]
@@ -102,6 +103,7 @@ const ChatElement = React.memo((
                 playerKeywordData={props.playerKeywordData}
                 playerSenderKeywordData={props.playerSenderKeywordData}
                 roleListKeywordData={props.roleListKeywordData}
+                noLinks={props.noLinks}
             />
         case "normal":
             return <NormalChatMessage
@@ -119,6 +121,7 @@ const ChatElement = React.memo((
                 myIndex={myIndex}
                 forwardButton={forwardButton}
                 roleList={roleList}
+                noLinks={props.noLinks}
             />
         case "playerForwardedMessage":
         case "targetsMessage":
@@ -127,6 +130,7 @@ const ChatElement = React.memo((
                     <StyledText className={"chat-message " + style}
                         playerKeywordData={props.playerKeywordData}
                         roleListKeywordData={props.roleListKeywordData}
+                        noLinks={props.noLinks}
                     >
                         {(chatGroupIcon??"")} {translateChatMessage(message.variant, playerNames, roleList)}
                     </StyledText>
@@ -147,6 +151,7 @@ const ChatElement = React.memo((
                             className="chat-message result"
                             playerKeywordData={props.playerKeywordData}
                             roleListKeywordData={props.roleListKeywordData}
+                            noLinks={props.noLinks}
                         >{chatGroupIcon ?? ""} {translate("chatMessage.kiraSelection")}</StyledText>
                         <KiraResultDisplay 
                             map={{
@@ -155,6 +160,7 @@ const ChatElement = React.memo((
                             }}
                             playerKeywordData={props.playerKeywordData}
                             playerNames={playerNames}
+                            noLinks={props.noLinks}
                         />
                     </div>
                 case "string":
@@ -167,6 +173,7 @@ const ChatElement = React.memo((
                     className="chat-message result"
                     playerKeywordData={props.playerKeywordData}
                     roleListKeywordData={props.roleListKeywordData}
+                    noLinks={props.noLinks}
                 >{chatGroupIcon ?? ""} {translate("chatMessage.kiraResult")}</StyledText>
                 <KiraResultDisplay 
                     map={{
@@ -175,6 +182,7 @@ const ChatElement = React.memo((
                     }}
                     playerKeywordData={props.playerKeywordData}
                     playerNames={playerNames}
+                    noLinks={props.noLinks}
                 />
             </div>
         case "playerDied":
@@ -186,6 +194,7 @@ const ChatElement = React.memo((
                 playerNames={playerNames}
                 roleList={roleList}
                 message={message as any}
+                noLinks={props.noLinks}
             />
     }
 
@@ -197,6 +206,7 @@ const ChatElement = React.memo((
         <StyledText className={"chat-message " + style} 
             playerKeywordData={props.playerKeywordData}
             roleListKeywordData={props.roleListKeywordData}
+            noLinks={props.noLinks}
         >
             {(chatGroupIcon??"")} {translateChatMessage(message.variant, playerNames, roleList)}
         </StyledText>
@@ -213,7 +223,7 @@ const ChatElement = React.memo((
             {
                 myIndex!==undefined && mouseHovering && forwardButton && props.messageIndex !== undefined && 
                 <Button
-                    className="chat-message-div-small-button material-icons-round"
+                    className="chat-message-div-small-button material-symbols-rounded"
                     onClick={()=>props.messageIndex !== undefined?GAME_MANAGER.sendControllerInput({
                         id: {type: "forwardMessage", player: myIndex}, 
                         selection: {type: "chatMessage", selection: props.messageIndex}
@@ -233,6 +243,7 @@ function PlayerDiedChatMessage(props: Readonly<{
     playerNames: UnsafeString[],
     roleList: RoleList,
     message: ChatMessage & { variant: { type: "playerDied" } }
+    noLinks?: boolean
 }>): ReactElement {
     let graveRoleString: string;
     switch (props.message.variant.grave.information.type) {
@@ -252,6 +263,7 @@ function PlayerDiedChatMessage(props: Readonly<{
                 <StyledText className={"chat-message " + props.style}
                     playerKeywordData={props.playerKeywordData}
                     roleListKeywordData={props.roleListKeywordData}
+                    noLinks={props.noLinks}
                 >
                     {(props.chatGroupIcon ?? "")} {translate("chatMessage.playerDied",
                         encodeString(props.playerNames[props.message.variant.grave.player]), graveRoleString
@@ -260,7 +272,7 @@ function PlayerDiedChatMessage(props: Readonly<{
             }
             defaultOpen={spectator}
         >
-            <GraveComponent grave={props.message.variant.grave} playerNames={props.playerNames} roleList={props.roleList}/>
+            <GraveComponent noLinks={props.noLinks} grave={props.message.variant.grave} playerNames={props.playerNames} roleList={props.roleList}/>
         </DetailsSummary>
     </div>;
 }
@@ -274,6 +286,7 @@ function LobbyChatMessage(props: Readonly<{
     playerSenderKeywordData: KeywordDataMap | undefined,
     roleListKeywordData: KeywordDataMap | undefined,
     chatGroupIcon: string
+    noLinks?: boolean
 }>): ReactElement {
     let style = props.style;
 
@@ -285,10 +298,12 @@ function LobbyChatMessage(props: Readonly<{
         <StyledText
             playerKeywordData={props.playerSenderKeywordData ?? PLAYER_SENDER_KEYWORD_DATA}
             roleListKeywordData={props.roleListKeywordData}
+            noLinks={props.noLinks}
         >{props.chatGroupIcon ?? ""} {encodeString(props.message.variant.sender)}: </StyledText>
         <StyledText
             playerKeywordData={props.playerKeywordData}
             roleListKeywordData={props.roleListKeywordData}
+            noLinks={props.noLinks}
         >{translateChatMessage(props.message.variant, props.playerNames, props.roleList)}</StyledText>
     </span></div>;
 }
@@ -307,7 +322,8 @@ function NormalChatMessage(props: Readonly<{
     setMouseHovering: (hovering: boolean) => void,
     myIndex: PlayerIndex | undefined,
     forwardButton: boolean | undefined,
-    roleList: RoleList
+    roleList: RoleList,
+    noLinks?: boolean
 }>): ReactElement {
     let style = props.style;
     let chatGroupIcon = props.chatGroupIcon;
@@ -350,11 +366,13 @@ function NormalChatMessage(props: Readonly<{
             <StyledText
                 playerKeywordData={props.playerSenderKeywordData ?? PLAYER_SENDER_KEYWORD_DATA}
                 roleListKeywordData={props.roleListKeywordData}
+                noLinks={props.noLinks}
             >
                 {chatGroupIcon ?? ""} {messageSender}: </StyledText>
             <StyledText
                 playerKeywordData={props.playerKeywordData}
                 roleListKeywordData={props.roleListKeywordData}
+                noLinks={props.noLinks}
             >
                 {translateChatMessage(props.message.variant, props.playerNames, props.roleList)}
             </StyledText>
@@ -372,7 +390,7 @@ function NormalChatMessage(props: Readonly<{
             {
                 props.myIndex!==undefined && props.mouseHovering && props.forwardButton && props.messageIndex !== undefined
                 && <Button
-                    className="chat-message-div-small-button material-icons-round"
+                    className="chat-message-div-small-button material-symbols-rounded"
                     onClick={()=>props.messageIndex !== undefined?GAME_MANAGER.sendControllerInput({
                         id: {type: "forwardMessage", player: props.myIndex?props.myIndex:0}, 
                         selection: {type: "chatMessage", selection: props.messageIndex}
@@ -408,7 +426,7 @@ function useContainsMention(message: ChatMessageVariant & { text: string | Unsaf
                 return undefined
             }
         },
-        ["yourPlayerIndex", "yourRole", "yourRoleState"]
+        ["yourPlayerIndex", "yourRole", "abilityState"]
     );
 
     const text = encodeString(replaceMentions(message.text, playerNames, roleList));
@@ -482,6 +500,10 @@ export function translateChatMessage(
             return translate("chatMessage.roleAssignment", 
                 translate("role."+message.role+".name")
             );
+        case "gainedRoleAbility":
+            return translate("chatMessage.gainedRoleAbility", 
+                translate("role."+message.role+".name")
+            );
         case "playersRoleRevealed":
             return translate("chatMessage.playersRoleRevealed",
                 encodeString(playerNames[message.player]),
@@ -550,7 +572,12 @@ export function translateChatMessage(
                         message.dayNumber
                     );
             }
-            
+        case "votesHidden":
+            if(message.value){
+                return translate("chatMessage.votesHidden.true");
+            }else{
+                return translate("chatMessage.votesHidden.false");
+            }
         case "trialInformation":
             return translate("chatMessage.trialInformation",
                 message.requiredVotes,
@@ -642,6 +669,11 @@ export function translateChatMessage(
                     out = translate("chatMessage.abilityUsed.selection.twoRoleOption",
                         message.selection.selection[0]===null?translate("none"):translate("role."+message.selection.selection[0]+".name"),
                         message.selection.selection[1]===null?translate("none"):translate("role."+message.selection.selection[1]+".name"),
+                    );
+                    break;
+                case "graveDeathCauses":
+                    out = translate("chatMessage.abilityUsed.selection.graveDeathCauses",
+                        translateGraveDeathCauses(message.selection.selection)
                     );
                     break;
                 case "twoRoleOutlineOption":                    
@@ -739,6 +771,16 @@ export function translateChatMessage(
             return translate("chatMessage.gossipResult." + (message.enemies ? "enemies" : "none"));
         case "tallyClerkResult":
             return translate("chatMessage.tallyClerkResult", message.evilCount);
+        case "dreamwalkerTarget":
+            return translate("chatMessage.dreamwalkerTarget", encodeString(playerNames[message.target]));
+        case "dreamwalkerResult":
+            if (message.result.length == 0) {
+                return translate("chatMessage.dreamwalkerResult.none");
+            }else{
+                return encodeString(replaceMentions(translate("chatMessage.dreamwalkerResult",
+                    message.result.map((role)=>translate("role."+role+".name")).join(", ")
+                ), playerNames, roleList))
+            }
         case "lookoutResult":
             return translate("chatMessage.lookoutResult", playerListToString(message.players, playerNames));
         case "spyMafiaVisit":
@@ -780,7 +822,8 @@ export function translateChatMessage(
                 encodeString(playerNames[message.player]),
                 translate("role."+message.role+".name"),
                 translate("chatMessage.informantResult.visited", playerListToString(message.visited, playerNames)),
-                translate("chatMessage.informantResult.visitedBy", playerListToString(message.visitedBy, playerNames))
+                translate("chatMessage.informantResult.visitedBy", playerListToString(message.visitedBy, playerNames)),
+                translate("chatMessage.informantResult.winCondition", translateWinCondition(message.winCondition))
             );
         case "ambusherCaught":
             return translate("chatMessage.ambusherCaught",
@@ -790,8 +833,6 @@ export function translateChatMessage(
             return translate("chatMessage.mercenaryHits", roleListToString(message.roles));
         case "mercenaryResult":
             return translate("chatMessage.mercenaryResult."+(message.hit?"hit":"notHit"));
-        case "pawnRole":
-            return translate("chatMessage.pawnRole", translate("role."+message.role+".name"));
         case "mediumHauntStarted":
             return translate("chatMessage.mediumHauntStarted", encodeString(playerNames[message.medium]), encodeString(playerNames[message.player]));
         case "mediumSeance":
@@ -856,7 +897,6 @@ export function translateChatMessage(
         case "youGuardedSomeone":
         case "youWereGuarded":
         case "revolutionaryWon":
-        case "jesterWon":
         case "wardblocked":
         case "roleBlocked":
         case "yourConvertFailed":
@@ -871,6 +911,7 @@ export function translateChatMessage(
         case "targetsMessage":
         case "psychicFailed":
         case "phaseFastForwarded":
+        case "pawnVisitedYou":
         case "invalidWhisper":
         case "politicianCountdownStarted":
         case "youAttackedSomeone":
@@ -912,6 +953,9 @@ export type ChatMessageVariant = {
 // System
 {
     type: "roleAssignment", 
+    role: Role
+} | {
+    type: "gainedRoleAbility", 
     role: Role
 } | {
     type: "playerDied", 
@@ -962,6 +1006,9 @@ export type ChatMessageVariant = {
 } | 
 // Trial
 {
+    type: "votesHidden",
+    value: boolean
+} | {
     type: "trialInformation", 
     requiredVotes: number, 
     trialsLeft: number
@@ -1103,6 +1150,12 @@ export type ChatMessageVariant = {
     outlineIndex: number,
     result: AuditorResult,
 } | {
+    type: "dreamwalkerResult",
+    result: Role[],
+} | {
+    type: "dreamwalkerTarget",
+    target: PlayerIndex,
+} | {
     type: "engineerVisitorsRole",
     role: Role
 } | {
@@ -1147,7 +1200,8 @@ export type ChatMessageVariant = {
     player: PlayerIndex
     role: Role,
     visitedBy: PlayerIndex[],
-    visited: PlayerIndex[]
+    visited: PlayerIndex[],
+    winCondition: WinCondition
 } | {
     type: "ambusherCaught",
     ambusher: PlayerIndex
@@ -1171,8 +1225,6 @@ export type ChatMessageVariant = {
     trackedPlayer: PlayerIndex
     players: PlayerIndex[]
 } | {
-    type: "jesterWon"
-} | {
     type: "wildcardConvertFailed",
     role: Role
 } | {
@@ -1189,8 +1241,7 @@ export type ChatMessageVariant = {
 } | {
     type: "mercenaryYouAreAHit"
 } | {
-    type: "pawnRole",
-    role: Role
+    type: "pawnVisitedYou"
 } | {
     type: "kiraResult",
     result: {

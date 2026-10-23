@@ -67,7 +67,7 @@ export default function ChatMenu(): ReactElement {
                 const sendChatController = controllers.get({type: "sendChat", player: id.player});
                 if(sendChatController===null){return null}
 
-                return <div key={JSON.stringify(id)}>
+                return <div className="chat-menu-chat-controller" key={JSON.stringify(id)}>
                     <div key={"header: "+JSON.stringify(id)} className="chat-menu-icons">
                         {!sendChatGroups.includes("all") && translate("noAll.icon")}
                         {sendChatGroups.map((group) => {
@@ -238,6 +238,7 @@ export function ChatTextInput(props: Readonly<{
     disabled?: boolean,
     whispering?: PlayerIndex | null,
     controllingPlayer?: PlayerIndex
+    hidden?: boolean
 }>): ReactElement {
     const [chatBoxText, setChatBoxText] = useState<string>("");
     const [drawAttentionSeconds, setDrawAttentionSeconds] = useState<number>(0);
@@ -375,11 +376,15 @@ export function ChatTextInput(props: Readonly<{
         sendingPlayer!==null &&
         sendingPlayer===whispering
     ){
-        return <></>;
+        return <div className="chat-send-section">
+            <StyledText className="chat-message special">
+                {translate("cannotWhisperYourself")}
+            </StyledText>
+        </div>;
     }
 
     return <>
-        {whisperingPlayerName !== null && <div className="chat-whisper-notification">
+        {whisperingPlayerName !== null && <div className="chat-whisper-notification" hidden={props.hidden}>
             {sendingPlayerName!==null?<StyledText className="discreet">{
                 translate("playerIsWhisperingToPlayer", encodeString(sendingPlayerName), encodeString(whisperingPlayerName))
             }</StyledText>:null}
@@ -390,15 +395,17 @@ export function ChatTextInput(props: Readonly<{
                 {translate("cancelWhisper")}
             </Button>:null}
         </div>}
-        <div className="chat-send-section">
+        <div className="chat-send-section" hidden={props.hidden}>
             <textarea
                 className={drawAttentionSeconds * 2 % 2 === 1 ? "highlighted" : undefined}
                 ref={ref}
                 value={chatBoxText}
                 onChange={handleInputChange}
                 onKeyDown={handleInputKeyDown}
+                placeholder={translate("menu.chat.placeHolder")}
             />
             <Button 
+                className="flush"
                 disabled={props.disabled}
                 onClick={sendChatField}
                 aria-label={translate("menu.chat.button.send")}

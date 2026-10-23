@@ -25,7 +25,7 @@ export default function StartMenu(): ReactElement {
         <main>
             <div className="satellite">
                 <div className="left">
-                    <Button onClick={async () => {
+                    <Button className="brand" onClick={async () => {
                         setAnchorContent(<LoadingScreen type="default"/>);
                         if (await GAME_MANAGER.setOutsideLobbyState()) {
                             setAnchorContent(<PlayMenu/>);

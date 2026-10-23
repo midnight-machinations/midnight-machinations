@@ -1,5 +1,5 @@
 import { marked } from "marked";
-import React, { ReactElement, useContext, useEffect } from "react";
+import React, { ReactElement, useContext } from "react";
 import ReactDOMServer from "react-dom/server";
 import { find } from "..";
 import translate, { translateChecked } from "../game/lang";
@@ -9,12 +9,14 @@ import DUMMY_NAMES from "../resources/dummyNames.json";
 import { ARTICLES, WikiArticleLink, getArticleLangKey } from "./WikiArticleLink";
 import { MenuControllerContext } from "../menu/game/GameScreen";
 import { Player, UnsafeString } from "../game/gameState.d";
-import { AnchorControllerContext } from "../menu/Anchor";
+import { AnchorControllerContext, CtrlPressedContext, TooltipContext } from "../menu/Anchor";
 import { setWikiSearchPage } from "./Wiki";
 import { getRoleSetsFromRole, RoleList, translateRoleOutline } from "../game/roleListState.d";
 import { encodeString } from "./ChatMessage";
 import DUMMY_ROLE_LIST from "../resources/dummyRoleList.json";
 import KEYWORD_DATA_JSON_IMPORT from "../resources/keywords.json" with { type: "json" };
+import { dropdownPlacementFunction } from "./Select";
+import WikiArticleTooltip from "./WikiArticleTooltip";
 
 const KEYWORD_DATA_JSON = KEYWORD_DATA_JSON_IMPORT as { [key: string]: TokenData };
 
@@ -63,12 +65,7 @@ export default function StyledText(props: Readonly<StyledTextProps>): ReactEleme
     const roleListKeywordData = props.roleListKeywordData ?? ROLE_LIST_KEYWORD_DATA;
     const menuController = useContext(MenuControllerContext);
     const anchorController = useContext(AnchorControllerContext)!;
-
-    useEffect(() => {
-        (window as any).setWikiSearchPage = (page: WikiArticleLink) => {
-            setWikiSearchPage(page, anchorController, menuController)
-        };
-    })
+    const isCtrlPressed = useContext(CtrlPressedContext) ?? false;
 
     let tokens: Token[] = [{
         type: "raw",
@@ -86,9 +83,52 @@ export default function StyledText(props: Readonly<StyledTextProps>): ReactEleme
     tokens = styleKeywords(tokens, {...playerKeywordData, ...roleListKeywordData});
 
     const jsxString = mapTokensToHtml(tokens, props.noLinks ?? false);
-    
+
+    const tooltipContext = useContext(TooltipContext)!;
+
+    const handleClick = (event: React.MouseEvent<HTMLSpanElement>) => {
+        const target = event.target as HTMLElement;
+        const anchor = target.closest('a[data-wiki-page]');
+        if (anchor) {
+            event.preventDefault();
+            const wikiPage = anchor.getAttribute('data-wiki-page') as WikiArticleLink;
+            if (wikiPage) {
+                setWikiSearchPage(wikiPage, anchorController, menuController);
+                tooltipContext.close();
+            }
+        }
+    };
+
+    const handleFocus = (event: any) => {
+        const target = event.target as HTMLElement;
+        const anchor = target.closest('a[data-wiki-page]');
+        if (anchor) {
+            const wikiPage = anchor.getAttribute('data-wiki-page') as WikiArticleLink;
+            if (wikiPage) {
+                tooltipContext.open(
+                    <WikiArticleTooltip article={wikiPage} />,
+                    (dropdownElement, sourceElement) => dropdownPlacementFunction(dropdownElement, sourceElement, null),
+                    { current: anchor as HTMLElement }
+                )
+            }
+        }
+    };
+
+    const handleUnfocus = (event: any) => {
+        const target = event.target as HTMLElement;
+        const anchor = target.closest('a[data-wiki-page]');
+        if (anchor) {
+            tooltipContext.close();
+        }
+    };
+
     return <span
         className={props.className}
+        onClick={handleClick}
+        onMouseOver={handleFocus}
+        onFocus={handleFocus}
+        onMouseOut={handleUnfocus}
+        onBlur={handleUnfocus}
         dangerouslySetInnerHTML={{__html: jsxString}}>
     </span>
 }
@@ -108,7 +148,8 @@ function mapTokensToHtml(tokens: Token[], noLinks: boolean): string {
             return ReactDOMServer.renderToStaticMarkup(
                 // eslint-disable-next-line jsx-a11y/anchor-is-valid
                 <a
-                    href={`javascript: window.setWikiSearchPage("${token.link}")`}
+                    href="#"
+                    data-wiki-page={token.link}
                     className={token.style + " keyword-link"}
                     dangerouslySetInnerHTML={{ __html: token.string }}
                 />
@@ -281,9 +322,19 @@ function getStyledHtmlFromString(string: string, playerKeywordData: KeywordDataM
 }
 
 function styleKeywords(tokens: Token[], extraData?: KeywordDataMap): Token[] {
-    const keywordDataMap = { ...KEYWORD_DATA, ...extraData };
+    const keywordDataListMap: [string, KeywordData][] = [];
 
-    for(const [keyword, data] of Object.entries(keywordDataMap).sort((a, b) => b[0].length - a[0].length)){
+    for(const [keyword, data] of Object.entries(extraData || {})) {
+        keywordDataListMap.push([keyword, data]);
+    }
+
+    for(const [keyword, data] of Object.entries(KEYWORD_DATA)) {
+        keywordDataListMap.push([keyword, data]);
+    }
+
+    keywordDataListMap.sort((a, b) => b[0].length - a[0].length);
+
+    for(const [keyword, data] of keywordDataListMap){
         for(let index = 0; index < tokens.length; index++) {
             const token = tokens[index];
             if (token.type !== "raw") continue;

@@ -1,5 +1,6 @@
 import { PlayerIndex, UnsafeString } from "./gameState.d";
-import { RoleSet } from "./roleListState.d";
+import translate from "./lang";
+import { RoleList, RoleSet } from "./roleListState.d";
 import { Role } from "./roleState.d";
 
 export type GraveIndex = number;
@@ -17,27 +18,35 @@ export type GraveInformation = {
     type: "normal",
     
     role: Role,
-    will: UnsafeString,
-    deathCause: GraveDeathCause,
-    deathNotes: UnsafeString[],
+    alibi: UnsafeString,
+    deathCauses: GraveDeathCause[],
+    callingCards: UnsafeString[],
 }
 
 export type GraveDeathCause = {
-    type: "execution" | "ascension" | "none"
+    type: "execution" | "ascension" | "suicide" | "quit"
 } | {
-    type: "killers"
-    killers: GraveKiller[]
-}
-export type GraveKiller = {
     type: "roleSet"
     value: RoleSet
 } | {
-    type: "suicide"
-} | {
-    type: "quit"
-} | {
     type: "role"
     value: Role
+} | {
+    type: "quit"
 };
 
 export type GravePhase = "day" | "night"
+
+export function translateGraveDeathCause(deathCause: GraveDeathCause): string {
+    switch(deathCause.type){
+        case "role":
+            return translate("role."+deathCause.value+".name");
+        case "roleSet":
+            return translate(deathCause.value);
+        default:
+            return translate("grave.deathCause."+deathCause.type);
+    }
+}
+export function translateGraveDeathCauses(deathCauses: GraveDeathCause[]): string {
+    return deathCauses.map((cause) =>  translateGraveDeathCause(cause)).join(", ");
+}

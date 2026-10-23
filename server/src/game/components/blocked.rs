@@ -1,6 +1,5 @@
 use crate::game::{components::player_component::PlayerComponent, prelude::*};
 
-
 pub type BlockedComponent = PlayerComponent<Blocked>;
 pub struct Blocked{
     blocked: bool
@@ -68,12 +67,13 @@ impl PlayerReference {
                 continue;
             }
             if !matches!(visit.tag,
-                VisitTag::Role { role: Role::Transporter, .. } |
-                VisitTag::Role { role: Role::Warper, .. } |
-                VisitTag::Role { role: Role::Porter, .. } |
-                VisitTag::Role { role: Role::Polymath, id: 3 } |
+                VisitTag::Ability { ability: AbilityID::Role{role: Role::Transporter, ..}, ..} |
+                VisitTag::Ability { ability: AbilityID::Role{role: Role::Warper, ..}, ..} |
+                VisitTag::Ability { ability: AbilityID::Role{role: Role::Polymath, ..}, id: 3} |
+                VisitTag::Ability { ability: AbilityID::Role{role: Role::Witch, ..}, ..} |
 
-                VisitTag::Role { role: Role::Witch, .. }
+                VisitTag::Ability { ability: AbilityID::Role{role: Role::Lich, ..}, id: 7 } |
+                VisitTag::Ability { ability: AbilityID::Role{role: Role::Lich, ..}, id: 15 }
             ) {
                 continue;
             }

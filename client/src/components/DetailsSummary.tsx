@@ -25,7 +25,7 @@ export default function DetailsSummary(props: Readonly<{
 
     return <div className={"details-summary-container "+(props.className??"")}>
         <div className={"details-summary-summary-container"+(open ? " open" : "")}
-            onClick={() => {
+            onClick={(e) => {
                 if(props.disabled) return;
                 setOpen(!open);
                 if(props.onClick) props.onClick();

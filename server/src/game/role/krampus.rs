@@ -1,6 +1,6 @@
 use std::collections::HashSet;
 use serde::{Deserialize, Serialize};
-use crate::game::prelude::*;
+use crate::game::{components::attack::night_attack::NightAttack, prelude::*};
 
 #[derive(Debug, Clone, Serialize, Default)]
 #[serde(rename_all = "camelCase")]
@@ -22,14 +22,18 @@ pub(super) const DEFENSE: DefensePower = DefensePower::Armored;
 impl RoleStateTrait for Krampus {
     type ClientAbilityState = ();
     fn on_midnight(self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut OnMidnightFold, priority: OnMidnightPriority) {
-        let actor_visits = Visits::into_iter(midnight_variables).default_visits(actor_ref, Role::Krampus).collect::<Vec<_>>();
+        let actor_visits = Visits::into_iter(midnight_variables).default_role_visits(actor_ref, Role::Krampus).collect::<Vec<_>>();
 
         match (priority, self.ability) {
             (OnMidnightPriority::Kill, KrampusAbility::Kill) => {
                 if let Some(visit) = actor_visits.first() {
                     let target_ref = visit.target;
 
-                    target_ref.try_night_kill_single_attacker(actor_ref, game, midnight_variables, GraveKiller::Role(Role::Krampus), AttackPower::Basic, true);
+                    NightAttack::new()
+                        .attackers([actor_ref])
+                        .grave_killer(Role::Krampus)
+                        .leave_calling_card()
+                        .attack(game, midnight_variables, target_ref);
 
                     actor_ref.edit_role_ability_helper(game, Krampus {
                         last_used_ability: Some(KrampusAbility::Kill),
@@ -97,7 +101,7 @@ impl RoleStateTrait for Krampus {
             
             .build_map()
     }
-    fn convert_selection_to_visits(self, game: &Game, actor_ref: PlayerReference) -> Vec<Visit> {
+    fn create_visits_initialize_night(self, game: &Game, _id: &AbilityID, actor_ref: PlayerReference) -> Vec<Visit> {
         let ability_index = match self.ability {
             KrampusAbility::Kill => 0,
             KrampusAbility::DoNothing => 1

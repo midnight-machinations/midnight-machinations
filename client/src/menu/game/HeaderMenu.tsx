@@ -297,7 +297,13 @@ export function FastForwardButton(props: { spectatorAndHost: boolean }): ReactEl
                 optionMap.set(
                     fastForwardSettingToString({type:"phase",phase:phase,day:i}),
                     [
-                        <StyledText noLinks={true}>{translate("phase."+phase)} {i.toString()}</StyledText>,
+                        <>
+                            <Icon>fast_forward</Icon>
+                            {" "}
+                            <StyledText noLinks={true}>
+                                {translate("phase."+phase)} {i.toString()}
+                            </StyledText>
+                        </>,
                         translate("phase."+phase)+" "+(i.toString())
                     ]
                 );
@@ -306,11 +312,12 @@ export function FastForwardButton(props: { spectatorAndHost: boolean }): ReactEl
     }
 
     return <Select
-        className={"fast-forward-button"+(fastForward.type!=="none"?" highlighted":"")}
+        className={"brand fast-forward-button"+(fastForward.type!=="none"?" highlighted":"")}
         value={fastForwardSettingToString(fastForward)}
         onChange={(e)=>{
             GAME_MANAGER.sendVoteFastForwardPhase(stringToFastForwardSetting(e));
         }}
         optionsSearch={optionMap}
+        hideArrow
     />
 }

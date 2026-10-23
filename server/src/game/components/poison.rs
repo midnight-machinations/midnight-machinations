@@ -1,6 +1,6 @@
-use crate::{game::{
-    attack_power::AttackPower, chat::ChatMessageVariant, components::graves::grave::GraveKiller, event::on_midnight::{OnMidnightFold, OnMidnight, OnMidnightPriority}, player::PlayerReference, Game
-}, vec_set::VecSet};
+use crate::game::{
+    Game, chat::ChatMessageVariant, components::attack::night_attack::NightAttack, event::on_midnight::{OnMidnight, OnMidnightFold, OnMidnightPriority}, player::PlayerReference,
+};
 
 impl Game {
     pub fn poison(&self)->&Poison{
@@ -17,29 +17,9 @@ pub struct Poison{
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
-struct PlayerPoison{
+struct PlayerPoison {
     player: PlayerReference,
-    attack_power: AttackPower,
-    grave_killer: GraveKiller,
-    attackers: VecSet<PlayerReference>,
-    leave_death_note: bool,
-}
-impl PlayerPoison{
-    pub fn new(
-        player: PlayerReference,
-        attack_power: AttackPower,
-        grave_killer: GraveKiller,
-        attackers: VecSet<PlayerReference>,
-        leave_death_note: bool,
-    )->Self{
-        Self{
-            player,
-            attack_power,
-            grave_killer,
-            attackers,
-            leave_death_note,
-        }
-    }
+    attack: NightAttack,
 }
 
 #[derive(PartialEq, Eq)]
@@ -49,25 +29,18 @@ pub enum PoisonAlert {
 }
 
 impl Poison{
-    /// run this at night
-    #[expect(clippy::too_many_arguments, reason = "This will be addressed in a future PR")]
     pub fn poison_player(
         game: &mut Game,
         midnight_variables: &mut OnMidnightFold,
-        player: PlayerReference,
-        attack_power: AttackPower,
-        grave_killer: GraveKiller,
-        attackers: VecSet<PlayerReference>,
-        death_note: bool,
+        target: PlayerReference,
+        attack: NightAttack,
         alert: PoisonAlert,
     ){
         let mut poison = game.poison().clone();
-        poison.poisons.push(PlayerPoison::new(
-            player, attack_power, grave_killer, attackers, death_note
-        ));
+        poison.poisons.push(PlayerPoison { player: target, attack });
 
         if alert == PoisonAlert::Alert {
-            for poison in poison.poisons.iter(){
+            for poison in &poison.poisons {
                 poison.player.push_night_message(midnight_variables, ChatMessageVariant::YouArePoisoned);
             }
         }
@@ -79,21 +52,11 @@ impl Poison{
 
         let mut poison = game.poison().clone();
 
-        for poison in poison.poisons.iter_mut(){
-            Self::attack_poisoned_player(game, midnight_variables, poison.clone());
+        for poison in &mut poison.poisons {
+            poison.attack.attack(game, midnight_variables, poison.player);
         }
         poison.poisons.clear();
         
         game.set_poison(poison);
-    }
-    fn attack_poisoned_player(game: &mut Game, midnight_variables: &mut OnMidnightFold, poison: PlayerPoison){
-        poison.player.try_night_kill(
-            poison.attackers.clone(),
-            game,
-            midnight_variables,
-            poison.grave_killer,
-            poison.attack_power,
-            poison.leave_death_note
-        );
     }
 }

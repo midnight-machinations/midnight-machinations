@@ -91,10 +91,8 @@ impl RoleStateTrait for Politician {
                     self.state = PoliticianState::FinalNomination;
                     actor_ref.edit_role_ability_helper(game, self);
                 },
-                PhaseType::Dusk => {
-                    if self.state == PoliticianState::FinalNomination {
-                        Politician::kill_all(game);
-                    }
+                PhaseType::Dusk if self.state == PoliticianState::FinalNomination => {
+                    Politician::kill_all(game);
                 },
                 _ => {}
             }
@@ -106,8 +104,8 @@ impl RoleStateTrait for Politician {
         self.check_for_and_start_countdown(game, actor_ref);
     }
 
-    fn on_ability_creation(self, game: &mut Game, actor_ref: PlayerReference, event: &OnAbilityCreation, fold: &mut OnAbilityCreationFold, priority: OnAbilityCreationPriority) {
-        if priority != OnAbilityCreationPriority::SideEffect || !event.id.is_players_role(actor_ref, Role::Politician) || fold.cancelled {return}
+    fn on_ability_creation(self, game: &mut Game, actor_ref: PlayerReference, event: &OnAbilityCreation, _fold: &mut OnAbilityCreationFold, priority: OnAbilityCreationPriority) {
+        if priority != OnAbilityCreationPriority::SideEffect || !event.id.is_players_role(actor_ref, Role::Politician) {return}
         self.check_for_and_start_countdown(game, actor_ref);
     }
 
@@ -184,8 +182,8 @@ impl Politician {
             if !player.alive(game) || player.win_condition(game).is_loyalist_for(GameConclusion::Politician) {continue}
             
             let mut grave = Grave::from_player_lynch(game, player);
-            if let GraveInformation::Normal{death_cause, ..} = &mut grave.information {
-                *death_cause = GraveDeathCause::Killers(vec![GraveKiller::Role(Role::Politician)]);
+            if let GraveInformation::Normal{death_causes, ..} = &mut grave.information {
+                *death_causes = vec![GraveDeathCause::Role(Role::Politician)];
             }
             player.die_and_add_grave(game, grave);
             

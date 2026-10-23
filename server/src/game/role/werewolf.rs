@@ -1,6 +1,6 @@
 use rand::seq::SliceRandom;
 use serde::Serialize;
-use crate::game::prelude::*;
+use crate::game::{components::attack::night_attack::NightAttack, prelude::*};
 
 
 #[derive(Clone, Debug, Default)]
@@ -23,25 +23,24 @@ impl RoleStateTrait for Werewolf {
             OnMidnightPriority::Deception => {
                 let Some(target) = Visits::default_target(midnight_variables, actor_ref, Role::Werewolf) else {return};
 
-                let enraged = 
-                    Tags::tagged(game, TagSetID::WerewolfTracked(actor_ref))
-                        .count()
-                        .saturating_mul(ENRAGED_DENOMINATOR) >= 
-                    PlayerReference::all_players(game)
-                        .filter(|p|p.alive(game)||*p==actor_ref)
-                        .count()
-                        .saturating_mul(ENRAGED_NUMERATOR);
-
-                if enraged || !Visits::into_iter(midnight_variables)
-                    .with_visitor(target)
-                    .with_direct()
-                    .collect::<Box<[Visit]>>()
-                    .is_empty()
+                if
+                    Werewolf::enraged(game, actor_ref) ||
+                    (
+                        !Visits::into_iter(midnight_variables)
+                            .with_visitor(target)
+                            .with_direct()
+                            .collect::<Box<[Visit]>>()
+                            .is_empty() &&
+                        Tags::has_tag(game, TagSetID::WerewolfTracked(actor_ref), target)
+                    )
                 {
-                    Visits::iter_mut(midnight_variables)
-                        .default_visit(actor_ref, Role::Werewolf)
-                        .into_iter()
-                        .for_each(|v|v.attack = true);
+                    Visits::push_ledger_event(midnight_variables, move |visits|
+                        visits
+                            .iter_mut()
+                            .default_role_visit(actor_ref, Role::Werewolf)
+                            .into_iter()
+                            .for_each(|v|v.attack = true)
+                    )
                 }
             }
             OnMidnightPriority::Kill => {
@@ -55,26 +54,21 @@ impl RoleStateTrait for Werewolf {
                     if game.day_number() <= 1 {return}
                         
                     //rampage target
-                    my_visit.target.rampage(
-                        game,
-                        midnight_variables,
-                        actor_ref,
-                        GraveKiller::Role(Role::Werewolf),
-                        AttackPower::ArmorPiercing,
-                        true,
-                        |v|*v != my_visit
-                    );
+                    NightAttack::new()
+                        .attackers([actor_ref])
+                        .grave_killer(Role::Werewolf)
+                        .power(AttackPower::ArmorPiercing)
+                        .leave_calling_card()
+                        .rampage(game, midnight_variables, my_visit.target, |v| *v != my_visit);
                     
                     //If target visits or you are enraged, attack them
                     if my_visit.attack {
-                        my_visit.target.try_night_kill_single_attacker(
-                            actor_ref,
-                            game,
-                            midnight_variables,
-                            GraveKiller::Role(Role::Werewolf),
-                            AttackPower::ArmorPiercing,
-                            true
-                        );
+                        NightAttack::new()
+                            .attackers([actor_ref])
+                            .grave_killer(Role::Werewolf)
+                            .power(AttackPower::ArmorPiercing)
+                            .leave_calling_card()
+                            .attack(game, midnight_variables, my_visit.target);
                     } 
                 }
                 
@@ -86,16 +80,16 @@ impl RoleStateTrait for Werewolf {
                     .into_iter()
                     .for_each(|player_ref|{
 
-                    let mut players: Vec<PlayerReference> = player_ref.tracker_seen_players(midnight_variables).collect();
-                    players.shuffle(&mut game.rng);
+                        let mut players: Vec<PlayerReference> = player_ref.tracker_seen_players(midnight_variables).collect();
+                        players.shuffle(&mut game.rng);
 
-                    actor_ref.push_night_message(midnight_variables, 
-                        ChatMessageVariant::WerewolfTrackingResult{
-                            tracked_player: player_ref, 
-                            players
-                        }
-                    );
-                });
+                        actor_ref.push_night_message(midnight_variables, 
+                            ChatMessageVariant::WerewolfTrackingResult{
+                                tracked_player: player_ref, 
+                                players
+                            }
+                        );
+                    });
             },
             _ => {}
         }
@@ -116,7 +110,7 @@ impl RoleStateTrait for Werewolf {
                 .build_map()
         ])
     }
-    fn convert_selection_to_visits(self, game: &Game, actor_ref: PlayerReference) -> Vec<Visit> {
+    fn create_visits_initialize_night(self, game: &Game, _id: &AbilityID, actor_ref: PlayerReference) -> Vec<Visit> {
         crate::game::role::common_role::convert_controller_selection_to_visits(
             game,
             actor_ref,
@@ -143,8 +137,8 @@ impl RoleStateTrait for Werewolf {
         }
     }
 
-    fn on_ability_creation(self, game: &mut Game, actor_ref: PlayerReference, event: &OnAbilityCreation, fold: &mut OnAbilityCreationFold, priority: OnAbilityCreationPriority) {
-        if priority != OnAbilityCreationPriority::SideEffect || !event.id.is_players_role(actor_ref, Role::Werewolf) || fold.cancelled {return}
+    fn on_ability_creation(self, game: &mut Game, actor_ref: PlayerReference, event: &OnAbilityCreation, _fold: &mut OnAbilityCreationFold, priority: OnAbilityCreationPriority) {
+        if priority != OnAbilityCreationPriority::SideEffect || !event.id.is_players_role(actor_ref, Role::Werewolf) {return}
         Tags::add_viewer(game, TagSetID::WerewolfTracked(actor_ref), actor_ref);
     }
     fn on_ability_deletion(self, game: &mut Game, actor_ref: PlayerReference, event: &OnAbilityDeletion, _fold: &mut (), priority: OnAbilityDeletionPriority) {
@@ -156,6 +150,15 @@ impl RoleStateTrait for Werewolf {
 impl Werewolf{
     fn track_player(&self, game: &mut Game, actor: PlayerReference, target: PlayerReference){
         Tags::add_tag(game, TagSetID::WerewolfTracked(actor), target);
+    }
+    fn enraged(game: &Game, actor_ref: PlayerReference)->bool{
+        Tags::tagged(game, TagSetID::WerewolfTracked(actor_ref))
+            .count()
+            .saturating_mul(ENRAGED_DENOMINATOR) >= 
+        PlayerReference::all_players(game)
+            .filter(|p|p.alive(game)||*p==actor_ref)
+            .count()
+            .saturating_mul(ENRAGED_NUMERATOR)
     }
 }
 impl GetClientAbilityState<ClientRoleState> for Werewolf {

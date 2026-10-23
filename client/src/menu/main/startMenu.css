@@ -5,7 +5,7 @@
     flex-direction: column;
 }
 
-.sm *:not(.material-icons-round, .keyword-title){
+.sm *:not(.material-symbols-rounded, .keyword-title){
     font-family: var(--computer-font);
 }
 

@@ -25,7 +25,7 @@ impl RoleStateTrait for Reeducator {
         let Some(role) = ControllerID::role(actor_ref, Role::Reeducator, 1).get_role_list_selection_first(game) else {return};
         if !self.convert_charges_remaining {return}
         
-        if !AttackPower::Basic.can_pierce(target.night_defense(game, midnight_variables)) {
+        if !AttackPower::ProtectionPiercing.can_pierce(target.night_defense(game, midnight_variables)) {
             actor_ref.push_night_message(midnight_variables, ChatMessageVariant::YourConvertFailed);
             return;
         }
@@ -88,7 +88,7 @@ impl RoleStateTrait for Reeducator {
                 .build_map()
         ])
     }
-    fn convert_selection_to_visits(self, game: &Game, actor_ref: PlayerReference) -> Vec<Visit> {
+    fn create_visits_initialize_night(self, game: &Game, _id: &AbilityID, actor_ref: PlayerReference) -> Vec<Visit> {
         common_role::convert_controller_selection_to_visits(
             game, 
             actor_ref, 

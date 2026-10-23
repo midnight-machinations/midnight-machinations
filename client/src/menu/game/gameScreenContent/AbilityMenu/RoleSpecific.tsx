@@ -16,13 +16,18 @@ import ChatElement, { encodeString } from "../../../../components/ChatMessage";
     
 
 export default function RoleSpecificSection(): ReactElement{
-    const roleStates = usePlayerState(
-        playerState => [...playerState.roleStates.values()],
-        ["yourRoleState", "tick"]
+    // const roleStates = usePlayerState(
+    //     playerState => [...playerState.roleStates.values()],
+    //     ["yourRoleState", "tick"]
+    // )!;
+
+    const abilityStates = usePlayerState(
+        playerState => [...playerState.abilityStates.values()],
+        ["abilityState", "tick"]
     )!;
 
     return <>{
-        roleStates.map((roleState)=><OneRoleSpecificSection roleState={roleState}/>)
+        abilityStates.map((abilityState)=><OneRoleSpecificSection roleState={abilityState}/>)
     }</>;
 }
 function OneRoleSpecificSection(props: Readonly<{
@@ -69,8 +74,8 @@ function roleSpecificSectionInner(
     let maxChargesCounter = abilityChargesCounter(numPlayers);
 
     switch(roleState.type){
-        case "auditor":
-            return <AuditorMenu roleState={roleState}/>;
+        // case "auditor":
+        //     return <AuditorMenu roleState={roleState}/>;
         case "hypnotist":
             return <HypnotistMenu roleState={roleState}/>;
         case "jailor": 
@@ -115,9 +120,9 @@ function roleSpecificSectionInner(
             </div>;
         case "vigilante":
             switch(roleState.state.type){
-                case "willSuicide":
+                case "killedTownie":
                     return <div className="role-information">
-                        <StyledText>{translate("role.vigilante.roleDataText.suicide")}</StyledText>
+                        <StyledText>{translate("role.vigilante.roleDataText.killedTownie")}</StyledText>
                     </div>
                 case "notLoaded":
                     return <div className="role-information">

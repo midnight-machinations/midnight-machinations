@@ -31,6 +31,7 @@ use crate::game::abilities_component::Abilities;
 use crate::game::chat::PlayerChatGroups;
 use crate::game::components::blocked::BlockedComponent;
 use crate::game::components::fast_forward::FastForwardComponent;
+use crate::game::components::hide_votes_message::HideVotesMessage;
 use crate::game::components::pitchfork_item::PitchforkItemComponent;
 use crate::game::components::role::RoleComponent;
 use crate::game::components::role_reveal::RevealedPlayersComponent;
@@ -111,6 +112,7 @@ pub struct Game {
     
     
     //components with data
+    pub hide_votes_message: HideVotesMessage,
     pub player_chat_groups: PlayerChatGroups,
     pub revealed_players: RevealedPlayersComponent,
     pub graves: Graves,
@@ -160,10 +162,6 @@ pub enum GameOverReason {
 type Assignments = VecMap<PlayerReference, OutlineAssignment>;
 
 impl Game {
-    pub const DISCONNECT_TIMER_SECS: u16 = 60 * 2;
-
-    
-
     #[expect(clippy::cast_possible_truncation, reason = "Game can only have 255 players maximum")]
     pub fn num_players(&self) -> u8 {
         self.players.len() as u8
@@ -236,8 +234,7 @@ impl Game {
         if start_trial_instantly && let Some(player_on_trial) = voted_player {
             PhaseStateMachine::next_phase(self, Some(PhaseState::Testimony {
                 trials_left: trials_left.saturating_sub(1), 
-                player_on_trial, 
-                nomination_time_remaining: self.phase_machine.get_time_remaining()
+                player_on_trial
             }));
         }
 

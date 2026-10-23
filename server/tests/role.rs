@@ -112,6 +112,25 @@ fn informant_read_whisper(){
 }
 
 #[test]
+fn employer_basic(){
+    kit::scenario!(game in Night 1 where
+        tailor: Employer,
+        townie: Detective,
+        _a: Godfather
+    );
+
+    tailor.send_ability_input_player_list_typical(townie);
+    tailor.send_ability_input(ControllerInput::new(
+        ControllerID::role(tailor.player_ref(), tailor.role(), 1),
+        RoleListSelection(vec![Role::Lookout]),
+    ));
+
+    game.skip_to(Obituary, 2);
+
+    assert_eq!(townie.role(), Role::Lookout);
+}
+
+#[test]
 fn tailor_basic(){
     kit::scenario!(game in Night 1 where
         tailor: Tailor,
@@ -407,23 +426,21 @@ fn psychic_auras(){
 
 #[test]
 fn tally_clerk_basic(){
-    kit::scenario!(game in Nomination 2 where
+    kit::scenario!(game in Night 2 where
         fg: TallyClerk,
         townie: Detective,
         mafioso: Mafioso
     );
 
-    fg.vote_for_player(Some(townie));
-    mafioso.vote_for_player(Some(townie));
-
-    game.skip_to(Judgement, 2);
-
-    fg.set_verdict(Verdict::Guilty);
-    mafioso.set_verdict(Verdict::Guilty);
     
-    game.skip_to(Obituary, 3);
+
+    fg.send_ability_input_player_list_typical(vec![townie, mafioso]);
+    townie.send_ability_input_player_list_typical(mafioso);
+    mafioso.send_ability_input_player_list_typical(townie);
+    game.skip_to(Discussion, 3);
+    
     assert_contains!(
-        fg.get_messages_after_night(1),
+        fg.get_messages_after_night(2),
         ChatMessageVariant::TallyClerkResult { evil_count: 1 }
     );
 }
@@ -449,7 +466,9 @@ fn spy_basic_transported() {
 
     game.next_phase();
     
-    assert_contains!(spy.get_messages(), ChatMessageVariant::SpyBug { visit_tags: vec![VisitTag::Role{role: Role::Blackmailer, id: 0}] });
+    assert_contains!(spy.get_messages(), ChatMessageVariant::SpyBug { visit_tags: vec![
+        VisitTag::Ability{ ability: AbilityID::Role { role: Role::Blackmailer, player: blackmailer.player_ref() }, id: 0 }
+    ] });
     assert_contains!(spy.get_messages(), ChatMessageVariant::SpyMafiaVisit { players: vec![bugged.player_ref()] });
 }
 
@@ -535,9 +554,6 @@ fn transporter_basic_vigilante_escort() {
 
     assert!(town1.received_blocked_message());
     assert!(!town2.received_blocked_message());
-    
-    game.skip_to(Obituary, 4);
-    assert!(!vigi.alive());
 }
 
 #[test]
@@ -642,10 +658,35 @@ fn witch_basic(){
 }
 
 #[test]
+fn witch_cant_make_vigilante_visit_night_1(){
+    kit::scenario!(game in Night 1 where
+        witch: Witch,
+        vigi: Vigilante,
+        informant: Informant
+    );
+
+    witch.send_ability_input_two_player_typical(vigi, witch);
+    informant.send_ability_input_player_list_typical(vigi);
+
+    game.next_phase();
+
+    assert_contains!(informant.get_messages(), ChatMessageVariant::InformantResult
+        {
+            player: vigi.player_ref(),
+            role: Role::Vigilante,
+            visited_by: vec![witch.player_ref()],
+            visited: vec![],
+            win_condition: WinCondition::GameConclusionReached { win_if_any: vec_set![GameConclusion::Town] }
+        }
+    );
+}
+
+
+#[test]
 fn cop_basic(){
     kit::scenario!(game in Night 2 where
         crus: Cop,
-        protected_player: Jester,
+        protected_player: Detective,
         townie1: Detective,
         townie2: Detective,
         mafioso: Mafioso,
@@ -683,7 +724,7 @@ fn cop_does_not_kill_framed_player(){
         crus: Cop,
         protected_player: Jester,
         townie: Detective,
-        framer: Framer,
+        framer: PropMaster,
         mafioso: Mafioso
     );
 
@@ -704,7 +745,7 @@ fn cop_does_not_kill_framed_player(){
 fn ambusher_basic(){
     kit::scenario!(game in Night 2 where
         ambusher: Ambusher,
-        protected_player: Jester,
+        protected_player: Detective,
         townie1: Detective,
         townie2: Detective,
         blackmailer: Informant
@@ -748,7 +789,7 @@ fn ambusher_does_not_kill_framed_player(){
         ambusher: Ambusher,
         protected_player: Jester,
         townie: Detective,
-        framer: Framer,
+        framer: PropMaster,
         mafioso: Mafioso
     );
 
@@ -816,7 +857,7 @@ fn veteran_basic(){
         tracker: Tracker
     );
 
-    assert!(vet.send_ability_input_boolean_typical(true));
+    assert!(vet.send_ability_input_player_list_typical(vet));
     assert!(framer.send_ability_input_player_list_typical(vet));
     assert!(townie.send_ability_input_player_list_typical(vet));
     assert!(tracker.send_ability_input_player_list_typical(vet));
@@ -831,11 +872,7 @@ fn veteran_basic(){
         townie.get_messages().contains(&ChatMessageVariant::LookoutResult { players: vec![framer.player_ref(), tracker.player_ref()] }) ||
         townie.get_messages().contains(&ChatMessageVariant::LookoutResult { players: vec![tracker.player_ref(), framer.player_ref()] })
     );
-
-    // assert_contains!(
-    //     townie.get_messages(),
-    //     ChatMessageVariant::LookoutResult { players: vec![framer.index(), tracker.index()] }
-    // );
+    
     assert_contains!(
         tracker.get_messages(),
         ChatMessageVariant::TrackerResult { players: vec![] }
@@ -847,7 +884,7 @@ fn veteran_does_not_kill_framed_player(){
     kit::scenario!(game in Night 2 where
         vet: Veteran,
         townie: Detective,
-        framer: Framer,
+        framer: PropMaster,
         mafioso: Mafioso
     );
 
@@ -944,14 +981,7 @@ fn marksman_basic() {
     );
 
     assert!(dt.send_ability_input_player_list_typical(gf));
-    mk.send_ability_input(ControllerInput::new(
-        ControllerID::role(mk.player_ref(), Role::Marksman, 0),
-        PlayerListSelection(vec!(dt.player_ref()))
-    ));
-    mk.send_ability_input(ControllerInput::new(
-        ControllerID::role(mk.player_ref(), Role::Marksman, 1),
-        PlayerListSelection(vec!(gf.player_ref()))
-    ));
+    assert!(mk.send_ability_input_two_player_typical(dt, gf));
 
     game.next_phase();
 
@@ -1107,7 +1137,10 @@ fn grave_contains_multiple_killers() {
 
     assert!(mafioso.send_ability_input_player_list_typical(townie));
     assert!(vigilante.send_ability_input_player_list_typical(townie));
+
     game.next_phase();
+
+    print!("{:#?}", *unsafe{GraveReference::new_unchecked(0)}.deref(&game));
     assert!(
         *unsafe{GraveReference::new_unchecked(0)}.deref(&game) ==
         Grave{ 
@@ -1116,9 +1149,9 @@ fn grave_contains_multiple_killers() {
             day_number: 2,
             information: GraveInformation::Normal{
                 role: Role::Detective,
-                death_cause: GraveDeathCause::Killers(vec![GraveKiller::RoleSet(RoleSet::Mafia), GraveKiller::Role(Role::Vigilante)]),
-                will: "".to_string(),
-                death_notes: vec![],
+                death_causes: vec![GraveDeathCause::RoleSet(RoleSet::Mafia), GraveDeathCause::Role(Role::Vigilante)],
+                alibi: "".to_string(),
+                calling_cards: vec![],
             }
         } ||
         *unsafe{GraveReference::new_unchecked(0)}.deref(&game) ==
@@ -1128,9 +1161,9 @@ fn grave_contains_multiple_killers() {
             day_number: 2,
             information: GraveInformation::Normal{
                 role: Role::Detective,
-                death_cause: GraveDeathCause::Killers(vec![GraveKiller::Role(Role::Vigilante), GraveKiller::RoleSet(RoleSet::Mafia)]),
-                will: "".to_string(),
-                death_notes: vec![],
+                death_causes: vec![GraveDeathCause::Role(Role::Vigilante), GraveDeathCause::RoleSet(RoleSet::Mafia)],
+                alibi: "".to_string(),
+                calling_cards: vec![],
             }
         }
     )
@@ -1151,30 +1184,6 @@ fn drunk_suspicious_aura() {
     assert_contains!(
         detective.get_messages(),
         ChatMessageVariant::DetectiveResult { suspicious: true }
-    );
-}
-
-#[test]
-fn framer_second_visit_erased() {
-    kit::scenario!(game in Night 1 where
-        framer: Framer,
-        lookout: Lookout,
-        v: Villager
-    );
-
-    framer.send_ability_input_player_list_typical(lookout);
-    framer.send_ability_input_player_list(v, 1);
-    lookout.send_ability_input_player_list_typical(v);
-
-    game.skip_to(Obituary, 2);
-
-    assert_not_contains!(
-        lookout.get_messages(),
-        ChatMessageVariant::LookoutResult { players: vec![framer.player_ref()] }
-    );
-    assert_contains!(
-        lookout.get_messages(),
-        ChatMessageVariant::LookoutResult { players: vec![lookout.player_ref()] }
     );
 }
 
@@ -2268,13 +2277,22 @@ fn apostle_converting_trapped_player_day_later() {
     if
         !engineer
             .get_messages_after_night(4)
-            .contains(&ChatMessageVariant::SpyBug { visit_tags: vec![VisitTag::Role { role: Role::Apostle, id: 0 }, VisitTag::Role { role: Role::Zealot, id: 0 }] })
+            .contains(&ChatMessageVariant::SpyBug { visit_tags: vec![
+                VisitTag::Ability { ability: AbilityID::Role { role: Role::Zealot, player: zealot.player_ref() }, id: 0 },
+                VisitTag::Ability { ability: AbilityID::Role { role: Role::Apostle, player: apostle.player_ref() }, id: 0 }
+            ] })
         &&
         !engineer
             .get_messages_after_night(4)
-            .contains(&ChatMessageVariant::SpyBug { visit_tags: vec![VisitTag::Role { role: Role::Zealot, id: 0 }, VisitTag::Role { role: Role::Apostle, id: 0 }] })
+            .contains(&ChatMessageVariant::SpyBug { visit_tags: vec![
+                VisitTag::Ability { ability: AbilityID::Role { role: Role::Apostle, player: apostle.player_ref() }, id: 0 },
+                VisitTag::Ability { ability: AbilityID::Role { role: Role::Zealot, player: zealot.player_ref() }, id: 0 }
+            ] })
     {
-        panic!("Engineer did not see {:?}", ChatMessageVariant::SpyBug { visit_tags: vec![VisitTag::Role { role: Role::Zealot, id: 0 }, VisitTag::Role { role: Role::Apostle, id: 0 }] });
+        panic!("Engineer did not see {:?}", ChatMessageVariant::SpyBug { visit_tags: vec![
+                VisitTag::Ability { ability: AbilityID::Role { role: Role::Apostle, player: apostle.player_ref() }, id: 0 },
+                VisitTag::Ability { ability: AbilityID::Role { role: Role::Zealot, player: zealot.player_ref() }, id: 0 }
+        ]});
     }
     assert_eq!(trapped.role_state().role(), Role::Detective);
 }
@@ -2305,7 +2323,7 @@ fn apostle_converting_trapped_player_same_day(){
     assert_eq!(trapped.role_state().role(), Role::Detective);
     assert_contains!(
         engineer.get_messages_after_night(4),
-        ChatMessageVariant::SpyBug { visit_tags: vec![VisitTag::Role { role: Role::Apostle, id: 0 }] }
+        ChatMessageVariant::SpyBug { visit_tags: vec![VisitTag::Ability { ability: AbilityID::Role { role: Role::Apostle, player: apostle.player_ref() }, id: 0 }] }
     );
 }
 
@@ -2326,7 +2344,9 @@ fn engineer_day_later(){
 
     game.next_phase();
 
-    assert_contains!(engineer.get_messages_after_night(3), ChatMessageVariant::SpyBug { visit_tags: vec![VisitTag::Role { role: Role::Mafioso, id: 0 }] });
+    assert_contains!(engineer.get_messages_after_night(3), ChatMessageVariant::SpyBug { visit_tags: vec![
+        VisitTag::Ability { ability: AbilityID::Role { role: Role::Mafioso, player: maf.player_ref() }, id: 0 }
+    ] });
     assert!(!maf.alive());
     assert!(trapped.alive());
 }
@@ -2385,9 +2405,9 @@ fn yer() {
         day_number: 2,
         information: GraveInformation::Normal { 
             role: Role::Detective, 
-            will: "".to_string(), 
-            death_cause: GraveDeathCause::Killers(vec![GraveKiller::Role(Role::Yer)]), 
-            death_notes: Vec::new(),
+            alibi: "".to_string(), 
+            death_causes: vec![GraveDeathCause::Role(Role::Yer)], 
+            calling_cards: Vec::new(),
         },
         
     }};
@@ -2424,9 +2444,9 @@ fn yer() {
         day_number: 3,
         information: GraveInformation::Normal { 
             role: Role::Zealot, 
-            will: "".to_string(), 
-            death_cause: GraveDeathCause::Killers(vec![GraveKiller::Role(Role::Yer)]), 
-            death_notes: Vec::new(),
+            alibi: "".to_string(), 
+            death_causes: vec![GraveDeathCause::Role(Role::Yer)], 
+            calling_cards: Vec::new(),
         },
     }};
 
@@ -2464,9 +2484,9 @@ fn yer() {
         day_number: 4,
         information: GraveInformation::Normal { 
             role: Role::Engineer, 
-            will: "".to_string(), 
-            death_cause: GraveDeathCause::Killers(vec![GraveKiller::Role(Role::Yer)]), 
-            death_notes: Vec::new(),
+            alibi: "".to_string(), 
+            death_causes: vec![GraveDeathCause::Role(Role::Yer)], 
+            calling_cards: Vec::new(),
         },
     }};
 
@@ -2486,7 +2506,7 @@ fn godfather_dies_to_veteran(){
     );
 
     assert!(gf.send_ability_input_player_list_typical(vet));
-    assert!(vet.send_ability_input_boolean_typical(true));
+    assert!(vet.send_ability_input_player_list_typical(vet));
 
     game.next_phase();
 
@@ -2613,7 +2633,7 @@ fn godfather_dies_to_veteran_after_possessed(){
     );
 
     assert!(min.send_ability_input_two_player_typical(gf, vet));
-    assert!(vet.send_ability_input_boolean_typical(true));
+    assert!(vet.send_ability_input_player_list_typical(vet));
 
     game.next_phase();
 

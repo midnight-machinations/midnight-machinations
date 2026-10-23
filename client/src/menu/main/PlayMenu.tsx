@@ -10,6 +10,7 @@ import LobbyMenu from "../lobby/LobbyMenu";
 import PlayMenuJoinPopup from "./PlayMenuJoinPopup";
 import { encodeString } from "../../components/ChatMessage";
 import { Button } from "../../components/Button";
+import Icon from "../../components/Icon";
 
 export default function PlayMenu(): ReactElement {
     const { setContent: setAnchorContent } = useContext(AnchorControllerContext)!;
@@ -51,7 +52,10 @@ export default function PlayMenu(): ReactElement {
                     {translate("menu.play.title")}
                 </h2>
                 <div>
-                    <button onClick={async () => {
+                    <Button className="flush" onClick={()=>{GAME_MANAGER.sendLobbyListRequest()}}>
+                        <Icon>refresh</Icon>
+                    </Button>
+                    <button className="brand" onClick={async () => {
                         setAnchorContent(<LoadingScreen type="host"/>);
                         if (await GAME_MANAGER.sendHostPacket()) {
                             setAnchorContent(<LobbyMenu/>)
@@ -59,10 +63,8 @@ export default function PlayMenu(): ReactElement {
                             setAnchorContent(<PlayMenu/>)
                         }
                     }}>
+                        <Icon>add</Icon>
                         {translate("menu.play.button.host")}
-                    </button>
-                    <button onClick={()=>{GAME_MANAGER.sendLobbyListRequest()}}>
-                        {translate("refresh")}
                     </button>
                 </div>
             </header>

@@ -5,10 +5,14 @@ use crate::game::{
 
 pub struct Aura;
 impl Aura{
+    pub fn any(game: &Game, midnight_variables: &OnMidnightFold, player: PlayerReference) -> bool {
+        Aura::innocent(game, midnight_variables, player) || Aura::suspicious(game, midnight_variables, player)
+    }
     pub fn innocent(game: &Game, midnight_variables: &OnMidnightFold, player: PlayerReference) -> bool {
         ((AbilityID::Role { role: Role::Godfather, player }).exists(game) && !player.night_blocked(midnight_variables)) ||
         ((AbilityID::Role { role: Role::Disguiser, player }).exists(game) && !player.night_blocked(midnight_variables)) ||
-        ((AbilityID::Role { role: Role::Pyrolisk, player }).exists(game) && game.day_number() == 1)
+        ((AbilityID::Role { role: Role::Pyrolisk, player }).exists(game) && game.day_number() == 1) ||
+        ((AbilityID::Role { role: Role::Reeducator, player }).exists(game) && game.day_number() == 1)
     }
     pub fn suspicious(game: &Game, midnight_variables: &OnMidnightFold, player: PlayerReference) -> bool {
         player.night_framed(midnight_variables) ||

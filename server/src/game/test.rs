@@ -2,12 +2,8 @@ use rand::{rngs::SmallRng, SeedableRng as _};
 
 use crate::{
     game::{
-        abilities_component::Abilities, chat::{ChatComponent, PlayerChatGroups}, components::{blocked::BlockedComponent,
-        enfranchise::EnfranchiseComponent, fast_forward::FastForwardComponent, graves::Graves, pitchfork_item::PitchforkItemComponent,
-        role::RoleComponent, role_reveal::RevealedPlayersComponent}, event::{AsInvokable as _, Invokable as _},
-        role_list_generation::RoleListGenerator
-    },
-    vec_map::VecMap
+        abilities_component::Abilities, chat::{ChatComponent, PlayerChatGroups}, components::{blocked::BlockedComponent, enfranchise::EnfranchiseComponent, fast_forward::FastForwardComponent, graves::Graves, hide_votes_message::HideVotesMessage, pitchfork_item::PitchforkItemComponent, role::RoleComponent, role_reveal::RevealedPlayersComponent}, event::{AsInvokable as _, Invokable as _}, role_list_generation::RoleListGenerator
+    }, vec_map::VecMap
 };
 
 use super::{
@@ -51,7 +47,6 @@ pub fn mock_game(settings: Settings, num_players: u8) -> Result<(Game, Assignmen
     let mut game = Game{
         clients: VecMap::new(),
         room_name: "Test".to_string(),
-        // pitchfork: Pitchfork::new(num_players),
         
         assignments: assignments.clone(),
         ticking: true,
@@ -60,11 +55,12 @@ pub fn mock_game(settings: Settings, num_players: u8) -> Result<(Game, Assignmen
         spectator_chat_messages: Vec::new(),
         players: players.into_boxed_slice(),
         phase_machine: PhaseStateMachine::new(settings.phase_times.clone()),
+        abilities: Abilities::new(&assignments, &settings.enabled_roles),
         settings,
 
         player_chat_groups: PlayerChatGroups::new(),
+        hide_votes_message: HideVotesMessage::default(),
         enfranchise: unsafe{EnfranchiseComponent::new(num_players)},
-        abilities: Abilities::new(&assignments),
         graves: Graves::default(),
         controllers: Controllers::default(),
         cult: Cult::default(),
@@ -98,7 +94,7 @@ pub fn mock_game(settings: Settings, num_players: u8) -> Result<(Game, Assignmen
         InsiderGroups::send_player_insider_groups_packet(&game, player);
     }
     
-    Abilities::set_default_abilties(&mut game);
+    Abilities::set_abilities_states_to_default(&mut game);
 
     //on role creation needs to be called after all players roles are known
     for player_ref in PlayerReference::all_players(&game){

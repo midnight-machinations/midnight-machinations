@@ -6,7 +6,7 @@ import { deleteReconnectData, loadReconnectData } from "./game/localStorage";
 import GAME_MANAGER from ".";
 import StartMenu from "./menu/main/StartMenu";
 import GameModesEditor from "./components/gameModeSettings/GameModesEditor";
-import parseFromJson from "./components/gameModeSettings/gameMode/dataFixer";
+import parseFromJson from "./components/gameModeSettings/gameMode/migrations";
 import { isFailure } from "./components/gameModeSettings/gameMode/parse";
 
 function uriAsFileURI(path: string): string {

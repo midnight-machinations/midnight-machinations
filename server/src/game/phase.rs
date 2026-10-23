@@ -29,7 +29,7 @@ pub enum PhaseType {
     Night,
     Recess
 }
-#[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq)]
+#[derive(Clone, Debug, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 #[serde(tag = "type")]
 pub enum PhaseState {
@@ -40,18 +40,24 @@ pub enum PhaseState {
     },
     Discussion,
     #[serde(rename_all = "camelCase")]
-    Nomination { trials_left: u8, nomination_time_remaining: Option<Duration> },
+    Nomination { trials_left: u8, },
     #[serde(rename_all = "camelCase")]
     Adjournment {trials_left: u8},
     #[serde(rename_all = "camelCase")]
-    Testimony { trials_left: u8, player_on_trial: PlayerReference, nomination_time_remaining: Option<Duration> },
+    Testimony { trials_left: u8, player_on_trial: PlayerReference, },
     #[serde(rename_all = "camelCase")]
-    Judgement { trials_left: u8, player_on_trial: PlayerReference, nomination_time_remaining: Option<Duration> },
+    Judgement { trials_left: u8, player_on_trial: PlayerReference, },
     #[serde(rename_all = "camelCase")]
     FinalWords { player_on_trial: PlayerReference },
     Dusk,
     Night,
     Recess
+}
+impl Eq for PhaseState {}
+impl PartialEq for PhaseState {
+    fn eq(&self, other: &Self) -> bool {
+        core::mem::discriminant(self) == core::mem::discriminant(other)
+    }
 }
 impl PartialOrd for PhaseState{
     fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
@@ -111,13 +117,6 @@ impl PhaseStateMachine {
             time = time.map(|o|o.div(2));
         }
 
-        if
-            phase == PhaseType::Nomination &&
-            !game.modifier_settings().is_enabled(ModifierID::UnscheduledNominations)
-        {
-            time = time.map(|o|o.div(3));
-        }
-
         time
     }
 }
@@ -174,9 +173,7 @@ impl PhaseState {
 
                 game.phase_machine.day_number = game.phase_machine.day_number.saturating_add(1);
             },
-            PhaseState::Nomination { trials_left, nomination_time_remaining } => {
-                game.phase_machine.set_time_remaining(nomination_time_remaining);
-
+            PhaseState::Nomination { trials_left} => {
                 let required_votes = game.nomination_votes_required();
                 game.add_message_to_chat_group(ChatGroup::All, ChatMessageVariant::TrialInformation { required_votes, trials_left });
                 
@@ -220,7 +217,6 @@ impl PhaseState {
             PhaseState::Discussion => {
                 Self::Nomination {
                     trials_left: 3,
-                    nomination_time_remaining: PhaseStateMachine::get_phase_time_length(game, PhaseType::Nomination)
                 }
             },
             PhaseState::Nomination {trials_left, ..} => {
@@ -233,8 +229,7 @@ impl PhaseState {
                 }else if let Some(player_on_trial) = game.count_nomination_and_start_trial(false){    
                     Self::Testimony{
                         trials_left: trials_left.saturating_sub(1), 
-                        player_on_trial, 
-                        nomination_time_remaining: PhaseStateMachine::get_phase_time_length(game, PhaseType::Nomination)
+                        player_on_trial,
                     }
                 } else if trials_left > 0 {
                     Self::Adjournment {trials_left: trials_left.saturating_sub(1)}
@@ -248,14 +243,13 @@ impl PhaseState {
                 } else {
                     Self::Nomination {
                         trials_left,
-                        nomination_time_remaining: PhaseStateMachine::get_phase_time_length(game, PhaseType::Nomination)
                     }
                 }
             },
-            PhaseState::Testimony { trials_left, player_on_trial, nomination_time_remaining } => {
-                Self::Judgement { trials_left, player_on_trial, nomination_time_remaining }
+            PhaseState::Testimony { trials_left, player_on_trial } => {
+                Self::Judgement { trials_left, player_on_trial }
             },
-            PhaseState::Judgement { trials_left, player_on_trial, nomination_time_remaining } => {
+            PhaseState::Judgement { trials_left, player_on_trial } => {
 
 
                 let (guilty, innocent) = game.count_verdict_votes(player_on_trial);
@@ -295,7 +289,7 @@ impl PhaseState {
                 } else if trials_left == 0 {
                     Self::Dusk
                 }else{
-                    Self::Nomination { trials_left, nomination_time_remaining }
+                    Self::Nomination { trials_left }
                 }
             },
             PhaseState::FinalWords { player_on_trial } => {

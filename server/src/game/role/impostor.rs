@@ -17,7 +17,7 @@ impl RoleStateTrait for Impostor {
     fn on_midnight(self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut OnMidnightFold, priority: OnMidnightPriority) {
         Godfather::night_kill_ability(game, midnight_variables, actor_ref, priority, Role::Impostor);
     }
-    fn convert_selection_to_visits(self, game: &Game, actor_ref: PlayerReference) -> Vec<Visit> {
+    fn create_visits_initialize_night(self, game: &Game, _id: &AbilityID, actor_ref: PlayerReference) -> Vec<Visit> {
         crate::game::role::common_role::convert_controller_selection_to_visits(
             game,
             actor_ref,
@@ -53,8 +53,8 @@ impl RoleStateTrait for Impostor {
             let grave = grave.deref_mut(game);
             grave.information = match grave.information.clone() {
                 GraveInformation::Obscured => GraveInformation::Obscured,
-                GraveInformation::Normal {will, death_cause, death_notes, .. } => {
-                    GraveInformation::Normal { role, will, death_cause, death_notes } 
+                GraveInformation::Normal {alibi: will, death_causes: death_cause, calling_cards, .. } => {
+                    GraveInformation::Normal { role, alibi: will, death_causes: death_cause, calling_cards } 
                 },
             };
         }

@@ -1,4 +1,3 @@
-import React from "react";
 import { ReactElement } from "react";
 import "./icon.css"
 
@@ -13,5 +12,5 @@ export default function Icon(props: JSX.IntrinsicElements['span'] & { size?: "no
             sizeClassName = `icon-${props.size}`
         break
     }
-    return <span {...props} className={"material-icons-round " + (props.className ?? "") + (" " + sizeClassName)}/>
+    return <span {...props} className={"material-symbols-rounded " + (props.className ?? "") + (" " + sizeClassName)}/>
 }

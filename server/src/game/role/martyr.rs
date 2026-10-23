@@ -1,5 +1,5 @@
 use serde::Serialize;
-use crate::game::prelude::*;
+use crate::game::{components::attack::night_attack::NightAttack, prelude::*};
 
 #[derive(PartialEq, Eq, Clone, Debug, Serialize)]
 #[serde(rename_all = "camelCase")]
@@ -49,11 +49,20 @@ impl RoleStateTrait for Martyr {
             self.state = MartyrState::StillPlaying { bullets: bullets.saturating_sub(1) };
 
             if target_ref == actor_ref {
-                if target_ref.try_night_kill_single_attacker(actor_ref, game, midnight_variables, GraveKiller::Suicide, AttackPower::Basic, true) {
+                if NightAttack::new()
+                    .attackers([actor_ref])
+                    .grave_killer(GraveDeathCause::Suicide)
+                    .leave_calling_card()
+                    .attack(game, midnight_variables, target_ref)
+                {
                     self.state = MartyrState::Won;
                 }
             } else {
-                target_ref.try_night_kill_single_attacker(actor_ref, game, midnight_variables, GraveKiller::Role(Role::Martyr), AttackPower::Basic, true);
+                NightAttack::new()
+                    .attackers([actor_ref])
+                    .grave_killer(Role::Martyr)
+                    .leave_calling_card()
+                    .attack(game, midnight_variables, target_ref);
             }
         };
 
@@ -72,9 +81,18 @@ impl RoleStateTrait for Martyr {
             )
             .build_map()
     }
-    fn convert_selection_to_visits(self, game: &Game, actor_ref: PlayerReference) -> Vec<Visit> {
+    fn create_visits_initialize_night(self, game: &Game, id: &AbilityID, actor_ref: PlayerReference) -> Vec<Visit> {
         let Some(BooleanSelection(true)) = ControllerID::role(actor_ref, Role::Martyr, 0).get_boolean_selection(game) else {return Vec::new()};
-        vec![Visit::new_role(actor_ref, actor_ref, true, Role::Martyr, 0)]
+        vec![Visit {
+            visitor: actor_ref,
+            target: actor_ref,
+            tag: VisitTag::Ability{ability: *id, id: 0},
+            attack: true,
+            wardblock_immune: false,
+            transport_immune: false,
+            investigate_immune: false,
+            indirect: false
+        }]
     }
     fn on_phase_start(self,  game: &mut Game, actor_ref: PlayerReference, phase: PhaseType) {
         if phase == PhaseType::Obituary && matches!(self.state, MartyrState::StillPlaying {..}) {
@@ -85,8 +103,8 @@ impl RoleStateTrait for Martyr {
             actor_ref.die_and_add_grave(game, Grave::from_player_suicide(game, actor_ref));
         }
     }
-    fn on_ability_creation(self, game: &mut Game, actor_ref: PlayerReference, event: &OnAbilityCreation, fold: &mut OnAbilityCreationFold, priority: OnAbilityCreationPriority) {
-        if priority != OnAbilityCreationPriority::SideEffect || !event.id.is_players_role(actor_ref, Role::Martyr) || fold.cancelled {return}
+    fn on_ability_creation(self, game: &mut Game, actor_ref: PlayerReference, event: &OnAbilityCreation, _fold: &mut OnAbilityCreationFold, priority: OnAbilityCreationPriority) {
+        if priority != OnAbilityCreationPriority::SideEffect || !event.id.is_players_role(actor_ref, Role::Martyr) {return}
         game.add_message_to_chat_group(ChatGroup::All, ChatMessageVariant::MartyrRevealed { martyr: actor_ref });
         for player in PlayerReference::all_players(game){
             player.reveal_players_role(game, actor_ref);
@@ -96,8 +114,8 @@ impl RoleStateTrait for Martyr {
     fn on_any_death(self, game: &mut Game, actor_ref: PlayerReference, dead_player_ref: PlayerReference) {
         let left_town = GraveReference::all_graves(game).any(|grave| 
             grave.deref(game).player == dead_player_ref &&
-            if let GraveInformation::Normal { death_cause, .. } = &grave.deref(game).information {
-                *death_cause == GraveDeathCause::Ascension
+            if let GraveInformation::Normal { death_causes, .. } = &grave.deref(game).information {
+                death_causes.contains(&GraveDeathCause::Ascension)
             } else {false}
         );
 

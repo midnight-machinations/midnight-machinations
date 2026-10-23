@@ -34,6 +34,6 @@ impl Chronokaiser {
         (game.day_number().saturating_sub(1) as u32).saturating_mul(Self::SPEED_UP_PERCENT_PER_DAY)
     }
     pub fn won(game: &Game, actor_ref: PlayerReference)->bool{
-        actor_ref.alive(game)
+        actor_ref.alive(game) && game.game_is_over() 
     }
 }

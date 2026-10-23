@@ -16,7 +16,7 @@ pub(super) const DEFENSE: DefensePower = DefensePower::None;
 
 impl RoleStateTrait for Disguiser {
     type ClientAbilityState = Disguiser;
-    fn on_midnight(mut self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut OnMidnightFold, priority: OnMidnightPriority) {
+    fn on_midnight(mut self, game: &mut Game, id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut OnMidnightFold, priority: OnMidnightPriority) {
         if priority != OnMidnightPriority::Deception {return}
 
         let Some(appeared_visit_player) = Visits::default_target(midnight_variables, actor_ref, Role::Disguiser) else {return};
@@ -24,16 +24,18 @@ impl RoleStateTrait for Disguiser {
         self.last_role_selection = Self::disguised_role(&self, game, actor_ref);
 
         appeared_visit_player.set_night_appeared_visits(midnight_variables, true);
-        Visits::add_visits(midnight_variables, 
-            Visits::into_iter(midnight_variables)
-                .with_visitor(actor_ref)
-                .with_tag(VisitTag::Role { role: Role::Disguiser, id: 1 })
-                .map(|v|Visit::new_appeared(appeared_visit_player, v.target))
-        );
+        let new_appeared_visits = Visits::into_iter(midnight_variables)
+            .with_visitor(actor_ref)
+            .with_tag(VisitTag::Ability { ability: *id, id: 1 })
+            .map(|v|Visit::new_appeared(appeared_visit_player, v.target))
+            .collect::<Vec<_>>()
+            .into_iter();
+        
+        Visits::add_visits(midnight_variables, new_appeared_visits);
 
         actor_ref.edit_role_ability_helper(game, self);
     }
-    fn convert_selection_to_visits(self, game: &Game, actor_ref: PlayerReference) -> Vec<Visit> {
+    fn create_visits_initialize_night(self, game: &Game, id: &AbilityID, actor_ref: PlayerReference) -> Vec<Visit> {
         crate::game::role::common_role::convert_controller_selection_to_visits(
             game,
             actor_ref,
@@ -45,7 +47,7 @@ impl RoleStateTrait for Disguiser {
                 actor_ref,
                 ControllerID::role(actor_ref, Role::Disguiser, 1),
                 false,
-                VisitTag::Role { role: Role::Disguiser, id: 1 }
+                VisitTag::Ability { ability: *id, id: 1 }
             ).into_iter().map(|mut v|{v.indirect=true; v.wardblock_immune=true; v.investigate_immune=true; v})
         ).collect()
     }
@@ -104,12 +106,12 @@ impl RoleStateTrait for Disguiser {
         if actor_ref == grave.deref(game).player && actor_ref.alive(game) {
             let mut grave = grave_ref.deref(game).clone();
             *grave_ref.deref_mut(game) = match grave.information {
-                GraveInformation::Normal{role: _, will, death_cause, death_notes} => {
+                GraveInformation::Normal{role: _, alibi: will, death_causes, calling_cards} => {
                     grave.information = GraveInformation::Normal{
                         role: Self::disguised_role(&self, game, actor_ref),
-                        will,
-                        death_cause,
-                        death_notes
+                        alibi: will,
+                        death_causes,
+                        calling_cards
                     };
                     grave
                 },
@@ -126,7 +128,7 @@ impl RoleStateTrait for Disguiser {
 
 impl Disguiser{
     fn disguised_role(&self, game: &Game, actor_ref: PlayerReference)->Role{
-        if let Some(role) = ControllerID::role(actor_ref, Role::Disguiser, 1)
+        if let Some(role) = ControllerID::role(actor_ref, Role::Disguiser, 2)
             .get_role_list_selection(game)
             .and_then(|selection| selection.0.first().copied())
         {

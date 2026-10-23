@@ -15,7 +15,7 @@ impl RoleStateTrait for Philosopher {
     fn on_midnight(self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut OnMidnightFold, priority: OnMidnightPriority) {
         if priority != OnMidnightPriority::Investigative {return;}
 
-        let mut actor_visits = Visits::into_iter(midnight_variables).default_visits(actor_ref, Role::Philosopher);
+        let mut actor_visits = Visits::into_iter(midnight_variables).default_role_visits(actor_ref, Role::Philosopher);
         let Some(first_visit) = actor_visits.next() else {return;};
         let Some(second_visit) = actor_visits.next() else {return;};
 
@@ -46,7 +46,7 @@ impl RoleStateTrait for Philosopher {
             .night_typical(actor_ref)
             .build_map()
     }
-    fn convert_selection_to_visits(self, game: &Game, actor_ref: PlayerReference) -> Vec<Visit> {
+    fn create_visits_initialize_night(self, game: &Game, _id: &AbilityID, actor_ref: PlayerReference) -> Vec<Visit> {
         common_role::convert_controller_selection_to_visits(
             game,
             actor_ref,

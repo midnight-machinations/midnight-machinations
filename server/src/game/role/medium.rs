@@ -57,7 +57,7 @@ impl RoleStateTrait for Medium {
         ])
     }
     fn send_player_chat_group_map(self, game: &Game, actor_ref: PlayerReference) -> PlayerChatGroupMap {
-        let mut out = PlayerChatGroupMap::new();
+        let mut out = PlayerChatGroupMap::default();
         if 
             !actor_ref.ability_deactivated_from_death(game) &&
             (
@@ -76,7 +76,7 @@ impl RoleStateTrait for Medium {
         out
     }
     fn receive_player_chat_group_map(self, game: &Game, actor_ref: PlayerReference)->crate::game::chat::PlayerChatGroupMap {
-        let mut out = PlayerChatGroupMap::new();
+        let mut out = PlayerChatGroupMap::default();
         if 
             !actor_ref.ability_deactivated_from_death(game) &&
             (
@@ -93,6 +93,38 @@ impl RoleStateTrait for Medium {
             out.insert(target, ChatGroup::Dead);
         }
         out
+    }
+    fn create_visits_initialize_night(self, _game: &Game, _id: &AbilityID, actor_ref: PlayerReference) -> Vec<Visit> {
+        Vec::new()
+            .into_iter()
+            .chain(
+                self.seanced_target.map(|target|
+                    Visit{
+                        visitor: actor_ref,
+                        target,
+                        tag: VisitTag::Ability { ability: AbilityID::Role { role: Role::Medium, player: actor_ref }, id: 0 },
+                        attack: false,
+                        wardblock_immune: false,
+                        transport_immune: true,
+                        investigate_immune: false,
+                        indirect: false
+                    }
+                )
+            ).chain(
+                self.haunted_target.map(|target|
+                    Visit{
+                        visitor: actor_ref,
+                        target,
+                        tag: VisitTag::Ability { ability: AbilityID::Role { role: Role::Medium, player: actor_ref }, id: 1 },
+                        attack: false,
+                        wardblock_immune: false,
+                        transport_immune: true,
+                        investigate_immune: false,
+                        indirect: false
+                    }
+                )
+            )
+            .collect()
     }
     fn on_phase_start(mut self, game: &mut Game, actor_ref: PlayerReference, phase: PhaseType){
         match phase {
@@ -143,11 +175,13 @@ impl RoleStateTrait for Medium {
             _=>{}
         }
     }
-    fn on_player_roleblocked(self, game: &mut Game, midnight_variables: &mut OnMidnightFold, actor_ref: PlayerReference, player: PlayerReference, invisible: bool) {
-        common_role::on_player_roleblocked(Role::Medium, midnight_variables, actor_ref, player);
-        if player != actor_ref {return}
-        if let Some(seanced) = self.seanced_target {
-            seanced.roleblock(game, midnight_variables, invisible);
+    fn on_player_roleblocked(self, game: &mut Game, id: &AbilityID, event: &OnPlayerRoleblocked, fold: &mut OnMidnightFold, _priority: ()) {
+        common_role::on_player_roleblocked(id, fold, event.player);
+        if
+            id.get_player_from_role_id().is_some_and(|actor|actor == event.player) &&
+            let Some(seanced) = self.seanced_target
+        {
+            seanced.roleblock(game, fold, event.invisible);
         }
     }
 }

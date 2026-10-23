@@ -1,7 +1,7 @@
 import React, { ReactElement, ReactNode, useContext, useEffect, useMemo, useRef } from "react";
 import ReactDOM from "react-dom/client";
 import { THEME_CSS_ATTRIBUTES } from "..";
-import { AnchorControllerContext, MobileContext } from "../menu/Anchor";
+import { AnchorControllerContext, MobileContext, TooltipContext } from "../menu/Anchor";
 import { MenuControllerContext } from "../menu/game/GameScreen";
 import { GameModeContext } from "./gameModeSettings/GameModesEditor";
 
@@ -91,6 +91,7 @@ export default function Popover<T extends HTMLElement = HTMLElement>(props: Read
     const menuControllerContext = useContext(MenuControllerContext);
     const gameModeContext = useContext(GameModeContext);
     const mobileContext = useContext(MobileContext);
+    const tooltipContext = useContext(TooltipContext);
 
     //open and set position
     useEffect(() => {
@@ -103,7 +104,9 @@ export default function Popover<T extends HTMLElement = HTMLElement>(props: Read
                     <MenuControllerContext.Provider value={menuControllerContext}>
                         <GameModeContext.Provider value={gameModeContext}>
                             <MobileContext.Provider value={mobileContext}>
-                                {props.children}
+                                <TooltipContext.Provider value={tooltipContext}>
+                                    {props.children}
+                                </TooltipContext.Provider>
                             </MobileContext.Provider>
                         </GameModeContext.Provider>
                     </MenuControllerContext.Provider>
@@ -126,7 +129,16 @@ export default function Popover<T extends HTMLElement = HTMLElement>(props: Read
         } else {
             popoverElement.hidden = true;
         }
-    }, [props, popoverRoot, anchorControllerContext, menuControllerContext, gameModeContext, mobileContext]);
+    }, [props.children, props.onRender, props.anchorForPositionRef, props.open, popoverRoot, anchorControllerContext, menuControllerContext, gameModeContext, mobileContext, tooltipContext]);
+
+    // Resize when children change
+    useEffect(() => {
+        setTimeout(() => {
+            if (props.onRender) {
+                props.onRender(popoverRef.current, props.anchorForPositionRef?.current ?? undefined)
+            }
+        })
+    }, [props.anchorForPositionRef, props.children, props.onRender, popoverRef])
 
     //close on click outside
     useEffect(() => {
@@ -135,7 +147,11 @@ export default function Popover<T extends HTMLElement = HTMLElement>(props: Read
         }
 
         const handleClickOutside = (event: MouseEvent) => {
-            if (!popoverRef.current?.contains(event.target as Node) && props.open) {
+            if (
+                !popoverRef.current?.contains(event.target as Node) &&
+                !props.anchorForPositionRef?.current?.contains(event.target as Node)
+                && props.open
+            ) {
                 props.setOpenOrClosed(false);
             }
         };
@@ -150,5 +166,5 @@ export default function Popover<T extends HTMLElement = HTMLElement>(props: Read
         }
     }, [props]);
 
-    return <div ref={thisRef} />
+    return <div ref={thisRef} hidden={true}/>
 }

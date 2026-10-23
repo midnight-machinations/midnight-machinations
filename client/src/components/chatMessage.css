@@ -31,6 +31,8 @@
     margin: .1rem;
     margin-left: 0;
     margin-right: 0;
+    padding-left: .25rem;
+    padding-right: .25rem;
     overflow-wrap: anywhere;
     tab-size: 1rem;
 }
@@ -50,7 +52,7 @@
 /* Chat message variants */
 .chat-message.player {
     text-indent: -1rem;
-    padding-left: 1rem;
+    padding-left: 1.25rem;
 }
 .chat-message.mention {
     /* Since it's so blurred, this shadow acts as a highlight overlay. */
@@ -90,7 +92,7 @@
     border-top: .13rem solid var(--primary-border-color);
     border-bottom: .13rem solid var(--primary-border-color);
 }
-.chat-message.deathNote {
+.chat-message.callingCard {
     border-top: .13rem solid var(--primary-border-color);
     border-bottom: .13rem solid var(--primary-border-color);
     background-color: #ff000022;

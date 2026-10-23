@@ -1,15 +1,13 @@
-import React, { ReactElement, useRef, useState } from "react";
+import { ReactElement, useEffect, useState } from "react";
 import translate from "../../game/lang";
 import GAME_MANAGER from "../../index";
 import "./lobbyMenu.css";
 import { ClientConnection } from "../../game/gameState.d";
 import Icon from "../../components/Icon";
 import { useLobbyOrGameState } from "../../components/useHooks";
-import { Button, RawButton } from "../../components/Button";
-import Popover from "../../components/Popover";
-import { dropdownPlacementFunction } from "../../components/Select";
 import StyledText from "../../components/StyledText";
 import { encodeString } from "../../components/ChatMessage";
+import FlushInput from "../../components/FlushInput";
 
 type PlayerDisplayData = {
     id: number,
@@ -58,43 +56,22 @@ export default function LobbyPlayerList(): ReactElement {
         ["playersHost", "playersLostConnection", "lobbyClients", "playersReady", "hostData", "gamePlayers"]
     ) ?? [];
 
-    const host = useLobbyOrGameState(
-        state => {
-            if (state.stateType === "lobby")
-                return state.players.get(state.myId!)?.ready === "host"
-            else
-                return state.host !== null
-        },
-        ["playersHost", "lobbyClients", "yourId", "playersReady", "hostData"]
-    )!;
-
-    return <section className="player-list-menu-colors selector-section">
-        <h2>{translate("menu.lobby.players")}</h2>
+    return <section className="player-list-menu-colors selector-section lobby-player-list-section">
         <div className="lobby-player-list">
             <ol>
                 {players
                     .filter(player => player.clientType === "player")
                     .map(player => <LobbyPlayerListPlayer key={player.id} player={player}/>)
                 }
-            </ol>
-        </div>
-        {host && <>
-            <h2>{translate("menu.hostSettings.spectators")}</h2>
-            <div className="lobby-player-list">
-                <ol>
+                {players.some(player => player.clientType === "spectator") && <>
+                    <h3><Icon size="small">visibility</Icon> {translate("menu.hostSettings.spectators")}</h3>
                     {players
                         .filter(player => player.clientType === "spectator")
                         .map(player => <LobbyPlayerListPlayer key={player.id} player={player}/>)
                     }
-                </ol>
-            </div>
-        </>}
-        {!host && <div className="spectators-ready">
-            {translate("menu.lobby.spectatorsReady", 
-                [...players.values()].filter(p => p.clientType === "spectator" && p.ready !== null).length,
-                [...players.values()].filter(p => p.clientType === "spectator").length
-            )}
-        </div>}
+                </>}
+            </ol>
+        </div>
     </section>
 }
 
@@ -109,16 +86,17 @@ function LobbyPlayerListPlayer(props: Readonly<{ player: PlayerDisplayData }>): 
         ["playersHost", "lobbyClients", "yourId", "playersReady", "hostData"]
     )!;
 
-    const [renameOpen, setRenameOpen] = useState(false);
-    const renameButtonRef = useRef<HTMLButtonElement>(null);
-
     return <li key={props.player.id} className={props.player.connection==="connected" ? "" : "keyword-dead"}>
         <div>
             {props.player.connection === "couldReconnect" && <Icon>signal_cellular_connected_no_internet_4_bar</Icon>}
             {props.player.connection === "disconnected" && <Icon>sentiment_very_dissatisfied</Icon>}
             {props.player.host && <Icon>shield</Icon>}
             {props.player.ready && <Icon>check</Icon>}
-            <StyledText>{props.player.displayName}</StyledText>
+            {(props.player.host === false && props.player.ready === false) && <Icon className="keyword-dead">schedule</Icon>}
+            {!host && <StyledText className={(props.player.host === false && props.player.ready === false) ? "keyword-dead" : ""}>
+                {props.player.displayName}
+            </StyledText>}
+            {host && <LobbyPlayerListPlayerRename {...props}/>}
         </div>
         <div>
             {host && !props.player.host && <button
@@ -127,39 +105,24 @@ function LobbyPlayerListPlayer(props: Readonly<{ player: PlayerDisplayData }>): 
             {host && props.player.connection !== "disconnected" && <button 
                 onClick={() => GAME_MANAGER.sendKickPlayerPacket(props.player.id)}
             ><Icon>person_remove</Icon></button>}
-            {host && props.player.clientType === "player" && <>
-                <RawButton
-                    ref={renameButtonRef}
-                    onClick={() => setRenameOpen(open => !open)}
-                ><Icon>edit</Icon></RawButton>
-                <Popover
-                    open={renameOpen}
-                    setOpenOrClosed={setRenameOpen}
-                    onRender={dropdownPlacementFunction}
-                    anchorForPositionRef={renameButtonRef}
-                ><LobbyPlayerListPlayerRename {...props}/></Popover>
-            </>}
         </div>
     </li>
 }
 
 function LobbyPlayerListPlayerRename(props: Readonly<{ player: PlayerDisplayData }>): ReactElement {
     const [playerName, setPlayerName] = useState(props.player.name ?? "");
+
+    useEffect(() => {
+        setPlayerName(props.player.name ?? "BUG")
+    }, [props.player.name])
     
-    return <div className="lobby-player-list-player-rename">
-        <input 
-            value={playerName}
-            onInput={e => setPlayerName((e.target as HTMLInputElement).value)}
-            onKeyUp={e => {
-                if (e.key === "Enter") {
-                    const newName = (e.target as HTMLInputElement).value;
-                    setPlayerName(newName);
-                    GAME_MANAGER.sendHostSetPlayerNamePacket(props.player.id, newName);
-                }
-            }}
-        />
-        <Button 
-            onClick={() => GAME_MANAGER.sendHostSetPlayerNamePacket(props.player.id, playerName)}
-        >{translate("menu.lobby.button.setName")}</Button>
-    </div>
+    return <FlushInput 
+        className="lobby-player-list-player-rename"
+        value={playerName}
+        setValue={newName => setPlayerName(newName)}
+        onConfirm={newName => {
+            setPlayerName(newName);
+            GAME_MANAGER.sendHostSetPlayerNamePacket(props.player.id, newName);
+        }}
+    />
 }

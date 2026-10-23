@@ -1,8 +1,9 @@
 use serde::{Deserialize, Serialize};
 
 
-#[derive(Debug, PartialEq, Eq, Clone, Copy, Hash, Serialize, Deserialize)]
+#[derive(Debug, Default, PartialEq, Eq, Clone, Copy, Hash, Serialize, Deserialize)]
 pub enum AttackPower {
+    #[default]
     Basic = 1,
     ArmorPiercing = 2,
     ProtectionPiercing = 3

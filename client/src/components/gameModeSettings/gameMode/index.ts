@@ -5,7 +5,8 @@ import { Role } from "../../../game/roleState.d";
 import { ListMapData } from "../../../ListMap";
 
 
-export type CurrentFormat = "v6";
+// The format field can be any string - it represents the ID of the last migration applied
+export type CurrentFormat = string;
 
 export type GameModeStorage = {
     format: CurrentFormat,

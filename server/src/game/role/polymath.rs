@@ -1,4 +1,5 @@
 use serde::Serialize;
+use crate::game::components::attack::night_attack::NightAttack;
 use crate::vec_map;
 use crate::game::prelude::*;
 use super::detective::Detective;
@@ -42,7 +43,9 @@ impl RoleStateTrait for Polymath {
                 
                 Transport::transport(
                     midnight_variables, TransportPriority::Warper, 
-                    &vec_map![(from, to)], |_| true, false
+                    vec_map![(from, to)],
+                    |_| true,
+                    false
                 );
             }
             (OnMidnightPriority::Kill, PolymathAbilityType::Kill) => {
@@ -53,14 +56,10 @@ impl RoleStateTrait for Polymath {
                 let Some(mark) = mark.first() else {return};
                 if !target.all_direct_night_visitors_cloned(midnight_variables).any(|p|p == *mark) {return};
                 
-                mark.try_night_kill_single_attacker (
-                    actor_ref,
-                    game, 
-                    midnight_variables, 
-                    GraveKiller::Role(Role::Marksman), 
-                    AttackPower::Basic, 
-                    false
-                );
+                NightAttack::new()
+                    .attackers([actor_ref])
+                    .grave_killer(Role::Marksman)
+                    .attack(game, midnight_variables, *mark);
             },
             _=>(),
         }
@@ -140,7 +139,7 @@ impl RoleStateTrait for Polymath {
         }
         ctrl
     }
-    fn convert_selection_to_visits(self, game: &Game, actor_ref: PlayerReference) -> Vec<Visit> {
+    fn create_visits_initialize_night(self, game: &Game, _id: &AbilityID, actor_ref: PlayerReference) -> Vec<Visit> {
         let type_selection = Self::ability_type_selection(game, actor_ref);
         match type_selection {
             PolymathAbilityType::None => Vec::new(),

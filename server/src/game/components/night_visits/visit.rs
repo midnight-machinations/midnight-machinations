@@ -1,6 +1,6 @@
 use serde::Serialize;
+use crate::game::abilities_component::ability_id::AbilityID;
 use crate::game::prelude::PlayerReference;
-use crate::game::prelude::Role;
 
 #[derive(Copy, Clone, Debug, PartialEq, Eq)]
 pub struct Visit {
@@ -20,18 +20,6 @@ pub struct Visit {
     pub indirect: bool
 }
 impl Visit {
-    pub fn new_role(visitor: PlayerReference, target: PlayerReference, attack: bool, role: Role, id: u8) -> Self {
-        Self {
-            visitor,
-            target,
-            tag: VisitTag::Role{role, id},
-            attack,
-            wardblock_immune: false,
-            transport_immune: false,
-            investigate_immune: false,
-            indirect: false,
-        }
-    }
     pub fn new_appeared(visitor: PlayerReference, target: PlayerReference)->Self{
         Self {
             visitor,
@@ -49,7 +37,8 @@ impl Visit {
 #[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord, Serialize)]
 #[serde(tag = "type", rename_all = "camelCase")]
 pub enum VisitTag{
-    Role{role: Role, id: u8},
+    Ability{ability: AbilityID, id: u8},
+    // Role{role: Role, id: u8},
     SyndicateGun,
     SyndicateBackupAttack,
     Appeared

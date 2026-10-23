@@ -32,7 +32,7 @@ pub trait RoleStateTrait: Clone + std::fmt::Debug + Default + Into<RoleState> + 
     fn on_controller_selection_changed(self, _game: &mut Game, _actor_ref: PlayerReference, _id: ControllerID) {}
     fn on_validated_ability_input_received(self, _game: &mut Game, _actor_ref: PlayerReference, _input_player: PlayerReference, _ability_input: ControllerInput) {}
 
-    fn convert_selection_to_visits(self, _game: &Game, _actor_ref: PlayerReference) -> Vec<Visit> {
+    fn create_visits_initialize_night(self, _game: &Game, _id: &AbilityID, _actor_ref: PlayerReference) -> Vec<Visit> {
         vec![]
     }
 
@@ -61,11 +61,11 @@ pub trait RoleStateTrait: Clone + std::fmt::Debug + Default + Into<RoleState> + 
     fn on_grave_added(self, _game: &mut Game, _actor_ref: PlayerReference, _grave: GraveReference) {}
     fn on_conceal_role(self, _game: &mut Game, _actor_ref: PlayerReference, _player: PlayerReference, _concealed_player: PlayerReference) {}
     
-    fn on_player_roleblocked(self, _game: &mut Game, midnight_variables: &mut OnMidnightFold, actor_ref: PlayerReference, player: PlayerReference, _invisible: bool) {
-        common_role::on_player_roleblocked(self.into().role(), midnight_variables, actor_ref, player);
+    fn on_player_roleblocked(self, _game: &mut Game, _id: &AbilityID, _event: &OnPlayerRoleblocked, _fold: &mut OnMidnightFold, _priority: ()) {
+        common_role::on_player_roleblocked(_id, _fold, _event.player);
     }
-    fn on_visit_wardblocked(self, _game: &mut Game, midnight_variables: &mut OnMidnightFold, actor_ref: PlayerReference, visit: Visit) {
-        common_role::on_visit_wardblocked(self.into().role(), midnight_variables, actor_ref, visit);
+    fn on_visit_wardblocked(self, _game: &mut Game, _id: &AbilityID, _event: &OnVisitWardblocked, _fold: &mut OnMidnightFold, _priority: ()) {
+        common_role::on_visit_wardblocked(_id, _fold, _event.visit);
     }
     fn on_player_possessed(self, _game: &mut Game, _id: &AbilityID, _event: &OnPlayerPossessed, _fold: &mut OnMidnightFold, _priority: ()) {}
    
@@ -92,6 +92,8 @@ macros::roles! {
     Snoop : snoop,
     Gossip : gossip,
     TallyClerk : tally_clerk,
+    Dreamwalker : dreamwalker,
+    Spotter : spotter,
 
     Doctor : doctor,
     Bodyguard : bodyguard,
@@ -105,6 +107,7 @@ macros::roles! {
     Veteran : veteran,
     Marksman: marksman,
     Deputy : deputy,
+    Slayer : slayer,
     Rabblerouser : rabblerouser,
 
     Escort : escort,
@@ -114,8 +117,11 @@ macros::roles! {
     Transporter : transporter,
     Porter : porter,
     Polymath : polymath,
-    Courtesan : courtesan,
     Nepotist : nepotist,
+    Employer : employer,
+    Intern : intern,
+
+    TownCommonWildcard : town_common_wildcard,
 
     // Mafia
     Godfather : godfather,
@@ -128,14 +134,16 @@ macros::roles! {
 
     Goon : made_man,
     Consort : consort,
+    Framer : framer,
     Maverick : maverick,
     
     Hypnotist : hypnotist,
+    Pyrotechnician : pyrotechnician,
     Blackmailer : blackmailer,
     Cerenovous : cerenovous,
     Informant: informant,
     Mortician : mortician,
-    Framer : framer,
+    PropMaster: prop_master,
     Disguiser : disguiser,
     Forger : forger,
     Reeducator : reeducator,
@@ -160,12 +168,15 @@ macros::roles! {
     Kidnapper : kidnapper,
     Pawn : pawn,
     Tailor : tailor,
+    Lackey : lackey,
+    Courtesan : courtesan,
 
     Arsonist : arsonist,
     Werewolf : werewolf,
     Ojo : ojo,
     Puppeteer: puppeteer,
     Pyrolisk : pyrolisk,
+    Lich : lich,
     Spiral : spiral,
     Kira : kira,
     Warden : warden,
@@ -248,14 +259,14 @@ mod macros {
                     }
                 }
                 
-                pub fn on_player_roleblocked(self, game: &mut Game, midnight_variables: &mut OnMidnightFold, actor_ref: PlayerReference, player: PlayerReference, invisible: bool){
+                pub fn on_player_roleblocked(self, _game: &mut Game, _id: &AbilityID, _event: &OnPlayerRoleblocked, _fold: &mut OnMidnightFold, _priority: ()){
                     match self {
-                        $(Self::$name(role_struct) => role_struct.on_player_roleblocked(game, midnight_variables, actor_ref, player, invisible)),*
+                        $(Self::$name(role_struct) => role_struct.on_player_roleblocked(_game, _id, _event, _fold, _priority)),*
                     }
                 }
-                pub fn on_visit_wardblocked(self, game: &mut Game, midnight_variables: &mut OnMidnightFold, actor_ref: PlayerReference, visit: Visit) {
+                pub fn on_visit_wardblocked(self, _game: &mut Game, _id: &AbilityID, _event: &OnVisitWardblocked, _fold: &mut OnMidnightFold, _priority: ()) {
                     match self {
-                        $(Self::$name(role_struct) => role_struct.on_visit_wardblocked(game, midnight_variables, actor_ref, visit)),*
+                        $(Self::$name(role_struct) => role_struct.on_visit_wardblocked(_game, _id, _event, _fold, _priority)),*
                     }
                 }
                 pub fn on_player_possessed(self, game: &mut Game, id: &AbilityID, event: &OnPlayerPossessed, fold: &mut OnMidnightFold, priority: ()){
@@ -283,9 +294,9 @@ mod macros {
                         $(Self::$name(role_struct) => role_struct.on_validated_ability_input_received(game, actor_ref, input_player, ability_input)),*
                     }
                 }
-                pub fn convert_selection_to_visits(self, game: &Game, actor_ref: PlayerReference) -> Vec<Visit>{
+                pub fn create_visits_initialize_night(self, game: &Game, id: &AbilityID, actor_ref: PlayerReference) -> Vec<Visit>{
                     match self {
-                        $(Self::$name(role_struct) => role_struct.convert_selection_to_visits(game, actor_ref)),*
+                        $(Self::$name(role_struct) => role_struct.create_visits_initialize_night(game, id, actor_ref)),*
                     }
                 }
                 pub fn send_player_chat_group_map(self, game: &Game, actor_ref: PlayerReference) -> PlayerChatGroupMap{

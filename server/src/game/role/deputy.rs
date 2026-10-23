@@ -31,8 +31,8 @@ impl RoleStateTrait for Deputy {
         let Some(shot) = target_ref.first() else {return};
 
         let mut grave = Grave::from_player_lynch(game, *shot);
-        if let GraveInformation::Normal{death_cause, ..} = &mut grave.information {
-            *death_cause = GraveDeathCause::Killers(vec![GraveKiller::Role(Role::Deputy)]);
+        if let GraveInformation::Normal{death_causes: death_cause, ..} = &mut grave.information {
+            *death_cause = vec![GraveDeathCause::Role(Role::Deputy)];
         }
 
         shot.add_private_chat_message(game, ChatMessageVariant::DeputyShotYou);

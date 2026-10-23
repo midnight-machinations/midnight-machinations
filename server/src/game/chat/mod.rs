@@ -6,6 +6,8 @@ use std::collections::VecDeque;
 pub use chat_group::*;
 pub use chat_message::*;
 pub use chat_message_variant::*;
+use crate::game::modifiers::ModifierID;
+use crate::game::modifiers::less_feedback::LessFeedback;
 use crate::game::prelude::*;
 
 use crate::game::{components::player_component::PlayerComponent, player::PlayerReference, Game};
@@ -31,6 +33,10 @@ impl ChatComponent{
     }
 
     pub fn add_chat_message(game: &mut Game, player: PlayerReference, message: ChatMessage) {
+
+        if game.modifier_settings().is_enabled(ModifierID::LessFeedback) && LessFeedback::should_block_message(&message) {
+            return;
+        }
         let chat_player = game.chat_messages.get_mut(player);
         let index = chat_player.messages.len();
         chat_player.messages.push(message.clone());
@@ -69,7 +75,7 @@ impl ChatComponent{
                     !event.receiver.alive(game) ||
                     !event.sender.alive(game) ||
                     event.receiver == event.sender || 
-                    !event.sender.get_current_send_chat_groups(game).contains(&ChatGroup::All) ||
+                    Silenced::silenced(game, event.sender) ||
                     event.message.replace(['\n', '\r'], "").trim().is_empty()
                 {
                     fold.cancelled = true;

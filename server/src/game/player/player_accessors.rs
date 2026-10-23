@@ -55,12 +55,12 @@ impl PlayerReference{
         self.send_packet(game, ToClientPacket::YourCrossedOutOutlines { crossed_out_outlines: self.deref(game).crossed_out_outlines.clone() });
     }
     
-    pub fn death_note<'a>(&self, game: &'a Game) -> &'a Option<String> {
-        &self.deref(game).death_note
+    pub fn calling_card<'a>(&self, game: &'a Game) -> &'a Option<String> {
+        &self.deref(game).calling_card
     }
-    pub fn set_death_note(&self, game: &mut Game, death_note: Option<String>){
-        self.deref_mut(game).death_note = death_note;
-        self.send_packet(game, ToClientPacket::YourDeathNote { death_note: self.deref(game).death_note.clone() })
+    pub fn set_calling_card(&self, game: &mut Game, calling_card: Option<String>){
+        self.deref_mut(game).calling_card = calling_card;
+        self.send_packet(game, ToClientPacket::YourCallingCard { calling_card: self.deref(game).calling_card.clone() })
     }
 
     pub fn add_private_chat_message(&self, game: &mut Game, message: ChatMessageVariant) {

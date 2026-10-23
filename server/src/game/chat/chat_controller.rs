@@ -87,10 +87,10 @@ impl ChatComponent{
             .filter_map(|id|
                 if 
                     let Some(Ability::Role(RoleAbility(RoleState::Cerenovous(cerenovous)))) = id.get_ability(game) &&
-                    let AbilityID::Role{role: Role::Cerenovous, player} = id &&
+                    let AbilityID::Role{role: Role::Cerenovous, player: cerenovous_player} = id &&
                     cerenovous.currently_brained == Some(player)
                 {
-                    Some(player)
+                    Some(cerenovous_player)
                 }else{
                     None
                 }

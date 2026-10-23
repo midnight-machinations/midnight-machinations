@@ -1,12 +1,19 @@
 .selector-section {
     background-color: var(--background-color);
-    border: solid .13rem var(--background-border-color);
-    border-bottom-color: var(--background-border-shadow-color);
-    border-right-color: var(--background-border-shadow-color);
-    border-radius: 1rem;
-    padding: 1rem;
 }
 
-.selector-section > h2 {
-    margin-bottom: 0.25rem;
+.selector-section-header {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    padding: .5rem;
+    font-weight: bold;
+    font-size: 1.125rem;
+}
+.selector-section-header > button:first-of-type {
+    margin-left: 0.5rem;
+}
+
+.selector-section-header > * {
+    font-size: 1rem;
 }

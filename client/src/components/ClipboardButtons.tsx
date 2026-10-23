@@ -53,7 +53,7 @@ function reconcilePasteProps<H>(props: PasteButtonProps<H>): ButtonProps<PasteBu
 
 export function PasteButton<H>(props: PasteButtonProps<H>): ReactElement {
     let pressedChildren = props.pressedChildren;
-    const children = props.children ?? <Icon>paste</Icon>;
+    const children = props.children ?? <Icon>content_paste</Icon>;
     if (pressedChildren === undefined && isValidElement(children) && children.type === Icon) {
         pressedChildren = success => success === "success"  ? <Icon>done</Icon> : <Icon>warning</Icon>;
     }

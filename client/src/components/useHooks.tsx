@@ -25,7 +25,7 @@ export function usePacketListener(listener: (type?: StateEventType) => void) {
     });
 }
 
-function strictDeepEqual(a: any, b: any): boolean {
+export function strictDeepEqual<T>(a: T, b: T): boolean {
     return deepEqual(a, b, { strict: true });
 }
 

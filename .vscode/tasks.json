@@ -1,0 +1,33 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+        "label": "Client Run",
+        "command": "pnpm",
+        "args": [
+            "start"
+        ],
+        "options": {
+            "cwd": "${workspaceFolder}/client"
+        }
+    },
+    {
+        "label": "Server Run",
+        "command": "cargo",
+        "args": [
+            "run"
+        ],
+        "options": {
+            "cwd": "${workspaceFolder}/server"
+        }
+    },
+    {
+        "label": "Run",
+        "dependsOn": [
+            "Client Run",
+            "Server Run"
+        ],
+        "problemMatcher": []
+    }
+]
+}

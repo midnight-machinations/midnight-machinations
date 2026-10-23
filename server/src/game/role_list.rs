@@ -233,7 +233,7 @@ impl RoleSet{
             RoleSet::Any => Role::values(),
             RoleSet::Town => 
                 vec![
-                    Role::Jailor, Role::Villager, Role::Drunk
+                    Role::Jailor, Role::Villager, Role::Drunk, Role::TownCommonWildcard
                 ].into_iter().chain(
                     RoleSet::TownCommon.get_roles()
                 ).collect(),
@@ -251,8 +251,8 @@ impl RoleSet{
                 vec_set![
                     Role::Detective, Role::Philosopher, Role::Gossip, 
                     Role::Psychic, Role::Auditor, Role::Spy, 
-                    Role::Lookout, Role::Tracker, Role::Snoop,
-                    Role::TallyClerk
+                    Role::Lookout, Role::Tracker, Role::Snoop, Role::Spotter,
+                    Role::TallyClerk, Role::Dreamwalker
                 ],
             RoleSet::TownProtective => 
                 vec_set![
@@ -262,15 +262,15 @@ impl RoleSet{
                 ],
             RoleSet::TownKilling => 
                 vec_set![
-                    Role::Vigilante, Role::Veteran, Role::Deputy, Role::Marksman, Role::Rabblerouser
+                    Role::Vigilante, Role::Veteran, Role::Deputy, Role::Slayer, Role::Marksman, Role::Rabblerouser
                 ],
             RoleSet::TownSupport => 
                 vec_set![
                     Role::Medium,
                     Role::Transporter, Role::Porter,
                     Role::Mayor, Role::Nepotist, Role::Reporter,
-                    Role::Courtesan, Role::Escort,
-                    Role::Polymath
+                    Role::Escort,
+                    Role::Polymath, Role::Employer, Role::Intern
                 ],
             RoleSet::Mafia =>
                 vec_set![
@@ -288,13 +288,15 @@ impl RoleSet{
                 ],
             RoleSet::MafiaSupport => 
                 vec_set![
-                    Role::Blackmailer, Role::Cerenovous, Role::Informant, Role::Hypnotist, Role::Consort,
+                    Role::Blackmailer, Role::Pyrotechnician, Role::Cerenovous,
+                    Role::Informant, Role::Hypnotist, Role::Consort,
                     Role::Forger, Role::Framer, Role::Mortician, Role::Disguiser,
-                    Role::Reeducator, Role::Ambusher
+                    Role::PropMaster, Role::Reeducator, Role::Ambusher
                 ],
             RoleSet::Minions => 
                 vec_set![
-                    Role::Witch, Role::Scarecrow, Role::Warper, Role::Kidnapper, Role::Pawn, Role::Tailor
+                    Role::Witch, Role::Scarecrow, Role::Warper, Role::Courtesan,
+                    Role::Kidnapper, Role::Pawn, Role::Tailor, Role::Lackey
                 ],
             RoleSet::Neutral =>
                 vec_set![
@@ -304,7 +306,7 @@ impl RoleSet{
             RoleSet::Fiends =>
                 vec_set![
                     Role::Arsonist, Role::Werewolf, Role::Ojo,
-                    Role::Puppeteer, Role::Pyrolisk, Role::Kira,
+                    Role::Puppeteer, Role::Pyrolisk, Role::Kira, Role::Lich,
                     Role::SerialKiller, Role::FiendsWildcard,
                     Role::Spiral, Role::Warden, Role::Juggernaut, Role::Yer
                 ],

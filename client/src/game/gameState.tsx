@@ -1,7 +1,7 @@
 import ListMap from "../ListMap"
 import GameState, { LobbyClient, LobbyState, PhaseTimes, Player, LobbyClientID, PlayerGameState, UnsafeString } from "./gameState.d"
 import { ModifierID, ModifierState } from "./modifiers"
-import { Role, RoleState } from "./roleState.d"
+import { AbilityID, abilityIdToString, Role, RoleState } from "./roleState.d"
 
 
 export function defaultPhaseTimes(): PhaseTimes {
@@ -9,7 +9,7 @@ export function defaultPhaseTimes(): PhaseTimes {
         briefing: 45,
         obituary: 20,
         discussion: 100,
-        nomination: 100,
+        nomination: 35,
         adjournment: 60,
         testimony: 30,
         judgement: 30,
@@ -23,7 +23,7 @@ export function createLobbyState(): LobbyState {
     return {
         stateType: "lobby",
         roomCode: 0,
-        lobbyName: "Mafia Lobby",
+        lobbyName: "Midnight Machinations Lobby",
 
         myId: null,
 
@@ -83,12 +83,13 @@ export function createPlayerGameState(): PlayerGameState {
         
         myRole: "detective" as Role,
         roleStates: new ListMap<Role, RoleState>(),
+        abilityStates: new ListMap<AbilityID, RoleState>([],(a,b)=>abilityIdToString(a) === abilityIdToString(b)),
 
         savedControllers: [],
 
         notes: [],
         crossedOutOutlines: [],
-        deathNote: "",
+        callingCard: "",
 
         fellowInsiders: [],
 

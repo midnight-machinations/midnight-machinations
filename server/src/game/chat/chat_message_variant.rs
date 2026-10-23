@@ -41,6 +41,7 @@ pub enum ChatMessageVariant {
     },
 
     RoleAssignment{role: Role},
+    GainedRoleAbility{role: Role},
     PlayerDied{grave: Grave},
     PlayersRoleRevealed{player: PlayerReference, role: Role},
     PlayersRoleConcealed{player: PlayerReference},
@@ -121,6 +122,7 @@ pub enum ChatMessageVariant {
     MediumHauntStarted{medium: PlayerReference, player: PlayerReference},
     MediumSeance{medium: PlayerReference, player: PlayerReference},
     MediumExists,
+    VotesHidden{value: bool},
     #[serde(rename_all = "camelCase")]
     DeputyKilled{shot: PlayerReference},
     #[serde(rename_all = "camelCase")]
@@ -151,7 +153,7 @@ pub enum ChatMessageVariant {
     YouArePoisoned,
 
     /*
-    Night Information
+        Night Information
     */
     RoleBlocked,
     Wardblocked,
@@ -168,6 +170,9 @@ pub enum ChatMessageVariant {
     PsychicFailed,
     #[serde(rename_all = "camelCase")]
     AuditorResult{outline_index: OutlineIndex, result: AuditorResult},
+    #[serde(rename_all = "camelCase")]
+    DreamwalkerResult{result: VecSet<Role>},
+    DreamwalkerTarget{target: PlayerReference},
     SnoopResult{townie: bool},
     PolymathSnoopResult{inno: bool},
     GossipResult{enemies: bool},
@@ -193,7 +198,13 @@ pub enum ChatMessageVariant {
     #[serde(rename_all = "camelCase")]
     PlayerRoleAndAlibi { player: PlayerReference, role: Role, will: String },
     #[serde(rename_all = "camelCase")]
-    InformantResult{player: PlayerReference, role: Role, visited_by: Vec<PlayerReference>, visited: Vec<PlayerReference>},
+    InformantResult{
+        player: PlayerReference,
+        role: Role,
+        visited_by: Vec<PlayerReference>,
+        visited: Vec<PlayerReference>,
+        win_condition: WinCondition
+    },
     #[serde(rename_all = "camelCase")]
     AmbusherCaught{ambusher: PlayerReference},
 
@@ -207,13 +218,12 @@ pub enum ChatMessageVariant {
     #[serde(rename_all = "camelCase")]
     WerewolfTrackingResult{tracked_player: PlayerReference, players: Vec<PlayerReference>},
 
-    JesterWon,
     RevolutionaryWon,
     ChronokaiserSpeedUp{percent: u32},
     MercenaryYouAreAHit,
     MercenaryResult{hit: bool},
     MercenaryHits{roles: VecSet<Role>},
-    PawnRole{role: Role},
+    PawnVisitedYou,
     KiraResult{result: KiraResult},
     MartyrRevealed { martyr: PlayerReference },
     MartyrWon,

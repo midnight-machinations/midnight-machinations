@@ -1,6 +1,6 @@
 use rand::seq::SliceRandom;
 use serde::Serialize;
-use crate::game::{prelude::*, role::informant::Informant};
+use crate::game::{components::attack::night_attack::NightAttack, prelude::*, role::informant::Informant};
 use super::common_role;
 
 
@@ -19,14 +19,11 @@ impl RoleStateTrait for Ojo {
                 if game.day_number() == 1 {return}
                 let Some(target_ref) = Visits::default_target(midnight_variables, actor_ref, Role::Ojo) else {return};
         
-                target_ref.try_night_kill_single_attacker(
-                    actor_ref,
-                    game,
-                    midnight_variables,
-                    GraveKiller::Role(Role::Ojo),
-                    AttackPower::Basic,
-                    true
-                );
+                NightAttack::new()
+                    .attackers([actor_ref])
+                    .grave_killer(Role::Ojo)
+                    .leave_calling_card()
+                    .attack(game, midnight_variables, target_ref);
             },
             OnMidnightPriority::Investigative => {
                 PlayerReference::all_players(game)
@@ -58,7 +55,7 @@ impl RoleStateTrait for Ojo {
             .add_grayed_out_condition(game.day_number() <= 1)
             .build_map()  
     }
-    fn convert_selection_to_visits(self, game: &Game, actor_ref: PlayerReference) -> Vec<Visit> {
+    fn create_visits_initialize_night(self, game: &Game, _id: &AbilityID, actor_ref: PlayerReference) -> Vec<Visit> {
         common_role::convert_controller_selection_to_visits(
             game,
             actor_ref,
@@ -66,8 +63,8 @@ impl RoleStateTrait for Ojo {
             true
         )
     }
-    fn on_ability_creation(self, game: &mut Game, actor_ref: PlayerReference, event: &OnAbilityCreation, fold: &mut OnAbilityCreationFold, priority: OnAbilityCreationPriority) {
-        if priority != OnAbilityCreationPriority::SideEffect || !event.id.is_players_role(actor_ref, Role::Ojo) || fold.cancelled {return}
+    fn on_ability_creation(self, game: &mut Game, actor_ref: PlayerReference, event: &OnAbilityCreation, _fold: &mut OnAbilityCreationFold, priority: OnAbilityCreationPriority) {
+        if priority != OnAbilityCreationPriority::SideEffect || !event.id.is_players_role(actor_ref, Role::Ojo) {return}
         PlayerReference::all_players(game).for_each(|p|actor_ref.reveal_players_role(game, p));
     }
     fn on_conceal_role(self, game: &mut Game, actor_ref: PlayerReference, player: PlayerReference, concealed_player: PlayerReference){

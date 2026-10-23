@@ -29,18 +29,14 @@ export default function HostMenu(): ReactElement {
 
     return <div className="settings-menu-card">
         <header>
-            <h1>{translate("menu.hostSettings.title")}</h1>
-            {translate("menu.hostSettings.lastRefresh", lastRefreshed.toLocaleTimeString())}
+            <h3>{translate("menu.hostSettings.title")}</h3>
+            <Button onClick={() => GAME_MANAGER.sendHostDataRequest()}
+            >{translate("refresh")}</Button>
         </header>
-        
-        <Button onClick={() => GAME_MANAGER.sendHostDataRequest()}
-        >{translate("refresh")}</Button>
-        
         <main className="settings-menu">
             <LobbyPlayerList />
-            <div className="chat-menu-colors">
-                <h2>{translate("menu.hostSettings.lobby")}</h2>
-                <section>
+            <section className="chat-menu-colors selector-section">
+                <div className="host-buttons">
                     <Button onClick={()=>GAME_MANAGER.sendBackToLobbyPacket()}>
                         {translate("backToLobby")}
                     </Button>
@@ -50,8 +46,11 @@ export default function HostMenu(): ReactElement {
                     <Button onClick={()=>GAME_MANAGER.sendHostSkipPhase()}>
                         {translate("menu.hostSettings.skipPhase")}
                     </Button>
-                </section>
-            </div>
+                </div>
+            </section>
         </main>
+        <footer>
+            {translate("menu.hostSettings.lastRefresh", lastRefreshed.toLocaleTimeString())}
+        </footer>
     </div>
 }

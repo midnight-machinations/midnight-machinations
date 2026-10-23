@@ -25,7 +25,7 @@ pub struct Player {
     alive: bool,
     notes: Vec<String>,
     crossed_out_outlines: Vec<u8>,
-    death_note: Option<String>,
+    calling_card: Option<String>,
 }
 impl Player {
     pub fn new(name: String, sender: ClientSender) -> Self {
@@ -36,28 +36,25 @@ impl Player {
             alive: true,
             notes: vec![],
             crossed_out_outlines: vec![],
-            death_note: None,
+            calling_card: None,
         }
     }
 }
 
 pub mod test {
-    use std::time::Duration;
-
     use crate::client_connection::ClientConnection;
 
     use super::Player;
 
     pub fn mock_player(name: String) -> Player {
         Player {
-            // Since `tick` is never called in tests, this will never decrement.
-            connection: ClientConnection::CouldReconnect { disconnect_timer: Duration::from_secs(1) },
+            connection: ClientConnection::CouldReconnect { disconnect_timer: None },
 
             name,
             alive: true,
             notes: vec![],
             crossed_out_outlines: vec![],
-            death_note: None,
+            calling_card: None,
         }
     }
 }

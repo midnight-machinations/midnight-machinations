@@ -1,7 +1,7 @@
 use serde::{Deserialize, Serialize};
 
 use crate::game::{
-    components::graves::grave::{GraveDeathCause, GraveInformation, GraveKiller},
+    components::graves::grave::{GraveDeathCause, GraveInformation},
     event::on_grave_added::OnGraveAdded, role_list::RoleSet, Game
 };
 
@@ -20,39 +20,29 @@ impl ModifierStateImpl for RoleSetGraveKillers{
         let grave = event.grave;
         match grave.deref(game).information.clone() {
             GraveInformation::Obscured => {},
-            GraveInformation::Normal { role, will, death_notes, death_cause } => {
-                if let GraveDeathCause::Killers(killers) = death_cause {
-                    let mut new_killers = Vec::new();
+            GraveInformation::Normal { role, alibi: will, calling_cards, death_causes } => {
+                let death_causes = death_causes
+                    .into_iter()
+                    .map(|killer|{
+                        let GraveDeathCause::Role(role) = killer else {return killer};
+                        let Some(role_set) = [
+                            RoleSet::Town,
+                            RoleSet::Mafia,
+                            RoleSet::Cult,
+                            RoleSet::Fiends,
+                            RoleSet::Minions,
+                            RoleSet::Neutral,
+                        ].iter().find(|set| set.get_roles().contains(&role)).cloned() else {return killer};
 
-                    for killer in killers {
-                        new_killers.push(
-                            if let GraveKiller::Role(killer_role) = killer {
-                                let killer_role_set = [
-                                    RoleSet::Town,
-                                    RoleSet::Mafia,
-                                    RoleSet::Cult,
-                                    RoleSet::Fiends,
-                                    RoleSet::Minions,
-                                    RoleSet::Neutral,
-                                ].iter().find(|set| set.get_roles().contains(&killer_role));
-    
-                                if let Some(role_set) = killer_role_set {
-                                    GraveKiller::RoleSet(role_set.clone())
-                                } else {
-                                    killer
-                                }
-                            } else {
-                                killer
-                            }
-                        );
-                    }
+                        GraveDeathCause::RoleSet(role_set)
+                    })
+                    .collect();
 
-                    grave.deref_mut(game).information = GraveInformation::Normal{
-                        role,
-                        will,
-                        death_cause: GraveDeathCause::Killers(new_killers),
-                        death_notes
-                    }
+                grave.deref_mut(game).information = GraveInformation::Normal{
+                    role,
+                    alibi: will,
+                    death_causes,
+                    calling_cards
                 }
             },
         }

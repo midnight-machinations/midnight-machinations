@@ -1,6 +1,6 @@
 use rand::seq::IndexedRandom;
 use serde::Serialize;
-use crate::{game::prelude::*, vec_set::VecSet};
+use crate::{game::{components::attack::night_attack::NightAttack, prelude::*}, vec_set::VecSet};
 
 #[derive(Debug, Clone, Default, Serialize)]
 pub struct Juggernaut{
@@ -20,7 +20,12 @@ impl RoleStateTrait for Juggernaut {
         if priority != OnMidnightPriority::Kill {return}
         if game.day_number() == 1 {return}
         let Some(target_ref) = Visits::default_target(midnight_variables, actor_ref, Role::Juggernaut) else {return};
-        target_ref.try_night_kill_single_attacker(actor_ref, game, midnight_variables, GraveKiller::Role(Role::Juggernaut), AttackPower::ArmorPiercing, true);
+        NightAttack::new()
+            .attackers([actor_ref])
+            .grave_killer(Role::Juggernaut)
+            .power(AttackPower::ArmorPiercing)
+            .leave_calling_card()
+            .attack(game, midnight_variables, target_ref);
     }
     fn controller_parameters_map(self, game: &Game, actor_ref: PlayerReference) -> ControllerParametersMap {
         ControllerParametersMap::builder(game)
@@ -30,7 +35,7 @@ impl RoleStateTrait for Juggernaut {
             .add_grayed_out_condition(game.day_number() <= 1)
             .build_map()
     }
-    fn convert_selection_to_visits(self, game: &Game, actor_ref: PlayerReference) -> Vec<Visit> {
+    fn create_visits_initialize_night(self, game: &Game, _id: &AbilityID, actor_ref: PlayerReference) -> Vec<Visit> {
         crate::game::role::common_role::convert_controller_selection_to_visits(
             game,
             actor_ref,
@@ -38,8 +43,8 @@ impl RoleStateTrait for Juggernaut {
             true
         )
     }
-    fn on_ability_creation(self, game: &mut Game, actor_ref: PlayerReference, event: &crate::game::event::on_ability_creation::OnAbilityCreation, fold: &mut crate::game::event::on_ability_creation::OnAbilityCreationFold, priority: crate::game::event::on_ability_creation::OnAbilityCreationPriority) {
-        if priority != OnAbilityCreationPriority::SideEffect || !event.id.is_players_role(actor_ref, Role::Juggernaut) || fold.cancelled {return}
+    fn on_ability_creation(self, game: &mut Game, actor_ref: PlayerReference, event: &crate::game::event::on_ability_creation::OnAbilityCreation, _fold: &mut crate::game::event::on_ability_creation::OnAbilityCreationFold, priority: crate::game::event::on_ability_creation::OnAbilityCreationPriority) {
+        if priority != OnAbilityCreationPriority::SideEffect || !event.id.is_players_role(actor_ref, Role::Juggernaut) {return}
         
         let roles = Self::get_available_roles(game);
         roles

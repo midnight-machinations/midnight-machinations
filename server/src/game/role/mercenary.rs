@@ -1,6 +1,6 @@
 use rand::seq::SliceRandom;
 use serde::Serialize;
-use crate::{game::prelude::*, vec_set::VecSet};
+use crate::{game::{components::attack::night_attack::NightAttack, prelude::*}, vec_set::VecSet};
 
 
 pub(super) const MAXIMUM_COUNT: Option<u8> = None;
@@ -38,23 +38,22 @@ impl RoleStateTrait for Mercenary {
         
         Self { won: false, roles, attacks_remaining }
     }
-    fn on_midnight(self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut OnMidnightFold, priority: OnMidnightPriority) {
+    fn on_midnight(self, game: &mut Game, id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut OnMidnightFold, priority: OnMidnightPriority) {
         let Some(visit) = Visits::default_visit(midnight_variables, actor_ref, Role::Mercenary) else {return};
 
         match (priority, visit.tag) {
-            (OnMidnightPriority::Kill, VisitTag::Role { role: Role::Mercenary, id: 2 }) => {
+            (OnMidnightPriority::Kill, VisitTag::Ability { ability, id: 2 }) if ability == *id => {
                 if game.day_number() == 1 || self.attacks_remaining == 0 {return}
-                visit.target.try_night_kill_single_attacker(
-                    actor_ref,
-                    game,
-                    midnight_variables,
-                    GraveKiller::Role(Role::Mercenary),
-                    AttackPower::Basic,
-                    true
-                );
+
+                NightAttack::new()
+                    .attackers([actor_ref])
+                    .grave_killer(Role::Mercenary)
+                    .leave_calling_card()
+                    .attack(game, midnight_variables, visit.target);
+
                 actor_ref.edit_role_ability_helper(game, Self{attacks_remaining: self.attacks_remaining.saturating_sub(1), ..self});
             },
-            (OnMidnightPriority::Investigative, VisitTag::Role { role: Role::Mercenary, id: 1 }) => {
+            (OnMidnightPriority::Investigative, VisitTag::Ability { ability, id: 1 }) if ability == *id => {
                 actor_ref.push_night_message(
                     midnight_variables,
                     ChatMessageVariant::MercenaryResult{hit: self.roles.contains(&visit.target.role(game))}
@@ -84,18 +83,18 @@ impl RoleStateTrait for Mercenary {
         );
         ctrl
     }
-    fn convert_selection_to_visits(self, game: &Game, actor_ref: PlayerReference) -> Vec<Visit> {
+    fn create_visits_initialize_night(self, game: &Game, id: &AbilityID, actor_ref: PlayerReference) -> Vec<Visit> {
         let controller_id = Self::controller_selection_controller_id(actor_ref, game);
         crate::game::role::common_role::convert_controller_selection_to_visits_visit_tag(
             game,
             actor_ref,
             ControllerID::role(actor_ref, Role::Mercenary, controller_id),
             controller_id == 2,
-            VisitTag::Role{role: Role::Mercenary, id: controller_id}
+            VisitTag::Ability { ability: *id, id: controller_id }
         )
     }
-    fn on_ability_creation(self, game: &mut Game, actor_ref: PlayerReference, event: &OnAbilityCreation, fold: &mut OnAbilityCreationFold, priority: OnAbilityCreationPriority) {
-        if priority != OnAbilityCreationPriority::SideEffect || !event.id.is_players_role(actor_ref, Role::Mercenary) || fold.cancelled {return}
+    fn on_ability_creation(self, game: &mut Game, actor_ref: PlayerReference, event: &OnAbilityCreation, _fold: &mut OnAbilityCreationFold, priority: OnAbilityCreationPriority) {
+        if priority != OnAbilityCreationPriority::SideEffect || !event.id.is_players_role(actor_ref, Role::Mercenary) {return}
         for player in PlayerReference::all_players(game){
             if !self.roles.contains(&player.role(game)) {continue};
             player.add_private_chat_message(game, ChatMessageVariant::MercenaryYouAreAHit);
