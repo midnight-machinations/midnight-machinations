@@ -5,5 +5,5 @@
 
 .dragged {
     opacity: 40%;
-    border-style: dashed;
+    outline-style: dashed;
 }

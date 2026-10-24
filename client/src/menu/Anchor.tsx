@@ -184,13 +184,16 @@ export default function Anchor(props: Readonly<{
 
         const iconFactor = enabled ? '1.2' : '1';
 
-        document.documentElement.style.setProperty('--game-font', getFont('game-base-font', enabled));
+        document.documentElement.style.setProperty('--game-font', getFont('computer-font', enabled));
         document.documentElement.style.setProperty('--kira-font', getFont('game-kira-font', enabled));
         document.documentElement.style.setProperty('--spiral-font', getFont('game-spiral-font', enabled));
         document.documentElement.style.setProperty('--title-font', getFont('game-title-font', enabled));
         document.documentElement.style.setProperty('--computer-font', getFont('computer-font', enabled));
         document.documentElement.style.setProperty('--legible-computer-font', getFont('legible-computer-font', enabled));
         document.documentElement.style.setProperty('--icon-factor', iconFactor);
+    }
+    const setScanlineIntensity = (intensity: number) => {
+        document.documentElement.style.setProperty('--scanline-opacity', `${intensity / 100 * 0.2}`);
     }
 
     // Load settings
@@ -200,6 +203,7 @@ export default function Anchor(props: Readonly<{
         AudioController.setVolume(settings.volume);
         setFontSize(settings.fontSize);
         setAccessibilityFontEnabled(settings.accessibilityFont);
+        setScanlineIntensity(settings.scanlineIntensity);
         switchLanguage(settings.language)
         computeKeywordData()
     }, [])
@@ -426,7 +430,7 @@ function ErrorCard(props: Readonly<{
     error: ErrorData,
     onClose: () => void
 }>) {
-    return <div className="error-card" onClick={() => props.onClose()}>
+    return <div className="error-card role-specific-colors" onClick={() => props.onClose()}>
         <header>
             {props.error.title}
             <button className="close flush">✕</button>

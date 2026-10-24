@@ -7,7 +7,7 @@
 .chat-message-div-small-button {
     font-size: 1rem;
     padding: 0.1rem;
-    border-radius: 0.2rem;
+    border-radius: 0;
 }
 .chat-message-div > details {
     width: 100%;
@@ -21,8 +21,9 @@
 .chat-message.block {
     background-color: var(--primary-color);
     border: .13rem solid var(--primary-border-color);
-    border-radius: .5rem;
+    border-radius: 0;
     padding: .25rem;
+    box-shadow: 0 0 10px rgba(from var(--primary-color) r g b / 0.2);
 }
 .chat-message {
     width: 100%;
@@ -58,14 +59,14 @@
     box-shadow: inset 0 0 0 100vmax #b8860b22;
 }
 .chat-message.dead {
-    background-color: black;
-    border-radius: .5rem;
-    color: grey;
+    background-color: #000000;
+    border-radius: 0;
+    color: #aaaaaa;
 }
 .chat-message.phase-change {
     text-align: center;
     background-color: var(--primary-color);
-    color: yellow;
+    color: #ffff00;
     text-decoration: underline;
 }
 .chat-message.phase-change .keyword-info{
@@ -75,13 +76,13 @@
     text-align: center;
 }
 .chat-message.special {
-    color: violet;
+    color: #ff00ff;
 }
 .chat-message.discreet, .discreet {
-    color: turquoise;
+    color: #00ffff;
 }
 .chat-message.important {
-    color: yellow;
+    color: #ffff00;
 }
 .chat-message.will {
     border-top: .13rem solid var(--primary-border-color);
@@ -93,17 +94,18 @@
     background-color: #ff000022;
 }
 .chat-message.trial {
-    color: orange;
+    color: #ff8800;
 }
 .chat-message.target {
-    color: orange;
+    color: #ff8800;
 }
 .chat-message.result {
-    background-color: #003300;
-    color: #aaffaa;
+    background-color: #001d00;
 }
 .chat-message.warning {
-    background-color: #660000;
+    background-color: #220000;
+    color: #ff0000;
+    border: 1px solid #aa0000;
 }
 
 .kira-guess-results {
@@ -117,7 +119,6 @@
     flex-direction: row;
     padding-left: 0.5rem;
     padding-right: 0.5rem;
-    border-radius: 0.4rem;
     border-width: .07rem;
     border-style: solid;
     border-color: black;

@@ -73,7 +73,6 @@
     justify-content: center;
     gap: 0.25rem 1rem;
     padding: 0.25rem;
-    background-color: var(--primary-color);
     border-top: var(--primary-border-color) solid .13rem;
 }
 
