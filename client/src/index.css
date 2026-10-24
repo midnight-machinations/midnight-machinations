@@ -378,7 +378,7 @@ code, .code {
     --primary-border-color: #6b1f6b;
     --primary-border-shadow-color: #330033;
     --background-border-color: #aa00aa;
-    --background-border-shadow-color: #110011;
+    --background-border-shadow-color: #000000;
     --hover-color: oklch(from #220022 calc(l * 1.2) c h);
     --focus-outline-color: #c731c7;
 }
@@ -404,7 +404,7 @@ code, .code {
     --primary-border-color: #565656;
     --primary-border-shadow-color: #333333;
     --background-border-color: #4e4e4e;
-    --background-border-shadow-color: #1b1b1b;
+    --background-border-shadow-color: #000000;
     --hover-color: oklch(from #222222 calc(l * 1.2) c h);
     --focus-outline-color: #eeeeee;
 }

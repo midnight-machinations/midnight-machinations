@@ -58,7 +58,6 @@ export default function StartMenu(): ReactElement {
                 <Icon>public</Icon> Discord
             </Button>
             <Button onClick={()=>{setAnchorContent(<Credits/>)}}>{translate("credits")}</Button>
-            <a className="button" href="https://mafia.dev.jackpapel.com">Dev (Experimental)</a>
         </footer>
     </div>
 }
