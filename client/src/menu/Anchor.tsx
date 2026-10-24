@@ -430,7 +430,7 @@ function ErrorCard(props: Readonly<{
     error: ErrorData,
     onClose: () => void
 }>) {
-    return <div className="error-card" onClick={() => props.onClose()}>
+    return <div className="error-card role-specific-colors" onClick={() => props.onClose()}>
         <header>
             {props.error.title}
             <button className="close flush">✕</button>

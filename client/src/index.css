@@ -1,6 +1,6 @@
 @font-face {
     font-family: computer-font;
-    src: url('resources/fonts/3270/3270-Regular.ttf');
+    src: url('resources/fonts/3270/3270SemiCondensed-Regular.ttf');
     font-weight: normal;
     font-style: normal;
     size-adjust: 120%;
@@ -116,13 +116,13 @@
     --primary-border-shadow-color: #333333;
     --background-border-color: #777777;
     --background-border-shadow-color: #000000;
-    --brand-color: oklch(from #580d0d calc(l - 0.2) c 275);
-    --brand-hover-color: oklch(from #834b4b calc(l - 0.2) c 275);
+    --brand-color: oklch(from #580d0d calc((l - 0.2) * 1.2) c 275);
+    --brand-hover-color: oklch(from #834b4b calc((l - 0.2) * 0.8) c 275);
     --brand-border-color: oklch(from #f05151 calc(l - 0.2) c 275);
     --brand-border-shadow-color: oklch(from #8d2020 calc(l - 0.2) c 275);
     --primary-color: #1d1d1d;
     --secondary-color: #222222;
-    --text-color: #ffffff;
+    --text-color: #cdcdcd;
 
     --hover-color: #222222;
     --focus-outline-color: #ffffff;
@@ -345,86 +345,80 @@ code, .code {
 }
 
 .chat-menu-colors {
-    --background-color: #000011;
+    --background-color: oklch(from #000011 calc(l * 1.2) c h);
     --fade-color: #0a0a0a;
-    --primary-color: #00001a;
-    --secondary-color: #000022;
-    --text-color: white;
+    --primary-color: oklch(from #00001a calc(l * 1.2) c h);
+    --secondary-color: oklch(from #000022 calc(l * 1.2) c h);
     --primary-border-color: #0f33a0;
     --primary-border-shadow-color: #0e0e40;
     --background-border-color: #0d0d5a;
     --background-border-shadow-color: #000000;
-    --hover-color: #16164b;
+    --hover-color: oklch(from #16164b calc(l * 1.1) c h);
     --focus-outline-color: #0031c4;
 }
 
 .player-list-menu-colors {
-    --background-color: #001100;
+    --background-color: oklch(from #001100 calc(l * 1.2) c h);
     --fade-color: #0a0a0a;
-    --primary-color: #001a00;
-    --secondary-color: #001f00;
-    --text-color: white;
+    --primary-color: oklch(from #001a00 calc(l * 1.2) c h);
+    --secondary-color: oklch(from #001f00 calc(l * 1.2) c h);
     --primary-border-color: #156d2b;
     --primary-border-shadow-color: #003300;
     --background-border-color: #007200;
     --background-border-shadow-color: #000000;
-    --hover-color: #002200;
+    --hover-color: oklch(from #002200 calc(l * 1.2) c h);
     --focus-outline-color: #00c030;
 }
 
 .will-menu-colors {
-    --background-color: #100310;
+    --background-color: oklch(from #100310 calc(l * 1.2) c h);
     --fade-color: #0a0a0a;
-    --primary-color: #110011;
-    --secondary-color: #1a001a;
-    --text-color: white;
+    --primary-color: oklch(from #110011 calc(l * 1.2) c h);
+    --secondary-color: oklch(from #1a001a calc(l * 1.2) c h);
     --primary-border-color: #6b1f6b;
     --primary-border-shadow-color: #330033;
     --background-border-color: #aa00aa;
     --background-border-shadow-color: #110011;
-    --hover-color: #220022;
+    --hover-color: oklch(from #220022 calc(l * 1.2) c h);
     --focus-outline-color: #c731c7;
 }
 
 .role-specific-colors {
-    --background-color: #110000;
+    --background-color: oklch(from #110000 calc(l * 1.2) c h);
     --fade-color: #0a0a0a;
-    --primary-color: #1c0000;
-    --secondary-color: #200000;
-    --text-color: white;
+    --primary-color: oklch(from #1c0000 calc(l * 1.2) c h);
+    --secondary-color: oklch(from #200000 calc(l * 1.2) c h);
     --primary-border-color: #6e0606;
     --primary-border-shadow-color: #330000;
     --background-border-color: #4b0000;
     --background-border-shadow-color: #000000;
-    --hover-color: #220000;
+    --hover-color: oklch(from #220000 calc(l * 1.2) c h);
     --focus-outline-color: #8d0000;
 }
 
 .graveyard-menu-colors {
-    --background-color: #111111;
+    --background-color: oklch(from #111111 calc(l * 1.2) c h);
     --fade-color: #0a0a0a;
-    --primary-color: #1a1a1a;
-    --secondary-color: #222222;
-    --text-color: white;
+    --primary-color: oklch(from #1a1a1a calc(l * 1.2) c h);
+    --secondary-color: oklch(from #222222 calc(l * 1.2) c h);
     --primary-border-color: #565656;
     --primary-border-shadow-color: #333333;
     --background-border-color: #4e4e4e;
     --background-border-shadow-color: #1b1b1b;
-    --hover-color: #222222;
+    --hover-color: oklch(from #222222 calc(l * 1.2) c h);
     --focus-outline-color: #eeeeee;
 }
 
 .wiki-menu-colors {
-    --background-color: #110000;
+    --background-color: oklch(from #110000 calc(l * 1.2) c h);
     --fade-color: #0a0a0a;
-    --primary-color: #110000;
-    --secondary-color: #1a0000;
-    --text-color: white;
-    --primary-border-color: #9a5311;
-    --primary-border-shadow-color: #330000;
+    --primary-color: oklch(from #110000 calc(l * 1.2) c h);
+    --secondary-color: oklch(from #1a0000 calc(l * 1.2) c h);
+    --primary-border-color: #86480e;
+    --primary-border-shadow-color: #2b0000;
     --background-border-color: #773a00;
     --background-border-shadow-color: #000000;
-    --hover-color: #220000;
+    --hover-color: oklch(from #220000 calc(l * 1.2) c h);
     --focus-outline-color: #aa5200;
 }
 

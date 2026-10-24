@@ -90,7 +90,7 @@
     padding: 0 0 1rem 0;
     border-width: .13rem;
     border-style: solid;
-    border-radius: 50%;
+    border-radius: 0;
     top: 0;
     right: 0;
 }
