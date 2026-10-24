@@ -39,7 +39,9 @@ export default function StartMenu(): ReactElement {
                         <Icon>settings</Icon> {translate("menu.settings.title")}
                     </Button>
                 </div>
-                <div className="center"/>
+                <div className="center glitch-image">
+                    <div className="logo"/>
+                </div>
                 <div className="right">
                     <Button onClick={() => setCoverCard(<GameModesEditor/>)}>
                         <Icon>edit</Icon> {translate("menu.globalMenu.gameSettingsEditor")}
