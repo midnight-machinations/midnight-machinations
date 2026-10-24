@@ -649,6 +649,58 @@ code, .code {
         clip: rect(.44em, 4.50em, .56em, 0);
         animation: glitch-anim2 5s infinite linear alternate-reverse;
     }
+
+    /* Image variant of .glitch: the pseudo-elements copy the element's background
+       instead of its text, and slices are clipped by percentage instead of em */
+    @keyframes glitch-image-anim {
+        0%   { clip-path: inset(12% 0 80% 0); transform: translateX(-2%) skew(0.32deg); }
+        5%   { transform: none; }
+        10%  { clip-path: inset(64% 0 22% 0); transform: translateX(1.5%) skew(0.1deg); }
+        15%  { transform: none; }
+        20%  { clip-path: inset(33% 0 60% 0); transform: translateX(-1%) skew(0.94deg); }
+        30%  { transform: none; }
+        35%  { clip-path: inset(84% 0 6% 0);  transform: translateX(2.5%) skew(0.37deg); }
+        45%  { transform: none; }
+        50%  { clip-path: inset(21% 0 71% 0); transform: translateX(-1.5%) skew(0.95deg); }
+        55%  { transform: none; }
+        65%  { clip-path: inset(47% 0 40% 0); transform: translateX(1%) skew(0.69deg); }
+        70%  { transform: none; }
+        80%  { clip-path: inset(70% 0 25% 0); transform: translateX(-2%) skew(0.07deg); }
+        85%  { transform: none; }
+        95%  { clip-path: inset(5% 0 88% 0);  transform: translateX(1.5%) skew(0.44deg); }
+        100% { transform: none; }
+    }
+    @keyframes glitch-image-anim2 {
+        0%   { transform: none; }
+        10%  { clip-path: inset(75% 0 15% 0); transform: translateX(2%) skew(0.85deg); }
+        15%  { transform: none; }
+        25%  { clip-path: inset(16% 0 74% 0); transform: translateX(-1.5%) skew(0.28deg); }
+        30%  { transform: none; }
+        40%  { clip-path: inset(55% 0 38% 0); transform: translateX(1%) skew(0.77deg); }
+        45%  { transform: none; }
+        60%  { clip-path: inset(30% 0 52% 0); transform: translateX(-2.5%) skew(0.3deg); }
+        65%  { transform: none; }
+        75%  { clip-path: inset(88% 0 4% 0);  transform: translateX(1.5%) skew(0.69deg); }
+        80%  { transform: none; }
+        90%  { clip-path: inset(40% 0 50% 0); transform: translateX(-1%) skew(0.81deg); }
+        100% { transform: none; }
+    }
+    .glitch-image {
+        position: relative;
+    }
+    .glitch-image::before, .glitch-image::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: inherit;
+        clip-path: inset(50% 0 50% 0);
+    }
+    .glitch-image::before {
+        animation: glitch-image-anim 5s infinite linear alternate-reverse;
+    }
+    .glitch-image::after {
+        animation: glitch-image-anim2 5s infinite linear alternate-reverse;
+    }
 }
 @media (prefers-reduced-motion: no-preference) {
     body::before {
