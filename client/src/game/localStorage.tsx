@@ -56,6 +56,7 @@ export type Settings = {
     maxMenus: number;
     menuOrder: ListMapData<ContentMenu, boolean>,
     headerEnabled?: boolean,
+    scanlineIntensity: number,
 };
 
 export type RoleSpecificMenuType = "playerList" | "standalone";
@@ -95,7 +96,7 @@ export function getDefaultSettings(): Readonly<Settings> {
     }
 
     return {
-        format: "v6",
+        format: "2026-10-23-add-scanline-intensity",
         volume: 0.5,
         fontSize: 1,
         accessibilityFont: false,
@@ -103,6 +104,7 @@ export function getDefaultSettings(): Readonly<Settings> {
         defaultName: null,
         maxMenus: mobile ? 1 : 6,
         menuOrder: menuOrder,
+        scanlineIntensity: 50,
     }
 }
 export function loadSettings(): unknown {

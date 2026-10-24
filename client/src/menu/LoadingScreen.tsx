@@ -6,6 +6,5 @@ import translate from "../game/lang";
 export default function LoadingScreen(props: {type: "default" | "host" | "join" | "disconnect"}) {
     return <div className="loading">
         <h1>{translate("menu.loading." + props.type)}</h1>
-        <div className="loading-dots"></div>
     </div>
 }

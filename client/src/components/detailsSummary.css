@@ -4,8 +4,7 @@
     justify-content: left;
     align-items: center;
     padding: .13rem;
-    background-color: var(--primary-color);
-    border-radius: 0.27rem;
+    border-radius: 0;
 }
 .details-summary-summary-container.open {
     border-bottom: .13rem solid var(--primary-border-shadow-color);
@@ -19,7 +18,10 @@
     padding: 0;
     background-color: var(--background-color);
     border: .13rem solid var(--primary-border-color);
-    border-radius: 0.4rem;
+    border-bottom-color: var(--primary-border-shadow-color);
+    border-right-color: var(--primary-border-shadow-color);
+    border-radius: 0;
+    box-shadow: 0 0 10px rgba(from var(--text-color) / 0.2);
     /* justify-content: left;
     align-items: center; */
 }

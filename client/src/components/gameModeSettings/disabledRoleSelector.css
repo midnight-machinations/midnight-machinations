@@ -4,7 +4,7 @@
     border: .13rem solid var(--primary-border-color);
     padding: .13rem .25rem;
     margin: .13rem;
-    border-radius: .25rem;
+    border-radius: 0;
     white-space: pre;
 }
 .placard.disabled {
@@ -19,7 +19,7 @@
 .modifier-config-popover {
     background-color: var(--background-color);
     border: .13rem solid var(--primary-border-color);
-    border-radius: .25rem;
+    border-radius: 0;
     padding: .13rem;
     min-width: fit-content;
 }
@@ -47,5 +47,5 @@
     border-top-color: var(--primary-border-shadow-color);
     border-left-color: var(--primary-border-shadow-color);
     background-color: var(--background-color);
-    border-radius: .25rem;
+    border-radius: 0;
 }
