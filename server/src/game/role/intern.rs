@@ -87,7 +87,7 @@ impl Intern{
             .clone()
             .into_iter()
             .filter(|r|RoleSet::TownCommon.get_roles().contains(r))
-            .filter(|r|matches!(r, Role::Engineer))
+            .filter(|r|!matches!(r, Role::Engineer))
             .choose_multiple(&mut game.rng, 3)
             .into_iter()
             .collect()
