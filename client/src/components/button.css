@@ -6,11 +6,7 @@
     padding: .13rem .25rem;
     margin-top: .25rem;
     background-color: var(--secondary-color);
-    border-radius: .25rem;
+    border-radius: 0;
     border: .13rem solid var(--primary-border-color);
-}
-
-button {
-    /* margin: 0;
-    padding: .13rem .13rem; */
+    box-shadow: 0 0 15px rgba(from var(--text-color) / 0.5);
 }

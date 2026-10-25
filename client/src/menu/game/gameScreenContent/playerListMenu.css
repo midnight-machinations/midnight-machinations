@@ -61,19 +61,24 @@
 }
 
 .player-list-menu .player-list-chat-section{
-    border-top: var(--primary-border-color) solid .13rem;
-    border-bottom: var(--primary-border-color) solid .13rem;
+    border-top: var(--background-border-color) solid .13rem;
+    border-bottom: var(--background-border-color) solid .13rem;
+    border-left: .13rem solid var(--background-border-color);
+    border-right: .13rem solid var(--background-border-color);
+    margin: .25rem;
     background-color: var(--background-color);
 }
 .player-list-menu .player-list-chat-message-section{
-    height: 10rem;
+    height: 12rem;
+    resize: vertical;
+    overflow: hidden;
 }
 
 .player-list-menu .player-card-holder:nth-last-child(even) {
-    background-color: var(--primary-color);
+    background-color: var(--background-color);
 }
 .player-list-menu .player-card-holder:nth-last-child(odd) {
-    background-color: var(--secondary-color);
+    background-color: var(--primary-color);
 }
 
 .player-card .chat-notification{
@@ -86,7 +91,7 @@
     padding: 0;
     border-width: .13rem;
     border-style: solid;
-    border-radius: 50%;
+    border-radius: 0;
     top: 0;
     right: 0;
 }

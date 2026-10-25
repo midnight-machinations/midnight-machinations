@@ -204,7 +204,7 @@ export function PageCollection(props: Readonly<{
             />
         })}
         {props.noLinks && props.pages.map((page) => {
-            return <div key={page} className={"placard " + (wikiPageIsEnabled(page, props.enabledRoles, props.enabledModifiers, props.wikiDisabledFilter) ? "" : "keyword-disabled")}>
+            return <div key={page} className={"wiki-page-button placard " + (wikiPageIsEnabled(page, props.enabledRoles, props.enabledModifiers, props.wikiDisabledFilter) ? "" : "keyword-disabled")}>
                 <StyledText noLinks={true}>{getArticleTitle(page)}</StyledText>
             </div>
         })}
@@ -219,7 +219,7 @@ function PageButton(props: Readonly<{
 }>): ReactElement {
     return <Button 
         key={props.page}
-        className={wikiPageIsEnabled(props.page, props.enabledRoles, props.enabledModifiers, props.wikiDisabledFilter) ? "" : "keyword-disabled"} 
+        className={"wiki-page-button" + (wikiPageIsEnabled(props.page, props.enabledRoles, props.enabledModifiers, props.wikiDisabledFilter) ? "" : "keyword-disabled")} 
         onClick={() => GAME_MANAGER.setWikiArticle(props.page)}
         tooltip={props.page}
     >

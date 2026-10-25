@@ -6,7 +6,7 @@
     bottom: 0;
     left: 0;
     background-color: var(--primary-color);
-    border-radius: 1rem;
+    border-radius: 0;
     border: .13rem solid var(--background-border-shadow-color);
     border-top-color: var(--background-border-color);
     border-left-color: var(--background-border-color);

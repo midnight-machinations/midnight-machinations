@@ -54,6 +54,14 @@
     background: url('../../../public/images/moon.png') center / 80% no-repeat;
 }
 
+/* Sits above the .glitch-image pseudo-elements so it isn't glitched */
+.sm > main > .satellite > .center > .logo {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    background: url('../../../public/images/mm.png') center / 80% no-repeat;
+}
+
 .sm > main > .satellite > .right {
     align-items: start;
 }
@@ -73,7 +81,6 @@
     justify-content: center;
     gap: 0.25rem 1rem;
     padding: 0.25rem;
-    background-color: var(--primary-color);
     border-top: var(--primary-border-color) solid .13rem;
 }
 

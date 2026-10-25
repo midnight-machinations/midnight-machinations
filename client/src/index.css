@@ -1,6 +1,6 @@
 @font-face {
     font-family: computer-font;
-    src: url('resources/fonts/3270/3270-Regular.ttf');
+    src: url('resources/fonts/3270/3270SemiCondensed-Regular.ttf');
     font-weight: normal;
     font-style: normal;
     size-adjust: 120%;
@@ -107,32 +107,35 @@
 
 
 :root{
-    --background-color: #0d0d0f;
+    /* Analog Horror Terminal Color Scheme */
+    --background-color: #000000;
+    --fade-color: #0a0a0a;
+    --scanline-opacity: 0.05;
 
-    --fade-color: #0e101b;
+    --primary-border-color: #888888;
+    --primary-border-shadow-color: #333333;
+    --background-border-color: #777777;
+    --background-border-shadow-color: #000000;
+    --brand-color: oklch(from #580d0d calc((l - 0.2) * 1.2) c 275);
+    --brand-hover-color: oklch(from #834b4b calc((l - 0.2) * 0.8) c 275);
+    --brand-border-color: oklch(from #f05151 calc(l - 0.2) c 275);
+    --brand-border-shadow-color: oklch(from #8d2020 calc(l - 0.2) c 275);
+    --primary-color: #1d1d1d;
+    --secondary-color: #222222;
+    --text-color: #cdcdcd;
 
-    --brand-color: oklch(from #c52c2c calc(l - 0.2) c 275);
-    --brand-hover-color: oklch(from #c93838 calc(l - 0.2) c 275);
-    --brand-border-color: oklch(from #d85353 calc(l - 0.2) c 275);
-    --brand-border-shadow-color: oklch(from #842727 calc(l - 0.2) c 275);
-    --primary-color: #272b3b;
-    --secondary-color: #232754;
-    --text-color: #ffffff;
-
-    --primary-border-color: #545b78;
-    --primary-border-shadow-color: #1c1f2d;
-    --background-border-color: #33323d;
-    --background-border-shadow-color: #0a0a0f;
-
-    --hover-color: #30375a;
-    --focus-outline-color: #929ccc;
+    --hover-color: #222222;
+    --focus-outline-color: #ffffff;
 
     font-size: 1em;
     
-    --game-font: game-base-font;
-    --kira-font: game-kira-font;
-    --spiral-font: game-spiral-font;
-    --title-font: game-title-font;
+    /* Terminal font as primary */
+    --game-font: computer-font;
+    --kira-font: computer-font;
+    --spiral-font: computer-font;
+    --title-font: computer-font;
+
+    font-family: var(--game-font);
 }
 
 button.brand, .button.brand {
@@ -170,7 +173,7 @@ s {
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
 
-    color: white;
+    color: var(--text-color);
 
     font-family: var(--game-font, Arial);
 }
@@ -179,7 +182,8 @@ s {
     height: .5rem;
     margin: 0%;
     padding: 0%;
-    background-color: #220000;
+    background-color: #000000;
+    box-shadow: inset 0 0 10px rgba(255, 0, 65, 0.3);
 }
 
 .centered-label {
@@ -189,15 +193,16 @@ s {
 }
 
 button, .button, input, select, option, textarea, .textarea, summary {
-    border-radius: 0.4rem;
+    border-radius: 0;
     margin: .13rem;
-    background-color: var(--secondary-color);
+    background-color: var(--background-color);
     border-color: var(--primary-border-color);
     border-style: solid;
     border-width: .13rem;
-    color: white;
+    color: var(--text-color);
     font-size: 1em;
     padding: 0.13rem 0.25rem;
+    box-shadow: 0 0 10px rgba(from var(--text-color) / 0.3);
 }
 
 /*
@@ -214,7 +219,7 @@ textarea, .textarea {
     white-space: pre;
     overflow-x: hidden;
     overflow-y: hidden;
-    border-radius: 0.25rem;
+    border-radius: 0;
 }
 
 *:focus-visible {
@@ -243,7 +248,7 @@ a:focus-visible {
 
 button, .button, summary {
     cursor: default;
-    background-color: var(--primary-color);
+    background-color: var(--background-color);
     white-space: nowrap;
 }
 button, .button, select, summary {
@@ -309,14 +314,6 @@ summary:hover:not([disabled]):not(:active) {
     background-color: var(--hover-color);
 }
 
-.hero {
-    height: 100vh;
-    background-position: center;
-    background-repeat: no-repeat;
-    background-size: cover;
-    position: relative;
-}
-
 code, .code {
     font-family: 'Courier New', Courier, monospace;
     font-weight: bold;
@@ -330,17 +327,17 @@ code, .code {
 }
 /* Track */
 ::-webkit-scrollbar-track {
-    background: #2b2b2b;
-    border-radius: .4rem;
+    background: #000000;
+    border: 1px solid #888888;
 }
 /* Handle */
 ::-webkit-scrollbar-thumb {
-    background: #616161;
-    border-radius: .4rem;
+    background: #aaaaaa;
+    box-shadow: 0 0 5px #aaaaaa;
 }
 /* Handle on hover */
 ::-webkit-scrollbar-thumb:hover {
-    background: #a1a1a1;
+    background: #ffffff;
 }
 
 ::-webkit-scrollbar-corner {
@@ -348,96 +345,81 @@ code, .code {
 }
 
 .chat-menu-colors {
-
-    --fade-color: #161b34;
-
-    --primary-color: #1c244e;
-    --secondary-color: #232754;
-    --text-color: #ffffff;
-
-    --primary-border-color: #3c4675;
-    --primary-border-shadow-color: #111836;
-
-    --hover-color: #232c57;
-    --focus-outline-color: #929ccc;
-
-
-    --background-color: #151a41;
-    --background-border-color: #2b3162;
-    --background-border-shadow-color: #0e1024;
-
-    --primary-color: #1c244e;
-    --secondary-color: #232754;
+    --background-color: oklch(from #000011 calc(l * 1.2) c h);
+    --fade-color: #0a0a0a;
+    --primary-color: oklch(from #00001a calc(l * 1.2) c h);
+    --secondary-color: oklch(from #000022 calc(l * 1.2) c h);
+    --primary-border-color: #0f33a0;
+    --primary-border-shadow-color: #0e0e40;
+    --background-border-color: #0d0d5a;
+    --background-border-shadow-color: #000000;
+    --hover-color: oklch(from #16164b calc(l * 1.1) c h);
+    --focus-outline-color: #0031c4;
 }
 
 .player-list-menu-colors {
-    --background-color: #182c28;
-    --fade-color: #0b1511;
-    --primary-color: #1a3531;
-    --secondary-color: #1f3a35;
-    --text-color: #ffffff;
-    --primary-border-color: #2e5952;
-    --primary-border-shadow-color: #142523;
-    --background-border-color: #2c4d46;
-    --background-border-shadow-color: #121f1c;
-    --hover-color: #1f403b;
-    --focus-outline-color: #84a997;
+    --background-color: oklch(from #001100 calc(l * 1.2) c h);
+    --fade-color: #0a0a0a;
+    --primary-color: oklch(from #001a00 calc(l * 1.2) c h);
+    --secondary-color: oklch(from #001f00 calc(l * 1.2) c h);
+    --primary-border-color: #156d2b;
+    --primary-border-shadow-color: #003300;
+    --background-border-color: #007200;
+    --background-border-shadow-color: #000000;
+    --hover-color: oklch(from #002200 calc(l * 1.2) c h);
+    --focus-outline-color: #00c030;
 }
 
 .will-menu-colors {
-    --background-color: #251737;
-    --fade-color: #100b15;
-    --primary-color: #2c1c40;
-    --secondary-color: #332142;
-    --text-color: #ffffff;
-    --primary-border-color: #4c3558;
-    --primary-border-shadow-color: #250d2b;
-    --background-border-color: #352d56;
-    --background-border-shadow-color: #110d18;
-    --hover-color: #38254e;
-    --focus-outline-color: #9c84a9;
+    --background-color: oklch(from #100310 calc(l * 1.2) c h);
+    --fade-color: #0a0a0a;
+    --primary-color: oklch(from #110011 calc(l * 1.2) c h);
+    --secondary-color: oklch(from #1a001a calc(l * 1.2) c h);
+    --primary-border-color: #6b1f6b;
+    --primary-border-shadow-color: #330033;
+    --background-border-color: #aa00aa;
+    --background-border-shadow-color: #000000;
+    --hover-color: oklch(from #220022 calc(l * 1.2) c h);
+    --focus-outline-color: #c731c7;
 }
 
 .role-specific-colors {
-    --background-color: #331c26;
-    --fade-color: #150b12;
-    --primary-color: #422031;
-    --secondary-color: #422137;
-    --text-color: #ffffff;
-    --primary-border-color: #5a3246;
-    --primary-border-shadow-color: #25141d;
-    --background-border-color: #50303e;
-    --background-border-shadow-color: #25131c;
-    --hover-color: #4c2337;
-    --focus-outline-color: #a9849c;
+    --background-color: oklch(from #110000 calc(l * 1.2) c h);
+    --fade-color: #0a0a0a;
+    --primary-color: oklch(from #1c0000 calc(l * 1.2) c h);
+    --secondary-color: oklch(from #200000 calc(l * 1.2) c h);
+    --primary-border-color: #6e0606;
+    --primary-border-shadow-color: #330000;
+    --background-border-color: #4b0000;
+    --background-border-shadow-color: #000000;
+    --hover-color: oklch(from #220000 calc(l * 1.2) c h);
+    --focus-outline-color: #8d0000;
 }
 
 .graveyard-menu-colors {
-    --background-color: #2c2b3b;
-    --fade-color: #1d1b29;
-    --primary-color: #323142;
-    --secondary-color: #373647;
-    --text-color: #ffffff;
-    --primary-border-color: #49485b;
-    --primary-border-shadow-color: #202027;
-    --background-border-color: #3d3c4d;
-    --background-border-shadow-color: #19181f;
-    --hover-color: #3c3b4d;
-    --focus-outline-color: #9896ae;
+    --background-color: oklch(from #111111 calc(l * 1.2) c h);
+    --fade-color: #0a0a0a;
+    --primary-color: oklch(from #1a1a1a calc(l * 1.2) c h);
+    --secondary-color: oklch(from #222222 calc(l * 1.2) c h);
+    --primary-border-color: #565656;
+    --primary-border-shadow-color: #333333;
+    --background-border-color: #4e4e4e;
+    --background-border-shadow-color: #000000;
+    --hover-color: oklch(from #222222 calc(l * 1.2) c h);
+    --focus-outline-color: #eeeeee;
 }
 
 .wiki-menu-colors {
-    --background-color: #2C2124;
-    --fade-color: #0F0D15;
-    --primary-color: #3A2A31;
-    --secondary-color: #3A2A31;
-    --text-color: #ffffff;
-    --primary-border-color: #533C44;
-    --primary-border-shadow-color: #261C26;
-    --background-border-color: #493942;
-    --background-border-shadow-color: #201924;
-    --hover-color: #442F35;
-    --focus-outline-color: #A18E99;
+    --background-color: oklch(from #110000 calc(l * 1.2) c h);
+    --fade-color: #0a0a0a;
+    --primary-color: oklch(from #110000 calc(l * 1.2) c h);
+    --secondary-color: oklch(from #1a0000 calc(l * 1.2) c h);
+    --primary-border-color: #86480e;
+    --primary-border-shadow-color: #2b0000;
+    --background-border-color: #773a00;
+    --background-border-shadow-color: #000000;
+    --hover-color: oklch(from #220000 calc(l * 1.2) c h);
+    --focus-outline-color: #aa5200;
 }
 
 
@@ -454,6 +436,24 @@ code, .code {
         }
         to {
             background-position: 100% 100%;
+        }
+    }
+
+    @keyframes scanline {
+        0% {
+            transform: translateY(-100%);
+        }
+        100% {
+            transform: translateY(100vh);
+        }
+    }
+
+    @keyframes vignette-pulse {
+        0%, 100% {
+            box-shadow: inset 0 0 200px rgba(0, 0, 0, 0.8);
+        }
+        50% {
+            box-shadow: inset 0 0 250px rgba(0, 0, 0, 0.9);
         }
     }
 
@@ -649,7 +649,106 @@ code, .code {
         clip: rect(.44em, 4.50em, .56em, 0);
         animation: glitch-anim2 5s infinite linear alternate-reverse;
     }
+
+    /* Image variant of .glitch: the pseudo-elements copy the element's background
+       instead of its text, and slices are clipped by percentage instead of em */
+    @keyframes glitch-image-anim {
+        0%   { clip-path: inset(12% 0 80% 0); transform: translateX(-2%) skew(0.32deg); }
+        5%   { transform: none; }
+        10%  { clip-path: inset(64% 0 22% 0); transform: translateX(1.5%) skew(0.1deg); }
+        15%  { transform: none; }
+        20%  { clip-path: inset(33% 0 60% 0); transform: translateX(-1%) skew(0.94deg); }
+        30%  { transform: none; }
+        35%  { clip-path: inset(84% 0 6% 0);  transform: translateX(2.5%) skew(0.37deg); }
+        45%  { transform: none; }
+        50%  { clip-path: inset(21% 0 71% 0); transform: translateX(-1.5%) skew(0.95deg); }
+        55%  { transform: none; }
+        65%  { clip-path: inset(47% 0 40% 0); transform: translateX(1%) skew(0.69deg); }
+        70%  { transform: none; }
+        80%  { clip-path: inset(70% 0 25% 0); transform: translateX(-2%) skew(0.07deg); }
+        85%  { transform: none; }
+        95%  { clip-path: inset(5% 0 88% 0);  transform: translateX(1.5%) skew(0.44deg); }
+        100% { transform: none; }
+    }
+    @keyframes glitch-image-anim2 {
+        0%   { transform: none; }
+        10%  { clip-path: inset(75% 0 15% 0); transform: translateX(2%) skew(0.85deg); }
+        15%  { transform: none; }
+        25%  { clip-path: inset(16% 0 74% 0); transform: translateX(-1.5%) skew(0.28deg); }
+        30%  { transform: none; }
+        40%  { clip-path: inset(55% 0 38% 0); transform: translateX(1%) skew(0.77deg); }
+        45%  { transform: none; }
+        60%  { clip-path: inset(30% 0 52% 0); transform: translateX(-2.5%) skew(0.3deg); }
+        65%  { transform: none; }
+        75%  { clip-path: inset(88% 0 4% 0);  transform: translateX(1.5%) skew(0.69deg); }
+        80%  { transform: none; }
+        90%  { clip-path: inset(40% 0 50% 0); transform: translateX(-1%) skew(0.81deg); }
+        100% { transform: none; }
+    }
+    .glitch-image {
+        position: relative;
+    }
+    .glitch-image::before, .glitch-image::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: inherit;
+        clip-path: inset(50% 0 50% 0);
+    }
+    .glitch-image::before {
+        animation: glitch-image-anim 5s infinite linear alternate-reverse;
+    }
+    .glitch-image::after {
+        animation: glitch-image-anim2 5s infinite linear alternate-reverse;
+    }
 }
+@media (prefers-reduced-motion: no-preference) {
+    body::before {
+        content: " ";
+        display: block;
+        position: fixed;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        right: 0;
+        background: linear-gradient(
+            rgba(0, 0, 0, 0) 50%, 
+            rgba(0, 0, 0, var(--scanline-opacity)) 50%
+        );
+        background-size: 100% 4px;
+        z-index: 999999;
+        pointer-events: none;
+    }
+}
+
+/* CRT Screen curvature and vignette */
+body {
+    background: radial-gradient(ellipse at center, #000000 0%, #000000 70%, #00000000 100%);
+    animation: vignette-pulse 3s ease-in-out infinite;
+    position: relative;
+}
+
+/* VHS noise overlay */
+body > #root::before {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: 
+        repeating-linear-gradient(
+            0deg,
+            rgba(0, 0, 0, 0.15),
+            rgba(0, 0, 0, 0.15) 1px,
+            transparent 1px,
+            transparent 2px
+        );
+    pointer-events: none;
+    z-index: 999998;
+    opacity: 0.05;
+}
+
 .highlighted.highlighted {
     border-color: yellow;
 }

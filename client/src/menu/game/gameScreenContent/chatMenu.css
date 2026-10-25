@@ -16,7 +16,7 @@
     justify-content: center;
     background-color: var(--secondary-color);
     padding: 0 .25rem;
-    border-radius: .13rem;
+    border-radius: 0;
     border-style: solid;
 }
 .chat-message-section {
@@ -36,7 +36,6 @@
     justify-content: left;
     align-items: center;
     padding: 0 .5rem;
-    background-color: var(--background-color);
     gap: .25rem;
 }
 .chat-whisper-notification {
@@ -51,7 +50,6 @@
 .chat-send-section {
     display: flex;
     flex-direction: row;
-    background-color: var(--background-color);
     align-items: stretch;
     height: max-content;
 }
@@ -69,8 +67,19 @@
 }
 .chat-menu-chat-controller {
     border: .13rem solid var(--primary-border-color);
-    padding-top: .13rem;
-    padding-bottom: .13rem;
+    background-color: var(--background-color);
     margin: .13rem;
-    border-radius: .25rem;
+    border-radius: 0;
+}
+.game-screen .brand.chat-menu-chat-controller {
+    border: .13rem solid var(--brand-border-color);
+    background-color: var(--brand-color);
+}
+.game-screen .brand.chat-menu-chat-controller textarea {
+    border-color: var(--brand-border-color);
+    border-top-color: var(--brand-border-shadow-color);
+    border-left-color: var(--brand-border-shadow-color);
+}
+.game-screen .brand.chat-menu-chat-controller textarea:focus-visible {
+    outline-color: var(--brand-border-color);
 }

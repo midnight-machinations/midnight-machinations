@@ -49,3 +49,16 @@ registerMigration("Settings", {
         });
     }
 });
+
+registerMigration("Settings", {
+    id: "2026-10-23-add-scanline-intensity",
+    description: "Add scanline intensity setting",
+    matches: (json) => json.format === "2025-10-23-change-to-migration-id-format",
+    transform: (json) => {
+        return Success({
+            ...json,
+            format: "2026-10-23-add-scanline-intensity",
+            scanlineIntensity: getDefaultSettings().scanlineIntensity,
+        });
+    }
+});

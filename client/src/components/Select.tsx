@@ -261,14 +261,26 @@ function SelectOptions<K extends { toString(): string}>(props: Readonly<{
     }
 
     const current = useRef<HTMLButtonElement | null>(null);
+    const containerRef = useRef<HTMLDivElement | null>(null);
 
+    // Only scroll the options list itself. scrollIntoView would also scroll the page,
+    // which moves the anchor and makes Popover's close-on-scroll listener close the dropdown.
     useEffect(() => {
-        if (current.current) {
-            current.current.scrollIntoView({ block: "center" });
+        const container = containerRef.current;
+        const item = current.current;
+        if (!container || !item) return;
+
+        const containerBounds = container.getBoundingClientRect();
+        const itemBounds = item.getBoundingClientRect();
+
+        if (itemBounds.top < containerBounds.top) {
+            container.scrollTop -= containerBounds.top - itemBounds.top;
+        } else if (itemBounds.bottom > containerBounds.bottom) {
+            container.scrollTop += itemBounds.bottom - containerBounds.bottom;
         }
     }, [props.indexSelected]);
 
-    return <div className="custom-select-options">
+    return <div className="custom-select-options" ref={containerRef}>
         <div>
             {[...options.entries()]
                 .map(([key, [value, _]], index) => {
