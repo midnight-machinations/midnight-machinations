@@ -725,7 +725,8 @@ code, .code {
 body {
     background: radial-gradient(ellipse at center, #000000 0%, #000000 70%, #00000000 100%);
     animation: vignette-pulse 3s ease-in-out infinite;
-    position: relative;
+    /* Do not make body positioned: Popovers are appended to body with position: absolute
+       and placed using viewport coordinates, which breaks if body is their containing block. */
 }
 
 /* VHS noise overlay */
