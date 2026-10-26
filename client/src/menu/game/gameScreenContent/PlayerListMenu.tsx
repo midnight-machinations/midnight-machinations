@@ -203,81 +203,85 @@ function PlayerCard(props: Readonly<{
     >
         <PlayerNamePlate playerIndex={props.playerIndex}/>
         
-        {mostRecentBlockMessage !== undefined ? 
-            <Button className="alibi-button will-menu-colors" onClick={()=>setAlibiOpen(!alibiOpen)}>
-                <StyledText noLinks={true}>
-                    {
-                        translateChatMessage(mostRecentBlockMessage[1].variant, playerNames, roleList)
-                            .split("\n")[1]
-                            .trim()
-                            .substring(0,30)
-                            .trim()
-                    }
-                </StyledText>
-            </Button>
-        : null}
-        {grave !== undefined ? 
-            <Button className="grave-button graveyard-menu-colors" onClick={()=>setGraveOpen(!graveOpen)}>
-                <StyledText noLinks={true}>
-                    {translateGraveRole(grave)} {translate(grave.diedPhase+".icon")}{grave.dayNumber.toString()}
-                </StyledText>
-            </Button>
-        : null}
+        <div className="player-card-alibis">
+            {mostRecentBlockMessage !== undefined ? 
+                <Button className="alibi-button will-menu-colors" onClick={()=>setAlibiOpen(!alibiOpen)}>
+                    <StyledText noLinks={true}>
+                        {
+                            translateChatMessage(mostRecentBlockMessage[1].variant, playerNames, roleList)
+                                .split("\n")[1]
+                                .trim()
+                                .substring(0,30)
+                                .trim()
+                        }
+                    </StyledText>
+                </Button>
+            : null}
+            {grave !== undefined ? 
+                <Button className="grave-button graveyard-menu-colors" onClick={()=>setGraveOpen(!graveOpen)}>
+                    <StyledText noLinks={true}>
+                        {translateGraveRole(grave)} {translate(grave.diedPhase+".icon")}{grave.dayNumber.toString()}
+                    </StyledText>
+                </Button>
+            : null}
+        </div>
         
-        {
-            phaseState.type === "nomination" && playerAlive && (
-                spectator ? (
-                    <>
-                        <Icon>how_to_vote</Icon>
-                        {numVoted}
-                    </>
-                ) : (
-                    <Button
-                        className="flush"
-                        onClick={() => toggleVoteForThisPlayer()}
-                        highlighted={myNominationSelection === props.playerIndex}
-                    >
-                        <Icon>how_to_vote</Icon>
-                        {numVoted}
-                    </Button>
-                )
-            ) 
-        }
-        {spectator ||
-            <Button
-                className="flush"
-                disabled={whispersDisabled}
-                onClick={()=>{
-                    setWhisperChatOpen(!whisperChatOpen);
-                    if(GAME_MANAGER.state.stateType === 'game' && GAME_MANAGER.state.clientState.type === 'player'){
-                        GAME_MANAGER.state.clientState.missedWhispers = 
-                            GAME_MANAGER.state.clientState.missedWhispers.filter(player => player !== props.playerIndex);
-                    }
-                    GAME_MANAGER.invokeStateListeners("whisperChatOpenOrClose");
-                }}
-                pressedChildren={() => <Icon>done</Icon>}
-            >
-                {whisperChatOpen===true?<Icon>close</Icon>:<Icon>chat</Icon>}
-                {whisperNotification===true && <div className="chat-notification highlighted">!</div>}
-            </Button>
-        }
-        {(() => {
-            const filter = props.playerIndex;
-            const isFilterSet = chatFilter?.type === "playerNameInMessage" && (chatFilter.player === filter);
-            
-            return <Button 
-                className="filter flush"
-                highlighted={isFilterSet}
-                onClick={() => {
-                    GAME_MANAGER.updateChatFilter(isFilterSet ? null : filter);
-                    return true;
-                }}
-                pressedChildren={result => <Icon>{result ? "done" : "warning"}</Icon>}
-                aria-label={translate("menu.playerList.button.filter")}
-            >
-                <Icon>filter_alt</Icon>
-            </Button>
-        })()}
+        <div className="player-card-buttons">
+            {
+                phaseState.type === "nomination" && playerAlive && (
+                    spectator ? (
+                        <>
+                            <Icon>how_to_vote</Icon>
+                            {numVoted}
+                        </>
+                    ) : (
+                        <Button
+                            className="flush"
+                            onClick={() => toggleVoteForThisPlayer()}
+                            highlighted={myNominationSelection === props.playerIndex}
+                        >
+                            <Icon>how_to_vote</Icon>
+                            {numVoted}
+                        </Button>
+                    )
+                ) 
+            }
+            {spectator ||
+                <Button
+                    className="flush"
+                    disabled={whispersDisabled}
+                    onClick={()=>{
+                        setWhisperChatOpen(!whisperChatOpen);
+                        if(GAME_MANAGER.state.stateType === 'game' && GAME_MANAGER.state.clientState.type === 'player'){
+                            GAME_MANAGER.state.clientState.missedWhispers = 
+                                GAME_MANAGER.state.clientState.missedWhispers.filter(player => player !== props.playerIndex);
+                        }
+                        GAME_MANAGER.invokeStateListeners("whisperChatOpenOrClose");
+                    }}
+                    pressedChildren={() => <Icon>done</Icon>}
+                >
+                    {whisperChatOpen===true?<Icon>close</Icon>:<Icon>chat</Icon>}
+                    {whisperNotification===true && <div className="chat-notification highlighted">!</div>}
+                </Button>
+            }
+            {(() => {
+                const filter = props.playerIndex;
+                const isFilterSet = chatFilter?.type === "playerNameInMessage" && (chatFilter.player === filter);
+                
+                return <Button 
+                    className="filter flush"
+                    highlighted={isFilterSet}
+                    onClick={() => {
+                        GAME_MANAGER.updateChatFilter(isFilterSet ? null : filter);
+                        return true;
+                    }}
+                    pressedChildren={result => <Icon>{result ? "done" : "warning"}</Icon>}
+                    aria-label={translate("menu.playerList.button.filter")}
+                >
+                    <Icon>filter_alt</Icon>
+                </Button>
+            })()}
+        </div>
     </div>
     {alibiOpen && mostRecentBlockMessage !== undefined ? <div className="open-alibi" onClick={()=>setAlibiOpen(false)}>
         <ChatMessage message={mostRecentBlockMessage[1]} messageIndex={mostRecentBlockMessage[0]}/>

@@ -18,7 +18,6 @@
 }
 
 
-
 .player-list-menu .dead-players-separator {
     border-top: .13rem solid var(--primary-border-color);
     border-bottom: .13rem solid var(--primary-border-shadow-color);
@@ -58,6 +57,14 @@
 }
 .player-card > .player-name-plate {
     flex-grow: 1;
+}
+.player-card .player-card-alibis {
+    flex-wrap: wrap;
+    display: flex;
+}
+.player-card .player-card-buttons {
+    flex-wrap: wrap;
+    display: flex;
 }
 
 .player-list-menu .player-list-chat-section{
@@ -99,6 +106,10 @@
     margin: .25rem;
 }
 .player-card .grave-button {
-    border-bottom-left-radius: 0;
-    border-bottom-right-radius: 0;
+    text-wrap: wrap;
+    overflow-wrap: anywhere;
+}
+.player-card .alibi-button {
+    text-wrap: wrap;
+    overflow-wrap: anywhere;
 }

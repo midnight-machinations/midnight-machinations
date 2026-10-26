@@ -52,6 +52,8 @@
     aspect-ratio: 1 / 1;
     min-width: 20rem;
     background: url('../../../public/images/moon.png') center / 80% no-repeat;
+    /* Keeps the logo's z-index local, so it doesn't render above popups */
+    isolation: isolate;
 }
 
 /* Sits above the .glitch-image pseudo-elements so it isn't glitched */
