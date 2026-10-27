@@ -12,7 +12,7 @@ Client (from `client/`):
 ```bash
 corepack enable
 pnpm install --frozen-lockfile
-pnpm dev          # dev server, default http://localhost:3000
+pnpm dev          # dev server, default http://localhost:3000; add --no-open (not --open=false) to skip opening a browser
 pnpm build        # type-checks (tsc) and builds; run this to check for type errors
 ```
 

@@ -29,5 +29,5 @@ echo "WS_ADDRESS=0.0.0.0:$server_port" > "$path/server/.env.local"
 
 echo
 echo "Worktree ready at $path"
-echo "  client: http://localhost:$client_port (cd client && pnpm dev)"
-echo "  server: ws://localhost:$server_port (cd server && cargo run)"
+echo "  server: ws://localhost:$server_port (cd $path/server && cargo run)"
+echo "  client: http://localhost:$client_port (cd $path/client && pnpm dev, add --no-open to skip opening a browser)"
