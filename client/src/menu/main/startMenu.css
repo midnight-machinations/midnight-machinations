@@ -84,6 +84,7 @@
     gap: 0.25rem 1rem;
     padding: 0.25rem;
     border-top: var(--primary-border-color) solid .13rem;
+    background-color: var(--background-color);
 }
 
 @media only screen and (max-width: 1000px) {
