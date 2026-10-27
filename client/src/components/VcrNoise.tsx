@@ -9,6 +9,7 @@ const MIN_Y = 220;
 const MIN_Y2 = 220;
 const NUM = 50;
 const RADIUS = 4;
+const FRAME_INTERVAL = 1000 / 30;
 
 function getRandomInt(min: number, max: number): number {
     min = Math.ceil(min);
@@ -67,11 +68,16 @@ export default function VcrNoise(): ReactElement {
         window.addEventListener("resize", resize);
 
         let frame: number;
-        const animate = () => {
-            renderTrackingNoise(ctx);
-            frame = requestAnimationFrame(() => requestAnimationFrame(animate));
+        let lastRender = -Infinity;
+        const animate = (time: number) => {
+            // Small tolerance so a 60Hz display doesn't skip a frame due to timing jitter
+            if (time - lastRender >= FRAME_INTERVAL - 1) {
+                lastRender = time;
+                renderTrackingNoise(ctx);
+            }
+            frame = requestAnimationFrame(animate);
         };
-        animate();
+        frame = requestAnimationFrame(animate);
 
         return () => {
             window.removeEventListener("resize", resize);
