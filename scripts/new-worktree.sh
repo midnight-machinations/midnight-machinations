@@ -27,6 +27,9 @@ echo "WS_ADDRESS=0.0.0.0:$server_port" > "$path/server/.env.local"
 
 (cd "$path/client" && pnpm install --frozen-lockfile)
 
+# Print absolute paths so the commands below work from any directory
+path=$(cd "$path" && pwd)
+
 echo
 echo "Worktree ready at $path"
 echo "  server: ws://localhost:$server_port (cd $path/server && cargo run)"
