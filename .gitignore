@@ -38,3 +38,6 @@ client/yarn-error.log*
 
 # Py cache
 generate/**/__pycache__
+
+# Claude Code worktrees
+.claude/worktrees/
