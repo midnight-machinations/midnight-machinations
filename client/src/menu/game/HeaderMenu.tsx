@@ -25,7 +25,7 @@ export default function HeaderMenu(props: Readonly<{
     )!
 
     const backgroundStyle = 
-        phaseState.type === "briefing" ? "background-none" :
+        (phaseState.type === "briefing" || phaseState.type === "recess") ? "background-none" :
         (phaseState.type === "night" || phaseState.type === "obituary") ? "background-night" : 
         "background-day";
 

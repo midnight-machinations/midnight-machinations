@@ -7,6 +7,7 @@ import { loadSettingsParsed } from "../game/localStorage";
 import LoadingScreen from "./LoadingScreen";
 import { Theme } from "..";
 import Icon from "../components/Icon";
+import VcrNoise from "../components/VcrNoise";
 import { Button } from "../components/Button";
 import { ChatMessage } from "../components/ChatMessage";
 import WikiCoverCard from "../components/WikiCoverCard";
@@ -326,6 +327,7 @@ export default function Anchor(props: Readonly<{
                         setTouchCurrent(null)
                     }}
                 >
+                    <VcrNoise/>
                     <Button className={"global-menu-button " + (stateType === "game" ? "" : "flush")}
                         onClick={() => {
                             if (!globalMenuOpen) {

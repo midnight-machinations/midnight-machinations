@@ -10,6 +10,8 @@
         url('../../public/images/fuzzy-background-alpha.png') center / 10000px,
         var(--background-color);
     animation: background-scroll 9s infinite forwards linear;
+    /* Gives .vcr-noise (z-index: -1) a stacking context, so it renders above this background but beneath content */
+    isolation: isolate;
 }
 
 .error-card {
