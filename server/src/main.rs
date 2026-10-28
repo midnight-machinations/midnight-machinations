@@ -12,6 +12,8 @@ use std::{thread, time::Duration};
 #[tokio::main]
 async fn main() -> ! {
 
+    // .env.local (untracked) takes precedence over .env, e.g. to give each git worktree its own port
+    dotenv::from_filename(".env.local").ok();
     dotenv::dotenv().ok();
     let address = std::env::var("WS_ADDRESS").expect("Missing environment variabled WS_ADDRESS");
 
