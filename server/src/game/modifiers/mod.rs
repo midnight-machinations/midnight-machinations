@@ -49,7 +49,7 @@ pub trait ModifierStateImpl where Self: Clone + Sized + Default + Serialize + fo
 
 macros::modifiers! {
     obscured_graves: ObscuredGraves,
-    skip_day_1: SkipDay1,
+    skip_day_1: SkipToDay2,
     dead_can_chat: DeadCanChat,
     abstaining: Abstaining,
     no_death_cause: NoDeathCause,
