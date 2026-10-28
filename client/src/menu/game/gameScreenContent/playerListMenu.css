@@ -66,6 +66,9 @@
     flex-wrap: wrap;
     display: flex;
 }
+.player-card .player-card-buttons > button {
+    position: relative;
+}
 
 .player-list-menu .player-list-chat-section{
     border-top: var(--background-border-color) solid .13rem;

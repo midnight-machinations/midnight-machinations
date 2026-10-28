@@ -34,12 +34,21 @@ impl RoleComponent{
 
     pub fn send_ability_state(game: &Game, id: AbilityID){
         let AbilityID::Role{player, ..} = id else {return};
-        let Some(Ability::Role(RoleAbility(new_role_data))) = id.get_ability(game) else {return};
+        let ability_state = id.get_ability(game)
+            .and_then(|ability|{
+                if let Ability::Role(RoleAbility(new_role_data)) = ability {Some(new_role_data)}else{None}
+            })
+            .and_then(|ability|{
+                if ability.role().should_inform_player_of_assignment() {
+                    Some(ability.clone().get_client_ability_state(game, player))
+                } else {
+                    None
+                }
+            });
 
-        if !new_role_data.role().should_inform_player_of_assignment() {return}
         player.send_packet(game, ToClientPacket::AbilityState {
             ability_id: id,
-            ability_state: new_role_data.clone().get_client_ability_state(game, player)
+            ability_state
         });
     }
 }
