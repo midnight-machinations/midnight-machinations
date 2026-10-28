@@ -7,13 +7,15 @@ use super::{client::ClientReference, WebsocketListener, ValidateClientError};
 
 impl WebsocketListener{
     pub fn on_connect(&mut self, connection: &Connection) {
-        self.create_client(connection);
+        self.with_voice_update(|listener| listener.create_client(connection));
     }
 
     pub fn on_disconnect(&mut self, connection: Connection) {
-        if let Some(client) = ClientReference::new(connection.address(), self){
-            self.delete_client(&client);
-        }
+        self.with_voice_update(|listener| {
+            if let Some(client) = ClientReference::new(connection.address(), listener){
+                listener.delete_client(&client);
+            }
+        });
     }
 
     pub fn on_message(&mut self, connection: &Connection, message: &Message) {
@@ -32,11 +34,18 @@ impl WebsocketListener{
             Err(ValidateClientError::InRoomThatDoesntExist) => 
                 log!(error "Listener"; "Received packet from a client in a room that doesnt exist"),
             Ok(client) => {
-                self.handle_message(client, packet)
+                if matches!(packet, ToServerPacket::Ping | ToServerPacket::RoomListRequest) {
+                    self.handle_message(client, packet);
+                } else {
+                    self.with_voice_update(|listener| listener.handle_message(client, packet));
+                }
             }
         }
     }
     pub(super) fn tick(&mut self, delta_time: Duration){
+        self.with_voice_update(|listener| listener.tick_rooms(delta_time));
+    }
+    fn tick_rooms(&mut self, delta_time: Duration){
         let mut closed_rooms = Vec::new();
         let mut closed_clients = Vec::new();
 

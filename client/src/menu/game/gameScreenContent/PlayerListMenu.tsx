@@ -1,3 +1,4 @@
+import SpeakingIndicator from "../../../voice/SpeakingIndicator";
 import React, { ReactElement, useCallback, useMemo } from "react";
 import translate from "../../../game/lang";
 import GAME_MANAGER from "../../../index";
@@ -227,6 +228,7 @@ function PlayerCard(props: Readonly<{
         </div>
         
         <div className="player-card-buttons">
+            <SpeakingIndicator playerIndex={props.playerIndex}/>
             {
                 phaseState.type === "nomination" && playerAlive && (
                     spectator ? (

@@ -1,3 +1,4 @@
+import VoiceControls from "../voice/VoiceControls";
 import React, { ReactElement, useContext, useEffect, useState } from "react";
 import "./settings.css";
 import translate, { Language, languageName, LANGUAGES, switchLanguage } from "../game/lang";
@@ -35,7 +36,7 @@ export default function SettingsMenu(): ReactElement {
         document.documentElement.style.setProperty('--scanline-opacity', `${scanlineIntensity / 100 * 0.2}`);
     }, [scanlineIntensity]);
 
-    return <div className="settings-menu-card">
+    return <div className="settings-menu-card user-settings-menu">
         <header>
             <h2><Icon size="tiny">settings</Icon> {translate("menu.settings.title")}</h2>
         </header>
@@ -192,6 +193,9 @@ export default function SettingsMenu(): ReactElement {
                         anchorController.clearCoverCard();
                     }}><Icon>delete_forever</Icon> {translate('menu.settings.eraseSaveData')}</Button>
                 </section>
+            </div>
+            <div className="settings-voice-column chat-menu-colors">
+                <VoiceControls/>
             </div>
         </main>
     </div>

@@ -3,7 +3,9 @@
 {
 	"name": "Ubuntu",
 	// Or use a Dockerfile or Docker Compose file. More info: https://containers.dev/guide/dockerfile
-	"image": "mcr.microsoft.com/devcontainers/base:jammy",
+	"build": {
+		"dockerfile": "Dockerfile"
+	},
 
 	// Features to add to the dev container. More info: https://containers.dev/features.
 	"features": {
@@ -12,10 +14,15 @@
 		//https://github.com/devcontainers/features/tree/main/src/node
 		"ghcr.io/devcontainers/features/node:1": {},
 		"ghcr.io/devcontainers/features/docker-in-docker:2": {}
-	}
+	},
 
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.
-	// "forwardPorts": [8081],
+	"forwardPorts": [3000, 9000, 9100],
+	// WebRTC media needs published UDP/TCP ports, separate from forwarded signaling.
+	"runArgs": [
+		"--publish", "44400-44402:44400-44402/udp",
+		"--publish", "44400-44402:44400-44402/tcp"
+	]
 
 	// Use 'postCreateCommand' to run commands after the container is created.
 	// "postCreateCommand": "uname -a",

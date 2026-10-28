@@ -39,6 +39,9 @@ pub struct ClientSender {
 }
 
 impl ClientSender {
+    pub(crate) fn same_connection(&self, other: &Self) -> bool {
+        self.tx.same_channel(&other.tx)
+    }
     pub fn send(&self, message: ToClientPacket) {
         let _ = self.tx.send(message);
     }

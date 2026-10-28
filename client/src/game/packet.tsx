@@ -1,3 +1,4 @@
+import { VoiceSession } from "../voice/types";
 import { PhaseType, PlayerIndex, PhaseTimes, Tag, LobbyClientID, ChatGroup, PhaseState, LobbyClient, InsiderGroup, GameClient, UnsafeString, FastForwardSetting } from "./gameState.d"
 import { Grave, GraveIndex } from "./graveState"
 import { ChatMessage, ChatMessageIndex } from "../components/ChatMessage"
@@ -15,6 +16,12 @@ export type LobbyPreviewData = {
 }
 
 export type ToClientPacket = {
+    type: "voiceEnabled",
+    enabled: boolean
+} | {
+    type: "voiceSession",
+    session: VoiceSession | null
+} | {
     type: "pong",
 } | {
     type: "hostData",
@@ -175,6 +182,9 @@ export type ToClientPacket = {
 }
 
 export type ToServerPacket = {
+    type: "setVoiceEnabled",
+    enabled: boolean
+} | {
     type: "ping",
 } | {
     type: "lobbyListRequest",

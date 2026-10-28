@@ -1,3 +1,4 @@
+import SpeakingIndicator from "../../voice/SpeakingIndicator";
 import { ReactElement, useEffect, useState } from "react";
 import translate from "../../game/lang";
 import GAME_MANAGER from "../../index";
@@ -97,6 +98,7 @@ function LobbyPlayerListPlayer(props: Readonly<{ player: PlayerDisplayData }>): 
                 {props.player.displayName}
             </StyledText>}
             {host && <LobbyPlayerListPlayerRename {...props}/>}
+            <SpeakingIndicator roomClientId={props.player.id}/>
         </div>
         <div>
             {host && !props.player.host && <button

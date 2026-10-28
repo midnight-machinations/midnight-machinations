@@ -74,6 +74,7 @@ impl SpectatorPointer {
         self.send_chat_messages(game);
     }
     pub fn send_join_game_data(&self, game: &mut Game){
+        self.send_packet(game, ToClientPacket::VoiceEnabled { enabled: game.settings.voice_enabled });
         // General
         self.send_packets(game, vec![
             ToClientPacket::GamePlayers{ 
