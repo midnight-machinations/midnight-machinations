@@ -116,7 +116,6 @@ impl RoleStateTrait for Steward {
         );
         out.iter_mut().for_each(|v|{
             v.transport_immune = true;
-            v.indirect = true;
         });
         out
     }

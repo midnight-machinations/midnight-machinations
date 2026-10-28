@@ -43,7 +43,7 @@ impl RoleStateTrait for Mercenary {
 
         match (priority, visit.tag) {
             (OnMidnightPriority::Kill, VisitTag::Ability { ability, id: 2 }) if ability == *id => {
-                if game.day_number() == 1 || self.attacks_remaining == 0 {return}
+                if game.day_number() <= 1 || self.attacks_remaining == 0 {return}
 
                 NightAttack::new()
                     .attackers([actor_ref])

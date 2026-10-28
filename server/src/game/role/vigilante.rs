@@ -11,14 +11,13 @@ pub struct Vigilante {
 #[serde(rename_all = "camelCase")]
 #[serde(tag = "type")]
 pub enum VigilanteState{
-    NotLoaded,
     Loaded{bullets: u8},
     KilledTownie,
 }
 
 impl Default for Vigilante {
     fn default() -> Self {
-        Self { state: VigilanteState::NotLoaded }
+        Self { state: VigilanteState::Loaded { bullets: 0 } }
     }
 }
 
@@ -28,34 +27,34 @@ pub(super) const DEFENSE: DefensePower = DefensePower::None;
 
 impl RoleStateTrait for Vigilante {
     type ClientAbilityState = Vigilante;
+    fn new_state(game: &mut Game) -> Self {
+        Self { state: VigilanteState::Loaded { bullets: crate::game::role::common_role::standard_charges(game) } }
+    }
     fn on_midnight(mut self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut OnMidnightFold, priority: OnMidnightPriority) {
         if priority != OnMidnightPriority::Kill {return}
+        if game.day_number() <= 1 {return}
 
-        match self.state {
-            VigilanteState::Loaded { bullets } if bullets > 0 => {
-                if let Some(target_ref) = Visits::default_target(midnight_variables, actor_ref, Role::Vigilante) {
-                    let killed = NightAttack::new()
-                        .attackers([actor_ref])
-                        .grave_killer(Role::Vigilante)
-                        .attack(game, midnight_variables, target_ref);
-                    self.state = VigilanteState::Loaded { bullets: bullets.saturating_sub(1) };
+        if 
+            let VigilanteState::Loaded { bullets } = self.state &&
+            bullets > 0 &&
+            let Some(target_ref) = Visits::default_target(midnight_variables, actor_ref, Role::Vigilante)
+        {
+            let killed = NightAttack::new()
+                .attackers([actor_ref])
+                .grave_killer(Role::Vigilante)
+                .attack(game, midnight_variables, target_ref);
+            self.state = VigilanteState::Loaded { bullets: bullets.saturating_sub(1) };
 
-                    if killed && target_ref.win_condition(game).is_loyalist_for(GameConclusion::Town) {
-                        self.state = VigilanteState::KilledTownie;
-                    }
-                }
+            if killed && target_ref.win_condition(game).is_loyalist_for(GameConclusion::Town) {
+                self.state = VigilanteState::KilledTownie;
             }
-            VigilanteState::NotLoaded => {
-                self.state = VigilanteState::Loaded { bullets: crate::game::role::common_role::standard_charges(game) };
-            }
-            _ => {},
         }
         
         actor_ref.edit_role_ability_helper(game, self);
     }
     fn controller_parameters_map(self, game: &Game, actor_ref: PlayerReference) -> ControllerParametersMap {
         let can_shoot = if let VigilanteState::Loaded { bullets } = &self.state {
-            *bullets >=1
+            *bullets >=1 && game.day_number() > 1
         } else {
             false
         };

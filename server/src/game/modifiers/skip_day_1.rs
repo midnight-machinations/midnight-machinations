@@ -8,15 +8,15 @@ use crate::game::{
 use super::{ModifierStateImpl, ModifierID};
 
 #[derive(Clone, Default, PartialEq, Eq, Hash, Serialize, Deserialize, Debug)]
-pub struct SkipDay1;
+pub struct SkipToDay2;
 
-impl From<&SkipDay1> for ModifierID{
-    fn from(_: &SkipDay1) -> Self {
-        ModifierID::SkipDay1
+impl From<&SkipToDay2> for ModifierID{
+    fn from(_: &SkipToDay2) -> Self {
+        ModifierID::SkipToDay2
     }
 }
 
-impl ModifierStateImpl for SkipDay1{
+impl ModifierStateImpl for SkipToDay2{
     fn on_phase_start(self, game: &mut Game, event: &OnPhaseStart, _fold: &mut (), _priority: ()) {
         match (event.phase.phase(), game.day_number()) {
             (Dusk, 1) |
@@ -24,6 +24,7 @@ impl ModifierStateImpl for SkipDay1{
             (Obituary, 2) |
             (Discussion, 2) |
             (Nomination, 2) |
+            (Adjournment, 2) |
             (Testimony, 2) |
             (Judgement, 2) |
             (FinalWords, 2)

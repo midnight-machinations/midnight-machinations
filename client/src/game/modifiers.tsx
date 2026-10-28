@@ -3,7 +3,7 @@ import { Role } from "./roleState.d";
 
 export const MODIFIERS = [
     "obscuredGraves",
-    "skipDay1",
+    "skipToDay2",
     "deadCanChat", "abstaining",
     "noDeathCause",
     "roleSetGraveKillers", "autoGuilty", 
@@ -21,7 +21,7 @@ export type ModifierID = (typeof MODIFIERS)[number];
 export type ModifierState = {
     type: "obscuredGraves"
 } | {
-    type: "skipDay1"
+    type: "skipToDay2"
 } | {
     type: "deadCanChat"
 } | {

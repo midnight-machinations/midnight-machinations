@@ -1,6 +1,5 @@
 import { useGameState, usePlayerNames, usePlayerState } from "../../../../components/useHooks";
-import React, { ReactElement } from "react";
-import AuditorMenu from "./RoleSpecificMenus/AuditorMenu";
+import { ReactElement } from "react";
 import Counter from "../../../../components/Counter";
 import StyledText from "../../../../components/StyledText";
 import translate from "../../../../game/lang";
