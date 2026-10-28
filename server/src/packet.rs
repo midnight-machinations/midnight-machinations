@@ -138,7 +138,7 @@ pub enum ToClientPacket{
     YourRole{role: Role},
 
     #[serde(rename_all = "camelCase")]
-    AbilityState{ability_id: AbilityID, ability_state: ClientRoleStateEnum},
+    AbilityState{ability_id: AbilityID, ability_state: Option<ClientRoleStateEnum>},
     
     #[serde(rename_all = "camelCase")]
     YourVoteFastForwardPhase{fast_forward: FastForwardSetting},

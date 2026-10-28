@@ -53,14 +53,17 @@ impl RoleStateTrait for Intern {
         }
 
     }
+    fn on_ability_deletion(mut self, game: &mut Game, actor_ref: PlayerReference, event: &OnAbilityDeletion, _fold: &mut (), _priority: OnAbilityDeletionPriority) {
+        if event.id != (AbilityID::Role { role: Role::Intern, player: actor_ref }) {return};
+        println!("sussy baka {:?}", event.id);
+        Self::remove_current_role(&mut self.current_role, game);
+    }
     fn on_phase_start(mut self, game: &mut Game, actor_ref: PlayerReference, phase: PhaseType) {
         if phase != PhaseType::Obituary {return}
         if actor_ref.ability_deactivated_from_death(game) {return}
         if BlockedComponent::blocked(game, actor_ref) {return}
 
-        //remove previous role
-        if let Some(ability_id) = self.current_role { ability_id.delete_ability(game) }
-        self.current_role = None;
+        Self::remove_current_role(&mut self.current_role, game);
 
         //give new role
         if let Some(chosen_role) = ControllerID::role(actor_ref, Role::Intern, 0)
@@ -91,5 +94,9 @@ impl Intern{
             .choose_multiple(&mut game.rng, 3)
             .into_iter()
             .collect()
+    }
+    fn remove_current_role(current_role: &mut Option<AbilityID>, game: &mut Game) {
+        if let Some(ability_id) = current_role { ability_id.delete_ability(game) }
+        *current_role = None;
     }
 }

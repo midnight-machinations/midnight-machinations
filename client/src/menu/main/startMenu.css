@@ -49,6 +49,7 @@
 }
 
 .sm > main > .satellite > .center {
+    position: relative;
     aspect-ratio: 1 / 1;
     min-width: 20rem;
     background: url('../../../public/images/moon.png') center / 80% no-repeat;
@@ -61,6 +62,7 @@
     position: absolute;
     inset: 0;
     z-index: 1;
+    pointer-events: none;
     background: url('../../../public/images/mm.png') center / 80% no-repeat;
 }
 

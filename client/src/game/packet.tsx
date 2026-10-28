@@ -152,7 +152,7 @@ export type ToClientPacket = {
 // } | {
     type: "abilityState",
     abilityId: AbilityID,
-    abilityState: RoleState
+    abilityState: RoleState | null
 } | {
     type: "yourVoteFastForwardPhase",
     fastForward: FastForwardSetting

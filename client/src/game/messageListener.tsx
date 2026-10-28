@@ -467,7 +467,11 @@ export default function messageListener(packet: ToClientPacket){
         break;
         case "abilityState":
             if(GAME_MANAGER.state.stateType === "game" && GAME_MANAGER.state.clientState.type === "player"){
-                GAME_MANAGER.state.clientState.abilityStates.insert(packet.abilityId, packet.abilityState);
+                if(packet.abilityState !== null){
+                    GAME_MANAGER.state.clientState.abilityStates.insert(packet.abilityId, packet.abilityState);
+                }else{
+                    GAME_MANAGER.state.clientState.abilityStates.delete(packet.abilityId);
+                }
             }
         break;
         case "yourVoteFastForwardPhase":
