@@ -14,6 +14,22 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
+      - name: Check required voice secrets
+        env:
+          VOICE_CONTROL_SECRET: ${{ secrets.VOICE_CONTROL_SECRET }}
+          VOICE_PUBLIC_URL: ${{ secrets.VOICE_PUBLIC_URL }}
+          VOICE_ANNOUNCED_ADDRESS: ${{ secrets.VOICE_ANNOUNCED_ADDRESS }}
+          VOICE_ALLOWED_ORIGINS: ${{ secrets.VOICE_ALLOWED_ORIGINS }}
+        run: |
+          missing=0
+          for name in VOICE_CONTROL_SECRET VOICE_PUBLIC_URL VOICE_ANNOUNCED_ADDRESS VOICE_ALLOWED_ORIGINS; do
+            if [ -z "${!name:-}" ]; then
+              echo "::error::Repository Actions secret $name is empty or unavailable to this run."
+              missing=1
+            fi
+          done
+          exit "$missing"
+
       # 2. Log in to Docker Hub
       - name: Login to DockerHub
         uses: docker/login-action@v2
@@ -65,6 +81,10 @@ jobs:
             : "${VOICE_PUBLIC_URL:?Set VOICE_PUBLIC_URL in GitHub secrets}"
             : "${VOICE_ANNOUNCED_ADDRESS:?Set VOICE_ANNOUNCED_ADDRESS in GitHub secrets}"
             : "${VOICE_ALLOWED_ORIGINS:?Set VOICE_ALLOWED_ORIGINS in GitHub secrets}"
+
+            # ssh-action v0.1.6 assigns shell variables without exporting them.
+            # Docker's -e NAME reads the environment of the docker process.
+            export VOICE_CONTROL_SECRET VOICE_PUBLIC_URL VOICE_ANNOUNCED_ADDRESS VOICE_ALLOWED_ORIGINS
 
             # Fetch both images before interrupting the running game.
             docker pull "$DOCKERHUB_USERNAME/midnightmachinations-server:latest"
