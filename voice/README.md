@@ -64,6 +64,47 @@ Hosts can enable or disable voice for the whole room in lobby settings or in-gam
 
 If any of Rust's three voice environment variables are absent, voice stays disabled and the game continues normally. A configured but unavailable service produces a reconnect message in the voice column.
 
+### Sammy production deployment
+
+`.github/workflows/sammyserver-deploy-prod.yml` builds and pushes both the game and voice images, then replaces both containers on the Sammy host. Deploying interrupts active games. It keeps the game on port 2001, publishes voice signaling on host port 9100 for the Cloudflare proxy, and publishes media ports 44400–44402 over UDP and TCP. Port 9101 is available only inside the shared Docker network. The workflow checks that voice has an authenticated game-server connection before reporting success.
+
+Before the first deployment:
+
+1. Add these repository secrets under **Settings → Secrets and variables → Actions**:
+
+   | Secret | Value |
+   | --- | --- |
+   | `VOICE_CONTROL_SECRET` | Generate once with `openssl rand -hex 32`. The workflow supplies the same value to both containers. |
+   | `VOICE_PUBLIC_URL` | `wss://voice.midnightmachinations.net` |
+   | `VOICE_ANNOUNCED_ADDRESS` | Sammy's public IPv4 address, reachable directly by players. Use the actual server/NAT public IP, not a CDN IP or Docker address. |
+   | `VOICE_ALLOWED_ORIGINS` | `https://midnightmachinations.net`, adding any other actual game frontend origins separated by commas with no spaces. An origin includes its scheme and optional port, with no path or trailing slash. |
+
+   Existing `DOCKERHUB_USERNAME`, `DOCKERHUB_TOKEN`, `SERVER_HOST`, `SERVER_USER`, `SERVER_SSH_KEY`, and `SERVER_SSH_PORT` stay as configured. The Docker Hub account must be able to push `midnightmachinations-voice`. The server must be able to pull both images; if they are private, log in to Docker Hub on the server using its deployment user first.
+
+2. In Cloudflare DNS, add an **A** record named **voice**, pointing to the same server IPv4 address as the existing **wss** record. Enable **Proxied**. Keep the existing `wss` record and rule unchanged. The frontend stays on Cloudflare Pages.
+
+   In **Rules → Overview → Origin Rules**, create a rule matching **Hostname equals `voice.midnightmachinations.net`** and set **Destination port → Rewrite to `9100`**. This follows the existing `wss` origin rule, which forwards the game connection to port 2001. The expression is:
+
+   ```text
+   (http.host eq "voice.midnightmachinations.net")
+   ```
+
+   Cloudflare accepts browser HTTPS/WSS on port 443 and forwards to Sammy on port 9100. No Nginx or Cloudflare Tunnel is required. See [Cloudflare Origin Rules](https://developers.cloudflare.com/rules/origin-rules/).
+
+   The voice signaling service speaks HTTP, like the existing game server. Apply the same HTTP-origin SSL behavior used by `wss` to this new hostname. If the zone already uses **Flexible**, no SSL change is needed. If HTTP-origin behavior is scoped to `wss` by an existing rule, add a hostname-specific **Configuration Rule** with **SSL → Flexible** for `voice.midnightmachinations.net`. Do not change the entire zone's SSL mode. With Flexible, the browser-to-Cloudflare connection is encrypted, while Cloudflare-to-Sammy signaling uses unencrypted HTTP. WebRTC audio is encrypted independently. See [Cloudflare encryption modes](https://developers.cloudflare.com/ssl/origin-configuration/ssl-modes/).
+
+3. Allow inbound **9100/TCP** for Cloudflare signaling, preferably restricted to [Cloudflare's published IP ranges](https://www.cloudflare.com/ips/), and **44400–44402/UDP and TCP** for voice media from players. Apply the rules in the host and provider firewalls, using the same firewall mechanism that already allows port 2001. Docker publishes these ports itself, so ensure any host restrictions apply to Docker-forwarded traffic as well. Port **9101** stays private inside Docker and must not be published.
+
+   Media connects directly to Sammy's public IPv4 address and does not pass through the orange-cloud proxy. Set `VOICE_ANNOUNCED_ADDRESS` to the IP shown in the existing `wss` A record. If behind NAT, forward the media ports unchanged to Sammy. No inbound port 443 on Sammy is needed for this configuration.
+
+4. Ensure the production frontend is deployed with the voice changes through your current frontend deployment process. The outdated `awesomeserver` workflows have been removed; Sammy deploys the game and voice servers only.
+
+5. Merge the workflow and voice changes into `prod`, or manually run **sammyserver-deploy** against the branch containing them. The workflow creates the Docker network and passes all required environment variables. No committed `.env`, client `VITE_*` variables, or manual container environment changes are needed. `VOICE_CONTROL_URL=ws://midnightmachinations-voice:9101/control` and all bind addresses are configured by the workflow. Local development `.env.local` files stay unchanged.
+
+6. Verify `https://voice.midnightmachinations.net/` returns `voice ready`, then join voice as two different players and check audio in both directions. On the host, use `docker logs midnightmachinations-voice` and `docker logs midnightmachinations-server` to investigate failures. If readiness fails, the workflow reports failure but leaves the containers running for inspection. It does not roll back automatically.
+
+Restrictive player networks may also require a separate TURN service. The initial workflow does not configure `VOICE_ICE_SERVERS` or deploy TURN.
+
 ## Permission and privacy behavior
 
 Rust computes private send and receive sets from the same calculations used by text chat. It applies a separate voice-only forced-silence override for Cerenovous and Blackmailer effects. Only each player's own permissions go to that player's game socket. Public roster data contains no voice availability or mute/deafen state.
