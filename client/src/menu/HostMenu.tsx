@@ -1,3 +1,4 @@
+import RoomVoiceSetting from "../components/gameModeSettings/RoomVoiceSetting";
 import React, { ReactElement, useContext, useEffect, useState } from "react";
 import translate from "../game/lang";
 import GAME_MANAGER from "..";
@@ -34,6 +35,7 @@ export default function HostMenu(): ReactElement {
             >{translate("refresh")}</Button>
         </header>
         <main className="settings-menu">
+            <RoomVoiceSetting/>
             <LobbyPlayerList />
             <section className="chat-menu-colors selector-section">
                 <div className="host-buttons">

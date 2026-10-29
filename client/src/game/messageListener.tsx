@@ -1,3 +1,4 @@
+import { VOICE } from "../voice/voiceManager";
 
 import { createPlayer } from "./gameState";
 import { ANCHOR_CONTROLLER, chatMessageToAudio } from "./../menu/Anchor";
@@ -31,9 +32,15 @@ function sendDefaultName() {
 } 
 
 export default function messageListener(packet: ToClientPacket){
-    console.log(JSON.stringify(packet, null, 2));
+    if (packet.type !== "voiceSession") console.log(JSON.stringify(packet, null, 2));
 
     switch(packet.type) {
+        case "voiceEnabled":
+            VOICE.setRoomEnabled(packet.enabled);
+        break;
+        case "voiceSession":
+            VOICE.setSession(packet.session);
+        break;
         case "pong":
             if (GAME_MANAGER.state.stateType !== "disconnected") {
                 GAME_MANAGER.server.sendPacket({

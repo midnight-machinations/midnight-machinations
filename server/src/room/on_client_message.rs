@@ -2,7 +2,7 @@ use std::time::{Duration, Instant};
 
 use crate::{game::on_client_message::GameClientMessageResult, lobby::on_client_message::LobbyClientMessageResult, log, packet::{ToClientPacket, ToServerPacket}, websocket_connections::connection::ClientSender};
 
-use super::{RoomClientID, Room};
+use super::{RoomClientID, Room, RoomState};
 
 pub const MESSAGE_PER_SECOND_LIMIT: u16 = 1;
 pub const MESSAGE_PER_SECOND_LIMIT_TIME: Duration = Duration::from_secs(20);
@@ -15,6 +15,20 @@ pub enum RoomClientMessageResult {
 
 impl Room {
     pub fn on_client_message(&mut self, send: &ClientSender, room_client_id: RoomClientID, incoming_packet: ToServerPacket) -> RoomClientMessageResult {
+        if let ToServerPacket::SetVoiceEnabled { enabled } = incoming_packet {
+            if !self.is_host(room_client_id) { return RoomClientMessageResult::None; }
+            match self {
+                Self::Lobby(lobby) => {
+                    lobby.settings.voice_enabled = enabled;
+                    lobby.send_to_all(ToClientPacket::VoiceEnabled { enabled });
+                },
+                Self::Game(game) => {
+                    game.settings.voice_enabled = enabled;
+                    game.send_packet_to_all(ToClientPacket::VoiceEnabled { enabled });
+                },
+            }
+            return RoomClientMessageResult::None;
+        }
         //RATE LIMITER
         match incoming_packet {
             ToServerPacket::SetName { .. } |

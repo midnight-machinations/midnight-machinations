@@ -6,14 +6,29 @@ use crate::{game::modifiers::{ModifierSettings}, vec_set::VecSet};
 
 use super::{phase::PhaseType, role::Role, role_list::RoleList};
 
-#[derive(Debug, Default, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct Settings{
+    #[serde(default = "default_voice_enabled")]
+    pub voice_enabled: bool,
     pub random_seed: Option<u64>,
     pub role_list: RoleList,
     pub phase_times: PhaseTimeSettings,
     pub enabled_roles: VecSet<Role>,
     pub modifiers: ModifierSettings,
+}
+fn default_voice_enabled() -> bool { true }
+impl Default for Settings {
+    fn default() -> Self {
+        Self {
+            voice_enabled: true,
+            random_seed: None,
+            role_list: RoleList::default(),
+            phase_times: PhaseTimeSettings::default(),
+            enabled_roles: VecSet::default(),
+            modifiers: ModifierSettings::default(),
+        }
+    }
 }
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]

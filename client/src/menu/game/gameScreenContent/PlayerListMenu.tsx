@@ -1,3 +1,5 @@
+import SpeakingIndicator from "../../../voice/SpeakingIndicator";
+import { useVoicePlayer } from "../../../voice/playerList";
 import React, { ReactElement, useCallback, useMemo } from "react";
 import translate from "../../../game/lang";
 import GAME_MANAGER from "../../../index";
@@ -197,8 +199,10 @@ function PlayerCard(props: Readonly<{
         });
     }, [controllers, myPlayerIndex, myNominationControllerId, myNominationSelection]);
 
+    const voice = useVoicePlayer({ playerIndex: props.playerIndex });
+
     return <><div
-        className={`player-card`}
+        className={`player-card ${voice.speaking ? "voice-speaking" : ""}`}
         key={props.playerIndex}
     >
         <PlayerNamePlate playerIndex={props.playerIndex}/>
@@ -227,6 +231,7 @@ function PlayerCard(props: Readonly<{
         </div>
         
         <div className="player-card-buttons">
+            {voice.showMuteButton && <SpeakingIndicator className="flush" playerIndex={props.playerIndex}/>}
             {
                 phaseState.type === "nomination" && playerAlive && (
                     spectator ? (

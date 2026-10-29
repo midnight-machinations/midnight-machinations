@@ -69,6 +69,7 @@ impl Lobby {
 
     /// Catches the sender up with the current lobby settings
     fn send_settings(&self, send: &ClientSender) {
+        send.send(ToClientPacket::VoiceEnabled { enabled: self.settings.voice_enabled });
         send.send(ToClientPacket::RoomName { name: self.name.clone() });
         send.send(ToClientPacket::PhaseTimes { phase_time_settings: self.settings.phase_times.clone() });
         send.send(ToClientPacket::RandomSeed { random_seed: self.settings.random_seed });

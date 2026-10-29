@@ -44,6 +44,8 @@ pub struct HostDataPacketGameClient {
 #[serde(rename_all = "camelCase")]
 #[serde(tag = "type")]
 pub enum ToClientPacket{
+    VoiceEnabled { enabled: bool },
+    VoiceSession { session: Option<crate::voice::VoiceSession> },
     Pong,
     
     #[serde(rename_all = "camelCase")]
@@ -169,6 +171,7 @@ pub enum RejectJoinReason {
 #[derive(Deserialize, Debug, Clone)]
 #[serde(tag = "type", rename_all = "camelCase")]
 pub enum ToServerPacket{
+    SetVoiceEnabled { enabled: bool },
     Ping,
     // Pre Lobby
     #[serde(rename = "lobbyListRequest")]

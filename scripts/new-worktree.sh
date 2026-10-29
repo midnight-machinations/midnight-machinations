@@ -25,6 +25,11 @@ fi
 printf "VITE_WS_ADDRESS=ws://localhost:%s\nCLIENT_PORT=%s\n" "$server_port" "$client_port" > "$path/client/.env.local"
 echo "WS_ADDRESS=0.0.0.0:$server_port" > "$path/server/.env.local"
 
+# Voice gets its own ports from the same offset; this also adds the voice settings to server/.env.local
+if [ -f "$path/voice/configure-local.mjs" ]; then
+    (cd "$path/voice" && node configure-local.mjs "$offset")
+fi
+
 (cd "$path/client" && pnpm install --frozen-lockfile)
 
 # Print absolute paths so the commands below work from any directory
@@ -34,3 +39,6 @@ echo
 echo "Worktree ready at $path"
 echo "  server: ws://localhost:$server_port (cd $path/server && cargo run)"
 echo "  client: http://localhost:$client_port (cd $path/client && pnpm dev, add --no-open to skip opening a browser)"
+if [ -f "$path/voice/configure-local.mjs" ]; then
+    echo "  voice:  ws://localhost:$((9100 + offset * 2)) (cd $path/voice && npm ci && npm start)"
+fi

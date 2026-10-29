@@ -75,3 +75,7 @@ curl -fSsL https://raw.githubusercontent.com/mafia-rust/mafia/main/system/instal
 ```bash
 ./mafia/system/update.sh
 ```
+
+## Voice chat
+
+See [voice/README.md](voice/README.md) to configure and run the optional WebRTC voice service.

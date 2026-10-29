@@ -100,3 +100,6 @@
     gap: 0.5rem;
     margin-top: 0.25rem;
 }
+.user-settings-menu { width: min(70rem, 90vw); }
+.user-settings-menu > main.settings-menu > div { flex-basis: 17rem; min-width: 0; }
+.settings-voice-column .voice-menu { width: 100%; box-sizing: border-box; }
