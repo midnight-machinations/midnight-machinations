@@ -16,6 +16,7 @@ Cargo.lock
 client/node_modules
 client/.pnp
 client/.pnp.js
+.pnpm-store/
 
 # Testing
 client/coverage
@@ -41,3 +42,7 @@ generate/**/__pycache__
 
 # Claude Code worktrees
 .claude/worktrees/
+
+# Voice service
+voice/node_modules/
+voice/.env.local

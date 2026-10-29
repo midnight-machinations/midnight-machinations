@@ -1,3 +1,5 @@
+import LobbyVoicePrompt from "../../voice/LobbyVoicePrompt";
+import RoomVoiceSetting from "../../components/gameModeSettings/RoomVoiceSetting";
 import { ReactElement, useContext, useEffect, useMemo, useState } from "react";
 import GAME_MANAGER, { DEV_ENV } from "../../index";
 import LobbyPlayerList from "./LobbyPlayerList";
@@ -146,6 +148,7 @@ function LobbyMenuSettings(props: Readonly<{
                 GAME_MANAGER.sendModifierSettingsPacket(new ListMap(gameMode.modifierSettings));
             }}
         />
+        <RoomVoiceSetting/>
         <div className="lobby-settings">
             <PhaseTimesSelector 
                 disabled={!props.isHost}
@@ -210,6 +213,7 @@ function LobbyMenuHeader(props: Readonly<{
                 <Icon>play_arrow</Icon>{translate("menu.lobby.button.start")}
             </Button>
             <RoomLinkButton/>
+            <LobbyVoicePrompt/>
         </div>
         {props.isHost ? 
             <FlushInput

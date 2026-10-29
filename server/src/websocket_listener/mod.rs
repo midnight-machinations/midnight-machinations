@@ -1,6 +1,7 @@
 mod event;
 mod client;
 mod handle_message;
+mod voice;
 
 pub type RoomCode = usize;
 
@@ -15,6 +16,8 @@ use rand::random;
 
 
 pub struct WebsocketListener {
+    voice: Option<crate::voice::VoiceBridge>,
+    voice_scopes: HashMap<RoomCode, (bool, String)>,
     /// Clients that are currently connected, if a client isnt connected it isnt here
     ///
     /// What to do in different connection sscenarios:
@@ -31,6 +34,8 @@ pub struct WebsocketListener {
 impl WebsocketListener{
     pub fn new() -> Self {
         Self {
+            voice: crate::voice::VoiceBridge::from_env(),
+            voice_scopes: HashMap::new(),
             rooms: HashMap::new(),
             clients: HashMap::new(),
         }

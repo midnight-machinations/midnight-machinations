@@ -73,6 +73,7 @@ impl ClientReference{
 
 
 pub(super) struct Client {
+    pub(super) voice_session: Option<crate::voice::VoiceSession>,
     connection: Connection,
     location: ClientLocation,
     last_ping: tokio::time::Instant,
@@ -82,6 +83,7 @@ impl Client{
 
     pub(super) fn new(connection: Connection) -> Self {
         Self {
+            voice_session: None,
             connection,
             location: ClientLocation::OutsideRoom,
             last_ping: tokio::time::Instant::now(),
@@ -100,6 +102,9 @@ impl Client{
     }
     pub(super) fn send(&self, packet: ToClientPacket){
         self.connection.send(packet);
+    }
+    pub(super) fn sender(&self) -> ClientSender {
+        self.connection.sender()
     }
     pub(super) fn location(&self)->&ClientLocation{
         &self.location

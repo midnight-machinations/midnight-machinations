@@ -1,0 +1,20 @@
+{
+  "name": "midnight-machinations-voice",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "start": "node --env-file-if-exists=.env.local src/server.mjs",
+    "check": "node --check src/server.mjs",
+    "configure": "node configure-local.mjs"
+  },
+  "dependencies": {
+    "mediasoup": "^3.19.0",
+    "ws": "^8.18.0"
+  },
+  "allowScripts": {
+    "mediasoup@3.32.0": true
+  }
+}

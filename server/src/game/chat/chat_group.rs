@@ -30,15 +30,7 @@ pub struct PlayerChatGroups{
 impl PlayerChatGroups{
     pub fn new()->Self{Self { send: PlayerChatGroupMap::new() }}
     pub fn send_player_chat_group_map(game: &mut Game)->PlayerChatGroupMap{
-        if game.modifier_settings().is_enabled(ModifierID::NoChat) {return PlayerChatGroupMap::new();}
-        
-        let out = PlayerChatGroupMap::combine(
-            PlayerReference::all_players(game)
-                .map(|p|p.send_player_chat_group_map(game))
-                .chain(once(Abilities::send_player_chat_group_map(game)))
-                .chain(once(InsiderGroups::send_player_chat_group_map(game)))
-                .chain(once(CallWitness::send_player_chat_group_map(game)))
-        );
+        let out = Self::compute_send_map(game);
 
         if game.player_chat_groups.send != out {
             for player in PlayerReference::all_players(game){
@@ -49,6 +41,17 @@ impl PlayerChatGroups{
         game.player_chat_groups.send = out.clone();
 
         out
+    }
+    /// Shared permission calculation for text and voice, without sending packets.
+    pub fn compute_send_map(game: &Game) -> PlayerChatGroupMap {
+        if game.modifier_settings().is_enabled(ModifierID::NoChat) {return PlayerChatGroupMap::new();}
+        PlayerChatGroupMap::combine(
+            PlayerReference::all_players(game)
+                .map(|p|p.send_player_chat_group_map(game))
+                .chain(once(Abilities::send_player_chat_group_map(game)))
+                .chain(once(InsiderGroups::send_player_chat_group_map(game)))
+                .chain(once(CallWitness::send_player_chat_group_map(game)))
+        )
     }
     pub fn receive_player_chat_group_map(game: &Game)->PlayerChatGroupMap{
         PlayerChatGroupMap::combine(
@@ -87,7 +90,7 @@ impl PlayerChatGroupMap{
             self.0.insert(player, vec_set![chat_group]);
         }
     }
-    fn get(&self, player: PlayerReference)->VecSet<ChatGroup>{
+    pub(crate) fn get(&self, player: PlayerReference)->VecSet<ChatGroup>{
         if let Some(out) = self.0.get(&player) {
             out.clone()
         }else{

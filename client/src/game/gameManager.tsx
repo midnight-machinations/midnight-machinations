@@ -1,3 +1,4 @@
+import { VOICE } from "../voice/voiceManager";
 import { ANCHOR_CONTROLLER } from "./../menu/Anchor";
 import StartMenu from "./../menu/main/StartMenu";
 import GAME_MANAGER from "./../index";
@@ -639,6 +640,7 @@ function createServer(){
                 console.log("Connected to server.");
             };
             Server.ws.onclose = (event: CloseEvent)=>{
+                VOICE.clearSession();
                 console.log("Disconnected from server.");
                 completePromise(false);
                 GAME_MANAGER.invokeStateListeners("connectionClosed");
@@ -677,6 +679,7 @@ function createServer(){
         },
 
         close : ()=>{
+            VOICE.clearSession();
             if(Server.ws === null) return;
             
             Server.ws.close();

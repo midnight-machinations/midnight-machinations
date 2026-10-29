@@ -19,6 +19,7 @@ pub mod room;
 pub mod lobby;
 pub mod packet;
 pub mod client_connection;
+pub mod voice;
 pub mod vec_map;
 pub mod vec_set;
 
