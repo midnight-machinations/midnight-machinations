@@ -49,14 +49,19 @@ jobs:
           build-args: |
             WS_ADDRESS=0.0.0.0:80
 
+      - name: Set up Docker Buildx for voice cache
+        uses: docker/setup-buildx-action@v4
+
       - name: Build and push voice image
-        uses: docker/build-push-action@v4
+        uses: docker/build-push-action@v7
         with:
           context: ./voice
           file: ./voice/Dockerfile
           push: true
           tags: |
             ${{ secrets.DOCKERHUB_USERNAME }}/midnightmachinations-voice:latest
+          cache-from: type=gha,scope=sammy-voice
+          cache-to: type=gha,scope=sammy-voice,mode=max,ignore-error=true
 
       # Secrets are passed as environment variables, never interpolated into shell code.
       - name: Deploy to server via SSH

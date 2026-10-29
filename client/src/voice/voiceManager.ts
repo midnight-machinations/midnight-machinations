@@ -2,6 +2,7 @@ import { Device, types } from "mediasoup-client";
 import { GroupPreference, VoiceSession, VoiceSettings } from "./types";
 import { ANCHOR_CONTROLLER } from "../menu/Anchor";
 import translate from "../game/lang";
+import { MicrophoneProcessing } from "./microphoneProcessing";
 
 type ConsumerMessage = {
     type: "consumer";
@@ -20,7 +21,7 @@ type Playback = {
     duration: number;
 };
 type PersonalPreference = { muted: boolean; volume: number };
-const DEFAULT_SETTINGS: VoiceSettings = { mode: "pushToTalk", key: "KeyV", deviceId: "", volume: 1 };
+const DEFAULT_SETTINGS: VoiceSettings = { mode: "openMic", key: "KeyV", deviceId: "", volume: 1, noiseSuppression: true, thresholdDb: -80 };
 function readStorage<T>(key: string, fallback: T): T {
     try { return JSON.parse(localStorage.getItem(key) ?? "null") ?? fallback; }
     catch { return fallback; }
@@ -34,7 +35,9 @@ export class VoiceManager {
     status: "disconnected" | "connecting" | "connected" | "error" = "disconnected";
     error = "";
     roomEnabled = true;
-    selfMuted = false;
+    selfMuted = true;
+    microphoneLevelDb = -80;
+    microphoneGateOpen = false;
     microphoneEnabled = false;
     requestingMicrophone = false;
     talking = false;
@@ -64,9 +67,7 @@ export class VoiceManager {
     private speaking = new Set<number>();
     private speakingUntil = new Map<number, number>();
     private activityBusy = false;
-    private microphoneSource?: MediaStreamAudioSourceNode;
-    private microphoneAnalyser?: AnalyserNode;
-    private microphoneSink?: GainNode;
+    private processing?: MicrophoneProcessing;
     // Automatic retries repeat the same failure; only the first one pops up an error card.
     private lastWarning = "";
     private sentPackets?: { producer: types.Producer; count: number };
@@ -74,12 +75,14 @@ export class VoiceManager {
     constructor() {
         const saved = readStorage<Partial<VoiceSettings>>("voiceSettings", {});
         this.settings = {
-            mode: saved.mode === "openMic" || saved.mode === "toggleMute" ? saved.mode : "pushToTalk",
+            mode: saved.mode === "pushToTalk" || saved.mode === "toggleMute" || saved.mode === "openMic" ? saved.mode : DEFAULT_SETTINGS.mode,
             key: typeof saved.key === "string" ? saved.key : DEFAULT_SETTINGS.key,
             deviceId: typeof saved.deviceId === "string" ? saved.deviceId : "",
             volume: typeof saved.volume === "number" && Number.isFinite(saved.volume) ? Math.max(0, Math.min(1, saved.volume)) : 1,
+            noiseSuppression: typeof saved.noiseSuppression === "boolean" ? saved.noiseSuppression : DEFAULT_SETTINGS.noiseSuppression,
+            thresholdDb: typeof saved.thresholdDb === "number" && Number.isFinite(saved.thresholdDb)
+                ? Math.max(-80, Math.min(0, saved.thresholdDb)) : DEFAULT_SETTINGS.thresholdDb,
         };
-        this.selfMuted = this.settings.mode === "toggleMute";
         window.addEventListener("keydown", event => {
             if (event.defaultPrevented || event.isComposing || event.code !== this.settings.key || event.repeat || this.settings.mode === "openMic") return;
             const target = event.target instanceof Element ? event.target : null;
@@ -119,8 +122,10 @@ export class VoiceManager {
     async togglePlayerMute(id: number) {
         if (id === this.session?.selfId) {
             if (!this.microphoneEnabled) {
-                if (this.status !== "connected") await this.join();
-                else await this.enableMicrophone({ unmute: true });
+                if (this.status !== "connected") {
+                    await this.join();
+                    if (this.microphoneEnabled) { this.selfMuted = false; this.updateMicrophone(); this.changed(); }
+                } else await this.enableMicrophone({ unmute: true });
             } else this.toggleSelfMute();
         } else this.setPerson(id, { muted: !this.person(id).muted });
     }
@@ -146,20 +151,20 @@ export class VoiceManager {
     async join() {
         if (!this.roomEnabled || !this.session || this.status === "connecting" || this.status === "connected") return;
         this.wantConnected = true;
+        this.selfMuted = true;
         this.lastWarning = "";
         this.status = "connecting";
         this.changed();
         // Start during the click so playback works under browser autoplay restrictions.
         // Don't wait for it: Firefox never settles resume() while a Bluetooth headset
-        // is switching to its microphone profile. Remote voices play through <audio>
-        // elements, so only the local speaking indicator needs this context running.
-        this.audio ??= new AudioContext();
+        // is switching to its microphone profile. Remote voices use <audio> elements.
+        this.audio ??= new AudioContext({ sampleRate: 48000 });
         const generation = this.generation;
         this.audio.resume().catch(error => this.playbackBlocked(error, generation));
         // Ask for the microphone before connecting: Firefox only offers WebRTC the
         // addresses it needs once the page has microphone access. Declining joins
         // listen-only; the player's own mic button asks again.
-        if (!this.microphoneEnabled) await this.enableMicrophone({ unmute: true, quietDecline: true });
+        if (!this.microphoneEnabled) await this.enableMicrophone({ quietDecline: true });
         if (this.wantConnected) await this.connect();
     }
     leave() {
@@ -366,46 +371,60 @@ export class VoiceManager {
         this.requestingMicrophone = true;
         const generation = ++this.microphoneGeneration;
         this.error = ""; this.changed();
+        let stream: MediaStream | undefined;
+        let processing: MicrophoneProcessing | undefined;
+        let processingStarted = false;
         try {
-            const stream = await navigator.mediaDevices.getUserMedia({ audio: {
+            stream = await navigator.mediaDevices.getUserMedia({ audio: {
                 deviceId: this.settings.deviceId ? { exact: this.settings.deviceId } : undefined,
-                echoCancellation: true, noiseSuppression: true, autoGainControl: true,
+                echoCancellation: true, noiseSuppression: false, autoGainControl: true,
+                channelCount: 1,
             }, video: false });
             if (generation !== this.microphoneGeneration || !this.session) { stream.getTracks().forEach(track => track.stop()); return; }
-            this.microphone?.getTracks().forEach(track => track.stop());
-            this.microphoneSource?.disconnect(); this.microphoneSink?.disconnect();
-            this.microphone = stream;
-            if (this.audio) {
-                this.microphoneSource = this.audio.createMediaStreamSource(stream);
-                this.microphoneAnalyser = this.audio.createAnalyser();
-                this.microphoneAnalyser.fftSize = 512;
-                this.microphoneSink = this.audio.createGain();
-                this.microphoneSink.gain.value = 0;
-                this.microphoneSource.connect(this.microphoneAnalyser);
-                this.microphoneAnalyser.connect(this.microphoneSink);
-                this.microphoneSink.connect(this.audio.destination);
+            this.audio ??= new AudioContext({ sampleRate: 48000 });
+            processingStarted = true;
+            processing = await MicrophoneProcessing.create(this.audio, stream, this.settings, (db, gateOpen) => {
+                if (generation !== this.microphoneGeneration) return;
+                this.microphoneLevelDb = db;
+                this.microphoneGateOpen = gateOpen;
+                this.changed();
+            }, () => {
+                if (generation !== this.microphoneGeneration) return;
+                this.disableMicrophone();
+                this.setError("voice.error.processing");
+            });
+            if (generation !== this.microphoneGeneration || !this.session) {
+                processing.close(); stream.getTracks().forEach(track => track.stop()); return;
             }
+            this.processing?.close();
+            this.microphone?.getTracks().forEach(track => track.stop());
+            this.microphone = stream;
+            this.processing = processing;
+            // Settings may change while the worklet is loading.
+            processing.configure(this.settings);
             this.microphoneEnabled = true;
             if (options.unmute) this.selfMuted = false;
+            const activeStream = stream;
             for (const track of stream.getAudioTracks()) {
-                track.enabled = false;
-                track.onended = () => { if (this.microphone === stream) this.disableMicrophone(); };
+                track.onended = () => { if (this.microphone === activeStream) this.disableMicrophone(); };
             }
             // A failed publish is a connection problem, not a microphone one. Keep the
             // microphone so the reconnect in connect() publishes it again.
             const connection = this.generation;
             try {
-                if (this.producer) await this.producer.replaceTrack({ track: stream.getAudioTracks()[0] });
+                if (this.producer) await this.producer.replaceTrack({ track: processing.track });
                 else await this.publishMicrophone();
             } catch (error) {
                 if (connection === this.generation) this.connectionFailed(error);
             }
             this.updateMicrophone();
         } catch (error) {
+            processing?.close();
+            stream?.getTracks().forEach(track => track.stop());
             if (generation === this.microphoneGeneration) {
                 this.disableMicrophone();
                 const declined = error instanceof DOMException && error.name === "NotAllowedError";
-                if (!(declined && options.quietDecline)) this.setError("voice.error.microphone", error);
+                if (!(declined && options.quietDecline)) this.setError(processingStarted ? "voice.error.processing" : "voice.error.microphone", error);
             }
         } finally { if (generation === this.microphoneGeneration) this.requestingMicrophone = false; this.changed(); }
     }
@@ -413,19 +432,19 @@ export class VoiceManager {
         this.microphoneGeneration++;
         this.requestingMicrophone = false;
         this.microphoneEnabled = false;
-        this.microphone?.getTracks().forEach(track => { track.enabled = false; });
+        if (this.processing) this.processing.track.enabled = false;
         // Keep the producer stable so other clients receive no mute notification.
         // Release the hardware; a fresh track can replace this stopped track later.
         this.microphone?.getTracks().forEach(track => track.stop());
         this.microphone = undefined;
-        this.microphoneSource?.disconnect(); this.microphoneSink?.disconnect();
-        this.microphoneSource = undefined; this.microphoneAnalyser = undefined; this.microphoneSink = undefined;
+        this.processing?.close(); this.processing = undefined;
+        this.microphoneLevelDb = -80; this.microphoneGateOpen = false;
         if (this.session) this.speakingUntil.delete(this.session.selfId);
         this.releaseTalk();
         this.changed();
     }
     private async publishMicrophone() {
-        const track = this.microphone?.getAudioTracks()[0];
+        const track = this.processing?.track;
         if (this.sendTransport && track && !this.producer) {
             const generation = this.generation;
             const producer = await this.sendTransport.produce({ track, stopTracks: false,
@@ -438,7 +457,7 @@ export class VoiceManager {
         const canSpeak = this.session && !this.session.forcedSilenced && this.session.sendGroups.some(group => !this.group(group).muted);
         const talking = Boolean(this.roomEnabled && !this.selfMuted && this.status === "connected" && this.preferencesPending === 0 && this.microphoneEnabled && canSpeak &&
             (this.settings.mode !== "pushToTalk" || this.heldKey || this.heldButton));
-        for (const track of this.microphone?.getAudioTracks() ?? []) track.enabled = talking;
+        if (this.processing) this.processing.track.enabled = talking;
         if (this.talking !== talking) { this.talking = talking; this.changed(); }
     }
     group(group: string): GroupPreference { return this.groups[group] ?? { muted: false, deafened: false }; }
@@ -471,6 +490,7 @@ export class VoiceManager {
         const deviceChanged = change.deviceId !== undefined && change.deviceId !== this.settings.deviceId;
         if (change.mode === "toggleMute" && this.settings.mode !== "toggleMute") this.selfMuted = true;
         this.settings = { ...this.settings, ...change };
+        this.processing?.configure(this.settings);
         saveStorage("voiceSettings", this.settings);
         this.releaseTalk(); this.updateVolumes(); this.changed();
         if (deviceChanged && this.microphoneEnabled) void this.enableMicrophone();
@@ -515,9 +535,9 @@ export class VoiceManager {
         const generation = this.generation;
         const now = performance.now();
         try {
-            if (this.talking && this.microphoneAnalyser) {
-                const data = new Float32Array(this.microphoneAnalyser.fftSize);
-                this.microphoneAnalyser.getFloatTimeDomainData(data);
+            if (this.talking && this.processing) {
+                const data = new Float32Array(this.processing.analyser.fftSize);
+                this.processing.analyser.getFloatTimeDomainData(data);
                 const rms = Math.sqrt(data.reduce((sum, sample) => sum + sample * sample, 0) / data.length);
                 if (rms > 0.015) this.speakingUntil.set(this.session.selfId, now + 250);
             } else this.speakingUntil.delete(this.session.selfId);

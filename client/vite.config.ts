@@ -8,6 +8,8 @@ export default defineConfig(({ mode }) => {
 
   return {
     plugins: [react()],
+    // AudioWorklet has import.meta.url but no WorkerGlobalScope/self.location.
+    worker: { format: 'es' },
     server: {
       port: Number(env.CLIENT_PORT) || 3000,
       open: true

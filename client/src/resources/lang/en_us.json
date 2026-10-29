@@ -2438,5 +2438,9 @@
     "voice.inVoice": "In voice",
     "voice.notInVoice": "Not in voice",
     "voice.unavailable": "Join a room with voice enabled to connect.",
-    "voice.savedMicrophone": "Selected microphone"
+    "voice.savedMicrophone": "Selected microphone",
+    "voice.noiseSuppression": "Noise suppression (RNNoise)",
+    "voice.inputThreshold": "Microphone threshold",
+    "voice.thresholdOff": "Off",
+    "voice.error.processing": "Could not start microphone audio processing. Try leaving and rejoining voice."
 }
