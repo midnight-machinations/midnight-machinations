@@ -15,4 +15,6 @@ export type VoiceSettings = {
     key: string;
     deviceId: string;
     volume: number;
+    noiseSuppression: boolean;
+    thresholdDb: number;
 };

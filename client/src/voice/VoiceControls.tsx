@@ -5,6 +5,7 @@ import Icon from "../components/Icon";
 import SpeakingIndicator from "./SpeakingIndicator";
 import { VoiceSettings } from "./types";
 import Select, { SelectOptionsSearch } from "../components/Select";
+import CheckBox from "../components/CheckBox";
 import "./voice.css";
 
 function useVoice() {
@@ -60,6 +61,23 @@ export function VoiceSettingsControls() {
             <Select className="voice-device-select" value={voice.settings.deviceId} optionsSearch={deviceOptions}
                 onChange={deviceId => voice.setSettings({ deviceId })}/>
         </label>
+        <div className="voice-setting-row">
+            <span>{translate("voice.noiseSuppression")}</span>
+            <CheckBox checked={voice.settings.noiseSuppression} ariaLabel={translate("voice.noiseSuppression")}
+                onChange={noiseSuppression => voice.setSettings({ noiseSuppression })}/>
+        </div>
+        <label htmlFor="voice-input-threshold">{translate("voice.inputThreshold")}
+            <output htmlFor="voice-input-threshold">{voice.settings.thresholdDb <= -80
+                ? translate("voice.thresholdOff") : `${voice.settings.thresholdDb} dB`}</output>
+        </label>
+        <input id="voice-input-threshold" className="voice-threshold" type="range" min="-80" max="0" step="1"
+            value={voice.settings.thresholdDb}
+            style={{
+                "--voice-level": `${Math.max(0, Math.min(100, (voice.microphoneLevelDb + 80) / 80 * 100))}%`,
+                "--voice-threshold": `${(voice.settings.thresholdDb + 80) / 80 * 100}%`,
+            } as React.CSSProperties}
+            aria-valuetext={voice.settings.thresholdDb <= -80 ? translate("voice.thresholdOff") : `${voice.settings.thresholdDb} dB`}
+            onChange={event => voice.setSettings({ thresholdDb: Number(event.target.value) })}/>
         <label>{translate("voice.masterVolume")}
             <input type="range" min="0" max="1" step="0.01" value={voice.settings.volume}
                 onChange={event => voice.setSettings({ volume: Number(event.target.value) })}/>
