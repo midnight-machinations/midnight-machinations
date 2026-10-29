@@ -18,7 +18,8 @@ Use `scripts/new-worktree.sh` from the repo root. Don't create the worktree with
    - If `<branch>` exists, the script checks it out. Otherwise it creates it from the current HEAD.
    - Leave out `port-offset` unless the user asks for specific ports or the default clashes with something. The default is the number of existing worktrees, so the first extra worktree gets client 3001 and server 9001.
    - It writes `client/.env.local` (`VITE_WS_ADDRESS`, `CLIENT_PORT`) and `server/.env.local` (`WS_ADDRESS`), then runs `pnpm install`. This can take a minute.
-4. Tell the user the worktree path and the client and server ports the script printed.
+   - If the branch has `voice/`, it also runs the voice `configure` step with the same offset. That writes `voice/.env.local` and adds the voice settings to `server/.env.local`. Voice uses signaling port `9100 + 2×offset`, control port `9101 + 2×offset`, and three media ports from `44400 + 3×offset`.
+4. Tell the user the worktree path and the client, server, and (if printed) voice ports the script printed.
 
 ## Running the worktree
 
@@ -27,7 +28,10 @@ The client and server each have to be started from their own directory in the wo
 ```bash
 cd <path>/server && cargo run           # serves on the worktree's server port
 cd <path>/client && pnpm dev --no-open  # serves on the worktree's client port
+cd <path>/voice && npm ci && npm start  # only on branches with voice/; serves on the worktree's voice ports
 ```
+
+- If `npm ci` warns that mediasoup's install script was blocked, the media worker isn't installed and `npm start` fails. Ask the user before running `npm install-scripts approve mediasoup` and `npm ci` again, because that runs mediasoup's install code.
 
 - Start the server too, not only the client. The worktree's client connects only to its own server port, so it won't reach a server running from another checkout. If the page can't connect, check that this worktree's server is running and that it logged `Started listening on 0.0.0.0:<server port>`.
 - Don't run `cargo run` from the worktree root (for example with `--manifest-path`). From there, the server doesn't read `server/.env.local`.

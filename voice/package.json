@@ -13,5 +13,8 @@
   "dependencies": {
     "mediasoup": "^3.19.0",
     "ws": "^8.18.0"
+  },
+  "allowScripts": {
+    "mediasoup@3.32.0": true
   }
 }

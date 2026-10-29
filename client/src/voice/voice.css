@@ -11,10 +11,10 @@
 .voice-talk { touch-action: none; user-select: none; width: 100%; padding: .6rem; }
 .voice-icon-button, .voice-player-mute { display: inline-flex; align-items: center; justify-content: center; flex: 0 0 2rem; width: 2rem; height: 2rem; padding: .2rem; }
 .voice-icon-button[aria-pressed=true], .voice-player-mute.is-muted { color: #e99b78; }
-.voice-player-mute.is-speaking { color: #63df91; filter: drop-shadow(0 0 .2rem #63df9155); }
-.voice-player-mute.is-idle { opacity: .65; }
-.voice-player-mute:disabled { opacity: .4; }
 .room-voice-setting label { display: flex; align-items: center; gap: .5rem; }
 .room-voice-setting input { min-width: 0; }
 
 .voice-menu > header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: .5rem; padding: .25rem .5rem; }
+
+/* Speaking shows as an outline on the speaker's player-list entry. */
+.voice-speaking { outline: 2px solid #63df91; outline-offset: -2px; box-shadow: 0 0 .4rem #63df9155; }

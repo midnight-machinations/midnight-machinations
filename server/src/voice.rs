@@ -10,6 +10,8 @@ pub struct VoicePeer {
     pub id: u32,
     pub name: String,
     pub player_index: Option<u8>,
+    /// Whether this peer has joined voice. Only shared in lobbies; always false in games.
+    pub in_voice: bool,
 }
 
 #[derive(Clone, Debug, PartialEq, Eq, Serialize)]
@@ -40,6 +42,8 @@ pub struct VoiceBridge {
     active: std::sync::Arc<std::sync::atomic::AtomicBool>,
     frozen: std::sync::Arc<std::sync::atomic::AtomicBool>,
     lease_until: std::sync::Arc<std::sync::Mutex<std::time::Instant>>,
+    /// Room client IDs joined to voice, by scope, as last reported by the SFU.
+    presence: std::sync::Arc<std::sync::Mutex<std::collections::HashMap<String, Vec<u32>>>>,
 }
 impl VoiceBridge {
     pub fn from_env() -> Option<Self> {
@@ -58,7 +62,8 @@ impl VoiceBridge {
         let active = Arc::new(AtomicBool::new(false));
         let frozen = Arc::new(AtomicBool::new(false));
         let lease_until = Arc::new(Mutex::new(std::time::Instant::now()));
-        let (connected, paused, lease) = (active.clone(), frozen.clone(), lease_until.clone());
+        let presence = Arc::new(Mutex::new(std::collections::HashMap::new()));
+        let (connected, paused, lease, reported) = (active.clone(), frozen.clone(), lease_until.clone(), presence.clone());
         // A dedicated runtime keeps permission acknowledgements progressing while the
         // synchronous game loop holds its lock and waits for a forwarding barrier.
         std::thread::spawn(move || {
@@ -102,8 +107,12 @@ impl VoiceBridge {
                                 message = socket.next() => {
                                     match message {
                                         Some(Ok(Message::Text(data))) => {
-                                            if let Ok(value) = serde_json::from_str::<serde_json::Value>(&data)
-                                                && value.get("frozen").and_then(serde_json::Value::as_u64) == Some(barrier)
+                                            let Ok(value) = serde_json::from_str::<serde_json::Value>(&data) else { continue };
+                                            if let Some(scopes) = value.get("presence")
+                                                && let Ok(scopes) = serde_json::from_value(scopes.clone())
+                                                && let Ok(mut reported) = reported.lock()
+                                            { *reported = scopes; }
+                                            if value.get("frozen").and_then(serde_json::Value::as_u64) == Some(barrier)
                                                 && let Some(reply) = acknowledgement.take()
                                             { let _ = reply.send(()); }
                                             continue;
@@ -129,6 +138,7 @@ impl VoiceBridge {
                             if socket.send(Message::text(packet.to_string())).await.is_err() { break }
                         }
                         connected.store(false, Ordering::SeqCst);
+                        if let Ok(mut reported) = reported.lock() { reported.clear(); }
                         let _ = socket.close(None).await;
                     }
                     if updates.has_changed().is_err() { return }
@@ -145,7 +155,13 @@ impl VoiceBridge {
             active,
             frozen,
             lease_until,
+            presence,
         })
+    }
+    pub fn in_voice(&self, scope: &str, id: u32) -> bool {
+        self.presence
+            .lock()
+            .is_ok_and(|presence| presence.get(scope).is_some_and(|ids| ids.contains(&id)))
     }
     /// Stop forwarding before a game mutation, including for modified clients.
     pub fn freeze(&self) {

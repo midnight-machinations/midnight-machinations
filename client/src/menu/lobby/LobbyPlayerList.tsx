@@ -1,4 +1,4 @@
-import SpeakingIndicator from "../../voice/SpeakingIndicator";
+import { LobbyVoiceMuteButton, useVoicePlayer } from "../../voice/playerList";
 import { ReactElement, useEffect, useState } from "react";
 import translate from "../../game/lang";
 import GAME_MANAGER from "../../index";
@@ -87,20 +87,25 @@ function LobbyPlayerListPlayer(props: Readonly<{ player: PlayerDisplayData }>): 
         ["playersHost", "lobbyClients", "yourId", "playersReady", "hostData"]
     )!;
 
-    return <li key={props.player.id} className={props.player.connection==="connected" ? "" : "keyword-dead"}>
+    const voice = useVoicePlayer({ roomClientId: props.player.id });
+
+    return <li key={props.player.id} className={`${props.player.connection==="connected" ? "" : "keyword-dead"} ${voice.speaking ? "voice-speaking" : ""}`}>
         <div>
             {props.player.connection === "couldReconnect" && <Icon>signal_cellular_connected_no_internet_4_bar</Icon>}
             {props.player.connection === "disconnected" && <Icon>sentiment_very_dissatisfied</Icon>}
             {props.player.host && <Icon>shield</Icon>}
             {props.player.ready && <Icon>check</Icon>}
             {(props.player.host === false && props.player.ready === false) && <Icon className="keyword-dead">schedule</Icon>}
+            {voice.available && (voice.inVoice
+                ? <Icon title={translate("voice.inVoice")}>headset_mic</Icon>
+                : <Icon className="keyword-dead" title={translate("voice.notInVoice")}>headset_off</Icon>)}
             {!host && <StyledText className={(props.player.host === false && props.player.ready === false) ? "keyword-dead" : ""}>
                 {props.player.displayName}
             </StyledText>}
             {host && <LobbyPlayerListPlayerRename {...props}/>}
-            <SpeakingIndicator roomClientId={props.player.id}/>
         </div>
         <div>
+            <LobbyVoiceMuteButton roomClientId={props.player.id}/>
             {host && !props.player.host && <button
                 onClick={() => GAME_MANAGER.sendSetPlayerHostPacket(props.player.id)}
             ><Icon>add_moderator</Icon></button>}

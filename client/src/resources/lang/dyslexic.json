@@ -1889,9 +1889,11 @@
     "voice.status.connecting": "Connecting",
     "voice.status.connected": "Connected",
     "voice.status.error": "Reconnecting",
+    "voice.error.title": "Voice chat problem",
     "voice.error.connection": "Voice disconnected. Retrying automatically.",
     "voice.error.microphone": "Could not open the microphone. Check browser permissions and the selected device.",
     "voice.error.playback": "Could not start audio playback. Try joining voice again.",
+    "voice.error.silentMicrophone": "Your microphone isn't producing any audio. If you're using a Bluetooth headset, try reconnecting it.",
     "chatGroup.all.name": "All",
     "chatGroup.dead.name": "Dead",
     "chatGroup.jail.name": "Jail",
@@ -1909,6 +1911,8 @@
     "voice.undeafen": "Undeafen",
     "voice.enableForRoom": "Enable voice chat",
     "voice.disabledByHost": "Voice chat is disabled by the host.",
+    "voice.inVoice": "In voice",
+    "voice.notInVoice": "Not in voice",
     "voice.unavailable": "Join a room with voice enabled to connect.",
     "voice.savedMicrophone": "Selected microphone"
 }

@@ -1,5 +1,7 @@
 import { Device, types } from "mediasoup-client";
 import { GroupPreference, VoiceSession, VoiceSettings } from "./types";
+import { ANCHOR_CONTROLLER } from "../menu/Anchor";
+import translate from "../game/lang";
 
 type ConsumerMessage = {
     type: "consumer";
@@ -65,6 +67,9 @@ export class VoiceManager {
     private microphoneSource?: MediaStreamAudioSourceNode;
     private microphoneAnalyser?: AnalyserNode;
     private microphoneSink?: GainNode;
+    // Automatic retries repeat the same failure; only the first one pops up an error card.
+    private lastWarning = "";
+    private sentPackets?: { producer: types.Producer; count: number };
 
     constructor() {
         const saved = readStorage<Partial<VoiceSettings>>("voiceSettings", {});
@@ -93,6 +98,7 @@ export class VoiceManager {
         document.addEventListener("visibilitychange", () => { if (document.hidden) this.releaseTalk(); });
         window.addEventListener("pagehide", () => this.leave());
         window.setInterval(() => void this.updateSpeaking(), 100);
+        window.setInterval(() => void this.checkMicrophoneFlow(), 5000);
     }
     subscribe = (listener: () => void) => { this.listeners.add(listener); return () => { this.listeners.delete(listener); }; };
     getRevision = () => this.revision;
@@ -113,9 +119,8 @@ export class VoiceManager {
     async togglePlayerMute(id: number) {
         if (id === this.session?.selfId) {
             if (!this.microphoneEnabled) {
-                this.selfMuted = false;
                 if (this.status !== "connected") await this.join();
-                if (this.status === "connected") await this.enableMicrophone();
+                else await this.enableMicrophone({ unmute: true });
             } else this.toggleSelfMute();
         } else this.setPerson(id, { muted: !this.person(id).muted });
     }
@@ -141,13 +146,25 @@ export class VoiceManager {
     async join() {
         if (!this.roomEnabled || !this.session || this.status === "connecting" || this.status === "connected") return;
         this.wantConnected = true;
-        // Run during the click so playback works under browser autoplay restrictions.
+        this.lastWarning = "";
+        this.status = "connecting";
+        this.changed();
+        // Start during the click so playback works under browser autoplay restrictions.
+        // Don't wait for it: Firefox never settles resume() while a Bluetooth headset
+        // is switching to its microphone profile. Remote voices play through <audio>
+        // elements, so only the local speaking indicator needs this context running.
         this.audio ??= new AudioContext();
-        try { await this.audio.resume(); await this.connect(); }
-        catch { this.error = "voice.error.playback"; this.changed(); }
+        const generation = this.generation;
+        this.audio.resume().catch(error => this.playbackBlocked(error, generation));
+        // Ask for the microphone before connecting: Firefox only offers WebRTC the
+        // addresses it needs once the page has microphone access. Declining joins
+        // listen-only; the player's own mic button asks again.
+        if (!this.microphoneEnabled) await this.enableMicrophone({ unmute: true, quietDecline: true });
+        if (this.wantConnected) await this.connect();
     }
     leave() {
         this.wantConnected = false;
+        this.lastWarning = "";
         this.disconnect();
         this.disableMicrophone();
         this.status = "disconnected";
@@ -272,9 +289,20 @@ export class VoiceManager {
         console.warn("Voice connection failed", error);
         this.disconnect();
         this.status = "error";
-        this.error = "voice.error.connection";
+        this.setError("voice.error.connection", error);
         this.changed();
         if (this.wantConnected && this.session) this.retry = setTimeout(() => void this.connect(), 2500);
+    }
+    /** Shows a warning in the voice column, and in the error card the first time it occurs. */
+    private setError(key: string, cause?: unknown) {
+        this.error = key;
+        if (key === this.lastWarning) return;
+        this.lastWarning = key;
+        const detail = cause instanceof Error ? cause.message : "";
+        ANCHOR_CONTROLLER?.pushErrorCard({
+            title: translate("voice.error.title"),
+            body: detail ? `${translate(key)} (${detail})` : translate(key),
+        });
     }
     private request<T = Record<string, never>>(action: string, data: object = {}): Promise<T> {
         const socket = this.socket;
@@ -311,7 +339,7 @@ export class VoiceManager {
     private playbackBlocked(error: unknown, generation: number) {
         if (generation !== this.generation) return;
         console.warn("Voice playback blocked", error);
-        this.error = "voice.error.playback";
+        this.setError("voice.error.playback", error);
         this.changed();
     }
     async resumePlayback() {
@@ -320,6 +348,7 @@ export class VoiceManager {
             await this.audio?.resume();
             await Promise.all([...this.playbacks.values()].map(playback => playback.element.play()));
             this.error = "";
+            this.lastWarning = "";
             this.changed();
         } catch (error) { this.playbackBlocked(error, generation); }
     }
@@ -331,7 +360,8 @@ export class VoiceManager {
             this.speakingUntil.delete(playback.peer);
         }
     }
-    async enableMicrophone() {
+    /** `unmute` turns off self-mute once access is granted. `quietDecline` shows no warning if the player declines access. */
+    async enableMicrophone(options: { unmute?: boolean; quietDecline?: boolean } = {}) {
         if (!this.session || this.requestingMicrophone) return;
         this.requestingMicrophone = true;
         const generation = ++this.microphoneGeneration;
@@ -356,15 +386,27 @@ export class VoiceManager {
                 this.microphoneSink.connect(this.audio.destination);
             }
             this.microphoneEnabled = true;
+            if (options.unmute) this.selfMuted = false;
             for (const track of stream.getAudioTracks()) {
                 track.enabled = false;
                 track.onended = () => { if (this.microphone === stream) this.disableMicrophone(); };
             }
-            if (this.producer) await this.producer.replaceTrack({ track: stream.getAudioTracks()[0] });
-            else await this.publishMicrophone();
+            // A failed publish is a connection problem, not a microphone one. Keep the
+            // microphone so the reconnect in connect() publishes it again.
+            const connection = this.generation;
+            try {
+                if (this.producer) await this.producer.replaceTrack({ track: stream.getAudioTracks()[0] });
+                else await this.publishMicrophone();
+            } catch (error) {
+                if (connection === this.generation) this.connectionFailed(error);
+            }
             this.updateMicrophone();
-        } catch {
-            if (generation === this.microphoneGeneration) { this.disableMicrophone(); this.error = "voice.error.microphone"; }
+        } catch (error) {
+            if (generation === this.microphoneGeneration) {
+                this.disableMicrophone();
+                const declined = error instanceof DOMException && error.name === "NotAllowedError";
+                if (!(declined && options.quietDecline)) this.setError("voice.error.microphone", error);
+            }
         } finally { if (generation === this.microphoneGeneration) this.requestingMicrophone = false; this.changed(); }
     }
     disableMicrophone() {
@@ -441,6 +483,32 @@ export class VoiceManager {
         }
     }
     isSpeaking(id: number | undefined) { return id !== undefined && this.speaking.has(id); }
+    /**
+     * A working microphone always sends packets, even while push-to-talk or mute
+     * disables its track, because the browser then sends silence. No new packets
+     * means the audio device has stalled, such as a Bluetooth headset that failed
+     * to switch to its microphone profile.
+     */
+    private async checkMicrophoneFlow() {
+        const producer = this.producer;
+        if (!producer || this.status !== "connected" || !this.microphoneEnabled) { this.sentPackets = undefined; return; }
+        let count = 0;
+        try {
+            for (const stat of (await producer.getStats()).values()) {
+                if (stat.type === "outbound-rtp") count += stat.packetsSent ?? 0;
+            }
+        } catch { return; }
+        if (producer !== this.producer) return;
+        const stalled = this.sentPackets?.producer === producer && this.sentPackets.count === count;
+        this.sentPackets = { producer, count };
+        if (stalled) {
+            this.setError("voice.error.silentMicrophone");
+            this.changed();
+        } else if (this.error === "voice.error.silentMicrophone") {
+            this.error = "";
+            this.changed();
+        }
+    }
     private async updateSpeaking() {
         if (this.activityBusy || this.status !== "connected" || !this.session) return;
         this.activityBusy = true;

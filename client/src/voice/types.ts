@@ -1,4 +1,4 @@
-export type VoicePeer = { id: number; name: string; playerIndex: number | null };
+export type VoicePeer = { id: number; name: string; playerIndex: number | null; inVoice: boolean };
 export type VoiceSession = {
     url: string;
     token: string;

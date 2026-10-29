@@ -67,6 +67,7 @@ impl WebsocketListener {
                                 LobbyClientType::Spectator => format!("Spectator {id}"),
                             },
                             player_index: None,
+                            in_voice: bridge.in_voice(&scope, *id),
                         });
                         permissions.insert(
                             *id,
@@ -128,6 +129,8 @@ impl WebsocketListener {
                             id: *id,
                             name,
                             player_index: index,
+                            // Voice presence stays private during games.
+                            in_voice: false,
                         });
                         permissions.insert(*id, (sends, receives, silenced, connection));
                     }

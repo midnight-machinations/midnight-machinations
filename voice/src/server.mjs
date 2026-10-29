@@ -36,6 +36,13 @@ function enqueue(action) {
 function send(socket, data) {
   if (socket.readyState === WebSocket.OPEN) socket.send(JSON.stringify(data));
 }
+// Rust shares lobby voice presence with the room; game presence stays private there.
+function reportPresence() {
+  if (control?.readyState !== WebSocket.OPEN) return;
+  const presence = {};
+  for (const [scope, room] of rooms) presence[scope] = [...room.peers.keys()];
+  send(control, { presence });
+}
 function healthy() { return control?.readyState === WebSocket.OPEN && Date.now() - lastHeartbeat < 3500; }
 function allowed(listener, speaker) {
   if (frozen || !healthy() || listener.closed || speaker.closed || listener === speaker) return false;
@@ -58,6 +65,7 @@ function closePeer(peer) {
   }
   for (const transport of peer.transports.values()) transport.close();
   peer.socket.close(1000, 'Voice session ended');
+  reportPresence();
 }
 function failClosed() {
   policies = new Map();
@@ -149,6 +157,7 @@ async function handle(socket, state, request) {
       transports: new Map(), consumers: new Map() };
     state.peer = peer;
     room.peers.set(peer.id, peer);
+    reportPresence();
     return { routerRtpCapabilities: room.router.rtpCapabilities, iceServers: JSON.parse(process.env.VOICE_ICE_SERVERS ?? '[]') };
   }
   const peer = state.peer;
