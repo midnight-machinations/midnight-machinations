@@ -1920,7 +1920,7 @@
     "wiki.article.role.steward.guide":"- At night, choose up to 2 roles to protect\n    - Everyone with these roles are protected from attacks\n    - You aren't told if anyone with this role is attacked\n    - You can't protect the same role twice in a row\n    - You can't protect Steward more than once per game\n    - Everyone you protect has the following night messages deleted: you were protected, and you survived an attack.", 
     "wiki.article.role.steward.abilities":"* Choose up to 2 roles to protect\n    * Everyone with either of the roles is protected\n    * You aren't told if anyone you protect is attacked\n    - Everyone you protect has the following night messages deleted: you were protected, and you survived an attack.",
     "wiki.article.role.steward.attributes":"* You can't protect the same role two nights in a row\n* You can't protect Steward more than once\n* Your ability does nothing if you are blocked, or dead",
-    "wiki.article.role.steward.extra":"You visit the roles you protect with an indirect, transport immune visit",
+    "wiki.article.role.steward.extra":"You visit the roles you protect with a transport immune visit",
     "wiki.article.role.steward.exampleAlibi":"Steward\nN1: n/a\nN2: Lookout Medium",
     "wiki.article.role.steward.exampleAlibi.description":"On night 1, the steward didn't use their ability. On night 2, they gave all lookouts and mediums protected defense. From this alibi, it is impossible to know if the lookout or medium was attacked, because the steward is not told when this happens, unlike doctor or cop.",
 
@@ -1971,7 +1971,7 @@
     "wiki.article.role.intern.extra":"- You can't be given engineer as a random town common role.\n- You **can** be given intern as a random town common role.\n- The intern ability doesn't create visits.",
     
     "wiki.article.role.vigilante.reminder": "Each night, select a player to attack. If you kill a town loyalist, you cant shoot again.",
-    "wiki.article.role.vigilante.guide": "- At night, select a player to attack\n- If you kill a town loyalist, you cant shoot again.\n- You have X bullets (X = Total players ÷ 5 (round up))\n- You can't shoot on your 1st night.",
+    "wiki.article.role.vigilante.guide": "- At night, select a player to attack\n- If you kill a town loyalist, you cant shoot again.\n- You have X bullets (X = Total players ÷ 5 (round up))\n- You can't shoot on night 1.",
     "wiki.article.role.vigilante.abilities":"",
     "wiki.article.role.vigilante.attributes":"",
     "wiki.article.role.vigilante.extra": "* You only have a basic attack",
