@@ -137,6 +137,7 @@ pub struct Game {
     pub win_condition: WinConditionComponent,
     pub role: RoleComponent,
     pub fast_forward: FastForwardComponent,
+    pub host_fast_forward: components::fast_forward::FastForwardSetting,
     pub chat_messages: ChatComponent
 }
 
@@ -382,9 +383,13 @@ impl Game {
     }
     
     fn resend_host_data(&self, connection: &ClientConnection) {
-        connection.send_packet(ToClientPacket::HostData { clients: self.clients.iter()
+        connection.send_packet(ToClientPacket::HostData { fast_forward: self.host_fast_forward.clone(), clients: self.clients.iter()
             .map(|(id, client)| {
                 (*id, HostDataPacketGameClient {
+                    name: match client.client_location {
+                        GameClientLocation::Player(player) => player.name(self).clone(),
+                        GameClientLocation::Spectator(spectator) => spectator.deref(self).expect("Existing spectator").name.clone(),
+                    },
                     client_type: client.client_location.clone(),
                     connection: match client.client_location {
                         GameClientLocation::Player(player) => player.connection(self).clone(),
@@ -421,6 +426,18 @@ impl Game {
         );
     }
 
+    pub fn set_spectator_name(&mut self, spectator: SpectatorPointer, name: String) {
+        let taken_names = PlayerReference::all_players(self).map(|p| p.name(self).clone())
+            .chain(self.spectators.iter().enumerate()
+                .filter(|(index, _)| *index != usize::from(spectator.index()))
+                .map(|(_, s)| s.name.clone())).collect::<Vec<_>>();
+        let name = name_validation::sanitize_name(name, &taken_names);
+        if let Some(spectator) = spectator.deref_mut(self) {
+            spectator.name = name;
+        }
+        self.resend_host_data_to_all_hosts();
+    }
+
     pub fn set_player_name(&mut self, player_ref: PlayerReference, name: String) {
         let mut other_players: Vec<String> = PlayerReference::all_players(self)
             .map(|p| p.name(self))
@@ -428,6 +445,7 @@ impl Game {
             .collect();
 
         other_players.remove(player_ref.index() as usize);
+        other_players.extend(self.spectators.iter().map(|s| s.name.clone()));
         
         let new_name: String = name_validation::sanitize_name(name, &other_players);
 

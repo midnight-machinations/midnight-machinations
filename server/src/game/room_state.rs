@@ -82,7 +82,11 @@ impl RoomState for Game {
 
         self.ensure_host_exists(None);
 
+        let taken_names = PlayerReference::all_players(self).map(|p| p.name(self).clone())
+            .chain(self.spectators.iter().map(|s| s.name.clone())).collect::<Vec<_>>();
+        let name = crate::room::name_validation::sanitize_name(String::new(), &taken_names);
         let new_spectator = self.join_spectator(SpectatorInitializeParameters {
+            name,
             connection: ClientConnection::Connected(send.clone()),
             host: is_host,
         })?;

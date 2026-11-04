@@ -4,7 +4,7 @@ import GAME_MANAGER from "../../../index";
 import "../gameScreen.css";
 import "./chatMenu.css"
 import { PlayerClientType, PlayerIndex, UnsafeString } from "../../../game/gameState.d";
-import ChatElement, { ChatMessage, encodeString, translateChatMessage } from "../../../components/ChatMessage";
+import ChatElement, { encodeString } from "../../../components/ChatMessage";
 import { ContentMenu, ContentTab } from "../GameScreen";
 import { HistoryPoller, HistoryQueue } from "../../../history";
 import { Button } from "../../../components/Button";
@@ -14,7 +14,11 @@ import { useGameState, useLobbyOrGameState, usePlayerNames, usePlayerState } fro
 import { Virtuoso } from 'react-virtuoso';
 import ListMap from "../../../ListMap";
 import { controllerIdToLinkWithPlayer } from "../../../game/controllerInput";
-import { RoleList } from "../../../game/roleListState.d";
+import LobbyVoicePrompt from "../../../voice/LobbyVoicePrompt";
+import ChatGroupSelect from "../../../components/ChatGroupSelect";
+import { SelfVoiceMuteButton } from "../../../voice/SpeakingIndicator";
+import { ChatFilter, filterChatMessages } from "../../../game/chatFilter";
+import ChatFilters from "./ChatFilters";
 
 
 export default function ChatMenu(): ReactElement {
@@ -23,42 +27,23 @@ export default function ChatMenu(): ReactElement {
         ["filterUpdate"]
     );
 
-    const sendChatGroups = usePlayerState(
-        playerState => playerState.sendChatGroups,
-        ["yourSendChatGroups"]
-    )??[];
-
     const playerNames = usePlayerNames();
-
-    const filterString = useMemo(() => {
-        if (filter === undefined || filter === null) {
-            return "";
-        } else if (filter.type === "playerNameInMessage") {
-            return encodeString(playerNames[filter.player]);
-        } else if (filter.type === "whispersBetweenPlayers") {
-            return filter.players.map((p)=>encodeString(playerNames[p])).join();
-        }else{
-            return "";
-        }
-    }, [filter, playerNames]);
-
     const controllers = new ListMap(
         usePlayerState(playerState=>playerState.savedControllers, ["yourAllowedControllers", "yourAllowedController"]),
         (k1, k2)=>controllerIdToLinkWithPlayer(k1)===controllerIdToLinkWithPlayer(k2)
     );
 
+    const filterActive = filter !== undefined && filter !== null;
+
     return <div className="chat-menu chat-menu-colors">
         <ContentTab close={ContentMenu.ChatMenu}>{translate("menu.chat.title")}</ContentTab>
-        {filter === undefined || filter === null || <div className="chat-filter-zone highlighted">
-            <StyledText>{translate("menu.chat.playerFilter", filterString)}</StyledText>
-            <Button 
-                onClick={()=> GAME_MANAGER.updateChatFilter(null)}
-                highlighted={true}
-                aria-label={translate("menu.chat.clearFilter")}
-            >
-                <Icon>filter_alt_off</Icon>
-            </Button>
-        </div>}
+        <div className={"chat-voice-header" + (filterActive ? " highlighted" : "")}>
+            <ChatFilters filter={filter ?? null}/>
+            <div className="chat-header-voice-controls">
+                <LobbyVoicePrompt/>
+                <SelfVoiceMuteButton/>
+            </div>
+        </div>
         <ChatMessageSection filter={filter}/>
         {controllers.list
             .map(([id, _])=>{
@@ -66,14 +51,20 @@ export default function ChatMenu(): ReactElement {
 
                 const sendChatController = controllers.get({type: "sendChat", player: id.player});
                 if(sendChatController===null){return null}
+                const groupController = controllers.get({ type: "chatGroup", player: id.player });
+                if (groupController?.parameters.available.type !== "chatGroup" || groupController.selection.type !== "chatGroup") return null;
+                const sendChatGroups = groupController.parameters.available.selection.groups;
 
                 return <div className="brand chat-menu-chat-controller" key={JSON.stringify(id)}>
                     <div key={"header: "+JSON.stringify(id)} className="chat-menu-icons">
-                        {!sendChatGroups.includes("all") && translate("noAll.icon")}
+                        {!sendChatGroups.includes("all") && <StyledText noLinks={true}>{translate("noAll.icon")}</StyledText>}
                         {sendChatGroups.map((group) => {
-                            return translate("chatGroup."+group+".icon");
+                            return <StyledText key={group} noLinks={true}>{translate("chatGroup."+group+".icon")}</StyledText>;
                         })}
                         <StyledText>{encodeString(playerNames[id.player])}</StyledText>
+                        <ChatGroupSelect id={{ type: "chatGroup", player: id.player }}
+                            groups={sendChatGroups} selected={groupController.selection.selection}
+                            disabled={groupController.parameters.grayedOut}/>
                     </div>
                     <ChatTextInput 
                         key={"input: "+JSON.stringify(id)}
@@ -86,83 +77,6 @@ export default function ChatMenu(): ReactElement {
         
     </div>
 }
-
-export type ChatFilter = {
-    type: "playerNameInMessage",
-    player: PlayerIndex
-} | {
-//     type: "myWhispersWithPlayer",
-//     player: PlayerIndex,
-// } | {
-    type: "whispersBetweenPlayers",
-    players: PlayerIndex[]
-} | null;
-
-function filterMessage(
-    filter: ChatFilter,
-    message: ChatMessage,
-    playerNames: UnsafeString[],
-    roleList: RoleList
-): boolean{
-    if(filter === null || filter === undefined)
-        return true;
-
-    switch(filter.type){
-        case "playerNameInMessage":
-            let msgTxt = "";
-            //special case messages, where translate chat message doesnt work properly, or it should be let through anyway
-            switch (message.variant.type) {
-                //translateChatMessage errors for playerDied type.
-                case "playerDied":
-                case "phaseChange":
-                    return true
-                case "normal":
-                    switch(message.variant.messageSender.type) {
-                        case "player":
-                        case "livingToDead":
-                            if(message.variant.messageSender.player === filter.player)
-                                return true;
-                            break;
-                    }
-                    break;
-                case "targetsMessage":
-                    msgTxt = translateChatMessage(message.variant.message, playerNames, roleList);
-                    break;
-            }
-
-            msgTxt += translateChatMessage(message.variant, playerNames, roleList);
-
-            return msgTxt.includes(encodeString(playerNames[filter.player]));
-        // case "myWhispersWithPlayer":
-        //     switch (message.variant.type) {
-        //         //translateChatMessage errors for playerDied type.
-        //         case "phaseChange":
-        //             return true
-        //         case "whisper":
-        //             if(
-        //                 (message.variant.fromPlayerIndex === filter.player && message.variant.toPlayerIndex === myPlayerIndex) ||
-        //                 (message.variant.toPlayerIndex === filter.player && message.variant.fromPlayerIndex === myPlayerIndex)
-        //             )
-        //                 return true;
-        //             else
-        //                 return false;
-        //         default:
-        //             return false;
-        //     }
-        case "whispersBetweenPlayers":
-            switch (message.variant.type) {
-                case "phaseChange":
-                    return true
-                case "whisper":
-                    return filter.players.includes(message.variant.fromPlayerIndex) && filter.players.includes(message.variant.toPlayerIndex);
-                default:
-                    return false;
-            }
-
-    }
-    return true;
-}
-
 
 export function ChatMessageSection(props: Readonly<{
     filter?: ChatFilter,
@@ -178,23 +92,16 @@ export function ChatMessageSection(props: Readonly<{
         ["roleList"]
     ) ?? [];
 
-    const allMessages = messages
-        .filter((msg)=>filterMessage(filter, msg[1], players.map((p)=>p.toString()), roleList))
-        .filter((msg, index, array)=>{
-            //if there is a filter, remove repeat phaseChange message
-            if(filter === null){return true}
-            if(msg[1].variant.type !== "phaseChange"){return true}
-            if(index+1===array.length){return true}
-            if(array[index+1][1].variant.type !== "phaseChange"){return true}
-            return false;
-        }).map((msg, index) => {
+    const names = usePlayerNames();
+    const plainNames = players.length > 0 ? players.map(player => player.name) : names;
+    const allMessages = filterChatMessages(filter, messages, names, roleList, plainNames)
+        .map((msg) => {
             return <ChatElement
-                key={index}
+                key={msg[0]}
                 messageIndex={msg[0]}
                 message={msg[1]}
                 playerKeywordData={(() => {
-                    if (filter===null) {return undefined}
-                    if (filter.type === "whispersBetweenPlayers") {return undefined}
+                    if (filter?.type !== "playerNameInMessage" || !players[filter.player]) return undefined;
 
                     const newKeywordData: KeywordDataMap = {...PLAYER_KEYWORD_DATA};
 
@@ -207,8 +114,7 @@ export function ChatMessageSection(props: Readonly<{
                     return newKeywordData;
                 })()}
                 playerSenderKeywordData={(() => {
-                    if (filter===null) {return undefined}
-                    if (filter.type === "whispersBetweenPlayers") {return undefined}
+                    if (filter?.type !== "playerNameInMessage" || !players[filter.player]) return undefined;
 
                     const newKeywordData: KeywordDataMap = {...PLAYER_SENDER_KEYWORD_DATA};
 

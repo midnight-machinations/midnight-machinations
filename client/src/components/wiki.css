@@ -4,6 +4,8 @@
     max-height: 100%;
     max-width: 100%;
     min-height: 0;
+    min-width: 0;
+    overflow-x: hidden;
     display: flex;
     flex-direction: column;
 }
@@ -13,7 +15,9 @@
     justify-content: stretch;
 }
 .wiki-search-bar > input {
-    width: 100%;
+    flex: 1;
+    min-width: 0;
+    width: auto;
 }
 .wiki-search-bar > button {
     width: fit-content;
@@ -21,12 +25,15 @@
 .wiki-results {
     margin: .75%;
     overflow-y: auto;
+    overflow-x: hidden;
     flex: 1 1;
     padding-bottom: 1rem;
 }
 .wiki-search .masonry-item {
     margin: .25rem;
-    width: 100%;
+    width: calc(100% - .5rem);
+    min-width: 0;
+    overflow-wrap: anywhere;
     border: .13rem solid var(--primary-border-color);
     background-color: var(--secondary-color);
 }
@@ -48,6 +55,8 @@
     height: 100%;
     width: 100%;
     overflow-y: auto;
+    overflow-x: hidden;
+    overflow-wrap: anywhere;
     padding-bottom: 1rem;
 }
 /* Markdown */
@@ -174,4 +183,18 @@
 .anchor-cover-card-content > .wiki-article {
     margin-left: 1rem;
     margin-right: 1rem;
+}
+.wiki-article pre {
+    white-space: pre-wrap;
+}
+.wiki-article table {
+    width: 100%;
+    table-layout: fixed;
+}
+.wiki-article img, .wiki-article video, .wiki-article iframe {
+    max-width: 100%;
+}
+.wiki-disabled-selector > .custom-select {
+    min-width: 0;
+    max-width: 100%;
 }

@@ -1,3 +1,4 @@
+import StyledText from "../StyledText";
 import React, { useSyncExternalStore } from "react";
 import GAME_MANAGER from "../../index";
 import { useLobbyOrGameState } from "../useHooks";
@@ -5,7 +6,7 @@ import translate from "../../game/lang";
 import { VOICE } from "../../voice/voiceManager";
 import CheckBox from "../CheckBox";
 
-export default function RoomVoiceSetting() {
+export default function RoomVoiceSetting(props: Readonly<{ children?: React.ReactNode }>) {
     useSyncExternalStore(VOICE.subscribe, VOICE.getRevision);
     const room = useLobbyOrGameState(state => ({
         host: state.stateType === "game" ? state.host !== null : state.players.get(state.myId!)?.ready === "host",
@@ -17,5 +18,6 @@ export default function RoomVoiceSetting() {
             <CheckBox checked={VOICE.roomEnabled} disabled={!room.host} ariaLabel={translate("voice.enableForRoom")}
                 onChange={enabled => GAME_MANAGER.server.sendPacket({ type: "setVoiceEnabled", enabled })}/>
         </div>
+        {props.children}
     </section>;
 }

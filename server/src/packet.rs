@@ -35,6 +35,7 @@ pub struct RoomPreviewData {
 #[derive(Serialize, Debug, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct HostDataPacketGameClient {
+    pub name: String,
     pub client_type: GameClientLocation,
     pub connection: ClientConnection,
     pub host: bool,
@@ -97,7 +98,8 @@ pub enum ToClientPacket{
     ModifierSettings{modifier_settings: ModifierSettings},
 
     // Host
-    HostData { clients: VecMap<RoomClientID, HostDataPacketGameClient> },
+    #[serde(rename_all = "camelCase")]
+    HostData { clients: VecMap<RoomClientID, HostDataPacketGameClient>, fast_forward: FastForwardSetting },
 
     // Game
     GamePlayers{players: Vec<String>},
@@ -219,7 +221,8 @@ pub enum ToServerPacket{
     HostDataRequest,
     HostForceBackToLobby,
     HostForceEndGame,
-    HostForceSkipPhase,
+    #[serde(rename_all = "camelCase")]
+    HostForceSkipPhase { fast_forward: FastForwardSetting },
     HostForceSetPlayerName { id: RoomClientID, name: String },
 
     // Game

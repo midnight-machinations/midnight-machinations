@@ -81,6 +81,7 @@ pub fn mock_game(settings: Settings, num_players: u8) -> Result<(Game, Assignmen
         fragile_vests: unsafe{PlayerComponent::<FragileVests>::new(num_players)},
         win_condition: unsafe{PlayerComponent::<WinCondition>::new(num_players, &assignments)},
         fast_forward: unsafe{FastForwardComponent::new(num_players)},
+        host_fast_forward: crate::game::components::fast_forward::FastForwardSetting::None,
         chat_messages: unsafe{ChatComponent::new(num_players)},
         revealed_players: unsafe{RevealedPlayersComponent::new(num_players)}
     };

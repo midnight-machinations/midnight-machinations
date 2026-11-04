@@ -3,7 +3,7 @@
 use crate::{
     game::{
         abilities::role_abilities::RoleAbility, abilities_component::{ability::Ability, ability_id::AbilityID, Abilities}, chat::{ChatComponent, ChatGroup, ChatMessageVariant, MessageSender}, controllers::{
-            AvailableBooleanSelection, AvailablePlayerListSelection, AvailableStringSelection, AvailableUnitSelection, BooleanSelection, ControllerID, ControllerParametersMap, PlayerListSelection, StringSelection
+            AvailableBooleanSelection, AvailableChatGroupSelection, AvailablePlayerListSelection, AvailableStringSelection, AvailableUnitSelection, BooleanSelection, ControllerID, ControllerParametersMap, PlayerListSelection, StringSelection
         }, event::{on_validated_ability_input_received::OnValidatedControllerInputReceived, on_whisper::OnWhisper, AsInvokable as _, Invokable as _}, player::PlayerReference, role::{Role, RoleState}, Game
     },
     strings::TidyableString, vec_set::VecSet
@@ -32,7 +32,7 @@ impl ChatComponent{
             return;
         }
         
-        for chat_group in sender_player.get_current_send_chat_groups(game){
+        if let Some(chat_group) = sender_player.selected_send_chat_group(game){
             let message_sender = match chat_group {
                 ChatGroup::Jail if sender_player.role(game) == Role::Jailor => {
                     Some(MessageSender::Jailor)
@@ -114,7 +114,14 @@ impl ChatComponent{
             .allow_players(allowed_players.clone())
             .build_map();
 
-        let no_chat_groups = player.get_current_send_chat_groups(game).is_empty();
+        let groups = player.get_current_send_chat_groups(game);
+        let no_chat_groups = groups.is_empty();
+        let chat_group = ControllerParametersMap::builder(game)
+            .id(ControllerID::ChatGroup { player })
+            .available_selection(AvailableChatGroupSelection { groups })
+            .add_grayed_out_condition(no_chat_groups)
+            .allow_players(allowed_players.clone())
+            .build_map();
         let send_chat = ControllerParametersMap::builder(game)
             .id(ControllerID::SendChat{ player })
             .available_selection(AvailableUnitSelection)
@@ -142,6 +149,6 @@ impl ChatComponent{
             .allow_players(allowed_players)
             .build_map();
 
-        ControllerParametersMap::combine([chat, chat_is_block, send_chat, whisper, whisper_to_player, send_whisper])
+        ControllerParametersMap::combine([chat, chat_is_block, chat_group, send_chat, whisper, whisper_to_player, send_whisper])
     }
 }

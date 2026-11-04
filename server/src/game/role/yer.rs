@@ -102,7 +102,7 @@ impl RoleStateTrait for Yer {
             ControllerParametersMap::builder(game)
                 .id(ControllerID::role(actor_ref, Role::Yer, 2))
                 .single_role_selection_typical(game, |_|true)
-                .default_selection(RoleListSelection(vec!(self.old_role)))
+                .default_selection(RoleListSelection(vec![self.old_role]))
                 .add_grayed_out_condition(
                     self.star_passes_remaining == 0 ||
                     actor_ref.ability_deactivated_from_death(game) ||

@@ -93,7 +93,7 @@ impl RoleStateTrait for Disguiser {
             ControllerParametersMap::builder(game)
                 .id(ControllerID::role(actor_ref, Role::Disguiser, 2))
                 .single_role_selection_typical(game, |_|true)
-                .default_selection(RoleListSelection(vec!(self.last_role_selection)))
+                .default_selection(RoleListSelection(vec![self.last_role_selection]))
                 .add_grayed_out_condition(actor_ref.ability_deactivated_from_death(game))
                 .allow_players([actor_ref])
                 .build_map()

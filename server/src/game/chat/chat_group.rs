@@ -2,6 +2,8 @@ use std::iter::once;
 
 use serde::{Deserialize, Serialize};
 
+use crate::game::controllers::{ControllerID, ControllerSelection};
+
 use crate::{
     game::{
         Game, abilities_component::Abilities, components::{call_witness::CallWitness, insider_group::InsiderGroups, silenced::Silenced}, modifiers::ModifierID, phase::PhaseType, player::PlayerReference
@@ -104,6 +106,12 @@ impl PlayerChatGroupMap{
 }
 
 impl ChatGroup{
+    pub fn select_available(groups: &VecSet<Self>, selected: Option<Self>) -> Option<Self> {
+        selected.filter(|group| groups.contains(group))
+            .or_else(|| groups.contains(&Self::All).then_some(Self::All))
+            .or_else(|| groups.iter().next().copied())
+    }
+
     pub fn all_players_in_group(&self, game: &Game)->Vec<PlayerReference>{
         let map = PlayerChatGroups::receive_player_chat_group_map(game);
 
@@ -117,6 +125,17 @@ impl ChatGroup{
     }
 }
 impl PlayerReference{
+    /// The same destination is used for text and voice, including permission changes
+    /// that happen before the next controller refresh.
+    pub fn selected_send_chat_group(&self, game: &Game) -> Option<ChatGroup> {
+        let selected = match (ControllerID::ChatGroup { player: *self }).get_selection(game) {
+            Some(ControllerSelection::ChatGroup(selection)) => selection.0,
+            _ => None,
+        };
+        let groups = PlayerChatGroups::compute_send_map(game).get(*self);
+        ChatGroup::select_available(&groups, selected)
+    }
+
     fn receive_player_chat_group_map(&self, game: &Game)->PlayerChatGroupMap{
         if game.current_phase().phase() == PhaseType::Recess {
             let mut out = PlayerChatGroupMap::new();

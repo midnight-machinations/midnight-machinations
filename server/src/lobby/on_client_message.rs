@@ -47,29 +47,13 @@ impl Lobby {
                 self.chat_message_index = self.chat_message_index.saturating_add(1);
             }
             ToServerPacket::SetSpectator { spectator } => {
-                let player_names = self.clients.values().filter_map(|p| {
-                    if let LobbyClientType::Player { name } = p.client_type.clone() {
-                        Some(name)
+                if let Some(client) = self.clients.get_mut(&room_client_id) {
+                    let name = client.name().clone();
+                    client.client_type = if spectator {
+                        LobbyClientType::Spectator { name }
                     } else {
-                        None
-                    }
-                }).collect::<Vec<_>>();
-
-                let new_name = name_validation::sanitize_name("".to_string(), &player_names);
-
-                if let Some(player) = self.clients.get_mut(&room_client_id){
-                    match &player.client_type {
-                        LobbyClientType::Spectator => {
-                            if !spectator {
-                                player.client_type = LobbyClientType::Player { name: new_name}
-                            }
-                        },
-                        LobbyClientType::Player { .. } => {
-                            if spectator {
-                                player.client_type = LobbyClientType::Spectator;
-                            }
-                        },
-                    }
+                        LobbyClientType::Player { name }
+                    };
                 }
 
                 self.set_rolelist_length();
@@ -124,7 +108,7 @@ impl Lobby {
                 for (room_client_id, lobby_client) in self.clients.clone() {
                     
                     game_clients.insert(room_client_id, 
-                        if let LobbyClientType::Spectator = lobby_client.client_type {
+                        if let LobbyClientType::Spectator { .. } = lobby_client.client_type {
                             GameClient {
                                 client_location: GameClientLocation::Spectator(SpectatorPointer::new(next_spectator_index)),
                                 host: lobby_client.is_host(),
@@ -153,8 +137,9 @@ impl Lobby {
                                 break 'packet_match;
                             }
                         },
-                        LobbyClientType::Spectator => {
+                        LobbyClientType::Spectator { ref name } => {
                             game_spectator_params.push(SpectatorInitializeParameters{
+                                name: name.clone(),
                                 host: lobby_client.is_host(),
                                 connection: lobby_client.connection,
                             });

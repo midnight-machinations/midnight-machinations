@@ -45,9 +45,7 @@ export function useGameState<T>(
     usePacketListener((type?: StateEventType) => {
         if (GAME_MANAGER.state.stateType === "game" && (events ?? []).includes(type as StateEventType)) {
             const value = getValue(GAME_MANAGER.state);
-            if (!strictDeepEqual(value, state)) {
-                setState((_previous)=>value);
-            }
+            setState(previous => strictDeepEqual(value, previous) ? previous : value);
         }
     })
 

@@ -10,7 +10,7 @@ const addressIndex = args.indexOf('--announced-address');
 const suppliedAddress = addressIndex >= 0 ? args[addressIndex + 1] : process.env.VOICE_ANNOUNCED_ADDRESS;
 if (addressIndex >= 0) args.splice(addressIndex, 2);
 if (suppliedAddress !== undefined && isIP(suppliedAddress) !== 4) throw new Error('--announced-address requires an IPv4 address');
-if (args.length > 1) throw new Error('Usage: npm run configure -- [offset] [--announced-address IPv4]');
+if (args.length > 1) throw new Error('Usage: pnpm configure [offset] [--announced-address IPv4]');
 const offset = Number(args[0] ?? 0);
 if (!Number.isInteger(offset) || offset < 0 || offset > 1000) throw new Error('Expected a port offset between 0 and 1000');
 // Firefox rejects loopback media candidates. On Linux the host can also reach

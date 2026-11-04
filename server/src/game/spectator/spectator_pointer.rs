@@ -178,10 +178,9 @@ impl Iterator for SpectatorPointerIterator {
             None
         } else {
             let ret = SpectatorPointer::new(self.current);
-            if let Some(new) = self.current.checked_add(1) {
+            {
+                let new = self.current.checked_add(1)?;
                 self.current = new;
-            } else {
-                return None
             }
             Some(ret)
         }

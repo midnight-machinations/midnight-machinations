@@ -20,6 +20,7 @@ pub enum ControllerID{
     
     Chat{player: PlayerReference},
     ChatIsBlock{player: PlayerReference},
+    ChatGroup{player: PlayerReference},
     SendChat{player: PlayerReference},
 
     Whisper{player: PlayerReference},
@@ -115,6 +116,7 @@ impl ControllerID{
                 ControllerID::Alibi { .. } |
                 ControllerID::Chat { .. } |
                 ControllerID::ChatIsBlock { .. } |
+                ControllerID::ChatGroup { .. } |
                 ControllerID::SendChat { .. } |
                 ControllerID::Whisper { .. } |
                 ControllerID::WhisperToPlayer { .. } |

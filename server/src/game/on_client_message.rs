@@ -23,15 +23,43 @@ pub enum GameClientMessageResult {
 }
 
 impl Game {
-    #[expect(clippy::match_single_binding, unused, reason="Surely spectators will do something in the future")]
     pub fn on_spectator_message(&mut self, sender_ref: SpectatorPointer, incoming_packet: ToServerPacket){
-        match incoming_packet {
-            _ => {}
+        if let ToServerPacket::SetName { name } = incoming_packet {
+            self.set_spectator_name(sender_ref, name);
         }
     }
     
     pub fn on_client_message(&mut self, _: &ClientSender, room_client_id: RoomClientID, incoming_packet: ToServerPacket) -> GameClientMessageResult {
         if let Some(client) = self.clients.get(&room_client_id) {
+            // Host commands must also work when the host is spectating.
+            match &incoming_packet {
+                ToServerPacket::HostForceSkipPhase { fast_forward } => {
+                    if client.host {
+                        FastForwardComponent::host_skip(self, fast_forward.clone());
+                    }
+                    return GameClientMessageResult::None;
+                }
+                ToServerPacket::HostForceSetPlayerName { id, name } => {
+                    if client.host && let Some(target) = self.clients.get(id) {
+                        match target.client_location {
+                            GameClientLocation::Player(player) => self.set_player_name(player, name.clone()),
+                            GameClientLocation::Spectator(spectator) => self.set_spectator_name(spectator, name.clone()),
+                        }
+                    }
+                    return GameClientMessageResult::None;
+                }
+                ToServerPacket::HostDataRequest => {
+                    if client.host {
+                        let connection = match client.client_location {
+                            GameClientLocation::Player(player) => player.connection(self).clone(),
+                            GameClientLocation::Spectator(spectator) => spectator.connection(self),
+                        };
+                        self.resend_host_data(&connection);
+                    }
+                    return GameClientMessageResult::None;
+                }
+                _ => {}
+            }
             match client.client_location {
                 GameClientLocation::Player(player) => {
                     self.on_player_message(room_client_id, player, incoming_packet)
@@ -81,22 +109,14 @@ impl Game {
 
                 OnGameEnding::new(conclusion).as_invokable().invoke(self);
             }
-            ToServerPacket::HostForceSkipPhase => {
-                if let Some(player) = self.clients.get(&room_client_id)
-                    && !player.host {break 'packet_match}
-                
-                FastForwardComponent::skip(self);
+            ToServerPacket::HostForceSkipPhase { fast_forward } => {
+                if !self.clients.get(&room_client_id).is_some_and(|client| client.host) {break 'packet_match}
+                FastForwardComponent::host_skip(self, fast_forward);
             }
             ToServerPacket::HostDataRequest => {
                 if let Some(player) = self.clients.get(&room_client_id) && !player.host {break 'packet_match}
 
                 self.resend_host_data(sender_player_ref.connection(self));
-            }
-            ToServerPacket::HostForceSetPlayerName { id, name } => {
-                if let Some(player) = self.clients.get(&room_client_id) && !player.host {break 'packet_match}
-                if let Some(player) = self.clients.get(&id) && let GameClientLocation::Player(player) = player.client_location {
-                    self.set_player_name(player, name);
-                }
             }
             ToServerPacket::SetPlayerHost { player_id } => {
                 if let Some(player) = self.clients.get(&room_client_id) && !player.host {break 'packet_match}

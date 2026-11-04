@@ -90,7 +90,7 @@ impl RoleStateTrait for Forger {
                     can_choose_duplicates: false,
                     max_roles: Some(1)
                 })
-                .default_selection(RoleListSelection(vec!(Role::Forger)))
+                .default_selection(RoleListSelection(vec![Role::Forger]))
                 .add_grayed_out_condition(
                     self.forges_remaining == 0 ||
                     actor_ref.ability_deactivated_from_death(game)

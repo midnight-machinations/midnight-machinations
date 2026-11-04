@@ -40,5 +40,5 @@ echo "Worktree ready at $path"
 echo "  server: ws://localhost:$server_port (cd $path/server && cargo run)"
 echo "  client: http://localhost:$client_port (cd $path/client && pnpm dev, add --no-open to skip opening a browser)"
 if [ -f "$path/voice/configure-local.mjs" ]; then
-    echo "  voice:  ws://localhost:$((9100 + offset * 2)) (cd $path/voice && npm ci && npm start)"
+    echo "  voice:  ws://localhost:$((9100 + offset * 2)) (cd $path/voice && pnpm install --frozen-lockfile && pnpm start)"
 fi

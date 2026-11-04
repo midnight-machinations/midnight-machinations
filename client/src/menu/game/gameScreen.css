@@ -27,6 +27,11 @@
 .game-screen .content {
     height: 1vh;
 }
+.game-screen .game-menu-swipe-container {
+    display: flex;
+    flex: 1;
+    min-height: 0;
+}
 .game-screen .content > div > div{
     height: 100%;
     max-height: 100%;

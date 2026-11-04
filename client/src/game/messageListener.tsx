@@ -159,6 +159,7 @@ export default function messageListener(packet: ToClientPacket){
                 if (packet.hosts.includes(GAME_MANAGER.state.myId ?? -1)) {
                     if (GAME_MANAGER.state.host === null) {
                         GAME_MANAGER.state.host = {
+                            fastForward: { type: "none" },
                             clients: new ListMap()
                         }
                     }
@@ -212,19 +213,11 @@ export default function messageListener(packet: ToClientPacket){
         break;
         case "lobbyClients":
             if(GAME_MANAGER.state.stateType === "lobby"){
-                const oldMySpectator = GAME_MANAGER.state.players.get(GAME_MANAGER.state.myId!)?.clientType.type === "spectator";
 
                 GAME_MANAGER.state.players = new ListMap();
                 for(const [clientId, lobbyClient] of packet.clients){
                     GAME_MANAGER.state.players.insert(clientId, lobbyClient);
                 }
-                const newMySpectator = GAME_MANAGER.state.players.get(GAME_MANAGER.state.myId!)?.clientType.type === "spectator";
-
-                
-                if (oldMySpectator && !newMySpectator){
-                    sendDefaultName();
-                }
-
                 // Recompute keyword data, since player names are keywords.
                 computePlayerKeywordDataForLobby(
                     Array.from(GAME_MANAGER.state.players.values())
@@ -239,6 +232,7 @@ export default function messageListener(packet: ToClientPacket){
         case "hostData":
             if (GAME_MANAGER.state.stateType === "game") {
                 GAME_MANAGER.state.host = {
+                    fastForward: packet.fastForward,
                     clients: new ListMap<number, GameClient>(packet.clients)
                 }
             } 

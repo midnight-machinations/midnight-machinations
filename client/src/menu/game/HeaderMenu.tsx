@@ -1,7 +1,7 @@
 import React, { ReactElement, useContext, useMemo } from "react";
 import translate from "../../game/lang";
 import GAME_MANAGER from "../../index";
-import { FastForwardSetting, PHASES, PhaseState, PhaseType, Player, Verdict } from "../../game/gameState.d";
+import { PhaseState, Player, Verdict } from "../../game/gameState.d";
 import { MenuControllerContext, ContentMenu, MENU_THEMES, MENU_TRANSLATION_KEYS } from "./GameScreen";
 import "./headerMenu.css";
 import StyledText from "../../components/StyledText";
@@ -10,7 +10,7 @@ import { Button } from "../../components/Button";
 import { useGameState, usePlayerState, useSpectator } from "../../components/useHooks";
 import { MobileContext } from "../Anchor";
 import { encodeString } from "../../components/ChatMessage";
-import Select from "../../components/Select";
+import FastForwardSelect from "../../components/FastForwardButton";
 import { loadSettingsParsed } from "../../game/localStorage";
 
 
@@ -31,7 +31,7 @@ export default function HeaderMenu(props: Readonly<{
 
     const host = useGameState(
         state => state.host !== null,
-        ["playersHost"]
+        ["playersHost", "hostData"]
     )!;
 
     const spectator = useSpectator()!;
@@ -126,7 +126,7 @@ function Information(): ReactElement {
             <div>
                 <h3>
                     <div>
-                        {translate("phase."+phaseState.type)}{dayNumberText}⏳{timeLeftText}
+                        {`${translate("phase."+phaseState.type)}${dayNumberText}⏳${timeLeftText}`}
                     </div>
                 </h3>
                 {spectator || <StyledText>
@@ -156,7 +156,7 @@ export function PhaseSpecificInformation(props: Readonly<{
             const trials = props.phaseState.trialsLeft;
 
             return <div className="phase-specific">
-                <div className="highlighted">
+                <div>
                     <StyledText>{translate(trials === 1 ? "trialsRemaining.1" : "trialsRemaining", trials)}</StyledText>
                 </div>
             </div>
@@ -171,17 +171,19 @@ export function PhaseSpecificInformation(props: Readonly<{
 
     // Trial
     return <div className="phase-specific">
-        <div className="highlighted">
+        <div>
             <StyledText>
                 {translate(`${props.phaseState.type}.playerOnTrial`, encodeString(props.players[props.phaseState.playerOnTrial].toString()))}
             </StyledText>
             {(!spectator && props.phaseState.type === "judgement")?<div className="judgement-info">
                 {
-                    (props.phaseState.playerOnTrial === props.myIndex)?translate("judgement.cannotVote.onTrial"):
-                    (!props.players[props.myIndex!].alive)?translate("judgement.cannotVote.dead"):
+                    (props.phaseState.playerOnTrial === props.myIndex)?<StyledText noLinks={true}>{translate("judgement.cannotVote.onTrial")}</StyledText>:
                     controllers.map(([id, controller])=>{
                         if(
                             id.type !== "judge" ||
+                            id.player !== props.myIndex ||
+                            controller.parameters.grayedOut ||
+                            !controller.parameters.allowedPlayers.includes(props.myIndex) ||
                             controller.parameters.available.type !== "integer" ||
                             controller.selection.type !== "integer"
                         ){return null;}
@@ -241,83 +243,13 @@ export function MenuButtons(props: Readonly<{ chatMenuNotification: boolean }>):
 
 
 
-type FastForwardSettingString = "none"|"skip"|`phase/${PhaseType}/${number}`
-function fastForwardSettingToString(fastForward: FastForwardSetting): string {
-    return fastForward.type==="phase"?
-        `phase/${fastForward.phase}/${fastForward.day}`:fastForward.type;
-}
-function stringToFastForwardSetting(string: FastForwardSettingString): FastForwardSetting {
-    let split = string.split("/");
-    switch(split[0]){
-        case "none":
-        case "skip":
-            return {type:split[0]}
-        case "phase":
-            return {type:"phase", phase: split[1] as PhaseType, day: parseInt(split[2])}
-    }
-    return {type:"none"};
-}
-
 export function FastForwardButton(props: { spectatorAndHost: boolean }): ReactElement {
     const fastForward = useGameState(
-        gameState => gameState.fastForward,
-        ["yourVoteFastForwardPhase"]
-    )!;
-    
-    const currentPhase = useGameState(
-        gameState => gameState.phaseState.type,
-        ["phase"]
-    )!;
-    const dayNumber = useGameState(
-        gameState => gameState.dayNumber,
-        ["phase"]
-    )!;
-
-    // eslint-disable-next-line
-    const optionMap = new Map();
-
-    optionMap.set(
-        "none",
-        [
-            <Icon>play_arrow</Icon>,
-            translate("none")
-        ]
-    );
-    optionMap.set(
-        "skip",
-        [
-            <Icon>fast_forward</Icon>,
-            translate("wiki.article.standard.fastForward.title")
-        ]
-    );
-    
-    for(let i = dayNumber; i < dayNumber+4; i++){
-        for(const phase of ["discussion", "nomination", "night"] as PhaseType[]){
-            if(dayNumber !== i || PHASES.indexOf(currentPhase) < PHASES.indexOf(phase) ){
-                optionMap.set(
-                    fastForwardSettingToString({type:"phase",phase:phase,day:i}),
-                    [
-                        <>
-                            <Icon>fast_forward</Icon>
-                            {" "}
-                            <StyledText noLinks={true}>
-                                {translate("phase."+phase)} {i.toString()}
-                            </StyledText>
-                        </>,
-                        translate("phase."+phase)+" "+(i.toString())
-                    ]
-                );
-            }
-        }
-    }
-
-    return <Select
-        className={"brand fast-forward-button"+(fastForward.type!=="none"?" highlighted":"")}
-        value={fastForwardSettingToString(fastForward)}
-        onChange={(e)=>{
-            GAME_MANAGER.sendVoteFastForwardPhase(stringToFastForwardSetting(e));
-        }}
-        optionsSearch={optionMap}
-        hideArrow
-    />
+        gameState => props.spectatorAndHost ? gameState.host?.fastForward : gameState.fastForward,
+        ["yourVoteFastForwardPhase", "hostData"]
+    ) ?? { type: "none" };
+    return <FastForwardSelect value={fastForward} onChange={setting => {
+        if (props.spectatorAndHost) GAME_MANAGER.sendHostSkipPhase(setting);
+        else GAME_MANAGER.sendVoteFastForwardPhase(setting);
+    }}/>;
 }

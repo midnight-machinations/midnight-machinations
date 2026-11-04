@@ -42,6 +42,7 @@ import { loadSettingsParsed } from "../../../../game/localStorage";
 import { setWikiSearchPage } from "../../../../components/Wiki";
 import { AnchorControllerContext } from "../../../Anchor";
 import { MenuControllerContext } from "../../GameScreen";
+import ChatGroupSelect from "../../../../components/ChatGroupSelect";
 import GraveDeathCausesSelectionMenu from "./ControllerSelectionTypes/GraveDeathCausesSelectionMenu";
 
 type GroupName = `${PlayerIndex}/${Role}` | 
@@ -67,6 +68,7 @@ export function getGroupNameFromControllerID(id: ControllerID): GroupName {
             return "syndicate";
         case "chat":
         case "chatIsBlock":
+        case "chatGroup":
         case "sendChat":
             return "chat";
         case "whisper":
@@ -116,11 +118,6 @@ export default function GenericAbilityMenu(): ReactElement {
         ["yourPlayerIndex"]
     )!;
 
-    const alive = usePlayerState(
-        (playerState, gameState) => gameState.players[playerState.myIndex].alive,
-        ["playerAlive", "yourPlayerIndex"]
-    )!;
-
     const phaseState = useGameState(
         gameState => gameState.phaseState,
         ["phase"]
@@ -133,7 +130,9 @@ export default function GenericAbilityMenu(): ReactElement {
             !controllerIsVisible(controllerID, controller) && 
             !( // Special case: hide judge abilities unless on trial, the backend doesn't do this for us.
                 controllerID.type === "judge" && loadSettingsParsed().headerEnabled === false &&
-                phaseState.type === "judgement" && phaseState.playerOnTrial !== myIndex && alive
+                phaseState.type === "judgement" && phaseState.playerOnTrial !== myIndex &&
+                controllerID.player === myIndex && !controller.parameters.grayedOut &&
+                controller.parameters.allowedPlayers.includes(myIndex)
             )
         ) {
             continue;
@@ -333,6 +332,9 @@ function SwitchSingleAbilityMenuType(props: Readonly<{
     let selected: ControllerSelection = props.selected;
 
     switch(available.type) {
+        case "chatGroup":
+            return <ChatGroupSelect id={id} groups={available.selection.groups}
+                selected={selected.type === "chatGroup" ? selected.selection : null}/>;
         case "unit":
             return <Button
                 onClick={()=>{

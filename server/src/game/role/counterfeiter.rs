@@ -99,7 +99,7 @@ impl RoleStateTrait for Counterfeiter {
             ControllerParametersMap::builder(game)
                 .id(ControllerID::role(actor_ref, Role::Counterfeiter, 1))
                 .single_role_selection_typical(game, |_|true)
-                .default_selection(RoleListSelection(vec!(Role::Counterfeiter)))
+                .default_selection(RoleListSelection(vec![Role::Counterfeiter]))
                 .add_grayed_out_condition(
                     self.forges_remaining == 0 ||
                     actor_ref.ability_deactivated_from_death(game)

@@ -3,6 +3,7 @@ import { GroupPreference, VoiceSession, VoiceSettings } from "./types";
 import { ANCHOR_CONTROLLER } from "../menu/Anchor";
 import translate from "../game/lang";
 import { MicrophoneProcessing } from "./microphoneProcessing";
+import { keybindReleased, matchesKeybind, matchesKeybindModifiers } from "./keybind";
 
 type ConsumerMessage = {
     type: "consumer";
@@ -15,6 +16,8 @@ type ConsumerMessage = {
 type Playback = {
     consumer: types.Consumer;
     element: HTMLAudioElement;
+    source: MediaStreamAudioSourceNode;
+    gain: GainNode;
     peer: number;
     packets: number;
     energy: number;
@@ -78,24 +81,27 @@ export class VoiceManager {
             mode: saved.mode === "pushToTalk" || saved.mode === "toggleMute" || saved.mode === "openMic" ? saved.mode : DEFAULT_SETTINGS.mode,
             key: typeof saved.key === "string" ? saved.key : DEFAULT_SETTINGS.key,
             deviceId: typeof saved.deviceId === "string" ? saved.deviceId : "",
-            volume: typeof saved.volume === "number" && Number.isFinite(saved.volume) ? Math.max(0, Math.min(1, saved.volume)) : 1,
+            volume: typeof saved.volume === "number" && Number.isFinite(saved.volume) ? Math.max(0, Math.min(2, saved.volume)) : 1,
             noiseSuppression: typeof saved.noiseSuppression === "boolean" ? saved.noiseSuppression : DEFAULT_SETTINGS.noiseSuppression,
             thresholdDb: typeof saved.thresholdDb === "number" && Number.isFinite(saved.thresholdDb)
                 ? Math.max(-80, Math.min(0, saved.thresholdDb)) : DEFAULT_SETTINGS.thresholdDb,
         };
         window.addEventListener("keydown", event => {
-            if (event.defaultPrevented || event.isComposing || event.code !== this.settings.key || event.repeat || this.settings.mode === "openMic") return;
+            if (this.heldKey && !matchesKeybindModifiers(this.settings.key, event)) {
+                this.heldKey = false;
+                this.updateMicrophone();
+            }
+            if (event.defaultPrevented || event.isComposing || !matchesKeybind(this.settings.key, event) || event.repeat || this.settings.mode === "openMic") return;
             const target = event.target instanceof Element ? event.target : null;
             // Shared Select searches from a button, including in ability menus.
             if (target?.closest("input, textarea, select, [contenteditable]:not([contenteditable=false]), [role=combobox], [role=textbox], [role=searchbox], .custom-select, .custom-select-options-popover")) return;
-            if (event.ctrlKey || event.metaKey || event.altKey) return;
             event.preventDefault();
             if (this.settings.mode === "toggleMute") { this.toggleSelfMute(); return; }
             this.heldKey = true;
             this.updateMicrophone();
         });
         window.addEventListener("keyup", event => {
-            if (event.code === this.settings.key) { this.heldKey = false; this.updateMicrophone(); }
+            if (this.heldKey && keybindReleased(this.settings.key, event)) { this.heldKey = false; this.updateMicrophone(); }
         });
         window.addEventListener("blur", () => this.releaseTalk());
         document.addEventListener("visibilitychange", () => { if (document.hidden) this.releaseTalk(); });
@@ -157,7 +163,7 @@ export class VoiceManager {
         this.changed();
         // Start during the click so playback works under browser autoplay restrictions.
         // Don't wait for it: Firefox never settles resume() while a Bluetooth headset
-        // is switching to its microphone profile. Remote voices use <audio> elements.
+        // is switching to its microphone profile.
         this.audio ??= new AudioContext({ sampleRate: 48000 });
         const generation = this.generation;
         this.audio.resume().catch(error => this.playbackBlocked(error, generation));
@@ -199,7 +205,6 @@ export class VoiceManager {
     }
     private preferences() {
         return {
-            muted: Object.entries(this.groups).filter(([, value]) => value.muted).map(([group]) => group),
             deafened: Object.entries(this.groups).filter(([, value]) => value.deafened).map(([group]) => group),
         };
     }
@@ -333,8 +338,14 @@ export class VoiceManager {
         element.autoplay = true;
         element.hidden = true;
         element.srcObject = new MediaStream([consumer.track]);
+        element.volume = 0;
         document.body.append(element);
-        this.playbacks.set(consumer.id, { consumer, element, peer: message.sourceId, packets: 0, energy: 0, duration: 0 });
+        // The element drives decoding while Web Audio plays the stream with
+        // gain, allowing master volume above the element's 100% limit.
+        const source = audio.createMediaStreamSource(element.srcObject);
+        const gain = audio.createGain();
+        source.connect(gain).connect(audio.destination);
+        this.playbacks.set(consumer.id, { consumer, element, source, gain, peer: message.sourceId, packets: 0, energy: 0, duration: 0 });
         this.updateVolumes();
         await this.request("consumerReady", { consumerId: consumer.id });
         if (generation !== this.generation) return;
@@ -361,6 +372,7 @@ export class VoiceManager {
         const playback = this.playbacks.get(id);
         if (playback) {
             playback.element.pause(); playback.element.srcObject = null; playback.element.remove();
+            playback.source.disconnect(); playback.gain.disconnect();
             playback.consumer.close(); this.playbacks.delete(id);
             this.speakingUntil.delete(playback.peer);
         }
@@ -454,13 +466,13 @@ export class VoiceManager {
         }
     }
     private updateMicrophone() {
-        const canSpeak = this.session && !this.session.forcedSilenced && this.session.sendGroups.some(group => !this.group(group).muted);
+        const canSpeak = this.session && !this.session.forcedSilenced && this.session.sendGroups.length > 0;
         const talking = Boolean(this.roomEnabled && !this.selfMuted && this.status === "connected" && this.preferencesPending === 0 && this.microphoneEnabled && canSpeak &&
             (this.settings.mode !== "pushToTalk" || this.heldKey || this.heldButton));
         if (this.processing) this.processing.track.enabled = talking;
         if (this.talking !== talking) { this.talking = talking; this.changed(); }
     }
-    group(group: string): GroupPreference { return this.groups[group] ?? { muted: false, deafened: false }; }
+    group(group: string): GroupPreference { return { deafened: this.groups[group]?.deafened === true }; }
     setGroup(group: string, change: Partial<GroupPreference>) {
         this.preferenceRevision++;
         this.groups = { ...this.groups, [group]: { ...this.group(group), ...change } };
@@ -499,7 +511,8 @@ export class VoiceManager {
         for (const playback of this.playbacks.values()) {
             const preference = this.person(playback.peer);
             playback.element.muted = preference.muted || this.preferencesPending > 0;
-            playback.element.volume = Math.max(0, Math.min(1, preference.volume * this.settings.volume));
+            playback.gain.gain.value = playback.element.muted ? 0
+                : Math.max(0, Math.min(1, preference.volume)) * this.settings.volume;
         }
     }
     isSpeaking(id: number | undefined) { return id !== undefined && this.speaking.has(id); }
@@ -542,7 +555,7 @@ export class VoiceManager {
                 if (rms > 0.015) this.speakingUntil.set(this.session.selfId, now + 250);
             } else this.speakingUntil.delete(this.session.selfId);
             await Promise.all([...this.playbacks.values()].map(async playback => {
-                if (playback.element.muted || playback.element.volume === 0 || playback.element.paused) {
+                if (playback.element.muted || playback.gain.gain.value === 0 || playback.element.paused) {
                     this.speakingUntil.delete(playback.peer);
                     return;
                 }

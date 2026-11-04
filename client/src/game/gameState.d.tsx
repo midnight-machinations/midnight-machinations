@@ -3,7 +3,7 @@ import { ChatMessage, ChatMessageIndex } from "../components/ChatMessage";
 import { AbilityID, Role, RoleState } from "./roleState.d";
 import { RoleList } from "./roleListState.d";
 import { LobbyPreviewData } from "./packet";
-import { ChatFilter } from "../menu/game/gameScreenContent/ChatMenu";
+import { ChatFilter } from "./chatFilter";
 import { ControllerID, SavedController } from "./controllerInput";
 import translate from "./lang";
 import ListMap, { ListMapData } from "../ListMap";
@@ -47,6 +47,7 @@ export type LobbyClient = {
 }
 export type ClientConnection = "connected" | "disconnected" | "couldReconnect";
 export type GameClient = {
+    name: UnsafeString,
     clientType: GameClientType,
     connection: ClientConnection,
     host: boolean,
@@ -59,7 +60,8 @@ export type GameClientType = {
     index: number,
 }
 export type LobbyClientType = {
-    type: "spectator"
+    type: "spectator",
+    name: UnsafeString,
 } | PlayerClientType;
 export type PlayerClientType = {
     type: "player",
@@ -97,6 +99,7 @@ type GameState = {
 
     clientState: PlayerGameState | {type: "spectator"},
     host: null | {
+        fastForward: FastForwardSetting,
         clients: ListMap<LobbyClientID, GameClient>
     },
 

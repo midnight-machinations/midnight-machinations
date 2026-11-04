@@ -103,3 +103,14 @@
 .user-settings-menu { width: min(70rem, 90vw); }
 .user-settings-menu > main.settings-menu > div { flex-basis: 17rem; min-width: 0; }
 .settings-voice-column .voice-menu { width: 100%; box-sizing: border-box; }
+
+.host-settings-menu {
+    width: min(52rem, 90vw);
+}
+
+.host-settings-menu > main > section {
+    flex: 1 1 17rem;
+    min-width: 0;
+    max-width: 100%;
+    height: auto;
+}

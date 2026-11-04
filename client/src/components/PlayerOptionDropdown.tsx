@@ -4,6 +4,7 @@ import translate from "../game/lang"
 import { PlayerIndex } from "../game/gameState.d"
 import { useGameState } from "./useHooks"
 import StyledText from "./StyledText"
+import { encodeString } from "./ChatMessage"
 import Select, { SelectOptionsSearch } from "./Select"
 
 /// A dropdown menu for selecting a player.
@@ -32,7 +33,7 @@ export default function PlayerOptionDropdown(props: {
             props.choosablePlayers === undefined ||
             props.choosablePlayers.includes(index)
         ){
-            optionMap.set(index, [<StyledText noLinks={true}>{name.toString()}</StyledText>, name]);
+            optionMap.set(index, [<StyledText noLinks={true}>{encodeString(name)}</StyledText>, name]);
         }
     }
 

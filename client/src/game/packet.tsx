@@ -25,6 +25,7 @@ export type ToClientPacket = {
     type: "pong",
 } | {
     type: "hostData",
+    fastForward: FastForwardSetting,
     clients: ListMapData<LobbyClientID, GameClient>
 } | {
     type: "rateLimitExceeded",
@@ -297,6 +298,7 @@ export type ToServerPacket = {
     type: "hostForceEndGame",
 } | {
     type: "hostForceSkipPhase",
+    fastForward: FastForwardSetting,
 } | {
     type: "hostForceSetPlayerName",
     id: number,

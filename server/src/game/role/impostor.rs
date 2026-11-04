@@ -36,7 +36,7 @@ impl RoleStateTrait for Impostor {
             ControllerParametersMap::builder(game)
                 .id(ControllerID::role(actor_ref, Role::Impostor, 1))
                 .single_role_selection_typical(game, |_|true)
-                .default_selection(RoleListSelection(vec!(Role::Impostor)))
+                .default_selection(RoleListSelection(vec![Role::Impostor]))
                 .add_grayed_out_condition(actor_ref.ability_deactivated_from_death(game))
                 .allow_players([actor_ref])
                 .build_map()

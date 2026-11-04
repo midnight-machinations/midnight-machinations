@@ -1,4 +1,3 @@
-import SpeakingIndicator from "../../../voice/SpeakingIndicator";
 import { useVoicePlayer } from "../../../voice/playerList";
 import React, { ReactElement, useCallback, useMemo } from "react";
 import translate from "../../../game/lang";
@@ -231,7 +230,6 @@ function PlayerCard(props: Readonly<{
         </div>
         
         <div className="player-card-buttons">
-            {voice.showMuteButton && <SpeakingIndicator className="flush" playerIndex={props.playerIndex}/>}
             {
                 phaseState.type === "nomination" && playerAlive && (
                     spectator ? (
@@ -277,7 +275,7 @@ function PlayerCard(props: Readonly<{
                     className="filter flush"
                     highlighted={isFilterSet}
                     onClick={() => {
-                        GAME_MANAGER.updateChatFilter(isFilterSet ? null : filter);
+                        GAME_MANAGER.updateChatFilter(isFilterSet ? null : { type: "playerNameInMessage", player: filter });
                         return true;
                     }}
                     pressedChildren={result => <Icon>{result ? "done" : "warning"}</Icon>}

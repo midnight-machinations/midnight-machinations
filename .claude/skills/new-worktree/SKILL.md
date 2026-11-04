@@ -28,10 +28,10 @@ The client and server each have to be started from their own directory in the wo
 ```bash
 cd <path>/server && cargo run           # serves on the worktree's server port
 cd <path>/client && pnpm dev --no-open  # serves on the worktree's client port
-cd <path>/voice && npm ci && npm start  # only on branches with voice/; serves on the worktree's voice ports
+cd <path>/voice && pnpm install --frozen-lockfile && pnpm start  # only on branches with voice/; serves on the worktree's voice ports
 ```
 
-- If `npm ci` warns that mediasoup's install script was blocked, the media worker isn't installed and `npm start` fails. Ask the user before running `npm install-scripts approve mediasoup` and `npm ci` again, because that runs mediasoup's install code.
+- The voice package approves mediasoup's native worker build in `voice/pnpm-workspace.yaml`. If installation fails, inspect its build output and the prerequisites in `voice/README.md`.
 
 - Start the server too, not only the client. The worktree's client connects only to its own server port, so it won't reach a server running from another checkout. If the page can't connect, check that this worktree's server is running and that it logged `Started listening on 0.0.0.0:<server port>`.
 - Don't run `cargo run` from the worktree root (for example with `--manifest-path`). From there, the server doesn't read `server/.env.local`.

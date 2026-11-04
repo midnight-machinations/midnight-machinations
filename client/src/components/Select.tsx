@@ -9,7 +9,9 @@ export type SelectOptionsNoSearch<K extends { toString(): string}> = Map<K, Reac
 export type SelectOptionsSearch<K extends { toString(): string}> = Map<K, [React.ReactNode, string]>;
 
 export default function Select<K extends { toString(): string}>(props: Readonly<{
-    value: K,
+    value: K | null,
+    placeholder?: React.ReactNode,
+    ariaLabel?: string,
     disabled?: boolean,
     className?: string,
     onChange?: (value: K)=>void,
@@ -104,8 +106,8 @@ export default function Select<K extends { toString(): string}>(props: Readonly<
 
     const ref = useRef<HTMLButtonElement>(null);
 
-    const value = optionsSearch.get(props.value);
-    if(value === undefined) {
+    const value = props.value === null ? undefined : optionsSearch.get(props.value);
+    if(value === undefined && props.value !== null) {
         console.error(`Value not found in options ${props.value}`);
     }
 
@@ -113,6 +115,7 @@ export default function Select<K extends { toString(): string}>(props: Readonly<
         <RawButton
             ref={ref}
             disabled={props.disabled}
+            aria-label={props.ariaLabel}
             onClick={()=>{handleSetOpen(!open)}}
             className={"custom-select "+(props.className?props.className:"")}
             onKeyDown={(e)=>{
@@ -131,7 +134,7 @@ export default function Select<K extends { toString(): string}>(props: Readonly<
             {props.hideArrow !== true && (open === true ? 
                 <Icon>keyboard_arrow_up</Icon> :
                 <Icon>keyboard_arrow_down</Icon>)}
-            {value !== undefined?value[0]:props.value.toString()}
+            {value !== undefined ? value[0] : props.placeholder ?? props.value?.toString()}
         </RawButton>
         <Popover className="custom-select-options-popover"
             open={open}
