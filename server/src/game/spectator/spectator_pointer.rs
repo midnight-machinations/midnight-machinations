@@ -35,6 +35,9 @@ impl SpectatorPointer {
     pub fn connection(&self, game: &Game) -> ClientConnection {
         self.deref(game).map(|s|s.connection.clone()).unwrap_or(ClientConnection::Disconnected)
     }
+    pub fn name(&self, game: &Game) -> String {
+        self.deref(game).map(|s|s.name.clone()).unwrap_or_default()
+    }
 
     pub fn is_connected(&self, game: &Game) -> bool {
         matches!(self.connection(game), ClientConnection::Connected(..))
