@@ -116,7 +116,7 @@ impl WebsocketListener {
                                     )
                                 }
                                 GameClientLocation::Spectator(spectator) => (
-                                    spectator.deref(game).expect("Existing spectator").name.clone(),
+                                    spectator.name(game),
                                     None,
                                     vec![],
                                     vec!["all".to_owned()],
