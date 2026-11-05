@@ -554,8 +554,8 @@ export class VoiceManager {
      * where opening the microphone triggers the switch: the AudioContext's clock
      * stops even though its state may still say running, so remote voices are
      * silent and the microphone sends nothing. The page can't recover the stream,
-     * and reopening the microphone switches the headset again, so explain how to
-     * avoid the switch instead.
+     * and reopening the microphone switches the headset again. Reloading the page
+     * once the headset has switched works, so tell the player to do that.
      */
     private checkAudioRunning() {
         const audio = this.audio;
