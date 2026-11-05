@@ -86,7 +86,7 @@ impl RoleStateTrait for PropMaster {
         ControllerParametersMap::combine([
             ControllerParametersMap::builder(game)
                 .id(ControllerID::role(actor_ref, Role::PropMaster, 0))
-                .single_player_selection_typical(actor_ref, false, false)
+                .single_player_selection_typical(actor_ref, false, true)
                 .night_typical(actor_ref)
                 .add_grayed_out_condition(
                     Prop::Holding != self.prop
@@ -194,7 +194,7 @@ impl PropMaster {
         if
             let Prop::Set { target } = self.prop &&
             (
-                InsiderGroupID::in_same_group(game, actor_ref, target) ||
+                // InsiderGroupID::in_same_group(game, actor_ref, target) ||
                 !target.alive(game) ||
                 actor_ref == target
             )

@@ -22,7 +22,7 @@ impl RoleStateTrait for Pyrotechnician {
         ControllerParametersMap::combine([
             ControllerParametersMap::builder(game)
                 .id(ControllerID::role(actor_ref, Role::Pyrotechnician, 0))
-                .single_player_selection_typical(actor_ref, false, false)
+                .single_player_selection_typical(actor_ref, false, true)
                 .night_typical(actor_ref)
                 .build_map(),
             ControllerParametersMap::builder(game)

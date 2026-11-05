@@ -20,7 +20,7 @@ impl RoleStateTrait for Framer {
     fn controller_parameters_map(self, game: &Game, actor_ref: PlayerReference) -> ControllerParametersMap {
         ControllerParametersMap::builder(game)
             .id(ControllerID::role(actor_ref, Role::Framer, 0))
-            .single_player_selection_typical(actor_ref, false, false)
+            .single_player_selection_typical(actor_ref, false, true)
             .night_typical(actor_ref)
             .build_map()
     }

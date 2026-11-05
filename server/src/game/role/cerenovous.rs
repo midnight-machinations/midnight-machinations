@@ -49,7 +49,7 @@ impl RoleStateTrait for Cerenovous {
                         .filter(|player|
                             player.alive(game) && 
                             *player != actor_ref &&
-                            !InsiderGroupID::in_same_group(game, actor_ref, *player) &&
+                            // !InsiderGroupID::in_same_group(game, actor_ref, *player) &&
                             Some(*player) != self.previous
                         )
                         .collect(),

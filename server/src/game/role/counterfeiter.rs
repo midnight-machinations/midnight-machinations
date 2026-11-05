@@ -91,7 +91,7 @@ impl RoleStateTrait for Counterfeiter {
         ControllerParametersMap::combine([
             ControllerParametersMap::builder(game)
                 .id(ControllerID::role(actor_ref, Role::Counterfeiter, 0))
-                .single_player_selection_typical(actor_ref, false, false)
+                .single_player_selection_typical(actor_ref, chose_no_forge(game, actor_ref), true)
                 .night_typical(actor_ref)
                 .add_grayed_out_condition(game.day_number() <= 1)
                 .build_map(),
