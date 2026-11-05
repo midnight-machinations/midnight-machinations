@@ -47,10 +47,10 @@ impl RoleStateTrait for Cerenovous {
                 .available_selection(AvailablePlayerListSelection {
                     available_players: PlayerReference::all_players(game)
                         .filter(|player|
-                            !(!player.alive(game) || 
-                            *player == actor_ref ||
-                            InsiderGroupID::in_same_group(game, actor_ref, *player) ||
-                            Some(*player) == self.previous)
+                            player.alive(game) && 
+                            *player != actor_ref &&
+                            !InsiderGroupID::in_same_group(game, actor_ref, *player) &&
+                            Some(*player) != self.previous
                         )
                         .collect(),
                     can_choose_duplicates: false,
