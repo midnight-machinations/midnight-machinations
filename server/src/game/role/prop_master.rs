@@ -148,15 +148,26 @@ impl RoleStateTrait for PropMaster {
         
         if self.has_prop(grave.deref(game).player) {
             let mut grave = grave_ref.deref(game).clone();
+
+
             *grave_ref.deref_mut(game) = match grave.information {
                 GraveInformation::Normal{role, alibi, death_causes, calling_cards} => {
+
+                    let new_death_causes = ControllerID::role(actor_ref, Role::PropMaster, 2)
+                        .get_grave_death_causes_selection(game)
+                        .map(|selection| selection.0.clone());
+
+                    if new_death_causes.is_none() {
+                        return;
+                    }
+                    if let Some(new_death_causes) = new_death_causes && new_death_causes.is_empty() {
+                        return;
+                    }
+
                     grave.information = GraveInformation::Normal{
                         role,
                         alibi,
-                        death_causes: ControllerID::role(actor_ref, Role::PropMaster, 2)
-                            .get_grave_death_causes_selection(game)
-                            .map(|selection| selection.0.clone())
-                            .unwrap_or(death_causes),
+                        death_causes,
                         calling_cards
                     };
                     grave
