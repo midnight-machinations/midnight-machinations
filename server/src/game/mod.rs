@@ -388,7 +388,7 @@ impl Game {
                 (*id, HostDataPacketGameClient {
                     name: match client.client_location {
                         GameClientLocation::Player(player) => player.name(self).clone(),
-                        GameClientLocation::Spectator(spectator) => spectator.deref(self).expect("Existing spectator").name.clone(),
+                        GameClientLocation::Spectator(spectator) => spectator.name(self),
                     },
                     client_type: client.client_location.clone(),
                     connection: match client.client_location {

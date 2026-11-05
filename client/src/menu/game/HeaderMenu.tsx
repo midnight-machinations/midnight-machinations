@@ -178,6 +178,9 @@ export function PhaseSpecificInformation(props: Readonly<{
             {(!spectator && props.phaseState.type === "judgement")?<div className="judgement-info">
                 {
                     (props.phaseState.playerOnTrial === props.myIndex)?<StyledText noLinks={true}>{translate("judgement.cannotVote.onTrial")}</StyledText>:
+                    (!props.players[props.myIndex!]?.alive && !controllers.some(([id, controller])=>
+                        id.type === "judge" && id.player === props.myIndex && !controller.parameters.grayedOut
+                    ))?<StyledText noLinks={true}>{translate("judgement.cannotVote.dead")}</StyledText>:
                     controllers.map(([id, controller])=>{
                         if(
                             id.type !== "judge" ||

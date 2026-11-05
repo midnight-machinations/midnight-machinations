@@ -66,7 +66,7 @@ impl LobbyClient {
                 LobbyClient{
                     connection: spectator.connection(game),
                     ready: if game_client.host { Ready::Host } else { Ready::Ready },
-                    client_type: LobbyClientType::Spectator { name: spectator.deref(game).expect("Existing spectator").name.clone() },
+                    client_type: LobbyClientType::Spectator { name: spectator.name(game) },
                     last_message_times: VecDeque::new()
                 }
             }

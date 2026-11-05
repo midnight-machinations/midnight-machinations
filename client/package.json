@@ -36,6 +36,7 @@
     "start": "vite",
     "dev": "vite",
     "build": "tsc && vite build",
+    "test": "node --test tests/*.test.cjs",
     "test:mobile-swipe": "node --test tests/mobileSwipe.test.cjs",
     "test:voice-keybind": "node --test tests/voiceKeybind.test.cjs",
     "test:chat-group": "node --test tests/chatGroupSelect.test.cjs",
