@@ -74,6 +74,8 @@ export class VoiceManager {
     // Automatic retries repeat the same failure; only the first one pops up an error card.
     private lastWarning = "";
     private sentPackets?: { producer: types.Producer; count: number };
+    private stuckAudioChecks = 0;
+    private lastAudioTime?: { audio: AudioContext; time: number };
 
     constructor() {
         const saved = readStorage<Partial<VoiceSettings>>("voiceSettings", {});
@@ -108,6 +110,7 @@ export class VoiceManager {
         window.addEventListener("pagehide", () => this.leave());
         window.setInterval(() => void this.updateSpeaking(), 100);
         window.setInterval(() => void this.checkMicrophoneFlow(), 5000);
+        window.setInterval(() => this.checkAudioRunning(), 1000);
     }
     subscribe = (listener: () => void) => { this.listeners.add(listener); return () => { this.listeners.delete(listener); }; };
     getRevision = () => this.revision;
@@ -159,6 +162,7 @@ export class VoiceManager {
         this.wantConnected = true;
         this.selfMuted = true;
         this.lastWarning = "";
+        this.stuckAudioChecks = 0;
         this.status = "connecting";
         this.changed();
         // Start during the click so playback works under browser autoplay restrictions.
@@ -525,6 +529,8 @@ export class VoiceManager {
     private async checkMicrophoneFlow() {
         const producer = this.producer;
         if (!producer || this.status !== "connected" || !this.microphoneEnabled) { this.sentPackets = undefined; return; }
+        // A stuck audio context stalls the microphone too; keep its more specific warning.
+        if (this.error === "voice.error.stuckAudio") return;
         let count = 0;
         try {
             for (const stat of (await producer.getStats()).values()) {
@@ -539,6 +545,35 @@ export class VoiceManager {
             this.changed();
         } else if (this.error === "voice.error.silentMicrophone") {
             this.error = "";
+            this.changed();
+        }
+    }
+    /**
+     * Audio streams that a browser opens while a Bluetooth headset switches to its
+     * microphone profile can stay stuck for good. Seen with Firefox on PipeWire,
+     * where opening the microphone triggers the switch: the AudioContext's clock
+     * stops even though its state may still say running, so remote voices are
+     * silent and the microphone sends nothing. The page can't recover the stream,
+     * and reopening the microphone switches the headset again, so explain how to
+     * avoid the switch instead.
+     */
+    private checkAudioRunning() {
+        const audio = this.audio;
+        if (!audio || !this.wantConnected || audio.state === "closed") {
+            this.stuckAudioChecks = 0;
+            return;
+        }
+        const time = audio.currentTime;
+        const advanced = this.lastAudioTime?.audio !== audio || time > this.lastAudioTime.time;
+        this.lastAudioTime = { audio, time };
+        if (audio.state === "running" && advanced) {
+            this.stuckAudioChecks = 0;
+            if (this.error === "voice.error.stuckAudio") { this.error = ""; this.changed(); }
+            return;
+        }
+        if (++this.stuckAudioChecks === 3) {
+            console.warn(`Voice audio context is stuck (state ${audio.state}, time ${time})`);
+            this.setError("voice.error.stuckAudio");
             this.changed();
         }
     }

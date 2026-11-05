@@ -1905,6 +1905,7 @@
     "voice.error.microphone": "Could not open the microphone. Check browser permissions and the selected device.",
     "voice.error.playback": "Could not start audio playback. Try joining voice again.",
     "voice.error.silentMicrophone": "Your microphone isn't producing any audio. If you're using a Bluetooth headset, try reconnecting it.",
+    "voice.error.stuckAudio": "Your browser's audio stopped working, so voice can't play or send sound. This usually happens when a Bluetooth headset switches to headset mode as you join. In your system sound settings, set the headset to its Headset (HSP/HFP) profile, then reload the page and join voice again.",
     "chatGroup.all.name": "All",
     "chatGroup.dead.name": "Dead",
     "chatGroup.jail.name": "Jail",
