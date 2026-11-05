@@ -89,9 +89,9 @@ impl Mafia{
         {
             let attackable_players = PlayerReference::all_players(game)
                 .filter(|p|
-                    !InsiderGroupID::Mafia.contains_player(game, *p) &&
-                    p.alive(game) &&
-                    *p != *backup
+                    // !InsiderGroupID::Mafia.contains_player(game, *p) &&
+                    p.alive(game)
+                    // *p != *backup
                 )
                 .collect::<VecSet<_>>();
 
