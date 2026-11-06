@@ -156,6 +156,34 @@ for crate in server server/wasm server/proto tools/gen; do (cd "$crate" && cargo
 pnpm exec biome format --write .
 ```
 
+## e2e
+
+> Playwright browser tests in e2e/. They start the client dev server themselves unless one is already running
+
+### e2e install
+
+> Download the Chromium browser Playwright drives (once per machine)
+
+```sh
+pnpm exec playwright install chromium
+```
+
+### e2e test
+
+> Run the browser tests
+
+**OPTIONS**
+* ui
+    * flags: --ui
+    * desc: Open Playwright's UI mode instead of running headless
+* headed
+    * flags: --headed
+    * desc: Show the browser while the tests run
+
+```sh
+pnpm exec playwright test --pass-with-no-tests ${ui:+--ui} ${headed:+--headed}
+```
+
 ## deploy
 
 > Deployment tasks live in deploy/{server,voice,client}/maskfile.md

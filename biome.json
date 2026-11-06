@@ -12,6 +12,8 @@
       "voice/src/**",
       "voice/test/**",
       "server/worker/*.ts",
+      "e2e/**",
+      "playwright.config.ts",
       "!client/src/gen",
       "!**/node_modules",
       "!**/target"

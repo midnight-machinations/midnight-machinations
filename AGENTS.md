@@ -19,9 +19,19 @@ mask setup          # install dependencies and generate local settings (mask con
 mask start          # client, server, and voice together
 mask check          # cargo clippy, cargo test, and pnpm build
 mask lint           # biome and clippy suggestions (advisory, never blocks)
+mask e2e test       # Playwright browser tests in e2e/ (first time: mask e2e install)
 ```
 
 After making changes, run `mask server clippy` / `mask server test` for server changes and `mask client build` for client changes, or `mask check` for both. Use pnpm, never npm, for JavaScript dependencies.
+
+## Git hooks
+
+Husky's pre-commit hook (`.husky/pre-commit`) prints Biome, clippy, and buf suggestions for the staged files. It never blocks a commit, so read its output and act on it.
+
+## Browser testing
+
+- Anytime you do a browser test, create a Playwright test after verifying with the human in the loop.
+- Playwright tests live in `e2e/` as `*.spec.ts` files, and `playwright.config.ts` starts the client dev server for them.
 
 ## Configuration
 

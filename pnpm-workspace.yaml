@@ -12,3 +12,6 @@ minimumReleaseAgeExclude:
   - '@biomejs/cli-linux-x64@2.6.6'
   - '@biomejs/cli-win32-arm64@2.6.6'
   - '@biomejs/cli-win32-x64@2.6.6'
+  - '@playwright/test@1.65.0'
+  - playwright-core@1.65.0
+  - playwright@1.65.0
