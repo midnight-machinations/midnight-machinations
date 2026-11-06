@@ -35,6 +35,9 @@ impl SpectatorPointer {
     pub fn connection(&self, game: &Game) -> ClientConnection {
         self.deref(game).map(|s|s.connection.clone()).unwrap_or(ClientConnection::Disconnected)
     }
+    pub fn name(&self, game: &Game) -> String {
+        self.deref(game).map(|s|s.name.clone()).unwrap_or_default()
+    }
 
     pub fn is_connected(&self, game: &Game) -> bool {
         matches!(self.connection(game), ClientConnection::Connected(..))
@@ -178,10 +181,9 @@ impl Iterator for SpectatorPointerIterator {
             None
         } else {
             let ret = SpectatorPointer::new(self.current);
-            if let Some(new) = self.current.checked_add(1) {
+            {
+                let new = self.current.checked_add(1)?;
                 self.current = new;
-            } else {
-                return None
             }
             Some(ret)
         }

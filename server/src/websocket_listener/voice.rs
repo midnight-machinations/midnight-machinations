@@ -6,7 +6,6 @@ use crate::{
     game::{
         abilities::role_abilities::RoleAbility,
         abilities_component::{Abilities, ability::Ability},
-        chat::PlayerChatGroups,
         components::silenced::Silenced,
         game_client::GameClientLocation,
         role::RoleState,
@@ -64,7 +63,7 @@ impl WebsocketListener {
                             id: *id,
                             name: match &client.client_type {
                                 LobbyClientType::Player { name } => name.clone(),
-                                LobbyClientType::Spectator => format!("Spectator {id}"),
+                                LobbyClientType::Spectator { name } => name.clone(),
                             },
                             player_index: None,
                             in_voice: bridge.in_voice(&scope, *id),
@@ -81,8 +80,7 @@ impl WebsocketListener {
                     }
                 }
                 Room::Game(game) => {
-                    let send = PlayerChatGroups::compute_send_map(game);
-                    let receive = PlayerChatGroups::receive_player_chat_group_map(game);
+                    let receive = crate::game::chat::PlayerChatGroups::receive_player_chat_group_map(game);
                     for (id, client) in game.clients.iter() {
                         let (name, index, sends, receives, silenced, connection) =
                             match client.client_location {
@@ -107,14 +105,18 @@ impl WebsocketListener {
                                     (
                                         player.name(game).clone(),
                                         Some(player.index()),
-                                        if silenced { vec![] } else { groups(&send) },
+                                        if silenced { vec![] } else {
+                                            player.selected_send_chat_group(game).into_iter()
+                                                .filter_map(|group| serde_json::to_value(group).ok()?.as_str().map(str::to_owned))
+                                                .collect()
+                                        },
                                         groups(&receive),
                                         silenced,
                                         player.connection(game).clone(),
                                     )
                                 }
                                 GameClientLocation::Spectator(spectator) => (
-                                    format!("Spectator {id}"),
+                                    spectator.name(game),
                                     None,
                                     vec![],
                                     vec!["all".to_owned()],

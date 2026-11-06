@@ -84,7 +84,7 @@ impl PlayerReference{
         messages.sort();
 
         let night_messages = messages.iter()
-            .map(|msg|ChatMessage::new_private(msg.clone()));
+            .map(|msg|ChatMessage::new_night_result(msg.clone()));
         // if less feedback is enabled, filter out messages that should be blocked, I do this in 2 places, once here just for the nightMessages packet
         let night_messages =
         if game.modifier_settings().is_enabled(ModifierID::LessFeedback) {
@@ -97,7 +97,9 @@ impl PlayerReference{
         };
 
         self.send_packet(game, ToClientPacket::NightMessages { chat_messages: night_messages });
-        self.add_private_chat_messages(game, messages);
+        for message in messages {
+            self.add_chat_message(game, ChatMessage::new_night_result(message));
+        }
     }
 
     pub fn chosen_vote(&self, game: &Game) -> Option<PlayerReference> {

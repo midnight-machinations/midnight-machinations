@@ -4,12 +4,12 @@ import GraveyardMenu from "./gameScreenContent/GraveyardMenu";
 import ChatMenu from "./gameScreenContent/ChatMenu";
 import PlayerListMenu from "./gameScreenContent/PlayerListMenu";
 import WillMenu from "./gameScreenContent/WillMenu";
-import GAME_MANAGER, { DEV_ENV, modulus, Theme } from "../..";
+import GAME_MANAGER, { DEV_ENV, Theme } from "../..";
 import WikiMenu from "./gameScreenContent/WikiMenu";
 import "../../index.css";
 import "./gameScreen.css";
 import AbilityMenu from "./gameScreenContent/AbilityMenu/AbilityMenu";
-import { addSwipeEventListener, MobileContext, removeSwipeEventListener } from "../Anchor";
+import { MobileContext } from "../Anchor";
 import StyledText from "../../components/StyledText";
 import Icon from "../../components/Icon";
 import { Button } from "../../components/Button";
@@ -17,6 +17,7 @@ import translate from "../../game/lang";
 import { useGameState } from "../../components/useHooks";
 import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
 import { loadSettingsParsed } from "../../game/localStorage";
+import { getNextSwipeMenu, useMenuSwipe } from "./useMenuSwipe";
 
 export enum ContentMenu {
     ChatMenu = "ChatMenu",
@@ -54,7 +55,6 @@ export const MENU_TRANSLATION_KEYS: Record<ContentMenu, string> = {
     [ContentMenu.WikiMenu]: "menu.wiki"
 }
 
-const ALL_CONTENT_MENUS = Object.values(ContentMenu);
 
 export interface MenuController {
     closeOrOpenMenu(menu: ContentMenu): void;
@@ -88,29 +88,19 @@ export function useMenuController<C extends Partial<Record<ContentMenu, boolean>
     }, [contentMenus])
 
     const initializeMenuController = useCallback(() => {
-        function setAndGetContentMenus(menu: ContentMenu, open: boolean): C {
-            const newMenus = {...contentMenus};
-
-            if (newMenus[menu] === undefined) {
-                console.log(`This screen does not have a ${menu} menu.`);
-                return newMenus;
-            } else {
-                newMenus[menu] = open;
-            }
-
-            return newMenus;
-        }
-
         function setContentMenu(menu: ContentMenu, open: boolean) {
-            const newMenus = setAndGetContentMenus(menu, open)
-
-            const menusOpen = getMenuController().menusOpen();
-            if(menusOpen.length + 1 > maxContent && menusOpen.length > 0 && open) {
-                const menuToClose = menusOpen[menusOpen.length - 1];
-                newMenus[menuToClose] = false;
-            }
-
-            setContentMenus(newMenus);
+            setContentMenus(previous => {
+                if (previous[menu] === undefined) return previous;
+                const newMenus = { ...previous };
+                newMenus[menu] = open;
+                const menusOpen = Object.entries(previous)
+                    .filter(([other, isOpen]) => isOpen && other !== menu)
+                    .map(([other]) => other as ContentMenu);
+                if (open && menusOpen.length >= maxContent) {
+                    newMenus[menusOpen[menusOpen.length - 1]] = false;
+                }
+                return newMenus;
+            });
         }
 
         setMenuController({
@@ -218,34 +208,6 @@ export default function GameScreen(): ReactElement {
         return () => window.removeEventListener("beforeunload", onBeforeUnload);
     }, [])
 
-    useEffect(() => {
-        const swipeEventListener = (right: boolean) => {
-            // Close the furthest right menu, open the next one to the left or right
-            
-            const menusOpen = menuController.menusOpen();
-            if (menusOpen.length === 0) {
-                return;
-            }
-
-            const allowedMenus = ALL_CONTENT_MENUS.filter(menu => { 
-                return !menusOpen.includes(menu) && menuController.menus().includes(menu)
-            });
-
-            const rightMostMenu = menusOpen[menusOpen.length - 1];
-            const index = ALL_CONTENT_MENUS.indexOf(rightMostMenu);
-            let nextMenu = ALL_CONTENT_MENUS[modulus(index + (right ? -1 : 1), ALL_CONTENT_MENUS.length)];
-            while (!allowedMenus.includes(nextMenu)) {
-                nextMenu = ALL_CONTENT_MENUS[modulus(ALL_CONTENT_MENUS.indexOf(nextMenu) + (right ? -1 : 1), ALL_CONTENT_MENUS.length)];
-            }
-
-            menuController.closeMenu(rightMostMenu);
-            menuController.openMenu(nextMenu);
-        }
-
-        addSwipeEventListener(swipeEventListener);
-        return () => removeSwipeEventListener(swipeEventListener);
-    })
-
     return <MenuControllerContext.Provider value={menuController}>
         <div className="game-screen">
             <div className="header">
@@ -261,6 +223,15 @@ export function GameScreenMenus(): ReactElement {
     const menuController = useContext(MenuControllerContext)!;
     const minSize = 10; // Percentage
     const mobile = useContext(MobileContext)!;
+    const swipeHandlers = useMenuSwipe(mobile, right => {
+        const open = menuController.menusOpen().filter(menu => menuController.canOpen(menu));
+        const next = getNextSwipeMenu(
+            menuController.menus().filter(menu => menuController.canOpen(menu)), open, right
+        );
+        if (next === undefined) return;
+        menuController.closeMenu(open[open.length - 1]);
+        menuController.openMenu(next);
+    });
 
     // These don't add up to 100, but the panel group will fix it
     const defaultSizes = {
@@ -286,34 +257,36 @@ export function GameScreenMenus(): ReactElement {
             return true;
         });
 
-    return <PanelGroup direction="horizontal" className="content">
-        {visibleMenus
-            .flatMap((menu, index) => {
-                const MenuElement = MENU_ELEMENTS[menu];
+    return <div className="game-menu-swipe-container" {...swipeHandlers}>
+        <PanelGroup direction="horizontal" className="content">
+            {visibleMenus
+                .flatMap((menu, index) => {
+                    const MenuElement = MENU_ELEMENTS[menu];
 
-                const out = [<Panel
-                    id={menu}
-                    order={index}
-                    className="panel"
-                    minSize={minSize}
-                    defaultSize={mobile===false?defaultSizes[menu]:undefined}
-                    key={`${menu}.panel`}
-                >
-                    <MenuElement />
-                </Panel>];
+                    const out = [<Panel
+                        id={menu}
+                        order={index}
+                        className="panel"
+                        minSize={minSize}
+                        defaultSize={mobile===false?defaultSizes[menu]:undefined}
+                        key={`${menu}.panel`}
+                    >
+                        <MenuElement />
+                    </Panel>];
 
-                if(!mobile && visibleMenus.length > index + 1){
-                    const nextMenu = visibleMenus[index + 1];
-                    out.push(<PanelResizeHandle key={`${menu}.and.${nextMenu}.handle`} className="panel-handle"/>)
-                }
-                return out;
+                    if(!mobile && visibleMenus.length > index + 1){
+                        const nextMenu = visibleMenus[index + 1];
+                        out.push(<PanelResizeHandle key={`${menu}.and.${nextMenu}.handle`} className="panel-handle"/>)
+                    }
+                    return out;
 
-            })
-        }
-        {visibleMenus.length === 0 && <Panel><div className="no-content">
-            {translate("menu.gameScreen.noContent")}
-        </div></Panel>}
-    </PanelGroup>
+                })
+            }
+            {visibleMenus.length === 0 && <Panel><div className="no-content">
+                <StyledText noLinks={true}>{translate("menu.gameScreen.noContent")}</StyledText>
+            </div></Panel>}
+        </PanelGroup>
+    </div>
 }
 
 export function ContentTab(props: Readonly<{

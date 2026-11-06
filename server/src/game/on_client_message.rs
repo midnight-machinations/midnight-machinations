@@ -23,43 +23,53 @@ pub enum GameClientMessageResult {
 }
 
 impl Game {
-    #[expect(clippy::match_single_binding, unused, reason="Surely spectators will do something in the future")]
     pub fn on_spectator_message(&mut self, sender_ref: SpectatorPointer, incoming_packet: ToServerPacket){
-        match incoming_packet {
-            _ => {}
+        if let ToServerPacket::SetName { name } = incoming_packet {
+            self.set_spectator_name(sender_ref, name);
         }
     }
     
     pub fn on_client_message(&mut self, _: &ClientSender, room_client_id: RoomClientID, incoming_packet: ToServerPacket) -> GameClientMessageResult {
-        if let Some(client) = self.clients.get(&room_client_id) {
-            match client.client_location {
-                GameClientLocation::Player(player) => {
-                    self.on_player_message(room_client_id, player, incoming_packet)
-                }
-                GameClientLocation::Spectator(spectator) => {
-                    self.on_spectator_message(spectator, incoming_packet);
-                    GameClientMessageResult::None
-                }
-            }
-        } else {
+        let Some(client) = self.clients.get(&room_client_id) else {
             log!(error "Game"; "Received message from invalid client id: {}", room_client_id);
-            GameClientMessageResult::None
+            return GameClientMessageResult::None;
+        };
+        let client_location = client.client_location.clone();
+
+        let incoming_packet = match self.on_host_message(room_client_id, incoming_packet) {
+            Ok(GameClientMessageResult::None) => {
+                self.send_repeating_data_to_all();
+                return GameClientMessageResult::None;
+            }
+            Ok(result) => return result,
+            Err(packet) => packet,
+        };
+
+        match client_location {
+            GameClientLocation::Player(player) => {
+                self.on_player_message(room_client_id, player, incoming_packet)
+            }
+            GameClientLocation::Spectator(spectator) => {
+                self.on_spectator_message(spectator, incoming_packet);
+                GameClientMessageResult::None
+            }
         }
     }
 
-    pub fn on_player_message(&mut self, room_client_id: RoomClientID, sender_player_ref: PlayerReference, incoming_packet: ToServerPacket) -> GameClientMessageResult {
-        'packet_match: {match incoming_packet {
-            ToServerPacket::Leave => {
-                if let RemoveRoomClientResult::RoomShouldClose = self.remove_client(room_client_id) {
-                    return GameClientMessageResult::Close;
-                }
-            },
+    /// Handles host commands from players and spectators alike, so a host who is spectating can still run the game.
+    /// Returns the packet back if it isn't a host command.
+    fn on_host_message(&mut self, room_client_id: RoomClientID, incoming_packet: ToServerPacket) -> Result<GameClientMessageResult, ToServerPacket> {
+        let Some(client) = self.clients.get(&room_client_id) else {return Ok(GameClientMessageResult::None)};
+        let is_host = client.host;
+        let client_location = client.client_location.clone();
+
+        match incoming_packet {
             ToServerPacket::HostForceBackToLobby => {
-                if let Some(player) = self.clients.get(&room_client_id) && !player.host {break 'packet_match}
+                if !is_host {return Ok(GameClientMessageResult::None)}
 
                 self.settings.role_list.simplify();
                 let role_list = self.settings.role_list.clone();
-                
+
                 self.send_to_all(ToClientPacket::RoleList { role_list });
 
                 let mut new_clients = VecMap::new();
@@ -71,35 +81,42 @@ impl Game {
 
                 let lobby = Lobby::new_from_game(self.room_name.clone(), self.settings.clone(), new_clients);
 
-                return GameClientMessageResult::BackToLobby(lobby);
+                return Ok(GameClientMessageResult::BackToLobby(lobby));
             }
             ToServerPacket::HostForceEndGame => {
-                if let Some(player) = self.clients.get(&room_client_id)
-                    && !player.host {break 'packet_match}
+                if !is_host {return Ok(GameClientMessageResult::None)}
 
                 let conclusion = GameConclusion::get_premature_conclusion(self);
 
                 OnGameEnding::new(conclusion).as_invokable().invoke(self);
             }
-            ToServerPacket::HostForceSkipPhase => {
-                if let Some(player) = self.clients.get(&room_client_id)
-                    && !player.host {break 'packet_match}
-                
-                FastForwardComponent::skip(self);
-            }
-            ToServerPacket::HostDataRequest => {
-                if let Some(player) = self.clients.get(&room_client_id) && !player.host {break 'packet_match}
+            ToServerPacket::HostForceSkipPhase { fast_forward } => {
+                if !is_host {return Ok(GameClientMessageResult::None)}
 
-                self.resend_host_data(sender_player_ref.connection(self));
+                FastForwardComponent::host_skip(self, fast_forward);
             }
             ToServerPacket::HostForceSetPlayerName { id, name } => {
-                if let Some(player) = self.clients.get(&room_client_id) && !player.host {break 'packet_match}
-                if let Some(player) = self.clients.get(&id) && let GameClientLocation::Player(player) = player.client_location {
-                    self.set_player_name(player, name);
+                if !is_host {return Ok(GameClientMessageResult::None)}
+
+                if let Some(target) = self.clients.get(&id) {
+                    match target.client_location {
+                        GameClientLocation::Player(player) => self.set_player_name(player, name),
+                        GameClientLocation::Spectator(spectator) => self.set_spectator_name(spectator, name),
+                    }
                 }
             }
+            ToServerPacket::HostDataRequest => {
+                if !is_host {return Ok(GameClientMessageResult::None)}
+
+                let connection = match client_location {
+                    GameClientLocation::Player(player) => player.connection(self).clone(),
+                    GameClientLocation::Spectator(spectator) => spectator.connection(self),
+                };
+                self.resend_host_data(&connection);
+            }
             ToServerPacket::SetPlayerHost { player_id } => {
-                if let Some(player) = self.clients.get(&room_client_id) && !player.host {break 'packet_match}
+                if !is_host {return Ok(GameClientMessageResult::None)}
+
                 if let Some(player) = self.clients.get_mut(&player_id) {
                     player.set_host();
                 }
@@ -107,13 +124,35 @@ impl Game {
                 self.resend_host_data_to_all_hosts();
             }
             ToServerPacket::RelinquishHost => {
-                if let Some(player) = self.clients.get_mut(&room_client_id){
-                    if !player.host {break 'packet_match}
+                if !is_host {return Ok(GameClientMessageResult::None)}
+
+                if let Some(player) = self.clients.get_mut(&room_client_id) {
                     player.relinquish_host();
                 }
                 self.ensure_host_exists(Some(room_client_id));
                 self.send_players();
                 self.resend_host_data_to_all_hosts();
+            }
+            other => return Err(other)
+        }
+        Ok(GameClientMessageResult::None)
+    }
+
+    fn send_repeating_data_to_all(&mut self) {
+        for player_ref in PlayerReference::all_players(self){
+            player_ref.send_repeating_data(self)
+        }
+        for spectator_ref in SpectatorPointer::all_spectators(self){
+            spectator_ref.send_repeating_data(self)
+        }
+    }
+
+    pub fn on_player_message(&mut self, room_client_id: RoomClientID, sender_player_ref: PlayerReference, incoming_packet: ToServerPacket) -> GameClientMessageResult {
+        match incoming_packet {
+            ToServerPacket::Leave => {
+                if let RemoveRoomClientResult::RoomShouldClose = self.remove_client(room_client_id) {
+                    return GameClientMessageResult::Close;
+                }
             },
             ToServerPacket::SaveNotes { notes } => {
                 sender_player_ref.set_notes(self, notes);
@@ -158,14 +197,9 @@ impl Game {
             _ => {
                 log!(error "Game"; "Recieved invalid packet for Game state: {incoming_packet:?}");
             }
-        }}
+        }
         
-        for player_ref in PlayerReference::all_players(self){
-            player_ref.send_repeating_data(self)
-        }
-        for spectator_ref in SpectatorPointer::all_spectators(self){
-            spectator_ref.send_repeating_data(self)
-        }
+        self.send_repeating_data_to_all();
 
         GameClientMessageResult::None
     }

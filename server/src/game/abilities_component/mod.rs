@@ -8,7 +8,7 @@ use crate::{
         Assignments, Game, abilities::{pawn_convert::PawnConvert, pitchfork::PitchforkAbility, role_abilities::RoleAbility, syndicate_gun::SyndicateGun}, abilities_component::{
             ability::Ability, ability_id::AbilityID
         }, event::{
-            AsInvokable, Invokable as _, on_ability_creation::OnAbilityCreation,
+            AsInvokable, on_ability_creation::OnAbilityCreation,
             on_ability_deletion::OnAbilityDeletion, on_ability_edit::OnAbilityEdit
         }, prelude::*
     },

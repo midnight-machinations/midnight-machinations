@@ -1,3 +1,4 @@
+import { ChatFilter } from "./chatFilter";
 import { WikiArticleLink } from "../components/WikiArticleLink";
 import ListMap from "../ListMap";
 import { ControllerInput } from "./controllerInput";
@@ -28,7 +29,7 @@ export type GameManager = {
     
 
     state: State,
-    updateChatFilter(filter: PlayerIndex | null): void,
+    updateChatFilter(filter: ChatFilter): void,
 
     server: Server,
     listeners: StateListener[],
@@ -104,7 +105,7 @@ export type GameManager = {
     sendVoteFastForwardPhase(fastForward: FastForwardSetting): void;
     sendHostDataRequest(): void;
     sendHostEndGamePacket(): void;
-    sendHostSkipPhase(): void;
+    sendHostSkipPhase(fastForward: FastForwardSetting): void;
     sendHostSetPlayerNamePacket(player_id: number, name: string): void;
 
     messageListener(serverMessage: ToClientPacket): void;

@@ -8,6 +8,13 @@ Midnight Machinations (formerly Mafia) is a multiplayer social deduction game.
 
 ## Commands
 
+All development services (from the repository root, after installing client/voice dependencies and configuring local voice):
+```bash
+pnpm start  # client, Rust server, and voice; Ctrl+C stops all three
+pnpm test         # development launcher checks
+```
+The root launcher has no dependencies. It reports missing setup instead of installing or configuring automatically. Use pnpm for both client and voice dependencies. Each service has its own pnpm lockfile; do not generate npm lockfiles.
+
 Client (from `client/`):
 ```bash
 corepack enable

@@ -9,7 +9,7 @@ export type VoiceSession = {
     forcedSilenced: boolean;
     peers: VoicePeer[];
 };
-export type GroupPreference = { muted: boolean; deafened: boolean };
+export type GroupPreference = { deafened: boolean };
 export type VoiceSettings = {
     mode: "pushToTalk" | "openMic" | "toggleMute";
     key: string;

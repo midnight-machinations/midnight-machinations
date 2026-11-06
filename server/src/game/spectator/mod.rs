@@ -9,10 +9,12 @@ use crate::{
 
 #[derive(Debug, Clone)]
 pub struct SpectatorInitializeParameters {
+    pub name: String,
     pub connection: ClientConnection,
     pub host: bool,
 }
 pub struct Spectator {
+    pub name: String,
     pub connection: ClientConnection,
     pub fast_forward_vote: bool,
 
@@ -21,6 +23,7 @@ pub struct Spectator {
 impl Spectator {
     pub fn new(params: SpectatorInitializeParameters) -> Self {
         Self {
+            name: params.name,
             connection: params.connection,
             fast_forward_vote: false,
 

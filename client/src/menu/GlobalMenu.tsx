@@ -81,21 +81,22 @@ export default function GlobalMenu(): ReactElement {
                             {translate("menu.hostSettings.title")}
                         </Button>
                     </>}
+                    <Button onClick={() => quitToMainMenu()}><Icon>not_interested</Icon> {translate("menu.globalMenu.abandon")}</Button>
                 </section>
             }
             <section>
-                { quitButtonBlacklist.includes(anchorController.contentType) ||
-                    <button onClick={() => quitToMainMenu()}><Icon>not_interested</Icon> {translate("menu.globalMenu.quitToMenu")}</button>
+                { stateType === "lobby" || stateType === "game" || quitButtonBlacklist.includes(anchorController.contentType) ||
+                    <Button onClick={() => quitToMainMenu()}><Icon>not_interested</Icon> {translate("menu.globalMenu.quitToMenu")}</Button>
                 }
-                <button onClick={() => {
+                <Button onClick={() => {
                     anchorController.setCoverCard(<SettingsMenu />)
                     anchorController.closeGlobalMenu();
-                }}><Icon>settings</Icon> {translate("menu.globalMenu.settings")}</button>
-                <button onClick={() => goToRolelistEditor()}><Icon>edit</Icon> {translate("menu.globalMenu.gameSettingsEditor")}</button>
-                <button onClick={() => {
+                }}><Icon>settings</Icon> {translate("menu.globalMenu.settings")}</Button>
+                <Button onClick={() => goToRolelistEditor()}><Icon>edit</Icon> {translate("menu.globalMenu.gameSettingsEditor")}</Button>
+                <Button onClick={() => {
                     anchorController.setCoverCard(<WikiCoverCard />);
                     anchorController.closeGlobalMenu();
-                }}><Icon>menu_book</Icon> {translate("menu.wiki.title")}</button>
+                }}><Icon>menu_book</Icon> {translate("menu.wiki.title")}</Button>
             </section>
         </div>
     );

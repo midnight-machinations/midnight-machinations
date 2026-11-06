@@ -42,7 +42,7 @@ export default function LobbyNamePane(): ReactElement {
 
     return <section className="chat-menu-colors selector-section">
         <div className="lobby-name-pane">
-            {!isSpectator && <NameSelector ready={ready}/>}
+            <NameSelector ready={ready}/>
             <div className="name-pane-buttons">
                 {ready !== "ready" && <Button onClick={() => GAME_MANAGER.sendSetSpectatorPacket(!isSpectator)}>
                     {isSpectator
@@ -70,7 +70,6 @@ function NameSelector(props: Readonly<{ ready: "host" | "ready" | "notReady" }>)
         state => {
             const client = state.players.get(state.myId!);
             if(client === undefined || client === null) return undefined;
-            if(client.clientType.type === "spectator") return undefined;
             return client.clientType.name;
         },
         ["lobbyClients", "yourId"]

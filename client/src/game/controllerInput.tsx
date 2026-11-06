@@ -1,6 +1,6 @@
 import { ListMapData } from "../ListMap";
 import { KiraGuess } from "../menu/game/gameScreenContent/AbilityMenu/ControllerSelectionTypes/KiraSelectionMenu";
-import { PhaseType, PlayerIndex, UnsafeString } from "./gameState.d";
+import { ChatGroup, PhaseType, PlayerIndex, UnsafeString } from "./gameState.d";
 import translate, { translateChecked } from "./lang";
 import { Role } from "./roleState.d";
 import abilitiesJson from "../resources/abilityId.json";
@@ -64,6 +64,9 @@ export type ControllerID = {
     player: PlayerIndex,
 } | {
     type: "chat",
+    player: PlayerIndex,
+} | {
+    type: "chatGroup",
     player: PlayerIndex,
 } | {
     type: "chatIsBlock",
@@ -206,6 +209,9 @@ export function sortControllerIdCompare(
 }
 
 export type ControllerSelection = {
+    type: "chatGroup",
+    selection: ChatGroup | null
+} | {
     type: "unit",
     selection: UnitSelection
 } | {
@@ -245,6 +251,8 @@ export type ControllerSelection = {
 
 export function defaultControllerSelection(available: AvailableControllerSelection): ControllerSelection {
     switch (available.type) {
+        case "chatGroup":
+            return { type: "chatGroup", selection: available.selection.groups.includes("all") ? "all" : available.selection.groups[0] ?? null };
         case "unit":
             return {type: "unit", selection: null};
         case "boolean":
@@ -274,6 +282,9 @@ export function defaultControllerSelection(available: AvailableControllerSelecti
 
 
 export type AvailableControllerSelection = {
+    type: "chatGroup",
+    selection: { groups: ChatGroup[] }
+} | {
     type: "unit",
 } | {
     type: "boolean",

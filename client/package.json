@@ -20,6 +20,7 @@
     "react-dom": "18.2.0",
     "react-resizable-panels": "^2.1.6",
     "react-responsive-masonry": "^2.6.0",
+    "react-swipeable": "^7.0.2",
     "react-virtuoso": "^4.12.0",
     "typescript": "^5.7.2",
     "web-vitals": "^2.1.4"
@@ -35,6 +36,11 @@
     "start": "vite",
     "dev": "vite",
     "build": "tsc && vite build",
+    "test": "node --test tests/*.test.cjs",
+    "test:mobile-swipe": "node --test tests/mobileSwipe.test.cjs",
+    "test:voice-keybind": "node --test tests/voiceKeybind.test.cjs",
+    "test:chat-group": "node --test tests/chatGroupSelect.test.cjs",
+    "test:chat-filter": "node --test tests/chatFilters.test.cjs",
     "preview": "vite preview"
   },
   "browserslist": {

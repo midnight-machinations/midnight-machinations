@@ -96,8 +96,7 @@ impl Marksman {
                     mark_id == 2 &&
                     Visits::into_iter(midnight_variables)
                         .with_tag(VisitTag::Ability { ability: AbilityID::Role { role: Role::Marksman, player: actor_ref }, id: 0 })
-                        .find(|v|v.attack)
-                        .is_some()
+                        .any(|v|v.attack)
                 {
                     return;
                 }

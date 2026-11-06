@@ -151,6 +151,7 @@ impl Possession {
             },
             ControllerSelection::Unit(..) |
             ControllerSelection::ChatMessage(..) |
+            ControllerSelection::ChatGroup(..) |
             ControllerSelection::RoleList(..) |
             ControllerSelection::TwoRoleOption(..) |
             ControllerSelection::TwoRoleOutlineOption(..) |

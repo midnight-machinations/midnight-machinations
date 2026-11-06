@@ -36,7 +36,7 @@ impl RoleStateTrait for Informant {
     fn controller_parameters_map(self, game: &Game, actor_ref: PlayerReference) -> ControllerParametersMap {
         ControllerParametersMap::builder(game)
             .id(ControllerID::role(actor_ref, Role::Informant, 0))
-            .player_list_selection_typical(actor_ref, false, false, false, false, true, Some(2))
+            .player_list_selection_typical(actor_ref, false, true, false, false, true, Some(2))
             .night_typical(actor_ref)
             
             .build_map()

@@ -2367,7 +2367,7 @@ fn yer() {
     yer.send_ability_input_player_list(detective, 1);
     yer.send_ability_input(ControllerInput::new(
         ControllerID::Role { player: yer.player_ref(), role: Role::Yer, id: 2 }, 
-        RoleListSelection(vec!(Role::TallyClerk)) 
+        RoleListSelection(vec![Role::TallyClerk]) 
     ));
 
     game.skip_to(PhaseType::Dusk, 2);
@@ -2385,7 +2385,7 @@ fn yer() {
     yer.send_ability_input_player_list(detective, 1);
     yer.send_ability_input(ControllerInput::new(
         ControllerID::Role { player: yer.player_ref(), role: Role::Yer, id: 2 }, 
-        RoleListSelection(vec!(Role::Mafioso)) 
+        RoleListSelection(vec![Role::Mafioso]) 
     ));
     
     game.skip_to(PhaseType::Dusk, 3);
@@ -2424,7 +2424,7 @@ fn yer() {
     yer.send_ability_input_player_list(convertee, 1);
     yer.send_ability_input(ControllerInput::new(
         ControllerID::Role { player: yer.player_ref(), role: Role::Yer, id: 2 }, 
-        RoleListSelection(vec!(Role::Zealot)) 
+        RoleListSelection(vec![Role::Zealot]) 
     ));
     
     game.skip_to(PhaseType::Dusk, 4);
@@ -2461,7 +2461,7 @@ fn yer() {
     convertee.send_ability_input_player_list(informant, 1);
     convertee.send_ability_input(ControllerInput::new(
         ControllerID::Role { player: yer.player_ref(), role: Role::Yer, id: 2 }, 
-        RoleListSelection(vec!(Role::Zealot)) 
+        RoleListSelection(vec![Role::Zealot]) 
     ));
     
     game.skip_to(PhaseType::Dusk, 5);
@@ -2651,7 +2651,7 @@ fn fiends_wildcard_defense_upgrade(){
 
     fiend.send_ability_input(ControllerInput::new(
         ControllerID::role(fiend.player_ref(), Role::FiendsWildcard, 0),
-        RoleListSelection(vec!(Role::Puppeteer))
+        RoleListSelection(vec![Role::Puppeteer])
     ));
 
     game.skip_to(Dusk, 2);

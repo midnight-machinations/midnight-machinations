@@ -629,6 +629,9 @@ export function translateChatMessage(
             let out;
 
             switch (message.selection.type) {
+                case "chatGroup":
+                    out = message.selection.selection === null ? translate("none") : translate(`chatGroup.${message.selection.selection}.name`);
+                    break;
                 case "unit":
                     out = translate("chatMessage.abilityUsed.selection.unit");
                     break;
@@ -928,6 +931,7 @@ export function translateChatMessage(
 }
 export type ChatMessageIndex = number;
 export type ChatMessage = {
+    nightResult?: boolean
     variant: ChatMessageVariant
     chatGroup: ChatGroup | null
 }

@@ -556,6 +556,10 @@
         "midnight": false,
         "visible": false
     },
+    "chatGroup": {
+        "midnight": false,
+        "visible": false
+    },
     "chatIsBlock": {
         "midnight": false,
         "visible": false

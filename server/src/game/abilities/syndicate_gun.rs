@@ -167,7 +167,7 @@ impl AbilityTrait for SyndicateGun {
             ControllerParametersMap::combine([
                 ControllerParametersMap::builder(game)
                     .id(ControllerID::syndicate_gun_item_shoot())
-                    .single_player_selection_typical(player_with_gun, false, false)
+                    .single_player_selection_typical(player_with_gun, true, true)
                     .night_typical(player_with_gun)
                     .add_grayed_out_condition(game.day_number() <= 1)
                     .build_map(),

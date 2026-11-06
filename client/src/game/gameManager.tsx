@@ -1,3 +1,4 @@
+import { ChatFilter } from "./chatFilter";
 import { VOICE } from "../voice/voiceManager";
 import { ANCHOR_CONTROLLER } from "./../menu/Anchor";
 import StartMenu from "./../menu/main/StartMenu";
@@ -82,6 +83,7 @@ export function createGameManager(): GameManager {
                 GAME_MANAGER.state.enabledRoles = lobbyState.enabledRoles;
                 if (lobbyState.players.get(lobbyState.myId!)?.ready === "host") {
                     GAME_MANAGER.state.host = {
+                        fastForward: { type: "none" },
                         clients: new ListMap()
                     };
                 }
@@ -117,12 +119,9 @@ export function createGameManager(): GameManager {
             stateType: "disconnected"
         },
 
-        updateChatFilter(filter: PlayerIndex | null) {
+        updateChatFilter(filter: ChatFilter) {
             if(GAME_MANAGER.state.stateType === "game"){
-                GAME_MANAGER.state.chatFilter = filter===null?null:{
-                    type: "playerNameInMessage",
-                    player: filter
-                };
+                GAME_MANAGER.state.chatFilter = filter;
                 GAME_MANAGER.invokeStateListeners("filterUpdate");
             }
         },
@@ -573,9 +572,10 @@ export function createGameManager(): GameManager {
                 type: "hostForceEndGame"
             })
         },
-        sendHostSkipPhase() {
+        sendHostSkipPhase(fastForward) {
             this.server.sendPacket({
-                type: "hostForceSkipPhase"
+                type: "hostForceSkipPhase",
+                fastForward
             })
         },
         sendHostSetPlayerNamePacket(playerId, name) {

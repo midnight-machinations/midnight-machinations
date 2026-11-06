@@ -2,12 +2,13 @@
 .voice-menu > .voice-menu-content { display: block; padding: .75rem; overflow-y: auto; }
 .voice-menu fieldset { margin: .65rem 0; border: 1px solid var(--primary-border-color); padding: .6rem; min-width: 0; }
 .voice-buttons { display: flex; align-items: center; flex-wrap: wrap; gap: .5rem; }
-.voice-group { display: grid; grid-template-columns: minmax(0, 1fr) 2.25rem 2.25rem; align-items: center; gap: .4rem; min-height: 2.5rem; }
+.voice-group { display: grid; grid-template-columns: minmax(0, 1fr) 2.25rem; align-items: center; gap: .4rem; min-height: 2.5rem; }
 .voice-group > span, .voice-person > span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
 .voice-person { display: grid; grid-template-columns: minmax(0, 1fr) 2.25rem minmax(4rem, 7rem); gap: .4rem; align-items: center; padding: .4rem 0; }
 .voice-person input[type=range] { width: 100%; min-width: 0; }
 .voice-settings > label { display: flex; flex-wrap: wrap; gap: .5rem; justify-content: space-between; align-items: center; margin: .5rem 0; }
 .voice-settings .custom-select { max-width: min(13rem, 100%); min-width: 0; }
+.voice-settings > input[type=range] { width: 100%; }
 .voice-setting-row { display: flex; gap: .5rem; justify-content: space-between; align-items: center; margin: .5rem 0; }
 .voice-setting-row > .checkbox { flex-shrink: 0; }
 .voice-settings input.voice-threshold {

@@ -1,4 +1,5 @@
 import http from 'node:http';
+import { canForwardVoice } from './routing.mjs';
 import { timingSafeEqual } from 'node:crypto';
 import { createWorker } from 'mediasoup';
 import { WebSocketServer, WebSocket } from 'ws';
@@ -48,8 +49,7 @@ function allowed(listener, speaker) {
   if (frozen || !healthy() || listener.closed || speaker.closed || listener === speaker) return false;
   const from = policies.get(speaker.token);
   const to = policies.get(listener.token);
-  return from && to && from.scope === to.scope && from.send.some(group =>
-    to.receive.includes(group) && !speaker.muted.has(group) && !listener.deafened.has(group));
+  return canForwardVoice(from, to, listener.deafened);
 }
 function closePeer(peer) {
   if (peer.closed) return;
@@ -153,7 +153,7 @@ async function handle(socket, state, request) {
     const previous = room.peers.get(policy.id);
     if (previous) closePeer(previous);
     const peer = { id: policy.id, token: request.token, socket, room, closed: false,
-      muted: groupSet(request.muted ?? []), deafened: groupSet(request.deafened ?? []),
+      deafened: groupSet(request.deafened ?? []),
       transports: new Map(), consumers: new Map() };
     state.peer = peer;
     room.peers.set(peer.id, peer);
@@ -165,7 +165,6 @@ async function handle(socket, state, request) {
   const room = peer.room;
   switch (request.action) {
     case 'preferences':
-      peer.muted = groupSet(request.muted);
       peer.deafened = groupSet(request.deafened);
       await reconcile(room);
       return {};

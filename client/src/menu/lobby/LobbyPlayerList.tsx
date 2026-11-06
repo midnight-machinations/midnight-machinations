@@ -16,7 +16,7 @@ type PlayerDisplayData = {
     connection: ClientConnection,
     ready: boolean | null,
     host: boolean,
-    name: string | null,
+    name: string,
     displayName: string,
 }
 
@@ -25,7 +25,7 @@ export default function LobbyPlayerList(): ReactElement {
         state => {
             if (state.stateType === "lobby") {
                 return state.players.entries().map(([id, player]) => {
-                    const name = player.clientType.type === "player" ? encodeString(player.clientType.name) : null;
+                    const name = player.clientType.name as string;
                     return {
                         id,
                         clientType: player.clientType.type,
@@ -33,7 +33,7 @@ export default function LobbyPlayerList(): ReactElement {
                         connection: player.connection,
                         host: player.ready === "host",
                         name,
-                        displayName: name ?? "Spectator",
+                        displayName: encodeString(name),
                     }
                 })
             } else if (state.host !== null) {
@@ -45,11 +45,11 @@ export default function LobbyPlayerList(): ReactElement {
                         ready: null,
                         host: player.host,
                         name: player.clientType.type === "player"
-                            ? encodeString(state.players[player.clientType.index].name)
-                            : player.clientType.index.toString(),
+                            ? state.players[player.clientType.index].name as string
+                            : player.name as string,
                         displayName: player.clientType.type === "player"
                             ? encodeString(state.players[player.clientType.index].toString())
-                            : player.clientType.index.toString(),
+                            : encodeString(player.name),
                     }
                 })
             }
@@ -117,10 +117,10 @@ function LobbyPlayerListPlayer(props: Readonly<{ player: PlayerDisplayData }>): 
 }
 
 function LobbyPlayerListPlayerRename(props: Readonly<{ player: PlayerDisplayData }>): ReactElement {
-    const [playerName, setPlayerName] = useState(props.player.name ?? "");
+    const [playerName, setPlayerName] = useState(props.player.name);
 
     useEffect(() => {
-        setPlayerName(props.player.name ?? "BUG")
+        setPlayerName(props.player.name)
     }, [props.player.name])
     
     return <FlushInput 

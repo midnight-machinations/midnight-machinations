@@ -86,7 +86,7 @@ impl RoleStateTrait for PropMaster {
         ControllerParametersMap::combine([
             ControllerParametersMap::builder(game)
                 .id(ControllerID::role(actor_ref, Role::PropMaster, 0))
-                .single_player_selection_typical(actor_ref, false, false)
+                .single_player_selection_typical(actor_ref, false, true)
                 .night_typical(actor_ref)
                 .add_grayed_out_condition(
                     Prop::Holding != self.prop
@@ -146,24 +146,24 @@ impl RoleStateTrait for PropMaster {
         if actor_ref.ability_deactivated_from_death(game) {return;}
         let grave_ref = grave;
         
-        if self.has_prop(grave.deref(game).player) {
-            let mut grave = grave_ref.deref(game).clone();
-            *grave_ref.deref_mut(game) = match grave.information {
-                GraveInformation::Normal{role, alibi, death_causes, calling_cards} => {
-                    grave.information = GraveInformation::Normal{
-                        role,
-                        alibi,
-                        death_causes: ControllerID::role(actor_ref, Role::PropMaster, 2)
-                            .get_grave_death_causes_selection(game)
-                            .map(|selection| selection.0.clone())
-                            .unwrap_or(death_causes),
-                        calling_cards
-                    };
-                    grave
-                },
-                _ => grave
-            };
+        if !self.has_prop(grave.deref(game).player) {
+            return;
         }
+        let mut new_grave = grave_ref.deref(game).clone();
+            
+        if let GraveInformation::Normal{death_causes, ..} = &mut new_grave.information {
+
+            let new_death_causes = ControllerID::role(actor_ref, Role::PropMaster, 2)
+                .get_grave_death_causes_selection(game)
+                .map(|selection| selection.0.clone())
+                .unwrap_or(death_causes.clone());
+
+            if !new_death_causes.is_empty() {
+                *death_causes = new_death_causes;
+            }
+        };
+
+        *grave_ref.deref_mut(game) = new_grave
     }
     fn on_phase_start(self, game: &mut Game, actor_ref: PlayerReference, _phase: PhaseType) {
         self.take_prop_if_on_invalid(game, actor_ref);
@@ -194,7 +194,7 @@ impl PropMaster {
         if
             let Prop::Set { target } = self.prop &&
             (
-                InsiderGroupID::in_same_group(game, actor_ref, target) ||
+                // InsiderGroupID::in_same_group(game, actor_ref, target) ||
                 !target.alive(game) ||
                 actor_ref == target
             )

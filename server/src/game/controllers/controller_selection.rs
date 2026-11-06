@@ -75,5 +75,6 @@ selection_kinds! {
     String: AvailableStringSelection, StringSelection;
     Integer: AvailableIntegerSelection, IntegerSelection;
     Kira: AvailableKiraSelection, KiraSelection;
-    ChatMessage: AvailableChatMessageSelection, ChatMessageSelection
+    ChatMessage: AvailableChatMessageSelection, ChatMessageSelection;
+    ChatGroup: AvailableChatGroupSelection, ChatGroupSelection
 }

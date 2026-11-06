@@ -4,6 +4,7 @@
 }
 .wiki-menu > .wiki-menu-search {
     min-height: 0;
+    min-width: 0;
     flex-grow: 1;
 }
 .wiki-menu .wiki-disabled-selector {

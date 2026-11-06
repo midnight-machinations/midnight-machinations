@@ -1,0 +1,13 @@
+{
+  "name": "midnight-machinations-dev",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "start": "node scripts/start-dev.mjs",
+    "test": "node --test scripts/tests/*.test.mjs"
+  },
+  "packageManager": "pnpm@11.5.0"
+}

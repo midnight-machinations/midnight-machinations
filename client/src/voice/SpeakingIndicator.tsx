@@ -4,6 +4,12 @@ import translate from "../game/lang";
 import { VOICE } from "./voiceManager";
 import "./voice.css";
 
+export function SelfVoiceMuteButton() {
+    useSyncExternalStore(VOICE.subscribe, VOICE.getRevision);
+    if (VOICE.status !== "connected" || !VOICE.session) return null;
+    return <SpeakingIndicator roomClientId={VOICE.session.selfId} className="voice-icon-button"/>;
+}
+
 /** Only local playback preferences and received speech affect remote icons. */
 export default function SpeakingIndicator(props: { roomClientId?: number; playerIndex?: number; className?: string }) {
     useSyncExternalStore(VOICE.subscribe, VOICE.getRevision);

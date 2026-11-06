@@ -38,10 +38,42 @@ impl FastForwardComponent {
     }
 
     fn attempt_skip(game: &mut Game){
-        if game.game_is_over() {return;}
-        if Self::all_players_want_skip(game) {
+        if game.game_is_over() {
+            Self::set_host_setting(game, FastForwardSetting::None);
+            return;
+        }
+        let host_wants_skip = match game.host_fast_forward {
+            FastForwardSetting::Skip => true,
+            FastForwardSetting::Phase { phase, day } =>
+                Self::can_skip(game.current_phase().phase(), game.day_number(), phase, day),
+            FastForwardSetting::None => false,
+        };
+        if host_wants_skip || Self::all_players_want_skip(game) {
             Self::skip(game)
         }
+    }
+
+    fn set_host_setting(game: &mut Game, setting: FastForwardSetting) {
+        if game.host_fast_forward != setting {
+            game.host_fast_forward = setting;
+            game.resend_host_data_to_all_hosts();
+        }
+    }
+
+    pub fn host_skip(game: &mut Game, setting: FastForwardSetting) {
+        if game.game_is_over() { return; }
+        if let FastForwardSetting::Phase { phase, day } = setting {
+            // Match the regular skip destinations; trial phases may never occur.
+            if !matches!(phase, PhaseType::Discussion | PhaseType::Nomination | PhaseType::Night)
+                || day == u8::MAX
+                || (day == 1 && phase != PhaseType::Night)
+                || !Self::can_skip(game.current_phase().phase(), game.day_number(), phase, day) {
+                return;
+            }
+        }
+        let skip = setting != FastForwardSetting::None;
+        Self::set_host_setting(game, setting);
+        if skip { Self::attempt_skip(game); }
     }
     pub fn skip(game: &mut Game){
         game.add_message_to_chat_group(ChatGroup::All, ChatMessageVariant::PhaseFastForwarded);
@@ -50,6 +82,14 @@ impl FastForwardComponent {
     }
 
     fn reset_votes(game: &mut Game){
+        if match game.host_fast_forward {
+            FastForwardSetting::Skip => true,
+            FastForwardSetting::Phase { phase, day } =>
+                !Self::can_skip(game.current_phase().phase(), game.day_number(), phase, day),
+            FastForwardSetting::None => false,
+        } {
+            Self::set_host_setting(game, FastForwardSetting::None);
+        }
         for player in PlayerReference::all_players(game){
             if 
                 match player.fast_forward_vote(game) {

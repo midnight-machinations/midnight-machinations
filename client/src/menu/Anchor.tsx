@@ -52,8 +52,6 @@ const TooltipContext = createContext<TooltipController | undefined>(undefined);
 
 export { MobileContext, CtrlPressedContext, AnchorControllerContext, TooltipContext };
 
-const MIN_SWIPE_DISTANCE_X = 60;
-const MAX_SWIPE_DISTANCE_Y = 60;
 const MOBILE_MAX_WIDTH_PX = 600;
 
 /**
@@ -173,8 +171,6 @@ export default function Anchor(props: Readonly<{
     const [globalMenuOpen, setGlobalMenuOpen] = useState<boolean>(false);
 
 
-    const [touchStart, setTouchStart] = useState<[number, number] | null>(null);
-    const [touchCurrent, setTouchCurrent] = useState<[number, number] | null>(null);
     const setFontSize = (n: number) => {
         document.documentElement.style.fontSize = `${n}em`;
     }
@@ -296,36 +292,7 @@ export default function Anchor(props: Readonly<{
     return <MobileContext.Provider value={mobile} >
         <AnchorControllerContext.Provider value={anchorController}>
             <TooltipContext.Provider value={toolTipContext}>
-                <div
-                    className="anchor"
-                    onTouchStart={(e) => {
-                        setTouchStart([e.targetTouches[0].clientX,e.targetTouches[0].clientY])
-                        setTouchCurrent([e.targetTouches[0].clientX,e.targetTouches[0].clientY])
-                    }}
-                    onTouchMove={(e) => {
-                        setTouchCurrent([e.targetTouches[0].clientX,e.targetTouches[0].clientY])
-                    }}
-                    onTouchEnd={(e) => {
-                        if(touchStart !== null && touchCurrent !== null){
-
-                            if(touchStart[1] - touchCurrent[1] > MAX_SWIPE_DISTANCE_Y) {
-                                return;
-                            }
-                            if(touchStart[0] - touchCurrent[0] > MIN_SWIPE_DISTANCE_X) {
-                                for(let listener of swipeEventListeners) {
-                                    listener(false);
-                                }
-                            } else if (touchStart[0] - touchCurrent[0] < -MIN_SWIPE_DISTANCE_X) {
-                                for(let listener of swipeEventListeners) {
-                                    listener(true);
-                                }
-                            }
-                        }
-
-                        setTouchStart(null)
-                        setTouchCurrent(null)
-                    }}
-                >
+                <div className="anchor">
                     <Button className={"global-menu-button " + (stateType === "game" ? "" : "flush")}
                         onClick={() => {
                             if (!globalMenuOpen) {
@@ -360,15 +327,6 @@ export default function Anchor(props: Readonly<{
             </TooltipContext.Provider>
         </AnchorControllerContext.Provider>
     </MobileContext.Provider>
-}
-
-let swipeEventListeners: ((right: boolean) => void)[] = [];
-
-export function addSwipeEventListener(listener: (right: boolean) => void) {
-    swipeEventListeners = [...swipeEventListeners, listener];
-}
-export function removeSwipeEventListener(listener: (right: boolean) => void) {
-    swipeEventListeners = swipeEventListeners.filter((l) => l !== listener);
 }
 
 function CoverCard(props: Readonly<{

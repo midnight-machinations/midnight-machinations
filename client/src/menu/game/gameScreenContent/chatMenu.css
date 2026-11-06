@@ -3,21 +3,70 @@
     display: flex;
     flex-direction: column;
 }
+.chat-voice-header {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: .25rem;
+    flex-shrink: 0;
+    padding: .065rem .25rem;
+    border: .13rem solid transparent;
+    border-bottom-color: var(--background-border-shadow-color);
+}
+.chat-voice-header:empty {
+    display: none;
+}
+.chat-header-voice-controls {
+    display: flex;
+    align-items: center;
+    gap: .25rem;
+    flex-shrink: 0;
+    margin-left: auto;
+}
+.chat-header-voice-controls:empty { display: none; }
+.chat-voice-header button, .chat-voice-header input {
+    margin-top: .065rem;
+    margin-bottom: .065rem;
+    padding-top: .115rem;
+    padding-bottom: .115rem;
+}
+.chat-voice-header .chat-filter-icon-button, .chat-voice-header .voice-icon-button {
+    flex-basis: 1.875rem;
+    width: 1.875rem;
+    height: 1.875rem;
+}
 @media only screen and (max-width: 600px) {
     .game-screen .content > .chat-menu {
         width: 100%;
     }
 }
-.chat-filter-zone {
+.chat-filter-controls {
     display: flex;
-    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+    flex-wrap: wrap;
     gap: .25rem;
+    flex: 1;
+    min-width: 0;
+}
+.chat-filter-controls > .custom-select { min-width: 0; max-width: 100%; }
+.chat-filter-controls > input { flex: 1 1 8rem; width: 8rem; min-width: 0; max-width: 100%; }
+.chat-filter-actions {
+    display: flex;
+    align-items: center;
+    gap: .25rem;
+    min-width: 0;
+    max-width: 100%;
+}
+.chat-filter-actions > .custom-select { min-width: 0; max-width: 100%; }
+.chat-filter-icon-button {
+    display: inline-flex;
     align-items: center;
     justify-content: center;
-    background-color: var(--secondary-color);
-    padding: 0 .25rem;
-    border-radius: 0;
-    border-style: solid;
+    flex: 0 0 2rem;
+    width: 2rem;
+    height: 2rem;
+    padding: .2rem;
 }
 .chat-message-section {
     height: 100%;
@@ -37,7 +86,10 @@
     align-items: center;
     padding: 0 .5rem;
     gap: .25rem;
+    flex-wrap: wrap;
 }
+.chat-group-select { margin-left: auto; min-width: 0; max-width: 100%; }
+.chat-group-select > .custom-select { max-width: 100%; }
 .chat-whisper-notification {
     display: flex;
     flex-direction: row;

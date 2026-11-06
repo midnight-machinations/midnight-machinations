@@ -119,6 +119,7 @@ impl Game{
                 win_condition: unsafe{WinConditionComponent::new(num_players, &assignments)},
                 role: unsafe{RoleComponent::new(num_players, &assignments)},
                 fast_forward: unsafe{FastForwardComponent::new(num_players)},
+                host_fast_forward: crate::game::components::fast_forward::FastForwardSetting::None,
                 chat_messages: unsafe{ChatComponent::new(num_players)}
             };
 
