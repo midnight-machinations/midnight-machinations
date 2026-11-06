@@ -1,7 +1,8 @@
 pub mod lobby_client;
 pub mod on_client_message;
 
-use std::{collections::VecDeque, time::{Duration, Instant}};
+use std::{collections::VecDeque, time::Duration};
+use crate::platform::Instant;
 
 use lobby_client::{LobbyClient, LobbyClientType, Ready};
 

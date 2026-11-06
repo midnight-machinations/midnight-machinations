@@ -1,0 +1,35 @@
+# Local development settings. `mask config` generates every per-service settings
+# file from this one; edit here instead of in the generated files:
+#
+#   client/.env.local          Vite dev server port and game server address
+#   server/.env.local          native game server address and voice link
+#   deploy/server/.dev.vars    serverless game server (wrangler dev)
+#   deploy/voice/.dev.vars     voice Worker (wrangler dev)
+#
+# config.local.toml (gitignored) overrides any key here. Put secrets and
+# per-checkout settings there; `mask worktree` writes its port offset there, and
+# `mask config` stores a generated voice control secret there.
+
+[features]
+# Feature flags. Each one reaches the server as FEATURE_<NAME> and the client as
+# VITE_FEATURE_<NAME> ("true"/"false"). Add new flags here.
+voice = true
+
+[ports]
+# Added to every port below, so several checkouts can run side by side.
+offset = 0
+client = 3000
+server = 9000
+voice = 9100
+
+[voice]
+# Used only when features.voice is on.
+# Shared by the game server and the voice Worker. Generated when empty.
+control_secret = ""
+# A Cloudflare Realtime SFU app (dashboard: Realtime -> SFU). Needed for audio.
+realtime_app_id = ""
+realtime_app_token = ""
+# Optional: comma-separated exact frontend origins allowed to join voice.
+allowed_origins = ""
+# Optional: JSON RTCIceServer[] (for example TURN) given to joined browsers.
+ice_servers = ""

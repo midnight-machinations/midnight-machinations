@@ -1,10 +1,17 @@
-
-label.checkbox {
+button.checkbox {
     display: inline-flex;
+    margin: 0;
+    padding: 0;
     background-color: var(--secondary-color);
-    border: .13rem solid var(--primary-border-color);
+    border: 0.13rem solid var(--primary-border-color);
     border-radius: 0;
     box-shadow: 0 0 5px rgba(from var(--text-color) / 0.2);
 }
-label.checkbox[aria-disabled=true] { opacity: .5; cursor: default; }
-label.checkbox:focus-visible { outline: 2px solid var(--text-color); outline-offset: 2px; }
+button.checkbox[aria-disabled="true"] {
+    opacity: 0.5;
+    cursor: default;
+}
+button.checkbox:focus-visible {
+    outline: 2px solid var(--text-color);
+    outline-offset: 2px;
+}

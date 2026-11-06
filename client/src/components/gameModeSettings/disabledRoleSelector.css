@@ -1,9 +1,9 @@
 .placard {
     display: inline-block;
     background-color: var(--primary-color);
-    border: .13rem solid var(--primary-border-color);
-    padding: .13rem .25rem;
-    margin: .13rem;
+    border: 0.13rem solid var(--primary-border-color);
+    padding: 0.13rem 0.25rem;
+    margin: 0.13rem;
     border-radius: 0;
     white-space: pre;
 }
@@ -18,9 +18,9 @@
 }
 .modifier-config-popover {
     background-color: var(--background-color);
-    border: .13rem solid var(--primary-border-color);
+    border: 0.13rem solid var(--primary-border-color);
     border-radius: 0;
-    padding: .13rem;
+    padding: 0.13rem;
     min-width: fit-content;
 }
 .modifier-config-popover .role-list-setter-list {
@@ -43,7 +43,7 @@
     flex-wrap: wrap;
     justify-content: flex-start;
     margin: 0 0.5rem 0.5rem 0.5rem;
-    border: .13rem solid var(--primary-border-color);
+    border: 0.13rem solid var(--primary-border-color);
     border-top-color: var(--primary-border-shadow-color);
     border-left-color: var(--primary-border-shadow-color);
     background-color: var(--background-color);

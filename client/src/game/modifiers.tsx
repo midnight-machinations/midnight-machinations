@@ -1,67 +1,100 @@
-import { ListMapData } from "../ListMap";
-import { Role } from "./roleState.d";
+import type { ListMapData } from "../ListMap";
+import type { Role } from "./roleState.d";
 
 export const MODIFIERS = [
     "obscuredGraves",
     "skipToDay2",
-    "deadCanChat", "abstaining",
+    "deadCanChat",
+    "abstaining",
     "noDeathCause",
-    "roleSetGraveKillers", "autoGuilty", 
-    "twoThirdsMajority", "noMajority", "noTrialPhases", 
-    "noWhispers", "hiddenWhispers",
-    "noNightChat", "noChat", 
+    "roleSetGraveKillers",
+    "autoGuilty",
+    "twoThirdsMajority",
+    "noMajority",
+    "noTrialPhases",
+    "noWhispers",
+    "hiddenWhispers",
+    "noNightChat",
+    "noChat",
     "unscheduledNominations",
-    "hiddenNominationVotes", "hiddenVerdictVotes",
-    "forfeitNominationVote", "randomPlayerNames",
-    "customRoleLimits", "lessFeedback"
+    "hiddenNominationVotes",
+    "hiddenVerdictVotes",
+    "forfeitNominationVote",
+    "randomPlayerNames",
+    "customRoleLimits",
+    "lessFeedback",
 ] as const;
 
 export type ModifierID = (typeof MODIFIERS)[number];
 
-export type ModifierState = {
-    type: "obscuredGraves"
-} | {
-    type: "skipToDay2"
-} | {
-    type: "deadCanChat"
-} | {
-    type: "abstaining"
-} | {
-    type: "noDeathCause"
-} | {
-    type: "roleSetGraveKillers"
-} | {
-    type: "autoGuilty"
-} | {
-    type: "twoThirdsMajority"
-} | {
-    type: "noMajority"
-} | {
-    type: "noTrialPhases"
-} | {
-    type: "noWhispers"
-} | {
-    type: "hiddenWhispers"
-} | {
-    type: "noNightChat"
-} | {
-    type: "noChat"
-} | {
-    type: "unscheduledNominations"
-} | {
-    type: "hiddenNominationVotes"
-} | {
-    type: "hiddenVerdictVotes"
-} | {
-    type: "forfeitNominationVote"
-} | {
-    type: "randomPlayerNames"
-} | {
-    type: "lessFeedback"
-} | {
-    type: "customRoleLimits",
-    limits: ListMapData<Role, number>
-}
+/** Every modifier, as a mutable array for props that take a list of modifiers */
+export const ALL_MODIFIERS: ModifierID[] = [...MODIFIERS];
+
+export type ModifierState =
+    | {
+          type: "obscuredGraves";
+      }
+    | {
+          type: "skipToDay2";
+      }
+    | {
+          type: "deadCanChat";
+      }
+    | {
+          type: "abstaining";
+      }
+    | {
+          type: "noDeathCause";
+      }
+    | {
+          type: "roleSetGraveKillers";
+      }
+    | {
+          type: "autoGuilty";
+      }
+    | {
+          type: "twoThirdsMajority";
+      }
+    | {
+          type: "noMajority";
+      }
+    | {
+          type: "noTrialPhases";
+      }
+    | {
+          type: "noWhispers";
+      }
+    | {
+          type: "hiddenWhispers";
+      }
+    | {
+          type: "noNightChat";
+      }
+    | {
+          type: "noChat";
+      }
+    | {
+          type: "unscheduledNominations";
+      }
+    | {
+          type: "hiddenNominationVotes";
+      }
+    | {
+          type: "hiddenVerdictVotes";
+      }
+    | {
+          type: "forfeitNominationVote";
+      }
+    | {
+          type: "randomPlayerNames";
+      }
+    | {
+          type: "lessFeedback";
+      }
+    | {
+          type: "customRoleLimits";
+          limits: ListMapData<Role, number>;
+      };
 
 export function defaultModifierState(modifierId: ModifierID): ModifierState {
     switch (modifierId) {

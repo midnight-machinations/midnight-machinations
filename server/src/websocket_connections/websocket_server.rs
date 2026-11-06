@@ -129,7 +129,9 @@ async fn handle_connection(
 
                 match message {
                     Ok(message) => {
-                        listener.on_message(&connection, &message);
+                        if let Ok(text) = message.to_text() {
+                            listener.on_message(&connection, text);
+                        }
                     }
                     Err(tokio_tungstenite::tungstenite::Error::ConnectionClosed) => break,
                     Err(err) => {

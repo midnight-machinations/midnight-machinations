@@ -22,9 +22,8 @@ impl RoleStateTrait for Witch {
             game,
             midnight_variables,
             priority,
+            *id,
             self.currently_used_player,
-            VisitTag::Ability { ability: *id, id: 0 },
-            VisitTag::Ability { ability: *id, id: 1 },
         ){
             actor_ref.edit_role_ability_helper(game, Witch{
                 currently_used_player: Some(currently_used_player)

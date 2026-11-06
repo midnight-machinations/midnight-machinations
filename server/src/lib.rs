@@ -13,6 +13,7 @@
 #![allow(clippy::new_without_default, reason = "This lint is stupid")]
 
 pub mod game;
+pub mod platform;
 pub mod websocket_connections;
 pub mod websocket_listener;
 pub mod room;
@@ -48,7 +49,7 @@ pub mod log {
         // Each case in this macro definition is for a different log marker.
         // None
         ($expr:expr) => {
-            println!("\x1b[0;90m{}\x1b[0m {}", chrono::Local::now().format("%m.%d %I:%M:%S"), $expr)
+            $crate::platform::print(&format!("\x1b[0;90m{}\x1b[0m {}", $crate::platform::timestamp(), $expr))
         };
         // Fatal error
         (fatal $prefix:expr; $($expr:expr),*) => {

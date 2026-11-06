@@ -1,40 +1,44 @@
-import { ReactElement, useContext, useMemo } from "react";
+import { type ReactElement, useContext, useMemo } from "react";
 import { translateChecked } from "../game/lang";
-import { ModifierID } from "../game/modifiers";
-import { Role } from "../game/roleState.d";
-import { WikiArticleLink } from "./WikiArticleLink";
-import StyledText, { DUMMY_NAMES_KEYWORD_DATA, DUMMY_ROLE_LIST_KEYWORD_DATA } from "./StyledText";
+import type { ModifierID } from "../game/modifiers";
+import type { Role } from "../game/roleState.d";
 import { TooltipContext } from "../menu/Anchor";
+import StyledText, { DUMMY_NAMES_KEYWORD_DATA, DUMMY_ROLE_LIST_KEYWORD_DATA } from "./StyledText";
 import WikiArticle from "./WikiArticle";
+import type { WikiArticleLink } from "./WikiArticleLink";
 
-export default function WikiArticleTooltip(props: Readonly<{
-    article: WikiArticleLink
-}>): ReactElement | null {
+export default function WikiArticleTooltip(
+    props: Readonly<{
+        article: WikiArticleLink;
+    }>,
+): ReactElement | null {
     const isCtrlPressed = useContext(TooltipContext)?.ctrlPressed;
     const articleTooltip = useMemo(() => {
         return getArticleTooltip(props.article);
     }, [props.article]);
 
-    return <>
-        {isCtrlPressed
-            ? <WikiArticle noLinks={true} article={props.article} className="wiki-article-tooltip" />
-            : (articleTooltip && <div className="wiki-article wiki-article-tooltip">
-                <StyledText
-                    noLinks={true}
-                    markdown={true}
-                    playerKeywordData={DUMMY_NAMES_KEYWORD_DATA}
-                    roleListKeywordData={DUMMY_ROLE_LIST_KEYWORD_DATA}
-                >
-                    {articleTooltip}
-                </StyledText>
-                <div className="wiki-article-tooltip-footer">
-                    {translateChecked("wiki.tooltipHint")}
-                </div>
-            </div>)
-        }
-    </>
+    return (
+        <>
+            {isCtrlPressed ? (
+                <WikiArticle noLinks={true} article={props.article} className="wiki-article-tooltip" />
+            ) : (
+                articleTooltip && (
+                    <div className="wiki-article wiki-article-tooltip">
+                        <StyledText
+                            noLinks={true}
+                            markdown={true}
+                            playerKeywordData={DUMMY_NAMES_KEYWORD_DATA}
+                            roleListKeywordData={DUMMY_ROLE_LIST_KEYWORD_DATA}
+                        >
+                            {articleTooltip}
+                        </StyledText>
+                        <div className="wiki-article-tooltip-footer">{translateChecked("wiki.tooltipHint")}</div>
+                    </div>
+                )
+            )}
+        </>
+    );
 }
-
 
 function getArticleTooltip(page: WikiArticleLink): string | null {
     const tooltipText = getArticleTooltipText(page);
@@ -44,7 +48,7 @@ function getArticleTooltip(page: WikiArticleLink): string | null {
     const truncated = shortened?.split("\n").slice(0, 3).join("\n");
     // Add ellipsis
     const hasMore = tooltipText && truncated && truncated.length < tooltipText.length;
-    const ellipsized = hasMore ? (truncated + "...") : tooltipText;
+    const ellipsized = hasMore ? `${truncated}...` : tooltipText;
     return ellipsized;
 }
 

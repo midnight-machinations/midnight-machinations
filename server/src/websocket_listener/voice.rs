@@ -1,18 +1,23 @@
 use std::collections::HashMap;
 
-use super::{WebsocketListener, client::ClientLocation};
+use std::net::SocketAddr;
+
+use super::{RoomCode, WebsocketListener, client::{Client, ClientLocation}};
 use crate::{
     client_connection::ClientConnection,
     game::{
         abilities::role_abilities::RoleAbility,
         abilities_component::{Abilities, ability::Ability},
+        Game,
+        chat::{ChatGroup, PlayerChatGroupMap},
         components::silenced::Silenced,
         game_client::GameClientLocation,
+        player::PlayerReference,
         role::RoleState,
     },
-    lobby::lobby_client::LobbyClientType,
+    lobby::{Lobby, lobby_client::LobbyClientType},
     packet::ToClientPacket,
-    room::Room,
+    room::{Room, RoomClientID},
     voice::{VoicePeer, VoiceSession, random_token},
 };
 
@@ -22,9 +27,6 @@ impl WebsocketListener {
     /// role events, controller inputs, and mid-phase status/group changes.
     /// Future timer, admin, or external event handlers must use this too.
     pub(super) fn with_voice_update<R>(&mut self, action: impl FnOnce(&mut Self) -> R) -> R {
-        if let Some(voice) = &self.voice {
-            voice.freeze();
-        }
         let result = action(self);
         self.sync_voice();
         result
@@ -54,140 +56,22 @@ impl WebsocketListener {
                 *scope = (in_game, random_token());
             }
             let scope = scope.1.clone();
-            let mut peers = Vec::new();
-            let mut permissions = HashMap::new();
-            match room.as_ref() {
-                Room::Lobby(lobby) => {
-                    for (id, client) in lobby.clients.iter() {
-                        peers.push(VoicePeer {
-                            id: *id,
-                            name: match &client.client_type {
-                                LobbyClientType::Player { name } => name.clone(),
-                                LobbyClientType::Spectator { name } => name.clone(),
-                            },
-                            player_index: None,
-                            in_voice: bridge.in_voice(&scope, *id),
-                        });
-                        permissions.insert(
-                            *id,
-                            (
-                                vec!["lobby".to_owned()],
-                                vec!["lobby".to_owned()],
-                                false,
-                                client.connection.clone(),
-                            ),
-                        );
-                    }
-                }
-                Room::Game(game) => {
-                    let receive = crate::game::chat::PlayerChatGroups::receive_player_chat_group_map(game);
-                    for (id, client) in game.clients.iter() {
-                        let (name, index, sends, receives, silenced, connection) =
-                            match client.client_location {
-                                GameClientLocation::Player(player) => {
-                                    let brained = Abilities::ids(game).iter().any(|id| matches!(
-                                    id.get_ability(game),
-                                    Some(Ability::Role(RoleAbility(RoleState::Cerenovous(state))))
-                                        if state.currently_brained == Some(player)
-                                ));
-                                    let silenced = brained || Silenced::silenced(game, player);
-                                    let groups = |map: &crate::game::chat::PlayerChatGroupMap| {
-                                        map.get(player)
-                                            .iter()
-                                            .filter_map(|group| {
-                                                serde_json::to_value(group)
-                                                    .ok()?
-                                                    .as_str()
-                                                    .map(str::to_owned)
-                                            })
-                                            .collect::<Vec<_>>()
-                                    };
-                                    (
-                                        player.name(game).clone(),
-                                        Some(player.index()),
-                                        if silenced { vec![] } else {
-                                            player.selected_send_chat_group(game).into_iter()
-                                                .filter_map(|group| serde_json::to_value(group).ok()?.as_str().map(str::to_owned))
-                                                .collect()
-                                        },
-                                        groups(&receive),
-                                        silenced,
-                                        player.connection(game).clone(),
-                                    )
-                                }
-                                GameClientLocation::Spectator(spectator) => (
-                                    spectator.name(game),
-                                    None,
-                                    vec![],
-                                    vec!["all".to_owned()],
-                                    false,
-                                    game.spectators
-                                        .get(usize::from(spectator.index()))
-                                        .map(|s| s.connection.clone())
-                                        .unwrap_or(ClientConnection::Disconnected),
-                                ),
-                            };
-                        peers.push(VoicePeer {
-                            id: *id,
-                            name,
-                            player_index: index,
-                            // Voice presence stays private during games.
-                            in_voice: false,
-                        });
-                        permissions.insert(*id, (sends, receives, silenced, connection));
-                    }
-                }
-            }
+            let (mut peers, permissions) = match room.as_ref() {
+                Room::Lobby(lobby) => lobby_voice(lobby, |id| bridge.in_voice(&scope, id)),
+                Room::Game(game) => game_voice(game),
+            };
             peers.sort_by_key(|peer| peer.id);
-            let mut members = Vec::new();
-            for (address, client) in &mut self.clients {
-                let ClientLocation::InRoom {
-                    room_code,
-                    room_client_id,
-                } = client.location()
-                else {
-                    continue;
-                };
-                if room_code != code {
-                    continue;
-                }
-                let Some((send, receive, silenced, ClientConnection::Connected(connection))) =
-                    permissions.get(room_client_id)
-                else {
-                    continue;
-                };
-                // A replaced game socket cannot retain an independent voice session.
-                if !connection.same_connection(&client.sender()) {
-                    continue;
-                }
-                let token = client
-                    .voice_session
-                    .as_ref()
-                    .filter(|s| s.scope == scope && s.self_id == *room_client_id)
-                    .map(|s| s.token.clone())
-                    .unwrap_or_else(random_token);
-                let session = VoiceSession {
-                    url: url.clone(),
-                    token: token.clone(),
-                    scope: scope.clone(),
-                    self_id: *room_client_id,
-                    send_groups: send.clone(),
-                    receive_groups: receive.clone(),
-                    forced_silenced: *silenced,
-                    peers: peers.clone(),
-                };
-                members.push(serde_json::json!({"id": room_client_id, "token": token, "send": send, "receive": receive}));
-                policies.insert(*address, session);
-            }
+            let room_voice = RoomVoice { code: *code, url: &url, scope, peers, permissions };
+            let mut members = room_voice.sessions(&mut self.clients, &mut policies);
             members.sort_by_key(|member| member.get("id").and_then(serde_json::Value::as_u64));
-            rooms.push(serde_json::json!({"scope": scope, "members": members}));
+            rooms.push(serde_json::json!({"scope": room_voice.scope, "members": members}));
         }
         rooms.sort_by_key(|room| {
             room.get("scope")
                 .and_then(serde_json::Value::as_str)
                 .map(str::to_owned)
         });
-        if let Some(bridge) = &self.voice {
+        if let Some(bridge) = &mut self.voice {
             bridge.publish(serde_json::json!(rooms));
         }
         for (address, client) in &mut self.clients {
@@ -199,5 +83,153 @@ impl WebsocketListener {
                 client.voice_session = next;
             }
         }
+    }
+}
+
+/// What one room client may do in voice
+struct VoicePermission {
+    send: Vec<String>,
+    receive: Vec<String>,
+    silenced: bool,
+    connection: ClientConnection,
+}
+
+type VoicePermissions = HashMap<RoomClientID, VoicePermission>;
+
+fn lobby_voice(lobby: &Lobby, in_voice: impl Fn(RoomClientID) -> bool) -> (Vec<VoicePeer>, VoicePermissions) {
+    let mut peers = Vec::new();
+    let mut permissions = HashMap::new();
+    for (id, client) in lobby.clients.iter() {
+        peers.push(VoicePeer {
+            id: *id,
+            name: match &client.client_type {
+                LobbyClientType::Player { name } => name.clone(),
+                LobbyClientType::Spectator { name } => name.clone(),
+            },
+            player_index: None,
+            in_voice: in_voice(*id),
+        });
+        permissions.insert(*id, VoicePermission {
+            send: vec!["lobby".to_owned()],
+            receive: vec!["lobby".to_owned()],
+            silenced: false,
+            connection: client.connection.clone(),
+        });
+    }
+    (peers, permissions)
+}
+
+fn game_voice(game: &Game) -> (Vec<VoicePeer>, VoicePermissions) {
+    let receive = crate::game::chat::PlayerChatGroups::receive_player_chat_group_map(game);
+    let mut peers = Vec::new();
+    let mut permissions = HashMap::new();
+    for (id, client) in game.clients.iter() {
+        let (name, player_index, permission) = match client.client_location {
+            GameClientLocation::Player(player) => (
+                player.name(game).clone(),
+                Some(player.index()),
+                player_voice(game, player, &receive),
+            ),
+            GameClientLocation::Spectator(spectator) => (
+                spectator.name(game),
+                None,
+                VoicePermission {
+                    send: vec![],
+                    receive: vec!["all".to_owned()],
+                    silenced: false,
+                    connection: game.spectators
+                        .get(usize::from(spectator.index()))
+                        .map(|s| s.connection.clone())
+                        .unwrap_or(ClientConnection::Disconnected),
+                },
+            ),
+        };
+        peers.push(VoicePeer {
+            id: *id,
+            name,
+            player_index,
+            // Voice presence stays private during games.
+            in_voice: false,
+        });
+        permissions.insert(*id, permission);
+    }
+    (peers, permissions)
+}
+
+fn chat_group_names<'a>(groups: impl IntoIterator<Item = &'a ChatGroup>) -> Vec<String> {
+    groups
+        .into_iter()
+        .filter_map(|group| serde_json::to_value(group).ok()?.as_str().map(str::to_owned))
+        .collect()
+}
+
+fn player_voice(game: &Game, player: PlayerReference, receive: &PlayerChatGroupMap) -> VoicePermission {
+    let brained = Abilities::ids(game).iter().any(|id| matches!(
+        id.get_ability(game),
+        Some(Ability::Role(RoleAbility(RoleState::Cerenovous(state))))
+            if state.currently_brained == Some(player)
+    ));
+    let silenced = brained || Silenced::silenced(game, player);
+    VoicePermission {
+        send: if silenced { vec![] } else { chat_group_names(&player.selected_send_chat_group(game)) },
+        receive: chat_group_names(receive.get(player).iter()),
+        silenced,
+        connection: player.connection(game).clone(),
+    }
+}
+
+/// One voice-enabled room's routing, used to build each member's session
+struct RoomVoice<'a> {
+    code: RoomCode,
+    url: &'a str,
+    scope: String,
+    peers: Vec<VoicePeer>,
+    permissions: VoicePermissions,
+}
+
+impl RoomVoice<'_> {
+    /// Adds a session for each connected member to `policies` and returns the members for the control snapshot.
+    fn sessions(&self, clients: &mut HashMap<SocketAddr, Client>, policies: &mut HashMap<SocketAddr, VoiceSession>) -> Vec<serde_json::Value> {
+        let mut members = Vec::new();
+        for (address, client) in clients {
+            let ClientLocation::InRoom {
+                room_code,
+                room_client_id,
+            } = client.location()
+            else {
+                continue;
+            };
+            if *room_code != self.code {
+                continue;
+            }
+            let Some(VoicePermission { send, receive, silenced, connection: ClientConnection::Connected(connection) }) =
+                self.permissions.get(room_client_id)
+            else {
+                continue;
+            };
+            // A replaced game socket cannot retain an independent voice session.
+            if !connection.same_connection(&client.sender()) {
+                continue;
+            }
+            let token = client
+                .voice_session
+                .as_ref()
+                .filter(|s| s.scope == self.scope && s.self_id == *room_client_id)
+                .map(|s| s.token.clone())
+                .unwrap_or_else(random_token);
+            let session = VoiceSession {
+                url: self.url.to_owned(),
+                token: token.clone(),
+                scope: self.scope.clone(),
+                self_id: *room_client_id,
+                send_groups: send.clone(),
+                receive_groups: receive.clone(),
+                forced_silenced: *silenced,
+                peers: self.peers.clone(),
+            };
+            members.push(serde_json::json!({"id": room_client_id, "token": token, "send": send, "receive": receive}));
+            policies.insert(*address, session);
+        }
+        members
     }
 }

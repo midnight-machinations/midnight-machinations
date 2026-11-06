@@ -28,7 +28,7 @@ git fetch origin
 
 ## 2. Set up
 
-Create the worktree with `scripts/new-worktree.sh <path> review/pr-<n>`, after making `review/pr-<n>` at the PR head (`git branch --no-track review/pr-<n> origin/<head>`). Without `--no-track`, the branch tracks the PR's head branch, and a bare `git push` would push the fixes straight to it. The worktree gets its own ports, so the app can run there.
+Create the worktree with `mask worktree <path> review/pr-<n>`, after making `review/pr-<n>` at the PR head (`git branch --no-track review/pr-<n> origin/<head>`). Without `--no-track`, the branch tracks the PR's head branch, and a bare `git push` would push the fixes straight to it. The worktree gets its own ports, so the app can run there.
 
 Run every check at the PR head before reading any code, and save the output in the scratchpad:
 

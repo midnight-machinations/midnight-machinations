@@ -1,78 +1,79 @@
-import { AudioFilePath } from "./Anchor";
+import type { AudioFilePath } from "./Anchor";
 
-export default class AudioController {
-    private static audio = new Audio();
-    private static queue: string[] = []
-    private static autoplay: boolean = true;
-    private static currentlyPlaying: boolean = false;
+const audio = new Audio();
+let queue: string[] = [];
+let autoplay = true;
+let currentlyPlaying = false;
 
-    public static setVolume(volume: number) {
-        this.audio.volume = volume;
-    }
+function playQueue() {
+    if (queue.length === 0) return;
 
-    public static unpauseQueue() {
-        if (!this.currentlyPlaying) {
-            this.autoplay = true;
-            this.playQueue()
-        }
-    }
-    public static pauseQueue() {
-        this.autoplay = false;
-        this.audio.pause();
-    }
-    public static clearQueue() {
-        this.queue = [];
-    }
-    public static queueFile(src: AudioFilePath) {
-        this.queue.push(src);
-        if (this.autoplay) {
-            this.unpauseQueue();
-        }
-    }
-
-    private static playQueue() {
-        if(this.queue.length > 0) {
-            this.currentlyPlaying = true;
-            console.log(`Audio: Playing ${this.queue[0]}`);
-            this.playFile(this.queue[0], () => {
-                this.queue = this.queue.slice(1)
-                this.currentlyPlaying = false;
-                if (this.autoplay)
-                    this.playQueue();
-            }, () => {
-                this.queue = this.queue.slice(1)
-                this.currentlyPlaying = false;
-                if (this.autoplay)
-                    this.playQueue();
-            });
-        }
-    }
-    private static playFile(src: string, onEnd?: () => void, onError?: () => void) {
-        this.audio.pause();
-        this.audio.src = src;
-        this.audio.load();
-
-        const onEnded = () => {
-            if(onEnd !== undefined) onEnd();
-            this.audio.removeEventListener("ended", onEnded);
-        }
-
-        this.playAudio(()=>{
-            if(onError !== undefined) onError();
-        });
-        this.audio.addEventListener("ended", onEnded);
-    }
-    private static playAudio(onError?: () => void) {
-        this.audio.play()
-            .then(() => {
-                this.audio.currentTime = 0;
-                this.audio.playbackRate = 1;
-            }).catch((error) => {
-                console.log("Audio failed to play: " + error);
-                if(onError !== undefined) onError();
-            }); 
-    }
+    currentlyPlaying = true;
+    console.log(`Audio: Playing ${queue[0]}`);
+    const next = () => {
+        queue = queue.slice(1);
+        currentlyPlaying = false;
+        if (autoplay) playQueue();
+    };
+    playFile(queue[0], next, next);
 }
+
+function playFile(src: string, onEnd?: () => void, onError?: () => void) {
+    audio.pause();
+    audio.src = src;
+    audio.load();
+
+    const onEnded = () => {
+        if (onEnd !== undefined) onEnd();
+        audio.removeEventListener("ended", onEnded);
+    };
+
+    playAudio(() => {
+        if (onError !== undefined) onError();
+    });
+    audio.addEventListener("ended", onEnded);
+}
+
+function playAudio(onError?: () => void) {
+    audio
+        .play()
+        .then(() => {
+            audio.currentTime = 0;
+            audio.playbackRate = 1;
+        })
+        .catch((error) => {
+            console.log(`Audio failed to play: ${error}`);
+            if (onError !== undefined) onError();
+        });
+}
+
+/** Plays queued sound effects one after another through a single shared audio element */
+const AudioController = {
+    setVolume(volume: number) {
+        audio.volume = volume;
+    },
+    unpauseQueue() {
+        if (!currentlyPlaying) {
+            autoplay = true;
+            playQueue();
+        }
+    },
+    pauseQueue() {
+        autoplay = false;
+        audio.pause();
+    },
+    clearQueue() {
+        queue = [];
+    },
+    queueFile(src: AudioFilePath) {
+        queue.push(src);
+        if (autoplay) {
+            AudioController.unpauseQueue();
+        }
+    },
+};
+
+export default AudioController;
 
 AudioController.clearQueue();
 AudioController.pauseQueue();

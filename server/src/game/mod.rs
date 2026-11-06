@@ -26,7 +26,7 @@ pub mod abilities;
 pub mod prelude;
 
 use std::collections::VecDeque;
-use std::time::Instant;
+use crate::platform::Instant;
 use crate::game::abilities_component::Abilities;
 use crate::game::chat::PlayerChatGroups;
 use crate::game::components::blocked::BlockedComponent;

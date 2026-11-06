@@ -44,90 +44,34 @@ pub(super) fn convert_controller_selection_to_visits(game: &Game, actor_ref: Pla
 }
 
 pub(super) fn convert_controller_selection_to_visits_visit_tag(game: &Game, actor_ref: PlayerReference, controller_id: ControllerID, attack: bool, tag: VisitTag) -> Vec<Visit> {
-    
     let Some(selection) = controller_id.get_selection(game) else {return Vec::new()};
 
+    let visit = |target: PlayerReference| Visit{
+        visitor: actor_ref,
+        target,
+        tag,
+        attack,
+        wardblock_immune: false,
+        transport_immune: false,
+        investigate_immune: false,
+        indirect: false
+    };
+
     match selection {
-        ControllerSelection::Unit(_) => vec![
-            Visit{
-                visitor: actor_ref,
-                target: actor_ref,
-                tag,
-                attack,
-                wardblock_immune: false,
-                transport_immune: false,
-                investigate_immune: false,
-                indirect: false
-            }
-        ],
+        ControllerSelection::Unit(_) => vec![visit(actor_ref)],
         ControllerSelection::TwoPlayerOption(selection) => {
-            if let Some((target_1, target_2)) = selection.0 {
-                vec![
-                    Visit{
-                        visitor: actor_ref,
-                        target: target_1,
-                        tag,
-                        attack,
-                        wardblock_immune: false,
-                        transport_immune: false,
-                        investigate_immune: false,
-                        indirect: false
-                    },
-                    Visit{
-                        visitor: actor_ref,
-                        target: target_2,
-                        tag,
-                        attack,
-                        wardblock_immune: false,
-                        transport_immune: false,
-                        investigate_immune: false,
-                        indirect: false
-                    }
-                ]
-            }else{
-                vec![]
-            }
+            selection.0.map_or_else(Vec::new, |(target_1, target_2)| vec![visit(target_1), visit(target_2)])
         },
         ControllerSelection::PlayerList(selection) => {
-            selection.0
-                .iter()
-                .map(|target_ref|
-                    Visit{
-                        visitor: actor_ref,
-                        target: *target_ref,
-                        tag,
-                        attack,
-                        wardblock_immune: false,
-                        transport_immune: false,
-                        investigate_immune: false,
-                        indirect: false
-                    }
-                )
-                .collect()
+            selection.0.iter().map(|target_ref| visit(*target_ref)).collect()
         }
         ControllerSelection::RoleList(selection) => {
             selection.0
                 .iter()
                 .flat_map(|role|
                     PlayerReference::all_players(game)
-                        .filter_map(|player|
-                            if player.role(game) == *role {
-                                Some(
-                                    Visit{
-                                        visitor: actor_ref,
-                                        target: player,
-                                        tag,
-                                        attack,
-                                        wardblock_immune: false,
-                                        transport_immune: false,
-                                        investigate_immune: false,
-                                        indirect: false
-                                    }
-                                )
-                            }else{
-                                None
-                            }
-                        )
+                        .filter(move |player| player.role(game) == *role)
+                        .map(visit)
                 )
                 .collect()
         }
@@ -135,69 +79,20 @@ pub(super) fn convert_controller_selection_to_visits_visit_tag(game: &Game, acto
             let mut out = Vec::new();
             for player in PlayerReference::all_players(game){
                 if Some(player.role(game)) == selection.0 {
-                    out.push(
-                        Visit{
-                            visitor: actor_ref,
-                            target: player,
-                            tag,
-                            attack,
-                            wardblock_immune: false,
-                            transport_immune: false,
-                            investigate_immune: false,
-                            indirect: false
-                        }
-                    );
+                    out.push(visit(player));
                 }
                 if Some(player.role(game)) == selection.1 {
-                    out.push(
-                        Visit{
-                            visitor: actor_ref,
-                            target: player,
-                            tag,
-                            attack,
-                            wardblock_immune: false,
-                            transport_immune: false,
-                            investigate_immune: false,
-                            indirect: false
-                        }
-                    );
+                    out.push(visit(player));
                 }
             }
             out
         }
         ControllerSelection::TwoRoleOutlineOption(selection) => {
-            let mut out = vec![];
-            if let Some(chosen_outline) = selection.0{
-                let (_, player) = chosen_outline.deref_as_role_and_player_originally_generated(game);
-                out.push(
-                    Visit{
-                        visitor: actor_ref,
-                        target: player,
-                        tag,
-                        attack,
-                        wardblock_immune: false,
-                        transport_immune: false,
-                        investigate_immune: false,
-                        indirect: false
-                    }
-                );
-            }
-            if let Some(chosen_outline) = selection.1{
-                let (_, player) = chosen_outline.deref_as_role_and_player_originally_generated(game);
-                out.push(
-                    Visit{
-                        visitor: actor_ref,
-                        target: player,
-                        tag,
-                        attack,
-                        wardblock_immune: false,
-                        transport_immune: false,
-                        investigate_immune: false,
-                        indirect: false
-                    }
-                );
-            }
-            out
+            [selection.0, selection.1]
+                .into_iter()
+                .flatten()
+                .map(|chosen_outline| visit(chosen_outline.deref_as_role_and_player_originally_generated(game).1))
+                .collect()
         },
         _ => Vec::new()
     }

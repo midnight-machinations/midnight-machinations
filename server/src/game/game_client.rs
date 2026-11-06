@@ -1,4 +1,5 @@
-use std::{collections::VecDeque, time::Instant};
+use std::collections::VecDeque;
+use crate::platform::Instant;
 
 use serde::Serialize;
 

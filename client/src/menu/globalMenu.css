@@ -1,4 +1,3 @@
-
 .global-menu {
     position: fixed;
     display: flex;
@@ -9,14 +8,14 @@
     min-width: fit-content;
     box-shadow: 0 0 20px rgba(from var(--text-color) / 0.5);
 
-    border: solid .13rem var(--primary-border-color);
+    border: solid 0.13rem var(--primary-border-color);
     border-bottom-color: var(--primary-border-shadow-color);
     border-right-color: var(--primary-border-shadow-color);
     border-radius: 0;
 
     gap: 0.5rem;
-    
-    padding: .5rem;
+
+    padding: 0.5rem;
     background-color: var(--background-color);
 
     z-index: 100;
@@ -28,7 +27,7 @@
 }
 
 .global-menu > section.standout {
-    border: solid .13rem var(--primary-border-color);
+    border: solid 0.13rem var(--primary-border-color);
     border-top-color: var(--primary-border-shadow-color);
     border-left-color: var(--primary-border-shadow-color);
     border-radius: 0;
@@ -40,7 +39,7 @@
 .global-menu button {
     display: flex;
     flex-direction: row;
-    gap: .25rem;
+    gap: 0.25rem;
 }
 
 @media (prefers-reduced-motion = no-preference) {
@@ -53,5 +52,7 @@
 }
 
 @keyframes slide-in {
-    100% { transform: translateX(0%); }
+    100% {
+        transform: translateX(0%);
+    }
 }

@@ -6,7 +6,9 @@ mod voice;
 pub type RoomCode = usize;
 
 
-use std::{collections::HashMap, net::SocketAddr, sync::{Arc, Mutex}, time::Duration};
+use std::{collections::HashMap, net::SocketAddr};
+#[cfg(not(target_arch = "wasm32"))]
+use std::{sync::{Arc, Mutex}, time::Duration};
 
 use crate::{log, packet::{RejectJoinReason, ToClientPacket}, room::{JoinRoomClientResult, RemoveRoomClientResult, Room, RoomClientID, RoomState}, websocket_connections::connection::Connection};
 
@@ -32,9 +34,14 @@ pub struct WebsocketListener {
     rooms: HashMap<RoomCode, Box<Room>>,
 }
 impl WebsocketListener{
+    /// A listener with voice configured from the environment, when it is.
+    #[cfg(not(target_arch = "wasm32"))]
     pub fn new() -> Self {
+        Self::with_voice(crate::voice::VoiceBridge::from_env())
+    }
+    pub fn with_voice(voice: Option<crate::voice::VoiceBridge>) -> Self {
         Self {
-            voice: crate::voice::VoiceBridge::from_env(),
+            voice,
             voice_scopes: HashMap::new(),
             rooms: HashMap::new(),
             clients: HashMap::new(),
@@ -180,6 +187,14 @@ impl WebsocketListener{
     }
 
     
+    pub fn voice(&self) -> Option<&crate::voice::VoiceBridge> {
+        self.voice.as_ref()
+    }
+    pub fn voice_mut(&mut self) -> Option<&mut crate::voice::VoiceBridge> {
+        self.voice.as_mut()
+    }
+
+    #[cfg(not(target_arch = "wasm32"))]
     pub fn start_tick(listener: Arc<Mutex<Self>>) {
         const DESIRED_FRAME_TIME: Duration = Duration::from_secs(1);
 

@@ -1,0 +1,28 @@
+[package]
+name = "mafia_proto"
+version = "0.1.0"
+edition = "2024"
+description = "Rust types and Twirp server stubs generated from the protos in /proto"
+
+# aislop flags unwrap(), todo!(), and unimplemented!() in non-test code, and its quality
+# limits (function length, parameter count, nesting) are the thresholds in /clippy.toml.
+[lints.clippy]
+unwrap_used = "warn"
+todo = "warn"
+unimplemented = "warn"
+too_many_lines = "warn"
+too_many_arguments = "warn"
+excessive_nesting = "warn"
+
+[dependencies]
+prost = "0.14"
+prost-types = "0.14"
+prost-reflect = { version = "0.16", features = ["derive", "serde"] }
+serde = { version = "1.0", features = ["derive"] }
+twurst-server = "0.3"
+
+[build-dependencies]
+twurst-build = "0.3"
+# twurst-build runs protoc, so ship one instead of requiring it to be installed.
+protoc-bin-vendored = "3"
+prost-build = "0.14"

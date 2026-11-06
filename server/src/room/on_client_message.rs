@@ -1,4 +1,5 @@
-use std::time::{Duration, Instant};
+use std::time::Duration;
+use crate::platform::Instant;
 
 use crate::{game::on_client_message::GameClientMessageResult, lobby::on_client_message::LobbyClientMessageResult, log, packet::{ToClientPacket, ToServerPacket}, websocket_connections::connection::ClientSender};
 

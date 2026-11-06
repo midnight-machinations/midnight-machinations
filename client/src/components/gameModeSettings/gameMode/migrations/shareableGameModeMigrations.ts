@@ -1,13 +1,13 @@
 /**
  * Migrations for ShareableGameMode data structure.
- * 
+ *
  * These migrations parallel the GameModeStorage migrations but for single game modes
  * that are shared between users.
  */
 
-import { registerMigration } from "./registry";
-import { Success } from "../parse";
 import { defaultPhaseTimes } from "../../../../game/gameState";
+import { Success } from "../parse";
+import { registerMigration } from "./registry";
 
 registerMigration("ShareableGameMode", {
     id: "2025-09-28-add-adjournment",
@@ -22,9 +22,9 @@ registerMigration("ShareableGameMode", {
         return Success({
             ...json,
             format: "v6",
-            phaseTimes
+            phaseTimes,
         });
-    }
+    },
 });
 
 registerMigration("ShareableGameMode", {
@@ -36,7 +36,7 @@ registerMigration("ShareableGameMode", {
             ...json,
             format: "2025-10-23-change-to-migration-id-format",
         });
-    }
+    },
 });
 
 registerMigration("ShareableGameMode", {
@@ -49,7 +49,7 @@ registerMigration("ShareableGameMode", {
         return Success({
             ...json,
             format: "2026-06-19-remove-recess-phase-time",
-            phaseTimes
+            phaseTimes,
         });
-    }
+    },
 });

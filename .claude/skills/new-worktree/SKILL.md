@@ -5,7 +5,7 @@ description: Create a new git worktree of this repo with its own client/server p
 
 # New worktree
 
-Use `scripts/new-worktree.sh` from the repo root. Don't create the worktree with plain `git worktree add`, because the new checkout would then use the same ports as the main one.
+Use the `mask worktree` task (in `maskfile.md`) from the repo root. Don't create the worktree with plain `git worktree add`, because the new checkout would then use the same ports as the main one.
 
 ## Steps
 
@@ -13,25 +13,24 @@ Use `scripts/new-worktree.sh` from the repo root. Don't create the worktree with
 2. Choose a path. By default, put it next to the main checkout: `../midnight-machinations-<branch>`, with any `/` in the branch name replaced by `-`.
 3. Run the script from the main checkout's root:
    ```bash
-   scripts/new-worktree.sh <path> <branch> [port-offset]
+   mask worktree <path> <branch> [--offset N]
    ```
-   - If `<branch>` exists, the script checks it out. Otherwise it creates it from the current HEAD.
-   - Leave out `port-offset` unless the user asks for specific ports or the default clashes with something. The default is the number of existing worktrees, so the first extra worktree gets client 3001 and server 9001.
-   - It writes `client/.env.local` (`VITE_WS_ADDRESS`, `CLIENT_PORT`) and `server/.env.local` (`WS_ADDRESS`), then runs `pnpm install`. This can take a minute.
-   - If the branch has `voice/`, it also runs the voice `configure` step with the same offset. That writes `voice/.env.local` and adds the voice settings to `server/.env.local`. Voice uses signaling port `9100 + 2×offset`, control port `9101 + 2×offset`, and three media ports from `44400 + 3×offset`.
-4. Tell the user the worktree path and the client, server, and (if printed) voice ports the script printed.
+   - If `<branch>` exists, the task checks it out. Otherwise it creates it from the current HEAD.
+   - Leave out `--offset` unless the user asks for specific ports or the default clashes with something. The default is the number of existing worktrees, so the first extra worktree gets client 3001 and server 9001.
+   - It copies the main checkout's `config.local.toml` (voice credentials and secret) with the new `[ports] offset`, runs `mask config` there, and then runs `pnpm install`. This can take a minute.
+   - Ports are the `config.toml` ports plus the offset: client `3000 + offset`, server `9000 + offset`, voice `9100 + offset`.
+4. Tell the user the worktree path and the client, server, and voice ports the task printed.
 
 ## Running the worktree
 
-The client and server each have to be started from their own directory in the worktree, because that is where their `.env.local` is read from:
+Run the tasks from the worktree root. Each task changes into its service directory, which is where that service's `.env.local` is read from:
 
 ```bash
-cd <path>/server && cargo run           # serves on the worktree's server port
-cd <path>/client && pnpm dev --no-open  # serves on the worktree's client port
-cd <path>/voice && pnpm install --frozen-lockfile && pnpm start  # only on branches with voice/; serves on the worktree's voice ports
+cd <path> && mask server run          # serves on the worktree's server port
+cd <path> && mask client dev --no-open  # serves on the worktree's client port
+cd <path> && mask voice start         # serves on the worktree's voice ports (run mask setup first)
 ```
 
-- The voice package approves mediasoup's native worker build in `voice/pnpm-workspace.yaml`. If installation fails, inspect its build output and the prerequisites in `voice/README.md`.
 
 - Start the server too, not only the client. The worktree's client connects only to its own server port, so it won't reach a server running from another checkout. If the page can't connect, check that this worktree's server is running and that it logged `Started listening on 0.0.0.0:<server port>`.
 - Don't run `cargo run` from the worktree root (for example with `--manifest-path`). From there, the server doesn't read `server/.env.local`.
@@ -39,6 +38,6 @@ cd <path>/voice && pnpm install --frozen-lockfile && pnpm start  # only on branc
 
 ## Notes
 
-- Both `.env.local` files are gitignored and take precedence over the committed `.env` files. To change a worktree's ports later, edit those files. Keep the client's `VITE_WS_ADDRESS` port the same as the server's `WS_ADDRESS` port.
+- The generated `.env.local` and `.dev.vars` files are gitignored. To change a worktree's ports or flags later, edit its `config.local.toml` and run `mask config` again.
 - Each worktree has its own `server/target`, so the first `cargo build` in it starts from scratch.
 - To remove a worktree: `git worktree remove <path>`, then `git branch -d <branch>` if the branch isn't needed anymore. Ask before deleting a branch that has unmerged commits.

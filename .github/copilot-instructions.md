@@ -12,12 +12,12 @@ This is Midnight Machinations (formerly Mafia), a multiplayer social deduction g
 ```
 .
 ├── client/          # Frontend React/TypeScript application
-│   ├── src/         # Source code
-│   └── public/      # Static assets
+│   └── src/         # Source code
 ├── server/          # Backend Rust application
 │   ├── src/         # Source code
 │   └── tests/       # Test files
-└── generate/        # Code generation utilities
+├── assets/          # Shared static files (client public/, server random_names/)
+└── tools/gen/       # Rust generators for shared files
 ```
 
 ## Build, Test, and Lint Commands
@@ -75,12 +75,12 @@ cargo audit                  # Check for security vulnerabilities
 ### Frontend (`client/`)
 
 * Add the role to the RoleState type in `client/src/game/roleState.d.tsx`
-* Add the role to `client/src/resources/roles.json`
+* Add the role to `assets/resources/roles.json`
   - Remember to supply associated chat messages - this is for the wiki
-* Handle any new chat messages in `client/src/components/ChatMessage.tsx` and `client/src/resources/styling/chatMessage.json` and add it roles in `client/src/resources/roles.json`
+* Handle any new chat messages in `client/src/components/ChatMessage.tsx` and `assets/resources/styling/chatMessage.json` and add it roles in `assets/resources/roles.json`
 * Add tags
 * Add any new packets to `client/src/game/packet.tsx` and `client/src/game/messageListener.tsx`
-* Add language in `client/src/resources/lang/en_us.json`
+* Add language in `assets/resources/lang/en_us.json`
   - Wiki page
   - Priority wiki page
   - The role itself
@@ -119,18 +119,18 @@ cargo audit                  # Check for security vulnerabilities
 * The name of the message should be written in lowerCamelCase
 * The fields of the message should be written in lowerCamelCase
 
-#### In `client/src/resources/lang/en_us.json`:
+#### In `assets/resources/lang/en_us.json`:
 * Add a key in the format `"chatMessage.<yourChatMessage>": "<Your message text.>"`.
 
 #### In `client/src/components/ChatMessage.tsx`:
 * Add the type and its corresponding fields to the `export type ChatMessageVariant` type.
 * Add a case in the `export function translateChatMessage` function that translates the message.
 
-#### In `client/src/resources/roles.json`
+#### In `assets/resources/roles.json`
 * If your message is related to specific role(s), add the message to the role's `.chatMessages` field.
 * This will add the messages to its wiki page.
 
-#### In `client/src/resources/styling/chatMessage.json`
+#### In `assets/resources/styling/chatMessage.json`
 * Add what style the message should be.
 * **Styles**
   * `result`: The style used for messages containing things like TI, attacks and block information.

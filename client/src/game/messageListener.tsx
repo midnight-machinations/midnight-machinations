@@ -1,86 +1,87 @@
-import { VOICE } from "../voice/voiceManager";
-
-import { createPlayer } from "./gameState";
-import { ANCHOR_CONTROLLER, chatMessageToAudio } from "./../menu/Anchor";
-import GAME_MANAGER from "./../index";
-import GameScreen from "./../menu/game/GameScreen";
-import { ToClientPacket } from "./packet";
-import { GameClient, PlayerIndex, Tag } from "./gameState.d";
-import { Role } from "./roleState.d";
-import translate from "./lang";
-import { computePlayerKeywordData, computePlayerKeywordDataForLobby, computeRoleListKeywordData } from "../components/StyledText";
-import { deleteReconnectData, loadSettingsParsed, saveReconnectData } from "./localStorage";
-import { WikiArticleLink } from "../components/WikiArticleLink";
-import React from "react";
-import WikiArticle from "../components/WikiArticle";
-import SpectatorGameScreen from "../menu/spectator/SpectatorGameScreen";
-import LobbyMenu from "../menu/lobby/LobbyMenu";
-import LoadingScreen from "../menu/LoadingScreen";
-import AudioController from "../menu/AudioController";
+import { getNamesForPlayerPoolFromLobbyClients } from "../components/gameModeSettings/OutlineSelector";
 import NightMessagePopup from "../components/NightMessagePopup";
+import {
+    computePlayerKeywordData,
+    computePlayerKeywordDataForLobby,
+    computeRoleListKeywordData,
+} from "../components/StyledText";
+import WikiArticle from "../components/WikiArticle";
+import type { WikiArticleLink } from "../components/WikiArticleLink";
+import GAME_MANAGER from "./../index";
+import ListMap from "../ListMap";
+import { ANCHOR_CONTROLLER, chatMessageToAudio } from "./../menu/Anchor";
+import AudioController from "../menu/AudioController";
+import GameScreen from "./../menu/game/GameScreen";
+import LoadingScreen from "../menu/LoadingScreen";
+import LobbyMenu from "../menu/lobby/LobbyMenu";
 import PlayMenu from "../menu/main/PlayMenu";
 import StartMenu from "../menu/main/StartMenu";
-import ListMap from "../ListMap";
+import SpectatorGameScreen from "../menu/spectator/SpectatorGameScreen";
+import { VOICE } from "../voice/voiceManager";
 import { controllerIdToLinkWithPlayer, sortControllerIdCompare } from "./controllerInput";
-import { getNamesForPlayerPoolFromLobbyClients } from "../components/gameModeSettings/OutlineSelector";
+import { createPlayer } from "./gameState";
+import type { GameClient, PlayerIndex, Tag } from "./gameState.d";
+import translate from "./lang";
+import { deleteReconnectData, loadSettingsParsed, saveReconnectData } from "./localStorage";
+import type { ToClientPacket } from "./packet";
+import type { Role } from "./roleState.d";
 
 function sendDefaultName() {
     const defaultName = loadSettingsParsed().defaultName;
-    if(defaultName !== null && defaultName !== undefined && defaultName !== ""){
-        GAME_MANAGER.sendSetNamePacket(defaultName as string)
+    if (defaultName !== null && defaultName !== undefined && defaultName !== "") {
+        GAME_MANAGER.sendSetNamePacket(defaultName as string);
     }
-} 
+}
 
-export default function messageListener(packet: ToClientPacket){
+export default function messageListener(packet: ToClientPacket) {
     if (packet.type !== "voiceSession") console.log(JSON.stringify(packet, null, 2));
 
-    switch(packet.type) {
+    switch (packet.type) {
         case "voiceEnabled":
             VOICE.setRoomEnabled(packet.enabled);
-        break;
+            break;
         case "voiceSession":
             VOICE.setSession(packet.session);
-        break;
+            break;
         case "pong":
             if (GAME_MANAGER.state.stateType !== "disconnected") {
                 GAME_MANAGER.server.sendPacket({
-                    type: "ping"
+                    type: "ping",
                 });
             }
-        break;
+            break;
         case "rateLimitExceeded":
             ANCHOR_CONTROLLER?.pushErrorCard({ title: translate("notification.rateLimitExceeded"), body: "" });
-        break;
+            break;
         case "forcedOutsideLobby":
             GAME_MANAGER.setOutsideLobbyState();
-            ANCHOR_CONTROLLER?.setContent(<PlayMenu/>);
-        break;
+            ANCHOR_CONTROLLER?.setContent(<PlayMenu />);
+            break;
         case "forcedDisconnect":
             GAME_MANAGER.setDisconnectedState();
-            ANCHOR_CONTROLLER?.setContent(<StartMenu/>);
-        break
+            ANCHOR_CONTROLLER?.setContent(<StartMenu />);
+            break;
         case "lobbyList":
-            if(GAME_MANAGER.state.stateType === "outsideLobby"){
+            if (GAME_MANAGER.state.stateType === "outsideLobby") {
                 GAME_MANAGER.state.lobbies = new Map();
 
-                for(let [lobbyId, lobbyData] of Object.entries(packet.lobbies))
-                    GAME_MANAGER.state.lobbies.set(Number.parseInt(lobbyId), lobbyData);
+                for (const [lobbyId, lobbyData] of Object.entries(packet.lobbies))
+                    GAME_MANAGER.state.lobbies.set(Number.parseInt(lobbyId, 10), lobbyData);
             }
-        break;
+            break;
         case "acceptJoin":
-            if(packet.inGame && packet.spectator){
+            if (packet.inGame && packet.spectator) {
                 GAME_MANAGER.setSpectatorGameState();
-                ANCHOR_CONTROLLER?.setContent(<LoadingScreen type="join" />)
-            }else if(packet.inGame && !packet.spectator){
+                ANCHOR_CONTROLLER?.setContent(<LoadingScreen type="join" />);
+            } else if (packet.inGame && !packet.spectator) {
                 GAME_MANAGER.setGameState();
-                ANCHOR_CONTROLLER?.setContent(<LoadingScreen type="join" />)
-            }else{
+                ANCHOR_CONTROLLER?.setContent(<LoadingScreen type="join" />);
+            } else {
                 GAME_MANAGER.setLobbyState();
-                ANCHOR_CONTROLLER?.setContent(<LobbyMenu/>);
+                ANCHOR_CONTROLLER?.setContent(<LobbyMenu />);
             }
-            
 
-            if(GAME_MANAGER.state.stateType === "lobby" || GAME_MANAGER.state.stateType === "game"){
+            if (GAME_MANAGER.state.stateType === "lobby" || GAME_MANAGER.state.stateType === "game") {
                 GAME_MANAGER.state.roomCode = packet.roomCode;
                 GAME_MANAGER.state.myId = packet.playerId;
             }
@@ -88,171 +89,205 @@ export default function messageListener(packet: ToClientPacket){
             saveReconnectData(packet.roomCode, packet.playerId);
             sendDefaultName();
             ANCHOR_CONTROLLER?.clearCoverCard();
-        break;
+            break;
         case "rejectJoin":
-            switch(packet.reason) {
+            switch (packet.reason) {
                 case "roomDoesntExist":
-                    ANCHOR_CONTROLLER?.pushErrorCard({ title: translate("notification.rejectJoin"), body: translate("notification.rejectJoin.roomDoesntExist") });
+                    ANCHOR_CONTROLLER?.pushErrorCard({
+                        title: translate("notification.rejectJoin"),
+                        body: translate("notification.rejectJoin.roomDoesntExist"),
+                    });
                     // If the room doesn't exist, don't suggest the user to reconnect to it.
                     deleteReconnectData();
                     ANCHOR_CONTROLLER?.clearCoverCard();
-                break;
+                    break;
                 case "gameAlreadyStarted":
-                    ANCHOR_CONTROLLER?.pushErrorCard({ title: translate("notification.rejectJoin"), body: translate("notification.rejectJoin.gameAlreadyStarted") });
-                break;
+                    ANCHOR_CONTROLLER?.pushErrorCard({
+                        title: translate("notification.rejectJoin"),
+                        body: translate("notification.rejectJoin.gameAlreadyStarted"),
+                    });
+                    break;
                 case "roomFull":
-                    ANCHOR_CONTROLLER?.pushErrorCard({ title: translate("notification.rejectJoin"), body: translate("notification.rejectJoin.roomFull") });
-                break;
+                    ANCHOR_CONTROLLER?.pushErrorCard({
+                        title: translate("notification.rejectJoin"),
+                        body: translate("notification.rejectJoin.roomFull"),
+                    });
+                    break;
                 case "serverBusy":
-                    ANCHOR_CONTROLLER?.pushErrorCard({ title: translate("notification.rejectJoin"), body: translate("notification.rejectJoin.serverBusy") });
-                break;
+                    ANCHOR_CONTROLLER?.pushErrorCard({
+                        title: translate("notification.rejectJoin"),
+                        body: translate("notification.rejectJoin.serverBusy"),
+                    });
+                    break;
                 case "playerTaken":
-                    ANCHOR_CONTROLLER?.pushErrorCard({ title: translate("notification.rejectJoin"), body: translate("notification.rejectJoin.playerTaken") });
-                break;
+                    ANCHOR_CONTROLLER?.pushErrorCard({
+                        title: translate("notification.rejectJoin"),
+                        body: translate("notification.rejectJoin.playerTaken"),
+                    });
+                    break;
                 case "playerDoesntExist":
-                    ANCHOR_CONTROLLER?.pushErrorCard({ title: translate("notification.rejectJoin"), body: translate("notification.rejectJoin.playerDoesntExist") });
-                break;
+                    ANCHOR_CONTROLLER?.pushErrorCard({
+                        title: translate("notification.rejectJoin"),
+                        body: translate("notification.rejectJoin.playerDoesntExist"),
+                    });
+                    break;
                 default:
-                    ANCHOR_CONTROLLER?.pushErrorCard({ title: translate("notification.rejectJoin"), body: `${packet.type} message response not implemented: ${packet.reason}` });
+                    ANCHOR_CONTROLLER?.pushErrorCard({
+                        title: translate("notification.rejectJoin"),
+                        body: `${packet.type} message response not implemented: ${packet.reason}`,
+                    });
                     console.error(`${packet.type} message response not implemented: ${packet.reason}`);
                     console.error(packet);
-                break;
+                    break;
             }
             deleteReconnectData();
-            
-        break;
+
+            break;
         case "rejectStart":
-            switch(packet.reason) {
+            switch (packet.reason) {
                 case "gameEndsInstantly":
-                    ANCHOR_CONTROLLER?.pushErrorCard({ title: translate("notification.rejectStart"), body: translate("notification.rejectStart.gameEndsInstantly") });
-                break;
+                    ANCHOR_CONTROLLER?.pushErrorCard({
+                        title: translate("notification.rejectStart"),
+                        body: translate("notification.rejectStart.gameEndsInstantly"),
+                    });
+                    break;
                 case "roleListTooSmall":
-                    ANCHOR_CONTROLLER?.pushErrorCard({ title: translate("notification.rejectStart"), body: translate("notification.rejectStart.roleListTooSmall") });
-                break;
+                    ANCHOR_CONTROLLER?.pushErrorCard({
+                        title: translate("notification.rejectStart"),
+                        body: translate("notification.rejectStart.roleListTooSmall"),
+                    });
+                    break;
                 case "roleListCannotCreateRoles":
-                    ANCHOR_CONTROLLER?.pushErrorCard({ title: translate("notification.rejectStart"), body: translate("notification.rejectStart.roleListCannotCreateRoles") });
-                break;
+                    ANCHOR_CONTROLLER?.pushErrorCard({
+                        title: translate("notification.rejectStart"),
+                        body: translate("notification.rejectStart.roleListCannotCreateRoles"),
+                    });
+                    break;
                 case "zeroTimeGame":
-                    ANCHOR_CONTROLLER?.pushErrorCard({ title: translate("notification.rejectStart"), body: translate("notification.rejectStart.zeroTimeGame") });
-                break;
+                    ANCHOR_CONTROLLER?.pushErrorCard({
+                        title: translate("notification.rejectStart"),
+                        body: translate("notification.rejectStart.zeroTimeGame"),
+                    });
+                    break;
                 case "tooManyCLients":
-                    ANCHOR_CONTROLLER?.pushErrorCard({ title: translate("notification.rejectStart"), body: translate("notification.rejectStart.tooManyClients") });
-                break;
+                    ANCHOR_CONTROLLER?.pushErrorCard({
+                        title: translate("notification.rejectStart"),
+                        body: translate("notification.rejectStart.tooManyClients"),
+                    });
+                    break;
                 default:
                     ANCHOR_CONTROLLER?.pushErrorCard({ title: translate("notification.rejectStart"), body: "" });
                     console.error(`${packet.type} message response not implemented: ${packet.reason}`);
                     console.error(packet);
-                break;
+                    break;
             }
-        break;
+            break;
         case "playersHost":
-            if(GAME_MANAGER.state.stateType === "lobby"){
-                for(let [playerId, player] of GAME_MANAGER.state.players.entries()){
+            if (GAME_MANAGER.state.stateType === "lobby") {
+                for (const [playerId, player] of GAME_MANAGER.state.players.entries()) {
                     if (packet.hosts.includes(playerId)) {
                         player.ready = "host";
                     } else {
-                        player.ready = player.ready === "host" ? "ready" : player.ready
+                        player.ready = player.ready === "host" ? "ready" : player.ready;
                     }
                 }
                 GAME_MANAGER.state.players = new ListMap(GAME_MANAGER.state.players.entries());
-            }else if(GAME_MANAGER.state.stateType === "game"){
+            } else if (GAME_MANAGER.state.stateType === "game") {
                 if (packet.hosts.includes(GAME_MANAGER.state.myId ?? -1)) {
                     if (GAME_MANAGER.state.host === null) {
                         GAME_MANAGER.state.host = {
                             fastForward: { type: "none" },
-                            clients: new ListMap()
-                        }
+                            clients: new ListMap(),
+                        };
                     }
 
                     for (const [id, client] of GAME_MANAGER.state.host.clients.entries()) {
                         client.host = packet.hosts.includes(id);
                     }
                 } else {
-                    GAME_MANAGER.state.host = null
+                    GAME_MANAGER.state.host = null;
                 }
             }
-        break;
+            break;
         case "playersReady":
-            if(GAME_MANAGER.state.stateType === "lobby"){
-                for(let [playerId, player] of GAME_MANAGER.state.players.entries()){
+            if (GAME_MANAGER.state.stateType === "lobby") {
+                for (const [playerId, player] of GAME_MANAGER.state.players.entries()) {
                     if (packet.ready.includes(playerId)) {
                         player.ready = "ready";
                     } else {
-                        player.ready = player.ready === "host" ? "host" : "notReady"
+                        player.ready = player.ready === "host" ? "host" : "notReady";
                     }
                 }
                 GAME_MANAGER.state.players = new ListMap(GAME_MANAGER.state.players.entries());
             }
-        break;
+            break;
         case "playersLostConnection":
-            if(GAME_MANAGER.state.stateType === "lobby"){
-                for(let [playerId, player] of GAME_MANAGER.state.players.entries()){
-                    if(packet.lostConnection.includes(playerId))
-                        player.connection = "couldReconnect";
+            if (GAME_MANAGER.state.stateType === "lobby") {
+                for (const [playerId, player] of GAME_MANAGER.state.players.entries()) {
+                    if (packet.lostConnection.includes(playerId)) player.connection = "couldReconnect";
                 }
                 GAME_MANAGER.state.players = new ListMap(GAME_MANAGER.state.players.entries());
             }
-        break;
+            break;
         /*
         In Lobby/Game 
         */
         case "yourId":
-            if(GAME_MANAGER.state.stateType === "lobby")
-                GAME_MANAGER.state.myId = packet.playerId;
-        break;
+            if (GAME_MANAGER.state.stateType === "lobby") GAME_MANAGER.state.myId = packet.playerId;
+            break;
         case "yourPlayerIndex":
-            if(GAME_MANAGER.state.stateType === "game" && GAME_MANAGER.state.clientState.type === "player")
+            if (GAME_MANAGER.state.stateType === "game" && GAME_MANAGER.state.clientState.type === "player")
                 GAME_MANAGER.state.clientState.myIndex = packet.playerIndex;
 
             //TODO jack Im sorry
             AudioController.clearQueue();
-        break;
+            break;
         case "yourFellowInsiders":
-            if(GAME_MANAGER.state.stateType === "game" && GAME_MANAGER.state.clientState.type === "player")
+            if (GAME_MANAGER.state.stateType === "game" && GAME_MANAGER.state.clientState.type === "player")
                 GAME_MANAGER.state.clientState.fellowInsiders = packet.fellowInsiders;
-        break;
+            break;
         case "lobbyClients":
-            if(GAME_MANAGER.state.stateType === "lobby"){
-
+            if (GAME_MANAGER.state.stateType === "lobby") {
                 GAME_MANAGER.state.players = new ListMap();
-                for(const [clientId, lobbyClient] of packet.clients){
+                for (const [clientId, lobbyClient] of packet.clients) {
                     GAME_MANAGER.state.players.insert(clientId, lobbyClient);
                 }
                 // Recompute keyword data, since player names are keywords.
                 computePlayerKeywordDataForLobby(
                     Array.from(GAME_MANAGER.state.players.values())
-                        .filter(client => client.clientType.type === "player")
-                        .map(client => (client.clientType as { type: "player", name: string }).name)
+                        .filter((client) => client.clientType.type === "player")
+                        .map((client) => (client.clientType as { type: "player"; name: string }).name),
                 );
                 // Recompute keyword data, since role list entries are keywords.
-                const names = getNamesForPlayerPoolFromLobbyClients(GAME_MANAGER.state.players)
+                const names = getNamesForPlayerPoolFromLobbyClients(GAME_MANAGER.state.players);
                 computeRoleListKeywordData(names, GAME_MANAGER.state.roleList);
             }
-        break;
+            break;
         case "hostData":
             if (GAME_MANAGER.state.stateType === "game") {
                 GAME_MANAGER.state.host = {
                     fastForward: packet.fastForward,
-                    clients: new ListMap<number, GameClient>(packet.clients)
-                }
-            } 
-        break;
+                    clients: new ListMap<number, GameClient>(packet.clients),
+                };
+            }
+            break;
         case "lobbyName":
-            if(GAME_MANAGER.state.stateType === "lobby" || GAME_MANAGER.state.stateType === "game"){
+            if (GAME_MANAGER.state.stateType === "lobby" || GAME_MANAGER.state.stateType === "game") {
                 GAME_MANAGER.state.lobbyName = packet.name;
             }
-        break;
-        case "startGame": 
+            break;
+        case "startGame":
             if (GAME_MANAGER.state.stateType === "lobby") {
-                const isSpectator = GAME_MANAGER.state.players.get(GAME_MANAGER.state.myId!)?.clientType.type === "spectator";
-                if(isSpectator){
+                const isSpectator =
+                    GAME_MANAGER.state.players.get(GAME_MANAGER.state.myId!)?.clientType.type === "spectator";
+                if (isSpectator) {
                     GAME_MANAGER.setSpectatorGameState();
-                    ANCHOR_CONTROLLER?.setContent(<LoadingScreen type="join" />)
-                }else{
+                    ANCHOR_CONTROLLER?.setContent(<LoadingScreen type="join" />);
+                } else {
                     GAME_MANAGER.setGameState();
-                    ANCHOR_CONTROLLER?.setContent(<LoadingScreen type="join" />)
+                    ANCHOR_CONTROLLER?.setContent(<LoadingScreen type="join" />);
                 }
-    
+
                 AudioController.queueFile("audio/start_game.mp3");
             }
             break;
@@ -260,34 +295,33 @@ export default function messageListener(packet: ToClientPacket){
             if (GAME_MANAGER.state.stateType === "game") {
                 const isSpectator = GAME_MANAGER.state.clientState.type === "spectator";
                 GAME_MANAGER.state.initialized = true;
-                if(isSpectator){
-                    ANCHOR_CONTROLLER?.setContent(<SpectatorGameScreen/>);
-                }else{
-                    ANCHOR_CONTROLLER?.setContent(<GameScreen/>);
+                if (isSpectator) {
+                    ANCHOR_CONTROLLER?.setContent(<SpectatorGameScreen />);
+                } else {
+                    ANCHOR_CONTROLLER?.setContent(<GameScreen />);
                 }
             }
             break;
         case "backToLobby":
             GAME_MANAGER.setLobbyState();
-            ANCHOR_CONTROLLER?.setContent(<LobbyMenu/>);
-        break;
+            ANCHOR_CONTROLLER?.setContent(<LobbyMenu />);
+            break;
         case "gamePlayers":
-            if(GAME_MANAGER.state.stateType === "game"){
+            if (GAME_MANAGER.state.stateType === "game") {
                 //only update the playerlist with the new one if there are any differences
                 let playersChanged = false;
-                if(GAME_MANAGER.state.players.length !== packet.players.length)
-                    playersChanged = true;
-                else{
-                    for(let i = 0; i < packet.players.length; i++){
-                        if(GAME_MANAGER.state.players[i].name !== packet.players[i]){
+                if (GAME_MANAGER.state.players.length !== packet.players.length) playersChanged = true;
+                else {
+                    for (let i = 0; i < packet.players.length; i++) {
+                        if (GAME_MANAGER.state.players[i].name !== packet.players[i]) {
                             playersChanged = true;
                             break;
                         }
                     }
                 }
-                if(playersChanged){
+                if (playersChanged) {
                     GAME_MANAGER.state.players = [];
-                    for(let i = 0; i < packet.players.length; i++){
+                    for (let i = 0; i < packet.players.length; i++) {
                         GAME_MANAGER.state.players.push(createPlayer(packet.players[i], i));
                     }
                 }
@@ -295,81 +329,90 @@ export default function messageListener(packet: ToClientPacket){
                 // Recompute keyword data, since player names are keywords.
                 computePlayerKeywordData(GAME_MANAGER.state.players);
                 // Recompute keyword data, since role list entries are keywords.
-                computeRoleListKeywordData(GAME_MANAGER.state.players.map(p=>p.toString()), GAME_MANAGER.state.roleList);
+                computeRoleListKeywordData(
+                    GAME_MANAGER.state.players.map((p) => p.toString()),
+                    GAME_MANAGER.state.roleList,
+                );
             }
-        break;
+            break;
         case "roleList":
             //list of role list entriy
-            if(GAME_MANAGER.state.stateType === "lobby" || GAME_MANAGER.state.stateType === "game") {
+            if (GAME_MANAGER.state.stateType === "lobby" || GAME_MANAGER.state.stateType === "game") {
                 GAME_MANAGER.state.roleList = packet.roleList;
 
                 // Recompute keyword data, since role list entries are keywords.
-                if(GAME_MANAGER.state.stateType === "game") {
-                    computeRoleListKeywordData(GAME_MANAGER.state.players.map(p=>p.toString()), GAME_MANAGER.state.roleList);
+                if (GAME_MANAGER.state.stateType === "game") {
+                    computeRoleListKeywordData(
+                        GAME_MANAGER.state.players.map((p) => p.toString()),
+                        GAME_MANAGER.state.roleList,
+                    );
                 } else {
-                    const names = getNamesForPlayerPoolFromLobbyClients(GAME_MANAGER.state.players)
+                    const names = getNamesForPlayerPoolFromLobbyClients(GAME_MANAGER.state.players);
                     computeRoleListKeywordData(names, GAME_MANAGER.state.roleList);
                 }
             }
-        break;
+            break;
         case "randomSeed":
-            if(GAME_MANAGER.state.stateType === "lobby" || GAME_MANAGER.state.stateType === "game") {
+            if (GAME_MANAGER.state.stateType === "lobby" || GAME_MANAGER.state.stateType === "game") {
                 GAME_MANAGER.state.randomSeed = packet.randomSeed;
             }
-        break;
+            break;
         case "roleOutline":
             //role list entriy
-            if(GAME_MANAGER.state.stateType === "lobby" || GAME_MANAGER.state.stateType === "game") {
+            if (GAME_MANAGER.state.stateType === "lobby" || GAME_MANAGER.state.stateType === "game") {
                 GAME_MANAGER.state.roleList = structuredClone(GAME_MANAGER.state.roleList);
                 GAME_MANAGER.state.roleList[packet.index] = packet.roleOutline;
                 GAME_MANAGER.state.roleList = [...GAME_MANAGER.state.roleList];
 
                 // Recompute keyword data, since role list entries are keywords.
-                if(GAME_MANAGER.state.stateType === "game") {
-                    computeRoleListKeywordData(GAME_MANAGER.state.players.map(p=>p.toString()), GAME_MANAGER.state.roleList);
+                if (GAME_MANAGER.state.stateType === "game") {
+                    computeRoleListKeywordData(
+                        GAME_MANAGER.state.players.map((p) => p.toString()),
+                        GAME_MANAGER.state.roleList,
+                    );
                 } else {
-                    const names = getNamesForPlayerPoolFromLobbyClients(GAME_MANAGER.state.players)
+                    const names = getNamesForPlayerPoolFromLobbyClients(GAME_MANAGER.state.players);
                     computeRoleListKeywordData(names, GAME_MANAGER.state.roleList);
                 }
             }
-        break;
+            break;
         case "phaseTime":
-            if(GAME_MANAGER.state.stateType === "lobby" || GAME_MANAGER.state.stateType === "game") {
+            if (GAME_MANAGER.state.stateType === "lobby" || GAME_MANAGER.state.stateType === "game") {
                 GAME_MANAGER.state.phaseTimes[packet.phase.type] = packet.time;
-                GAME_MANAGER.state.phaseTimes = {...GAME_MANAGER.state.phaseTimes};
+                GAME_MANAGER.state.phaseTimes = { ...GAME_MANAGER.state.phaseTimes };
             }
-        break;
+            break;
         case "phaseTimes":
-            if(GAME_MANAGER.state.stateType === "lobby" || GAME_MANAGER.state.stateType === "game")
+            if (GAME_MANAGER.state.stateType === "lobby" || GAME_MANAGER.state.stateType === "game")
                 GAME_MANAGER.state.phaseTimes = packet.phaseTimeSettings;
-        break;
+            break;
         case "enabledRoles":
-            if(GAME_MANAGER.state.stateType === "lobby" || GAME_MANAGER.state.stateType === "game")
+            if (GAME_MANAGER.state.stateType === "lobby" || GAME_MANAGER.state.stateType === "game")
                 GAME_MANAGER.state.enabledRoles = packet.roles;
-        break;
+            break;
         case "modifierSettings":
-            if(GAME_MANAGER.state.stateType === "lobby" || GAME_MANAGER.state.stateType === "game")
+            if (GAME_MANAGER.state.stateType === "lobby" || GAME_MANAGER.state.stateType === "game")
                 GAME_MANAGER.state.modifierSettings = new ListMap(packet.modifierSettings.modifiers);
-        break;
+            break;
         case "phase":
-            if(GAME_MANAGER.state.stateType === "game"){
+            if (GAME_MANAGER.state.stateType === "game") {
                 GAME_MANAGER.state.phaseState = packet.phase;
                 GAME_MANAGER.state.dayNumber = packet.dayNumber;
-        
-                if(packet.phase.type === "briefing" && GAME_MANAGER.state.clientState.type === "player"){
+
+                if (packet.phase.type === "briefing" && GAME_MANAGER.state.clientState.type === "player") {
                     const role = GAME_MANAGER.state.clientState.myRole;
-                    if(role !== undefined){
-                        ANCHOR_CONTROLLER?.setCoverCard(<WikiArticle article={"role/"+role as WikiArticleLink}/>);
+                    if (role !== undefined) {
+                        ANCHOR_CONTROLLER?.setCoverCard(<WikiArticle article={`role/${role}` as WikiArticleLink} />);
                     }
                 }
             }
-        break;
+            break;
         case "phaseTimeLeft":
-            if(GAME_MANAGER.state.stateType === "game")
-                GAME_MANAGER.state.timeLeftMs = packet.secondsLeft!==null?(packet.secondsLeft * 1000):null;
-        break;
+            if (GAME_MANAGER.state.stateType === "game")
+                GAME_MANAGER.state.timeLeftMs = packet.secondsLeft !== null ? packet.secondsLeft * 1000 : null;
+            break;
         case "playerAlive":
-            if(GAME_MANAGER.state.stateType === "game"){
+            if (GAME_MANAGER.state.stateType === "game") {
                 GAME_MANAGER.state.players = GAME_MANAGER.state.players.map((player, i) => {
                     if (i < packet.alive.length && player.alive !== packet.alive[i]) {
                         return { ...player, alive: packet.alive[i] };
@@ -377,69 +420,73 @@ export default function messageListener(packet: ToClientPacket){
                     return player;
                 });
             }
-        break;
+            break;
         case "playerVotes":
-            if(GAME_MANAGER.state.stateType === "game"){
-
-                let listMapVotes = new ListMap<PlayerIndex, number>(packet.votesForPlayer);
+            if (GAME_MANAGER.state.stateType === "game") {
+                const listMapVotes = new ListMap<PlayerIndex, number>(packet.votesForPlayer);
 
                 GAME_MANAGER.state.players = GAME_MANAGER.state.players.map((player, i) => {
-                    let numVoted = listMapVotes.get(i)??0;
+                    const numVoted = listMapVotes.get(i) ?? 0;
                     if (player.numVoted !== numVoted) {
                         return { ...player, numVoted };
                     }
                     return player;
                 });
             }
-        break;
+            break;
         case "yourSendChatGroups":
-            if(GAME_MANAGER.state.stateType === "game" && GAME_MANAGER.state.clientState.type === "player"){
+            if (GAME_MANAGER.state.stateType === "game" && GAME_MANAGER.state.clientState.type === "player") {
                 GAME_MANAGER.state.clientState.sendChatGroups = [...packet.sendChatGroups];
             }
-        break;
+            break;
         case "yourInsiderGroups":
-            if(GAME_MANAGER.state.stateType === "game" && GAME_MANAGER.state.clientState.type === "player"){
+            if (GAME_MANAGER.state.stateType === "game" && GAME_MANAGER.state.clientState.type === "player") {
                 GAME_MANAGER.state.clientState.insiderGroups = [...packet.insiderGroups];
             }
-        break;
+            break;
         case "yourAllowedControllers":
-            if(GAME_MANAGER.state.stateType === "game" && GAME_MANAGER.state.clientState.type === "player"){
-                GAME_MANAGER.state.clientState.savedControllers = 
-                    packet.save.sort((a, b) => sortControllerIdCompare(a[0],b[0]));
-            }
-        break;
-        case "yourAllowedController":
-            if(GAME_MANAGER.state.stateType === "game" && GAME_MANAGER.state.clientState.type === "player"){
-                let savedControllers = new ListMap(GAME_MANAGER.state.clientState.savedControllers,
-                    (k1,k2)=>controllerIdToLinkWithPlayer(k1)===controllerIdToLinkWithPlayer(k2)
+            if (GAME_MANAGER.state.stateType === "game" && GAME_MANAGER.state.clientState.type === "player") {
+                GAME_MANAGER.state.clientState.savedControllers = packet.save.sort((a, b) =>
+                    sortControllerIdCompare(a[0], b[0]),
                 );
-                if(packet.controller===null){
+            }
+            break;
+        case "yourAllowedController":
+            if (GAME_MANAGER.state.stateType === "game" && GAME_MANAGER.state.clientState.type === "player") {
+                const savedControllers = new ListMap(
+                    GAME_MANAGER.state.clientState.savedControllers,
+                    (k1, k2) => controllerIdToLinkWithPlayer(k1) === controllerIdToLinkWithPlayer(k2),
+                );
+                if (packet.controller === null) {
                     savedControllers.delete(packet.id);
-                }else{
+                } else {
                     savedControllers.insert(packet.id, packet.controller);
                 }
-                GAME_MANAGER.state.clientState.savedControllers = [...savedControllers.entries().sort((a, b) => sortControllerIdCompare(a[0],b[0]))]
+                GAME_MANAGER.state.clientState.savedControllers = [
+                    ...savedControllers.entries().sort((a, b) => sortControllerIdCompare(a[0], b[0])),
+                ];
             }
-        break;
+            break;
         case "yourRoleLabels":
-            if(GAME_MANAGER.state.stateType === "game"){
+            if (GAME_MANAGER.state.stateType === "game") {
                 const roleLabelMap = new Map(packet.roleLabels);
                 GAME_MANAGER.state.players = GAME_MANAGER.state.players.map((player) => {
-                    const newRoleLabel = roleLabelMap.get(player.index) as Role ?? null;
+                    const newRoleLabel = (roleLabelMap.get(player.index) as Role) ?? null;
                     if (player.roleLabel !== newRoleLabel) {
                         return { ...player, roleLabel: newRoleLabel };
                     }
                     return player;
                 });
             }
-        break;
+            break;
         case "yourPlayerTags":
-            if(GAME_MANAGER.state.stateType === "game"){
+            if (GAME_MANAGER.state.stateType === "game") {
                 const playerTagsMap = new Map(packet.playerTags);
                 GAME_MANAGER.state.players = GAME_MANAGER.state.players.map((player) => {
-                    const newPlayerTags = playerTagsMap.get(player.index) as Tag[] ?? [];
+                    const newPlayerTags = (playerTagsMap.get(player.index) as Tag[]) ?? [];
                     // Check if tags array has changed
-                    const tagsChanged = player.playerTags.length !== newPlayerTags.length ||
+                    const tagsChanged =
+                        player.playerTags.length !== newPlayerTags.length ||
                         player.playerTags.some((tag, idx) => tag !== newPlayerTags[idx]);
                     if (tagsChanged) {
                         return { ...player, playerTags: newPlayerTags };
@@ -447,55 +494,54 @@ export default function messageListener(packet: ToClientPacket){
                     return player;
                 });
             }
-        break;
+            break;
         case "yourNotes":
-            if(GAME_MANAGER.state.stateType === "game" && GAME_MANAGER.state.clientState.type === "player"){
+            if (GAME_MANAGER.state.stateType === "game" && GAME_MANAGER.state.clientState.type === "player") {
                 GAME_MANAGER.state.clientState.notes = packet.notes;
             }
-        break;
+            break;
         case "yourCrossedOutOutlines":
-            if(GAME_MANAGER.state.stateType === "game" && GAME_MANAGER.state.clientState.type === "player")
+            if (GAME_MANAGER.state.stateType === "game" && GAME_MANAGER.state.clientState.type === "player")
                 GAME_MANAGER.state.clientState.crossedOutOutlines = packet.crossedOutOutlines;
-        break;
+            break;
         case "yourCallingCard":
-            if(GAME_MANAGER.state.stateType === "game" && GAME_MANAGER.state.clientState.type === "player")
+            if (GAME_MANAGER.state.stateType === "game" && GAME_MANAGER.state.clientState.type === "player")
                 GAME_MANAGER.state.clientState.callingCard = packet.callingCard ?? "";
-        break;
+            break;
         case "yourRole":
-            if(GAME_MANAGER.state.stateType === "game" && GAME_MANAGER.state.clientState.type === "player"){
+            if (GAME_MANAGER.state.stateType === "game" && GAME_MANAGER.state.clientState.type === "player") {
                 GAME_MANAGER.state.clientState.myRole = packet.role;
             }
-        break;
+            break;
         case "abilityState":
-            if(GAME_MANAGER.state.stateType === "game" && GAME_MANAGER.state.clientState.type === "player"){
-                if(packet.abilityState !== null){
+            if (GAME_MANAGER.state.stateType === "game" && GAME_MANAGER.state.clientState.type === "player") {
+                if (packet.abilityState !== null) {
                     GAME_MANAGER.state.clientState.abilityStates.insert(packet.abilityId, packet.abilityState);
-                }else{
+                } else {
                     GAME_MANAGER.state.clientState.abilityStates.delete(packet.abilityId);
                 }
             }
-        break;
+            break;
         case "yourVoteFastForwardPhase":
-            if(GAME_MANAGER.state.stateType === "game")
-                GAME_MANAGER.state.fastForward = packet.fastForward;
-        break;
+            if (GAME_MANAGER.state.stateType === "game") GAME_MANAGER.state.fastForward = packet.fastForward;
+            break;
         case "addChatMessages":
-            if(GAME_MANAGER.state.stateType === "game" || GAME_MANAGER.state.stateType === "lobby"){
+            if (GAME_MANAGER.state.stateType === "game" || GAME_MANAGER.state.stateType === "lobby") {
                 GAME_MANAGER.state.chatMessages = new ListMap(
-                    GAME_MANAGER.state.chatMessages.entries().concat(packet.chatMessages)
+                    GAME_MANAGER.state.chatMessages.entries().concat(packet.chatMessages),
                 );
 
                 // Chat notification icon state
-                if(GAME_MANAGER.state.stateType === "game" && packet.chatMessages.length !== 0){
+                if (GAME_MANAGER.state.stateType === "game" && packet.chatMessages.length !== 0) {
                     GAME_MANAGER.state.missedChatMessages = true;
-                    
+
                     // eslint-disable-next-line
-                    for(let [_index, chatMessage] of packet.chatMessages){
-                        if(
+                    for (const [_index, chatMessage] of packet.chatMessages) {
+                        if (
                             chatMessage.variant.type === "whisper" &&
                             GAME_MANAGER.state.clientState.type === "player" &&
                             chatMessage.variant.toPlayerIndex === GAME_MANAGER.state.clientState.myIndex
-                        ){
+                        ) {
                             GAME_MANAGER.state.clientState.missedWhispers.push(chatMessage.variant.fromPlayerIndex);
                         }
                     }
@@ -503,56 +549,51 @@ export default function messageListener(packet: ToClientPacket){
 
                 if (GAME_MANAGER.state.stateType !== "game" || GAME_MANAGER.state.initialized === true) {
                     // eslint-disable-next-line
-                    for(let [_index, chatMessage] of packet.chatMessages){
-                        let audioSrc = chatMessageToAudio(chatMessage);
-                        if(audioSrc)
-                            AudioController.queueFile(audioSrc);
+                    for (const [_index, chatMessage] of packet.chatMessages) {
+                        const audioSrc = chatMessageToAudio(chatMessage);
+                        if (audioSrc) AudioController.queueFile(audioSrc);
                     }
                 }
             }
-        break;
+            break;
         case "nightMessages":
-            if(GAME_MANAGER.state.stateType === "game" || GAME_MANAGER.state.stateType === "lobby"){
-
-                if(ANCHOR_CONTROLLER?.getCoverCard()===null && packet.chatMessages.length!==0){
-                    ANCHOR_CONTROLLER?.setCoverCard(<NightMessagePopup messages={packet.chatMessages}/>)
+            if (GAME_MANAGER.state.stateType === "game" || GAME_MANAGER.state.stateType === "lobby") {
+                if (ANCHOR_CONTROLLER?.getCoverCard() === null && packet.chatMessages.length !== 0) {
+                    ANCHOR_CONTROLLER?.setCoverCard(<NightMessagePopup messages={packet.chatMessages} />);
                 }
             }
-        break;
+            break;
         case "addGrave":
-            if(GAME_MANAGER.state.stateType === "game"){
+            if (GAME_MANAGER.state.stateType === "game") {
                 GAME_MANAGER.state.graves.insert(packet.graveRef, packet.grave);
-                GAME_MANAGER.state.graves = new ListMap(
-                    [...GAME_MANAGER.state.graves
-                        .entries()
-                        .sort(([a,_a],[b,_b])=>a-b)
-                    ]
-                );
+                GAME_MANAGER.state.graves = new ListMap([
+                    ...GAME_MANAGER.state.graves.entries().sort(([a, _a], [b, _b]) => a - b),
+                ]);
             }
-        break;
+            break;
         case "gameOver":
-            if(GAME_MANAGER.state.stateType === "game"){
+            if (GAME_MANAGER.state.stateType === "game") {
                 GAME_MANAGER.state.ticking = false;
-                switch(packet.reason) {
+                switch (packet.reason) {
                     case "reachedMaxDay":
                     case "draw":
                         console.log("Game ended! (naturally)");
-                    break;
+                        break;
                     default:
                         // alert("Game ended for an unknown reason!");
                         console.error(`${packet.type} message response not implemented: ${packet.reason}`);
                         console.error(packet);
-                    break;
+                        break;
                 }
             }
-        break;
+            break;
         default:
-            console.error(`incoming message response not implemented: ${(packet as any)?.type}`);
+            console.error(
+                `incoming message response not implemented: ${(packet as { type?: string } | undefined)?.type}`,
+            );
             console.error(packet);
-        break;
+            break;
     }
 
-    GAME_MANAGER.invokeStateListeners(packet.type)
+    GAME_MANAGER.invokeStateListeners(packet.type);
 }
-
-

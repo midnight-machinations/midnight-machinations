@@ -17,7 +17,10 @@ export function isModifierKey(code: string) {
 
 export function keybindFromEvent(event: KeyEvent): string {
     const ownModifier = modifierForKey(event.code);
-    return [...MODIFIERS.filter(([name, flag]) => event[flag] && name !== ownModifier).map(([name]) => name), event.code].join("+");
+    return [
+        ...MODIFIERS.filter(([name, flag]) => event[flag] && name !== ownModifier).map(([name]) => name),
+        event.code,
+    ].join("+");
 }
 
 export function matchesKeybindModifiers(binding: string, event: KeyEvent): boolean {
@@ -35,10 +38,13 @@ export function keybindReleased(binding: string, event: KeyEvent): boolean {
 }
 
 export function formatKeybind(binding: string): string {
-    return binding.split("+").map(code => {
-        const modifier = modifierForKey(code) ?? code;
-        if (modifier === "Control") return "Ctrl";
-        if (isModifierKey(code)) return modifier;
-        return code.replace(/^(Key|Digit)(?=\w$)/, "");
-    }).join("+");
+    return binding
+        .split("+")
+        .map((code) => {
+            const modifier = modifierForKey(code) ?? code;
+            if (modifier === "Control") return "Ctrl";
+            if (isModifierKey(code)) return modifier;
+            return code.replace(/^(Key|Digit)(?=\w$)/, "");
+        })
+        .join("+");
 }

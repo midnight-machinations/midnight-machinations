@@ -1,21 +1,23 @@
-import React, { ReactElement, ReactNode, useContext, useEffect, useMemo, useRef } from "react";
+import React, { type ReactElement, type ReactNode, useContext, useEffect, useMemo, useRef } from "react";
 import ReactDOM from "react-dom/client";
 import { THEME_CSS_ATTRIBUTES } from "..";
 import { AnchorControllerContext, MobileContext, TooltipContext } from "../menu/Anchor";
 import { MenuControllerContext } from "../menu/game/GameScreen";
 import { GameModeContext } from "./gameModeSettings/GameModesEditor";
 
-export default function Popover<T extends HTMLElement = HTMLElement>(props: Readonly<{
-    open: boolean,
-    children: ReactNode,
-    setOpenOrClosed: (open: boolean) => void,
-    onRender?: (popoverElement: HTMLDivElement, anchorElement?: T | undefined) => void
-    anchorForPositionRef?: React.RefObject<T>,
-    className?: string,
-    doNotCloseOnOutsideClick?: boolean
-}>): ReactElement {
+export default function Popover<T extends HTMLElement = HTMLElement>(
+    props: Readonly<{
+        open: boolean;
+        children: ReactNode;
+        setOpenOrClosed: (open: boolean) => void;
+        onRender?: (popoverElement: HTMLDivElement, anchorElement?: T | undefined) => void;
+        anchorForPositionRef?: React.RefObject<T>;
+        className?: string;
+        doNotCloseOnOutsideClick?: boolean;
+    }>,
+): ReactElement {
     const thisRef = useRef<HTMLDivElement>(null);
-    const popoverRef = useRef<HTMLDivElement>(document.createElement('div'));
+    const popoverRef = useRef<HTMLDivElement>(document.createElement("div"));
 
     const popoverRoot = useMemo(() => {
         const popoverElement = popoverRef.current;
@@ -23,7 +25,7 @@ export default function Popover<T extends HTMLElement = HTMLElement>(props: Read
 
         document.body.appendChild(popoverElement);
         return ReactDOM.createRoot(popoverElement);
-    }, [])
+    }, []);
 
     //set ref
     useEffect(() => {
@@ -31,36 +33,39 @@ export default function Popover<T extends HTMLElement = HTMLElement>(props: Read
         return () => {
             setTimeout(() => {
                 popoverRoot.unmount();
-            })
+            });
             initialPopover.remove();
-            
-            popoverRef.current = document.createElement('div');
-        }
-    }, [popoverRoot])
+
+            popoverRef.current = document.createElement("div");
+        };
+    }, [popoverRoot]);
 
     //match css styles
     useEffect(() => {
         const styleCopyFrom = props.anchorForPositionRef?.current ?? thisRef.current;
         const popoverElement = popoverRef.current;
-        
+
         if (styleCopyFrom) {
             // Match styles
-            THEME_CSS_ATTRIBUTES.forEach(prop => {
-                popoverElement.style.setProperty(`--${prop}`, getComputedStyle(styleCopyFrom).getPropertyValue(`--${prop}`))
-            })
+            THEME_CSS_ATTRIBUTES.forEach((prop) => {
+                popoverElement.style.setProperty(
+                    `--${prop}`,
+                    getComputedStyle(styleCopyFrom).getPropertyValue(`--${prop}`),
+                );
+            });
 
-            popoverElement.className = 'popover ' + (props.className ?? '')
+            popoverElement.className = `popover ${props.className ?? ""}`;
         }
-    }, [props.anchorForPositionRef, props.className])
+    }, [props.anchorForPositionRef, props.className]);
 
     // This is for the popover's anchor, not the element named Anchor
     const [anchorLocation, setAnchorLocation] = React.useState(() => {
         const bounds = props.anchorForPositionRef?.current?.getBoundingClientRect();
 
         if (bounds) {
-            return { top: bounds.top, left: bounds.left }
+            return { top: bounds.top, left: bounds.left };
         } else {
-            return {top: 0, left: 0}
+            return { top: 0, left: 0 };
         }
     });
 
@@ -68,24 +73,17 @@ export default function Popover<T extends HTMLElement = HTMLElement>(props: Read
     useEffect(() => {
         const listener = () => {
             const bounds = props.anchorForPositionRef?.current?.getBoundingClientRect();
-            if (
-                bounds &&
-                props.open &&
-                (
-                    anchorLocation.top !== bounds?.top || 
-                    anchorLocation.left !== bounds?.left
-                )
-            )
-            props.setOpenOrClosed(false);
+            if (bounds && props.open && (anchorLocation.top !== bounds?.top || anchorLocation.left !== bounds?.left))
+                props.setOpenOrClosed(false);
         };
-        
+
         window.addEventListener("scroll", listener, true);
         window.addEventListener("resize", listener);
         return () => {
             window.removeEventListener("scroll", listener, true);
             window.removeEventListener("resize", listener);
-        }
-    })
+        };
+    });
 
     const anchorControllerContext = useContext(AnchorControllerContext);
     const menuControllerContext = useContext(MenuControllerContext);
@@ -110,35 +108,47 @@ export default function Popover<T extends HTMLElement = HTMLElement>(props: Read
                             </MobileContext.Provider>
                         </GameModeContext.Provider>
                     </MenuControllerContext.Provider>
-                </AnchorControllerContext.Provider>
+                </AnchorControllerContext.Provider>,
             );
 
             if (anchorElement) {
                 const anchorBounds = anchorElement.getBoundingClientRect();
 
-                setAnchorLocation({top: anchorBounds.top, left: anchorBounds.left});
+                setAnchorLocation({ top: anchorBounds.top, left: anchorBounds.left });
             }
 
             setTimeout(() => {
                 popoverElement.hidden = false;
-                
+
                 if (props.onRender) {
-                    props.onRender(popoverElement, anchorElement ?? undefined)
+                    props.onRender(popoverElement, anchorElement ?? undefined);
                 }
-            })
+            });
         } else {
             popoverElement.hidden = true;
         }
-    }, [props.children, props.onRender, props.anchorForPositionRef, props.open, popoverRoot, anchorControllerContext, menuControllerContext, gameModeContext, mobileContext, tooltipContext]);
+    }, [
+        props.children,
+        props.onRender,
+        props.anchorForPositionRef,
+        props.open,
+        popoverRoot,
+        anchorControllerContext,
+        menuControllerContext,
+        gameModeContext,
+        mobileContext,
+        tooltipContext,
+    ]);
 
     // Resize when children change
+    // biome-ignore lint/correctness/useExhaustiveDependencies(props.children): re-run onRender whenever the content changes size
     useEffect(() => {
         setTimeout(() => {
             if (props.onRender) {
-                props.onRender(popoverRef.current, props.anchorForPositionRef?.current ?? undefined)
+                props.onRender(popoverRef.current, props.anchorForPositionRef?.current ?? undefined);
             }
-        })
-    }, [props.anchorForPositionRef, props.children, props.onRender, popoverRef])
+        });
+    }, [props.anchorForPositionRef, props.children, props.onRender]);
 
     //close on click outside
     useEffect(() => {
@@ -149,8 +159,8 @@ export default function Popover<T extends HTMLElement = HTMLElement>(props: Read
         const handleClickOutside = (event: MouseEvent) => {
             if (
                 !popoverRef.current?.contains(event.target as Node) &&
-                !props.anchorForPositionRef?.current?.contains(event.target as Node)
-                && props.open
+                !props.anchorForPositionRef?.current?.contains(event.target as Node) &&
+                props.open
             ) {
                 props.setOpenOrClosed(false);
             }
@@ -158,13 +168,13 @@ export default function Popover<T extends HTMLElement = HTMLElement>(props: Read
 
         setTimeout(() => {
             document.addEventListener("click", handleClickOutside);
-        })
+        });
         return () => {
             setTimeout(() => {
                 document.removeEventListener("click", handleClickOutside);
-            })
-        }
+            });
+        };
     }, [props]);
 
-    return <div ref={thisRef} hidden={true}/>
+    return <div ref={thisRef} hidden={true} />;
 }

@@ -1,27 +1,25 @@
-import { ChatFilter } from "./chatFilter";
-import { VOICE } from "../voice/voiceManager";
-import { ANCHOR_CONTROLLER } from "./../menu/Anchor";
-import StartMenu from "./../menu/main/StartMenu";
 import GAME_MANAGER from "./../index";
-import messageListener from "./messageListener";
-import React from "react";
-import { PhaseType, PhaseTimes, Verdict, PlayerIndex, FastForwardSetting } from "./gameState.d";
-import { GameManager, Server, StateListener } from "./gameManager.d";
-import { LobbyPreviewData, ToClientPacket, ToServerPacket } from "./packet";
-import { RoleOutline } from "./roleListState.d";
-import translate from "./lang";
-import PlayMenu from "../menu/main/PlayMenu";
-import { createGameState, createLobbyState } from "./gameState";
-import { deleteReconnectData } from "./localStorage";
-import AudioController from "../menu/AudioController";
 import ListMap from "../ListMap";
+import { ANCHOR_CONTROLLER } from "./../menu/Anchor";
+import AudioController from "../menu/AudioController";
 import { defaultAlibi } from "../menu/game/gameScreenContent/WillMenu";
+import PlayMenu from "../menu/main/PlayMenu";
+import StartMenu from "./../menu/main/StartMenu";
+import { VOICE } from "../voice/voiceManager";
+import type { ChatFilter } from "./chatFilter";
+import type { GameManager, Server, StateListener } from "./gameManager.d";
+import { createGameState, createLobbyState } from "./gameState";
+import type { FastForwardSetting, PhaseTimes, PhaseType, Verdict } from "./gameState.d";
+import translate from "./lang";
+import { deleteReconnectData } from "./localStorage";
+import messageListener from "./messageListener";
+import type { LobbyPreviewData, ToClientPacket, ToServerPacket } from "./packet";
+import type { RoleOutline } from "./roleListState.d";
 
 export function createGameManager(): GameManager {
-
     console.log("Game manager created.");
-    
-    let gameManager: GameManager = {
+
+    const gameManager: GameManager = {
         async setDisconnectedState(): Promise<void> {
             AudioController.clearQueue();
             AudioController.pauseQueue();
@@ -36,26 +34,25 @@ export function createGameManager(): GameManager {
                 GAME_MANAGER.server.close();
 
                 GAME_MANAGER.state = {
-                    stateType: "disconnected"
+                    stateType: "disconnected",
                 };
                 return promise;
             } else {
                 GAME_MANAGER.state = {
-                    stateType: "disconnected"
+                    stateType: "disconnected",
                 };
                 return Promise.resolve();
             }
         },
         setLobbyState() {
-            
-            let gameState = null
+            let gameState = null;
             if (GAME_MANAGER.state.stateType === "game") {
-                gameState = {...GAME_MANAGER.state};
+                gameState = { ...GAME_MANAGER.state };
             }
 
             GAME_MANAGER.state = createLobbyState();
 
-            if(gameState!=null){
+            if (gameState != null) {
                 GAME_MANAGER.state.roomCode = gameState.roomCode;
                 GAME_MANAGER.state.lobbyName = gameState.lobbyName;
                 GAME_MANAGER.state.roleList = gameState.roleList;
@@ -64,12 +61,10 @@ export function createGameManager(): GameManager {
             }
         },
         setGameState() {
-
             let lobbyState = null;
             if (GAME_MANAGER.state.stateType === "lobby") {
-                lobbyState = {...GAME_MANAGER.state};
+                lobbyState = { ...GAME_MANAGER.state };
             }
-
 
             AudioController.clearQueue();
             AudioController.unpauseQueue();
@@ -84,24 +79,24 @@ export function createGameManager(): GameManager {
                 if (lobbyState.players.get(lobbyState.myId!)?.ready === "host") {
                     GAME_MANAGER.state.host = {
                         fastForward: { type: "none" },
-                        clients: new ListMap()
+                        clients: new ListMap(),
                     };
                 }
-                GAME_MANAGER.state.myId = lobbyState.myId
+                GAME_MANAGER.state.myId = lobbyState.myId;
             }
         },
         setSpectatorGameState() {
             this.setGameState();
-            if(GAME_MANAGER.state.stateType === "game")
+            if (GAME_MANAGER.state.stateType === "game")
                 GAME_MANAGER.state.clientState = {
-                    type: "spectator"
+                    type: "spectator",
                 };
         },
         async setOutsideLobbyState() {
             AudioController.clearQueue();
             AudioController.pauseQueue();
-            
-            if (!GAME_MANAGER.server.ws?.OPEN && !await GAME_MANAGER.server.open()) {
+
+            if (!GAME_MANAGER.server.ws?.OPEN && !(await GAME_MANAGER.server.open())) {
                 await this.setDisconnectedState();
                 return false;
             }
@@ -109,23 +104,22 @@ export function createGameManager(): GameManager {
             GAME_MANAGER.state = {
                 stateType: "outsideLobby",
                 selectedRoomCode: null,
-                lobbies: new Map<number, LobbyPreviewData>()
+                lobbies: new Map<number, LobbyPreviewData>(),
             };
 
             return true;
         },
 
         state: {
-            stateType: "disconnected"
+            stateType: "disconnected",
         },
 
         updateChatFilter(filter: ChatFilter) {
-            if(GAME_MANAGER.state.stateType === "game"){
+            if (GAME_MANAGER.state.stateType === "game") {
                 GAME_MANAGER.state.chatFilter = filter;
                 GAME_MANAGER.invokeStateListeners("filterUpdate");
             }
         },
-
 
         server: createServer(),
 
@@ -135,13 +129,12 @@ export function createGameManager(): GameManager {
             gameManager.listeners.push(listener);
         },
         removeStateListener(listener) {
-            let index = gameManager.listeners.indexOf(listener);
-            if (index !== -1)
-                gameManager.listeners.splice(index, 1);
+            const index = gameManager.listeners.indexOf(listener);
+            if (index !== -1) gameManager.listeners.splice(index, 1);
         },
         invokeStateListeners(type) {
             for (let i = 0; i < gameManager.listeners.length; i++) {
-                if (typeof (gameManager.listeners[i]) === "function") {
+                if (typeof gameManager.listeners[i] === "function") {
                     gameManager.listeners[i](type);
                 }
             }
@@ -150,14 +143,16 @@ export function createGameManager(): GameManager {
         setPrependWhisperFunction: (f) => {
             gameManager.prependWhisper = f;
         },
-        prependWhisper: (index) => {},
-        
+        prependWhisper: (_index) => {
+            // Replaced by the chat menu while it is mounted
+        },
+
         wikiArticleCallbacks: [],
         addSetWikiArticleCallback: (callback) => {
             gameManager.wikiArticleCallbacks.push(callback);
         },
         removeSetWikiArticleCallback: (callback) => {
-            gameManager.wikiArticleCallbacks.splice(gameManager.wikiArticleCallbacks.indexOf(callback), 1)
+            gameManager.wikiArticleCallbacks.splice(gameManager.wikiArticleCallbacks.indexOf(callback), 1);
         },
         setWikiArticle: (article) => {
             for (const callback of gameManager.wikiArticleCallbacks) {
@@ -165,14 +160,13 @@ export function createGameManager(): GameManager {
             }
         },
 
-
         leaveGame() {
             if (this.state.stateType !== "disconnected") {
                 this.server.sendPacket({ type: "leave" });
             }
             deleteReconnectData();
             this.setDisconnectedState();
-            ANCHOR_CONTROLLER?.setContent(<PlayMenu/>);
+            ANCHOR_CONTROLLER?.setContent(<PlayMenu />);
         },
 
         sendLobbyListRequest() {
@@ -183,7 +177,7 @@ export function createGameManager(): GameManager {
             const promise = new Promise<boolean>((resolver) => {
                 completePromise = resolver;
             });
-            let onJoined: StateListener = (type) => {
+            const onJoined: StateListener = (type) => {
                 if (type === "acceptJoin") {
                     completePromise(true);
                     GAME_MANAGER.removeStateListener(onJoined);
@@ -219,9 +213,8 @@ export function createGameManager(): GameManager {
             this.server.sendPacket({
                 type: "reJoin",
                 roomCode,
-                playerId
+                playerId,
             });
-
 
             return promise;
         },
@@ -246,7 +239,7 @@ export function createGameManager(): GameManager {
 
             this.server.sendPacket({
                 type: "join",
-                roomCode
+                roomCode,
             });
 
             return promise;
@@ -254,13 +247,13 @@ export function createGameManager(): GameManager {
         sendKickPlayerPacket(playerId: number) {
             this.server.sendPacket({
                 type: "kick",
-                playerId: playerId
+                playerId: playerId,
             });
         },
         sendSetPlayerHostPacket(playerId: number) {
             this.server.sendPacket({
                 type: "setPlayerHost",
-                playerId: playerId
+                playerId: playerId,
             });
         },
         sendRelinquishHostPacket() {
@@ -272,42 +265,42 @@ export function createGameManager(): GameManager {
         sendSetSpectatorPacket(spectator) {
             this.server.sendPacket({
                 type: "setSpectator",
-                spectator: spectator
+                spectator: spectator,
             });
         },
 
         sendSetNamePacket(name) {
             this.server.sendPacket({
                 type: "setName",
-                name: name
+                name: name,
             });
         },
 
         sendReadyUpPacket(ready) {
             this.server.sendPacket({
                 type: "readyUp",
-                ready: ready
+                ready: ready,
             });
         },
         sendSendLobbyMessagePacket(text) {
             this.server.sendPacket({
                 type: "sendLobbyMessage",
-                text: text
+                text: text,
             });
         },
 
         sendSetLobbyNamePacket(name) {
             this.server.sendPacket({
                 type: "setLobbyName",
-                name: name
+                name: name,
             });
         },
         sendStartGamePacket() {
             let completePromise: (success: boolean) => void;
-            let promise = new Promise<boolean>((resolver) => {
+            const promise = new Promise<boolean>((resolver) => {
                 completePromise = resolver;
             });
-            let onJoined: StateListener = (type) => {
+            const onJoined: StateListener = (type) => {
                 if (type === "startGame") {
                     completePromise(true);
                     GAME_MANAGER.removeStateListener(onJoined);
@@ -319,14 +312,14 @@ export function createGameManager(): GameManager {
             GAME_MANAGER.addStateListener(onJoined);
 
             this.server.sendPacket({
-                type: "startGame"
+                type: "startGame",
             });
 
             return promise;
         },
         sendBackToLobbyPacket() {
             this.server.sendPacket({
-                type: "hostForceBackToLobby"
+                type: "hostForceBackToLobby",
             });
         },
         sendSetPhaseTimePacket(phase: PhaseType, time: number) {
@@ -334,203 +327,199 @@ export function createGameManager(): GameManager {
                 this.server.sendPacket({
                     type: "setPhaseTime",
                     phase: phase,
-                    time: time
+                    time: time,
                 });
             }
         },
         sendSetPhaseTimesPacket(phaseTimeSettings: PhaseTimes) {
             this.server.sendPacket({
                 type: "setPhaseTimes",
-                phaseTimeSettings
+                phaseTimeSettings,
             });
         },
         sendSetRoleListPacket(roleListEntries: RoleOutline[]) {
             this.server.sendPacket({
                 type: "setRoleList",
-                roleList: roleListEntries
+                roleList: roleListEntries,
             });
         },
         sendSetRandomSeedPacket(randomSeed: number | null) {
             this.server.sendPacket({
                 type: "setRandomSeed",
-                randomSeed: randomSeed
+                randomSeed: randomSeed,
             });
         },
         sendSetRoleOutlinePacket(index: number, roleOutline: RoleOutline) {
             this.server.sendPacket({
                 type: "setRoleOutline",
                 index,
-                roleOutline
+                roleOutline,
             });
         },
         sendSimplifyRoleListPacket() {
             this.server.sendPacket({
-                type: "simplifyRoleList"
+                type: "simplifyRoleList",
             });
         },
 
         sendJudgementPacket(judgement: Verdict) {
-            let player = undefined;
-            // if(player===undefined){
-                if(this.state.stateType==="game" && this.state.clientState.type === "player"){
-                    player = this.state.clientState.myIndex;
-                }
-            // }
-            if(player===undefined){return}
+            if (this.state.stateType !== "game" || this.state.clientState.type !== "player") {
+                return;
+            }
+            const player = this.state.clientState.myIndex;
 
-            const verdictInt = judgement==="innocent"?0:judgement==="guilty"?1:2;
+            const verdictInt = judgement === "innocent" ? 0 : judgement === "guilty" ? 1 : 2;
 
             this.sendControllerInput({
-                id: {type:"judge",player},
-                selection: {type:"integer",selection:verdictInt}
+                id: { type: "judge", player },
+                selection: { type: "integer", selection: verdictInt },
             });
         },
 
         sendSaveWillPacket(will) {
-            if(will === ""){
+            if (will === "") {
                 will = defaultAlibi();
             }
 
-            let player = undefined;
-            // if(player===undefined){
-                if(this.state.stateType==="game" && this.state.clientState.type === "player"){
-                    player = this.state.clientState.myIndex;
-                }
-            // }
-            if(player===undefined){return}
+            if (this.state.stateType !== "game" || this.state.clientState.type !== "player") {
+                return;
+            }
+            const player = this.state.clientState.myIndex;
 
             this.sendControllerInput({
                 id: {
                     type: "alibi",
-                    player: player
-                }, 
+                    player: player,
+                },
                 selection: {
                     type: "string",
-                    selection: will
-                }
+                    selection: will,
+                },
             });
         },
         sendSaveNotesPacket(notes) {
             this.server.sendPacket({
                 type: "saveNotes",
-                notes: notes
+                notes: notes,
             });
         },
         sendSaveCrossedOutOutlinesPacket(crossedOutOutlines) {
             this.server.sendPacket({
                 type: "saveCrossedOutOutlines",
-                crossedOutOutlines: crossedOutOutlines
+                crossedOutOutlines: crossedOutOutlines,
             });
         },
         sendSaveCallingCardPacket(notes) {
             this.server.sendPacket({
                 type: "saveCallingCard",
-                callingCard: notes.trim().length === 0 ? null : notes
+                callingCard: notes.trim().length === 0 ? null : notes,
             });
         },
         sendSendChatMessagePacket(text, block, controllingPlayer) {
-            if(controllingPlayer===undefined){
-                if(this.state.stateType==="game" && this.state.clientState.type === "player"){
+            if (controllingPlayer === undefined) {
+                if (this.state.stateType === "game" && this.state.clientState.type === "player") {
                     controllingPlayer = this.state.clientState.myIndex;
                 }
             }
-            if(controllingPlayer===undefined){return}
+            if (controllingPlayer === undefined) {
+                return;
+            }
 
             this.sendControllerInput({
                 id: {
                     type: "chatIsBlock",
-                    player: controllingPlayer
-                }, 
+                    player: controllingPlayer,
+                },
                 selection: {
                     type: "boolean",
-                    selection: block
-                }
+                    selection: block,
+                },
             });
 
             this.sendControllerInput({
                 id: {
                     type: "chat",
-                    player: controllingPlayer
-                }, 
+                    player: controllingPlayer,
+                },
                 selection: {
                     type: "string",
-                    selection: text
-                }
+                    selection: text,
+                },
             });
 
-            
             this.sendControllerInput({
                 id: {
                     type: "sendChat",
-                    player: controllingPlayer
-                }, 
+                    player: controllingPlayer,
+                },
                 selection: {
                     type: "unit",
-                    selection: null
-                }
+                    selection: null,
+                },
             });
         },
         sendSendWhisperPacket(whisperToPlayer, text, controllingPlayer) {
-            if(controllingPlayer===undefined){
-                if(this.state.stateType==="game" && this.state.clientState.type === "player"){
+            if (controllingPlayer === undefined) {
+                if (this.state.stateType === "game" && this.state.clientState.type === "player") {
                     controllingPlayer = this.state.clientState.myIndex;
                 }
             }
-            if(controllingPlayer===undefined){return}
+            if (controllingPlayer === undefined) {
+                return;
+            }
 
             this.sendControllerInput({
                 id: {
                     type: "whisperToPlayer",
-                    player: controllingPlayer
-                }, 
+                    player: controllingPlayer,
+                },
                 selection: {
                     type: "playerList",
-                    selection: [whisperToPlayer]
-                }
+                    selection: [whisperToPlayer],
+                },
             });
 
             this.sendControllerInput({
                 id: {
                     type: "whisper",
-                    player: controllingPlayer
-                }, 
+                    player: controllingPlayer,
+                },
                 selection: {
                     type: "string",
-                    selection: text
-                }
+                    selection: text,
+                },
             });
 
-            
             this.sendControllerInput({
                 id: {
                     type: "sendWhisper",
-                    player: controllingPlayer
-                }, 
+                    player: controllingPlayer,
+                },
                 selection: {
                     type: "unit",
-                    selection: null
-                }
+                    selection: null,
+                },
             });
         },
         sendEnabledRolesPacket(roles) {
             this.server.sendPacket({
                 type: "setEnabledRoles",
-                roles: roles
+                roles: roles,
             });
         },
         sendModifierSettingsPacket(modifiers) {
             this.server.sendPacket({
                 type: "setModifierSettings",
                 modifierSettings: {
-                    modifiers: modifiers.list
-                }
+                    modifiers: modifiers.list,
+                },
             });
         },
 
         sendControllerInput(input) {
             this.server.sendPacket({
                 type: "controllerInput",
-                controllerInput: input
+                controllerInput: input,
             });
         },
         sendSetConsortOptions(
@@ -540,7 +529,7 @@ export function createGameManager(): GameManager {
             youWereGuardedMessage: boolean,
             youWereTransportedMessage: boolean,
             youWerePossessedMessage: boolean,
-            youWereWardblockedMessage: boolean
+            youWereWardblockedMessage: boolean,
         ): void {
             this.server.sendPacket({
                 type: "setConsortOptions",
@@ -551,39 +540,39 @@ export function createGameManager(): GameManager {
                 youWereGuardedMessage: youWereGuardedMessage ?? false,
                 youWereTransportedMessage: youWereTransportedMessage ?? false,
                 youWerePossessedMessage: youWerePossessedMessage ?? false,
-                youWereWardblockedMessage: youWereWardblockedMessage ?? false
+                youWereWardblockedMessage: youWereWardblockedMessage ?? false,
             });
         },
 
         sendVoteFastForwardPhase(fastForward: FastForwardSetting) {
             this.server.sendPacket({
                 type: "voteFastForwardPhase",
-                fastForward: fastForward
+                fastForward: fastForward,
             });
         },
 
         sendHostDataRequest() {
             this.server.sendPacket({
-                type: "hostDataRequest"
-            })
+                type: "hostDataRequest",
+            });
         },
         sendHostEndGamePacket() {
             this.server.sendPacket({
-                type: "hostForceEndGame"
-            })
+                type: "hostForceEndGame",
+            });
         },
         sendHostSkipPhase(fastForward) {
             this.server.sendPacket({
                 type: "hostForceSkipPhase",
-                fastForward
-            })
+                fastForward,
+            });
         },
         sendHostSetPlayerNamePacket(playerId, name) {
             this.server.sendPacket({
                 type: "hostForceSetPlayerName",
                 id: playerId,
-                name
-            })
+                name,
+            });
         },
 
         messageListener(serverMessage) {
@@ -591,9 +580,13 @@ export function createGameManager(): GameManager {
         },
 
         tick(timePassedMs) {
-            if (gameManager.state.stateType !== "game") {return}
+            if (gameManager.state.stateType !== "game") {
+                return;
+            }
             if (!gameManager.state.ticking) return;
-            if(gameManager.state.timeLeftMs === null) {return}
+            if (gameManager.state.timeLeftMs === null) {
+                return;
+            }
 
             const newTimeLeft = gameManager.state.timeLeftMs - timePassedMs;
             if (Math.floor(newTimeLeft / 1000) < Math.floor(gameManager.state.timeLeftMs / 1000)) {
@@ -604,17 +597,16 @@ export function createGameManager(): GameManager {
                 gameManager.state.timeLeftMs = 0;
             }
         },
-    }
+    };
     return gameManager;
 }
-function createServer(){
-
-    let Server: Server = {
+function createServer() {
+    const Server: Server = {
         ws: null,
 
-        open : () => {
-            let address = import.meta.env.VITE_WS_ADDRESS;
-            if(!address){
+        open: () => {
+            const address = import.meta.env.VITE_WS_ADDRESS;
+            if (!address) {
                 throw new Error("Missing env var VITE_WS_ADDRESS, make sure you defined it in .env");
             }
             try {
@@ -630,16 +622,16 @@ function createServer(){
                 }),
                 new Promise<boolean>((resolver) => {
                     setTimeout(() => {
-                        resolver(false)
-                    }, 3000)
-                })
+                        resolver(false);
+                    }, 3000);
+                }),
             ]);
 
-            Server.ws.onopen = (event: Event)=>{
+            Server.ws.onopen = (_event: Event) => {
                 completePromise(true);
                 console.log("Connected to server.");
             };
-            Server.ws.onclose = (event: CloseEvent)=>{
+            Server.ws.onclose = (_event: CloseEvent) => {
                 VOICE.clearSession();
                 console.log("Disconnected from server.");
                 completePromise(false);
@@ -648,29 +640,27 @@ function createServer(){
                 Server.ws = null;
 
                 ANCHOR_CONTROLLER?.pushErrorCard({
-                    title: translate("notification.connectionFailed"), 
-                    body: ""
+                    title: translate("notification.connectionFailed"),
+                    body: "",
                 });
-                ANCHOR_CONTROLLER?.setContent(<StartMenu/>);
+                ANCHOR_CONTROLLER?.setContent(<StartMenu />);
             };
-            Server.ws.onmessage = (event: MessageEvent<string>)=>{
-                GAME_MANAGER.messageListener(
-                    JSON.parse(event.data) as ToClientPacket
-                );
+            Server.ws.onmessage = (event: MessageEvent<string>) => {
+                GAME_MANAGER.messageListener(JSON.parse(event.data) as ToClientPacket);
             };
-            Server.ws.onerror = (event: Event) => {
+            Server.ws.onerror = (_event: Event) => {
                 Server.close();
                 completePromise(false);
                 ANCHOR_CONTROLLER?.pushErrorCard({
-                    title: translate("notification.connectionFailed"), 
-                    body: translate("notification.serverNotFound")
+                    title: translate("notification.connectionFailed"),
+                    body: translate("notification.serverNotFound"),
                 });
             };
-            
+
             return promise;
         },
 
-        sendPacket : (packet: ToServerPacket)=>{
+        sendPacket: (packet: ToServerPacket) => {
             if (Server.ws === null) {
                 console.error("Attempted to send packet to null websocket!");
             } else {
@@ -678,15 +668,14 @@ function createServer(){
             }
         },
 
-        close : ()=>{
+        close: () => {
             VOICE.clearSession();
-            if(Server.ws === null) return;
-            
+            if (Server.ws === null) return;
+
             Server.ws.close();
             Server.ws = null;
-        }
-        
-    }
+        },
+    };
     return Server;
 }
 

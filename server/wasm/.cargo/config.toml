@@ -1,0 +1,6 @@
+[build]
+target = "wasm32-unknown-unknown"
+
+[target.wasm32-unknown-unknown]
+# Randomness comes from the host's crypto.getRandomValues (see __getrandom_v03_custom).
+rustflags = ["--cfg", 'getrandom_backend="custom"']

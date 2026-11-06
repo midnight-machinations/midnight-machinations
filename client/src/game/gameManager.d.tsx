@@ -1,66 +1,71 @@
-import { ChatFilter } from "./chatFilter";
-import { WikiArticleLink } from "../components/WikiArticleLink";
-import ListMap from "../ListMap";
-import { ControllerInput } from "./controllerInput";
-import { PhaseType, PhaseTimes, PlayerIndex, State, Verdict, FastForwardSetting } from "./gameState.d";
-import { ToClientPacket, ToServerPacket } from "./packet";
-import { RoleList, RoleOutline } from "./roleListState.d";
-import { Role } from "./roleState.d";
-import { ModifierID, ModifierState } from "./modifiers";
+import type { WikiArticleLink } from "../components/WikiArticleLink";
+import type ListMap from "../ListMap";
+import type { ChatFilter } from "./chatFilter";
+import type { ControllerInput } from "./controllerInput";
+import type { FastForwardSetting, PhaseTimes, PhaseType, PlayerIndex, State, Verdict } from "./gameState.d";
+import type { ModifierID, ModifierState } from "./modifiers";
+import type { ToClientPacket, ToServerPacket } from "./packet";
+import type { RoleList, RoleOutline } from "./roleListState.d";
+import type { Role } from "./roleState.d";
 
 export type Server = {
-    ws: WebSocket | null,
+    ws: WebSocket | null;
 
     open(): Promise<boolean>;
     sendPacket(packets: ToServerPacket): void;
     close(): void;
-}
+};
 
-export type StateEventType = ToClientPacket["type"] | "tick" | "filterUpdate" | "openGameMenu" | "closeGameMenu" | "whisperChatOpenOrClose" | "connectionClosed";
+export type StateEventType =
+    | ToClientPacket["type"]
+    | "tick"
+    | "filterUpdate"
+    | "openGameMenu"
+    | "closeGameMenu"
+    | "whisperChatOpenOrClose"
+    | "connectionClosed";
 export type StateListener = (type?: StateEventType) => void;
 
 export type GameManager = {
-
     setDisconnectedState(): Promise<void>;
     setLobbyState(): void;
     setGameState(): void;
     setSpectatorGameState(): void;
     setOutsideLobbyState(): Promise<boolean>;
-    
 
-    state: State,
-    updateChatFilter(filter: ChatFilter): void,
+    state: State;
+    updateChatFilter(filter: ChatFilter): void;
 
-    server: Server,
-    listeners: StateListener[],
+    server: Server;
+    listeners: StateListener[];
 
     addStateListener(listener: StateListener): void;
     removeStateListener(listener: StateListener): void;
     invokeStateListeners(type?: StateEventType): void;
 
-    setPrependWhisperFunction: (f: ((index: PlayerIndex) => void)) => void;
+    setPrependWhisperFunction: (f: (index: PlayerIndex) => void) => void;
     prependWhisper: (index: PlayerIndex) => void;
 
     wikiArticleCallbacks: ((article: WikiArticleLink | null) => void)[];
-    addSetWikiArticleCallback: (callback: ((article: WikiArticleLink | null) => void)) => void;
-    removeSetWikiArticleCallback: (callback: ((article: WikiArticleLink | null) => void)) => void;
+    addSetWikiArticleCallback: (callback: (article: WikiArticleLink | null) => void) => void;
+    removeSetWikiArticleCallback: (callback: (article: WikiArticleLink | null) => void) => void;
     setWikiArticle: (article: WikiArticleLink | null) => void;
 
     leaveGame(): void;
 
     sendLobbyListRequest(): void;
     /**
-     * @returns A promise that will be fulfilled as true if the join was 
+     * @returns A promise that will be fulfilled as true if the join was
      *          successful and false if the join was unsuccessful
      */
     sendHostPacket(): Promise<boolean>;
     /**
-     * @returns A promise that will be fulfilled as true if the join was 
+     * @returns A promise that will be fulfilled as true if the join was
      *          successful and false if the join was unsuccessful
      */
     sendRejoinPacket(roomCode: number, playerId: number): Promise<boolean>;
     /**
-     * @returns A promise that will be fulfilled as true if the join was 
+     * @returns A promise that will be fulfilled as true if the join was
      *          successful and false if the join was unsuccessful
      */
     sendJoinPacket(roomCode: number): Promise<boolean>;
@@ -80,7 +85,7 @@ export type GameManager = {
     sendSetRandomSeedPacket(randomSeed: number | null): void;
     sendSetRoleOutlinePacket(index: number, roleOutline: RoleOutline): void;
     sendSimplifyRoleListPacket(): void;
-    
+
     sendJudgementPacket(judgement: Verdict): void;
     sendSaveWillPacket(will: string): void;
     sendSaveNotesPacket(notes: string[]): void;
@@ -93,14 +98,14 @@ export type GameManager = {
 
     sendControllerInput(input: ControllerInput): void;
     sendSetConsortOptions(
-        roleblock: boolean, 
-        youWereRoleblockedMessage: boolean, 
-        youSurvivedAttackMessage: boolean, 
-        youWereGuardedMessage: boolean, 
-        youWereTransportedMessage: boolean, 
-        youWerePossessedMessage: boolean, 
-        yourTargetWasJailedMessage: boolean
-    ): void
+        roleblock: boolean,
+        youWereRoleblockedMessage: boolean,
+        youSurvivedAttackMessage: boolean,
+        youWereGuardedMessage: boolean,
+        youWereTransportedMessage: boolean,
+        youWerePossessedMessage: boolean,
+        yourTargetWasJailedMessage: boolean,
+    ): void;
 
     sendVoteFastForwardPhase(fastForward: FastForwardSetting): void;
     sendHostDataRequest(): void;
@@ -111,7 +116,6 @@ export type GameManager = {
     messageListener(serverMessage: ToClientPacket): void;
 
     tick(timePassedMs: number): void;
-
-}
+};
 
 export declare function createGameManager(): GameManager;

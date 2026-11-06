@@ -7,7 +7,7 @@
 .generic-ability-menu-tab-no-summary {
     display: flex;
     flex-direction: column;
-    border-bottom: .13rem dotted var(--primary-border-color)
+    border-bottom: 0.13rem dotted var(--primary-border-color);
 }
 .generic-ability-menu-tab-no-summary:last-child {
     border-bottom: none;
@@ -17,20 +17,20 @@
     flex-direction: row;
     justify-content: space-between;
     width: 100%;
-    padding: 0 .13rem;
-}
-.generic-ability-menu-tab-no-summary > div > span{
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: .13rem;
+    padding: 0 0.13rem;
 }
 .generic-ability-menu-tab-summary > span {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    gap: .13rem;
+    gap: 0.13rem;
     flex-wrap: wrap;
+}
+.generic-ability-menu-tab-no-summary > div > span {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.13rem;
 }
 .controller-icon {
     padding: 0;
@@ -39,5 +39,5 @@
 .generic-ability-menu .text-area-dropdown {
     border-top-left-radius: 0;
     border-top-right-radius: 0;
-    border-top: .13rem solid var(--primary-border-color);
+    border-top: 0.13rem solid var(--primary-border-color);
 }

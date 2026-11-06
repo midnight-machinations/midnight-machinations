@@ -17,12 +17,8 @@
 	},
 
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.
-	"forwardPorts": [3000, 9000, 9100],
-	// WebRTC media needs published UDP/TCP ports, separate from forwarded signaling.
-	"runArgs": [
-		"--publish", "44400-44402:44400-44402/udp",
-		"--publish", "44400-44402:44400-44402/tcp"
-	]
+	// Voice media goes to Cloudflare's SFU directly, so no media ports are needed.
+	"forwardPorts": [3000, 9000, 9100]
 
 	// Use 'postCreateCommand' to run commands after the container is created.
 	// "postCreateCommand": "uname -a",

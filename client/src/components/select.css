@@ -1,7 +1,7 @@
 .custom-select {
     position: relative; /* Position relative to contain absolute children */
     overflow: visible;
-    
+
     display: inline-flex;
     flex-direction: row;
 }
@@ -11,10 +11,10 @@
     min-width: max-content;
     overflow: hidden;
 
-    padding: .13rem .13rem;
+    padding: 0.13rem 0.13rem;
     background-color: var(--secondary-color);
     border-radius: 0;
-    border: .13rem solid var(--primary-border-color);
+    border: 0.13rem solid var(--primary-border-color);
     box-shadow: 0 0 15px rgba(from var(--text-color) / 0.4);
 }
 .custom-select-options-popover > div > .button {
@@ -25,7 +25,7 @@
 
     max-height: 15rem;
 }
-.custom-select-options > div{
+.custom-select-options > div {
     display: flex;
     flex-direction: column;
     min-height: max-content;

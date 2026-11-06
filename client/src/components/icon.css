@@ -18,5 +18,5 @@ button .icon {
 
 .icon-tiny {
     font-size: calc(0.75em * var(--icon-factor));
-    vertical-align:auto;
+    vertical-align: auto;
 }

@@ -1,17 +1,17 @@
-import React, { ReactElement, useEffect, useMemo } from "react";
-import translate from "../../../game/lang";
-import GAME_MANAGER from "../../../index";
-import { ContentMenu, ContentTab } from "../GameScreen";
-import { usePlayerState } from "../../../components/useHooks";
-import { getSingleRoleJsonData } from "../../../game/roleState.d";
-import { TextDropdownArea } from "../../../components/TextAreaDropdown";
-import ListMap from "../../../ListMap";
-import { controllerIdToLinkWithPlayer } from "../../../game/controllerInput";
-import { PlayerIndex, UnsafeString } from "../../../game/gameState.d";
-import { DragAndDrop } from "../../../components/DragAndDrop";
+import { type ReactElement, useEffect, useMemo } from "react";
 import { Button } from "../../../components/Button";
+import { DragAndDrop } from "../../../components/DragAndDrop";
 import Icon from "../../../components/Icon";
 import StyledText from "../../../components/StyledText";
+import { TextDropdownArea } from "../../../components/TextAreaDropdown";
+import { usePlayerState } from "../../../components/useHooks";
+import { controllerIdToLinkWithPlayer } from "../../../game/controllerInput";
+import type { PlayerIndex, UnsafeString } from "../../../game/gameState.d";
+import translate from "../../../game/lang";
+import { getSingleRoleJsonData } from "../../../game/roleState.d";
+import GAME_MANAGER from "../../../index";
+import ListMap from "../../../ListMap";
+import { ContentMenu, ContentTab } from "../GameScreen";
 import "./willMenu.css";
 
 export function defaultAlibi(): string {
@@ -20,123 +20,129 @@ export function defaultAlibi(): string {
 const DEFAULT_ALIBI = "ROLE\nNight 1: \nNight 2:";
 
 export default function WillMenu(): ReactElement {
-    const playerIndex = usePlayerState(
-        playerState => playerState.myIndex
-    )!;
+    const playerIndex = usePlayerState((playerState) => playerState.myIndex)!;
 
-    const cantChat = usePlayerState(
-        playerState => playerState.sendChatGroups.length === 0,
-        ["yourSendChatGroups"]
-    )!;
+    const cantChat = usePlayerState((playerState) => playerState.sendChatGroups.length === 0, ["yourSendChatGroups"])!;
 
-    const myRole = usePlayerState(
-        playerState => playerState.myRole,
-        ["yourRole"]
-    )!;
+    const myRole = usePlayerState((playerState) => playerState.myRole, ["yourRole"])!;
 
     const savedAbilities = usePlayerState(
-        playerState => playerState.savedControllers,
-        ["yourAllowedControllers", "yourAllowedController"]
+        (playerState) => playerState.savedControllers,
+        ["yourAllowedControllers", "yourAllowedController"],
     )!;
-    const alibiSelection = new ListMap(savedAbilities, (k1, k2)=>controllerIdToLinkWithPlayer(k1)===controllerIdToLinkWithPlayer(k2)).get({type: "alibi", player: playerIndex});
-    const alibi = (alibiSelection?.selection.type === "string")?alibiSelection.selection.selection:"";
-    useEffect(()=>{
-        if(alibi===""){
+    const alibiSelection = new ListMap(
+        savedAbilities,
+        (k1, k2) => controllerIdToLinkWithPlayer(k1) === controllerIdToLinkWithPlayer(k2),
+    ).get({ type: "alibi", player: playerIndex });
+    const alibi = alibiSelection?.selection.type === "string" ? alibiSelection.selection.selection : "";
+    useEffect(() => {
+        if (alibi === "") {
             GAME_MANAGER.sendSaveWillPacket("");
         }
-    }, [alibi])
+    }, [alibi]);
 
-    const notes = usePlayerState(
-        playerState => playerState.notes,
-        ["yourNotes"]
-    )!;
-    const callingCard = usePlayerState(
-        playerState => playerState.callingCard,
-        ["yourCallingCard"]
-    )!;
+    const notes = usePlayerState((playerState) => playerState.notes, ["yourNotes"])!;
+    const callingCard = usePlayerState((playerState) => playerState.callingCard, ["yourCallingCard"])!;
 
     const cantPost = useMemo(() => {
-        return cantChat
+        return cantChat;
     }, [cantChat]);
 
-
     const canPostAsPlayers: PlayerIndex[] = savedAbilities
-        .map(([id,_])=>id.type==="chat"?id.player:undefined)
-        .filter((p)=>p!==undefined?true:false) as PlayerIndex[];
-    
-    return <div className="will-menu will-menu-colors">
-        <ContentTab
-            close={ContentMenu.WillMenu}
-        >
-            {translate("menu.will.title")}
-        </ContentTab>
-        <section>
-            <TextDropdownArea
-                titleString={translate("menu.will.will")}
-                defaultOpen={true}
-                savedText={alibi}
-                cantPost={cantPost}
-                onSave={(text) => {
-                    GAME_MANAGER.sendSaveWillPacket(text);
-                }}
-            />
-            {getSingleRoleJsonData(myRole).canWriteCallingCard===true ? <TextDropdownArea
-                titleString={translate("menu.will.callingCard")}
-                savedText={callingCard}
-                cantPost={cantPost}
-                onSave={(text) => {
-                    GAME_MANAGER.sendSaveCallingCardPacket(text);
-                }}
-            />:null}
+        .map(([id, _]) => (id.type === "chat" ? id.player : undefined))
+        .filter((p) => p !== undefined) as PlayerIndex[];
 
-            <StyledText>{translate("menu.will.notes.icon")} {translate("menu.will.notes")}</StyledText>
-
-            <DragAndDrop
-                items={(notes.length === 0 ? [["", 0]] : notes.map((note, i) => [note, i])) as [UnsafeString, number][]}
-                dragHandle={true}
-                render={([note], i, dragHandleProps) => {
-                    const title: UnsafeString = (note as string).split('\n')[0] || translate("menu.will.notes");
-                    return <TextDropdownArea
-                        canPostAs={canPostAsPlayers}
-
-                        key={i}
-                        titleString={title}
-                        savedText={note}
+    return (
+        <div className="will-menu will-menu-colors">
+            <ContentTab close={ContentMenu.WillMenu}>{translate("menu.will.title")}</ContentTab>
+            <section>
+                <TextDropdownArea
+                    titleString={translate("menu.will.will")}
+                    defaultOpen={true}
+                    savedText={alibi}
+                    cantPost={cantPost}
+                    onSave={(text) => {
+                        GAME_MANAGER.sendSaveWillPacket(text);
+                    }}
+                />
+                {getSingleRoleJsonData(myRole).canWriteCallingCard === true ? (
+                    <TextDropdownArea
+                        titleString={translate("menu.will.callingCard")}
+                        savedText={callingCard}
                         cantPost={cantPost}
-                        dragHandleProps={dragHandleProps}
-                        onSubtract={() => {
-                            if(GAME_MANAGER.state.stateType === "game" && GAME_MANAGER.state.clientState.type === "player"){
-                                const notes = [...GAME_MANAGER.state.clientState.notes];
-                                notes.splice(i, 1);
-                                GAME_MANAGER.sendSaveNotesPacket(notes as string[]);
-                            }
-                        }}
                         onSave={(text) => {
-                            if(GAME_MANAGER.state.stateType === "game" && GAME_MANAGER.state.clientState.type === "player"){
-                                const notes = [...GAME_MANAGER.state.clientState.notes];
-                                notes[i] = text;
-                                GAME_MANAGER.sendSaveNotesPacket(notes as string[]);
-                            }
+                            GAME_MANAGER.sendSaveCallingCardPacket(text);
                         }}
                     />
-                }}
-                onDragEnd={(newItems) => {
-                    if(GAME_MANAGER.state.stateType === "game" && GAME_MANAGER.state.clientState.type === "player"){
-                        GAME_MANAGER.sendSaveNotesPacket(newItems.map(([note]) => note) as string[]);
-                    }
-                }}
-            />
-            <Button
-                className="flush"
-                onClick={() => {
-                    if(GAME_MANAGER.state.stateType === "game" && GAME_MANAGER.state.clientState.type === "player"){
-                        const notes = [...GAME_MANAGER.state.clientState.notes];
-                        notes.push("Note "+(notes.length+1));
-                        GAME_MANAGER.sendSaveNotesPacket(notes as string[]);
-                    }
-                }}
-            ><Icon>add</Icon></Button>
-        </section>
-    </div>
-}
+                ) : null}
 
+                <StyledText>
+                    {translate("menu.will.notes.icon")} {translate("menu.will.notes")}
+                </StyledText>
+
+                <DragAndDrop
+                    items={
+                        (notes.length === 0 ? [["", 0]] : notes.map((note, i) => [note, i])) as [UnsafeString, number][]
+                    }
+                    dragHandle={true}
+                    render={([note], i, dragHandleProps) => {
+                        const title: UnsafeString = (note as string).split("\n")[0] || translate("menu.will.notes");
+                        return (
+                            <TextDropdownArea
+                                canPostAs={canPostAsPlayers}
+                                key={i}
+                                titleString={title}
+                                savedText={note}
+                                cantPost={cantPost}
+                                dragHandleProps={dragHandleProps}
+                                onSubtract={() => {
+                                    if (
+                                        GAME_MANAGER.state.stateType === "game" &&
+                                        GAME_MANAGER.state.clientState.type === "player"
+                                    ) {
+                                        const notes = [...GAME_MANAGER.state.clientState.notes];
+                                        notes.splice(i, 1);
+                                        GAME_MANAGER.sendSaveNotesPacket(notes as string[]);
+                                    }
+                                }}
+                                onSave={(text) => {
+                                    if (
+                                        GAME_MANAGER.state.stateType === "game" &&
+                                        GAME_MANAGER.state.clientState.type === "player"
+                                    ) {
+                                        const notes = [...GAME_MANAGER.state.clientState.notes];
+                                        notes[i] = text;
+                                        GAME_MANAGER.sendSaveNotesPacket(notes as string[]);
+                                    }
+                                }}
+                            />
+                        );
+                    }}
+                    onDragEnd={(newItems) => {
+                        if (
+                            GAME_MANAGER.state.stateType === "game" &&
+                            GAME_MANAGER.state.clientState.type === "player"
+                        ) {
+                            GAME_MANAGER.sendSaveNotesPacket(newItems.map(([note]) => note) as string[]);
+                        }
+                    }}
+                />
+                <Button
+                    className="flush"
+                    onClick={() => {
+                        if (
+                            GAME_MANAGER.state.stateType === "game" &&
+                            GAME_MANAGER.state.clientState.type === "player"
+                        ) {
+                            const notes = [...GAME_MANAGER.state.clientState.notes];
+                            notes.push(`Note ${notes.length + 1}`);
+                            GAME_MANAGER.sendSaveNotesPacket(notes as string[]);
+                        }
+                    }}
+                >
+                    <Icon>add</Icon>
+                </Button>
+            </section>
+        </div>
+    );
+}

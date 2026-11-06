@@ -228,6 +228,7 @@ pub enum RoleSet {
     Minions
 }
 impl RoleSet{
+    #[expect(clippy::too_many_lines, reason = "a lookup table with one arm per role set; new roles are added to it by hand")]
     pub fn get_roles(&self) -> VecSet<Role> {
         match self {
             RoleSet::Any => Role::values(),

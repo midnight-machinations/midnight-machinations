@@ -7,14 +7,14 @@ on:
     paths:
       - '.github/workflows/server.yml'
       - 'server/**'
-      - '!server/resources/**'
+      - 'assets/random_names/**'
   pull_request:
     branches: 
       - 'main'
     paths:
       - '.github/workflows/server.yml'
       - 'server/**'
-      - '!server/resources/**'
+      - 'assets/random_names/**'
 
 env:
   CARGO_TERM_COLOR: always
@@ -38,5 +38,7 @@ jobs:
         run: cargo test --verbose
       - name: Check
         run: cargo clippy --verbose
+      - name: WebAssembly build (Cloudflare Worker)
+        run: rustup target add wasm32-unknown-unknown && cd wasm && cargo build --release
       - name: Audit
         run: cargo audit

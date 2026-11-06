@@ -1,25 +1,37 @@
-import React from 'react';
-import { createRoot } from 'react-dom/client';
-import './index.css';
-import Anchor from './menu/Anchor';
-import { GameManager, createGameManager } from './game/gameManager';
-import LoadingScreen from './menu/LoadingScreen';
-import route from './routing';
-import { UnsafeString } from './game/gameState.d';
-import { RoleList, RoleOutline, translateRoleOutline } from './game/roleListState.d';
+import { createRoot } from "react-dom/client";
+import "./index.css";
+import { createGameManager, type GameManager } from "./game/gameManager";
+import type { UnsafeString } from "./game/gameState.d";
+import { type RoleList, type RoleOutline, translateRoleOutline } from "./game/roleListState.d";
+import Anchor from "./menu/Anchor";
+import LoadingScreen from "./menu/LoadingScreen";
+import route from "./routing";
 
-export const DEV_ENV = import.meta.env.MODE !== 'production';
+export const DEV_ENV = import.meta.env.MODE !== "production";
 
-export type Theme = "chat-menu-colors" | "player-list-menu-colors" | "will-menu-colors" | "role-specific-colors" | "graveyard-menu-colors" | "wiki-menu-colors"
+export type Theme =
+    | "chat-menu-colors"
+    | "player-list-menu-colors"
+    | "will-menu-colors"
+    | "role-specific-colors"
+    | "graveyard-menu-colors"
+    | "wiki-menu-colors";
 
 const THEME_CSS_ATTRIBUTES = [
-    'background-color', 'fade-color', 'primary-color', 'secondary-color', 
-    'text-color', 'primary-border-color', 'primary-border-shadow-color', 
-    'background-border-color', 'background-border-shadow-color', 
-    'hover-color', 'focus-outline-color'
+    "background-color",
+    "fade-color",
+    "primary-color",
+    "secondary-color",
+    "text-color",
+    "primary-border-color",
+    "primary-border-shadow-color",
+    "background-border-color",
+    "background-border-shadow-color",
+    "hover-color",
+    "focus-outline-color",
 ];
 
-export { THEME_CSS_ATTRIBUTES }
+export { THEME_CSS_ATTRIBUTES };
 
 const ROOT = createRoot(document.querySelector("#root")!);
 const GAME_MANAGER: GameManager = createGameManager();
@@ -30,14 +42,14 @@ setInterval(() => {
     GAME_MANAGER.tick(TIME_PERIOD);
 }, TIME_PERIOD);
 
-new MutationObserver(mutations => {
+new MutationObserver((mutations) => {
     for (const mutation of mutations) {
         if (mutation.type === "childList") {
             const elem = mutation.target as Element;
 
-            for (const glitch of elem.querySelectorAll('.glitch')) {
-                if (!glitch.hasAttribute('data-text')) {
-                    glitch.setAttribute('data-text', glitch.textContent ?? "")
+            for (const glitch of elem.querySelectorAll(".glitch")) {
+                if (!glitch.hasAttribute("data-text")) {
+                    glitch.setAttribute("data-text", glitch.textContent ?? "");
                 }
             }
         }
@@ -45,19 +57,19 @@ new MutationObserver(mutations => {
 }).observe(document.body, { subtree: true, childList: true });
 
 ROOT.render(
-    <Anchor onMount={anchorController => route(anchorController, window.location)}>
-        <LoadingScreen type="default"/>
-    </Anchor>
+    <Anchor onMount={(anchorController) => route(anchorController, window.location)}>
+        <LoadingScreen type="default" />
+    </Anchor>,
 );
 
 export function find(text: string): RegExp {
     // Detect if iOS <= 16.3
     // https://bugs.webkit.org/show_bug.cgi?id=174931
     // https://stackoverflow.com/a/11129615
-    if(
-        /(iPhone|iPod|iPad)/i.test(navigator.userAgent) && 
+    if (
+        /(iPhone|iPod|iPad)/i.test(navigator.userAgent) &&
         /OS ([2-9]_\d)|(1[0-5]_\d)|(16_[0-3])(_\d)? like Mac OS X/i.test(navigator.userAgent)
-    ) { 
+    ) {
         // This won't work if a keyword starts with a symbol.
         return RegExp(`\\b${regEscape(text)}(?!\\w)`, "gi");
     } else {
@@ -66,20 +78,32 @@ export function find(text: string): RegExp {
 }
 
 export function regEscape(text: string) {
-    return text.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&')
+    return text.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
 }
 
 export function replaceMentions(rawText: UnsafeString, playerNames: UnsafeString[], roleList: RoleList): UnsafeString {
     let text = rawText;
-    playerNames.map((el, i) => [i, el] as [number, UnsafeString]).reverse().forEach(([i, player]) => {
-        text = (text as string).replace(find(`@${i + 1}`), player as string);
-    });
-    playerNames.map((el, i) => [i, el] as [number, UnsafeString]).reverse().forEach(([i, player]) => {
-        text = (text as string).replace(find(`@${player}`), player as string);
-    });
-    roleList.map((el, i) => [i, el] as [number, RoleOutline]).reverse().forEach(([i, outline]) => {
-        text = (text as string).replace(find(`@o${i + 1}`), `${i + 1}: ${translateRoleOutline(outline, playerNames)}`);
-    })
+    playerNames
+        .map((el, i) => [i, el] as [number, UnsafeString])
+        .reverse()
+        .forEach(([i, player]) => {
+            text = (text as string).replace(find(`@${i + 1}`), player as string);
+        });
+    playerNames
+        .map((el, i) => [i, el] as [number, UnsafeString])
+        .reverse()
+        .forEach(([_i, player]) => {
+            text = (text as string).replace(find(`@${player}`), player as string);
+        });
+    roleList
+        .map((el, i) => [i, el] as [number, RoleOutline])
+        .reverse()
+        .forEach(([i, outline]) => {
+            text = (text as string).replace(
+                find(`@o${i + 1}`),
+                `${i + 1}: ${translateRoleOutline(outline, playerNames)}`,
+            );
+        });
     return text;
 }
 

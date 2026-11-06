@@ -1,0 +1,84 @@
+# Pre-commit suggestions for people and AI agents. This hook never blocks a commit.
+#
+# Husky runs hooks with `sh -e`, which would turn any failing check into a failed commit, so
+# errors are switched off and the exit status is forced to 0. To skip it entirely, commit with
+# HUSKY=0 git commit ...
+set +e
+trap 'exit 0' EXIT
+
+root=$(git rev-parse --show-toplevel) || exit 0
+cd "$root" || exit 0
+
+staged=$(git diff --cached --name-only --diff-filter=ACMR)
+[ -z "$staged" ] && exit 0
+
+suggest() { printf '[suggestion] %s\n' "$*"; }
+has() { printf '%s\n' "$staged" | grep -Eq "$1"; }
+installed() { command -v "$1" >/dev/null 2>&1; }
+
+echo "pre-commit: checking staged files. These are suggestions only; the commit will go ahead."
+
+# Files that should not be committed, or should not be edited by hand.
+secrets=$(printf '%s\n' "$staged" | grep -E '(^|/)(config\.local\.toml|\.dev\.vars|\.env\.local|\.env\.[^/]*\.local)$')
+if [ -n "$secrets" ]; then
+  suggest "These files hold local settings or secrets and are normally gitignored. Unstage them with git restore --staged <file>:"
+  printf '  %s\n' $secrets
+fi
+if git diff --cached -U0 | grep -Eq '^\+.*-----BEGIN [A-Z ]*PRIVATE KEY-----'; then
+  suggest "A private key is in the staged changes. Remove it and rotate the key if it was ever pushed."
+fi
+if has '^client/src/gen/' && ! has '^proto/.*\.proto$'; then
+  suggest "client/src/gen is generated. Edit the .proto files in proto/ and run: mask proto generate"
+fi
+
+# TypeScript: Biome lint and format checks for the staged files only.
+if has '\.(ts|tsx|js|jsx|cjs|mjs|json)$'; then
+  if [ -x node_modules/.bin/biome ] || [ -f node_modules/@biomejs/biome/package.json ]; then
+    out=$(pnpm exec biome check --staged --no-errors-on-unmatched --colors=off --max-diagnostics=15 2>&1)
+    if [ $? -ne 0 ]; then
+      suggest "Biome found issues in staged files. Fix lint issues by hand, or run: pnpm exec biome check --write --staged"
+      printf '%s\n' "$out" | head -n 120
+    fi
+  else
+    suggest "Biome is not installed, so TypeScript was not checked. Run: pnpm install"
+  fi
+fi
+
+# Rust: clippy for each crate with staged .rs files, showing only diagnostics in those files.
+rust_crates=""
+for crate in server/wasm server/proto tools/gen server; do
+  files=$(printf '%s\n' "$staged" | grep -E "^$crate/.*\.rs$")
+  # server/ also contains the nested crates, which are handled by their own entry above.
+  [ "$crate" = server ] && files=$(printf '%s\n' "$files" | grep -Ev '^server/(wasm|proto)/')
+  [ -n "$files" ] && rust_crates="$rust_crates $crate"
+done
+if [ -n "$rust_crates" ]; then
+  if installed cargo; then
+    for crate in $rust_crates; do
+      patterns=$(printf '%s\n' "$staged" | grep -E "^$crate/.*\.rs$" | sed "s#^$crate/##")
+      out=$(cd "$crate" && cargo clippy --quiet --message-format short 2>&1 | tr '\\' '/' | grep -F "$patterns")
+      if [ -n "$out" ]; then
+        suggest "clippy found issues in staged files of $crate (see clippy.toml). Run: (cd $crate && cargo clippy)"
+        printf '%s\n' "$out" | head -n 40
+      fi
+    done
+  else
+    suggest "cargo is not installed, so Rust was not checked."
+  fi
+fi
+
+# Protos: lint them, and remind about regenerating the TypeScript client.
+if has '^proto/.*\.proto$|^proto/buf(\.gen)?\.yaml$'; then
+  if [ -x proto/node_modules/.bin/buf ]; then
+    out=$(cd proto && pnpm exec buf lint 2>&1)
+    if [ $? -ne 0 ]; then
+      suggest "buf lint found issues in proto/. Run: mask proto lint"
+      printf '%s\n' "$out" | head -n 40
+    fi
+    has '^client/src/gen/' || suggest "Protos changed but client/src/gen did not. Run: mask proto generate"
+  else
+    suggest "buf is not installed, so the protos were not linted. Run: (cd proto && pnpm install)"
+  fi
+fi
+
+exit 0

@@ -1,18 +1,19 @@
+import { type ReactElement, useContext, useEffect, useState } from "react";
+import { FEATURES } from "../features";
 import VoiceControls from "../voice/VoiceControls";
-import React, { ReactElement, useContext, useEffect, useState } from "react";
 import "./settings.css";
-import translate, { Language, languageName, LANGUAGES, switchLanguage } from "../game/lang";
-import StyledText, { computeKeywordData } from "../components/StyledText";
-import Icon from "../components/Icon";
-import { loadSettingsParsed, saveSettings } from "../game/localStorage";
-import { AnchorControllerContext, ANCHOR_CONTROLLER } from "./Anchor";
-import AudioController from "./AudioController";
+import { Button } from "../components/Button";
+import { encodeString } from "../components/ChatMessage";
 import CheckBox from "../components/CheckBox";
 import { DragAndDrop } from "../components/DragAndDrop";
+import Icon from "../components/Icon";
+import StyledText, { computeKeywordData } from "../components/StyledText";
+import type { UnsafeString } from "../game/gameState.d";
+import translate, { LANGUAGES, type Language, languageName, switchLanguage } from "../game/lang";
+import { loadSettingsParsed, saveSettings } from "../game/localStorage";
+import { ANCHOR_CONTROLLER, AnchorControllerContext } from "./Anchor";
+import AudioController from "./AudioController";
 import { MENU_THEMES, MENU_TRANSLATION_KEYS } from "./game/GameScreen";
-import { UnsafeString } from "../game/gameState.d";
-import { encodeString } from "../components/ChatMessage";
-import { Button } from "../components/Button";
 
 export default function SettingsMenu(): ReactElement {
     const [volume, setVolume] = useState<number>(loadSettingsParsed().volume);
@@ -33,170 +34,208 @@ export default function SettingsMenu(): ReactElement {
     }, [volume, fontSizeState, accessibilityFontEnabled]);
 
     useEffect(() => {
-        document.documentElement.style.setProperty('--scanline-opacity', `${scanlineIntensity / 100 * 0.2}`);
+        document.documentElement.style.setProperty("--scanline-opacity", `${(scanlineIntensity / 100) * 0.2}`);
     }, [scanlineIntensity]);
 
-    return <div className="settings-menu-card user-settings-menu">
-        <header>
-            <h2><Icon size="tiny">settings</Icon> {translate("menu.settings.title")}</h2>
-        </header>
-        
-        <main className="settings-menu">
-            <div className="graveyard-menu-colors">
-                <section className="player-list-menu-colors">
-                    <h2>{translate("menu.settings.defaultName")}</h2>
-                    <input type="text"
-                        value={defaultName===null ? "" : encodeString(defaultName)} 
-                        placeholder={translate("menu.lobby.field.namePlaceholder")}
-                        onChange={(e) => {
-                            const defaultName = e.target.value === "" ? null : e.target.value;
-                            saveSettings({defaultName});
-                            setDefaultName(defaultName);
-                        }
-                    }/>
-                </section>
-                <section>
-                    <div className="settings-volume-container">
-                        <Icon>volume_up</Icon>
-                        <input className="settings-volume" type="range" min="0" max="1" step="0.01" 
-                            value={volume} 
+    return (
+        <div className="settings-menu-card user-settings-menu">
+            <header>
+                <h2>
+                    <Icon size="tiny">settings</Icon> {translate("menu.settings.title")}
+                </h2>
+            </header>
+
+            <main className="settings-menu">
+                <div className="graveyard-menu-colors">
+                    <section className="player-list-menu-colors">
+                        <h2>{translate("menu.settings.defaultName")}</h2>
+                        <input
+                            type="text"
+                            value={defaultName === null ? "" : encodeString(defaultName)}
+                            placeholder={translate("menu.lobby.field.namePlaceholder")}
                             onChange={(e) => {
-                                const volume = parseFloat(e.target.value);
-                                saveSettings({volume});
-                                setVolume(volume);
-                            }
-                        }/>
-                    </div>
-                </section>
-                <section>
-                    <label>
-                        {translate("menu.settings.scanlineIntensity")} ({scanlineIntensity}%)
-                        <input type="range" min="0" max="100" step="1"
-                            value={scanlineIntensity}
-                            onChange={(e) => {
-                                const scanlineIntensity = parseInt(e.target.value, 10);
-                                saveSettings({scanlineIntensity});
-                                setScanlineIntensity(scanlineIntensity);
+                                const defaultName = e.target.value === "" ? null : e.target.value;
+                                saveSettings({ defaultName });
+                                setDefaultName(defaultName);
                             }}
                         />
-                    </label>
-                </section>
-                <section className="wiki-menu-colors">
-                    <div className="settings-language-container">
-                        <Icon>language</Icon>
-                        <select 
-                            name="lang-select" 
-                            defaultValue={loadSettingsParsed().language}
-                            onChange={e => {
-                                const language = e.target.options[e.target.selectedIndex].value as Language;
-                                switchLanguage(language);
-                                saveSettings({language});
-                                computeKeywordData()
-                                anchorController.reload();
-                            }}
-                        >
-                            {LANGUAGES.map(lang => <option key={lang} value={lang}>{languageName(lang)}</option>)}
-                        </select>
-                    </div>
-                    <label>
-                        {translate("menu.settings.fontSize")}
-                        <input type="number" min="0.5" max="2" step="0.1"
-                            value={fontSizeText}
-                            onChange={(e)=>{
-                                if(e.target.value === "") return;
-                                const fontSize = parseFloat(e.target.value);
-                                setFontSizeText(fontSize);
-                            }}
-                            onBlur={()=>{
-                                if(fontSizeText < 0.5 || fontSizeText > 2) {
-                                    setFontSize(1);
-                                    setFontSizeText(1);
-                                    saveSettings({fontSize: 1});
-                                }else{
-                                    setFontSize(fontSizeText);
-                                    saveSettings({fontSize: fontSizeText});
-                                }
-                            }}
-                        />
-                    </label>
-                    <label>
-                        {translate("menu.settings.accessibilityFont")}
-                        {" "}
-                        <CheckBox checked={accessibilityFontEnabled} onChange={(checked: boolean) => {
-                            setAccessibilityFontEnabled(checked);
-                            saveSettings({accessibilityFont: checked});
-                        }}></CheckBox>
-                    </label>
-                </section>
-            </div>
-            <div className="chat-menu-colors">
-                <section>
-                    <div className="menu-order">
-                        {translate("menu.settings.menuOrder")}
-                        <div className="menu-list">
-                            <DragAndDrop
-                                items={menuOrder}
-                                render={(menu, i) => 
-                                    <Button 
-                                        className={"placard " + (MENU_THEMES[menu[0]]??"")}
-                                        highlighted={menu[1] === true}
-                                        onClick={() => {
-                                            menuOrder[i][1] = !menuOrder[i][1];
-                                            let newItems = [...menuOrder];
-                                            saveSettings({menuOrder: [...newItems]})
-                                            setMenuOrder([...newItems])
-                                        }}
-                                    >
-                                        {translate(MENU_TRANSLATION_KEYS[menu[0]] + ".icon")}
-                                    </Button>
-                                }
-                                onDragEnd={newItems => {
-                                    saveSettings({menuOrder: [...newItems]})
-                                    setMenuOrder([...newItems])
+                    </section>
+                    <section>
+                        <div className="settings-volume-container">
+                            <Icon>volume_up</Icon>
+                            <input
+                                className="settings-volume"
+                                type="range"
+                                min="0"
+                                max="1"
+                                step="0.01"
+                                value={volume}
+                                onChange={(e) => {
+                                    const volume = parseFloat(e.target.value);
+                                    saveSettings({ volume });
+                                    setVolume(volume);
                                 }}
                             />
                         </div>
+                    </section>
+                    <section>
+                        <label>
+                            {translate("menu.settings.scanlineIntensity")} ({scanlineIntensity}%)
+                            <input
+                                type="range"
+                                min="0"
+                                max="100"
+                                step="1"
+                                value={scanlineIntensity}
+                                onChange={(e) => {
+                                    const scanlineIntensity = parseInt(e.target.value, 10);
+                                    saveSettings({ scanlineIntensity });
+                                    setScanlineIntensity(scanlineIntensity);
+                                }}
+                            />
+                        </label>
+                    </section>
+                    <section className="wiki-menu-colors">
+                        <div className="settings-language-container">
+                            <Icon>language</Icon>
+                            <select
+                                name="lang-select"
+                                defaultValue={loadSettingsParsed().language}
+                                onChange={(e) => {
+                                    const language = e.target.options[e.target.selectedIndex].value as Language;
+                                    switchLanguage(language);
+                                    saveSettings({ language });
+                                    computeKeywordData();
+                                    anchorController.reload();
+                                }}
+                            >
+                                {LANGUAGES.map((lang) => (
+                                    <option key={lang} value={lang}>
+                                        {languageName(lang)}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+                        <label>
+                            {translate("menu.settings.fontSize")}
+                            <input
+                                type="number"
+                                min="0.5"
+                                max="2"
+                                step="0.1"
+                                value={fontSizeText}
+                                onChange={(e) => {
+                                    if (e.target.value === "") return;
+                                    const fontSize = parseFloat(e.target.value);
+                                    setFontSizeText(fontSize);
+                                }}
+                                onBlur={() => {
+                                    if (fontSizeText < 0.5 || fontSizeText > 2) {
+                                        setFontSize(1);
+                                        setFontSizeText(1);
+                                        saveSettings({ fontSize: 1 });
+                                    } else {
+                                        setFontSize(fontSizeText);
+                                        saveSettings({ fontSize: fontSizeText });
+                                    }
+                                }}
+                            />
+                        </label>
+                        <label>
+                            {translate("menu.settings.accessibilityFont")}{" "}
+                            <CheckBox
+                                checked={accessibilityFontEnabled}
+                                onChange={(checked: boolean) => {
+                                    setAccessibilityFontEnabled(checked);
+                                    saveSettings({ accessibilityFont: checked });
+                                }}
+                            ></CheckBox>
+                        </label>
+                    </section>
+                </div>
+                <div className="chat-menu-colors">
+                    <section>
+                        <div className="menu-order">
+                            {translate("menu.settings.menuOrder")}
+                            <div className="menu-list">
+                                <DragAndDrop
+                                    items={menuOrder}
+                                    render={(menu, i) => (
+                                        <Button
+                                            className={`placard ${MENU_THEMES[menu[0]] ?? ""}`}
+                                            highlighted={menu[1] === true}
+                                            onClick={() => {
+                                                menuOrder[i][1] = !menuOrder[i][1];
+                                                const newItems = [...menuOrder];
+                                                saveSettings({ menuOrder: [...newItems] });
+                                                setMenuOrder([...newItems]);
+                                            }}
+                                        >
+                                            {translate(`${MENU_TRANSLATION_KEYS[menu[0]]}.icon`)}
+                                        </Button>
+                                    )}
+                                    onDragEnd={(newItems) => {
+                                        saveSettings({ menuOrder: [...newItems] });
+                                        setMenuOrder([...newItems]);
+                                    }}
+                                />
+                            </div>
+                        </div>
+                        <label>
+                            {translate("menu.settings.maxMenus")}
+                            <input
+                                type="number"
+                                min="1"
+                                max="6"
+                                step="1"
+                                value={maxMenus}
+                                onChange={(e) => {
+                                    if (e.target.value === "") return;
+                                    const maxMenus = parseFloat(e.target.value);
+                                    setMaxMenus(maxMenus);
+                                }}
+                                onBlur={() => {
+                                    if (Math.floor(maxMenus) !== maxMenus || maxMenus < 1 || maxMenus > 6) {
+                                        setMaxMenus(6);
+                                        saveSettings({ maxMenus: 6 });
+                                    } else {
+                                        saveSettings({ maxMenus });
+                                    }
+                                }}
+                            />
+                        </label>
+                        <label>
+                            {translate("menu.settings.enableHeader")}{" "}
+                            <CheckBox
+                                checked={headerEnabled}
+                                onChange={(checked: boolean) => {
+                                    setHeaderEnabled(checked);
+                                    saveSettings({ headerEnabled: checked });
+                                }}
+                            ></CheckBox>
+                        </label>
+                    </section>
+                    <section className="role-specific-colors">
+                        <h2>
+                            <StyledText className="keyword-evil">{translate("menu.settings.dangerZone")}</StyledText>
+                        </h2>
+                        <Button
+                            onClick={() => {
+                                if (!window.confirm(translate("confirmDelete"))) return;
+                                localStorage.clear();
+                                anchorController.clearCoverCard();
+                            }}
+                        >
+                            <Icon>delete_forever</Icon> {translate("menu.settings.eraseSaveData")}
+                        </Button>
+                    </section>
+                </div>
+                {FEATURES.voice && (
+                    <div className="settings-voice-column chat-menu-colors">
+                        <VoiceControls />
                     </div>
-                    <label>
-                        {translate("menu.settings.maxMenus")}
-                        <input type="number" min="1" max="6" step="1"
-                            value={maxMenus}
-                            onChange={(e)=>{
-                                if(e.target.value === "") return;
-                                const maxMenus = parseFloat(e.target.value);
-                                setMaxMenus(maxMenus);
-                            }}
-                            onBlur={()=>{
-                                if(Math.floor(maxMenus) !== maxMenus || maxMenus < 1 || maxMenus > 6) {
-                                    setMaxMenus(6);  
-                                    saveSettings({maxMenus: 6});
-                                }else{
-                                    saveSettings({maxMenus});
-                                }
-                            }}
-                        />
-                    </label>
-                    <label>
-                        {translate("menu.settings.enableHeader")}
-                        {" "}
-                        <CheckBox checked={headerEnabled} onChange={(checked: boolean) => {
-                            setHeaderEnabled(checked);
-                            saveSettings({headerEnabled: checked});
-                        }}></CheckBox>
-                    </label>
-                </section>
-                <section className="role-specific-colors">
-                    <h2><StyledText className="keyword-evil">{translate("menu.settings.dangerZone")}</StyledText></h2>
-                    <Button onClick={()=>{
-                        if(!window.confirm(translate("confirmDelete"))) return;
-                        localStorage.clear();
-                        anchorController.clearCoverCard();
-                    }}><Icon>delete_forever</Icon> {translate('menu.settings.eraseSaveData')}</Button>
-                </section>
-            </div>
-            <div className="settings-voice-column chat-menu-colors">
-                <VoiceControls/>
-            </div>
-        </main>
-    </div>
+                )}
+            </main>
+        </div>
+    );
 }

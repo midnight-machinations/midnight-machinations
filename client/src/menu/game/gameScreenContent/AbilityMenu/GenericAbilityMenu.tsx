@@ -1,66 +1,58 @@
-import { ReactElement, useContext, useMemo } from "react";
-import { 
-    TwoPlayerOptionSelection, 
-    TwoRoleOptionSelection, 
-    ControllerID,
-    ControllerSelection,
-    translateControllerID,
-    AvailableControllerSelection,
-    TwoRoleOutlineOptionSelection,
-    RoleListSelection,
-    SavedController,
-    controllerIdToLinkWithPlayer,
-    singleAbilityJsonData,
-    StringSelection,
-    translateControllerIDNoRole,
-    PlayerListSelection,
-    IntegerSelection,
-    controllerIdToLink,
-    GraveDeathCausesSelection
-} from "../../../../game/controllerInput";
-import { Button } from "../../../../components/Button";
-import TwoRoleOutlineOptionSelectionMenu from "./ControllerSelectionTypes/TwoRoleOutlineOptionSelectionMenu";
+import { type ReactElement, useContext, useMemo } from "react";
 import GAME_MANAGER from "../../../..";
-import TwoRoleOptionSelectionMenu from "./ControllerSelectionTypes/TwoRoleOptionSelectionMenu";
-import TwoPlayerOptionSelectionMenu from "./ControllerSelectionTypes/TwoPlayerOptionSelectionMenu";
+import { Button } from "../../../../components/Button";
 import StyledText from "../../../../components/StyledText";
-import KiraSelectionMenu, { KiraSelection } from "./ControllerSelectionTypes/KiraSelectionMenu";
+import {
+    type AvailableControllerSelection,
+    type ControllerID,
+    type ControllerSelection,
+    controllerIdToLink,
+    controllerIdToLinkWithPlayer,
+    type GraveDeathCausesSelection,
+    type IntegerSelection,
+    type PlayerListSelection,
+    type RoleListSelection,
+    type SavedController,
+    type StringSelection,
+    singleAbilityJsonData,
+    type TwoPlayerOptionSelection,
+    type TwoRoleOptionSelection,
+    type TwoRoleOutlineOptionSelection,
+    translateControllerID,
+    translateControllerIDNoRole,
+} from "../../../../game/controllerInput";
+import KiraSelectionMenu, { type KiraSelection } from "./ControllerSelectionTypes/KiraSelectionMenu";
 import RoleListSelectionMenu from "./ControllerSelectionTypes/RoleListSelectionMenu";
+import TwoPlayerOptionSelectionMenu from "./ControllerSelectionTypes/TwoPlayerOptionSelectionMenu";
+import TwoRoleOptionSelectionMenu from "./ControllerSelectionTypes/TwoRoleOptionSelectionMenu";
+import TwoRoleOutlineOptionSelectionMenu from "./ControllerSelectionTypes/TwoRoleOutlineOptionSelectionMenu";
 import "./genericAbilityMenu.css";
 import DetailsSummary from "../../../../components/DetailsSummary";
+import type { PlayerIndex } from "../../../../game/gameState.d";
 import translate from "../../../../game/lang";
-import StringSelectionMenu from "./ControllerSelectionTypes/StringSelectionMenu";
+import type { Role } from "../../../../game/roleState.d";
 import ListMap from "../../../../ListMap";
-import { Role } from "../../../../game/roleState.d";
-import { PlayerIndex } from "../../../../game/gameState.d";
-import PlayerListSelectionMenu from "./ControllerSelectionTypes/PlayerListSelectionMenu";
-import IntegerSelectionMenu from "./ControllerSelectionTypes/IntegerSelectionMenu";
 import BooleanSelectionMenu from "./ControllerSelectionTypes/BooleanSelectionMenu";
-import "./ControllerSelectionTypes/genericListController.css"
+import IntegerSelectionMenu from "./ControllerSelectionTypes/IntegerSelectionMenu";
+import PlayerListSelectionMenu from "./ControllerSelectionTypes/PlayerListSelectionMenu";
+import StringSelectionMenu from "./ControllerSelectionTypes/StringSelectionMenu";
+import "./ControllerSelectionTypes/genericListController.css";
+import ChatGroupSelect from "../../../../components/ChatGroupSelect";
 import { useGameState, usePlayerState } from "../../../../components/useHooks";
-import { loadSettingsParsed } from "../../../../game/localStorage";
 import { setWikiSearchPage } from "../../../../components/Wiki";
+import { loadSettingsParsed } from "../../../../game/localStorage";
 import { AnchorControllerContext } from "../../../Anchor";
 import { MenuControllerContext } from "../../GameScreen";
-import ChatGroupSelect from "../../../../components/ChatGroupSelect";
 import GraveDeathCausesSelectionMenu from "./ControllerSelectionTypes/GraveDeathCausesSelectionMenu";
 
-type GroupName = `${PlayerIndex}/${Role}` | 
-    "syndicate" | 
-    "chat" |
-    "vote" |
-    "whisper" |
-    ControllerID["type"];
+type GroupName = `${PlayerIndex}/${Role}` | "syndicate" | "chat" | "vote" | "whisper" | ControllerID["type"];
 
-type ControllerGroupsMap = ListMap<
-    GroupName, 
-    ListMap<ControllerID, SavedController>
->;
+type ControllerGroupsMap = ListMap<GroupName, ListMap<ControllerID, SavedController>>;
 
 export function getGroupNameFromControllerID(id: ControllerID): GroupName {
-    switch (id.type){
+    switch (id.type) {
         case "role":
-            return "role/"+id.player+"/"+id.role as `${PlayerIndex}/${Role}`
+            return `role/${id.player}/${id.role}` as `${PlayerIndex}/${Role}`;
         case "syndicateGunGive":
         case "syndicateGunShoot":
         case "syndicateBackupAttack":
@@ -85,9 +77,9 @@ export function getGroupNameFromControllerID(id: ControllerID): GroupName {
 }
 
 function translateGroupName(id: ControllerID): string {
-    switch (id.type){
+    switch (id.type) {
         case "role":
-            return translate("role."+id.role+".name");
+            return translate(`role.${id.role}.name`);
         case "syndicateGunGive":
         case "syndicateGunShoot":
         case "syndicateBackupAttack":
@@ -104,182 +96,192 @@ function translateGroupName(id: ControllerID): string {
 
 /// True if this controller should be in this menu
 export function controllerIsVisible(id: ControllerID, controller: SavedController): boolean {
-    return ((singleAbilityJsonData(controllerIdToLink(id))?.visible)??true) && !controller.parameters.grayedOut;
+    return (singleAbilityJsonData(controllerIdToLink(id))?.visible ?? true) && !controller.parameters.grayedOut;
 }
 
-export default function GenericAbilityMenu(): ReactElement {
+export default function GenericAbilityMenu(): ReactElement | null {
     const savedAbilities = usePlayerState(
-        playerState => playerState.savedControllers,
-        ["yourAllowedControllers", "yourAllowedController"]
+        (playerState) => playerState.savedControllers,
+        ["yourAllowedControllers", "yourAllowedController"],
     )!;
 
-    const myIndex = usePlayerState(
-        playerState => playerState.myIndex,
-        ["yourPlayerIndex"]
-    )!;
+    const myIndex = usePlayerState((playerState) => playerState.myIndex, ["yourPlayerIndex"])!;
 
-    const phaseState = useGameState(
-        gameState => gameState.phaseState,
-        ["phase"]
-    )!;
+    const phaseState = useGameState((gameState) => gameState.phaseState, ["phase"])!;
 
-    let controllerGroupsMap: ControllerGroupsMap = new ListMap();
+    const controllerGroupsMap: ControllerGroupsMap = new ListMap();
     //build this map ^
-    for(let [controllerID, controller] of savedAbilities) {
+    for (const [controllerID, controller] of savedAbilities) {
         if (
-            !controllerIsVisible(controllerID, controller) && 
-            !( // Special case: hide judge abilities unless on trial, the backend doesn't do this for us.
-                controllerID.type === "judge" && loadSettingsParsed().headerEnabled === false &&
-                phaseState.type === "judgement" && phaseState.playerOnTrial !== myIndex &&
-                controllerID.player === myIndex && !controller.parameters.grayedOut &&
+            !controllerIsVisible(controllerID, controller) &&
+            !(
+                // Special case: hide judge abilities unless on trial, the backend doesn't do this for us.
+                controllerID.type === "judge" &&
+                loadSettingsParsed().headerEnabled === false &&
+                phaseState.type === "judgement" &&
+                phaseState.playerOnTrial !== myIndex &&
+                controllerID.player === myIndex &&
+                !controller.parameters.grayedOut &&
                 controller.parameters.allowedPlayers.includes(myIndex)
             )
         ) {
             continue;
         }
-        let groupName = getGroupNameFromControllerID(controllerID);
-        
+        const groupName = getGroupNameFromControllerID(controllerID);
+
         let controllers = controllerGroupsMap.get(groupName);
-        if(controllers === null){
-            controllers = new ListMap([], (k1, k2)=>controllerIdToLinkWithPlayer(k1)===controllerIdToLinkWithPlayer(k2));
+        if (controllers === null) {
+            controllers = new ListMap(
+                [],
+                (k1, k2) => controllerIdToLinkWithPlayer(k1) === controllerIdToLinkWithPlayer(k2),
+            );
         }
 
         controllers.insert(controllerID, controller);
         controllerGroupsMap.insert(groupName, controllers);
     }
 
-    return <>
-        {controllerGroupsMap.entries().map(([group, controllers], i)=>{
-            return <MultipleControllersMenu
-                key={i}
-                groupName={group}
-                controllers={controllers}
-            />
-        })}
-    </>
+    return (
+        <>
+            {controllerGroupsMap.entries().map(([group, controllers]) => {
+                return <MultipleControllersMenu key={group} groupName={group} controllers={controllers} />;
+            })}
+        </>
+    );
 }
 
-function MultipleControllersMenu(props: Readonly<{
-    groupName: string,
-    controllers: ListMap<ControllerID, SavedController>
-}>): ReactElement {
-    if(props.controllers.entries().length === 0){
-        return <></>;
+function MultipleControllersMenu(
+    props: Readonly<{
+        groupName: string;
+        controllers: ListMap<ControllerID, SavedController>;
+    }>,
+): ReactElement | null {
+    if (props.controllers.entries().length === 0) {
+        return null;
     }
-    if(props.controllers.entries().length === 1){
-        let firstController = props.controllers.entries()[0];
-        return <SingleAbilityMenu
-            abilityId={firstController[0]}
-            saveData={firstController[1]}
-            key={0}
-        />
+    if (props.controllers.entries().length === 1) {
+        const firstController = props.controllers.entries()[0];
+        return <SingleAbilityMenu abilityId={firstController[0]} saveData={firstController[1]} key={0} />;
     }
 
-    const disabled = !props.controllers.values().some((controller)=>!controller.parameters.grayedOut)
+    const disabled = !props.controllers.values().some((controller) => !controller.parameters.grayedOut);
 
-
-    let anyControllerId = props.controllers.keys()[0]
+    const anyControllerId = props.controllers.keys()[0];
     let groupName = "";
-    if(anyControllerId !== undefined){
-        groupName = translateGroupName(anyControllerId)
-    }else{
-        return <></>;
+    if (anyControllerId !== undefined) {
+        groupName = translateGroupName(anyControllerId);
+    } else {
+        return null;
     }
 
-    return <DetailsSummary
-        className="generic-ability-menu"
-        summary={
-            <div className="generic-ability-menu-tab-summary">
-                <StyledText>{groupName}</StyledText>
-            </div>
-        }
-        defaultOpen={true}
-        disabled={disabled}
-    >
-        {props.controllers.entries().map(([id, saveData], i) => {
-            return <SingleAbilityMenu
-                key={i}
-                abilityId={id}
-                saveData={saveData}
-                includeDropdown={false}
-            />
-        })}
-    </DetailsSummary>
+    return (
+        <DetailsSummary
+            className="generic-ability-menu"
+            summary={
+                <div className="generic-ability-menu-tab-summary">
+                    <StyledText>{groupName}</StyledText>
+                </div>
+            }
+            defaultOpen={true}
+            disabled={disabled}
+        >
+            {props.controllers.entries().map(([id, saveData]) => {
+                return (
+                    <SingleAbilityMenu
+                        key={controllerIdToLink(id)}
+                        abilityId={id}
+                        saveData={saveData}
+                        includeDropdown={false}
+                    />
+                );
+            })}
+        </DetailsSummary>
+    );
 }
 
-function SingleAbilityMenu(props: Readonly<{
-    abilityId: ControllerID,
-    key: number,
-    saveData: SavedController,
-    includeDropdown?: boolean
-}>): ReactElement {
+function SingleAbilityMenu(
+    props: Readonly<{
+        abilityId: ControllerID;
+        saveData: SavedController;
+        includeDropdown?: boolean;
+    }>,
+): ReactElement {
     const nightIcon = singleAbilityJsonData(controllerIdToLink(props.abilityId))?.midnight;
     const instantIcon = singleAbilityJsonData(controllerIdToLink(props.abilityId))?.instant;
     const visitIcon = singleAbilityJsonData(controllerIdToLink(props.abilityId))?.visit;
 
     let controllerIdName = translateControllerID(props.abilityId);
-    if(props.abilityId.type === "role" && props.includeDropdown === false){
-        controllerIdName = (translateControllerIDNoRole(props.abilityId)??"");
+    if (props.abilityId.type === "role" && props.includeDropdown === false) {
+        controllerIdName = translateControllerIDNoRole(props.abilityId) ?? "";
     }
 
     //The chat message makes it more verbose, showing more relevant information
     // as menus get large, it makes it harder to parse. so i keep it out for now
-    const inner = <>
-        <SwitchSingleAbilityMenuType
-            id={props.abilityId}
-            available={props.saveData.parameters.available}
-            selected={props.saveData.selection}
-        />
-    </>
+    const inner = (
+        <>
+            <SwitchSingleAbilityMenuType
+                id={props.abilityId}
+                available={props.saveData.parameters.available}
+                selected={props.saveData.selection}
+            />
+        </>
+    );
 
-    if(props.includeDropdown===true || props.includeDropdown===undefined){
-        return <DetailsSummary
-            className="generic-ability-menu"
-            summary={
-                <div className="generic-ability-menu-tab-summary">
-                    <span><StyledText>{controllerIdName}</StyledText></span>
+    if (props.includeDropdown === true || props.includeDropdown === undefined) {
+        return (
+            <DetailsSummary
+                className="generic-ability-menu"
+                summary={
+                    <div className="generic-ability-menu-tab-summary">
+                        <span>
+                            <StyledText>{controllerIdName}</StyledText>
+                        </span>
+                        <span>
+                            {instantIcon && <ControllerIcon icon={{ instant: true }} />}
+                            {nightIcon && <ControllerIcon icon={{ night: true }} />}
+                            {visitIcon && <ControllerIcon icon={{ visit: visitIcon }} />}
+                        </span>
+                    </div>
+                }
+                defaultOpen={true}
+                disabled={props.saveData.parameters.grayedOut}
+            >
+                {inner}
+            </DetailsSummary>
+        );
+    } else {
+        return (
+            <div className="generic-ability-menu generic-ability-menu-tab-no-summary">
+                <div className="generic-no-summary">
+                    <span>
+                        <StyledText>{controllerIdName}</StyledText>
+                    </span>
                     <span>
                         {instantIcon && <ControllerIcon icon={{ instant: true }} />}
                         {nightIcon && <ControllerIcon icon={{ night: true }} />}
                         {visitIcon && <ControllerIcon icon={{ visit: visitIcon }} />}
                     </span>
                 </div>
-            }
-            defaultOpen={true}
-            disabled={props.saveData.parameters.grayedOut}
-        >
-            {inner}
-        </DetailsSummary>
-        
-    }else{
-        return <div className="generic-ability-menu generic-ability-menu-tab-no-summary">
-            <div className="generic-no-summary">
-                <span>
-                    <StyledText>{controllerIdName}</StyledText>
-                </span>
-                <span>
-                    {instantIcon && <ControllerIcon icon={{ instant: true }} />}
-                    {nightIcon && <ControllerIcon icon={{ night: true }} />}
-                    {visitIcon && <ControllerIcon icon={{ visit: visitIcon }} />}
-                </span>
+                {inner}
             </div>
-            {inner}
-        </div>
+        );
     }
 }
 
-type ControllerIconData = {
-    instant: true
-} | {
-    night: true
-} | {
-    visit: "normal" | "abnormal" | "none"
-};
+type ControllerIconData =
+    | {
+          instant: true;
+      }
+    | {
+          night: true;
+      }
+    | {
+          visit: "normal" | "abnormal" | "none";
+      };
 
 function ControllerIcon(props: Readonly<{ icon: ControllerIconData }>) {
     const anchorController = useContext(AnchorControllerContext)!;
     const menuController = useContext(MenuControllerContext)!;
-
 
     const children = useMemo(() => {
         if ("instant" in props.icon) {
@@ -289,312 +291,314 @@ function ControllerIcon(props: Readonly<{ icon: ControllerIconData }>) {
             return translate("night.icon");
         }
         if ("visit" in props.icon) {
-            return translate("visit.icon."+props.icon.visit);
+            return translate(`visit.icon.${props.icon.visit}`);
         }
         return null;
     }, [props.icon]);
 
     const tooltip = useMemo(() => {
         if ("instant" in props.icon) {
-            return <div className="wiki-article wiki-article-tooltip">
-                {translate("wiki.article.standard.controller.tooltip.instant")}
-            </div>;
+            return (
+                <div className="wiki-article wiki-article-tooltip">
+                    {translate("wiki.article.standard.controller.tooltip.instant")}
+                </div>
+            );
         }
         if ("night" in props.icon) {
-            return <div className="wiki-article wiki-article-tooltip">
-                {translate("wiki.article.standard.controller.tooltip.night")}
-            </div>;
+            return (
+                <div className="wiki-article wiki-article-tooltip">
+                    {translate("wiki.article.standard.controller.tooltip.night")}
+                </div>
+            );
         }
         if ("visit" in props.icon) {
-            return <div className="wiki-article wiki-article-tooltip">
-                {translate(`wiki.article.standard.controller.tooltip.visit.${props.icon.visit}`)}
-            </div>;
+            return (
+                <div className="wiki-article wiki-article-tooltip">
+                    {translate(`wiki.article.standard.controller.tooltip.visit.${props.icon.visit}`)}
+                </div>
+            );
         }
     }, [props.icon]);
 
-    return <Button
-        className="flush controller-icon"
-        tooltip={tooltip}
-        onClick={() => setWikiSearchPage("standard/controller", anchorController, menuController)}
-    >
-        {children}
-    </Button>
+    return (
+        <Button
+            className="flush controller-icon"
+            tooltip={tooltip}
+            onClick={() => setWikiSearchPage("standard/controller", anchorController, menuController)}
+        >
+            {children}
+        </Button>
+    );
 }
 
+function SwitchSingleAbilityMenuType(
+    props: Readonly<{
+        id: ControllerID;
+        available: AvailableControllerSelection;
+        selected: ControllerSelection;
+    }>,
+): ReactElement | null {
+    const { id, available } = props;
+    const selected: ControllerSelection = props.selected;
 
-function SwitchSingleAbilityMenuType(props: Readonly<{
-    id: ControllerID,
-    available: AvailableControllerSelection,
-    selected: ControllerSelection
-}>): ReactElement {
-
-    const {id, available} = props;
-    let selected: ControllerSelection = props.selected;
-
-    switch(available.type) {
+    switch (available.type) {
         case "chatGroup":
-            return <ChatGroupSelect id={id} groups={available.selection.groups}
-                selected={selected.type === "chatGroup" ? selected.selection : null}/>;
+            return (
+                <ChatGroupSelect
+                    id={id}
+                    groups={available.selection.groups}
+                    selected={selected.type === "chatGroup" ? selected.selection : null}
+                />
+            );
         case "unit":
-            return <Button
-                onClick={()=>{
-                    GAME_MANAGER.sendControllerInput({
-                        id, 
-                        selection: {type: "unit", selection: null}
-                    });
-                }}
-            >
-                {translateControllerID(props.id)}
-            </Button>
-        case "boolean":{
-            let bool;
-            if(selected === null || selected.type !== "boolean"){
-                bool = false;
-            }else{
-                bool = selected.selection;
-            }
+            return (
+                <Button
+                    onClick={() => {
+                        GAME_MANAGER.sendControllerInput({
+                            id,
+                            selection: { type: "unit", selection: null },
+                        });
+                    }}
+                >
+                    {translateControllerID(props.id)}
+                </Button>
+            );
+        case "boolean": {
+            const bool = selected !== null && selected.type === "boolean" ? selected.selection : false;
 
-            return <BooleanSelectionMenu
-                id={id}
-                selection={bool}
-                onChoose={(x)=>{
-                    GAME_MANAGER.sendControllerInput({
-                        id, 
-                        selection: {
-                            type: "boolean",
-                            selection: x
-                        }
-                    });
-                }}
-            />;
+            return (
+                <BooleanSelectionMenu
+                    id={id}
+                    selection={bool}
+                    onChoose={(x) => {
+                        GAME_MANAGER.sendControllerInput({
+                            id,
+                            selection: {
+                                type: "boolean",
+                                selection: x,
+                            },
+                        });
+                    }}
+                />
+            );
         }
-        case "playerList":{
+        case "playerList": {
             let input: PlayerListSelection;
-            if(
-                props.selected === null ||
-                props.selected.type !== "playerList"
-            ){
+            if (props.selected === null || props.selected.type !== "playerList") {
                 input = [];
-            }else{
+            } else {
                 input = props.selected.selection;
             }
 
-            return <PlayerListSelectionMenu
-                selection={input}
-                availableSelection={available.selection}
-                onChoose={(selection) => {
-                    GAME_MANAGER.sendControllerInput({
-                        id, 
-                        selection: {
-                            type: "playerList",
-                            selection
-                        }
-                    });
-                }}
-            />;
+            return (
+                <PlayerListSelectionMenu
+                    selection={input}
+                    availableSelection={available.selection}
+                    onChoose={(selection) => {
+                        GAME_MANAGER.sendControllerInput({
+                            id,
+                            selection: {
+                                type: "playerList",
+                                selection,
+                            },
+                        });
+                    }}
+                />
+            );
         }
-        case "twoPlayerOption":{
+        case "twoPlayerOption": {
             let input: TwoPlayerOptionSelection;
-            if(
-                props.selected === null ||
-                props.selected.type !== "twoPlayerOption"
-            ){
+            if (props.selected === null || props.selected.type !== "twoPlayerOption") {
                 input = null;
-            }else{
+            } else {
                 input = props.selected.selection;
             }
 
-            return <TwoPlayerOptionSelectionMenu
-                selection={input}
-                availableSelection={available.selection}
-                onChoose={(selection) => {
-                    GAME_MANAGER.sendControllerInput({
-                        id, 
-                        selection: {
-                            type: "twoPlayerOption",
-                            selection
-                        }
-                    });
-                }}
-            />;
+            return (
+                <TwoPlayerOptionSelectionMenu
+                    selection={input}
+                    availableSelection={available.selection}
+                    onChoose={(selection) => {
+                        GAME_MANAGER.sendControllerInput({
+                            id,
+                            selection: {
+                                type: "twoPlayerOption",
+                                selection,
+                            },
+                        });
+                    }}
+                />
+            );
         }
-        case "roleList":{
+        case "roleList": {
             let input: RoleListSelection;
-            if(
-                props.selected === null ||
-                props.selected.type !== "roleList"
-            ){
+            if (props.selected === null || props.selected.type !== "roleList") {
                 input = [];
-            }else{
+            } else {
                 input = props.selected.selection;
             }
 
-            return <RoleListSelectionMenu
-                selection={input}
-                availableSelection={available.selection}
-                onChoose={(selection) => {
-                    GAME_MANAGER.sendControllerInput({
-                        id, 
-                        selection: {
-                            type: "roleList",
-                            selection
-                        }
-                    });
-                }}
-            />
+            return (
+                <RoleListSelectionMenu
+                    selection={input}
+                    availableSelection={available.selection}
+                    onChoose={(selection) => {
+                        GAME_MANAGER.sendControllerInput({
+                            id,
+                            selection: {
+                                type: "roleList",
+                                selection,
+                            },
+                        });
+                    }}
+                />
+            );
         }
-        case "twoRoleOption":{
-
+        case "twoRoleOption": {
             let input: TwoRoleOptionSelection;
-            if(
-                props.selected === null ||
-                props.selected.type !== "twoRoleOption"
-            ){
+            if (props.selected === null || props.selected.type !== "twoRoleOption") {
                 input = [null, null];
-            }else{
+            } else {
                 input = props.selected.selection;
             }
 
-            return <TwoRoleOptionSelectionMenu
-                input={input}
-                availableSelection={available.selection}
-                onChoose={(selection) => {
-                    GAME_MANAGER.sendControllerInput({
-                        id,
-                        selection: {
-                            type: "twoRoleOption",
-                            selection: selection
-                        }
-                    });
-                }}
-            />;
+            return (
+                <TwoRoleOptionSelectionMenu
+                    input={input}
+                    availableSelection={available.selection}
+                    onChoose={(selection) => {
+                        GAME_MANAGER.sendControllerInput({
+                            id,
+                            selection: {
+                                type: "twoRoleOption",
+                                selection: selection,
+                            },
+                        });
+                    }}
+                />
+            );
         }
         case "graveDeathCauses": {
             let input: GraveDeathCausesSelection;
-            if(
-                props.selected === null ||
-                props.selected.type !== "graveDeathCauses"
-            ){
+            if (props.selected === null || props.selected.type !== "graveDeathCauses") {
                 input = [];
-            }else{
+            } else {
                 input = props.selected.selection;
             }
 
-            return <GraveDeathCausesSelectionMenu
-                selection={input}
-                onChoose={(selection) => {
-                    GAME_MANAGER.sendControllerInput({
-                        id,
-                        selection: {
-                            type: "graveDeathCauses",
-                            selection: selection
-                        }
-                    });
-                }}
-            />
+            return (
+                <GraveDeathCausesSelectionMenu
+                    selection={input}
+                    onChoose={(selection) => {
+                        GAME_MANAGER.sendControllerInput({
+                            id,
+                            selection: {
+                                type: "graveDeathCauses",
+                                selection: selection,
+                            },
+                        });
+                    }}
+                />
+            );
         }
-        case "twoRoleOutlineOption":{
+        case "twoRoleOutlineOption": {
             let input: TwoRoleOutlineOptionSelection;
-            if(
-                props.selected === null ||
-                props.selected.type !== "twoRoleOutlineOption"
-            ){
+            if (props.selected === null || props.selected.type !== "twoRoleOutlineOption") {
                 input = [null, null];
-            }else{
+            } else {
                 input = props.selected.selection;
             }
 
-            return <TwoRoleOutlineOptionSelectionMenu
-                selection={input}
-                available={available.selection}
-                onChoose={(selection) => {
-                    GAME_MANAGER.sendControllerInput({
-                        id,
-                        selection: {
-                            type: "twoRoleOutlineOption",
-                            selection: selection
-                        }
-                    });
-                }}
-            />
+            return (
+                <TwoRoleOutlineOptionSelectionMenu
+                    selection={input}
+                    available={available.selection}
+                    onChoose={(selection) => {
+                        GAME_MANAGER.sendControllerInput({
+                            id,
+                            selection: {
+                                type: "twoRoleOutlineOption",
+                                selection: selection,
+                            },
+                        });
+                    }}
+                />
+            );
         }
-        case "string":{
+        case "string": {
             let input: StringSelection;
-            if(
-                props.selected === null ||
-                props.selected.type !== "string"
-            ){
+            if (props.selected === null || props.selected.type !== "string") {
                 input = "";
-            }else{
+            } else {
                 input = props.selected.selection;
             }
 
-            return <StringSelectionMenu
-                id={id}
-                selection={input}
-                onChoose={(selection) => {
-                    GAME_MANAGER.sendControllerInput({
-                        id,
-                        selection: {
-                            type: "string",
-                            selection: selection
-                        }
-                    });
-                }}
-            />
+            return (
+                <StringSelectionMenu
+                    id={id}
+                    selection={input}
+                    onChoose={(selection) => {
+                        GAME_MANAGER.sendControllerInput({
+                            id,
+                            selection: {
+                                type: "string",
+                                selection: selection,
+                            },
+                        });
+                    }}
+                />
+            );
         }
-        case "integer":{
+        case "integer": {
             let input: IntegerSelection;
-            if(
-                props.selected === null ||
-                props.selected.type !== "integer"
-            ){
+            if (props.selected === null || props.selected.type !== "integer") {
                 input = 0;
-            }else{
+            } else {
                 input = props.selected.selection;
             }
 
-            return <IntegerSelectionMenu
-                id={id}
-                selection={input}
-                available={available.selection}
-                onChoose={(selection: number) => {
-                    GAME_MANAGER.sendControllerInput({
-                        id,
-                        selection: {
-                            type: "integer",
-                            selection: selection
-                        }
-                    });
-                }}
-            />
+            return (
+                <IntegerSelectionMenu
+                    id={id}
+                    selection={input}
+                    available={available.selection}
+                    onChoose={(selection: number) => {
+                        GAME_MANAGER.sendControllerInput({
+                            id,
+                            selection: {
+                                type: "integer",
+                                selection: selection,
+                            },
+                        });
+                    }}
+                />
+            );
         }
-        case "kira":{
+        case "kira": {
             let input: KiraSelection;
-            if(
-                props.selected === null ||
-                props.selected.type !== "kira"
-            ){
+            if (props.selected === null || props.selected.type !== "kira") {
                 input = [];
-            }else{
+            } else {
                 input = props.selected.selection;
             }
 
-            return <KiraSelectionMenu
-                selection={input}
-                available={available.selection}
-                onChange={(selection)=>{
-                    GAME_MANAGER.sendControllerInput({
-                        id,
-                        selection: {
-                            type: "kira",
-                            selection: selection
-                        }
-                    });
-                }}
-            />
+            return (
+                <KiraSelectionMenu
+                    selection={input}
+                    available={available.selection}
+                    onChange={(selection) => {
+                        GAME_MANAGER.sendControllerInput({
+                            id,
+                            selection: {
+                                type: "kira",
+                                selection: selection,
+                            },
+                        });
+                    }}
+                />
+            );
         }
         default:
-            return <></>;
+            return null;
     }
 }

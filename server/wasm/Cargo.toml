@@ -1,0 +1,31 @@
+[package]
+name = "mafia_wasm"
+version = "0.1.0"
+edition = "2024"
+description = "The game server compiled to WebAssembly for the Cloudflare Worker in ../worker"
+
+[lib]
+crate-type = ["cdylib"]
+
+# aislop flags unwrap(), todo!(), and unimplemented!() in non-test code, and its quality
+# limits (function length, parameter count, nesting) are the thresholds in /clippy.toml.
+[lints.clippy]
+unwrap_used = "warn"
+todo = "warn"
+unimplemented = "warn"
+too_many_lines = "warn"
+too_many_arguments = "warn"
+excessive_nesting = "warn"
+
+[dependencies]
+mafia_server = { path = ".." }
+getrandom = "0.3"
+serde_json = "1.0"
+tokio = { version = "1", features = ["sync"] }
+
+[profile.release]
+opt-level = "s"
+lto = true
+codegen-units = 1
+strip = true
+panic = "abort"

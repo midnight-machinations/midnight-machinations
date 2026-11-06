@@ -1,7 +1,7 @@
 .two-role-outline-option-input .grid {
     display: grid;
-    padding: .13rem;
-    gap: .13rem .25rem;
+    padding: 0.13rem;
+    gap: 0.13rem 0.25rem;
     margin-bottom: 1rem;
     width: 100%;
     grid-template-columns: [role-list-start] 50% [role-list-end graves-start] 50% [graves-end];
@@ -9,21 +9,21 @@
 .two-role-outline-option-input > .grid button {
     text-align: left;
     margin: 0;
-    text-wrap:pretty;
+    text-wrap: pretty;
     overflow-x: auto;
     overflow-y: hidden;
 }
 .two-role-outline-option-input > .grid label {
     display: flex;
     align-items: center;
-    padding-left: .2rem;
+    padding-left: 0.2rem;
     text-align: left;
     margin: 0;
     text-wrap: pretty;
     overflow-x: auto;
     overflow-y: hidden;
     background-color: var(--primary-color);
-    border: .13rem solid var(--primary-border-color);
+    border: 0.13rem solid var(--primary-border-color);
 }
 /* .two-role-outline-option-input > .grid button.role-list-button {
     grid-column: role-list-start / role-list-end;
@@ -31,7 +31,7 @@
 .two-role-outline-option-input > .grid button.grave-list-button {
     grid-column: graves-start / graves-end;
 } */
-.two-role-outline-option-input > .grid button > *{
+.two-role-outline-option-input > .grid button > * {
     width: 100%;
     text-align: left;
     overflow-x: scroll;

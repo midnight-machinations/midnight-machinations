@@ -51,11 +51,11 @@ impl AbilityTrait for RoleAbility {
     }
     fn on_player_possessed(&self, game: &mut Game, id: &AbilityID, event: &OnPlayerPossessed, fold: &mut OnMidnightFold, priority: ()){
         if id.get_role_actor_expect() == event.possessed {
-            for id in game.controllers.all_controller_ids() {
-                if let ControllerID::Role { role, .. } = id && role == self.0.role() {
-                    if Possession::possession_immune(&id) { continue; }
-                    Possession::possess_controller(game, id.clone(), event.possessed, event.possessed_into)
-                }
+            let own_controllers = game.controllers.all_controller_ids().into_iter().filter(|id|
+                matches!(id, ControllerID::Role { role, .. } if *role == self.0.role()) && !Possession::possession_immune(id)
+            );
+            for id in own_controllers {
+                Possession::possess_controller(game, id, event.possessed, event.possessed_into)
             }
 
             let visits = self.0.clone().create_visits_initialize_night(game, id, id.get_role_actor_expect());

@@ -219,24 +219,7 @@ impl PhaseState {
                     trials_left: 3,
                 }
             },
-            PhaseState::Nomination {trials_left, ..} => {
-                if game.modifier_settings().is_enabled(ModifierID::UnscheduledNominations){
-                    if trials_left == 0 {
-                        Self::Dusk
-                    } else {
-                        Self::Adjournment { trials_left: 0 }
-                    }
-                }else if let Some(player_on_trial) = game.count_nomination_and_start_trial(false){    
-                    Self::Testimony{
-                        trials_left: trials_left.saturating_sub(1), 
-                        player_on_trial,
-                    }
-                } else if trials_left > 0 {
-                    Self::Adjournment {trials_left: trials_left.saturating_sub(1)}
-                } else {
-                    Self::Adjournment {trials_left}
-                }
-            },
+            PhaseState::Nomination {trials_left, ..} => Self::end_nomination(game, trials_left),
             PhaseState::Adjournment {trials_left} => {
                 if trials_left == 0 {
                     Self::Dusk
@@ -249,49 +232,7 @@ impl PhaseState {
             PhaseState::Testimony { trials_left, player_on_trial } => {
                 Self::Judgement { trials_left, player_on_trial }
             },
-            PhaseState::Judgement { trials_left, player_on_trial } => {
-
-
-                let (guilty, innocent) = game.count_verdict_votes(player_on_trial);
-
-                if !HiddenVerdictVotes::verdict_votes_are_hidden(game) {
-                    
-                    game.add_messages_to_chat_group(ChatGroup::All, 
-                        PlayerReference::all_players(game)
-                            .filter(|player_ref|{
-                                player_ref.alive(game) && *player_ref != player_on_trial
-                            })
-                            .map(|player_ref|
-                                ChatMessageVariant::JudgementVerdict{
-                                    voter_player_index: player_ref,
-                                    verdict: player_ref.verdict(game)
-                                }
-                            )
-                            .collect()
-                    );
-
-
-                    game.add_message_to_chat_group(ChatGroup::All, ChatMessageVariant::TrialVerdict{ 
-                        player_on_trial, 
-                        innocent, guilty 
-                    });
-                }
-                
-
-                let hang = if game.modifier_settings().is_enabled(ModifierID::TwoThirdsMajority) {
-                    innocent <= guilty.div(2)
-                } else {
-                    innocent < guilty
-                };
-                
-                if hang {
-                    Self::FinalWords { player_on_trial }
-                } else if trials_left == 0 {
-                    Self::Dusk
-                }else{
-                    Self::Nomination { trials_left }
-                }
-            },
+            PhaseState::Judgement { trials_left, player_on_trial } => Self::end_judgement(game, trials_left, player_on_trial),
             PhaseState::FinalWords { player_on_trial } => {
                 player_on_trial.die_and_add_grave(game, Grave::from_player_lynch(game, player_on_trial));
 
@@ -308,5 +249,68 @@ impl PhaseState {
             },
             PhaseState::Recess => Self::Recess
         }
+    }
+
+    fn end_nomination(game: &mut Game, trials_left: u8) -> PhaseState {
+        if game.modifier_settings().is_enabled(ModifierID::UnscheduledNominations){
+            if trials_left == 0 {
+                Self::Dusk
+            } else {
+                Self::Adjournment { trials_left: 0 }
+            }
+        }else if let Some(player_on_trial) = game.count_nomination_and_start_trial(false){    
+            Self::Testimony{
+                trials_left: trials_left.saturating_sub(1), 
+                player_on_trial,
+            }
+        } else if trials_left > 0 {
+            Self::Adjournment {trials_left: trials_left.saturating_sub(1)}
+        } else {
+            Self::Adjournment {trials_left}
+        }
+    
+    }
+
+    fn end_judgement(game: &mut Game, trials_left: u8, player_on_trial: PlayerReference) -> PhaseState {
+        let (guilty, innocent) = game.count_verdict_votes(player_on_trial);
+
+        if !HiddenVerdictVotes::verdict_votes_are_hidden(game) {
+            
+            game.add_messages_to_chat_group(ChatGroup::All, 
+                PlayerReference::all_players(game)
+                    .filter(|player_ref|{
+                        player_ref.alive(game) && *player_ref != player_on_trial
+                    })
+                    .map(|player_ref|
+                        ChatMessageVariant::JudgementVerdict{
+                            voter_player_index: player_ref,
+                            verdict: player_ref.verdict(game)
+                        }
+                    )
+                    .collect()
+            );
+
+
+            game.add_message_to_chat_group(ChatGroup::All, ChatMessageVariant::TrialVerdict{ 
+                player_on_trial, 
+                innocent, guilty 
+            });
+        }
+        
+
+        let hang = if game.modifier_settings().is_enabled(ModifierID::TwoThirdsMajority) {
+            innocent <= guilty.div(2)
+        } else {
+            innocent < guilty
+        };
+        
+        if hang {
+            Self::FinalWords { player_on_trial }
+        } else if trials_left == 0 {
+            Self::Dusk
+        }else{
+            Self::Nomination { trials_left }
+        }
+    
     }
 }

@@ -2,7 +2,7 @@
  * A utility for keeping track of how we're polling the history
  */
 export class HistoryPoller<T> {
-    /** 
+    /**
      * -1 indicates we are not using the history.
      */
     index: number;
@@ -18,7 +18,7 @@ export class HistoryPoller<T> {
 
     poll(history: HistoryQueue<T>): T | undefined {
         this.index++;
-        let result = history.poll(this.index);
+        const result = history.poll(this.index);
         if (result === undefined) {
             this.index--;
         }
@@ -31,7 +31,7 @@ export class HistoryPoller<T> {
             this.index = -1;
             return undefined;
         } else {
-            let result = history.poll(this.index);
+            const result = history.poll(this.index);
             // History shrunk for some reason. Should be impossible but might as well account for it.
             if (result === undefined) {
                 return this.pollPrevious(history);
@@ -42,7 +42,7 @@ export class HistoryPoller<T> {
     }
 }
 
-/** 
+/**
  * A queue with a max length
  */
 export class HistoryQueue<T> {
@@ -73,7 +73,7 @@ export class HistoryQueue<T> {
     push(value: T) {
         this.values = [value].concat(this.values);
         while (this.values.length > this.max_length) {
-            this.values.pop()
+            this.values.pop();
         }
     }
 }

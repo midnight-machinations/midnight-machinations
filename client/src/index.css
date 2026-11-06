@@ -1,6 +1,6 @@
 @font-face {
     font-family: computer-font;
-    src: url('resources/fonts/3270/3270SemiCondensed-Regular.ttf');
+    src: url("../../assets/resources/fonts/3270/3270SemiCondensed-Regular.ttf");
     font-weight: normal;
     font-style: normal;
     size-adjust: 120%;
@@ -8,78 +8,94 @@
 
 @font-face {
     font-family: legible-computer-font;
-    src: url('resources/fonts/Consolas/Consolas-Regular.ttf');
+    src: url("../../assets/resources/fonts/Consolas/Consolas-Regular.ttf");
     font-weight: normal;
     font-style: normal;
 }
 @font-face {
     font-family: legible-computer-font;
-    src: url('resources/fonts/Consolas/Consolas-Bold.ttf');
+    src: url("../../assets/resources/fonts/Consolas/Consolas-Bold.ttf");
     font-weight: bold;
     font-style: normal;
 }
 @font-face {
     font-family: legible-computer-font;
-    src: url('resources/fonts/Consolas/Consolas-Italic.ttf');
+    src: url("../../assets/resources/fonts/Consolas/Consolas-Italic.ttf");
     font-weight: normal;
     font-style: italic;
 }
 @font-face {
     font-family: legible-computer-font;
-    src: url('resources/fonts/Consolas/Consolas-Bold-Italic.ttf');
+    src: url("../../assets/resources/fonts/Consolas/Consolas-Bold-Italic.ttf");
     font-weight: bold;
     font-style: italic;
 }
 
 @font-face {
     font-family: game-base-font;
-    src: url('resources/fonts/Roboto/Roboto-Regular.ttf');
+    src: url("https://cdn.jsdelivr.net/npm/@fontsource/roboto@5.3.0/files/roboto-latin-400-normal.woff2")
+        format("woff2");
+    font-display: swap;
     font-weight: normal;
     font-style: normal;
 }
 @font-face {
     font-family: game-base-font;
-    src: url('resources/fonts/Roboto/Roboto-Bold.ttf');
+    src: url("https://cdn.jsdelivr.net/npm/@fontsource/roboto@5.3.0/files/roboto-latin-700-normal.woff2")
+        format("woff2");
+    font-display: swap;
     font-weight: bold;
     font-style: normal;
 }
 @font-face {
     font-family: game-base-font;
-    src: url('resources/fonts/Roboto/Roboto-Italic.ttf');
+    src: url("https://cdn.jsdelivr.net/npm/@fontsource/roboto@5.3.0/files/roboto-latin-400-italic.woff2")
+        format("woff2");
+    font-display: swap;
     font-weight: normal;
     font-style: italic;
 }
 @font-face {
     font-family: game-base-font;
-    src: url('resources/fonts/Roboto/Roboto-BoldItalic.ttf');
+    src: url("https://cdn.jsdelivr.net/npm/@fontsource/roboto@5.3.0/files/roboto-latin-700-italic.woff2")
+        format("woff2");
+    font-display: swap;
     font-weight: bold;
     font-style: italic;
 }
 
 @font-face {
     font-family: game-accessible-font;
-    src: url('resources/fonts/opendyslexic/OpenDyslexic-Regular.woff2');
+    src: url("https://cdn.jsdelivr.net/npm/@fontsource/opendyslexic@5.3.0/files/opendyslexic-latin-400-normal.woff2")
+        format("woff2");
+    font-display: swap;
     font-weight: normal;
     font-style: normal;
     size-adjust: 80%;
 }
 @font-face {
     font-family: game-accessible-font;
-    src: url('resources/fonts/opendyslexic/OpenDyslexic-Bold.woff2');
+    src: url("https://cdn.jsdelivr.net/npm/@fontsource/opendyslexic@5.3.0/files/opendyslexic-latin-700-normal.woff2")
+        format("woff2");
+    font-display: swap;
     font-weight: bold;
     font-style: normal;
     size-adjust: 80%;
 }
 @font-face {
     font-family: game-accessible-font;
-    src: url('resources/fonts/opendyslexic/OpenDyslexic-Italic.woff2');
+    src: url("https://cdn.jsdelivr.net/npm/@fontsource/opendyslexic@5.3.0/files/opendyslexic-latin-400-italic.woff2")
+        format("woff2");
+    font-display: swap;
     font-weight: normal;
     font-style: italic;
     size-adjust: 80%;
 }
 @font-face {
     font-family: game-accessible-font;
-    src: url('resources/fonts/opendyslexic/OpenDyslexic-Bold-Italic.woff2');
+    src: url("https://cdn.jsdelivr.net/npm/@fontsource/opendyslexic@5.3.0/files/opendyslexic-latin-700-italic.woff2")
+        format("woff2");
+    font-display: swap;
     font-weight: bold;
     font-style: italic;
     size-adjust: 80%;
@@ -87,13 +103,15 @@
 
 @font-face {
     font-family: game-kira-font;
-    src: url(resources/fonts/canterbury.regular.ttf) format('truetype');
+    src: url(../../assets/resources/fonts/canterbury.regular.ttf) format("truetype");
     size-adjust: 120%;
 }
 
 @font-face {
     font-family: game-spiral-font;
-    src: url(resources/fonts/oswald/Oswald-Regular.ttf) format('truetype');
+    src: url("https://cdn.jsdelivr.net/npm/@fontsource/oswald@5.3.0/files/oswald-latin-400-normal.woff2")
+        format("woff2");
+    font-display: swap;
     size-adjust: 90%;
 }
 
@@ -102,11 +120,10 @@
     font-style: normal;
     font-weight: 400;
     size-adjust: 110%;
-    src: url(resources/fonts/Dankduck.ttf) format('truetype');
+    src: url(../../assets/resources/fonts/Dankduck.ttf) format("truetype");
 }
 
-
-:root{
+:root {
     /* Analog Horror Terminal Color Scheme */
     --background-color: #000000;
     --fade-color: #0a0a0a;
@@ -128,7 +145,7 @@
     --focus-outline-color: #ffffff;
 
     font-size: 1em;
-    
+
     /* Terminal font as primary */
     --game-font: computer-font;
     --kira-font: computer-font;
@@ -138,38 +155,41 @@
     font-family: var(--game-font);
 }
 
-button.brand, .button.brand {
+button.brand,
+.button.brand {
     background-color: var(--brand-color);
     border-color: var(--brand-border-color);
     border-bottom-color: var(--brand-border-shadow-color);
     border-right-color: var(--brand-border-shadow-color);
-    padding: .25rem .5rem;
+    padding: 0.25rem 0.5rem;
     font-weight: bold;
 }
 
-button.brand:hover:not(:disabled):not(:active), .button.brand:hover:not(:disabled):not(:active) {
+button.brand:hover:not(:disabled):not(:active),
+.button.brand:hover:not(:disabled):not(:active) {
     background-color: var(--brand-hover-color);
 }
 
-button.flush, .button.flush {
+button.flush,
+.button.flush {
     border: none;
     background: none;
 }
 
 s {
     text-decoration: line-through;
-    text-decoration-thickness: .13rem;
+    text-decoration-thickness: 0.13rem;
 }
 
-*{
+* {
     user-select: none;
-    
+
     text-align: center;
     box-sizing: border-box;
 
     margin: 0;
     padding: 0;
-    
+
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
 
@@ -177,9 +197,9 @@ s {
 
     font-family: var(--game-font, Arial);
 }
-.timer-box{
+.timer-box {
     width: 100%;
-    height: .5rem;
+    height: 0.5rem;
     margin: 0%;
     padding: 0%;
     background-color: #000000;
@@ -192,13 +212,20 @@ s {
     gap: 0.5rem;
 }
 
-button, .button, input, select, option, textarea, .textarea, summary {
+button,
+.button,
+input,
+select,
+option,
+textarea,
+.textarea,
+summary {
     border-radius: 0;
-    margin: .13rem;
+    margin: 0.13rem;
     background-color: var(--background-color);
     border-color: var(--primary-border-color);
     border-style: solid;
-    border-width: .13rem;
+    border-width: 0.13rem;
     color: var(--text-color);
     font-size: 1em;
     padding: 0.13rem 0.25rem;
@@ -208,7 +235,8 @@ button, .button, input, select, option, textarea, .textarea, summary {
 /*
 Ensure the CSS is EXACTLY the same (FUCK YOU CHROME)
 */
-textarea, .textarea {
+textarea,
+.textarea {
     display: inline-block;
     unicode-bidi: normal;
     overflow-wrap: normal;
@@ -223,17 +251,17 @@ textarea, .textarea {
 }
 
 *:focus-visible {
-    outline: var(--focus-outline-color) solid .13rem;
+    outline: var(--focus-outline-color) solid 0.13rem;
     background-color: var(--hover-color);
 }
 
 *.fauxcus-visible {
-    outline: var(--focus-outline-color) solid .13rem;
+    outline: var(--focus-outline-color) solid 0.13rem;
     background-color: var(--hover-color);
 }
 
 a {
-    text-decoration: none .13rem;
+    text-decoration: none 0.13rem;
 }
 
 a:hover {
@@ -246,37 +274,38 @@ a:focus-visible {
     text-decoration-color: var(--focus-outline-color);
 }
 
-button, .button, summary {
+button,
+.button,
+summary {
     cursor: default;
     background-color: var(--background-color);
     white-space: nowrap;
 }
-button, .button, select, summary {
+button,
+.button,
+select,
+summary {
     border-bottom-color: var(--primary-border-shadow-color);
     border-right-color: var(--primary-border-shadow-color);
     user-select: none;
 }
-button.depressed, .button.depressed {
+button.depressed,
+.button.depressed {
     border-bottom-color: var(--primary-border-color);
     border-right-color: var(--primary-border-color);
     border-top-color: var(--primary-border-shadow-color);
     border-left-color: var(--primary-border-shadow-color);
 }
-input, option, textarea, .textarea {
+input,
+option,
+textarea,
+.textarea {
     border-top-color: var(--primary-border-shadow-color);
     border-left-color: var(--primary-border-shadow-color);
 }
 
-:has(input):focus-within > button.clear,
-:has(input):focus-within > .button.clear {
-    display: block;
-}
-
-:has(button.clear), :has(.button.clear) {
-    position: relative;
-}
-
-button.clear, .button.clear {
+button.clear,
+.button.clear {
     display: none;
     font-size: 0.8em;
     position: absolute;
@@ -287,12 +316,30 @@ button.clear, .button.clear {
     padding: 0;
 }
 
-button.close, .button.close {
+:has(input):focus-within > button.clear,
+:has(input):focus-within > .button.clear {
+    display: block;
+}
+
+:has(button.clear),
+:has(.button.clear) {
+    position: relative;
+}
+
+button.close,
+.button.close {
     font-size: 1em;
     padding: 0;
 }
 
-button:disabled, .button:disabled, input:disabled, select:disabled, option:disabled, textarea:disabled, .textarea:disabled, summary:disabled {
+button:disabled,
+.button:disabled,
+input:disabled,
+select:disabled,
+option:disabled,
+textarea:disabled,
+.textarea:disabled,
+summary:disabled {
     opacity: 0.5;
     box-shadow: 0 0 100vmax #55555555 inset;
 }
@@ -314,16 +361,17 @@ summary:hover:not([disabled]):not(:active) {
     background-color: var(--hover-color);
 }
 
-code, .code {
-    font-family: 'Courier New', Courier, monospace;
+code,
+.code {
+    font-family: "Courier New", Courier, monospace;
     font-weight: bold;
     padding: 0.25rem;
     white-space: pre;
 }
 
 ::-webkit-scrollbar {
-    width: .3rem;
-    height: .3rem;
+    width: 0.3rem;
+    height: 0.3rem;
 }
 /* Track */
 ::-webkit-scrollbar-track {
@@ -341,7 +389,7 @@ code, .code {
 }
 
 ::-webkit-scrollbar-corner {
-    background: transparent
+    background: transparent;
 }
 
 .chat-menu-colors {
@@ -422,7 +470,6 @@ code, .code {
     --focus-outline-color: #aa5200;
 }
 
-
 @media only screen and (max-width: 600px) {
     .mobile-hidden {
         display: none;
@@ -449,7 +496,8 @@ code, .code {
     }
 
     @keyframes vignette-pulse {
-        0%, 100% {
+        0%,
+        100% {
             box-shadow: inset 0 0 200px rgba(0, 0, 0, 0.8);
         }
         50% {
@@ -459,165 +507,165 @@ code, .code {
 
     @keyframes glitch-anim {
         0% {
-            clip: rect(.89em, 99.99em, .47em, 0);
+            clip: rect(0.89em, 99.99em, 0.47em, 0);
             transform: skew(0.32deg);
         }
         5% {
-            clip: rect(.13em, 99.99em, .94em, 0);
+            clip: rect(0.13em, 99.99em, 0.94em, 0);
             transform: skew(0.73deg);
         }
         10% {
-            clip: rect(.23em, 99.99em, .22em, 0);
+            clip: rect(0.23em, 99.99em, 0.22em, 0);
             transform: skew(0.1deg);
         }
         15% {
-            clip: rect(.84em, 99.99em, .64em, 0);
+            clip: rect(0.84em, 99.99em, 0.64em, 0);
             transform: skew(0.03deg);
         }
         20% {
-            clip: rect(.36em, 99.99em, .33em, 0);
+            clip: rect(0.36em, 99.99em, 0.33em, 0);
             transform: skew(0.94deg);
         }
         25% {
-            clip: rect(.75em, 99.99em, .84em, 0);
+            clip: rect(0.75em, 99.99em, 0.84em, 0);
             transform: skew(0.27deg);
         }
         30% {
-            clip: rect(.66em, 99.99em, .86em, 0);
+            clip: rect(0.66em, 99.99em, 0.86em, 0);
             transform: skew(0.2deg);
         }
         35% {
-            clip: rect(.94em, 99.99em, .23em, 0);
+            clip: rect(0.94em, 99.99em, 0.23em, 0);
             transform: skew(0.37deg);
         }
         40% {
-            clip: rect(.84em, 99.99em, .21em, 0);
+            clip: rect(0.84em, 99.99em, 0.21em, 0);
             transform: skew(0.5deg);
         }
         45% {
-            clip: rect(.68em, 99.99em, 1.00em, 0);
+            clip: rect(0.68em, 99.99em, 1em, 0);
             transform: skew(0.84deg);
         }
         50% {
-            clip: rect(.11em, 99.99em, .27em, 0);
+            clip: rect(0.11em, 99.99em, 0.27em, 0);
             transform: skew(0.95deg);
         }
         55% {
-            clip: rect(.79em, 99.99em, .89em, 0);
+            clip: rect(0.79em, 99.99em, 0.89em, 0);
             transform: skew(0.69deg);
         }
         60% {
-            clip: rect(.70em, 99.99em, .14em, 0);
+            clip: rect(0.7em, 99.99em, 0.14em, 0);
             transform: skew(0.3deg);
         }
         65% {
-            clip: rect(.99em, 99.99em, .47em, 0);
+            clip: rect(0.99em, 99.99em, 0.47em, 0);
             transform: skew(0.95deg);
         }
         70% {
-            clip: rect(.66em, 99.99em, .35em, 0);
+            clip: rect(0.66em, 99.99em, 0.35em, 0);
             transform: skew(0.68deg);
         }
         75% {
-            clip: rect(.40em, 99.99em, .55em, 0);
+            clip: rect(0.4em, 99.99em, 0.55em, 0);
             transform: skew(0.69deg);
         }
         80% {
-            clip: rect(.90em, 99.99em, .59em, 0);
+            clip: rect(0.9em, 99.99em, 0.59em, 0);
             transform: skew(0.07deg);
         }
         85% {
-            clip: rect(.17em, 99.99em, .43em, 0);
+            clip: rect(0.17em, 99.99em, 0.43em, 0);
             transform: skew(0.09deg);
         }
         90% {
-            clip: rect(.17em, 99.99em, .52em, 0);
+            clip: rect(0.17em, 99.99em, 0.52em, 0);
             transform: skew(0.81deg);
         }
         95% {
-            clip: rect(.40em, 99.99em, .34em, 0);
+            clip: rect(0.4em, 99.99em, 0.34em, 0);
             transform: skew(0.44deg);
         }
     }
     @keyframes glitch-anim2 {
         0% {
-            clip: rect(.15em, 99.99em, .28em, 0);
+            clip: rect(0.15em, 99.99em, 0.28em, 0);
             transform: skew(0.11deg);
         }
         5% {
-            clip: rect(.02em, 99.99em, .79em, 0);
+            clip: rect(0.02em, 99.99em, 0.79em, 0);
             transform: skew(0.85deg);
         }
         10% {
-            clip: rect(.20em, 99.99em, .53em, 0);
+            clip: rect(0.2em, 99.99em, 0.53em, 0);
             transform: skew(0.19deg);
         }
         15% {
-            clip: rect(.60em, 99.99em, .44em, 0);
+            clip: rect(0.6em, 99.99em, 0.44em, 0);
             transform: skew(0.64deg);
         }
         20% {
-            clip: rect(.61em, 99.99em, .11em, 0);
+            clip: rect(0.61em, 99.99em, 0.11em, 0);
             transform: skew(0.62deg);
         }
         25% {
-            clip: rect(.16em, 99.99em, .73em, 0);
+            clip: rect(0.16em, 99.99em, 0.73em, 0);
             transform: skew(0.28deg);
         }
         30% {
-            clip: rect(.93em, 99.99em, .09em, 0);
+            clip: rect(0.93em, 99.99em, 0.09em, 0);
             transform: skew(0.57deg);
         }
         35% {
-            clip: rect(.86em, 99.99em, .22em, 0);
+            clip: rect(0.86em, 99.99em, 0.22em, 0);
             transform: skew(0.27deg);
         }
         40% {
-            clip: rect(.25em, 99.99em, .02em, 0);
+            clip: rect(0.25em, 99.99em, 0.02em, 0);
             transform: skew(0.77deg);
         }
         45% {
-            clip: rect(.62em, 99.99em, .07em, 0);
+            clip: rect(0.62em, 99.99em, 0.07em, 0);
             transform: skew(0.83deg);
         }
         50% {
-            clip: rect(.10em, 99.99em, .74em, 0);
+            clip: rect(0.1em, 99.99em, 0.74em, 0);
             transform: skew(0.84deg);
         }
         55% {
-            clip: rect(.09em, 99.99em, .17em, 0);
+            clip: rect(0.09em, 99.99em, 0.17em, 0);
             transform: skew(0.25deg);
         }
         60% {
-            clip: rect(.10em, 99.99em, .74em, 0);
+            clip: rect(0.1em, 99.99em, 0.74em, 0);
             transform: skew(0.48deg);
         }
         65% {
-            clip: rect(.48em, 99.99em, .83em, 0);
+            clip: rect(0.48em, 99.99em, 0.83em, 0);
             transform: skew(0.71deg);
         }
         70% {
-            clip: rect(.40em, 99.99em, .09em, 0);
+            clip: rect(0.4em, 99.99em, 0.09em, 0);
             transform: skew(0.6deg);
         }
         75% {
-            clip: rect(.53em, 99.99em, .70em, 0);
+            clip: rect(0.53em, 99.99em, 0.7em, 0);
             transform: skew(0.15deg);
         }
         80% {
-            clip: rect(.97em, 99.99em, .48em, 0);
+            clip: rect(0.97em, 99.99em, 0.48em, 0);
             transform: skew(0.41deg);
         }
         85% {
-            clip: rect(.32em, 99.99em, .82em, 0);
+            clip: rect(0.32em, 99.99em, 0.82em, 0);
             transform: skew(0.51deg);
         }
         90% {
-            clip: rect(.99em, 99.99em, .02em, 0);
+            clip: rect(0.99em, 99.99em, 0.02em, 0);
             transform: skew(0.38deg);
         }
         95% {
-            clip: rect(.12em, 99.99em, .22em, 0);
+            clip: rect(0.12em, 99.99em, 0.22em, 0);
             transform: skew(0.76deg);
         }
     }
@@ -633,9 +681,9 @@ code, .code {
         top: 0;
         width: 100%;
         height: 100%;
-        left: .02em;
-        text-shadow: -.02em 0 var(--background-color);
-        clip: rect(.44em, 4.50em, .56em, 0);
+        left: 0.02em;
+        text-shadow: -0.02em 0 var(--background-color);
+        clip: rect(0.44em, 4.5em, 0.56em, 0);
         animation: glitch-anim 5s infinite linear alternate-reverse;
     }
     .glitch::after {
@@ -644,51 +692,126 @@ code, .code {
         top: 0;
         width: 100%;
         height: 100%;
-        left: -.02em;
-        text-shadow: -.02em 0 var(--background-color), .04em 0 var(--background-color);
-        clip: rect(.44em, 4.50em, .56em, 0);
+        left: -0.02em;
+        text-shadow:
+            -0.02em 0 var(--background-color),
+            0.04em 0 var(--background-color);
+        clip: rect(0.44em, 4.5em, 0.56em, 0);
         animation: glitch-anim2 5s infinite linear alternate-reverse;
     }
 
     /* Image variant of .glitch: the pseudo-elements copy the element's background
        instead of its text, and slices are clipped by percentage instead of em */
     @keyframes glitch-image-anim {
-        0%   { clip-path: inset(12% 0 80% 0); transform: translateX(-2%) skew(0.32deg); }
-        5%   { transform: none; }
-        10%  { clip-path: inset(64% 0 22% 0); transform: translateX(1.5%) skew(0.1deg); }
-        15%  { transform: none; }
-        20%  { clip-path: inset(33% 0 60% 0); transform: translateX(-1%) skew(0.94deg); }
-        30%  { transform: none; }
-        35%  { clip-path: inset(84% 0 6% 0);  transform: translateX(2.5%) skew(0.37deg); }
-        45%  { transform: none; }
-        50%  { clip-path: inset(21% 0 71% 0); transform: translateX(-1.5%) skew(0.95deg); }
-        55%  { transform: none; }
-        65%  { clip-path: inset(47% 0 40% 0); transform: translateX(1%) skew(0.69deg); }
-        70%  { transform: none; }
-        80%  { clip-path: inset(70% 0 25% 0); transform: translateX(-2%) skew(0.07deg); }
-        85%  { transform: none; }
-        95%  { clip-path: inset(5% 0 88% 0);  transform: translateX(1.5%) skew(0.44deg); }
-        100% { transform: none; }
+        0% {
+            clip-path: inset(12% 0 80% 0);
+            transform: translateX(-2%) skew(0.32deg);
+        }
+        5% {
+            transform: none;
+        }
+        10% {
+            clip-path: inset(64% 0 22% 0);
+            transform: translateX(1.5%) skew(0.1deg);
+        }
+        15% {
+            transform: none;
+        }
+        20% {
+            clip-path: inset(33% 0 60% 0);
+            transform: translateX(-1%) skew(0.94deg);
+        }
+        30% {
+            transform: none;
+        }
+        35% {
+            clip-path: inset(84% 0 6% 0);
+            transform: translateX(2.5%) skew(0.37deg);
+        }
+        45% {
+            transform: none;
+        }
+        50% {
+            clip-path: inset(21% 0 71% 0);
+            transform: translateX(-1.5%) skew(0.95deg);
+        }
+        55% {
+            transform: none;
+        }
+        65% {
+            clip-path: inset(47% 0 40% 0);
+            transform: translateX(1%) skew(0.69deg);
+        }
+        70% {
+            transform: none;
+        }
+        80% {
+            clip-path: inset(70% 0 25% 0);
+            transform: translateX(-2%) skew(0.07deg);
+        }
+        85% {
+            transform: none;
+        }
+        95% {
+            clip-path: inset(5% 0 88% 0);
+            transform: translateX(1.5%) skew(0.44deg);
+        }
+        100% {
+            transform: none;
+        }
     }
     @keyframes glitch-image-anim2 {
-        0%   { transform: none; }
-        10%  { clip-path: inset(75% 0 15% 0); transform: translateX(2%) skew(0.85deg); }
-        15%  { transform: none; }
-        25%  { clip-path: inset(16% 0 74% 0); transform: translateX(-1.5%) skew(0.28deg); }
-        30%  { transform: none; }
-        40%  { clip-path: inset(55% 0 38% 0); transform: translateX(1%) skew(0.77deg); }
-        45%  { transform: none; }
-        60%  { clip-path: inset(30% 0 52% 0); transform: translateX(-2.5%) skew(0.3deg); }
-        65%  { transform: none; }
-        75%  { clip-path: inset(88% 0 4% 0);  transform: translateX(1.5%) skew(0.69deg); }
-        80%  { transform: none; }
-        90%  { clip-path: inset(40% 0 50% 0); transform: translateX(-1%) skew(0.81deg); }
-        100% { transform: none; }
+        0% {
+            transform: none;
+        }
+        10% {
+            clip-path: inset(75% 0 15% 0);
+            transform: translateX(2%) skew(0.85deg);
+        }
+        15% {
+            transform: none;
+        }
+        25% {
+            clip-path: inset(16% 0 74% 0);
+            transform: translateX(-1.5%) skew(0.28deg);
+        }
+        30% {
+            transform: none;
+        }
+        40% {
+            clip-path: inset(55% 0 38% 0);
+            transform: translateX(1%) skew(0.77deg);
+        }
+        45% {
+            transform: none;
+        }
+        60% {
+            clip-path: inset(30% 0 52% 0);
+            transform: translateX(-2.5%) skew(0.3deg);
+        }
+        65% {
+            transform: none;
+        }
+        75% {
+            clip-path: inset(88% 0 4% 0);
+            transform: translateX(1.5%) skew(0.69deg);
+        }
+        80% {
+            transform: none;
+        }
+        90% {
+            clip-path: inset(40% 0 50% 0);
+            transform: translateX(-1%) skew(0.81deg);
+        }
+        100% {
+            transform: none;
+        }
     }
     .glitch-image {
         position: relative;
     }
-    .glitch-image::before, .glitch-image::after {
+    .glitch-image::before,
+    .glitch-image::after {
         content: "";
         position: absolute;
         inset: 0;
@@ -711,10 +834,7 @@ code, .code {
         left: 0;
         bottom: 0;
         right: 0;
-        background: linear-gradient(
-            rgba(0, 0, 0, 0) 50%, 
-            rgba(0, 0, 0, var(--scanline-opacity)) 50%
-        );
+        background: linear-gradient(rgba(0, 0, 0, 0) 50%, rgba(0, 0, 0, var(--scanline-opacity)) 50%);
         background-size: 100% 4px;
         z-index: 999999;
         pointer-events: none;
@@ -737,14 +857,13 @@ body > #root::before {
     left: 0;
     width: 100vw;
     height: 100vh;
-    background: 
-        repeating-linear-gradient(
-            0deg,
-            rgba(0, 0, 0, 0.15),
-            rgba(0, 0, 0, 0.15) 1px,
-            transparent 1px,
-            transparent 2px
-        );
+    background: repeating-linear-gradient(
+        0deg,
+        rgba(0, 0, 0, 0.15),
+        rgba(0, 0, 0, 0.15) 1px,
+        transparent 1px,
+        transparent 2px
+    );
     pointer-events: none;
     z-index: 999998;
     opacity: 0.05;
@@ -754,10 +873,11 @@ body > #root::before {
     border-color: yellow;
 }
 .flush.highlighted {
-    outline: .13rem solid yellow;
-    outline-offset: -.13rem;
+    outline: 0.13rem solid yellow;
+    outline-offset: -0.13rem;
 }
 
-button.flush:disabled, .button.flush:disabled {
+button.flush:disabled,
+.button.flush:disabled {
     box-shadow: none;
 }

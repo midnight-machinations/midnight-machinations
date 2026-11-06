@@ -1,0 +1,12 @@
+# Thresholds copied from aislop's quality defaults (scanaislop/aislop, .aislop/config.yml):
+# maxFunctionLoc 80, maxParams 6, maxNesting 5. The lints that use them are enabled in each
+# crate's [lints.clippy] table, and all of them only warn.
+too-many-lines-threshold = 80
+too-many-arguments-threshold = 6
+excessive-nesting-threshold = 5
+
+# aislop only flags unwrap/todo outside tests.
+allow-unwrap-in-tests = true
+allow-expect-in-tests = true
+allow-panic-in-tests = true
+allow-indexing-slicing-in-tests = true

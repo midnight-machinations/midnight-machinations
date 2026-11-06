@@ -1,29 +1,27 @@
-import React, { ReactElement } from "react";
+import type { ReactElement } from "react";
 import { ContentMenu, ContentTab } from "../GameScreen";
-import "./wikiMenu.css"
-import translate from "../../../game/lang";
-import Wiki from "../../../components/Wiki";
+import "./wikiMenu.css";
 import { useLobbyOrGameState } from "../../../components/useHooks";
+import Wiki from "../../../components/Wiki";
+import translate from "../../../game/lang";
+import { ALL_MODIFIERS } from "../../../game/modifiers";
 import { getAllRoles } from "../../../game/roleListState.d";
-import { MODIFIERS, ModifierID } from "../../../game/modifiers";
 
 export default function WikiMenu(): ReactElement {
-    const enabledRoles = useLobbyOrGameState(
-        state => state.enabledRoles,
-        ["enabledRoles"],
-        getAllRoles()
-    )!;
+    const enabledRoles = useLobbyOrGameState((state) => state.enabledRoles, ["enabledRoles"], getAllRoles())!;
     const enabledModifiers = useLobbyOrGameState(
-        state => state.modifierSettings.keys(),
+        (state) => state.modifierSettings.keys(),
         ["modifierSettings"],
-        MODIFIERS as any as ModifierID[]
+        ALL_MODIFIERS,
     )!;
 
-    return <div className="wiki-menu wiki-menu-colors">
-        <ContentTab close={ContentMenu.WikiMenu}>{translate("menu.wiki.title")}</ContentTab>
-        
-        <div className="wiki-menu-search">
-            <Wiki enabledRoles={enabledRoles} enabledModifiers={enabledModifiers}/>
+    return (
+        <div className="wiki-menu wiki-menu-colors">
+            <ContentTab close={ContentMenu.WikiMenu}>{translate("menu.wiki.title")}</ContentTab>
+
+            <div className="wiki-menu-search">
+                <Wiki enabledRoles={enabledRoles} enabledModifiers={enabledModifiers} />
+            </div>
         </div>
-    </div>
+    );
 }

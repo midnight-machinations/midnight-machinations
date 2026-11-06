@@ -1,5 +1,5 @@
-import { TouchEvent, useRef } from "react";
-import { SwipeEventData, useSwipeable } from "react-swipeable";
+import { type TouchEvent, useRef } from "react";
+import { type SwipeEventData, useSwipeable } from "react-swipeable";
 
 export function getNextSwipeMenu<T>(menus: readonly T[], open: readonly T[], right: boolean): T | undefined {
     if (open.length === 0) return;
@@ -17,10 +17,16 @@ function hasSelection() {
 
 function isTouchControl(target: EventTarget | null, root: EventTarget | null) {
     if (!(target instanceof Element)) return true;
-    if (target.closest("input, textarea, select, button, a, [contenteditable]:not([contenteditable=false]), [role=slider], [role=combobox], .custom-select")) return true;
+    if (
+        target.closest(
+            "input, textarea, select, button, a, [contenteditable]:not([contenteditable=false]), [role=slider], [role=combobox], .custom-select",
+        )
+    )
+        return true;
     // Leave horizontally scrollable tables and other nested scrollers alone.
     for (let element: Element | null = target; element && element !== root; element = element.parentElement) {
-        if (element.scrollWidth > element.clientWidth && /^(auto|scroll)$/.test(getComputedStyle(element).overflowX)) return true;
+        if (element.scrollWidth > element.clientWidth && /^(auto|scroll)$/.test(getComputedStyle(element).overflowX))
+            return true;
     }
     return false;
 }
@@ -28,7 +34,8 @@ function isTouchControl(target: EventTarget | null, root: EventTarget | null) {
 export function useMenuSwipe(enabled: boolean, onSwipe: (right: boolean) => void) {
     const blocked = useRef(false);
     const finish = (data: SwipeEventData, right: boolean) => {
-        if (enabled && !blocked.current && !hasSelection() && data.absX >= 48 && data.absX >= data.absY * 1.5) onSwipe(right);
+        if (enabled && !blocked.current && !hasSelection() && data.absX >= 48 && data.absX >= data.absY * 1.5)
+            onSwipe(right);
     };
     const handlers = useSwipeable({
         trackTouch: enabled,
@@ -42,14 +49,16 @@ export function useMenuSwipe(enabled: boolean, onSwipe: (right: boolean) => void
         onSwiping: ({ dir }) => {
             if (dir === "Up" || dir === "Down") blocked.current = true;
         },
-        onSwipedLeft: data => finish(data, false),
-        onSwipedRight: data => finish(data, true),
+        onSwipedLeft: (data) => finish(data, false),
+        onSwipedRight: (data) => finish(data, true),
     });
     return {
         ...handlers,
         onTouchStartCapture(event: TouchEvent<HTMLDivElement>) {
             if (event.touches.length !== 1) blocked.current = true;
         },
-        onTouchCancelCapture() { blocked.current = true; },
+        onTouchCancelCapture() {
+            blocked.current = true;
+        },
     };
 }

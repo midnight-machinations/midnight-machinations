@@ -1,191 +1,195 @@
-import LobbyVoicePrompt from "../../voice/LobbyVoicePrompt";
+import { type ReactElement, useContext, useEffect, useMemo, useState } from "react";
 import RoomVoiceSetting from "../../components/gameModeSettings/RoomVoiceSetting";
-import { ReactElement, useContext, useEffect, useMemo, useState } from "react";
 import GAME_MANAGER, { DEV_ENV } from "../../index";
+import LobbyVoicePrompt from "../../voice/LobbyVoicePrompt";
 import LobbyPlayerList from "./LobbyPlayerList";
 import "./lobbyMenu.css";
+import { Button } from "../../components/Button";
+import { encodeString } from "../../components/ChatMessage";
+import FlushInput from "../../components/FlushInput";
+import EnabledRoleSelector from "../../components/gameModeSettings/EnabledRoleSelector";
+import { GameModeSelector } from "../../components/gameModeSettings/GameModeSelector";
+import { GameModeContext } from "../../components/gameModeSettings/GameModesEditor";
+import { ModifiersSelector } from "../../components/gameModeSettings/ModifiersSelector";
+import { OutlineListSelector } from "../../components/gameModeSettings/OutlineSelector";
+import PhaseTimesSelector from "../../components/gameModeSettings/PhaseTimeSelector";
+import RandomSeedSelector from "../../components/gameModeSettings/RandomSeedSelector";
+import Icon from "../../components/Icon";
+import { useLobbyState } from "../../components/useHooks";
+import type { StateListener } from "../../game/gameManager.d";
+import type { UnsafeString } from "../../game/gameState.d";
 import translate from "../../game/lang";
-import { StateListener } from "../../game/gameManager.d";
+import { getAllRoles, type RoleList } from "../../game/roleListState.d";
+import ListMap from "../../ListMap";
 import { AnchorControllerContext, MobileContext } from "../Anchor";
 import { RoomLinkButton } from "../GlobalMenu";
-import { RoleList, getAllRoles } from "../../game/roleListState.d";
 import LoadingScreen from "../LoadingScreen";
 import StartMenu from "../main/StartMenu";
-import { GameModeContext } from "../../components/gameModeSettings/GameModesEditor";
-import PhaseTimesSelector from "../../components/gameModeSettings/PhaseTimeSelector";
-import { OutlineListSelector } from "../../components/gameModeSettings/OutlineSelector";
-import EnabledRoleSelector from "../../components/gameModeSettings/EnabledRoleSelector";
-import Icon from "../../components/Icon";
-import { GameModeSelector } from "../../components/gameModeSettings/GameModeSelector";
 import LobbyChatMenu from "./LobbyChatMenu";
-import { useLobbyState } from "../../components/useHooks";
-import { Button } from "../../components/Button";
-import { ModifiersSelector } from "../../components/gameModeSettings/ModifiersSelector";
 import LobbyNamePane from "./LobbyNamePane";
-import { UnsafeString } from "../../game/gameState.d";
-import { encodeString } from "../../components/ChatMessage";
-import ListMap from "../../ListMap";
-import RandomSeedSelector from "../../components/gameModeSettings/RandomSeedSelector";
-import FlushInput from "../../components/FlushInput";
 
 export default function LobbyMenu(): ReactElement {
     const isSpectator = useLobbyState(
-        lobbyState => lobbyState.players.get(lobbyState.myId!)?.clientType.type === "spectator",
-        ["playersHost", "lobbyClients"]
+        (lobbyState) => lobbyState.players.get(lobbyState.myId!)?.clientType.type === "spectator",
+        ["playersHost", "lobbyClients"],
     )!;
     const isHost = useLobbyState(
-        lobbyState => {
+        (lobbyState) => {
             const myClient = lobbyState.players.get(lobbyState.myId!);
             if (myClient === null) return true;
             return myClient.ready === "host";
         },
-        ["playersHost", "lobbyClients", "yourId"]
+        ["playersHost", "lobbyClients", "yourId"],
     )!;
     const mobile = useContext(MobileContext)!;
 
     const [advancedView, setAdvancedView] = useState<boolean>(true);
 
+    // Reset, since you don't get the button on mobile or when you're the host.
+    // biome-ignore lint/correctness/useExhaustiveDependencies: deliberately keyed on mobile and isHost changing
     useEffect(() => {
-        // Reset, since you don't get the button on mobile or when you're the host.
         setAdvancedView(true);
     }, [mobile, isHost]);
 
     useEffect(() => {
         const onBeforeUnload = (e: BeforeUnloadEvent) => {
-            if (!DEV_ENV) e.preventDefault()
+            if (!DEV_ENV) e.preventDefault();
         };
 
         window.addEventListener("beforeunload", onBeforeUnload);
         return () => window.removeEventListener("beforeunload", onBeforeUnload);
     }, []);
 
-    return <div className="lm">
-        <div className="graveyard-menu-colors">
-            <LobbyMenuHeader isHost={isHost} advancedView={advancedView} setAdvancedView={setAdvancedView}/>
-            {advancedView 
-                ? <main className="chat-menu-colors">
-                    <div>
-                        <LobbyNamePane />
-                        <LobbyPlayerList />
-                    </div>
-                    <div className="vertical-line-separator" />
-                    <div>
-                        <LobbyMenuSettings isHost={isHost}/>
-                    </div>
-                </main>
-                : <main className="chat-menu-colors">
-                    <div>
-                        <LobbyNamePane />
-                        <LobbyPlayerList />
-                    </div>
-                    <div className="vertical-line-separator" />
-                    <div>
-                        <LobbyChatMenu spectator={isSpectator}/>
-                    </div>
-                </main>
-            }
-            <LobbyChatMenu spectator={isSpectator}/>
+    return (
+        <div className="lm">
+            <div className="graveyard-menu-colors">
+                <LobbyMenuHeader isHost={isHost} advancedView={advancedView} setAdvancedView={setAdvancedView} />
+                {advancedView ? (
+                    <main className="chat-menu-colors">
+                        <div>
+                            <LobbyNamePane />
+                            <LobbyPlayerList />
+                        </div>
+                        <div className="vertical-line-separator" />
+                        <div>
+                            <LobbyMenuSettings isHost={isHost} />
+                        </div>
+                    </main>
+                ) : (
+                    <main className="chat-menu-colors">
+                        <div>
+                            <LobbyNamePane />
+                            <LobbyPlayerList />
+                        </div>
+                        <div className="vertical-line-separator" />
+                        <div>
+                            <LobbyChatMenu spectator={isSpectator} />
+                        </div>
+                    </main>
+                )}
+                <LobbyChatMenu spectator={isSpectator} />
+            </div>
         </div>
-    </div>
+    );
 }
 
-function LobbyMenuSettings(props: Readonly<{
-    isHost: boolean,
-}>): JSX.Element {
-    const roleList = useLobbyState(
-        lobbyState => lobbyState.roleList,
-        ["roleList", "roleOutline"]
-    )!;
-    const enabledRoles = useLobbyState(
-        lobbyState => lobbyState.enabledRoles,
-        ["enabledRoles"]
-    )!;
-    const phaseTimes = useLobbyState(
-        lobbyState => lobbyState.phaseTimes,
-        ["phaseTimes"]
-    )!;
-    const modifierSettings = useLobbyState(
-        lobbyState => lobbyState.modifierSettings.list,
-        ["modifierSettings"]
-    )!;
+function LobbyMenuSettings(
+    props: Readonly<{
+        isHost: boolean;
+    }>,
+): JSX.Element {
+    const roleList = useLobbyState((lobbyState) => lobbyState.roleList, ["roleList", "roleOutline"])!;
+    const enabledRoles = useLobbyState((lobbyState) => lobbyState.enabledRoles, ["enabledRoles"])!;
+    const phaseTimes = useLobbyState((lobbyState) => lobbyState.phaseTimes, ["phaseTimes"])!;
+    const modifierSettings = useLobbyState((lobbyState) => lobbyState.modifierSettings.list, ["modifierSettings"])!;
 
-    const mobile = useContext(MobileContext)!;
+    const _mobile = useContext(MobileContext)!;
     const { setContent: setAnchorContent } = useContext(AnchorControllerContext)!;
 
     useEffect(() => {
         const listener: StateListener = (type) => {
-            if(type === "rejectJoin"){
+            if (type === "rejectJoin") {
                 // Kicked, probably
-                setAnchorContent(<LoadingScreen type="disconnect"/>);
+                setAnchorContent(<LoadingScreen type="disconnect" />);
                 GAME_MANAGER.setDisconnectedState();
                 setAnchorContent(<StartMenu />);
             }
-        }
+        };
 
         GAME_MANAGER.addStateListener(listener);
-        return ()=>{GAME_MANAGER.removeStateListener(listener);}
+        return () => {
+            GAME_MANAGER.removeStateListener(listener);
+        };
     }, [setAnchorContent]);
 
     const sendRoleList = (newRoleList: RoleList) => {
         const combinedRoleList = structuredClone(roleList);
         newRoleList.forEach((role, index) => {
-            combinedRoleList[index] = role
-        })
+            combinedRoleList[index] = role;
+        });
         GAME_MANAGER.sendSetRoleListPacket(combinedRoleList);
     };
 
     const context = useMemo(() => {
-        return {roleList, enabledRoles, phaseTimes, modifierSettings};
+        return { roleList, enabledRoles, phaseTimes, modifierSettings };
     }, [enabledRoles, phaseTimes, roleList, modifierSettings]);
 
-    return <GameModeContext.Provider value={context}>
-        <GameModeSelector 
-            disabled={!props.isHost}
-            loadGameMode={gameMode => {
-                GAME_MANAGER.sendSetPhaseTimesPacket(gameMode.phaseTimes);
-                GAME_MANAGER.sendEnabledRolesPacket(gameMode.enabledRoles);
-                GAME_MANAGER.sendSetRoleListPacket(gameMode.roleList);
-                GAME_MANAGER.sendModifierSettingsPacket(new ListMap(gameMode.modifierSettings));
-            }}
-        />
-        <RoomVoiceSetting/>
-        <div className="lobby-settings">
-            <PhaseTimesSelector 
+    return (
+        <GameModeContext.Provider value={context}>
+            <GameModeSelector
                 disabled={!props.isHost}
-                onChange={pts => GAME_MANAGER.sendSetPhaseTimesPacket(pts)}
+                loadGameMode={(gameMode) => {
+                    GAME_MANAGER.sendSetPhaseTimesPacket(gameMode.phaseTimes);
+                    GAME_MANAGER.sendEnabledRolesPacket(gameMode.enabledRoles);
+                    GAME_MANAGER.sendSetRoleListPacket(gameMode.roleList);
+                    GAME_MANAGER.sendModifierSettingsPacket(new ListMap(gameMode.modifierSettings));
+                }}
             />
-            <OutlineListSelector
-                disabled={!props.isHost}
-                onChangeRolePicker={(value, index) => GAME_MANAGER.sendSetRoleOutlinePacket(index, value)}
-                onAddNewOutline={undefined}
-                onRemoveOutline={undefined}
-                setRoleList={sendRoleList}
-            />
-            <EnabledRoleSelector
-                onEnableRoles={roles => GAME_MANAGER.sendEnabledRolesPacket([...enabledRoles, ...roles])}
-                onDisableRoles={roles => GAME_MANAGER.sendEnabledRolesPacket(enabledRoles.filter(role => !roles.includes(role)))}
-                onIncludeAll={() => GAME_MANAGER.sendEnabledRolesPacket(getAllRoles())}
-                disabled={!props.isHost}
-            />
-            <ModifiersSelector
-                disabled={!props.isHost}
-                setModifiers={modifiers => GAME_MANAGER.sendModifierSettingsPacket(new ListMap(modifiers))}
-            />
-            <RandomSeedSelector
-                disabled={!props.isHost}
-                onChange={randomSeed => GAME_MANAGER.sendSetRandomSeedPacket(randomSeed)}
-            />
-        </div>
-    </GameModeContext.Provider>
+            <RoomVoiceSetting />
+            <div className="lobby-settings">
+                <PhaseTimesSelector
+                    disabled={!props.isHost}
+                    onChange={(pts) => GAME_MANAGER.sendSetPhaseTimesPacket(pts)}
+                />
+                <OutlineListSelector
+                    disabled={!props.isHost}
+                    onChangeRolePicker={(value, index) => GAME_MANAGER.sendSetRoleOutlinePacket(index, value)}
+                    onAddNewOutline={undefined}
+                    onRemoveOutline={undefined}
+                    setRoleList={sendRoleList}
+                />
+                <EnabledRoleSelector
+                    onEnableRoles={(roles) => GAME_MANAGER.sendEnabledRolesPacket([...enabledRoles, ...roles])}
+                    onDisableRoles={(roles) =>
+                        GAME_MANAGER.sendEnabledRolesPacket(enabledRoles.filter((role) => !roles.includes(role)))
+                    }
+                    onIncludeAll={() => GAME_MANAGER.sendEnabledRolesPacket(getAllRoles())}
+                    disabled={!props.isHost}
+                />
+                <ModifiersSelector
+                    disabled={!props.isHost}
+                    setModifiers={(modifiers) => GAME_MANAGER.sendModifierSettingsPacket(new ListMap(modifiers))}
+                />
+                <RandomSeedSelector
+                    disabled={!props.isHost}
+                    onChange={(randomSeed) => GAME_MANAGER.sendSetRandomSeedPacket(randomSeed)}
+                />
+            </div>
+        </GameModeContext.Provider>
+    );
 }
 
 // There's probably a better way to do this that doesn't need the mobile check.
-function LobbyMenuHeader(props: Readonly<{
-    isHost: boolean,
-    advancedView: boolean,
-    setAdvancedView: (advancedView: boolean) => void
-}>): JSX.Element {
-    const [lobbyName, setLobbyName] = useState<UnsafeString>(GAME_MANAGER.state.stateType === "lobby" ? GAME_MANAGER.state.lobbyName : "Midnight Machinations Lobby");
+function LobbyMenuHeader(
+    props: Readonly<{
+        isHost: boolean;
+        advancedView: boolean;
+        setAdvancedView: (advancedView: boolean) => void;
+    }>,
+): JSX.Element {
+    const [lobbyName, setLobbyName] = useState<UnsafeString>(
+        GAME_MANAGER.state.stateType === "lobby" ? GAME_MANAGER.state.lobbyName : "Midnight Machinations Lobby",
+    );
     const { setContent: setAnchorContent } = useContext(AnchorControllerContext)!;
 
     useEffect(() => {
@@ -195,39 +199,46 @@ function LobbyMenuHeader(props: Readonly<{
             }
         };
 
-        if(GAME_MANAGER.state.stateType === "lobby")
-            setLobbyName(GAME_MANAGER.state.lobbyName);
+        if (GAME_MANAGER.state.stateType === "lobby") setLobbyName(GAME_MANAGER.state.lobbyName);
 
-        GAME_MANAGER.addStateListener(listener)
-        return ()=>{GAME_MANAGER.removeStateListener(listener);}
-    }, [setLobbyName]);
+        GAME_MANAGER.addStateListener(listener);
+        return () => {
+            GAME_MANAGER.removeStateListener(listener);
+        };
+    }, []);
 
-    return <header>
-        <div>
-            <Button disabled={!props.isHost} className="start brand" onClick={async ()=>{
-                setAnchorContent(<LoadingScreen type="default"/>);
-                if (!await GAME_MANAGER.sendStartGamePacket()) {
-                    setAnchorContent(<LobbyMenu/>)
-                }
-            }}>
-                <Icon>play_arrow</Icon>{translate("menu.lobby.button.start")}
-            </Button>
-            <RoomLinkButton/>
-            <LobbyVoicePrompt/>
-        </div>
-        {props.isHost ? 
-            <FlushInput
-                className="lobby-name-field"
-                value={lobbyName as string}
-                setValue={setLobbyName}
-                onConfirm={(value) => {
-                    setLobbyName(value);
-                    GAME_MANAGER.sendSetLobbyNamePacket(value);
-                }}
-            /> : 
-            <h3>{encodeString(lobbyName)}</h3>
-        }
-        
-    </header>
+    return (
+        <header>
+            <div>
+                <Button
+                    disabled={!props.isHost}
+                    className="start brand"
+                    onClick={async () => {
+                        setAnchorContent(<LoadingScreen type="default" />);
+                        if (!(await GAME_MANAGER.sendStartGamePacket())) {
+                            setAnchorContent(<LobbyMenu />);
+                        }
+                    }}
+                >
+                    <Icon>play_arrow</Icon>
+                    {translate("menu.lobby.button.start")}
+                </Button>
+                <RoomLinkButton />
+                <LobbyVoicePrompt />
+            </div>
+            {props.isHost ? (
+                <FlushInput
+                    className="lobby-name-field"
+                    value={lobbyName as string}
+                    setValue={setLobbyName}
+                    onConfirm={(value) => {
+                        setLobbyName(value);
+                        GAME_MANAGER.sendSetLobbyNamePacket(value);
+                    }}
+                />
+            ) : (
+                <h3>{encodeString(lobbyName)}</h3>
+            )}
+        </header>
+    );
 }
-

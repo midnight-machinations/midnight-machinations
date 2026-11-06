@@ -1,0 +1,80 @@
+{
+  "$schema": "./node_modules/@biomejs/biome/configuration_schema.json",
+  "vcs": {
+    "enabled": true,
+    "clientKind": "git",
+    "useIgnoreFile": true
+  },
+  "files": {
+    "includes": [
+      "client/src/**",
+      "client/tests/**",
+      "voice/src/**",
+      "voice/test/**",
+      "server/worker/*.ts",
+      "e2e/**",
+      "playwright.config.ts",
+      "!client/src/gen",
+      "!**/node_modules",
+      "!**/target",
+      "!**/*.md"
+    ],
+    "ignoreUnknown": true
+  },
+  "formatter": {
+    "indentStyle": "space",
+    "indentWidth": 4,
+    "lineEnding": "lf",
+    "lineWidth": 120
+  },
+  "json": {
+    "formatter": {
+      "indentStyle": "space",
+      "indentWidth": 2
+    }
+  },
+  "linter": {
+    "rules": {
+      "preset": "recommended",
+      "a11y": {
+        "noLabelWithoutControl": {
+          "level": "error",
+          "options": { "inputComponents": ["Select", "CheckBox"] }
+        }
+      },
+      "correctness": {
+        "noUnusedVariables": "warn",
+        "noUnusedImports": "warn",
+        "useExhaustiveDependencies": "warn",
+        "useHookAtTopLevel": "error"
+      },
+      "suspicious": {
+        "noDebugger": "warn",
+        "noEmptyBlockStatements": "warn"
+      },
+      "complexity": {
+        "noExtraBooleanCast": "warn"
+      },
+      "style": {
+        "noNonNullAssertion": "off"
+      }
+    }
+  },
+  "overrides": [
+    {
+      "includes": ["client/tests/**", "voice/test/**"],
+      "linter": {
+        "rules": {
+          "suspicious": {
+            "noTemplateCurlyInString": "off",
+            "noEmptyBlockStatements": "off"
+          },
+          "correctness": {
+            "noComponentHookFactories": "off",
+            "useHookAtTopLevel": "off"
+          }
+        }
+      }
+    }
+  ]
+}

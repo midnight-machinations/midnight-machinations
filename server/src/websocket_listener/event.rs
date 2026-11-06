@@ -1,5 +1,4 @@
 use std::time::Duration;
-use tokio_tungstenite::tungstenite::Message;
 
 use crate::{room::RoomState, log, packet::ToServerPacket, websocket_connections::connection::Connection};
 
@@ -18,12 +17,12 @@ impl WebsocketListener{
         });
     }
 
-    pub fn on_message(&mut self, connection: &Connection, message: &Message) {
+    pub fn on_message(&mut self, connection: &Connection, message: &str) {
         if message.is_empty() { return }
 
         log!(info "Listener"; "{}: {}", &connection.address().to_string(), message);
 
-        let Ok(packet) = serde_json::from_str::<ToServerPacket>(message.to_string().as_str()) else {
+        let Ok(packet) = serde_json::from_str::<ToServerPacket>(message) else {
             log!(error "Listener"; "Recieved message but could not parse packet");
             return
         };
@@ -42,7 +41,7 @@ impl WebsocketListener{
             }
         }
     }
-    pub(super) fn tick(&mut self, delta_time: Duration){
+    pub fn tick(&mut self, delta_time: Duration){
         self.with_voice_update(|listener| listener.tick_rooms(delta_time));
     }
     fn tick_rooms(&mut self, delta_time: Duration){

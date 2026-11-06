@@ -1,8 +1,8 @@
 .large-forger-menu {
-    padding-top: .2rem;
+    padding-top: 0.2rem;
 }
 .large-forger-menu > div {
-    margin: .2rem;
+    margin: 0.2rem;
     display: flex;
     flex-direction: row;
     justify-content: space-between;

@@ -1,135 +1,168 @@
-import { LobbyVoiceMuteButton, useVoicePlayer } from "../../voice/playerList";
-import { ReactElement, useEffect, useState } from "react";
+import { type ReactElement, useEffect, useState } from "react";
 import translate from "../../game/lang";
 import GAME_MANAGER from "../../index";
+import { LobbyVoiceMuteButton, useVoicePlayer } from "../../voice/playerList";
 import "./lobbyMenu.css";
-import { ClientConnection } from "../../game/gameState.d";
-import Icon from "../../components/Icon";
-import { useLobbyOrGameState } from "../../components/useHooks";
-import StyledText from "../../components/StyledText";
 import { encodeString } from "../../components/ChatMessage";
 import FlushInput from "../../components/FlushInput";
+import Icon from "../../components/Icon";
+import StyledText from "../../components/StyledText";
+import { useLobbyOrGameState } from "../../components/useHooks";
+import type { ClientConnection } from "../../game/gameState.d";
 
 type PlayerDisplayData = {
-    id: number,
-    clientType: "player" | "spectator",
-    connection: ClientConnection,
-    ready: boolean | null,
-    host: boolean,
-    name: string,
-    displayName: string,
-}
+    id: number;
+    clientType: "player" | "spectator";
+    connection: ClientConnection;
+    ready: boolean | null;
+    host: boolean;
+    name: string;
+    displayName: string;
+};
 
 export default function LobbyPlayerList(): ReactElement {
-    const players: PlayerDisplayData[] = useLobbyOrGameState(
-        state => {
-            if (state.stateType === "lobby") {
-                return state.players.entries().map(([id, player]) => {
-                    const name = player.clientType.name as string;
-                    return {
-                        id,
-                        clientType: player.clientType.type,
-                        ready: player.ready === "ready",
-                        connection: player.connection,
-                        host: player.ready === "host",
-                        name,
-                        displayName: encodeString(name),
-                    }
-                })
-            } else if (state.host !== null) {
-                return state.host.clients.entries().map(([id, player]) => {
-                    return {
-                        id,
-                        clientType: player.clientType.type,
-                        connection: player.connection,
-                        ready: null,
-                        host: player.host,
-                        name: player.clientType.type === "player"
-                            ? state.players[player.clientType.index].name as string
-                            : player.name as string,
-                        displayName: player.clientType.type === "player"
-                            ? encodeString(state.players[player.clientType.index].toString())
-                            : encodeString(player.name),
-                    }
-                })
-            }
-        },
-        ["playersHost", "playersLostConnection", "lobbyClients", "playersReady", "hostData", "gamePlayers"]
-    ) ?? [];
-
-    return <section className="player-list-menu-colors selector-section lobby-player-list-section">
-        <div className="lobby-player-list">
-            <ol>
-                {players
-                    .filter(player => player.clientType === "player")
-                    .map(player => <LobbyPlayerListPlayer key={player.id} player={player}/>)
+    const players: PlayerDisplayData[] =
+        useLobbyOrGameState(
+            (state) => {
+                if (state.stateType === "lobby") {
+                    return state.players.entries().map(([id, player]) => {
+                        const name = player.clientType.name as string;
+                        return {
+                            id,
+                            clientType: player.clientType.type,
+                            ready: player.ready === "ready",
+                            connection: player.connection,
+                            host: player.ready === "host",
+                            name,
+                            displayName: encodeString(name),
+                        };
+                    });
+                } else if (state.host !== null) {
+                    return state.host.clients.entries().map(([id, player]) => {
+                        return {
+                            id,
+                            clientType: player.clientType.type,
+                            connection: player.connection,
+                            ready: null,
+                            host: player.host,
+                            name:
+                                player.clientType.type === "player"
+                                    ? (state.players[player.clientType.index].name as string)
+                                    : (player.name as string),
+                            displayName:
+                                player.clientType.type === "player"
+                                    ? encodeString(state.players[player.clientType.index].toString())
+                                    : encodeString(player.name),
+                        };
+                    });
                 }
-                {players.some(player => player.clientType === "spectator") && <>
-                    <h3><Icon size="small">visibility</Icon> {translate("menu.hostSettings.spectators")}</h3>
+            },
+            ["playersHost", "playersLostConnection", "lobbyClients", "playersReady", "hostData", "gamePlayers"],
+        ) ?? [];
+
+    return (
+        <section className="player-list-menu-colors selector-section lobby-player-list-section">
+            <div className="lobby-player-list">
+                <ol>
                     {players
-                        .filter(player => player.clientType === "spectator")
-                        .map(player => <LobbyPlayerListPlayer key={player.id} player={player}/>)
-                    }
-                </>}
-            </ol>
-        </div>
-    </section>
+                        .filter((player) => player.clientType === "player")
+                        .map((player) => (
+                            <LobbyPlayerListPlayer key={player.id} player={player} />
+                        ))}
+                    {players.some((player) => player.clientType === "spectator") && (
+                        <>
+                            <h3>
+                                <Icon size="small">visibility</Icon> {translate("menu.hostSettings.spectators")}
+                            </h3>
+                            {players
+                                .filter((player) => player.clientType === "spectator")
+                                .map((player) => (
+                                    <LobbyPlayerListPlayer key={player.id} player={player} />
+                                ))}
+                        </>
+                    )}
+                </ol>
+            </div>
+        </section>
+    );
 }
 
 function LobbyPlayerListPlayer(props: Readonly<{ player: PlayerDisplayData }>): ReactElement {
     const host = useLobbyOrGameState(
-        state => {
-            if (state.stateType === "lobby")
-                return state.players.get(state.myId!)?.ready === "host"
-            else
-                return state.host !== null
+        (state) => {
+            if (state.stateType === "lobby") return state.players.get(state.myId!)?.ready === "host";
+            else return state.host !== null;
         },
-        ["playersHost", "lobbyClients", "yourId", "playersReady", "hostData"]
+        ["playersHost", "lobbyClients", "yourId", "playersReady", "hostData"],
     )!;
 
     const voice = useVoicePlayer({ roomClientId: props.player.id });
 
-    return <li key={props.player.id} className={`${props.player.connection==="connected" ? "" : "keyword-dead"} ${voice.speaking ? "voice-speaking" : ""}`}>
-        <div>
-            {props.player.connection === "couldReconnect" && <Icon>signal_cellular_connected_no_internet_4_bar</Icon>}
-            {props.player.connection === "disconnected" && <Icon>sentiment_very_dissatisfied</Icon>}
-            {props.player.host && <Icon>shield</Icon>}
-            {props.player.ready && <Icon>check</Icon>}
-            {(props.player.host === false && props.player.ready === false) && <Icon className="keyword-dead">schedule</Icon>}
-            {voice.available && (voice.inVoice
-                ? <Icon title={translate("voice.inVoice")}>headset_mic</Icon>
-                : <Icon className="keyword-dead" title={translate("voice.notInVoice")}>headset_off</Icon>)}
-            {!host && <StyledText className={(props.player.host === false && props.player.ready === false) ? "keyword-dead" : ""}>
-                {props.player.displayName}
-            </StyledText>}
-            {host && <LobbyPlayerListPlayerRename {...props}/>}
-        </div>
-        <div>
-            <LobbyVoiceMuteButton roomClientId={props.player.id}/>
-            {host && !props.player.host && <button
-                onClick={() => GAME_MANAGER.sendSetPlayerHostPacket(props.player.id)}
-            ><Icon>add_moderator</Icon></button>}
-            {host && props.player.connection !== "disconnected" && <button 
-                onClick={() => GAME_MANAGER.sendKickPlayerPacket(props.player.id)}
-            ><Icon>person_remove</Icon></button>}
-        </div>
-    </li>
+    return (
+        <li
+            key={props.player.id}
+            className={`${props.player.connection === "connected" ? "" : "keyword-dead"} ${voice.speaking ? "voice-speaking" : ""}`}
+        >
+            <div>
+                {props.player.connection === "couldReconnect" && (
+                    <Icon>signal_cellular_connected_no_internet_4_bar</Icon>
+                )}
+                {props.player.connection === "disconnected" && <Icon>sentiment_very_dissatisfied</Icon>}
+                {props.player.host && <Icon>shield</Icon>}
+                {props.player.ready && <Icon>check</Icon>}
+                {props.player.host === false && props.player.ready === false && (
+                    <Icon className="keyword-dead">schedule</Icon>
+                )}
+                {voice.available &&
+                    (voice.inVoice ? (
+                        <Icon title={translate("voice.inVoice")}>headset_mic</Icon>
+                    ) : (
+                        <Icon className="keyword-dead" title={translate("voice.notInVoice")}>
+                            headset_off
+                        </Icon>
+                    ))}
+                {!host && (
+                    <StyledText
+                        className={props.player.host === false && props.player.ready === false ? "keyword-dead" : ""}
+                    >
+                        {props.player.displayName}
+                    </StyledText>
+                )}
+                {host && <LobbyPlayerListPlayerRename {...props} />}
+            </div>
+            <div>
+                <LobbyVoiceMuteButton roomClientId={props.player.id} />
+                {host && !props.player.host && (
+                    <button type="button" onClick={() => GAME_MANAGER.sendSetPlayerHostPacket(props.player.id)}>
+                        <Icon>add_moderator</Icon>
+                    </button>
+                )}
+                {host && props.player.connection !== "disconnected" && (
+                    <button type="button" onClick={() => GAME_MANAGER.sendKickPlayerPacket(props.player.id)}>
+                        <Icon>person_remove</Icon>
+                    </button>
+                )}
+            </div>
+        </li>
+    );
 }
 
 function LobbyPlayerListPlayerRename(props: Readonly<{ player: PlayerDisplayData }>): ReactElement {
     const [playerName, setPlayerName] = useState(props.player.name);
 
     useEffect(() => {
-        setPlayerName(props.player.name)
-    }, [props.player.name])
-    
-    return <FlushInput 
-        className="lobby-player-list-player-rename"
-        value={playerName}
-        setValue={newName => setPlayerName(newName)}
-        onConfirm={newName => {
-            setPlayerName(newName);
-            GAME_MANAGER.sendHostSetPlayerNamePacket(props.player.id, newName);
-        }}
-    />
+        setPlayerName(props.player.name);
+    }, [props.player.name]);
+
+    return (
+        <FlushInput
+            className="lobby-player-list-player-rename"
+            value={playerName}
+            setValue={(newName) => setPlayerName(newName)}
+            onConfirm={(newName) => {
+                setPlayerName(newName);
+                GAME_MANAGER.sendHostSetPlayerNamePacket(props.player.id, newName);
+            }}
+        />
+    );
 }

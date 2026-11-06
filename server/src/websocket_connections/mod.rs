@@ -1,6 +1,7 @@
 use std::sync::{Mutex, Arc, MutexGuard};
 
 pub mod connection;
+#[cfg(not(target_arch = "wasm32"))]
 pub mod websocket_server;
 
 pub trait ForceLock {

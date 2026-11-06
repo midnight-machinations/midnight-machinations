@@ -16,31 +16,6 @@ pub struct ControllerParameters{
     allowed_players: VecSet<PlayerReference>
 }
 impl ControllerParameters{
-    pub fn new(
-        game: &Game,
-        available: AvailableControllerSelection,
-        grayed_out: bool,
-        reset_on_phase_start: Option<PhaseType>,
-        dont_save: bool,
-        default_selection: ControllerSelection,
-        allowed_players: VecSet<PlayerReference>
-    )->Option<Self>{
-        if available.validate_selection(game, &default_selection) {
-            Some(
-                Self{
-                    available,
-                    grayed_out,
-                    reset_on_phase_start,
-                    default_selection,
-                    dont_save,
-                    allowed_players
-                }
-            )
-        }else{
-            None
-        }
-    }
-    
     pub fn validate_selection(&self, game: &Game, selection: &ControllerSelection)->bool{
         self.available.validate_selection(game, selection)
     }

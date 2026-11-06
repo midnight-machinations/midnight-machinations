@@ -11,13 +11,13 @@
     flex-direction: column;
 
     background-color: var(--background-color);
-    border: solid .13rem var(--background-border-color);
+    border: solid 0.13rem var(--background-border-color);
     border-bottom-color: var(--background-border-shadow-color);
     border-right-color: var(--background-border-shadow-color);
     border-radius: 0;
     padding: 1rem;
     gap: 1rem;
-    
+
     width: 100%;
     max-width: 100rem;
     height: 100%;
@@ -56,7 +56,7 @@
 .play-menu-browser > .play-menu-center {
     flex-grow: 1;
 
-    border: solid .13rem var(--background-border-color);
+    border: solid 0.13rem var(--background-border-color);
     border-radius: 0;
 
     overflow: hidden;
@@ -103,11 +103,13 @@
     width: 100%;
 }
 
-.play-menu-browser tfoot > tr, .play-menu-browser thead > tr {
+.play-menu-browser tfoot > tr,
+.play-menu-browser thead > tr {
     height: 2em;
 }
 
-.play-menu-browser table th, .play-menu-browser table td {
+.play-menu-browser table th,
+.play-menu-browser table td {
     display: flex;
     padding: 0.25rem 0.5rem;
     text-align: center;
@@ -116,20 +118,23 @@
     white-space: nowrap;
     flex-shrink: 0;
     min-width: 0;
-    border-right: .13rem solid var(--primary-border-color);
+    border-right: 0.13rem solid var(--primary-border-color);
 }
 
-.play-menu-browser table th:first-of-type, .play-menu-browser table td:first-of-type {
+.play-menu-browser table th:first-of-type,
+.play-menu-browser table td:first-of-type {
     flex-basis: 4rem;
 }
 
-.play-menu-browser table th:nth-of-type(2), .play-menu-browser table td:nth-of-type(2) {
+.play-menu-browser table th:nth-of-type(2),
+.play-menu-browser table td:nth-of-type(2) {
     flex-basis: 8rem;
     justify-content: left;
     overflow: hidden;
 }
 
-.play-menu-browser table th:nth-of-type(3), .play-menu-browser table td:nth-of-type(3) {
+.play-menu-browser table th:nth-of-type(3),
+.play-menu-browser table td:nth-of-type(3) {
     flex-basis: calc(100% - 12rem);
     justify-content: left;
     border-right: none;

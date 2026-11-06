@@ -1,4 +1,4 @@
-use std::{collections::HashMap, iter};
+use std::collections::HashMap;
 
 use serde::Serialize;
 use crate::{game::{components::attack::night_attack::NightAttack, prelude::*}, vec_map, vec_set};
@@ -13,11 +13,7 @@ impl RoleStateTrait for Lich {
     type ClientAbilityState = Lich;
     fn on_midnight(self, game: &mut Game, id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut OnMidnightFold, priority: OnMidnightPriority) {
 
-        if let Some(target) = Visits::into_iter(midnight_variables)
-            .with_tag(VisitTag::Ability { ability: *id, id: Self::WARD_ID.cast_unsigned() })
-            .with_visitor(actor_ref)
-            .map_target()
-            .next()
+        if let Some(target) = Self::first_target(midnight_variables, id, actor_ref, Self::WARD_ID)
         {
             target.ward_night_action(game, midnight_variables, priority);
         }
@@ -64,22 +60,14 @@ impl RoleStateTrait for Lich {
                 );
             },
             OnMidnightPriority::Roleblock => {
-                if let Some(target_ref) = Visits::into_iter(midnight_variables)
-                    .with_tag(VisitTag::Ability { ability: *id, id: Self::ROLEBLOCK_ID.cast_unsigned() })
-                    .with_visitor(actor_ref)
-                    .map_target()
-                    .next()
+                if let Some(target_ref) = Self::first_target(midnight_variables, id, actor_ref, Self::ROLEBLOCK_ID)
                 {
                     target_ref.roleblock(game, midnight_variables, true);
                 }
             }
             OnMidnightPriority::Convert => {
                 if priority != OnMidnightPriority::Convert {return;}
-                let Some(target) = Visits::into_iter(midnight_variables)
-                    .with_tag(VisitTag::Ability { ability: *id, id: Self::TAILOR_ID.cast_unsigned() })
-                    .with_visitor(actor_ref)
-                    .map_target()
-                    .next() else {return};
+                let Some(target) = Self::first_target(midnight_variables, id, actor_ref, Self::TAILOR_ID) else {return};
 
                 let Some(&role) = ControllerID::role(actor_ref, Role::Lich, Self::TAILOR_ID_ROLE.cast_unsigned()).get_role_list_selection_first(game) else {return};
             
@@ -87,33 +75,7 @@ impl RoleStateTrait for Lich {
                     target.set_night_convert_role_to(midnight_variables, Some(role.new_state(game)));
                 }
             },
-            OnMidnightPriority::Kill => {
-                if game.day_number() == 1 {return}
-
-                if let Some(target) = Visits::into_iter(midnight_variables)
-                    .with_tag(VisitTag::Ability { ability: *id, id: Self::CHOOSE_ATTACK_ID.cast_unsigned() })
-                    .with_visitor(actor_ref)
-                    .map_target()
-                    .next()
-                {
-                    let attack_power = 
-                    if ControllerID::role(actor_ref, Role::Lich, Self::CHOOSE_ABILITY_ID.cast_unsigned())
-                        .get_integer_selection(game)
-                        .is_some_and(|IntegerSelection(i)|*i == Self::PIERCE)
-                    {
-                        AttackPower::ProtectionPiercing
-                    }else{
-                        AttackPower::ArmorPiercing
-                    };
-
-                    NightAttack::new()
-                        .attackers([actor_ref])
-                        .grave_killer(Role::Lich)
-                        .power(attack_power)
-                        .leave_calling_card()
-                        .attack(game, midnight_variables, target);
-                }
-            },
+            OnMidnightPriority::Kill => Self::kill(game, id, actor_ref, midnight_variables),
             _ => {}
         }
     }
@@ -150,92 +112,7 @@ impl RoleStateTrait for Lich {
                         .add_grayed_out_condition(actor_ref.ability_deactivated_from_death(game))
                         .build_map()
                 )
-        ).chain(iter::once(
-                match ControllerID::role(actor_ref, Role::Lich, Self::CHOOSE_ABILITY_ID.cast_unsigned()).get_integer_selection(game) {
-                    Some(IntegerSelection(Self::TRANSPORT_ID)) => {
-                        let available_players: vec_set::VecSet<PlayerReference> = PlayerReference::all_players(game)
-                            .filter(|p| p.alive(game))
-                            .collect();
-                        Some(
-                            ControllerParametersMap::builder(game)
-                                .id(ControllerID::role(actor_ref, Role::Lich, Self::TRANSPORT_ID.cast_unsigned()))
-                                .available_selection(AvailableTwoPlayerOptionSelection {
-                                    available_first_players: available_players.clone(),
-                                    available_second_players: available_players,
-                                    can_choose_duplicates: false,
-                                    can_choose_none: true
-                                })
-                                .night_typical(actor_ref)
-                                .build_map()
-                        )
-                    },
-                    Some(IntegerSelection(Self::WARP_ID)) => Some(
-                        ControllerParametersMap::builder(game)
-                            .id(ControllerID::role(actor_ref, Role::Lich, Self::WARP_ID.cast_unsigned()))
-                            .available_selection(AvailableTwoPlayerOptionSelection {
-                                available_first_players: PlayerReference::all_players(game)
-                                    .filter(|p|p.alive(game))
-                                    .filter(|p|*p != actor_ref)
-                                    .collect(),
-                                available_second_players:PlayerReference::all_players(game)
-                                    .filter(|p|p.alive(game))
-                                    .collect(),
-                                can_choose_duplicates: false,
-                                can_choose_none: true
-                            })
-                            .night_typical(actor_ref)
-                            .build_map()
-                    ),
-                    Some(IntegerSelection(Self::WARD_ID)) => Some(
-                        ControllerParametersMap::builder(game)
-                            .id(ControllerID::role(actor_ref, Role::Lich, Self::WARD_ID.cast_unsigned()))
-                            .single_player_selection_typical(actor_ref, false, true)
-                            .night_typical(actor_ref)
-                            .build_map()
-                    ),
-                    Some(IntegerSelection(Self::TAILOR_ID)) => Some(
-                        ControllerParametersMap::combine([
-                            //player to convert
-                            ControllerParametersMap::builder(game)
-                                .id(ControllerID::role(actor_ref, Role::Lich, Self::TAILOR_ID.cast_unsigned()))
-                                .single_player_selection_typical(actor_ref, false, true)
-                                .night_typical(actor_ref)
-                                .build_map(),
-                            //role
-                            ControllerParametersMap::builder(game)
-                                .id(ControllerID::role(actor_ref, Role::Lich, Self::TAILOR_ID_ROLE.cast_unsigned()))
-                                .single_role_selection_typical(game, |r|RoleSet::TownCommon.get_roles().contains(r))
-                                .night_typical(actor_ref)
-                                .build_map()
-                    ])),
-                    Some(IntegerSelection(Self::ROLEBLOCK_ID)) => Some(
-                        ControllerParametersMap::builder(game)
-                            .id(ControllerID::role(actor_ref, Role::Lich, Self::ROLEBLOCK_ID.cast_unsigned()))
-                            .single_player_selection_typical(actor_ref, false, true)
-                            .night_typical(actor_ref)
-                            .build_map()
-                    ),
-                    Some(IntegerSelection(Self::POSSESS_ID)) => Some(
-                        ControllerParametersMap::builder(game)
-                            .id(ControllerID::role(actor_ref, Role::Lich, Self::POSSESS_ID.cast_unsigned()))
-                            .available_selection(AvailableTwoPlayerOptionSelection {
-                                available_first_players: PlayerReference::all_players(game)
-                                    .filter(|p|p.alive(game))
-                                    .filter(|p|*p != actor_ref)
-                                    .collect(),
-                                available_second_players: PlayerReference::all_players(game)
-                                    .filter(|p|p.alive(game))
-                                    .collect(),
-                                can_choose_duplicates: true,
-                                can_choose_none: true
-                            })
-                            .night_typical(actor_ref)
-                            .build_map()
-                    ),
-                    _ => None
-                }
-            ).flatten()
-        ))
+        ).chain(Self::chosen_ability_parameters(game, actor_ref)))
     }
     fn create_visits_initialize_night(self, game: &Game, id: &AbilityID, actor_ref: PlayerReference) -> Vec<Visit> {
 
@@ -340,6 +217,117 @@ impl RoleStateTrait for Lich {
 }
 
 impl Lich{
+    /// The first player this Lich targets with visit `visit_id` of ability `id`
+    fn first_target(midnight_variables: &OnMidnightFold, id: &AbilityID, actor_ref: PlayerReference, visit_id: i8) -> Option<PlayerReference> {
+        Visits::into_iter(midnight_variables)
+            .with_tag(VisitTag::Ability { ability: *id, id: visit_id.cast_unsigned() })
+            .with_visitor(actor_ref)
+            .map_target()
+            .next()
+    }
+
+    fn kill(game: &mut Game, id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut OnMidnightFold) {
+        if game.day_number() == 1 {return}
+
+        if let Some(target) = Self::first_target(midnight_variables, id, actor_ref, Self::CHOOSE_ATTACK_ID)
+        {
+            let attack_power = 
+            if ControllerID::role(actor_ref, Role::Lich, Self::CHOOSE_ABILITY_ID.cast_unsigned())
+                .get_integer_selection(game)
+                .is_some_and(|IntegerSelection(i)|*i == Self::PIERCE)
+            {
+                AttackPower::ProtectionPiercing
+            }else{
+                AttackPower::ArmorPiercing
+            };
+
+            NightAttack::new()
+                .attackers([actor_ref])
+                .grave_killer(Role::Lich)
+                .power(attack_power)
+                .leave_calling_card()
+                .attack(game, midnight_variables, target);
+        }
+    }
+
+    fn single_target_parameters(game: &Game, actor_ref: PlayerReference, controller_id: i8) -> ControllerParametersMap {
+        ControllerParametersMap::builder(game)
+            .id(ControllerID::role(actor_ref, Role::Lich, controller_id.cast_unsigned()))
+            .single_player_selection_typical(actor_ref, false, true)
+            .night_typical(actor_ref)
+            .build_map()
+    }
+
+    /// A living player other than the Lich, then any living player
+    fn other_then_any_alive(game: &Game, actor_ref: PlayerReference, can_choose_duplicates: bool) -> AvailableTwoPlayerOptionSelection {
+        AvailableTwoPlayerOptionSelection {
+            available_first_players: PlayerReference::all_players(game)
+                .filter(|p|p.alive(game))
+                .filter(|p|*p != actor_ref)
+                .collect(),
+            available_second_players: PlayerReference::all_players(game)
+                .filter(|p|p.alive(game))
+                .collect(),
+            can_choose_duplicates,
+            can_choose_none: true
+        }
+    }
+
+    /// Controllers for whichever extra ability the Lich chose tonight
+    fn chosen_ability_parameters(game: &Game, actor_ref: PlayerReference) -> Option<ControllerParametersMap> {
+        match ControllerID::role(actor_ref, Role::Lich, Self::CHOOSE_ABILITY_ID.cast_unsigned()).get_integer_selection(game) {
+            Some(IntegerSelection(Self::TRANSPORT_ID)) => {
+                let available_players: vec_set::VecSet<PlayerReference> = PlayerReference::all_players(game)
+                    .filter(|p| p.alive(game))
+                    .collect();
+                Some(
+                    ControllerParametersMap::builder(game)
+                        .id(ControllerID::role(actor_ref, Role::Lich, Self::TRANSPORT_ID.cast_unsigned()))
+                        .available_selection(AvailableTwoPlayerOptionSelection {
+                            available_first_players: available_players.clone(),
+                            available_second_players: available_players,
+                            can_choose_duplicates: false,
+                            can_choose_none: true
+                        })
+                        .night_typical(actor_ref)
+                        .build_map()
+                )
+            },
+            Some(IntegerSelection(Self::WARP_ID)) => Some(
+                ControllerParametersMap::builder(game)
+                    .id(ControllerID::role(actor_ref, Role::Lich, Self::WARP_ID.cast_unsigned()))
+                    .available_selection(Self::other_then_any_alive(game, actor_ref, false))
+                    .night_typical(actor_ref)
+                    .build_map()
+            ),
+            Some(IntegerSelection(Self::WARD_ID)) => Some(Self::single_target_parameters(game, actor_ref, Self::WARD_ID)),
+            Some(IntegerSelection(Self::TAILOR_ID)) => Some(
+                ControllerParametersMap::combine([
+                    //player to convert
+                    ControllerParametersMap::builder(game)
+                        .id(ControllerID::role(actor_ref, Role::Lich, Self::TAILOR_ID.cast_unsigned()))
+                        .single_player_selection_typical(actor_ref, false, true)
+                        .night_typical(actor_ref)
+                        .build_map(),
+                    //role
+                    ControllerParametersMap::builder(game)
+                        .id(ControllerID::role(actor_ref, Role::Lich, Self::TAILOR_ID_ROLE.cast_unsigned()))
+                        .single_role_selection_typical(game, |r|RoleSet::TownCommon.get_roles().contains(r))
+                        .night_typical(actor_ref)
+                        .build_map()
+            ])),
+            Some(IntegerSelection(Self::ROLEBLOCK_ID)) => Some(Self::single_target_parameters(game, actor_ref, Self::ROLEBLOCK_ID)),
+            Some(IntegerSelection(Self::POSSESS_ID)) => Some(
+                ControllerParametersMap::builder(game)
+                    .id(ControllerID::role(actor_ref, Role::Lich, Self::POSSESS_ID.cast_unsigned()))
+                    .available_selection(Self::other_then_any_alive(game, actor_ref, true))
+                    .night_typical(actor_ref)
+                    .build_map()
+            ),
+            _ => None
+        }
+    }
+
     pub const CHOOSE_ATTACK_ID: i8 = 0;
     pub const CHOOSE_ABILITY_ID: i8 = 1;
     pub const TRANSPORT_ID: i8 = 2;

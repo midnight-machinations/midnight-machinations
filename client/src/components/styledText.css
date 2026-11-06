@@ -6,8 +6,8 @@
     text-decoration: underline;
 }
 .keyword-player-number {
-	border-radius: 0;
-    border: solid .13rem;
+    border-radius: 0;
+    border: solid 0.13rem;
     border-bottom-color: #aaaaaa;
     border-right-color: #aaaaaa;
     background-color: var(--primary-color);
@@ -16,12 +16,13 @@
     padding: 0.1em 0.35em 1.2em;
     font-size: 0.8em;
     text-indent: 0;
+    /* biome-ignore lint/complexity/noImportantStyles: number badges stay centred inside text-align: left containers such as chat and the wiki */
     text-align: center !important;
     box-shadow: 0 0 5px rgba(from var(--text-color) / 0.3);
 }
 .keyword-outline-number {
-	border-radius: 0;
-    border: solid .13rem;
+    border-radius: 0;
+    border: solid 0.13rem;
     border-bottom-color: #aaaaaa;
     border-right-color: #aaaaaa;
     background-color: var(--primary-color);
@@ -30,13 +31,14 @@
     padding: 0.1em 0.35em 1.2em;
     font-size: 0.8em;
     text-indent: 0;
+    /* biome-ignore lint/complexity/noImportantStyles: number badges stay centred inside text-align: left containers such as chat and the wiki */
     text-align: center !important;
     margin: 0 0 0 0;
     box-shadow: 0 0 5px rgba(from var(--text-color) / 0.3);
 }
 .keyword-player-sender {
     color: #aaaaaa;
-    font-style: italic; 
+    font-style: italic;
     font-weight: bold;
 }
 .keyword-player-important {
@@ -46,7 +48,7 @@
 }
 .keyword-player {
     color: #ffffff;
-    font-style: italic; 
+    font-style: italic;
     font-weight: bold;
 }
 .keyword-outline.keyword-outline {
@@ -85,41 +87,54 @@
 .keyword-dead .keyword-player {
     color: rgb(168, 168, 168);
 }
-.keyword-pride, .keyword-trans, .keyword-christmas {
+.keyword-pride,
+.keyword-trans,
+.keyword-christmas {
     background-clip: text;
-    color: rgba(255,255,255,.2);
+    color: rgba(255, 255, 255, 0.2);
     -webkit-background-clip: text;
-    -webkit-text-fill-color: rgba(255,255,255,.2);
+    -webkit-text-fill-color: rgba(255, 255, 255, 0.2);
     text-shadow: none;
-    filter: drop-shadow(.1rem .1rem .1rem rgb(0, 0, 0));
+    filter: drop-shadow(0.1rem 0.1rem 0.1rem rgb(0, 0, 0));
 }
 .keyword-pride {
-    background-image: linear-gradient(to left, red, violet, rgb(103, 0, 177), rgb(0, 202, 202), green, rgb(216, 216, 0), orange, red);
+    background-image: linear-gradient(
+        to left,
+        red,
+        violet,
+        rgb(103, 0, 177),
+        rgb(0, 202, 202),
+        green,
+        rgb(216, 216, 0),
+        orange,
+        red
+    );
     background-size: 6em;
     animation: scrolling-rainbow 3s linear infinite;
-    filter: drop-shadow(-.05rem -.05rem .1rem #ffffff88)
-            drop-shadow(.1rem .1rem .1rem rgb(0, 0, 0));
+    filter: drop-shadow(-0.05rem -0.05rem 0.1rem #ffffff88) drop-shadow(0.1rem 0.1rem 0.1rem rgb(0, 0, 0));
 }
 .keyword-christmas {
     --spiral-color: #ff817e;
-    --spiral-shine: #FF615D;
+    --spiral-shine: #ff615d;
     --spiral-background-color: #ffdcdc;
-    background-image: repeating-linear-gradient(115deg,
-        var(--spiral-color) 0em, var(--spiral-color) 0.55em, 
-        var(--spiral-background-color) 0.55em, var(--spiral-background-color) 1.10em
+    background-image: repeating-linear-gradient(
+        115deg,
+        var(--spiral-color) 0em,
+        var(--spiral-color) 0.55em,
+        var(--spiral-background-color) 0.55em,
+        var(--spiral-background-color) 1.1em
     );
     animation: scrolling-rainbow 3s linear infinite;
     background-size: 6em;
     font-weight: bold;
-    filter: drop-shadow(0 0 .2em var(--spiral-shine))
-            drop-shadow(.1rem .1rem .1rem rgb(0, 0, 0));
+    filter: drop-shadow(0 0 0.2em var(--spiral-shine)) drop-shadow(0.1rem 0.1rem 0.1rem rgb(0, 0, 0));
 }
 .keyword-christmas.keyword-naughty {
     --spiral-color: #47a850;
     --spiral-background-color: #a4e6a4;
 }
 .keyword-title {
-    font-family: var(--title-font), 'Roboto', sans-serif;
+    font-family: var(--title-font), "Roboto", sans-serif;
 }
 .keyword-kira {
     font-family: var(--kira-font, Arial);
@@ -154,12 +169,24 @@
     }
 }
 @keyframes fadeIn {
-    0% { opacity: 0; }
-    80% { opacity: 0; }
-    100% { opacity: 1; }
+    0% {
+        opacity: 0;
+    }
+    80% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
 }
 @keyframes fadeOut {
-    0% { opacity: 1; }
-    20% { opacity: 1; }
-    100% { opacity: 0; }
+    0% {
+        opacity: 1;
+    }
+    20% {
+        opacity: 1;
+    }
+    100% {
+        opacity: 0;
+    }
 }

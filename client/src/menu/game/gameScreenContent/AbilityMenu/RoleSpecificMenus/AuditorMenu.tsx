@@ -1,22 +1,23 @@
-import { ReactElement } from "react"
-import React from "react"
-import { Role, RoleState } from "../../../../../game/roleState.d"
-import TwoRoleOutlineOptionSelectionMenu from "../ControllerSelectionTypes/TwoRoleOutlineOptionSelectionMenu"
-import GAME_MANAGER from "../../../../.."
-import { controllerIdToLinkWithPlayer, TwoRoleOutlineOptionSelection } from "../../../../../game/controllerInput"
-import { usePlayerState } from "../../../../../components/useHooks"
-import ListMap from "../../../../../ListMap"
+import type { ReactElement } from "react";
+import GAME_MANAGER from "../../../../..";
+import { usePlayerState } from "../../../../../components/useHooks";
+import {
+    type AvailableTwoRoleOutlineOptionSelection,
+    controllerIdToLinkWithPlayer,
+    type TwoRoleOutlineOptionSelection,
+} from "../../../../../game/controllerInput";
+import type { Role, RoleState } from "../../../../../game/roleState.d";
+import ListMap from "../../../../../ListMap";
+import TwoRoleOutlineOptionSelectionMenu from "../ControllerSelectionTypes/TwoRoleOutlineOptionSelectionMenu";
 
 export type AuditorResult = Role[];
 
-export default function AuditorMenu(props: Readonly<{
-    roleState: RoleState & {type: "auditor"}
-}>): ReactElement {
-    
-    const myPlayerIndex = usePlayerState(
-        state=>state.myIndex,
-        ["yourPlayerIndex"]
-    )!;
+export default function AuditorMenu(
+    props: Readonly<{
+        roleState: RoleState & { type: "auditor" };
+    }>,
+): ReactElement {
+    const myPlayerIndex = usePlayerState((state) => state.myIndex, ["yourPlayerIndex"])!;
 
     const onInput = (selection: TwoRoleOutlineOptionSelection) => {
         GAME_MANAGER.sendControllerInput({
@@ -24,37 +25,39 @@ export default function AuditorMenu(props: Readonly<{
                 type: "role",
                 role: "auditor",
                 player: myPlayerIndex,
-                id: 0
+                id: 0,
             },
             selection: {
                 type: "twoRoleOutlineOption",
-                selection: selection
-            }
+                selection: selection,
+            },
         });
-    }
-    
+    };
 
     const savedAbilities = usePlayerState(
-        playerState => playerState.savedControllers,
-        ["yourAllowedControllers", "yourAllowedController"]
+        (playerState) => playerState.savedControllers,
+        ["yourAllowedControllers", "yourAllowedController"],
     )!;
-    
-    const savedAbilitiesMap = new ListMap(savedAbilities, (k1, k2) => controllerIdToLinkWithPlayer(k1) === controllerIdToLinkWithPlayer(k2));
 
-    let singleAbilitySave = savedAbilitiesMap.get({
+    const savedAbilitiesMap = new ListMap(
+        savedAbilities,
+        (k1, k2) => controllerIdToLinkWithPlayer(k1) === controllerIdToLinkWithPlayer(k2),
+    );
+
+    const singleAbilitySave = savedAbilitiesMap.get({
         type: "role",
         role: "auditor",
         player: myPlayerIndex,
-        id: 0
+        id: 0,
     });
 
-    let newSelection;
-    let newAvailable;
-    if(
+    let newSelection: TwoRoleOutlineOptionSelection | undefined;
+    let newAvailable: AvailableTwoRoleOutlineOptionSelection | undefined;
+    if (
         singleAbilitySave !== null &&
         singleAbilitySave.selection.type === "twoRoleOutlineOption" &&
         singleAbilitySave.parameters.available.type === "twoRoleOutlineOption"
-    ){
+    ) {
         newSelection = singleAbilitySave.selection.selection;
         newAvailable = singleAbilitySave.parameters.available.selection;
     } else {
@@ -62,10 +65,12 @@ export default function AuditorMenu(props: Readonly<{
         newAvailable = undefined;
     }
 
-    return <TwoRoleOutlineOptionSelectionMenu
-        previouslyGivenResults={props.roleState.previouslyGivenResults}
-        selection={newSelection}
-        available={newAvailable}
-        onChoose={onInput}
-    />
+    return (
+        <TwoRoleOutlineOptionSelectionMenu
+            previouslyGivenResults={props.roleState.previouslyGivenResults}
+            selection={newSelection}
+            available={newAvailable}
+            onChoose={onInput}
+        />
+    );
 }

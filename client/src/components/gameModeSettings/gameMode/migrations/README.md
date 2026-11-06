@@ -37,27 +37,27 @@ When you need to add a new migration (e.g., changing the data structure):
 1. **Choose the appropriate file** based on what data type you're migrating
 2. **Add a new migration** using `registerMigration()`:
 
-    ```typescript
-    registerMigration("GameModeStorage", {
-        id: "YYYY-MM-DD-description",  // Use today's date
-        description: "Brief description of what this migration does",
-        matches: (json) => {
-            // Return true if this migration should run on this data
-            // Match the format field from the PREVIOUS migration
-            return json.format === "2024-01-07-v5-to-v6";
-        },
-        transform: (json) => {
-            // Transform the data to the next version
-            // ... your transformation logic ...
-            
-            return Success({
-                ...json,
-                format: "YYYY-MM-DD-description",  // Set to THIS migration's ID
-                // ... other changes ...
-            });
-        }
-    });
-    ```
+   ```typescript
+   registerMigration("GameModeStorage", {
+       id: "YYYY-MM-DD-description",  // Use today's date
+       description: "Brief description of what this migration does",
+       matches: (json) => {
+           // Return true if this migration should run on this data
+           // Match the format field from the PREVIOUS migration
+           return json.format === "2024-01-07-v5-to-v6";
+       },
+       transform: (json) => {
+           // Transform the data to the next version
+           // ... your transformation logic ...
+   
+           return Success({
+               ...json,
+               format: "YYYY-MM-DD-description",  // Set to THIS migration's ID
+               // ... other changes ...
+           });
+       }
+   });
+   ```
 
 3. **No need to update version constants** - The system automatically uses the last registered migration as the current format
 
@@ -74,9 +74,9 @@ registerMigration("Settings", {
         return Success({
             ...json,
             format: "2024-10-23-add-dark-mode",
-            darkMode: false  // Add new field with default value
+            darkMode: false, // Add new field with default value
         });
-    }
+    },
 });
 ```
 
@@ -95,17 +95,17 @@ registerMigration("GameModeStorage", {
                     k,
                     {
                         ...v,
-                        roleList: v.roleList.map(transformRole)
-                    }
-                ])
-            )
+                        roleList: v.roleList.map(transformRole),
+                    },
+                ]),
+            ),
         }));
-        
+
         return Success({
             format: "2024-10-23-restructure-roles",
-            gameModes
+            gameModes,
         });
-    }
+    },
 });
 ```
 

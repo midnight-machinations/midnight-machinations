@@ -1,14 +1,14 @@
-import { ReactElement, useEffect, useState } from "react";
-import { useLobbyOrGameState } from "../useHooks";
-import React from "react";
+import { type ReactElement, useEffect, useState } from "react";
 import translate from "../../game/lang";
+import { useLobbyOrGameState } from "../useHooks";
 
-
-export default function RandomSeedSelector(props: Readonly<{
-    disabled?: boolean,
-    onChange?: (randomSeed: number | null) => void
-}>): ReactElement {
-    const randomSeed = useLobbyOrGameState(state => state.randomSeed, ["randomSeed"])??null;
+export default function RandomSeedSelector(
+    props: Readonly<{
+        disabled?: boolean;
+        onChange?: (randomSeed: number | null) => void;
+    }>,
+): ReactElement {
+    const randomSeed = useLobbyOrGameState((state) => state.randomSeed, ["randomSeed"]) ?? null;
 
     const [localSeed, setLocalSeed] = useState<number | null>(randomSeed);
 
@@ -20,31 +20,34 @@ export default function RandomSeedSelector(props: Readonly<{
         if (props.onChange) {
             props.onChange(seed);
         }
-    }
+    };
 
-    return <div className="chat-menu-colors selector-section">
-        <div className="selector-section-header">
-            {translate("wiki.article.standard.randomSeed.title")}
-            {": "}
-            {props.disabled
-                ? (randomSeed??translate("none"))
-                : <input
-                    disabled={props.disabled ?? false}
-                    type="text"
-                    value={localSeed===null ? "" : localSeed}
-                    onChange={(e)=>{
-                        if(e.target.value === "") {
-                            setLocalSeed(null);
-                            onChange(null);
-                            return;
-                        }else{
-                            const value = Number(e.target.value);
-                            setLocalSeed(isNaN(value) ? null : value);
-                            onChange(isNaN(value) ? null : value);
-                        }
-                    }}
-                /> 
-            }
+    return (
+        <div className="chat-menu-colors selector-section">
+            <div className="selector-section-header">
+                {translate("wiki.article.standard.randomSeed.title")}
+                {": "}
+                {props.disabled ? (
+                    (randomSeed ?? translate("none"))
+                ) : (
+                    <input
+                        disabled={props.disabled ?? false}
+                        type="text"
+                        value={localSeed === null ? "" : localSeed}
+                        onChange={(e) => {
+                            if (e.target.value === "") {
+                                setLocalSeed(null);
+                                onChange(null);
+                                return;
+                            } else {
+                                const value = Number(e.target.value);
+                                setLocalSeed(Number.isNaN(value) ? null : value);
+                                onChange(Number.isNaN(value) ? null : value);
+                            }
+                        }}
+                    />
+                )}
+            </div>
         </div>
-    </div>
+    );
 }

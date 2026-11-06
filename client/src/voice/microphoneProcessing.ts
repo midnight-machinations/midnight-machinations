@@ -1,5 +1,5 @@
-import workletUrl from "./microphone.worklet.js?worker&url";
-import { VoiceSettings } from "./types";
+import workletUrl from "./microphone.worklet.ts?worker&url";
+import type { VoiceSettings } from "./types";
 
 const modules = new WeakMap<AudioContext, Promise<void>>();
 
@@ -12,7 +12,9 @@ export class MicrophoneProcessing {
         readonly destination: MediaStreamAudioDestinationNode,
         readonly analyser: AnalyserNode,
     ) {}
-    get track() { return this.destination.stream.getAudioTracks()[0]; }
+    get track() {
+        return this.destination.stream.getAudioTracks()[0];
+    }
     configure(settings: VoiceSettings) {
         this.node.port.postMessage({ noiseSuppression: settings.noiseSuppression, thresholdDb: settings.thresholdDb });
     }
@@ -27,8 +29,13 @@ export class MicrophoneProcessing {
         this.analyser.disconnect();
         this.track.stop();
     }
-    static async create(audio: AudioContext, stream: MediaStream, settings: VoiceSettings,
-        onLevel: (db: number, gateOpen: boolean) => void, onError: () => void) {
+    static async create(
+        audio: AudioContext,
+        stream: MediaStream,
+        settings: VoiceSettings,
+        onLevel: (db: number, gateOpen: boolean) => void,
+        onError: () => void,
+    ) {
         let module = modules.get(audio);
         if (!module) {
             module = audio.audioWorklet.addModule(workletUrl);
@@ -38,8 +45,11 @@ export class MicrophoneProcessing {
         await module;
         const source = audio.createMediaStreamSource(stream);
         const node = new AudioWorkletNode(audio, "voice-microphone", {
-            numberOfInputs: 1, numberOfOutputs: 1, outputChannelCount: [1],
-            channelCount: 1, channelCountMode: "explicit",
+            numberOfInputs: 1,
+            numberOfOutputs: 1,
+            outputChannelCount: [1],
+            channelCount: 1,
+            channelCountMode: "explicit",
             processorOptions: { noiseSuppression: settings.noiseSuppression, thresholdDb: settings.thresholdDb },
         });
         const destination = audio.createMediaStreamDestination();
@@ -50,11 +60,19 @@ export class MicrophoneProcessing {
         processing.track.enabled = false;
         try {
             await new Promise<void>((resolve, reject) => {
-                const timeout = window.setTimeout(() => reject(new Error("Microphone processor did not initialize")), 10000);
-                node.onprocessorerror = () => { clearTimeout(timeout); reject(new Error("Microphone processor failed")); };
+                const timeout = window.setTimeout(
+                    () => reject(new Error("Microphone processor did not initialize")),
+                    10000,
+                );
+                node.onprocessorerror = () => {
+                    clearTimeout(timeout);
+                    reject(new Error("Microphone processor failed"));
+                };
                 node.port.onmessage = ({ data }) => {
-                    if (data.ready) { clearTimeout(timeout); resolve(); }
-                    else if (typeof data.levelDb === "number") onLevel(data.levelDb, data.gateOpen);
+                    if (data.ready) {
+                        clearTimeout(timeout);
+                        resolve();
+                    } else if (typeof data.levelDb === "number") onLevel(data.levelDb, data.gateOpen);
                 };
             });
             node.onprocessorerror = onError;
@@ -62,6 +80,9 @@ export class MicrophoneProcessing {
             node.connect(analyser);
             analyser.connect(destination);
             return processing;
-        } catch (error) { processing.close(); throw error; }
+        } catch (error) {
+            processing.close();
+            throw error;
+        }
     }
 }

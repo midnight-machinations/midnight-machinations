@@ -8,15 +8,29 @@ export default defineConfig(({ mode }) => {
 
   return {
     plugins: [react()],
+    // Static files shared with other packages live in the root assets folder.
+    publicDir: '../assets/public',
     // AudioWorklet has import.meta.url but no WorkerGlobalScope/self.location.
     worker: { format: 'es' },
     server: {
       port: Number(env.CLIENT_PORT) || 3000,
-      open: true
+      open: true,
+      // Roles, language files, and fonts are imported from the root assets folder.
+      fs: { allow: ['..'] }
     },
     build: {
       outDir: 'build',
-      sourcemap: false
+      sourcemap: false,
+      rollupOptions: {
+        output: {
+          // Keep libraries out of the app chunk so they stay cached between app releases
+          manualChunks(id) {
+            if (!id.includes('node_modules')) return undefined
+            if (/node_modules[\/](react|react-dom|scheduler)[\/]/.test(id)) return 'react'
+            return 'vendor'
+          }
+        }
+      }
     }
   }
 })

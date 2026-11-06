@@ -4,21 +4,21 @@
     justify-content: space-between;
     align-items: center;
 
-    padding: 0 .13rem;
+    padding: 0 0.13rem;
 }
 
 .counter-count {
     display: flex;
     flex-direction: row;
     align-items: center;
-    gap: .25rem;
+    gap: 0.25rem;
 }
 
 .counter-count .counter-circle {
     width: 0.5em;
     height: 1em;
     background-color: var(--focus-outline-color);
-    border: .13rem solid var(--primary-border-color);
+    border: 0.13rem solid var(--primary-border-color);
     border-bottom-color: var(--primary-border-shadow-color);
     border-right-color: var(--primary-border-shadow-color);
 }

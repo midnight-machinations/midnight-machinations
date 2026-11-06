@@ -1,7 +1,7 @@
 .role-information {
     display: flex;
     flex-direction: row;
-    padding: .13rem;
+    padding: 0.13rem;
     align-items: center;
     justify-content: space-between;
 }

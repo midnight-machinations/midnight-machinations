@@ -1,23 +1,23 @@
-.details-summary-summary-container{
+.details-summary-summary-container {
     display: flex;
     flex-direction: row;
     justify-content: left;
     align-items: center;
-    padding: .13rem;
+    padding: 0.13rem;
     border-radius: 0;
 }
 .details-summary-summary-container.open {
-    border-bottom: .13rem solid var(--primary-border-shadow-color);
+    border-bottom: 0.13rem solid var(--primary-border-shadow-color);
     border-bottom-left-radius: 0;
     border-bottom-right-radius: 0;
 }
-.details-summary-container{
+.details-summary-container {
     display: flex;
     flex-direction: column;
-    margin: .13rem;
+    margin: 0.13rem;
     padding: 0;
     background-color: var(--background-color);
-    border: .13rem solid var(--primary-border-color);
+    border: 0.13rem solid var(--primary-border-color);
     border-bottom-color: var(--primary-border-shadow-color);
     border-right-color: var(--primary-border-shadow-color);
     border-radius: 0;

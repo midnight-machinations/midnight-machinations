@@ -1,13 +1,18 @@
 {
-  "name": "midnight-machinations-dev",
+  "name": "midnight-machinations",
   "private": true,
   "type": "module",
+  "description": "Repository-wide tooling (lint, format, git hooks). Each package keeps its own dependencies.",
   "engines": {
     "node": ">=22"
   },
-  "scripts": {
-    "start": "node scripts/start-dev.mjs",
-    "test": "node --test scripts/tests/*.test.mjs"
+  "devDependencies": {
+    "@biomejs/biome": "^2.6.6",
+    "@playwright/test": "^1.65.0",
+    "husky": "^9.1.7"
   },
-  "packageManager": "pnpm@11.5.0"
+  "packageManager": "pnpm@11.5.0",
+  "scripts": {
+    "prepare": "husky"
+  }
 }

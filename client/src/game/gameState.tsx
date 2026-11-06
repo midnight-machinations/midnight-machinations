@@ -1,8 +1,16 @@
-import ListMap from "../ListMap"
-import GameState, { LobbyClient, LobbyState, PhaseTimes, Player, LobbyClientID, PlayerGameState, UnsafeString } from "./gameState.d"
-import { ModifierID, ModifierState } from "./modifiers"
-import { AbilityID, abilityIdToString, Role, RoleState } from "./roleState.d"
-
+import ListMap from "../ListMap";
+import type GameState from "./gameState.d";
+import type {
+    LobbyClient,
+    LobbyClientID,
+    LobbyState,
+    PhaseTimes,
+    Player,
+    PlayerGameState,
+    UnsafeString,
+} from "./gameState.d";
+import type { ModifierID, ModifierState } from "./modifiers";
+import { type AbilityID, abilityIdToString, type Role, type RoleState } from "./roleState.d";
 
 export function defaultPhaseTimes(): PhaseTimes {
     return {
@@ -16,7 +24,7 @@ export function defaultPhaseTimes(): PhaseTimes {
         finalWords: 10,
         dusk: 30,
         night: 60,
-    }
+    };
 }
 
 export function createLobbyState(): LobbyState {
@@ -35,7 +43,7 @@ export function createLobbyState(): LobbyState {
 
         players: new ListMap<LobbyClientID, LobbyClient>(),
         chatMessages: new ListMap(),
-    }
+    };
 }
 
 export function createGameState(): GameState {
@@ -48,18 +56,17 @@ export function createGameState(): GameState {
 
         myId: null,
 
-        chatMessages : new ListMap(),
+        chatMessages: new ListMap(),
         graves: new ListMap(),
         players: [],
-        
-        phaseState: {type:"briefing"},
+
+        phaseState: { type: "briefing" },
         timeLeftMs: 0,
         dayNumber: 1,
 
-
         chatFilter: null,
-        fastForward: {type:"none"},
-        
+        fastForward: { type: "none" },
+
         roleList: [],
         randomSeed: null,
         enabledRoles: [],
@@ -71,8 +78,8 @@ export function createGameState(): GameState {
         clientState: createPlayerGameState(),
         host: null,
 
-        missedChatMessages: false
-    }
+        missedChatMessages: false,
+    };
 }
 
 export function createPlayerGameState(): PlayerGameState {
@@ -80,10 +87,10 @@ export function createPlayerGameState(): PlayerGameState {
         type: "player",
 
         myIndex: 0,
-        
+
         myRole: "detective" as Role,
         roleStates: new ListMap<Role, RoleState>(),
-        abilityStates: new ListMap<AbilityID, RoleState>([],(a,b)=>abilityIdToString(a) === abilityIdToString(b)),
+        abilityStates: new ListMap<AbilityID, RoleState>([], (a, b) => abilityIdToString(a) === abilityIdToString(b)),
 
         savedControllers: [],
 
@@ -96,12 +103,12 @@ export function createPlayerGameState(): PlayerGameState {
         sendChatGroups: [],
         insiderGroups: [],
 
-        missedWhispers: []
-    }
+        missedWhispers: [],
+    };
 }
 
 export function createPlayer(name: UnsafeString, index: number): Player {
-    return{
+    return {
         name: name,
         index: index,
         numVoted: 0,
@@ -110,9 +117,7 @@ export function createPlayer(name: UnsafeString, index: number): Player {
         playerTags: [],
 
         toString() {
-            return ""+(this.index+1)+": " + this.name;
-        }
-    }
+            return `${this.index + 1}: ${this.name}`;
+        },
+    };
 }
-
-

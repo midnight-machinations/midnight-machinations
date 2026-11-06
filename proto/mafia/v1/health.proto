@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+package mafia.v1;
+
+// Reports whether the game server is up. This is the first Twirp endpoint and proves the
+// generation pipeline end to end; add new services next to it.
+service HealthService {
+  rpc Check(CheckRequest) returns (CheckResponse);
+}
+
+message CheckRequest {}
+
+message CheckResponse {
+  // The server's package version.
+  string version = 1;
+}

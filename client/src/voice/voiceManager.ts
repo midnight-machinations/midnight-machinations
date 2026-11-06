@@ -1,20 +1,16 @@
-import { Device, types } from "mediasoup-client";
-import { GroupPreference, VoiceSession, VoiceSettings } from "./types";
-import { ANCHOR_CONTROLLER } from "../menu/Anchor";
+import { FEATURES } from "../features";
 import translate from "../game/lang";
-import { MicrophoneProcessing } from "./microphoneProcessing";
+import { ANCHOR_CONTROLLER } from "../menu/Anchor";
 import { keybindReleased, matchesKeybind, matchesKeybindModifiers } from "./keybind";
+import { MicrophoneProcessing } from "./microphoneProcessing";
+import type { GroupPreference, VoiceSession, VoiceSettings } from "./types";
 
-type ConsumerMessage = {
-    type: "consumer";
-    id: string;
-    producerId: string;
-    kind: "audio";
-    rtpParameters: types.RtpParameters;
-    sourceId: number;
-};
+/** Sent by the voice service when it pulls speakers into this session. */
+type OfferMessage = { type: "offer"; sdp: string; tracks: { mid: string; peer: number }[] };
+/** A reply to one of our requests (has an id) or a message the signaling server pushes (has a type) */
+type SignalingMessage = { id?: number; error?: string; data?: unknown } & (OfferMessage | { type?: undefined });
 type Playback = {
-    consumer: types.Consumer;
+    receiver: RTCRtpReceiver;
     element: HTMLAudioElement;
     source: MediaStreamAudioSourceNode;
     gain: GainNode;
@@ -24,13 +20,27 @@ type Playback = {
     duration: number;
 };
 type PersonalPreference = { muted: boolean; volume: number };
-const DEFAULT_SETTINGS: VoiceSettings = { mode: "openMic", key: "KeyV", deviceId: "", volume: 1, noiseSuppression: true, thresholdDb: -80 };
+const DEFAULT_SETTINGS: VoiceSettings = {
+    mode: "openMic",
+    key: "KeyV",
+    deviceId: "",
+    volume: 1,
+    noiseSuppression: true,
+    thresholdDb: -80,
+};
 function readStorage<T>(key: string, fallback: T): T {
-    try { return JSON.parse(localStorage.getItem(key) ?? "null") ?? fallback; }
-    catch { return fallback; }
+    try {
+        return JSON.parse(localStorage.getItem(key) ?? "null") ?? fallback;
+    } catch {
+        return fallback;
+    }
 }
 function saveStorage(key: string, value: unknown) {
-    try { localStorage.setItem(key, JSON.stringify(value)); } catch { /* Voice can work without storage. */ }
+    try {
+        localStorage.setItem(key, JSON.stringify(value));
+    } catch {
+        /* Voice can work without storage. */
+    }
 }
 
 export class VoiceManager {
@@ -49,18 +59,23 @@ export class VoiceManager {
     people: Record<number, PersonalPreference> = {};
     private listeners = new Set<() => void>();
     private socket?: WebSocket;
-    private sendTransport?: types.Transport;
-    private receiveTransport?: types.Transport;
-    private producer?: types.Producer;
+    /** One connection to the SFU: our microphone out, every allowed speaker in. */
+    private connection?: RTCPeerConnection;
+    private sender?: RTCRtpSender;
+    /** Track mid to speaker, announced before each renegotiation. */
+    private trackPeers = new Map<string, number>();
     private microphone?: MediaStream;
     private audio?: AudioContext;
     private playbacks = new Map<string, Playback>();
-    private pending = new Map<number, { resolve: (value: unknown) => void; reject: (error: Error) => void; timeout: ReturnType<typeof setTimeout> }>();
+    private pending = new Map<
+        number,
+        { resolve: (value: unknown) => void; reject: (error: Error) => void; timeout: ReturnType<typeof setTimeout> }
+    >();
     private requestId = 0;
     private generation = 0;
     private wantConnected = false;
     private retry?: ReturnType<typeof setTimeout>;
-    private consumeQueue = Promise.resolve();
+    private negotiation = Promise.resolve();
     private heldKey = false;
     private heldButton = false;
     private microphoneGeneration = 0;
@@ -73,50 +88,96 @@ export class VoiceManager {
     private processing?: MicrophoneProcessing;
     // Automatic retries repeat the same failure; only the first one pops up an error card.
     private lastWarning = "";
-    private sentPackets?: { producer: types.Producer; count: number };
+    private sentPackets?: { sender: RTCRtpSender; count: number };
     private stuckAudioChecks = 0;
     private lastAudioTime?: { audio: AudioContext; time: number };
 
     constructor() {
         const saved = readStorage<Partial<VoiceSettings>>("voiceSettings", {});
         this.settings = {
-            mode: saved.mode === "pushToTalk" || saved.mode === "toggleMute" || saved.mode === "openMic" ? saved.mode : DEFAULT_SETTINGS.mode,
+            mode:
+                saved.mode === "pushToTalk" || saved.mode === "toggleMute" || saved.mode === "openMic"
+                    ? saved.mode
+                    : DEFAULT_SETTINGS.mode,
             key: typeof saved.key === "string" ? saved.key : DEFAULT_SETTINGS.key,
             deviceId: typeof saved.deviceId === "string" ? saved.deviceId : "",
-            volume: typeof saved.volume === "number" && Number.isFinite(saved.volume) ? Math.max(0, Math.min(2, saved.volume)) : 1,
-            noiseSuppression: typeof saved.noiseSuppression === "boolean" ? saved.noiseSuppression : DEFAULT_SETTINGS.noiseSuppression,
-            thresholdDb: typeof saved.thresholdDb === "number" && Number.isFinite(saved.thresholdDb)
-                ? Math.max(-80, Math.min(0, saved.thresholdDb)) : DEFAULT_SETTINGS.thresholdDb,
+            volume:
+                typeof saved.volume === "number" && Number.isFinite(saved.volume)
+                    ? Math.max(0, Math.min(2, saved.volume))
+                    : 1,
+            noiseSuppression:
+                typeof saved.noiseSuppression === "boolean"
+                    ? saved.noiseSuppression
+                    : DEFAULT_SETTINGS.noiseSuppression,
+            thresholdDb:
+                typeof saved.thresholdDb === "number" && Number.isFinite(saved.thresholdDb)
+                    ? Math.max(-80, Math.min(0, saved.thresholdDb))
+                    : DEFAULT_SETTINGS.thresholdDb,
         };
-        window.addEventListener("keydown", event => {
+        window.addEventListener("keydown", (event) => {
             if (this.heldKey && !matchesKeybindModifiers(this.settings.key, event)) {
                 this.heldKey = false;
                 this.updateMicrophone();
             }
-            if (event.defaultPrevented || event.isComposing || !matchesKeybind(this.settings.key, event) || event.repeat || this.settings.mode === "openMic") return;
+            if (
+                event.defaultPrevented ||
+                event.isComposing ||
+                !matchesKeybind(this.settings.key, event) ||
+                event.repeat ||
+                this.settings.mode === "openMic"
+            )
+                return;
             const target = event.target instanceof Element ? event.target : null;
             // Shared Select searches from a button, including in ability menus.
-            if (target?.closest("input, textarea, select, [contenteditable]:not([contenteditable=false]), [role=combobox], [role=textbox], [role=searchbox], .custom-select, .custom-select-options-popover")) return;
+            if (
+                target?.closest(
+                    "input, textarea, select, [contenteditable]:not([contenteditable=false]), [role=combobox], [role=textbox], [role=searchbox], .custom-select, .custom-select-options-popover",
+                )
+            )
+                return;
             event.preventDefault();
-            if (this.settings.mode === "toggleMute") { this.toggleSelfMute(); return; }
+            if (this.settings.mode === "toggleMute") {
+                this.toggleSelfMute();
+                return;
+            }
             this.heldKey = true;
             this.updateMicrophone();
         });
-        window.addEventListener("keyup", event => {
-            if (this.heldKey && keybindReleased(this.settings.key, event)) { this.heldKey = false; this.updateMicrophone(); }
+        window.addEventListener("keyup", (event) => {
+            if (this.heldKey && keybindReleased(this.settings.key, event)) {
+                this.heldKey = false;
+                this.updateMicrophone();
+            }
         });
         window.addEventListener("blur", () => this.releaseTalk());
-        document.addEventListener("visibilitychange", () => { if (document.hidden) this.releaseTalk(); });
+        document.addEventListener("visibilitychange", () => {
+            if (document.hidden) this.releaseTalk();
+        });
         window.addEventListener("pagehide", () => this.leave());
         window.setInterval(() => void this.updateSpeaking(), 100);
         window.setInterval(() => void this.checkMicrophoneFlow(), 5000);
         window.setInterval(() => this.checkAudioRunning(), 1000);
     }
-    subscribe = (listener: () => void) => { this.listeners.add(listener); return () => { this.listeners.delete(listener); }; };
+    subscribe = (listener: () => void) => {
+        this.listeners.add(listener);
+        return () => {
+            this.listeners.delete(listener);
+        };
+    };
     getRevision = () => this.revision;
-    private changed() { this.revision++; for (const listener of this.listeners) listener(); }
-    private releaseTalk() { this.heldKey = false; this.heldButton = false; this.updateMicrophone(); }
-    holdToTalk(held: boolean) { this.heldButton = held; this.updateMicrophone(); }
+    private changed() {
+        this.revision++;
+        for (const listener of this.listeners) listener();
+    }
+    private releaseTalk() {
+        this.heldKey = false;
+        this.heldButton = false;
+        this.updateMicrophone();
+    }
+    holdToTalk(held: boolean) {
+        this.heldButton = held;
+        this.updateMicrophone();
+    }
 
     setRoomEnabled(enabled: boolean) {
         this.roomEnabled = enabled;
@@ -133,7 +194,11 @@ export class VoiceManager {
             if (!this.microphoneEnabled) {
                 if (this.status !== "connected") {
                     await this.join();
-                    if (this.microphoneEnabled) { this.selfMuted = false; this.updateMicrophone(); this.changed(); }
+                    if (this.microphoneEnabled) {
+                        this.selfMuted = false;
+                        this.updateMicrophone();
+                        this.changed();
+                    }
                 } else await this.enableMicrophone({ unmute: true });
             } else this.toggleSelfMute();
         } else this.setPerson(id, { muted: !this.person(id).muted });
@@ -143,9 +208,13 @@ export class VoiceManager {
     }
     setSession(session: VoiceSession | null) {
         const previous = this.session;
-        const newSession = session?.token !== previous?.token || session?.scope !== previous?.scope || session?.url !== previous?.url;
+        const newSession =
+            session?.token !== previous?.token || session?.scope !== previous?.scope || session?.url !== previous?.url;
         this.session = session;
-        if (!session) { this.leave(); return; }
+        if (!session) {
+            this.leave();
+            return;
+        }
         if (session.scope !== previous?.scope) {
             this.groups = readStorage(`voiceGroups:${session.scope}`, {});
             this.people = readStorage(`voicePeople:${session.scope}`, {});
@@ -158,7 +227,14 @@ export class VoiceManager {
         this.changed();
     }
     async join() {
-        if (!this.roomEnabled || !this.session || this.status === "connecting" || this.status === "connected") return;
+        if (
+            !FEATURES.voice ||
+            !this.roomEnabled ||
+            !this.session ||
+            this.status === "connecting" ||
+            this.status === "connected"
+        )
+            return;
         this.wantConnected = true;
         this.selfMuted = true;
         this.lastWarning = "";
@@ -170,7 +246,7 @@ export class VoiceManager {
         // is switching to its microphone profile.
         this.audio ??= new AudioContext({ sampleRate: 48000 });
         const generation = this.generation;
-        this.audio.resume().catch(error => this.playbackBlocked(error, generation));
+        this.audio.resume().catch((error) => this.playbackBlocked(error, generation));
         // Ask for the microphone before connecting: Firefox only offers WebRTC the
         // addresses it needs once the page has microphone access. Declining joins
         // listen-only; the player's own mic button asks again.
@@ -184,24 +260,37 @@ export class VoiceManager {
         this.disableMicrophone();
         this.status = "disconnected";
         this.error = "";
-        if (!this.session) { void this.audio?.close(); this.audio = undefined; }
+        if (!this.session) {
+            void this.audio?.close();
+            this.audio = undefined;
+        }
         this.changed();
     }
-    clearSession() { this.setSession(null); }
+    clearSession() {
+        this.setSession(null);
+    }
     private disconnect() {
         this.generation++;
         clearTimeout(this.retry);
         this.retry = undefined;
         this.releaseTalk();
-        if (this.socket) { this.socket.onclose = null; this.socket.close(); this.socket = undefined; }
-        for (const request of this.pending.values()) { clearTimeout(request.timeout); request.reject(new Error("Voice disconnected")); }
+        if (this.socket) {
+            this.socket.onclose = null;
+            this.socket.close();
+            this.socket = undefined;
+        }
+        for (const request of this.pending.values()) {
+            clearTimeout(request.timeout);
+            request.reject(new Error("Voice disconnected"));
+        }
         this.pending.clear();
         this.preferencesPending = 0;
         for (const id of [...this.playbacks.keys()]) this.closePlayback(id);
-        this.producer?.close(); this.producer = undefined;
-        this.sendTransport?.close(); this.sendTransport = undefined;
-        this.receiveTransport?.close(); this.receiveTransport = undefined;
-        this.consumeQueue = Promise.resolve();
+        this.connection?.close();
+        this.connection = undefined;
+        this.sender = undefined;
+        this.trackPeers.clear();
+        this.negotiation = Promise.resolve();
         this.speakingUntil.clear();
         this.speaking.clear();
         this.status = "disconnected";
@@ -209,7 +298,9 @@ export class VoiceManager {
     }
     private preferences() {
         return {
-            deafened: Object.entries(this.groups).filter(([, value]) => value.deafened).map(([group]) => group),
+            deafened: Object.entries(this.groups)
+                .filter(([, value]) => value.deafened)
+                .map(([group]) => group),
         };
     }
     private async connect() {
@@ -227,48 +318,74 @@ export class VoiceManager {
             this.socket = socket;
             await new Promise<void>((resolve, reject) => {
                 const timeout = setTimeout(() => reject(new Error("Voice connection timeout")), 10000);
-                socket.onopen = () => { clearTimeout(timeout); resolve(); };
-                socket.onerror = () => { clearTimeout(timeout); reject(new Error("Voice connection failed")); };
-                socket.onclose = () => { clearTimeout(timeout); reject(new Error("Voice connection closed")); };
+                socket.onopen = () => {
+                    clearTimeout(timeout);
+                    resolve();
+                };
+                socket.onerror = () => {
+                    clearTimeout(timeout);
+                    reject(new Error("Voice connection failed"));
+                };
+                socket.onclose = () => {
+                    clearTimeout(timeout);
+                    reject(new Error("Voice connection closed"));
+                };
             });
             if (!current()) return;
-            socket.onmessage = event => {
+            socket.onmessage = (event) => {
                 if (!current()) return;
-                let message;
-                try { message = JSON.parse(event.data); } catch { return; }
+                let message: SignalingMessage;
+                try {
+                    message = JSON.parse(event.data);
+                } catch {
+                    return;
+                }
                 if (typeof message.id === "number") {
                     const request = this.pending.get(message.id);
                     if (request) {
-                        clearTimeout(request.timeout); this.pending.delete(message.id);
-                        if (message.error) request.reject(new Error(message.error)); else request.resolve(message.data);
+                        clearTimeout(request.timeout);
+                        this.pending.delete(message.id);
+                        if (message.error) request.reject(new Error(message.error));
+                        else request.resolve(message.data);
                     }
-                } else if (message.type === "consumer") {
-                    this.consumeQueue = this.consumeQueue.then(async () => {
-                        if (current()) await this.consume(message);
-                    }).catch(error => { if (current()) this.connectionFailed(error); });
-                } else if (message.type === "consumerClosed") {
-                    this.consumeQueue = this.consumeQueue.then(() => { if (current()) this.closePlayback(message.id); });
+                } else if (message.type === "offer") {
+                    this.negotiation = this.negotiation
+                        .then(async () => {
+                            if (current()) await this.answer(message);
+                        })
+                        .catch((error) => {
+                            if (current()) this.connectionFailed(error);
+                        });
                 }
             };
-            socket.onclose = event => {
-                if (current()) this.connectionFailed(new Error(`Voice signaling closed (${event.code}): ${event.reason}`));
+            socket.onclose = (event) => {
+                if (current())
+                    this.connectionFailed(new Error(`Voice signaling closed (${event.code}): ${event.reason}`));
             };
-            const joined = await this.request<{ routerRtpCapabilities: types.RtpCapabilities; iceServers: RTCIceServer[] }>("join", { token: session.token, ...this.preferences() });
-            const device = new Device();
-            await device.load({ routerRtpCapabilities: joined.routerRtpCapabilities });
-            if (!current()) return;
-            const recvOptions = await this.request<types.TransportOptions>("createTransport", { direction: "recv" });
-            if (!current()) return;
-            this.receiveTransport = device.createRecvTransport({ ...recvOptions, iceServers: joined.iceServers });
-            this.wireTransport(this.receiveTransport);
-            const sendOptions = await this.request<types.TransportOptions>("createTransport", { direction: "send" });
-            if (!current()) return;
-            this.sendTransport = device.createSendTransport({ ...sendOptions, iceServers: joined.iceServers });
-            this.wireTransport(this.sendTransport);
-            this.sendTransport.on("produce", ({ kind, rtpParameters }, callback, errback) => {
-                this.request<{ id: string }>("produce", { kind, rtpParameters }).then(callback, errback);
+            const joined = await this.request<{ iceServers: RTCIceServer[] }>("join", {
+                token: session.token,
+                ...this.preferences(),
             });
-            await this.request("receive", { rtpCapabilities: device.rtpCapabilities });
+            if (!current()) return;
+            const connection = new RTCPeerConnection({ iceServers: joined.iceServers, bundlePolicy: "max-bundle" });
+            this.connection = connection;
+            connection.onconnectionstatechange = () => {
+                if (connection.connectionState === "failed" && connection === this.connection) {
+                    this.connectionFailed(new Error("Voice connection failed"));
+                }
+            };
+            connection.ontrack = (event) => this.play(event.transceiver);
+            // Publish one stable track even without a microphone, so other clients get
+            // no signal when it is enabled later. A missing track just sends nothing.
+            const transceiver = connection.addTransceiver(this.processing?.track ?? "audio", { direction: "sendonly" });
+            this.sender = transceiver.sender;
+            await connection.setLocalDescription(await connection.createOffer());
+            const published = await this.request<{ sdp: string }>("publish", {
+                sdp: connection.localDescription?.sdp,
+                mid: transceiver.mid,
+            });
+            if (!current()) return;
+            await connection.setRemoteDescription({ type: "answer", sdp: published.sdp });
             if (!current()) return;
             // Preferences can change while transport setup is awaiting the server.
             // Keep playback and the microphone gated until the latest choices apply.
@@ -281,23 +398,11 @@ export class VoiceManager {
             this.preferencesPending = 0;
             this.updateVolumes();
             this.status = "connected";
-            await this.publishMicrophone();
             this.updateMicrophone();
             this.changed();
         } catch (error) {
             if (current()) this.connectionFailed(error);
         }
-    }
-    private wireTransport(transport: types.Transport) {
-        const generation = this.generation;
-        transport.on("connect", ({ dtlsParameters }, callback, errback) => {
-            this.request("connectTransport", { transportId: transport.id, dtlsParameters }).then(() => callback(), errback);
-        });
-        transport.on("connectionstatechange", state => {
-            if (state === "failed" && generation === this.generation) {
-                this.connectionFailed(new Error(`Voice ${transport.direction} transport failed`));
-            }
-        });
     }
     private connectionFailed(error?: unknown) {
         console.warn("Voice connection failed", error);
@@ -323,25 +428,37 @@ export class VoiceManager {
         if (!socket || socket.readyState !== WebSocket.OPEN) return Promise.reject(new Error("Voice disconnected"));
         const id = ++this.requestId;
         return new Promise<T>((resolve, reject) => {
-            const timeout = setTimeout(() => { this.pending.delete(id); reject(new Error("Voice request timeout")); }, 10000);
-            this.pending.set(id, { resolve: value => resolve(value as T), reject, timeout });
+            const timeout = setTimeout(() => {
+                this.pending.delete(id);
+                reject(new Error("Voice request timeout"));
+            }, 10000);
+            this.pending.set(id, { resolve: (value) => resolve(value as T), reject, timeout });
             socket.send(JSON.stringify({ id, action, ...data }));
         });
     }
-    private async consume(message: ConsumerMessage) {
-        const generation = this.generation;
-        const transport = this.receiveTransport;
+    /** Applies the service's offer for newly pulled speakers and answers it. */
+    private async answer(message: OfferMessage) {
+        const connection = this.connection;
+        if (!connection) return;
+        for (const track of message.tracks) this.trackPeers.set(track.mid, track.peer);
+        await connection.setRemoteDescription({ type: "offer", sdp: message.sdp });
+        await connection.setLocalDescription(await connection.createAnswer());
+        this.socket?.send(JSON.stringify({ type: "answer", sdp: connection.localDescription?.sdp }));
+    }
+    private play(transceiver: RTCRtpTransceiver) {
         const audio = this.audio;
-        if (!transport || !audio) return;
-        const consumer = await transport.consume({ id: message.id, producerId: message.producerId,
-            kind: message.kind, rtpParameters: message.rtpParameters });
-        if (generation !== this.generation) { consumer.close(); return; }
+        const mid = transceiver.mid;
+        const peer = mid === null ? undefined : this.trackPeers.get(mid);
+        if (!audio || mid === null || peer === undefined) return;
+        // A speaker pulled again replaces their previous, now silent, track.
+        for (const [id, playback] of this.playbacks) if (playback.peer === peer) this.closePlayback(id);
+        const generation = this.generation;
         // A media element drives remote decoding in browsers that leave a
         // WebRTC stream silent when connected only to a Web Audio source node.
         const element = document.createElement("audio");
         element.autoplay = true;
         element.hidden = true;
-        element.srcObject = new MediaStream([consumer.track]);
+        element.srcObject = new MediaStream([transceiver.receiver.track]);
         element.volume = 0;
         document.body.append(element);
         // The element drives decoding while Web Audio plays the stream with
@@ -349,12 +466,19 @@ export class VoiceManager {
         const source = audio.createMediaStreamSource(element.srcObject);
         const gain = audio.createGain();
         source.connect(gain).connect(audio.destination);
-        this.playbacks.set(consumer.id, { consumer, element, source, gain, peer: message.sourceId, packets: 0, energy: 0, duration: 0 });
+        this.playbacks.set(mid, {
+            receiver: transceiver.receiver,
+            element,
+            source,
+            gain,
+            peer,
+            packets: 0,
+            energy: 0,
+            duration: 0,
+        });
         this.updateVolumes();
-        await this.request("consumerReady", { consumerId: consumer.id });
-        if (generation !== this.generation) return;
         // Autoplay failures are playback problems, not broken WebRTC sessions.
-        void element.play().catch(error => this.playbackBlocked(error, generation));
+        void element.play().catch((error) => this.playbackBlocked(error, generation));
     }
     private playbackBlocked(error: unknown, generation: number) {
         if (generation !== this.generation) return;
@@ -366,18 +490,23 @@ export class VoiceManager {
         const generation = this.generation;
         try {
             await this.audio?.resume();
-            await Promise.all([...this.playbacks.values()].map(playback => playback.element.play()));
+            await Promise.all([...this.playbacks.values()].map((playback) => playback.element.play()));
             this.error = "";
             this.lastWarning = "";
             this.changed();
-        } catch (error) { this.playbackBlocked(error, generation); }
+        } catch (error) {
+            this.playbackBlocked(error, generation);
+        }
     }
     private closePlayback(id: string) {
         const playback = this.playbacks.get(id);
         if (playback) {
-            playback.element.pause(); playback.element.srcObject = null; playback.element.remove();
-            playback.source.disconnect(); playback.gain.disconnect();
-            playback.consumer.close(); this.playbacks.delete(id);
+            playback.element.pause();
+            playback.element.srcObject = null;
+            playback.element.remove();
+            playback.source.disconnect();
+            playback.gain.disconnect();
+            this.playbacks.delete(id);
             this.speakingUntil.delete(playback.peer);
         }
     }
@@ -386,34 +515,57 @@ export class VoiceManager {
         if (!this.session || this.requestingMicrophone) return;
         this.requestingMicrophone = true;
         const generation = ++this.microphoneGeneration;
-        this.error = ""; this.changed();
+        this.error = "";
+        this.changed();
         let stream: MediaStream | undefined;
         let processing: MicrophoneProcessing | undefined;
         let processingStarted = false;
         try {
-            stream = await navigator.mediaDevices.getUserMedia({ audio: {
-                deviceId: this.settings.deviceId ? { exact: this.settings.deviceId } : undefined,
-                echoCancellation: true, noiseSuppression: false, autoGainControl: true,
-                channelCount: 1,
-            }, video: false });
-            if (generation !== this.microphoneGeneration || !this.session) { stream.getTracks().forEach(track => track.stop()); return; }
-            this.audio ??= new AudioContext({ sampleRate: 48000 });
-            processingStarted = true;
-            processing = await MicrophoneProcessing.create(this.audio, stream, this.settings, (db, gateOpen) => {
-                if (generation !== this.microphoneGeneration) return;
-                this.microphoneLevelDb = db;
-                this.microphoneGateOpen = gateOpen;
-                this.changed();
-            }, () => {
-                if (generation !== this.microphoneGeneration) return;
-                this.disableMicrophone();
-                this.setError("voice.error.processing");
+            stream = await navigator.mediaDevices.getUserMedia({
+                audio: {
+                    deviceId: this.settings.deviceId ? { exact: this.settings.deviceId } : undefined,
+                    echoCancellation: true,
+                    noiseSuppression: false,
+                    autoGainControl: true,
+                    channelCount: 1,
+                },
+                video: false,
             });
             if (generation !== this.microphoneGeneration || !this.session) {
-                processing.close(); stream.getTracks().forEach(track => track.stop()); return;
+                stream.getTracks().forEach((track) => {
+                    track.stop();
+                });
+                return;
+            }
+            this.audio ??= new AudioContext({ sampleRate: 48000 });
+            processingStarted = true;
+            processing = await MicrophoneProcessing.create(
+                this.audio,
+                stream,
+                this.settings,
+                (db, gateOpen) => {
+                    if (generation !== this.microphoneGeneration) return;
+                    this.microphoneLevelDb = db;
+                    this.microphoneGateOpen = gateOpen;
+                    this.changed();
+                },
+                () => {
+                    if (generation !== this.microphoneGeneration) return;
+                    this.disableMicrophone();
+                    this.setError("voice.error.processing");
+                },
+            );
+            if (generation !== this.microphoneGeneration || !this.session) {
+                processing.close();
+                stream.getTracks().forEach((track) => {
+                    track.stop();
+                });
+                return;
             }
             this.processing?.close();
-            this.microphone?.getTracks().forEach(track => track.stop());
+            this.microphone?.getTracks().forEach((track) => {
+                track.stop();
+            });
             this.microphone = stream;
             this.processing = processing;
             // Settings may change while the worklet is loading.
@@ -422,61 +574,74 @@ export class VoiceManager {
             if (options.unmute) this.selfMuted = false;
             const activeStream = stream;
             for (const track of stream.getAudioTracks()) {
-                track.onended = () => { if (this.microphone === activeStream) this.disableMicrophone(); };
+                track.onended = () => {
+                    if (this.microphone === activeStream) this.disableMicrophone();
+                };
             }
-            // A failed publish is a connection problem, not a microphone one. Keep the
+            // A failed swap is a connection problem, not a microphone one. Keep the
             // microphone so the reconnect in connect() publishes it again.
             const connection = this.generation;
             try {
-                if (this.producer) await this.producer.replaceTrack({ track: processing.track });
-                else await this.publishMicrophone();
+                await this.sender?.replaceTrack(processing.track);
             } catch (error) {
                 if (connection === this.generation) this.connectionFailed(error);
             }
             this.updateMicrophone();
         } catch (error) {
             processing?.close();
-            stream?.getTracks().forEach(track => track.stop());
+            stream?.getTracks().forEach((track) => {
+                track.stop();
+            });
             if (generation === this.microphoneGeneration) {
                 this.disableMicrophone();
                 const declined = error instanceof DOMException && error.name === "NotAllowedError";
-                if (!(declined && options.quietDecline)) this.setError(processingStarted ? "voice.error.processing" : "voice.error.microphone", error);
+                if (!(declined && options.quietDecline))
+                    this.setError(processingStarted ? "voice.error.processing" : "voice.error.microphone", error);
             }
-        } finally { if (generation === this.microphoneGeneration) this.requestingMicrophone = false; this.changed(); }
+        } finally {
+            if (generation === this.microphoneGeneration) this.requestingMicrophone = false;
+            this.changed();
+        }
     }
     disableMicrophone() {
         this.microphoneGeneration++;
         this.requestingMicrophone = false;
         this.microphoneEnabled = false;
         if (this.processing) this.processing.track.enabled = false;
-        // Keep the producer stable so other clients receive no mute notification.
+        // Keep the sender stable so other clients receive no mute notification.
         // Release the hardware; a fresh track can replace this stopped track later.
-        this.microphone?.getTracks().forEach(track => track.stop());
+        this.microphone?.getTracks().forEach((track) => {
+            track.stop();
+        });
         this.microphone = undefined;
-        this.processing?.close(); this.processing = undefined;
-        this.microphoneLevelDb = -80; this.microphoneGateOpen = false;
+        this.processing?.close();
+        this.processing = undefined;
+        this.microphoneLevelDb = -80;
+        this.microphoneGateOpen = false;
         if (this.session) this.speakingUntil.delete(this.session.selfId);
         this.releaseTalk();
         this.changed();
     }
-    private async publishMicrophone() {
-        const track = this.processing?.track;
-        if (this.sendTransport && track && !this.producer) {
-            const generation = this.generation;
-            const producer = await this.sendTransport.produce({ track, stopTracks: false,
-                disableTrackOnPause: false, zeroRtpOnPause: false, codecOptions: { opusDtx: true } });
-            if (generation !== this.generation) { producer.close(); return; }
-            this.producer = producer;
-        }
-    }
     private updateMicrophone() {
         const canSpeak = this.session && !this.session.forcedSilenced && this.session.sendGroups.length > 0;
-        const talking = Boolean(this.roomEnabled && !this.selfMuted && this.status === "connected" && this.preferencesPending === 0 && this.microphoneEnabled && canSpeak &&
-            (this.settings.mode !== "pushToTalk" || this.heldKey || this.heldButton));
+        const talking = Boolean(
+            this.roomEnabled &&
+                !this.selfMuted &&
+                this.status === "connected" &&
+                this.preferencesPending === 0 &&
+                this.microphoneEnabled &&
+                canSpeak &&
+                (this.settings.mode !== "pushToTalk" || this.heldKey || this.heldButton),
+        );
         if (this.processing) this.processing.track.enabled = talking;
-        if (this.talking !== talking) { this.talking = talking; this.changed(); }
+        if (this.talking !== talking) {
+            this.talking = talking;
+            this.changed();
+        }
     }
-    group(group: string): GroupPreference { return { deafened: this.groups[group]?.deafened === true }; }
+    group(group: string): GroupPreference {
+        return { deafened: this.groups[group]?.deafened === true };
+    }
     setGroup(group: string, change: Partial<GroupPreference>) {
         this.preferenceRevision++;
         this.groups = { ...this.groups, [group]: { ...this.group(group), ...change } };
@@ -486,21 +651,29 @@ export class VoiceManager {
             this.preferencesPending++;
             this.updateMicrophone();
             this.updateVolumes();
-            void this.request("preferences", this.preferences()).then(() => {
-                if (generation !== this.generation) return;
-                this.preferencesPending--;
-                this.updateMicrophone();
-                this.updateVolumes();
-                this.changed();
-            }).catch(() => { if (generation === this.generation) this.connectionFailed(); });
+            void this.request("preferences", this.preferences())
+                .then(() => {
+                    if (generation !== this.generation) return;
+                    this.preferencesPending--;
+                    this.updateMicrophone();
+                    this.updateVolumes();
+                    this.changed();
+                })
+                .catch(() => {
+                    if (generation === this.generation) this.connectionFailed();
+                });
         }
-        this.updateMicrophone(); this.changed();
+        this.updateMicrophone();
+        this.changed();
     }
-    person(id: number): PersonalPreference { return this.people[id] ?? { muted: false, volume: 1 }; }
+    person(id: number): PersonalPreference {
+        return this.people[id] ?? { muted: false, volume: 1 };
+    }
     setPerson(id: number, change: Partial<PersonalPreference>) {
         this.people = { ...this.people, [id]: { ...this.person(id), ...change } };
         if (this.session) saveStorage(`voicePeople:${this.session.scope}`, this.people);
-        this.updateVolumes(); this.changed();
+        this.updateVolumes();
+        this.changed();
     }
     setSettings(change: Partial<VoiceSettings>) {
         const deviceChanged = change.deviceId !== undefined && change.deviceId !== this.settings.deviceId;
@@ -508,18 +681,23 @@ export class VoiceManager {
         this.settings = { ...this.settings, ...change };
         this.processing?.configure(this.settings);
         saveStorage("voiceSettings", this.settings);
-        this.releaseTalk(); this.updateVolumes(); this.changed();
+        this.releaseTalk();
+        this.updateVolumes();
+        this.changed();
         if (deviceChanged && this.microphoneEnabled) void this.enableMicrophone();
     }
     private updateVolumes() {
         for (const playback of this.playbacks.values()) {
             const preference = this.person(playback.peer);
             playback.element.muted = preference.muted || this.preferencesPending > 0;
-            playback.gain.gain.value = playback.element.muted ? 0
+            playback.gain.gain.value = playback.element.muted
+                ? 0
                 : Math.max(0, Math.min(1, preference.volume)) * this.settings.volume;
         }
     }
-    isSpeaking(id: number | undefined) { return id !== undefined && this.speaking.has(id); }
+    isSpeaking(id: number | undefined) {
+        return id !== undefined && this.speaking.has(id);
+    }
     /**
      * A working microphone always sends packets, even while push-to-talk or mute
      * disables its track, because the browser then sends silence. No new packets
@@ -527,19 +705,24 @@ export class VoiceManager {
      * to switch to its microphone profile.
      */
     private async checkMicrophoneFlow() {
-        const producer = this.producer;
-        if (!producer || this.status !== "connected" || !this.microphoneEnabled) { this.sentPackets = undefined; return; }
+        const sender = this.sender;
+        if (!sender?.track || this.status !== "connected" || !this.microphoneEnabled) {
+            this.sentPackets = undefined;
+            return;
+        }
         // A stuck audio context stalls the microphone too; keep its more specific warning.
         if (this.error === "voice.error.stuckAudio") return;
         let count = 0;
         try {
-            for (const stat of (await producer.getStats()).values()) {
+            for (const stat of (await sender.getStats()).values()) {
                 if (stat.type === "outbound-rtp") count += stat.packetsSent ?? 0;
             }
-        } catch { return; }
-        if (producer !== this.producer) return;
-        const stalled = this.sentPackets?.producer === producer && this.sentPackets.count === count;
-        this.sentPackets = { producer, count };
+        } catch {
+            return;
+        }
+        if (sender !== this.sender) return;
+        const stalled = this.sentPackets?.sender === sender && this.sentPackets.count === count;
+        this.sentPackets = { sender, count };
         if (stalled) {
             this.setError("voice.error.silentMicrophone");
             this.changed();
@@ -568,7 +751,10 @@ export class VoiceManager {
         this.lastAudioTime = { audio, time };
         if (audio.state === "running" && advanced) {
             this.stuckAudioChecks = 0;
-            if (this.error === "voice.error.stuckAudio") { this.error = ""; this.changed(); }
+            if (this.error === "voice.error.stuckAudio") {
+                this.error = "";
+                this.changed();
+            }
             return;
         }
         if (++this.stuckAudioChecks === 3) {
@@ -589,37 +775,48 @@ export class VoiceManager {
                 const rms = Math.sqrt(data.reduce((sum, sample) => sum + sample * sample, 0) / data.length);
                 if (rms > 0.015) this.speakingUntil.set(this.session.selfId, now + 250);
             } else this.speakingUntil.delete(this.session.selfId);
-            await Promise.all([...this.playbacks.values()].map(async playback => {
-                if (playback.element.muted || playback.gain.gain.value === 0 || playback.element.paused) {
-                    this.speakingUntil.delete(playback.peer);
-                    return;
-                }
-                try {
-                    const stats = await playback.consumer.getStats();
-                    if (generation !== this.generation || !this.playbacks.has(playback.consumer.id)) return;
-                    for (const stat of stats.values()) {
-                        if (stat.type !== "inbound-rtp") continue;
-                        const duration = stat.totalSamplesDuration ?? 0;
-                        const energy = stat.totalAudioEnergy ?? 0;
-                        const rms = duration > playback.duration
-                            ? Math.sqrt(Math.max(0, energy - playback.energy) / (duration - playback.duration)) : 0;
-                        if (stat.packetsReceived > playback.packets && Math.max(stat.audioLevel ?? 0, rms) > 0.015) {
-                            this.speakingUntil.set(playback.peer, now + 250);
-                        }
-                        playback.packets = stat.packetsReceived;
-                        playback.energy = energy; playback.duration = duration;
+            await Promise.all(
+                [...this.playbacks].map(async ([id, playback]) => {
+                    if (playback.element.muted || playback.gain.gain.value === 0 || playback.element.paused) {
+                        this.speakingUntil.delete(playback.peer);
+                        return;
                     }
-                } catch { /* A consumer may close while statistics are being read. */ }
-            }));
+                    try {
+                        const stats = await playback.receiver.getStats();
+                        if (generation !== this.generation || !this.playbacks.has(id)) return;
+                        for (const stat of stats.values()) {
+                            if (stat.type !== "inbound-rtp") continue;
+                            const duration = stat.totalSamplesDuration ?? 0;
+                            const energy = stat.totalAudioEnergy ?? 0;
+                            const rms =
+                                duration > playback.duration
+                                    ? Math.sqrt(Math.max(0, energy - playback.energy) / (duration - playback.duration))
+                                    : 0;
+                            if (
+                                stat.packetsReceived > playback.packets &&
+                                Math.max(stat.audioLevel ?? 0, rms) > 0.015
+                            ) {
+                                this.speakingUntil.set(playback.peer, now + 250);
+                            }
+                            playback.packets = stat.packetsReceived;
+                            playback.energy = energy;
+                            playback.duration = duration;
+                        }
+                    } catch {
+                        /* A track may close while statistics are being read. */
+                    }
+                }),
+            );
             if (generation !== this.generation) return;
             const next = new Set([...this.speakingUntil].filter(([, until]) => until > now).map(([id]) => id));
-            if (next.size !== this.speaking.size || [...next].some(id => !this.speaking.has(id))) {
+            if (next.size !== this.speaking.size || [...next].some((id) => !this.speaking.has(id))) {
                 this.speaking = next;
                 this.changed();
             }
-        } finally { this.activityBusy = false; }
+        } finally {
+            this.activityBusy = false;
+        }
     }
-
 }
 
 export const VOICE = new VoiceManager();
