@@ -1,5 +1,5 @@
 use crate::game::{
-    Game, chat::ChatMessageVariant, components::night_visits::{NightVisitsIterator, Visits, visit::VisitTag}, controllers::{
+    Game, abilities_component::ability_id::AbilityID, chat::ChatMessageVariant, components::night_visits::{NightVisitsIterator, Visits, visit::VisitTag}, controllers::{
         BooleanSelection, ControllerID, ControllerSelection, Controllers, PlayerListSelection,
         TwoPlayerOptionSelection
     }, event::{Invokable as _, on_midnight::{OnMidnightFold, OnMidnightPriority}, on_player_possessed::OnPlayerPossessed},
@@ -65,20 +65,24 @@ impl Possession {
 
         Some(possessed)
     }
+    /// Possesses with `ability`'s visit 0 (who to possess) and visit 1 (who they use their ability on),
+    /// then shows the actor what the possessed player learned.
     pub fn possess_night_action_and_steal_messages(
         actor: PlayerReference,
         game: &mut Game,
         fold: &mut OnMidnightFold,
         priority: OnMidnightPriority,
-
+        ability: AbilityID,
         currently_used_player: Option<PlayerReference>,
-
-        tag_possess: VisitTag,
-        tag_possess_into: VisitTag,
     )->Option<PlayerReference>{
         match priority {
             OnMidnightPriority::Possess => {
-                Self::possess_night_action(game, fold, tag_possess, tag_possess_into)
+                Self::possess_night_action(
+                    game,
+                    fold,
+                    VisitTag::Ability { ability, id: 0 },
+                    VisitTag::Ability { ability, id: 1 },
+                )
             },
             OnMidnightPriority::Investigative => {
                 if let Some(currently_used_player) = currently_used_player {

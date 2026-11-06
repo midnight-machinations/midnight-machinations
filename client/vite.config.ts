@@ -20,7 +20,17 @@ export default defineConfig(({ mode }) => {
     },
     build: {
       outDir: 'build',
-      sourcemap: false
+      sourcemap: false,
+      rollupOptions: {
+        output: {
+          // Keep libraries out of the app chunk so they stay cached between app releases
+          manualChunks(id) {
+            if (!id.includes('node_modules')) return undefined
+            if (/node_modules[\/](react|react-dom|scheduler)[\/]/.test(id)) return 'react'
+            return 'vendor'
+          }
+        }
+      }
     }
   }
 })

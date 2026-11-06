@@ -28,8 +28,8 @@ impl RoleStateTrait for Marksman {
     fn on_midnight(self, game: &mut Game, _id: &AbilityID, actor_ref: PlayerReference, midnight_variables: &mut OnMidnightFold, priority: OnMidnightPriority) {
 
         if !matches!(self.state, MarksmanState::ShotTownie | MarksmanState::NotLoaded) {
-            self.clone().midnight(actor_ref, game, midnight_variables, priority, 0, 1);
-            self.clone().midnight(actor_ref, game, midnight_variables, priority, 2, 3);
+            self.clone().midnight(actor_ref, game, midnight_variables, priority, MarkVisitIds { mark: 0, camp: 1 });
+            self.clone().midnight(actor_ref, game, midnight_variables, priority, MarkVisitIds { mark: 2, camp: 3 });
         }
 
         if matches!(self.state, MarksmanState::NotLoaded) && matches!(priority, OnMidnightPriority::Kill) {
@@ -75,8 +75,15 @@ impl RoleStateTrait for Marksman {
     }
 }
 
+/// The visit ids of one mark-and-camp pair: Marksman has two, (0, 1) and (2, 3)
+struct MarkVisitIds {
+    mark: u8,
+    camp: u8,
+}
+
 impl Marksman {
-    fn midnight(mut self, actor_ref: PlayerReference, game: &mut Game, midnight_variables: &mut OnMidnightFold, priority: OnMidnightPriority, mark_id: u8, camp_id: u8) {
+    fn midnight(mut self, actor_ref: PlayerReference, game: &mut Game, midnight_variables: &mut OnMidnightFold, priority: OnMidnightPriority, ids: MarkVisitIds) {
+        let MarkVisitIds { mark: mark_id, camp: camp_id } = ids;
         match priority {
             OnMidnightPriority::Deception => {
                 let Some(mark) = Visits::into_iter(midnight_variables)

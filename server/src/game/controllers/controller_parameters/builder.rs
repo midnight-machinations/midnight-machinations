@@ -1,8 +1,8 @@
 use crate::{
     game::{
         controllers::{
-            AvailablePlayerListSelection, AvailableRoleListSelection,
-            AvailableSelectionKind, ControllerID, ControllerParameters
+            AvailableControllerSelection, AvailablePlayerListSelection, AvailableRoleListSelection,
+            AvailableSelectionKind, ControllerID, ControllerParameters, ControllerSelection
         }, components::{detained::Detained, insider_group::InsiderGroupID}, phase::PhaseType, player::PlayerReference, role::Role, Game
     },
     vec_set::VecSet
@@ -167,15 +167,22 @@ impl<A: AvailableSelectionKind, I: BuilderIDState> ControllerParametersBuilder<'
     }
 
     pub fn try_build(self) -> Option<ControllerParameters> {
-        ControllerParameters::new(
-            self.game, 
-            self.available.into(), 
-            self.grayed_out, 
-            self.reset_on_phase_start, 
-            self.dont_save, 
-            self.default_selection.into(), 
-            self.allowed_players
-        )
+        self.into_parameters().0
+    }
+
+    /// The parameters, or None if the default selection is not one of the available selections, and the id
+    fn into_parameters(self) -> (Option<ControllerParameters>, I) {
+        let available: AvailableControllerSelection = self.available.into();
+        let default_selection: ControllerSelection = self.default_selection.into();
+        let parameters = available.validate_selection(self.game, &default_selection).then_some(ControllerParameters {
+            available,
+            grayed_out: self.grayed_out,
+            reset_on_phase_start: self.reset_on_phase_start,
+            dont_save: self.dont_save,
+            default_selection,
+            allowed_players: self.allowed_players,
+        });
+        (parameters, self.id)
     }
 }
 
@@ -196,18 +203,9 @@ impl<'a, A: BuilderAvailableControllerSelectionState> ControllerParametersBuilde
 
 impl<A: AvailableSelectionKind> ControllerParametersBuilder<'_, A, ControllerID> {
     pub fn build_map(self) -> ControllerParametersMap {
-        if let Some(single) = ControllerParameters::new(
-            self.game,
-            self.available.into(),
-            self.grayed_out,
-            self.reset_on_phase_start,
-            self.dont_save,
-            self.default_selection.into(),
-            self.allowed_players
-        ){
-            ControllerParametersMap::new_controller(self.id, single)
-        }else{
-            ControllerParametersMap::default()
+        match self.into_parameters() {
+            (Some(single), id) => ControllerParametersMap::new_controller(id, single),
+            (None, _) => ControllerParametersMap::default(),
         }
     }
 }

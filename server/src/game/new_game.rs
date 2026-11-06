@@ -49,33 +49,7 @@ impl Game{
             }    
 
 
-            // Create list of players
-            let mut new_players = Vec::new();
-            let mut new_players_names = Vec::new();
-            for player in players.iter() {
-                let ClientConnection::Connected(ref sender) = player.connection else {
-                    return Err(RejectStartReason::PlayerDisconnected)
-                };
-                
-                let name = if settings.modifiers.is_enabled(ModifierID::RandomPlayerNames) {
-                    generate_random_name(
-                        &new_players_names
-                            .iter()
-                            .map(|p: &String|p.as_str())
-                            .collect::<Vec<&str>>()
-                    )
-                }else{
-                    player.name.clone()
-                };
-                new_players_names.push(name.clone());
-
-                let new_player = Player::new(
-                    name,
-                    sender.clone()
-                );
-                
-                new_players.push(new_player);
-            }
+            let new_players = Self::new_players(&players, &settings)?;
 
             #[expect(clippy::cast_possible_truncation, reason = "Explained in doc comment")]
             let num_players = new_players.len() as u8;
@@ -123,19 +97,7 @@ impl Game{
                 chat_messages: unsafe{ChatComponent::new(num_players)}
             };
 
-            for player in PlayerReference::all_players(&game){
-                let Some(assignment) = assignments.get(&player) else {
-                    return Err(RejectStartReason::RoleListTooSmall)
-                };
-
-                for group in assignment.insider_groups.clone() {
-                    unsafe {group.add_player_to_revealed_group_unchecked(&mut game, player);}
-                }
-
-                let win_con = player.win_condition(&game).clone();
-                player.set_win_condition(&mut game, win_con);
-                InsiderGroups::send_player_insider_groups_packet(&game, player);
-            }
+            Self::assign_starting_groups(&mut game, &assignments)?;
 
             if !game.game_is_over() {
                 break game;
@@ -147,29 +109,7 @@ impl Game{
             return Err(RejectStartReason::RoleListCannotCreateRoles);
         }
         
-        game.send_packet_to_all(ToClientPacket::StartGame);
-        
-        Abilities::set_abilities_states_to_default(&mut game);
-
-        //initial role creation calls "on role created". It acts as if your role was just switched but doesnt call on role switch
-        for player_ref in PlayerReference::all_players(&game){
-            player_ref.initial_set_role_insider_wincondition(&mut game);
-        }
-
-        for player_ref in PlayerReference::all_players(&game){
-            player_ref.send_join_game_data(&mut game);
-        }
-        for spectator in SpectatorPointer::all_spectators(&game){
-            spectator.send_join_game_data(&mut game);
-        }
-
-        //reveal groups
-        for group in InsiderGroupID::all() {
-            group.reveal_group_players(&mut game);
-        }
-
-        //on game start needs to be called after all players have joined
-        OnGameStart::new().as_invokable().invoke(&mut game);
+        Self::start(&mut game);
 
         Ok(game)
     }
@@ -183,5 +123,81 @@ impl Game{
         }
 
         assignments
+    }
+
+    /// Puts each player in their assigned insider groups and sends them their groups
+    fn assign_starting_groups(game: &mut Game, assignments: &Assignments) -> Result<(), RejectStartReason> {
+        for player in PlayerReference::all_players(game){
+            let Some(assignment) = assignments.get(&player) else {
+                return Err(RejectStartReason::RoleListTooSmall)
+            };
+
+            for group in assignment.insider_groups.clone() {
+                unsafe {group.add_player_to_revealed_group_unchecked(game, player);}
+            }
+
+            let win_con = player.win_condition(game).clone();
+            player.set_win_condition(game, win_con);
+            InsiderGroups::send_player_insider_groups_packet(game, player);
+        }
+        Ok(())
+    }
+
+    fn new_players(players: &[PlayerInitializeParameters], settings: &Settings) -> Result<Vec<Player>, RejectStartReason> {
+        // Create list of players
+        let mut new_players = Vec::new();
+        let mut new_players_names = Vec::new();
+        for player in players.iter() {
+            let ClientConnection::Connected(ref sender) = player.connection else {
+                return Err(RejectStartReason::PlayerDisconnected)
+            };
+        
+            let name = if settings.modifiers.is_enabled(ModifierID::RandomPlayerNames) {
+                generate_random_name(
+                    &new_players_names
+                        .iter()
+                        .map(|p: &String|p.as_str())
+                        .collect::<Vec<&str>>()
+                )
+            }else{
+                player.name.clone()
+            };
+            new_players_names.push(name.clone());
+
+            let new_player = Player::new(
+                name,
+                sender.clone()
+            );
+        
+            new_players.push(new_player);
+        }
+        Ok(new_players)
+    }
+
+    /// Tells everyone the game started, then sets up roles, sends join data, and runs the game start event
+    fn start(game: &mut Game) {
+        game.send_packet_to_all(ToClientPacket::StartGame);
+        
+        Abilities::set_abilities_states_to_default(game);
+
+        //initial role creation calls "on role created". It acts as if your role was just switched but doesnt call on role switch
+        for player_ref in PlayerReference::all_players(game){
+            player_ref.initial_set_role_insider_wincondition(game);
+        }
+
+        for player_ref in PlayerReference::all_players(game){
+            player_ref.send_join_game_data(game);
+        }
+        for spectator in SpectatorPointer::all_spectators(game){
+            spectator.send_join_game_data(game);
+        }
+
+        //reveal groups
+        for group in InsiderGroupID::all() {
+            group.reveal_group_players(game);
+        }
+
+        //on game start needs to be called after all players have joined
+        OnGameStart::new().as_invokable().invoke(game);
     }
 }

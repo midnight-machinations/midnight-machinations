@@ -726,7 +726,8 @@ export function translateChatMessage(
             const twoThirdsMajority =
                 GAME_MANAGER.state.stateType === "game" &&
                 GAME_MANAGER.state.modifierSettings.keys().includes("twoThirdsMajority");
-            const hang = twoThirdsMajority ? message.innocent <= 2 * message.guilty : message.innocent < message.guilty;
+            // Matches PhaseState::end_judgement on the server: innocent <= guilty / 2, rounded down
+            const hang = twoThirdsMajority ? 2 * message.innocent <= message.guilty : message.innocent < message.guilty;
             return translate(
                 "chatMessage.trialVerdict",
                 encodeString(playerNames[message.playerOnTrial]),

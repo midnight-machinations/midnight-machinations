@@ -41,7 +41,7 @@ pub struct VoiceBridge {
     /// Hands each new snapshot to whatever carries it to the voice service.
     outbox: Box<dyn FnMut(&serde_json::Value) + Send>,
     /// Room client IDs joined to voice, by scope, as last reported by the voice service.
-    presence: std::sync::Arc<std::sync::Mutex<std::collections::HashMap<String, Vec<u32>>>>,
+    presence: Presence,
 }
 impl VoiceBridge {
     pub fn new(public_url: String, outbox: Box<dyn FnMut(&serde_json::Value) + Send>) -> Self {
@@ -70,16 +70,13 @@ impl VoiceBridge {
     #[cfg(not(target_arch = "wasm32"))]
     pub fn from_env() -> Option<Self> {
         if std::env::var("FEATURE_VOICE").is_ok_and(|flag| flag == "false") { return None }
-        use futures_util::{SinkExt, StreamExt};
-        use tokio::sync::watch;
-        use tokio_tungstenite::tungstenite::{Message, client::IntoClientRequest};
 
         let url = std::env::var("VOICE_CONTROL_URL").ok()?;
         let public_url = std::env::var("VOICE_PUBLIC_URL").ok()?;
         let secret = std::env::var("VOICE_CONTROL_SECRET")
             .ok()
             .filter(|s| !s.is_empty())?;
-        let (snapshots, mut updates) = watch::channel(serde_json::json!([]));
+        let (snapshots, updates) = tokio::sync::watch::channel(serde_json::json!([]));
         let bridge = Self::new(public_url, Box::new(move |snapshot| { snapshots.send_replace(snapshot.clone()); }));
         let reported = bridge.presence.clone();
         // A dedicated runtime keeps the link independent of the game loop's lock.
@@ -90,48 +87,71 @@ impl VoiceBridge {
             else {
                 return;
             };
-            runtime.block_on(async move {
-                let mut version = 0u64;
-                loop {
-                    let Ok(mut request) = url.as_str().into_client_request() else { return };
-                    let Ok(auth) = format!("Bearer {secret}").parse() else { return };
-                    request.headers_mut().insert("authorization", auth);
-                    if let Ok(Ok((mut socket, _))) = tokio::time::timeout(
-                        std::time::Duration::from_secs(3), tokio_tungstenite::connect_async(request)
-                    ).await {
-                        // The voice service starts empty, so send the current snapshot first.
-                        updates.mark_changed();
-                        loop {
-                            tokio::select! {
-                                result = updates.changed() => {
-                                    if result.is_err() { return }
-                                    version = version.saturating_add(1);
-                                    let packet = serde_json::json!({"version": version, "rooms": updates.borrow_and_update().clone()});
-                                    if socket.send(Message::text(packet.to_string())).await.is_err() { break }
-                                },
-                                message = socket.next() => match message {
-                                    Some(Ok(Message::Text(data))) => {
-                                        let Ok(value) = serde_json::from_str::<serde_json::Value>(&data) else { continue };
-                                        if let Some(scopes) = value.get("presence")
-                                            && let Ok(scopes) = serde_json::from_value(scopes.clone())
-                                            && let Ok(mut reported) = reported.lock()
-                                        { *reported = scopes; }
-                                    },
-                                    Some(Ok(Message::Ping(data))) => {
-                                        if socket.send(Message::Pong(data)).await.is_err() { break }
-                                    },
-                                    Some(Ok(Message::Close(_))) | Some(Err(_)) | None => break,
-                                    _ => {},
-                                },
-                            }
-                        }
-                        if let Ok(mut reported) = reported.lock() { reported.clear(); }
-                        let _ = socket.close(None).await;
-                    }
-                    tokio::time::sleep(std::time::Duration::from_secs(2)).await;
-                }
-            });
+            runtime.block_on(control_link::run(url, secret, updates, reported));
         });
         Some(bridge)
+    }
+}
+
+type Presence = std::sync::Arc<std::sync::Mutex<std::collections::HashMap<String, Vec<u32>>>>;
+
+#[cfg(not(target_arch = "wasm32"))]
+mod control_link {
+    use super::Presence;
+    use futures_util::{SinkExt, StreamExt};
+    use tokio::sync::watch;
+    use tokio_tungstenite::tungstenite::{Message, client::IntoClientRequest};
+
+    type Socket = tokio_tungstenite::WebSocketStream<tokio_tungstenite::MaybeTlsStream<tokio::net::TcpStream>>;
+
+    /// Keeps a control link open, reconnecting every two seconds, until the bridge is dropped.
+    pub(super) async fn run(url: String, secret: String, mut updates: watch::Receiver<serde_json::Value>, reported: Presence) {
+        let mut version = 0u64;
+        loop {
+            let Ok(mut request) = url.as_str().into_client_request() else { return };
+            let Ok(auth) = format!("Bearer {secret}").parse() else { return };
+            request.headers_mut().insert("authorization", auth);
+            if let Ok(Ok((mut socket, _))) = tokio::time::timeout(
+                std::time::Duration::from_secs(3), tokio_tungstenite::connect_async(request)
+            ).await {
+                let bridge_dropped = relay(&mut socket, &mut updates, &reported, &mut version).await;
+                if let Ok(mut reported) = reported.lock() { reported.clear(); }
+                let _ = socket.close(None).await;
+                if bridge_dropped { return }
+            }
+            tokio::time::sleep(std::time::Duration::from_secs(2)).await;
+        }
+    }
+
+    /// Sends snapshots and reads presence until the link fails. Returns true when the bridge was dropped.
+    async fn relay(socket: &mut Socket, updates: &mut watch::Receiver<serde_json::Value>, reported: &Presence, version: &mut u64) -> bool {
+        // The voice service starts empty, so send the current snapshot first.
+        updates.mark_changed();
+        loop {
+            tokio::select! {
+                result = updates.changed() => {
+                    if result.is_err() { return true }
+                    *version = version.saturating_add(1);
+                    let packet = serde_json::json!({"version": *version, "rooms": updates.borrow_and_update().clone()});
+                    if socket.send(Message::text(packet.to_string())).await.is_err() { return false }
+                },
+                message = socket.next() => match message {
+                    Some(Ok(Message::Text(data))) => record_presence(&data, reported),
+                    Some(Ok(Message::Ping(data))) => {
+                        if socket.send(Message::Pong(data)).await.is_err() { return false }
+                    },
+                    Some(Ok(Message::Close(_)) | Err(_)) | None => return false,
+                    _ => {},
+                },
+            }
+        }
+    }
+
+    fn record_presence(data: &str, reported: &Presence) {
+        let Ok(value) = serde_json::from_str::<serde_json::Value>(data) else { return };
+        if let Some(scopes) = value.get("presence")
+            && let Ok(scopes) = serde_json::from_value(scopes.clone())
+            && let Ok(mut reported) = reported.lock()
+        { *reported = scopes; }
     }
 }
