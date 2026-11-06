@@ -1,0 +1,18 @@
+# Normalize line endings
+* text=auto eol=lf
+
+# Binary files
+*.png binary
+*.jpg binary
+*.gif binary
+*.ico binary
+*.mp3 binary
+*.woff binary
+*.woff2 binary
+*.ttf binary
+*.otf binary
+*.wasm binary
+
+# Keep generated files out of stats and diffs
+pnpm-lock.yaml linguist-generated
+client/src/gen/** linguist-generated

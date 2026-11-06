@@ -1,0 +1,13 @@
+{
+  "name": "midnight-machinations",
+  "private": true,
+  "type": "module",
+  "description": "Repository-wide tooling (lint, format, git hooks). Each package keeps its own dependencies.",
+  "engines": {
+    "node": ">=22"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^2.6.6"
+  },
+  "packageManager": "pnpm@11.5.0"
+}

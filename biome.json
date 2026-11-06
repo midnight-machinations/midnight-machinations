@@ -1,0 +1,56 @@
+{
+	"$schema": "./node_modules/@biomejs/biome/configuration_schema.json",
+	"files": {
+		"includes": [
+			"client/src/**",
+			"client/tests/**",
+			"voice/src/**",
+			"voice/test/**",
+			"server/worker/*.ts",
+			"!client/src/gen",
+			"!client/src/resources",
+			"!**/node_modules",
+			"!**/target"
+		],
+		"ignoreUnknown": true
+	},
+	"formatter": {
+		"indentStyle": "space",
+		"indentWidth": 4,
+		"lineEnding": "lf",
+		"lineWidth": 120
+	},
+	"linter": {
+		"rules": {
+			"preset": "recommended",
+			"correctness": {
+				"noUnusedVariables": "warn",
+				"noUnusedImports": "warn",
+				"useExhaustiveDependencies": "warn",
+				"useHookAtTopLevel": "error"
+			},
+			"suspicious": {
+				"noDebugger": "warn",
+				"noEmptyBlockStatements": "warn"
+			},
+			"complexity": {
+				"noExtraBooleanCast": "warn"
+			},
+			"style": {
+				"noNonNullAssertion": "off"
+			}
+		}
+	},
+	"overrides": [
+		{
+			"includes": ["client/tests/**", "voice/test/**"],
+			"linter": {
+				"rules": {
+					"suspicious": {
+						"noTemplateCurlyInString": "off"
+					}
+				}
+			}
+		}
+	]
+}

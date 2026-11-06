@@ -18,6 +18,7 @@ All development commands are tasks in `maskfile.md`. Run `mask --help` from the 
 mask setup          # install dependencies and generate local settings (mask config)
 mask start          # client, server, and voice together
 mask check          # cargo clippy, cargo test, and pnpm build
+mask lint           # biome and clippy suggestions (advisory, never blocks)
 ```
 
 After making changes, run `mask server clippy` / `mask server test` for server changes and `mask client build` for client changes, or `mask check` for both. Use pnpm, never npm, for JavaScript dependencies.

@@ -5,6 +5,16 @@ edition = "2024"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
+# aislop flags unwrap(), todo!(), and unimplemented!() in non-test code, and its quality
+# limits (function length, parameter count, nesting) are the thresholds in /clippy.toml.
+[lints.clippy]
+unwrap_used = "warn"
+todo = "warn"
+unimplemented = "warn"
+too_many_lines = "warn"
+too_many_arguments = "warn"
+excessive_nesting = "warn"
+
 [dependencies]
 # Only channels are needed by the game itself, which keeps it buildable for WebAssembly (see wasm/).
 tokio = { version = "1", features = ["sync"] }

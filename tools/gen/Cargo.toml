@@ -4,6 +4,16 @@ version = "0.1.0"
 edition = "2024"
 description = "Code and data generators for Midnight Machinations"
 
+# aislop flags unwrap(), todo!(), and unimplemented!() in non-test code, and its quality
+# limits (function length, parameter count, nesting) are the thresholds in /clippy.toml.
+[lints.clippy]
+unwrap_used = "warn"
+todo = "warn"
+unimplemented = "warn"
+too_many_lines = "warn"
+too_many_arguments = "warn"
+excessive_nesting = "warn"
+
 [dependencies]
 serde_json = { version = "1.0", features = ["preserve_order"] }
 serde = "1.0"

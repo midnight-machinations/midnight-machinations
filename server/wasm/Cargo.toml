@@ -7,6 +7,16 @@ description = "The game server compiled to WebAssembly for the Cloudflare Worker
 [lib]
 crate-type = ["cdylib"]
 
+# aislop flags unwrap(), todo!(), and unimplemented!() in non-test code, and its quality
+# limits (function length, parameter count, nesting) are the thresholds in /clippy.toml.
+[lints.clippy]
+unwrap_used = "warn"
+todo = "warn"
+unimplemented = "warn"
+too_many_lines = "warn"
+too_many_arguments = "warn"
+excessive_nesting = "warn"
+
 [dependencies]
 mafia_server = { path = ".." }
 getrandom = "0.3"

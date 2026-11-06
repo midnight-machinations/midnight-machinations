@@ -13,6 +13,7 @@ Local settings, including ports, feature flags, and voice credentials, live in `
 ```sh
 set -e
 corepack enable || true
+pnpm install --frozen-lockfile
 (cd client && pnpm install --frozen-lockfile)
 (cd voice && pnpm install --frozen-lockfile)
 (cd server/worker && pnpm install --frozen-lockfile)
@@ -134,6 +135,25 @@ set -e
 (cd server && cargo clippy && cargo test)
 (cd server/proto && cargo clippy)
 (cd client && pnpm build)
+```
+
+## lint
+
+> Biome (TypeScript) and clippy (every Rust crate). Advisory: it reports and never fixes
+
+Biome rules and clippy thresholds are copied from [aislop](https://github.com/scanaislop/aislop) (`biome.json`, `clippy.toml`, and each crate's `[lints.clippy]`). Existing code still has findings, so this is not part of `mask check`.
+
+```sh
+pnpm exec biome check . || true
+for crate in server server/wasm server/proto tools/gen; do (cd "$crate" && cargo clippy); done
+```
+
+## format
+
+> Format TypeScript with Biome (writes files)
+
+```sh
+pnpm exec biome format --write .
 ```
 
 ## deploy
