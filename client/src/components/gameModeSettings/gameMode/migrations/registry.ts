@@ -1,11 +1,11 @@
-import { GameModeStorage, ShareableGameMode } from "..";
-import { Settings } from "../../../../game/localStorage";
-import { ParseResult } from "../parse";
+import type { Settings } from "../../../../game/localStorage";
+import type { GameModeStorage, ShareableGameMode } from "..";
+import type { ParseResult } from "../parse";
 
 /**
  * A migration transforms data from one format to another.
  * Migrations are applied sequentially in the order they are registered.
- * 
+ *
  * Each migration should:
  * - Have a unique ID (timestamp-based to avoid collisions)
  * - Include a matcher to identify if it should run
@@ -15,10 +15,10 @@ import { ParseResult } from "../parse";
 export type Migration<T = any> = {
     id: string;
     description: string;
-    
+
     // Check if this migration applies to the given data
     matches: (json: NonNullable<any>) => boolean;
-    
+
     // Transform the data to the next version
     transform: (json: NonNullable<any>) => ParseResult<T>;
 };
@@ -33,15 +33,12 @@ export type MigrationRegistry = {
 export const MIGRATIONS: MigrationRegistry = {
     GameModeStorage: [],
     ShareableGameMode: [],
-    Settings: []
+    Settings: [],
 };
 
 /**
  * Register a migration for a specific data type.
  */
-export function registerMigration<T extends keyof MigrationRegistry>(
-    type: T,
-    migration: Migration
-): void {
+export function registerMigration<T extends keyof MigrationRegistry>(type: T, migration: Migration): void {
     MIGRATIONS[type].push(migration);
 }

@@ -7,13 +7,15 @@ import { readSource } from "./support.ts";
 
 const sent: any[] = [];
 const moduleExports: any = {};
+const react = { createElement: (type: unknown, props: unknown, ...children: unknown[]) => ({ type, props, children }) };
 const compiled = ts.transpileModule(readSource("components/ChatGroupSelect.tsx"), {
     compilerOptions: { module: ts.ModuleKind.CommonJS, jsx: ts.JsxEmit.React, esModuleInterop: true },
 }).outputText;
 vm.runInNewContext(compiled, {
+    React: react,
     exports: moduleExports,
     require: (name: string) => {
-        if (name === "react") return { createElement: (type: unknown, props: unknown, ...children: unknown[]) => ({ type, props, children }) };
+        if (name === "react") return react;
         if (name === "..") return { sendControllerInput: (input: unknown) => sent.push(input) };
         if (name === "../game/lang") return (key: string) => key;
         if (name === "./Select") return function Select() {};

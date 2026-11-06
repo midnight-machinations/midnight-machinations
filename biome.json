@@ -16,7 +16,8 @@
       "playwright.config.ts",
       "!client/src/gen",
       "!**/node_modules",
-      "!**/target"
+      "!**/target",
+      "!**/*.md"
     ],
     "ignoreUnknown": true
   },

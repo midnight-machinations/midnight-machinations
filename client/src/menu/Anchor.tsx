@@ -1,56 +1,67 @@
-import React, { JSXElementConstructor, ReactElement, useRef, createContext, useContext, useState, useEffect, useMemo, useCallback } from "react";
+import type React from "react";
+import {
+    createContext,
+    type JSXElementConstructor,
+    type ReactElement,
+    useCallback,
+    useContext,
+    useEffect,
+    useMemo,
+    useRef,
+    useState,
+} from "react";
 import "../index.css";
 import "./anchor.css";
-import { switchLanguage } from "../game/lang";
-import GlobalMenu from "./GlobalMenu";
-import { loadSettingsParsed } from "../game/localStorage";
-import LoadingScreen from "./LoadingScreen";
-import { Theme } from "..";
-import Icon from "../components/Icon";
+import type { Theme } from "..";
 import { Button } from "../components/Button";
-import { ChatMessage } from "../components/ChatMessage";
-import WikiCoverCard from "../components/WikiCoverCard";
-import WikiArticle from "../components/WikiArticle";
-import AudioController from "./AudioController";
-import { computeKeywordData } from "../components/StyledText";
+import type { ChatMessage } from "../components/ChatMessage";
 import GameModesEditor from "../components/gameModeSettings/GameModesEditor";
-import HostMenu from "./HostMenu";
-import SettingsMenu from "./Settings";
+import Icon from "../components/Icon";
 import NightMessagePopup from "../components/NightMessagePopup";
 import Popover from "../components/Popover";
+import { computeKeywordData } from "../components/StyledText";
 import { useLobbyOrGameState } from "../components/useHooks";
+import WikiArticle from "../components/WikiArticle";
+import WikiCoverCard from "../components/WikiCoverCard";
+import { switchLanguage } from "../game/lang";
+import { loadSettingsParsed } from "../game/localStorage";
+import AudioController from "./AudioController";
+import GlobalMenu from "./GlobalMenu";
+import HostMenu from "./HostMenu";
+import LoadingScreen from "./LoadingScreen";
+import SettingsMenu from "./Settings";
 
 const MobileContext = createContext<boolean | undefined>(undefined);
 const CtrlPressedContext = createContext<boolean | undefined>(undefined);
 
 export type AnchorController = {
-    reload: () => void,
-    setContent: (content: JSX.Element) => void,
-    contentType: string | JSXElementConstructor<any>,
-    getCoverCard: () => JSX.Element | null,
-    setCoverCard: (content: JSX.Element) => void,
-    clearCoverCard: () => void,
-    pushErrorCard: (error: ErrorData) => void,
-    openGlobalMenu: () => void,
-    closeGlobalMenu: () => void,
-    setFontSize: (fontSize: number) => void,
-    setAccessibilityFontEnabled: (accessibilityFontEnabled: boolean) => void
-}
+    reload: () => void;
+    setContent: (content: JSX.Element) => void;
+    contentType: string | JSXElementConstructor<any>;
+    getCoverCard: () => JSX.Element | null;
+    setCoverCard: (content: JSX.Element) => void;
+    clearCoverCard: () => void;
+    pushErrorCard: (error: ErrorData) => void;
+    openGlobalMenu: () => void;
+    closeGlobalMenu: () => void;
+    setFontSize: (fontSize: number) => void;
+    setAccessibilityFontEnabled: (accessibilityFontEnabled: boolean) => void;
+};
 
 export type TooltipController = {
-    ctrlPressed: boolean,
+    ctrlPressed: boolean;
     open: (
         tooltip: JSX.Element,
         onRender?: (dropdownElement: HTMLElement, sourceElement?: HTMLElement) => void,
-        sourceRef?: React.RefObject<HTMLElement>
-    ) => void,
-    close: () => void,
-}
+        sourceRef?: React.RefObject<HTMLElement>,
+    ) => void;
+    close: () => void;
+};
 
 const AnchorControllerContext = createContext<AnchorController | undefined>(undefined);
 const TooltipContext = createContext<TooltipController | undefined>(undefined);
 
-export { MobileContext, CtrlPressedContext, AnchorControllerContext, TooltipContext };
+export { AnchorControllerContext, CtrlPressedContext, MobileContext, TooltipContext };
 
 const MOBILE_MAX_WIDTH_PX = 600;
 
@@ -61,52 +72,60 @@ let ANCHOR_CONTROLLER: AnchorController | null = null;
 
 export { ANCHOR_CONTROLLER };
 
-export default function Anchor(props: Readonly<{
-    children: JSX.Element
-    onMount: (anchorController: AnchorController) => void,
-}>): ReactElement {
+export default function Anchor(
+    props: Readonly<{
+        children: JSX.Element;
+        onMount: (anchorController: AnchorController) => void;
+    }>,
+): ReactElement {
     const [mobile, setMobile] = useState<boolean>(false);
 
     // Tooltip stuff
     const [isCtrlPressed, setIsCtrlPressed] = useState<boolean>(false);
     const [tooltip, setTooltip] = useState<JSX.Element>(<></>);
-    const [tooltipOnRender, setOnRender] = useState<(dropdownElement: HTMLElement, sourceElement?: HTMLElement) => void>();
+    const [tooltipOnRender, setOnRender] =
+        useState<(dropdownElement: HTMLElement, sourceElement?: HTMLElement) => void>();
     const [tooltipSourceRef, setSourceRef] = useState<React.RefObject<HTMLElement>>();
     const [tooltipLastOpened, setLastOpened] = useState<number>(0);
     const [now, setNow] = useState(Date.now());
 
-    const showTooltip = useMemo(() => !mobile && (now < tooltipLastOpened + 10000), [now, tooltipLastOpened, mobile]);
+    const showTooltip = useMemo(() => !mobile && now < tooltipLastOpened + 10000, [now, tooltipLastOpened, mobile]);
 
     useEffect(() => {
         const interval = setInterval(() => setNow(Date.now()), 100);
         return () => clearInterval(interval);
     }, []);
 
-    const openTooltip = useCallback((
-        tooltip: JSX.Element,
-        onRender?: (dropdownElement: HTMLElement, sourceElement?: HTMLElement) => void,
-        sourceRef?: React.RefObject<HTMLElement>
-    ) => {
-        setTooltip(tooltip)
-        // `onRender` is itself a function. Wrap it so React stores the callback
-        // instead of treating it as a state updater and invoking it with the
-        // previous callback value.
-        setOnRender(() => onRender)
-        setSourceRef(sourceRef)
-        setLastOpened(Date.now())
-    }, [])
+    const openTooltip = useCallback(
+        (
+            tooltip: JSX.Element,
+            onRender?: (dropdownElement: HTMLElement, sourceElement?: HTMLElement) => void,
+            sourceRef?: React.RefObject<HTMLElement>,
+        ) => {
+            setTooltip(tooltip);
+            // `onRender` is itself a function. Wrap it so React stores the callback
+            // instead of treating it as a state updater and invoking it with the
+            // previous callback value.
+            setOnRender(() => onRender);
+            setSourceRef(sourceRef);
+            setLastOpened(Date.now());
+        },
+        [],
+    );
 
     const toolTipContext = useMemo(() => {
-        return { ctrlPressed: isCtrlPressed, open: openTooltip, close: () => setLastOpened(0) }
-    }, [isCtrlPressed, openTooltip])
+        return { ctrlPressed: isCtrlPressed, open: openTooltip, close: () => setLastOpened(0) };
+    }, [isCtrlPressed, openTooltip]);
 
     useEffect(() => {
-        const onResize = () => {setMobile(window.innerWidth <= MOBILE_MAX_WIDTH_PX)}
+        const onResize = () => {
+            setMobile(window.innerWidth <= MOBILE_MAX_WIDTH_PX);
+        };
         onResize();
 
         window.addEventListener("resize", onResize);
         return () => window.removeEventListener("resize", onResize);
-    }, [])
+    }, []);
 
     useEffect(() => {
         const onKeyDown = (event: KeyboardEvent) => {
@@ -129,68 +148,69 @@ export default function Anchor(props: Readonly<{
             window.removeEventListener("keyup", onKeyUp);
             window.removeEventListener("blur", onBlur);
         };
-    }, [])
+    }, []);
 
     const [children, setChildren] = useState<JSX.Element>(props.children);
     const [setChildrenCallbacks, setSetChildrenCallbacks] = useState<(() => void)[]>([]);
 
     useEffect(() => {
         for (const callback of setChildrenCallbacks) {
-            callback()
+            callback();
         }
         if (setChildrenCallbacks.length !== 0) {
-            setSetChildrenCallbacks([])
+            setSetChildrenCallbacks([]);
         }
-    }, [setChildrenCallbacks])
+    }, [setChildrenCallbacks]);
 
     const [coverCard, setCoverCard] = useState<JSX.Element | null>(null);
     const [coverCardTheme, setCoverCardTheme] = useState<Theme | null>(null);
-    const [setCoverCardCallbacks, setSetCoverCardCallbacks] = useState<(() => void)[]>([])
+    const [setCoverCardCallbacks, setSetCoverCardCallbacks] = useState<(() => void)[]>([]);
 
     useEffect(() => {
         for (const callback of setCoverCardCallbacks) {
-            callback()
+            callback();
         }
         if (setCoverCardCallbacks.length !== 0) {
-            setSetCoverCardCallbacks([])
+            setSetCoverCardCallbacks([]);
         }
-    }, [setCoverCardCallbacks])
+    }, [setCoverCardCallbacks]);
 
     const [errorCard, setErrorCard] = useState<JSX.Element | null>(null);
-    const [setErrorCardCallbacks, setSetErrorCardCallbacks] = useState<(() => void)[]>([])
+    const [setErrorCardCallbacks, setSetErrorCardCallbacks] = useState<(() => void)[]>([]);
 
     useEffect(() => {
         for (const callback of setErrorCardCallbacks) {
-            callback()
+            callback();
         }
         if (setErrorCardCallbacks.length !== 0) {
-            setSetErrorCardCallbacks([])
+            setSetErrorCardCallbacks([]);
         }
-    }, [setErrorCardCallbacks])
+    }, [setErrorCardCallbacks]);
 
     const [globalMenuOpen, setGlobalMenuOpen] = useState<boolean>(false);
 
-
     const setFontSize = (n: number) => {
         document.documentElement.style.fontSize = `${n}em`;
-    }
+    };
     const setAccessibilityFontEnabled = (enabled: boolean) => {
+        const getFont = (font: string, enabled: boolean) => (enabled === true ? "game-accessible-font" : font);
 
-        const getFont = (font: string, enabled: boolean) => enabled === true ? 'game-accessible-font' : font;
+        const iconFactor = enabled ? "1.2" : "1";
 
-        const iconFactor = enabled ? '1.2' : '1';
-
-        document.documentElement.style.setProperty('--game-font', getFont('computer-font', enabled));
-        document.documentElement.style.setProperty('--kira-font', getFont('game-kira-font', enabled));
-        document.documentElement.style.setProperty('--spiral-font', getFont('game-spiral-font', enabled));
-        document.documentElement.style.setProperty('--title-font', getFont('game-title-font', enabled));
-        document.documentElement.style.setProperty('--computer-font', getFont('computer-font', enabled));
-        document.documentElement.style.setProperty('--legible-computer-font', getFont('legible-computer-font', enabled));
-        document.documentElement.style.setProperty('--icon-factor', iconFactor);
-    }
+        document.documentElement.style.setProperty("--game-font", getFont("computer-font", enabled));
+        document.documentElement.style.setProperty("--kira-font", getFont("game-kira-font", enabled));
+        document.documentElement.style.setProperty("--spiral-font", getFont("game-spiral-font", enabled));
+        document.documentElement.style.setProperty("--title-font", getFont("game-title-font", enabled));
+        document.documentElement.style.setProperty("--computer-font", getFont("computer-font", enabled));
+        document.documentElement.style.setProperty(
+            "--legible-computer-font",
+            getFont("legible-computer-font", enabled),
+        );
+        document.documentElement.style.setProperty("--icon-factor", iconFactor);
+    };
     const setScanlineIntensity = (intensity: number) => {
-        document.documentElement.style.setProperty('--scanline-opacity', `${intensity / 100 * 0.2}`);
-    }
+        document.documentElement.style.setProperty("--scanline-opacity", `${(intensity / 100) * 0.2}`);
+    };
 
     // Load settings
     useEffect(() => {
@@ -200,147 +220,150 @@ export default function Anchor(props: Readonly<{
         setFontSize(settings.fontSize);
         setAccessibilityFontEnabled(settings.accessibilityFont);
         setScanlineIntensity(settings.scanlineIntensity);
-        switchLanguage(settings.language)
-        computeKeywordData()
-    }, [])
+        switchLanguage(settings.language);
+        computeKeywordData();
+    }, []);
 
     const reload = useCallback(() => {
-        setSetChildrenCallbacks(setChildrenCallbacks =>
+        setSetChildrenCallbacks((setChildrenCallbacks) =>
             setChildrenCallbacks.concat(() => {
                 setChildren(() => children);
-            }
-        ));
-        setChildren(<LoadingScreen type="default"/>);
+            }),
+        );
+        setChildren(<LoadingScreen type="default" />);
 
-        setSetCoverCardCallbacks(setCoverCardCallbacks => 
+        setSetCoverCardCallbacks((setCoverCardCallbacks) =>
             setCoverCardCallbacks.concat(() => {
-                setCoverCard(() => coverCard)
-            }
-        ));
-        setCoverCard(null)
+                setCoverCard(() => coverCard);
+            }),
+        );
+        setCoverCard(null);
 
-        setSetErrorCardCallbacks(setErrorCardCallbacks =>
+        setSetErrorCardCallbacks((setErrorCardCallbacks) =>
             setErrorCardCallbacks.concat(() => {
-                setErrorCard(() => errorCard)
-            })
-        )
-        setErrorCard(null)
-    }, [children, coverCard, errorCard])
+                setErrorCard(() => errorCard);
+            }),
+        );
+        setErrorCard(null);
+    }, [children, coverCard, errorCard]);
 
-    const anchorController = useMemo(() => ({
-        reload,
-        setContent: setChildren,
-        contentType: children.type,
-        getCoverCard: ()=>{
-            return coverCard
-        },
-        setCoverCard: (coverCard: JSX.Element, callback?: () => void) => {
-            let coverCardTheme: Theme | null = null;
-            if (coverCard.type === WikiCoverCard || coverCard.type === WikiArticle) {
-                coverCardTheme = "wiki-menu-colors"
-            }
-            if (coverCard.type === GameModesEditor || coverCard.type === NightMessagePopup) {
-                coverCardTheme = "chat-menu-colors"
-            }
-            if (coverCard.type === HostMenu || coverCard.type === SettingsMenu) {
-                coverCardTheme = "graveyard-menu-colors"
-            }
+    const anchorController = useMemo(
+        () => ({
+            reload,
+            setContent: setChildren,
+            contentType: children.type,
+            getCoverCard: () => {
+                return coverCard;
+            },
+            setCoverCard: (coverCard: JSX.Element, callback?: () => void) => {
+                let coverCardTheme: Theme | null = null;
+                if (coverCard.type === WikiCoverCard || coverCard.type === WikiArticle) {
+                    coverCardTheme = "wiki-menu-colors";
+                }
+                if (coverCard.type === GameModesEditor || coverCard.type === NightMessagePopup) {
+                    coverCardTheme = "chat-menu-colors";
+                }
+                if (coverCard.type === HostMenu || coverCard.type === SettingsMenu) {
+                    coverCardTheme = "graveyard-menu-colors";
+                }
 
-            if (callback) {
-                setSetCoverCardCallbacks(setCoverCardCallbacks => 
-                    setCoverCardCallbacks.concat(callback)
-                );
-            }
-            setCoverCard(coverCard)
-            setCoverCardTheme(coverCardTheme);
-        },
-        pushErrorCard: (error: ErrorData) => {
-            setErrorCard(<ErrorCard
-                onClose={() => setErrorCard(null)}
-                error={error}
-            />);
-        },
-        clearCoverCard: () => {
-            setCoverCard(null);
-            setCoverCardTheme(null);
-        },
-        openGlobalMenu: () => setGlobalMenuOpen(true),
-        closeGlobalMenu: () => setGlobalMenuOpen(false),
-        setFontSize: (fontSize: number) => {
-            setFontSize(fontSize);
-        },
-        setAccessibilityFontEnabled: (enabled: boolean) => {
-            setAccessibilityFontEnabled(enabled);
-        }
-    }), [reload, children, coverCard])
+                if (callback) {
+                    setSetCoverCardCallbacks((setCoverCardCallbacks) => setCoverCardCallbacks.concat(callback));
+                }
+                setCoverCard(coverCard);
+                setCoverCardTheme(coverCardTheme);
+            },
+            pushErrorCard: (error: ErrorData) => {
+                setErrorCard(<ErrorCard onClose={() => setErrorCard(null)} error={error} />);
+            },
+            clearCoverCard: () => {
+                setCoverCard(null);
+                setCoverCardTheme(null);
+            },
+            openGlobalMenu: () => setGlobalMenuOpen(true),
+            closeGlobalMenu: () => setGlobalMenuOpen(false),
+            setFontSize: (fontSize: number) => {
+                setFontSize(fontSize);
+            },
+            setAccessibilityFontEnabled: (enabled: boolean) => {
+                setAccessibilityFontEnabled(enabled);
+            },
+        }),
+        [reload, children, coverCard],
+    );
 
     useEffect(() => {
-        ANCHOR_CONTROLLER = anchorController
-    }, [anchorController])
+        ANCHOR_CONTROLLER = anchorController;
+    }, [anchorController]);
 
     useEffect(() => {
         props.onMount(anchorController);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [props])
-    
-    const stateType = useLobbyOrGameState(
-        state => state.stateType,
-        ["acceptJoin", "rejectJoin", "rejectStart", "gameInitializationComplete", "startGame", "backToLobby"]
-    )!;
-    
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [props]);
 
-    return <MobileContext.Provider value={mobile} >
-        <AnchorControllerContext.Provider value={anchorController}>
-            <TooltipContext.Provider value={toolTipContext}>
-                <div className="anchor">
-                    <Button className={"global-menu-button " + (stateType === "game" ? "" : "flush")}
-                        onClick={() => {
-                            if (!globalMenuOpen) {
-                                setGlobalMenuOpen(true)
-                            }
-                        }}
-                    >
-                        <Icon>menu</Icon>
-                    </Button>
-                    {globalMenuOpen && <GlobalMenu />}
-                    {children}
-                    {coverCard && <CoverCard 
-                        theme={coverCardTheme}
-                    >{coverCard}</CoverCard>}
-                    {errorCard}
-                    <Popover
-                        open={showTooltip}
-                        setOpenOrClosed={(open) => {
-                            if (open) {
-                                setLastOpened(Date.now())
-                            } else {
-                                setLastOpened(0)
-                            }
-                        }}
-                        anchorForPositionRef={tooltipSourceRef}
-                        onRender={tooltipOnRender}
-                        className="wiki-article-tooltip-popover"
-                    >
-                        {tooltip}
-                    </Popover>
-                </div>
-            </TooltipContext.Provider>
-        </AnchorControllerContext.Provider>
-    </MobileContext.Provider>
+    const stateType = useLobbyOrGameState(
+        (state) => state.stateType,
+        ["acceptJoin", "rejectJoin", "rejectStart", "gameInitializationComplete", "startGame", "backToLobby"],
+    )!;
+
+    return (
+        <MobileContext.Provider value={mobile}>
+            <AnchorControllerContext.Provider value={anchorController}>
+                <TooltipContext.Provider value={toolTipContext}>
+                    <div className="anchor">
+                        <Button
+                            className={"global-menu-button " + (stateType === "game" ? "" : "flush")}
+                            onClick={() => {
+                                if (!globalMenuOpen) {
+                                    setGlobalMenuOpen(true);
+                                }
+                            }}
+                        >
+                            <Icon>menu</Icon>
+                        </Button>
+                        {globalMenuOpen && <GlobalMenu />}
+                        {children}
+                        {coverCard && <CoverCard theme={coverCardTheme}>{coverCard}</CoverCard>}
+                        {errorCard}
+                        <Popover
+                            open={showTooltip}
+                            setOpenOrClosed={(open) => {
+                                if (open) {
+                                    setLastOpened(Date.now());
+                                } else {
+                                    setLastOpened(0);
+                                }
+                            }}
+                            anchorForPositionRef={tooltipSourceRef}
+                            onRender={tooltipOnRender}
+                            className="wiki-article-tooltip-popover"
+                        >
+                            {tooltip}
+                        </Popover>
+                    </div>
+                </TooltipContext.Provider>
+            </AnchorControllerContext.Provider>
+        </MobileContext.Provider>
+    );
 }
 
-function CoverCard(props: Readonly<{
-    children: React.ReactNode,
-    theme: Theme | null
-}>): ReactElement {
+function CoverCard(
+    props: Readonly<{
+        children: React.ReactNode;
+        theme: Theme | null;
+    }>,
+): ReactElement {
     const ref = useRef<HTMLDivElement>(null);
     const anchorController = useContext(AnchorControllerContext)!;
 
-    const escFunction = useCallback((event: KeyboardEvent) =>{
-        if(event.key === "Escape") {
-            anchorController.clearCoverCard();
-        }
-    }, [anchorController]);
+    const escFunction = useCallback(
+        (event: KeyboardEvent) => {
+            if (event.key === "Escape") {
+                anchorController.clearCoverCard();
+            }
+        },
+        [anchorController],
+    );
     useEffect(() => {
         document.addEventListener("keydown", escFunction, false);
         return () => {
@@ -350,71 +373,73 @@ function CoverCard(props: Readonly<{
 
     const [mouseDownOnElement, setMouseDownOnElement] = useState(false);
 
-    return <div 
-        className={`anchor-cover-card-background-cover ${props.theme ?? ""}`}
-        // Onclick will trigger even when the click is started on a child element
-        // This makes sure it starts and ends on the actual background cover.
-        onMouseDown={e => {
-            if (e.target === e.currentTarget) {
-                setMouseDownOnElement(true)
-            }
-        }}
-        onMouseUp={e => {
-            if (mouseDownOnElement && e.target === e.currentTarget) {
-                anchorController.clearCoverCard()
-            }
-            setMouseDownOnElement(false)
-        }}
-        ref={ref}
-    >
-        <div className="anchor-cover-card">
-            <Button className="close-button flush" onClick={anchorController.clearCoverCard}>
-                <Icon>close</Icon>
-            </Button>
-            <div className="anchor-cover-card-content">
-                {props.children}
+    return (
+        <div
+            className={`anchor-cover-card-background-cover ${props.theme ?? ""}`}
+            // Onclick will trigger even when the click is started on a child element
+            // This makes sure it starts and ends on the actual background cover.
+            onMouseDown={(e) => {
+                if (e.target === e.currentTarget) {
+                    setMouseDownOnElement(true);
+                }
+            }}
+            onMouseUp={(e) => {
+                if (mouseDownOnElement && e.target === e.currentTarget) {
+                    anchorController.clearCoverCard();
+                }
+                setMouseDownOnElement(false);
+            }}
+            ref={ref}
+        >
+            <div className="anchor-cover-card">
+                <Button className="close-button flush" onClick={anchorController.clearCoverCard}>
+                    <Icon>close</Icon>
+                </Button>
+                <div className="anchor-cover-card-content">{props.children}</div>
             </div>
         </div>
-    </div>
+    );
 }
-
 
 export type ErrorData = {
-    title: string,
-    body: string
+    title: string;
+    body: string;
+};
+
+function ErrorCard(
+    props: Readonly<{
+        error: ErrorData;
+        onClose: () => void;
+    }>,
+) {
+    return (
+        <div className="error-card role-specific-colors" onClick={() => props.onClose()}>
+            <header>
+                {props.error.title}
+                <button className="close flush">✕</button>
+            </header>
+            <div>{props.error.body}</div>
+        </div>
+    );
 }
 
-function ErrorCard(props: Readonly<{
-    error: ErrorData,
-    onClose: () => void
-}>) {
-    return <div className="error-card role-specific-colors" onClick={() => props.onClose()}>
-        <header>
-            {props.error.title}
-            <button className="close flush">✕</button>
-        </header>
-        <div>{props.error.body}</div>
-    </div>
-}
-
-
-export type AudioFile = 
-    "church_bell.mp3" | 
-    "night_bell.mp3" |
-    "gavel.mp3" | 
-    "alarm.mp3" | 
-    "vine_boom.mp3" | 
-    "sniper_shot.mp3" | 
-    "normal_message.mp3" | 
-    "whisper_broadcast.mp3" | 
-    "start_game.mp3";
+export type AudioFile =
+    | "church_bell.mp3"
+    | "night_bell.mp3"
+    | "gavel.mp3"
+    | "alarm.mp3"
+    | "vine_boom.mp3"
+    | "sniper_shot.mp3"
+    | "normal_message.mp3"
+    | "whisper_broadcast.mp3"
+    | "start_game.mp3";
 
 export type AudioFilePath = `audio/${AudioFile}`;
 
 export function chatMessageToAudio(msg: ChatMessage): AudioFilePath | null {
-    let file: AudioFile|null = null;
+    let file: AudioFile | null = null;
 
-    switch(msg.variant.type){
+    switch (msg.variant.type) {
         case "normal":
         case "voted":
             file = "normal_message.mp3";
@@ -422,24 +447,24 @@ export function chatMessageToAudio(msg: ChatMessage): AudioFilePath | null {
         case "broadcastWhisper":
             file = "whisper_broadcast.mp3";
             break;
-        case "playerDied": 
+        case "playerDied":
             file = "church_bell.mp3";
             break;
-        case "deputyKilled": 
+        case "deputyKilled":
             file = "sniper_shot.mp3";
             break;
         case "phaseChange":
-            if(msg.variant.phase.type === "testimony"){
-                file = "gavel.mp3"
-            }else if(msg.variant.phase.type === "night") {
-                file = "night_bell.mp3"
+            if (msg.variant.phase.type === "testimony") {
+                file = "gavel.mp3";
+            } else if (msg.variant.phase.type === "night") {
+                file = "night_bell.mp3";
             }
             break;
     }
 
-    if(file){
+    if (file) {
         return `audio/${file}`;
-    }else{
-        return null
+    } else {
+        return null;
     }
 }

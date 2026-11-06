@@ -6,35 +6,65 @@ import ts from "typescript";
 import { readSource, withoutImports } from "./support.ts";
 
 const keybind: any = {};
-vm.runInNewContext(ts.transpileModule(readSource("voice/keybind.ts"), {
-    compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022 },
-}).outputText, { exports: keybind });
-const key = (code: string, modifiers: Record<string, unknown> = {}) => ({ code, ctrlKey: false, altKey: false, shiftKey: false, metaKey: false, ...modifiers });
+vm.runInNewContext(
+    ts.transpileModule(readSource("voice/keybind.ts"), {
+        compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022 },
+    }).outputText,
+    { exports: keybind },
+);
+const key = (code: string, modifiers: Record<string, unknown> = {}) => ({
+    code,
+    ctrlKey: false,
+    altKey: false,
+    shiftKey: false,
+    metaKey: false,
+    ...modifiers,
+});
 
 function setup(mode: string, binding: string) {
     const listeners = new Map<string, (event?: unknown) => void>();
     const saved = new Map([["voiceSettings", JSON.stringify({ mode, key: binding })]]);
     class Element {
         editable = false;
-        closest() { return this.editable ? this : null; }
+        closest() {
+            return this.editable ? this : null;
+        }
     }
     const context: any = {
         ...keybind,
-        window: { addEventListener: (type: string, handler: (event?: unknown) => void) => listeners.set(type, handler), setInterval() {} },
-        document: { addEventListener() {} }, Element,
-        localStorage: { getItem: (name: string) => saved.get(name), setItem: (name: string, value: string) => saved.set(name, value) },
+        window: {
+            addEventListener: (type: string, handler: (event?: unknown) => void) => listeners.set(type, handler),
+            setInterval() {},
+        },
+        document: { addEventListener() {} },
+        Element,
+        localStorage: {
+            getItem: (name: string) => saved.get(name),
+            setItem: (name: string, value: string) => saved.set(name, value),
+        },
     };
     vm.createContext(context);
     const source = withoutImports(readSource("voice/voiceManager.ts"))
         .replace("export class VoiceManager", "class VoiceManager")
         .replace("export const VOICE = new VoiceManager();", "globalThis.VoiceManager = VoiceManager;");
-    vm.runInContext(ts.transpileModule(source, { compilerOptions: { target: ts.ScriptTarget.ES2022 } }).outputText, context);
+    vm.runInContext(
+        ts.transpileModule(source, { compilerOptions: { target: ts.ScriptTarget.ES2022 } }).outputText,
+        context,
+    );
     const voice = new context.VoiceManager();
     voice.status = "connected";
     voice.microphoneEnabled = true;
     voice.session = { sendGroups: ["lobby"], forcedSilenced: false };
     function dispatch(type: string, code: string, modifiers: Record<string, unknown> = {}) {
-        const event = { ...key(code, modifiers), target: new Element(), repeat: false, isComposing: false, defaultPrevented: false, preventDefault() {}, ...modifiers };
+        const event = {
+            ...key(code, modifiers),
+            target: new Element(),
+            repeat: false,
+            isComposing: false,
+            defaultPrevented: false,
+            preventDefault() {},
+            ...modifiers,
+        };
         listeners.get(type)?.(event);
     }
     return { voice, dispatch, listeners, context };

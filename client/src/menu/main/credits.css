@@ -1,19 +1,19 @@
-.credits-menu{
+.credits-menu {
     margin-top: 1rem;
     overflow-y: auto;
     height: 100%;
 }
-.credits-menu > div{
+.credits-menu > div {
     position: relative;
     display: flex;
     flex-direction: column;
 }
-.credits-menu > div > button{
+.credits-menu > div > button {
     width: min-content;
     position: sticky;
 }
 .credits-menu > div > h3 {
-    margin-bottom: .5rem;
+    margin-bottom: 0.5rem;
     margin-top: 2rem;
 }
 .credits-menu > div > p {

@@ -21,7 +21,8 @@
 .phase-times-selector > .phase-times > div > span {
     white-space: pre;
 }
-.phase-times-selector > .phase-times > div > input, .phase-time-input {
+.phase-times-selector > .phase-times > div > input,
+.phase-time-input {
     width: 3rem;
     margin: 0;
     padding: 0;

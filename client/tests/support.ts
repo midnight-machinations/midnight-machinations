@@ -8,4 +8,4 @@ const sourceDirectory = path.join(path.dirname(fileURLToPath(import.meta.url)), 
 export const readSource = (file: string): string => fs.readFileSync(path.join(sourceDirectory, file), "utf8");
 
 /** Drops ES import lines so a module can run in a sandbox whose context already provides them. */
-export const withoutImports = (source: string): string => source.replace(/^import .*\r?\n/gm, "");
+export const withoutImports = (source: string): string => source.replace(/^import\b[^;]*;?[^\S\r\n]*\r?\n/gm, "");

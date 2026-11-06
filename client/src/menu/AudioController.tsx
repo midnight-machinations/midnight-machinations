@@ -1,8 +1,8 @@
-import { AudioFilePath } from "./Anchor";
+import type { AudioFilePath } from "./Anchor";
 
 export default class AudioController {
     private static audio = new Audio();
-    private static queue: string[] = []
+    private static queue: string[] = [];
     private static autoplay: boolean = true;
     private static currentlyPlaying: boolean = false;
 
@@ -13,7 +13,7 @@ export default class AudioController {
     public static unpauseQueue() {
         if (!this.currentlyPlaying) {
             this.autoplay = true;
-            this.playQueue()
+            this.playQueue();
         }
     }
     public static pauseQueue() {
@@ -31,20 +31,22 @@ export default class AudioController {
     }
 
     private static playQueue() {
-        if(this.queue.length > 0) {
+        if (this.queue.length > 0) {
             this.currentlyPlaying = true;
             console.log(`Audio: Playing ${this.queue[0]}`);
-            this.playFile(this.queue[0], () => {
-                this.queue = this.queue.slice(1)
-                this.currentlyPlaying = false;
-                if (this.autoplay)
-                    this.playQueue();
-            }, () => {
-                this.queue = this.queue.slice(1)
-                this.currentlyPlaying = false;
-                if (this.autoplay)
-                    this.playQueue();
-            });
+            this.playFile(
+                this.queue[0],
+                () => {
+                    this.queue = this.queue.slice(1);
+                    this.currentlyPlaying = false;
+                    if (this.autoplay) this.playQueue();
+                },
+                () => {
+                    this.queue = this.queue.slice(1);
+                    this.currentlyPlaying = false;
+                    if (this.autoplay) this.playQueue();
+                },
+            );
         }
     }
     private static playFile(src: string, onEnd?: () => void, onError?: () => void) {
@@ -53,24 +55,26 @@ export default class AudioController {
         this.audio.load();
 
         const onEnded = () => {
-            if(onEnd !== undefined) onEnd();
+            if (onEnd !== undefined) onEnd();
             this.audio.removeEventListener("ended", onEnded);
-        }
+        };
 
-        this.playAudio(()=>{
-            if(onError !== undefined) onError();
+        this.playAudio(() => {
+            if (onError !== undefined) onError();
         });
         this.audio.addEventListener("ended", onEnded);
     }
     private static playAudio(onError?: () => void) {
-        this.audio.play()
+        this.audio
+            .play()
             .then(() => {
                 this.audio.currentTime = 0;
                 this.audio.playbackRate = 1;
-            }).catch((error) => {
+            })
+            .catch((error) => {
                 console.log("Audio failed to play: " + error);
-                if(onError !== undefined) onError();
-            }); 
+                if (onError !== undefined) onError();
+            });
     }
 }
 

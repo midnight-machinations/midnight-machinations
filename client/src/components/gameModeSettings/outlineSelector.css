@@ -5,9 +5,9 @@
 }
 .role-picker-option {
     display: block;
-    margin: .13rem;
+    margin: 0.13rem;
     background-color: var(--primary-color);
-    border: .13rem solid var(--primary-border-color);
+    border: 0.13rem solid var(--primary-border-color);
     border-radius: 0;
     border-bottom-color: var(--primary-border-shadow-color);
     border-right-color: var(--primary-border-shadow-color);
@@ -29,28 +29,28 @@
     border-radius: 0;
 }
 .role-picker select:first-of-type {
-    border-top-left-radius: .4rem;
-    border-bottom-left-radius: .4rem;
+    border-top-left-radius: 0.4rem;
+    border-bottom-left-radius: 0.4rem;
 }
 .role-picker select:last-of-type {
-    border-top-right-radius: .4rem;
-    border-bottom-right-radius: .4rem;
+    border-top-right-radius: 0.4rem;
+    border-bottom-right-radius: 0.4rem;
 }
 .role-list-setter-list {
     background-color: var(--primary-color);
-    border: .13rem solid var(--primary-border-color);
+    border: 0.13rem solid var(--primary-border-color);
     border-radius: 0;
     border-top-color: var(--background-border-shadow-color);
     border-left-color: var(--background-border-shadow-color);
     margin: 0 0.5rem 0.5rem 0.5rem;
 }
-.role-list-setter-list>div:nth-of-type(even) {
+.role-list-setter-list > div:nth-of-type(even) {
     background-color: var(--secondary-color);
 }
 .role-list-setter-outline-div {
-    padding: 0 .25rem;
-    align-items:center;
-    gap: .25rem;
+    padding: 0 0.25rem;
+    align-items: center;
+    gap: 0.25rem;
     display: flex;
     overflow-x: auto;
 }
@@ -62,8 +62,8 @@
     min-width: max-content;
     overflow-y: auto;
 
-    padding: .13rem .13rem;
+    padding: 0.13rem 0.13rem;
     background-color: var(--secondary-color);
     border-radius: 0;
-    border: .13rem solid var(--primary-border-color);
+    border: 0.13rem solid var(--primary-border-color);
 }

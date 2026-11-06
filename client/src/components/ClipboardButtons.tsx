@@ -1,14 +1,15 @@
-import React, { isValidElement, ReactElement, useContext } from "react";
-import { AnchorControllerContext, ErrorData } from "../menu/Anchor";
+import type React from "react";
+import { isValidElement, type ReactElement, useContext } from "react";
 import translate from "../game/lang";
-import { Button, ButtonProps } from "./Button";
+import { AnchorControllerContext, type ErrorData } from "../menu/Anchor";
+import { Button, type ButtonProps } from "./Button";
 import Icon from "./Icon";
 
 type CopyButtonResult = boolean;
-type CopyButtonProps = ButtonProps<CopyButtonResult> & { onClick?: undefined, ref?: undefined, text: string };
+type CopyButtonProps = ButtonProps<CopyButtonResult> & { onClick?: undefined; ref?: undefined; text: string };
 
 function reconcileCopyProps(props: CopyButtonProps): ButtonProps<CopyButtonResult> {
-    let newProps: Partial<CopyButtonProps> = {...props};
+    const newProps: Partial<CopyButtonProps> = { ...props };
     delete newProps.onClick;
     delete newProps.ref;
     newProps.text = undefined;
@@ -21,29 +22,32 @@ export function CopyButton(props: CopyButtonProps): ReactElement {
     let pressedChildren = props.pressedChildren;
     const children = props.children ?? <Icon>content_copy</Icon>;
     if (pressedChildren === undefined && isValidElement(children) && children.type === Icon) {
-        pressedChildren = success => success ? <Icon>done</Icon> : <Icon>warning</Icon>;
+        pressedChildren = (success) => (success ? <Icon>done</Icon> : <Icon>warning</Icon>);
     }
     const anchorController = useContext(AnchorControllerContext)!;
 
-    return <Button {...reconcileCopyProps(props)} 
-        onClick={() => writeToClipboard(props.text, anchorController.pushErrorCard)}
-        pressedText={success => translate("notification.clipboard.write." + (success ? "success" : "failure"))}
-        pressedChildren={pressedChildren}
-    >
-        {children ?? <Icon>content_copy</Icon>}
-    </Button>
+    return (
+        <Button
+            {...reconcileCopyProps(props)}
+            onClick={() => writeToClipboard(props.text, anchorController.pushErrorCard)}
+            pressedText={(success) => translate("notification.clipboard.write." + (success ? "success" : "failure"))}
+            pressedChildren={pressedChildren}
+        >
+            {children ?? <Icon>content_copy</Icon>}
+        </Button>
+    );
 }
 
 type PasteButtonResult<H> = "success" | "clipboardError" | H;
-type PasteButtonProps<H> = ButtonProps<PasteButtonResult<H>> & { 
-    onClick?: undefined, 
-    onClipboardRead?: (text: string) => (void | "success" | H)
-    pressedText?: never,
-    failureText?: (result: H) => React.ReactNode
+type PasteButtonProps<H> = ButtonProps<PasteButtonResult<H>> & {
+    onClick?: undefined;
+    onClipboardRead?: (text: string) => void | "success" | H;
+    pressedText?: never;
+    failureText?: (result: H) => React.ReactNode;
 };
 
 function reconcilePasteProps<H>(props: PasteButtonProps<H>): ButtonProps<PasteButtonResult<H>> {
-    const newProps: Partial<PasteButtonProps<H>> = {...props};
+    const newProps: Partial<PasteButtonProps<H>> = { ...props };
     delete newProps.onClick;
     delete newProps.onClipboardRead;
     delete newProps.failureText;
@@ -55,33 +59,38 @@ export function PasteButton<H>(props: PasteButtonProps<H>): ReactElement {
     let pressedChildren = props.pressedChildren;
     const children = props.children ?? <Icon>content_paste</Icon>;
     if (pressedChildren === undefined && isValidElement(children) && children.type === Icon) {
-        pressedChildren = success => success === "success"  ? <Icon>done</Icon> : <Icon>warning</Icon>;
+        pressedChildren = (success) => (success === "success" ? <Icon>done</Icon> : <Icon>warning</Icon>);
     }
     const anchorController = useContext(AnchorControllerContext)!;
-    
-    return <Button {...reconcilePasteProps(props)}
-        onClick={() => readFromClipboard(anchorController.pushErrorCard).then(text => {
-            if (text === null) return "clipboardError";
-            if (props.onClipboardRead === undefined) return "success";
 
-            return props.onClipboardRead(text) ?? "success";
-        })}
-        pressedText={result => {
-            if (result === "success" || (typeof result === "boolean" && result)) {
-                return translate("notification.clipboard.read.success")
+    return (
+        <Button
+            {...reconcilePasteProps(props)}
+            onClick={() =>
+                readFromClipboard(anchorController.pushErrorCard).then((text) => {
+                    if (text === null) return "clipboardError";
+                    if (props.onClipboardRead === undefined) return "success";
+
+                    return props.onClipboardRead(text) ?? "success";
+                })
             }
-            if (result === "clipboardError") {
-                return translate("notification.clipboard.read.failure")
-            }
-            if (props.failureText === undefined) {
-                return translate("notification.clipboard.handleRead.failure")
-            }
-            return props.failureText(result)
-        }}
-        pressedChildren={pressedChildren}
-    >
-        {children}
-    </Button>
+            pressedText={(result) => {
+                if (result === "success" || (typeof result === "boolean" && result)) {
+                    return translate("notification.clipboard.read.success");
+                }
+                if (result === "clipboardError") {
+                    return translate("notification.clipboard.read.failure");
+                }
+                if (props.failureText === undefined) {
+                    return translate("notification.clipboard.handleRead.failure");
+                }
+                return props.failureText(result);
+            }}
+            pressedChildren={pressedChildren}
+        >
+            {children}
+        </Button>
+    );
 }
 
 /**
@@ -91,8 +100,8 @@ export function PasteButton<H>(props: PasteButtonProps<H>): ReactElement {
 async function writeToClipboard(text: string, pushError: (error: ErrorData) => void): Promise<boolean> {
     if (!navigator.clipboard) {
         pushError({
-            title: translate("notification.clipboard.write.failure"), 
-            body: translate("notification.clipboard.write.failure.noClipboard")
+            title: translate("notification.clipboard.write.failure"),
+            body: translate("notification.clipboard.write.failure.noClipboard"),
         });
         return false;
     }
@@ -100,10 +109,10 @@ async function writeToClipboard(text: string, pushError: (error: ErrorData) => v
     try {
         await navigator.clipboard.writeText(text);
         return true;
-    } catch (error) {
+    } catch (_error) {
         pushError({
-            title: translate("notification.clipboard.read.failure"), 
-            body: translate("notification.clipboard.read.failure.notAllowed")
+            title: translate("notification.clipboard.read.failure"),
+            body: translate("notification.clipboard.read.failure.notAllowed"),
         });
         return false;
     }
@@ -116,8 +125,8 @@ async function writeToClipboard(text: string, pushError: (error: ErrorData) => v
 async function readFromClipboard(pushError: (error: ErrorData) => void): Promise<string | null> {
     if (!navigator.clipboard) {
         pushError({
-            title: translate("notification.clipboard.read.failure"), 
-            body: translate("notification.clipboard.read.failure.noClipboard")
+            title: translate("notification.clipboard.read.failure"),
+            body: translate("notification.clipboard.read.failure.noClipboard"),
         });
         return null;
     }
@@ -129,15 +138,14 @@ async function readFromClipboard(pushError: (error: ErrorData) => void): Promise
         switch ((error as any as DOMException).name) {
             case "NotFoundError":
                 pushError({
-                    title: translate("notification.clipboard.read.failure"), 
-                    body: translate("notification.clipboard.read.failure.notFound")
+                    title: translate("notification.clipboard.read.failure"),
+                    body: translate("notification.clipboard.read.failure.notFound"),
                 });
                 return null;
-            case "NotAllowedError":
             default:
                 pushError({
-                    title: translate("notification.clipboard.read.failure"), 
-                    body: translate("notification.clipboard.read.failure.notAllowed")
+                    title: translate("notification.clipboard.read.failure"),
+                    body: translate("notification.clipboard.read.failure.notAllowed"),
                 });
                 return null;
         }

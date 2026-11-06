@@ -10,7 +10,8 @@ import { readSource, withoutImports } from "./support.ts";
 const react = { useRef: (value: unknown) => ({ current: value }), useMemo: (fn: () => unknown) => fn() };
 const library = { exports: {} };
 vm.runInNewContext(fs.readFileSync(createRequire(import.meta.url).resolve("react-swipeable"), "utf8"), {
-    exports: library.exports, require: (name: string) => {
+    exports: library.exports,
+    require: (name: string) => {
         assert.equal(name, "react");
         return react;
     },
@@ -23,9 +24,15 @@ class Element {
     overflowX = "hidden";
     control = false;
     listeners = new Map<string, (event: unknown) => void>();
-    closest(): Element | null { return this.control ? this : this.parentElement?.closest() ?? null; }
-    addEventListener(name: string, listener: (event: unknown) => void) { this.listeners.set(name, listener); }
-    removeEventListener(name: string) { this.listeners.delete(name); }
+    closest(): Element | null {
+        return this.control ? this : (this.parentElement?.closest() ?? null);
+    }
+    addEventListener(name: string, listener: (event: unknown) => void) {
+        this.listeners.set(name, listener);
+    }
+    removeEventListener(name: string) {
+        this.listeners.delete(name);
+    }
 }
 
 const compiled = ts.transpileModule(readSource("menu/game/useMenuSwipe.ts"), {
@@ -37,7 +44,7 @@ function setup(enabled = true) {
     let selected = false;
     vm.runInNewContext(compiled, {
         exports,
-        require: (name: string) => name === "react" ? react : library.exports,
+        require: (name: string) => (name === "react" ? react : library.exports),
         window: { getSelection: () => ({ isCollapsed: !selected }) },
         Element,
         getComputedStyle: (element: Element) => ({ overflowX: element.overflowX }),
@@ -51,13 +58,23 @@ function setup(enabled = true) {
     function touch(name: string, x: number, y: number, time = 100, count = 1) {
         const event = {
             touches: name === "touchend" ? [] : Array.from({ length: count }, () => ({ clientX: x, clientY: y })),
-            target, currentTarget: root, timeStamp: time,
+            target,
+            currentTarget: root,
+            timeStamp: time,
         };
         if (name === "touchstart") handlers.onTouchStartCapture(event);
         if (name === "touchcancel") handlers.onTouchCancelCapture(event);
         root.listeners.get(name)?.(event);
     }
-    return { calls, touch, target, setSelection: (value: boolean) => { selected = value; }, next: exports.getNextSwipeMenu };
+    return {
+        calls,
+        touch,
+        target,
+        setSelection: (value: boolean) => {
+            selected = value;
+        },
+        next: exports.getNextSwipeMenu,
+    };
 }
 
 test("horizontal swipes switch once in either direction", () => {
@@ -72,8 +89,10 @@ test("horizontal swipes switch once in either direction", () => {
 });
 
 const taps: [string, [number, number]][] = [
-    ["tap", [150, 100]], ["short swipe", [125, 100]],
-    ["vertical scroll down", [145, 200]], ["vertical scroll up", [145, 0]],
+    ["tap", [150, 100]],
+    ["short swipe", [125, 100]],
+    ["vertical scroll down", [145, 200]],
+    ["vertical scroll up", [145, 0]],
     ["diagonal scroll", [70, 165]],
 ];
 for (const [name, move] of taps) {
@@ -86,11 +105,23 @@ for (const [name, move] of taps) {
     });
 }
 
-for (const kind of ["desktop", "control", "horizontal scroller", "selection", "multitouch", "cancel", "vertical first", "too slow"]) {
+for (const kind of [
+    "desktop",
+    "control",
+    "horizontal scroller",
+    "selection",
+    "multitouch",
+    "cancel",
+    "vertical first",
+    "too slow",
+]) {
     test(`${kind} does not switch tabs`, () => {
         const s = setup(kind !== "desktop");
         if (kind === "control") s.target.control = true;
-        if (kind === "horizontal scroller") { s.target.scrollWidth = 300; s.target.overflowX = "auto"; }
+        if (kind === "horizontal scroller") {
+            s.target.scrollWidth = 300;
+            s.target.overflowX = "auto";
+        }
         if (kind === "selection") s.setSelection(true);
         s.touch("touchstart", 150, 100, 0);
         if (kind === "multitouch") s.touch("touchstart", 150, 100, 20, 2);
@@ -126,26 +157,41 @@ test("dragging back to the starting point cancels a swipe", () => {
 test("closing and opening tabs in the same batch preserves both changes", () => {
     const source = withoutImports(readSource("menu/game/GameScreen.tsx"))
         .replace(/^export \{.*\}\r?\n/gm, "")
-        .replace(/export default /g, "").replace(/export /g, "");
+        .replace(/export default /g, "")
+        .replace(/export /g, "");
     let controller: any;
     let stateIndex = 0;
     const states: any[] = [];
     const updates: (() => void)[] = [];
     const context: any = {
-        createContext: () => ({}), useCallback: (fn: unknown) => fn, useEffect() {},
+        createContext: () => ({}),
+        useCallback: (fn: unknown) => fn,
+        useEffect() {},
         useState: (initial: unknown) => {
             const index = stateIndex++;
             states[index] = initial;
-            return [initial, (update: unknown) => updates.push(() => {
-                states[index] = typeof update === "function" ? update(states[index]) : update;
-            })];
+            return [
+                initial,
+                (update: unknown) =>
+                    updates.push(() => {
+                        states[index] = typeof update === "function" ? update(states[index]) : update;
+                    }),
+            ];
         },
         GAME_MANAGER: { state: { stateType: "game", clientState: { type: "player" } }, invokeStateListeners() {} },
     };
-    for (const name of ["ChatMenu", "AbilityMenu", "WillMenu", "PlayerListMenu", "GraveyardMenu", "WikiMenu"]) context[name] = () => {};
+    for (const name of ["ChatMenu", "AbilityMenu", "WillMenu", "PlayerListMenu", "GraveyardMenu", "WikiMenu"])
+        context[name] = () => {};
     vm.createContext(context);
     vm.runInContext(ts.transpileModule(source, { compilerOptions: { jsx: ts.JsxEmit.React } }).outputText, context);
-    context.useMenuController(3, { ChatMenu: true, WikiMenu: false, PlayerListMenu: true }, () => controller, (value: unknown) => { controller = value; });
+    context.useMenuController(
+        3,
+        { ChatMenu: true, WikiMenu: false, PlayerListMenu: true },
+        () => controller,
+        (value: unknown) => {
+            controller = value;
+        },
+    );
     controller.closeMenu("PlayerListMenu");
     controller.openMenu("WikiMenu");
     for (const update of updates) update();

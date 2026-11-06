@@ -1,18 +1,18 @@
-import enUsJson from "../../../assets/resources/lang/en_us.json";
 import brokenKeyboardJson from "../../../assets/resources/lang/broken_keyboard.json";
 import dyslexicJson from "../../../assets/resources/lang/dyslexic.json";
+import enUsJson from "../../../assets/resources/lang/en_us.json";
 
 export let langMap: ReadonlyMap<string, string>;
 export let langText: string;
 export let langJson: any;
 
 export const LANGUAGES = ["en_us", "broken_keyboard", "dyslexic"] as const;
-export type Language = typeof LANGUAGES[number]
+export type Language = (typeof LANGUAGES)[number];
 
 const LANGUAGE_IMPORTS: Record<Language, any> = {
-    "en_us": enUsJson,
-    "broken_keyboard": brokenKeyboardJson,
-    "dyslexic": dyslexicJson
+    en_us: enUsJson,
+    broken_keyboard: brokenKeyboardJson,
+    dyslexic: dyslexicJson,
 };
 
 switchLanguage("en_us");
@@ -28,9 +28,9 @@ export default function translate(langKey: string, ...valuesList: (string | numb
     const translation = translateChecked(langKey, ...valuesList);
 
     if (translation === null) {
-        console.error("Attempted to use non existent lang key: "+langKey);
-        return "ERROR: "+langKey;
-    } 
+        console.error("Attempted to use non existent lang key: " + langKey);
+        return "ERROR: " + langKey;
+    }
 
     return translation;
 }
@@ -44,17 +44,17 @@ export function translateAny(langKeys: string[], ...valuesList: (string | number
         }
     }
 
-    console.error("Attempted to use non existent lang key: "+langKeys.at(-1));
-    return "ERROR: "+langKeys.at(-1);
+    console.error("Attempted to use non existent lang key: " + langKeys.at(-1));
+    return "ERROR: " + langKeys.at(-1);
 }
 
 export function translateChecked(langKey: string, ...valuesList: (string | number)[]): string | null {
     let out = langMap.get(langKey);
-    if(out===undefined){
+    if (out === undefined) {
         return null;
     }
-    for(let i = 0; i < valuesList.length; i++){
-        out = out.replace("\\"+(i), valuesList[i] as string);
+    for (let i = 0; i < valuesList.length; i++) {
+        out = out.replace("\\" + i, valuesList[i] as string);
     }
     return out;
 }

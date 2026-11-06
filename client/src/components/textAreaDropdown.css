@@ -3,7 +3,8 @@
     flex-direction: column;
     align-items: stretch;
 }
-.text-area-dropdown .textarea, .text-area-dropdown textarea {
+.text-area-dropdown .textarea,
+.text-area-dropdown textarea {
     text-align: left;
     height: fit-content;
     min-height: 2rem;
@@ -23,7 +24,7 @@
     width: 100%;
     flex-direction: row;
     flex-wrap: wrap;
-    padding-left: .25rem;
+    padding-left: 0.25rem;
     justify-content: space-between;
     text-align: left;
     align-items: center;
@@ -36,7 +37,7 @@
     text-align: left;
 }
 .text-area-dropdown .details-summary-summary-container > div > div {
-    display:flex;
+    display: flex;
     flex-wrap: wrap;
     gap: 0.25rem;
     align-items: center;

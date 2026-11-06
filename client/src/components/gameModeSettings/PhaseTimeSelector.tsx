@@ -1,79 +1,87 @@
-import React, { ReactElement, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
-import { PhaseType, PhaseTimes } from "../../game/gameState.d";
-import translate from "../../game/lang";
+import type React from "react";
+import { type ReactElement, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 import { isValidPhaseTime } from "../../game/gameManager";
+import type { PhaseTimes, PhaseType } from "../../game/gameState.d";
+import translate from "../../game/lang";
 import "./phaseTimeSelector.css";
-import { GameModeContext } from "./GameModesEditor";
+import type { ModifierID, ModifierState } from "../../game/modifiers";
+import ListMap from "../../ListMap";
+import { AnchorControllerContext, MobileContext } from "../../menu/Anchor";
 import Popover from "../Popover";
 import { dropdownPlacementFunction } from "../Select";
-import { setWikiSearchPage } from "../Wiki";
-import { AnchorControllerContext, MobileContext } from "../../menu/Anchor";
-import { WikiArticleLink } from "../WikiArticleLink";
 import StyledText from "../StyledText";
-import ListMap from "../../ListMap";
-import { ModifierID, ModifierState } from "../../game/modifiers";
+import { setWikiSearchPage } from "../Wiki";
+import type { WikiArticleLink } from "../WikiArticleLink";
+import { GameModeContext } from "./GameModesEditor";
 
-
-
-export default function PhaseTimesSelector(props: Readonly<{
-    disabled?: boolean,
-    onChange: (phaseTimes: PhaseTimes) => void,
-}>): ReactElement {
-    const {phaseTimes} = useContext(GameModeContext);
+export default function PhaseTimesSelector(
+    props: Readonly<{
+        disabled?: boolean;
+        onChange: (phaseTimes: PhaseTimes) => void;
+    }>,
+): ReactElement {
+    const { phaseTimes } = useContext(GameModeContext);
 
     const onChange = (phase: Exclude<PhaseType, "recess">, time: number) => {
-        if (!isValidPhaseTime(time)) return
+        if (!isValidPhaseTime(time)) return;
 
-        let newPhaseTimes = {...phaseTimes};
+        const newPhaseTimes = { ...phaseTimes };
         newPhaseTimes[phase] = time;
         props.onChange(newPhaseTimes);
-    }
+    };
 
-    return <section className="phase-times-selector will-menu-colors selector-section">
-        <PhaseTimesVisualizer disabled={props.disabled} onChange={onChange} />
-    </section>
+    return (
+        <section className="phase-times-selector will-menu-colors selector-section">
+            <PhaseTimesVisualizer disabled={props.disabled} onChange={onChange} />
+        </section>
+    );
 }
 
-
-function PhaseTimeSelector(props: Readonly<{
-    disabled?: boolean,
-    phase: Exclude<PhaseType, "recess">,
-    time: number,
-    onChange: (phase: Exclude<PhaseType, "recess">, time: number) => void,
-}>): ReactElement {
+function _PhaseTimeSelector(
+    props: Readonly<{
+        disabled?: boolean;
+        phase: Exclude<PhaseType, "recess">;
+        time: number;
+        onChange: (phase: Exclude<PhaseType, "recess">, time: number) => void;
+    }>,
+): ReactElement {
     const phaseKey = "phase." + props.phase;
-    
-    return <div className="placard">
-        <span>{translate(phaseKey)}</span>
-        {props.disabled
-            ? props.time
-            : <input
-                disabled={props.disabled ?? false}
-                name={phaseKey}
-                type="text"
-                value={props.time}
-                onChange={(e)=>{
-                    const value = Number(e.target.value);
 
-                    if (!isValidPhaseTime(value)) return
-                    
-                    props.onChange(props.phase, value);
-                    
-                }}
-                onKeyUp={(e)=>{
-                    if(e.key !== 'Enter') return;
-                    
-                    props.onChange(props.phase, props.time);
-                }}
-            /> 
-        }
-    </div>
+    return (
+        <div className="placard">
+            <span>{translate(phaseKey)}</span>
+            {props.disabled ? (
+                props.time
+            ) : (
+                <input
+                    disabled={props.disabled ?? false}
+                    name={phaseKey}
+                    type="text"
+                    value={props.time}
+                    onChange={(e) => {
+                        const value = Number(e.target.value);
+
+                        if (!isValidPhaseTime(value)) return;
+
+                        props.onChange(props.phase, value);
+                    }}
+                    onKeyUp={(e) => {
+                        if (e.key !== "Enter") return;
+
+                        props.onChange(props.phase, props.time);
+                    }}
+                />
+            )}
+        </div>
+    );
 }
 
-function PhaseTimesVisualizer(props: Readonly<{
-    disabled?: boolean
-    onChange: (phase: Exclude<PhaseType, "recess">, time: number) => void
-}>): ReactElement {
+function PhaseTimesVisualizer(
+    props: Readonly<{
+        disabled?: boolean;
+        onChange: (phase: Exclude<PhaseType, "recess">, time: number) => void;
+    }>,
+): ReactElement {
     const gameModeContext = useContext(GameModeContext);
 
     const modifiers = useMemo(() => {
@@ -87,11 +95,14 @@ function PhaseTimesVisualizer(props: Readonly<{
     }, [gameModeContext.phaseTimes, phaseOrder]);
 
     const phaseEntries = useMemo(() => {
-        const entries: [Exclude<PhaseType, "recess">, {
-            ratio: number,
-            baseColor: string,
-            key: number
-        }][] = [];
+        const entries: [
+            Exclude<PhaseType, "recess">,
+            {
+                ratio: number;
+                baseColor: string;
+                key: number;
+            },
+        ][] = [];
 
         for (const { index, phase } of phaseOrder.map((phase, index) => ({ index, phase }))) {
             const time = getRealPhaseTime(phase, gameModeContext.phaseTimes);
@@ -102,36 +113,32 @@ function PhaseTimesVisualizer(props: Readonly<{
         return entries;
     }, [gameModeContext.phaseTimes, phaseOrder, totalPhaseTime]);
 
-    return <div className="phase-times-visualizer">
-        <div className="phase-times-visualizer-scroll">
-            {phaseEntries.map(([phase, { ratio, baseColor, key }]) => (
-                <PhaseTimesVisualizerPhase
-                    key={key}
-                    phase={phase}
-                    ratio={ratio}
-                    baseColor={baseColor}
-                    disabled={props.disabled}
-                    time={gameModeContext.phaseTimes[phase]}
-                    onChange={props.onChange}
-                />
-            ))}
+    return (
+        <div className="phase-times-visualizer">
+            <div className="phase-times-visualizer-scroll">
+                {phaseEntries.map(([phase, { ratio, baseColor, key }]) => (
+                    <PhaseTimesVisualizerPhase
+                        key={key}
+                        phase={phase}
+                        ratio={ratio}
+                        baseColor={baseColor}
+                        disabled={props.disabled}
+                        time={gameModeContext.phaseTimes[phase]}
+                        onChange={props.onChange}
+                    />
+                ))}
+            </div>
         </div>
-    </div>
+    );
 }
 
 function getRealPhaseTime(phase: Exclude<PhaseType, "recess">, phaseTimes: PhaseTimes): number {
-    let time = phaseTimes[phase];
+    const time = phaseTimes[phase];
     return time;
 }
 
 function getPhaseOrder(modifiers: ListMap<ModifierID, ModifierState>): Exclude<PhaseType, "recess">[] {
-    const preTrialPhases: Exclude<PhaseType, "recess">[] = [
-        "briefing",
-        "dusk",
-        "night",
-        "obituary",
-        "discussion",
-    ];
+    const preTrialPhases: Exclude<PhaseType, "recess">[] = ["briefing", "dusk", "night", "obituary", "discussion"];
 
     if (modifiers.get("noTrialPhases") !== null) {
         return preTrialPhases;
@@ -147,23 +154,25 @@ function getPhaseOrder(modifiers: ListMap<ModifierID, ModifierState>): Exclude<P
         "testimony",
         "judgement",
         "finalWords",
-    ]
+    ];
 }
 
-function PhaseTimesVisualizerPhase(props: Readonly<{
-    phase: Exclude<PhaseType, "recess">,
-    ratio: number,
-    baseColor: string
-    onChange: (phase: Exclude<PhaseType, "recess">, time: number) => void
-    disabled?: boolean
-    time: number
-}>): ReactElement {
+function PhaseTimesVisualizerPhase(
+    props: Readonly<{
+        phase: Exclude<PhaseType, "recess">;
+        ratio: number;
+        baseColor: string;
+        onChange: (phase: Exclude<PhaseType, "recess">, time: number) => void;
+        disabled?: boolean;
+        time: number;
+    }>,
+): ReactElement {
     const anchorController = useContext(AnchorControllerContext)!;
 
     const isMobile = useContext(MobileContext);
 
     const { phase, ratio, time, baseColor } = props;
-    
+
     const [open, setOpen] = useState<"show" | "edit" | "closed">("closed");
 
     const ref = useRef<HTMLButtonElement>(null);
@@ -195,86 +204,99 @@ function PhaseTimesVisualizerPhase(props: Readonly<{
     const onClick = useCallback(() => {
         if (props.disabled) {
             if (isMobile) {
-                setOpen(current => current === "closed" ? "show" : "closed");
+                setOpen((current) => (current === "closed" ? "show" : "closed"));
                 return;
             }
-            setWikiSearchPage('standard/' + phase as WikiArticleLink, anchorController);
+            setWikiSearchPage(("standard/" + phase) as WikiArticleLink, anchorController);
             return;
         }
 
-        setOpen(current => current === "edit" ? "closed" : "edit");
+        setOpen((current) => (current === "edit" ? "closed" : "edit"));
     }, [props.disabled, phase, anchorController]);
 
     const onMouseEnter = useCallback(() => {
         if (isMobile) return;
-        setOpen(current => current === "closed" ? "show" : current);
+        setOpen((current) => (current === "closed" ? "show" : current));
     }, []);
 
     const onMouseLeave = useCallback(() => {
         if (isMobile) return;
-        setOpen(current => current === "show" ? "closed" : current);
+        setOpen((current) => (current === "show" ? "closed" : current));
     }, []);
 
-    const handleMouseDown = useDragToChangeValue(time, time => {
+    const handleMouseDown = useDragToChangeValue(time, (time) => {
         if (isMobile) return;
-        setOpen(current => current === "edit" ? current : "show");
-        props.onChange(props.phase, time)
+        setOpen((current) => (current === "edit" ? current : "show"));
+        props.onChange(props.phase, time);
     });
 
-    return <>
-        <button style={{
-            width: `${ratio * 100}%`,
-            backgroundColor: baseColor
-        }}
-            onClick={onClick}
-            onMouseEnter={onMouseEnter}
-            onMouseLeave={onMouseLeave}
-            onMouseDown={(e) => {
-                if (isMobile) return;
-                setOpen(current => current === "closed" ? "show" : current);
-                handleMouseDown(e)
-            }}
-            onFocus={() => {
-                if (isMobile) return;
-                setOpen(current => current === "closed" ? "show" : current)
-            }}
-            onBlur={() => {
-                if (isMobile) return;
-                setOpen(current => current === "show" ? "closed" : current)
-            }}
-            ref={ref}
-        >{translate(`phase.${phase}`)}</button>
-        <Popover
-            open={open !== "closed"}
-            setOpenOrClosed={(open) => open ? setOpen(current => current === "closed" ? "show" : current) : setOpen("closed")}
-            anchorForPositionRef={ref}
-            onRender={dropdownPlacementFunction}
-        >
-            {open !== "edit" && <div className="placard">
-                <StyledText noLinks={true}>{translate(`phase.${phase}`)}: {"" + time}</StyledText>
-            </div>}
-            {open === "edit" && <div className="placard">
-                <input
-                    className="phase-time-input"
-                    disabled={props.disabled}
-                    defaultValue={time}
-                    style={{ display: open === "edit" ? undefined : "none"}}
-                    type="number"
-                    ref={focusInput}
-                    autoFocus
-                    onKeyUp={(e) => {
-                        if (e.key !== "Enter") return;
+    return (
+        <>
+            <button
+                style={{
+                    width: `${ratio * 100}%`,
+                    backgroundColor: baseColor,
+                }}
+                onClick={onClick}
+                onMouseEnter={onMouseEnter}
+                onMouseLeave={onMouseLeave}
+                onMouseDown={(e) => {
+                    if (isMobile) return;
+                    setOpen((current) => (current === "closed" ? "show" : current));
+                    handleMouseDown(e);
+                }}
+                onFocus={() => {
+                    if (isMobile) return;
+                    setOpen((current) => (current === "closed" ? "show" : current));
+                }}
+                onBlur={() => {
+                    if (isMobile) return;
+                    setOpen((current) => (current === "show" ? "closed" : current));
+                }}
+                ref={ref}
+            >
+                {translate(`phase.${phase}`)}
+            </button>
+            <Popover
+                open={open !== "closed"}
+                setOpenOrClosed={(open) =>
+                    open ? setOpen((current) => (current === "closed" ? "show" : current)) : setOpen("closed")
+                }
+                anchorForPositionRef={ref}
+                onRender={dropdownPlacementFunction}
+            >
+                {open !== "edit" && (
+                    <div className="placard">
+                        <StyledText noLinks={true}>
+                            {translate(`phase.${phase}`)}: {"" + time}
+                        </StyledText>
+                    </div>
+                )}
+                {open === "edit" && (
+                    <div className="placard">
+                        <input
+                            className="phase-time-input"
+                            disabled={props.disabled}
+                            defaultValue={time}
+                            style={{ display: open === "edit" ? undefined : "none" }}
+                            type="number"
+                            ref={focusInput}
+                            autoFocus
+                            onKeyUp={(e) => {
+                                if (e.key !== "Enter") return;
 
-                        const value = Number.parseInt((e.target as HTMLInputElement).value);
-                        if (!isValidPhaseTime(value)) return
+                                const value = Number.parseInt((e.target as HTMLInputElement).value);
+                                if (!isValidPhaseTime(value)) return;
 
-                        props.onChange(props.phase, value)
-                        setOpen("closed");
-                    }}
-                />
-            </div>}
-        </Popover>
-    </>
+                                props.onChange(props.phase, value);
+                                setOpen("closed");
+                            }}
+                        />
+                    </div>
+                )}
+            </Popover>
+        </>
+    );
 }
 
 function getPhaseBaseColor(phase: Exclude<PhaseType, "recess">): string {
@@ -307,14 +329,14 @@ function useDragToChangeValue(startValue: number, onChange: (value: number) => v
 
     useEffect(() => {
         if (startY === null) return;
-        
+
         // Add global listeners so dragging works even if the cursor leaves the button
-        globalThis.addEventListener('mousemove', handleMouseMove);
-        globalThis.addEventListener('mouseup', handleMouseUp);
+        globalThis.addEventListener("mousemove", handleMouseMove);
+        globalThis.addEventListener("mouseup", handleMouseUp);
 
         return () => {
-            globalThis.removeEventListener('mousemove', handleMouseMove);
-            globalThis.removeEventListener('mouseup', handleMouseUp);
+            globalThis.removeEventListener("mousemove", handleMouseMove);
+            globalThis.removeEventListener("mouseup", handleMouseUp);
         };
     }, [startY]);
 
@@ -329,8 +351,8 @@ function useDragToChangeValue(startValue: number, onChange: (value: number) => v
     };
 
     const handleMouseUp = () => {
-        globalThis.removeEventListener('mousemove', handleMouseMove);
-        globalThis.removeEventListener('mouseup', handleMouseUp);
+        globalThis.removeEventListener("mousemove", handleMouseMove);
+        globalThis.removeEventListener("mouseup", handleMouseUp);
     };
 
     return handleMouseDown;

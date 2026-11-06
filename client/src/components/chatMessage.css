@@ -1,4 +1,3 @@
-
 .chat-message-div-small-button-div {
     position: absolute;
     right: 0;
@@ -20,19 +19,19 @@
 }
 .chat-message.block {
     background-color: var(--primary-color);
-    border: .13rem solid var(--primary-border-color);
+    border: 0.13rem solid var(--primary-border-color);
     border-radius: 0;
-    padding: .25rem;
+    padding: 0.25rem;
     box-shadow: 0 0 10px rgba(from var(--primary-color) r g b / 0.2);
 }
 .chat-message {
     width: 100%;
     text-align: left;
-    margin: .1rem;
+    margin: 0.1rem;
     margin-left: 0;
     margin-right: 0;
-    padding-left: .25rem;
-    padding-right: .25rem;
+    padding-left: 0.25rem;
+    padding-right: 0.25rem;
     overflow-wrap: anywhere;
     tab-size: 1rem;
 }
@@ -45,7 +44,8 @@
 .chat-message * {
     text-align: left;
 }
-.chat-message ul, .chat-message ol {
+.chat-message ul,
+.chat-message ol {
     padding-left: 1rem;
     list-style-position: inside;
 }
@@ -69,7 +69,7 @@
     color: #ffff00;
     text-decoration: underline;
 }
-.chat-message.phase-change .keyword-info{
+.chat-message.phase-change .keyword-info {
     color: yellow;
 }
 .chat-message.center {
@@ -78,19 +78,20 @@
 .chat-message.special {
     color: #ff00ff;
 }
-.chat-message.discreet, .discreet {
+.chat-message.discreet,
+.discreet {
     color: #00ffff;
 }
 .chat-message.important {
     color: #ffff00;
 }
 .chat-message.will {
-    border-top: .13rem solid var(--primary-border-color);
-    border-bottom: .13rem solid var(--primary-border-color);
+    border-top: 0.13rem solid var(--primary-border-color);
+    border-bottom: 0.13rem solid var(--primary-border-color);
 }
 .chat-message.callingCard {
-    border-top: .13rem solid var(--primary-border-color);
-    border-bottom: .13rem solid var(--primary-border-color);
+    border-top: 0.13rem solid var(--primary-border-color);
+    border-bottom: 0.13rem solid var(--primary-border-color);
     background-color: #ff000022;
 }
 .chat-message.trial {
@@ -119,17 +120,17 @@
     flex-direction: row;
     padding-left: 0.5rem;
     padding-right: 0.5rem;
-    border-width: .07rem;
+    border-width: 0.07rem;
     border-style: solid;
     border-color: black;
 }
-.kira-guess-result.correct{
+.kira-guess-result.correct {
     border-color: limegreen;
 }
-.kira-guess-result.wrongSpot{
+.kira-guess-result.wrongSpot {
     border-color: yellow;
 }
-.kira-guess-result.notInGame{
+.kira-guess-result.notInGame {
     border-color: red;
 }
 .chat-message-div .details-summary-container {

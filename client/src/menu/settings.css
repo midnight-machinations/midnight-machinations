@@ -65,7 +65,7 @@
     display: flex;
     flex-direction: column;
     background-color: var(--secondary-color);
-    border: .13rem solid var(--primary-border-color);
+    border: 0.13rem solid var(--primary-border-color);
     border-top-color: var(--primary-border-shadow-color);
     border-left-color: var(--primary-border-shadow-color);
     border-radius: 0;
@@ -80,7 +80,8 @@
     padding: 0.25rem;
 }
 
-.settings-volume-container, .settings-language-container {
+.settings-volume-container,
+.settings-language-container {
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -100,9 +101,17 @@
     gap: 0.5rem;
     margin-top: 0.25rem;
 }
-.user-settings-menu { width: min(70rem, 90vw); }
-.user-settings-menu > main.settings-menu > div { flex-basis: 17rem; min-width: 0; }
-.settings-voice-column .voice-menu { width: 100%; box-sizing: border-box; }
+.user-settings-menu {
+    width: min(70rem, 90vw);
+}
+.user-settings-menu > main.settings-menu > div {
+    flex-basis: 17rem;
+    min-width: 0;
+}
+.settings-voice-column .voice-menu {
+    width: 100%;
+    box-sizing: border-box;
+}
 
 .host-settings-menu {
     width: min(52rem, 90vw);

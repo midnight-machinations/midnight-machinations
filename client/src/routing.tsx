@@ -1,16 +1,15 @@
-import React from "react";
-import { ARTICLES, WikiArticleLink } from "./components/WikiArticleLink";
-import { AnchorController } from "./menu/Anchor";
-import StandaloneWiki from "./menu/main/StandaloneWiki";
-import { deleteReconnectData, loadReconnectData } from "./game/localStorage";
 import GAME_MANAGER from ".";
-import StartMenu from "./menu/main/StartMenu";
 import GameModesEditor from "./components/gameModeSettings/GameModesEditor";
 import parseFromJson from "./components/gameModeSettings/gameMode/migrations";
 import { isFailure } from "./components/gameModeSettings/gameMode/parse";
+import { ARTICLES, type WikiArticleLink } from "./components/WikiArticleLink";
+import { deleteReconnectData, loadReconnectData } from "./game/localStorage";
+import type { AnchorController } from "./menu/Anchor";
+import StandaloneWiki from "./menu/main/StandaloneWiki";
+import StartMenu from "./menu/main/StartMenu";
 
 function uriAsFileURI(path: string): string {
-    if (path.endsWith('/')) {
+    if (path.endsWith("/")) {
         return path.substring(0, path.length - 1);
     } else {
         return path;
@@ -21,9 +20,9 @@ async function routeWiki(anchorController: AnchorController, page: string) {
     const wikiPage = uriAsFileURI(page);
 
     if (wikiPage === "") {
-        anchorController.setContent(<StandaloneWiki />)
+        anchorController.setContent(<StandaloneWiki />);
     } else if (ARTICLES.includes(wikiPage.substring(1) as any)) {
-        anchorController.setContent(<StandaloneWiki initialWikiPage={wikiPage.substring(1) as WikiArticleLink}/>)
+        anchorController.setContent(<StandaloneWiki initialWikiPage={wikiPage.substring(1) as WikiArticleLink} />);
     } else {
         return await route404(anchorController, `/wiki${page}`);
     }
@@ -32,41 +31,40 @@ async function routeWiki(anchorController: AnchorController, page: string) {
 async function routeLobby(anchorController: AnchorController, roomCode: string) {
     const reconnectData = loadReconnectData();
 
-    if (!await GAME_MANAGER.setOutsideLobbyState()) {
-        anchorController.setContent(<StartMenu/>);
+    if (!(await GAME_MANAGER.setOutsideLobbyState())) {
+        anchorController.setContent(<StartMenu />);
         return;
     }
-    
-    window.history.replaceState({}, "", '/');
+
+    window.history.replaceState({}, "", "/");
 
     let success: boolean;
     try {
-        const code = parseInt(roomCode, 18)
+        const code = parseInt(roomCode, 18);
         if (reconnectData) {
             success = await GAME_MANAGER.sendRejoinPacket(code, reconnectData.playerId);
-            
 
-            if(!success) {
+            if (!success) {
                 deleteReconnectData();
                 success = await GAME_MANAGER.sendJoinPacket(code);
             }
-        }else{
+        } else {
             success = await GAME_MANAGER.sendJoinPacket(code);
         }
     } catch {
         success = false;
     }
-    
+
     if (!success) {
         await GAME_MANAGER.setDisconnectedState();
         anchorController.clearCoverCard();
-        anchorController.setContent(<StartMenu/>)
+        anchorController.setContent(<StartMenu />);
     }
 }
 
 async function routeGameMode(anchorController: AnchorController, gameModeString: string) {
     window.history.replaceState({}, "", "/");
-    
+
     let gameMode: any;
     try {
         gameMode = JSON.parse(gameModeString);
@@ -81,8 +79,8 @@ async function routeGameMode(anchorController: AnchorController, gameModeString:
         console.log(verifiedGameMode.snippet);
         return await route404(anchorController, `/gameMode/?mode=${gameModeString}`);
     } else {
-        anchorController.setContent(<StartMenu/>)
-        anchorController.setCoverCard(<GameModesEditor initialGameMode={verifiedGameMode.value}/>)
+        anchorController.setContent(<StartMenu />);
+        anchorController.setCoverCard(<GameModesEditor initialGameMode={verifiedGameMode.value} />);
     }
 }
 
@@ -91,27 +89,27 @@ async function route404(anchorController: AnchorController, path: string) {
         <div style={{ height: "100vh", display: "flex", alignItems: "center", justifyContent: "center", gap: "1rem" }}>
             <h1>404</h1>
             <p>The requested path ({path}) could not be found</p>
-        </div>
-    )
+        </div>,
+    );
 }
 
 async function routeMainButFirstTryUsingReconnectData(anchorController: AnchorController) {
     window.history.replaceState({}, "", "/");
 
     const reconnectData = loadReconnectData();
-    
+
     if (!reconnectData) {
-        anchorController.setContent(<StartMenu/>)
+        anchorController.setContent(<StartMenu />);
         return;
     }
 
-    if (!await GAME_MANAGER.setOutsideLobbyState()) {
-        anchorController.setContent(<StartMenu/>);
+    if (!(await GAME_MANAGER.setOutsideLobbyState())) {
+        anchorController.setContent(<StartMenu />);
         return;
     }
 
-    if (!await GAME_MANAGER.sendRejoinPacket(reconnectData.roomCode, reconnectData.playerId)) {
-        anchorController.setContent(<StartMenu/>);
+    if (!(await GAME_MANAGER.sendRejoinPacket(reconnectData.roomCode, reconnectData.playerId))) {
+        anchorController.setContent(<StartMenu />);
         deleteReconnectData();
         return;
     }
@@ -120,7 +118,6 @@ async function routeMainButFirstTryUsingReconnectData(anchorController: AnchorCo
 }
 
 export default async function route(anchorController: AnchorController, url: Location) {
-
     if (url.pathname.startsWith("/wiki")) {
         return await routeWiki(anchorController, url.pathname.substring(5));
     } else if (url.pathname.startsWith("/connect")) {
@@ -135,11 +132,9 @@ export default async function route(anchorController: AnchorController, url: Loc
         }
     }
 
-    
-
-    if (url.pathname && url.pathname !== '/') {
+    if (url.pathname && url.pathname !== "/") {
         return await route404(anchorController, url.pathname);
     }
-    
+
     return await routeMainButFirstTryUsingReconnectData(anchorController);
 }

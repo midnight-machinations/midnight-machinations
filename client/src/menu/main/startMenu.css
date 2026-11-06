@@ -5,7 +5,7 @@
     flex-direction: column;
 }
 
-.sm *:not(.material-symbols-rounded, .keyword-title){
+.sm *:not(.material-symbols-rounded, .keyword-title) {
     font-family: var(--computer-font);
 }
 
@@ -52,7 +52,7 @@
     position: relative;
     aspect-ratio: 1 / 1;
     min-width: 20rem;
-    background: url('../../../public/images/moon.png') center / 80% no-repeat;
+    background: url("/images/moon.png") center / 80% no-repeat;
     /* Keeps the logo's z-index local, so it doesn't render above popups */
     isolation: isolate;
 }
@@ -63,7 +63,7 @@
     inset: 0;
     z-index: 1;
     pointer-events: none;
-    background: url('../../../public/images/mm.png') center / 80% no-repeat;
+    background: url("/images/mm.png") center / 80% no-repeat;
 }
 
 .sm > main > .satellite > .right {
@@ -85,7 +85,7 @@
     justify-content: center;
     gap: 0.25rem 1rem;
     padding: 0.25rem;
-    border-top: var(--primary-border-color) solid .13rem;
+    border-top: var(--primary-border-color) solid 0.13rem;
 }
 
 @media only screen and (max-width: 1000px) {
@@ -96,7 +96,8 @@
         flex-direction: column;
         align-items: center;
     }
-    .sm > main > .satellite > div.left, .sm > main > .satellite > div.right {
+    .sm > main > .satellite > div.left,
+    .sm > main > .satellite > div.right {
         align-items: center;
     }
 }

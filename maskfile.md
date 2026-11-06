@@ -127,14 +127,15 @@ echo "Worktree ready at $(cd "$path" && pwd). Run mask start there."
 
 ## check
 
-> Everything CI checks: proto lint, clippy, server tests, client build
+> Everything CI checks: proto lint, clippy, server tests, client build and tests, voice type-check and tests
 
 ```sh
 set -e
 (cd proto && pnpm exec buf lint)
 (cd server && cargo clippy && cargo test)
 (cd server/proto && cargo clippy)
-(cd client && pnpm build)
+(cd client && pnpm build && pnpm test)
+(cd voice && pnpm check && pnpm test)
 ```
 
 ## lint
@@ -231,6 +232,14 @@ cd client && pnpm dev ${no_open:+--no-open} ${host:+--host "$host"}
 
 ```sh
 cd client && pnpm build
+```
+
+### client test
+
+> Run the client unit tests in client/tests
+
+```sh
+cd client && pnpm test
 ```
 
 ## server

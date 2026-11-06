@@ -19,7 +19,10 @@ function setup() {
     const source = withoutImports(readSource("voice/voiceManager.ts"))
         .replace("export class VoiceManager", "class VoiceManager")
         .replace("export const VOICE = new VoiceManager();", "globalThis.VoiceManager = VoiceManager;");
-    vm.runInContext(ts.transpileModule(source, { compilerOptions: { target: ts.ScriptTarget.ES2022 } }).outputText, context);
+    vm.runInContext(
+        ts.transpileModule(source, { compilerOptions: { target: ts.ScriptTarget.ES2022 } }).outputText,
+        context,
+    );
     const voice = new context.VoiceManager();
     const audio = { state: "running", currentTime: 0 };
     voice.audio = audio;

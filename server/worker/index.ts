@@ -74,8 +74,9 @@ export class Game extends DurableObject<Env> {
         const id = this.nextId++;
         this.sockets.set(id, socket);
         this.run(() => this.game.connect(id));
-        socket.addEventListener("message", event => {
-            if (typeof event.data === "string") this.run(() => this.withString(event.data as string, (ptr, len) => this.game.message(id, ptr, len)));
+        socket.addEventListener("message", (event) => {
+            if (typeof event.data === "string")
+                this.run(() => this.withString(event.data as string, (ptr, len) => this.game.message(id, ptr, len)));
         });
         const closed = () => {
             if (!this.sockets.delete(id)) return;
@@ -96,15 +97,20 @@ export class Game extends DurableObject<Env> {
                 random: (ptr: number, len: number) => {
                     // getRandomValues fills at most 65536 bytes per call.
                     for (let offset = 0; offset < len; offset += 65536) {
-                        crypto.getRandomValues(new Uint8Array(this.game.memory.buffer, ptr + offset, Math.min(65536, len - offset)));
+                        crypto.getRandomValues(
+                            new Uint8Array(this.game.memory.buffer, ptr + offset, Math.min(65536, len - offset)),
+                        );
                     }
                 },
             },
         });
         this.game = instance.exports as unknown as Exports;
-        const voiceOn = this.env.FEATURE_VOICE !== "false" && (this.env.VOICE || this.env.VOICE_CONTROL_URL)
-            && this.env.VOICE_CONTROL_SECRET && this.env.VOICE_PUBLIC_URL;
-        const voiceUrl = voiceOn ? this.env.VOICE_PUBLIC_URL ?? "" : "";
+        const voiceOn =
+            this.env.FEATURE_VOICE !== "false" &&
+            (this.env.VOICE || this.env.VOICE_CONTROL_URL) &&
+            this.env.VOICE_CONTROL_SECRET &&
+            this.env.VOICE_PUBLIC_URL;
+        const voiceUrl = voiceOn ? (this.env.VOICE_PUBLIC_URL ?? "") : "";
         this.withString(voiceUrl, (ptr, len) => this.game.init(ptr, len));
     }
 
@@ -127,7 +133,11 @@ export class Game extends DurableObject<Env> {
             const payload = line.slice(space + 1);
             if (target === "voice") this.sendVoice(payload);
             else {
-                try { this.sockets.get(Number(target))?.send(payload); } catch { /* Socket is closing. */ }
+                try {
+                    this.sockets.get(Number(target))?.send(payload);
+                } catch {
+                    /* Socket is closing. */
+                }
             }
         }
     }
@@ -138,7 +148,11 @@ export class Game extends DurableObject<Env> {
         const sockets = [...this.sockets.values()];
         this.sockets.clear();
         for (const socket of sockets) {
-            try { socket.close(1011, "Server restarted"); } catch { /* Already closed. */ }
+            try {
+                socket.close(1011, "Server restarted");
+            } catch {
+                /* Already closed. */
+            }
         }
         this.idle();
         this.start();
@@ -184,13 +198,20 @@ export class Game extends DurableObject<Env> {
             const socket = response.webSocket;
             if (!socket) throw new Error(`Voice control link refused (${response.status})`);
             socket.accept();
-            if (this.sockets.size === 0) { socket.close(1000, "Idle"); return; }
+            if (this.sockets.size === 0) {
+                socket.close(1000, "Idle");
+                return;
+            }
             this.voice = socket;
             this.voiceVersion = 0;
-            socket.addEventListener("message", event => {
+            socket.addEventListener("message", (event) => {
                 const message = JSON.parse(String(event.data)) as { presence?: unknown };
                 if (message.presence) {
-                    this.run(() => this.withString(JSON.stringify(message.presence), (ptr, len) => this.game.voice_presence(ptr, len)));
+                    this.run(() =>
+                        this.withString(JSON.stringify(message.presence), (ptr, len) =>
+                            this.game.voice_presence(ptr, len),
+                        ),
+                    );
                 }
             });
             const lost = () => {
@@ -205,7 +226,8 @@ export class Game extends DurableObject<Env> {
             this.run(() => this.game.voice_resend());
         } catch (error) {
             console.warn("Voice control link failed", error);
-            if (this.sockets.size > 0 && this.latestVoiceSnapshot !== "[]") setTimeout(() => void this.connectVoice(), 2000);
+            if (this.sockets.size > 0 && this.latestVoiceSnapshot !== "[]")
+                setTimeout(() => void this.connectVoice(), 2000);
         } finally {
             this.voiceConnecting = false;
         }
@@ -222,7 +244,10 @@ export class Game extends DurableObject<Env> {
         const len = bytes.length;
         const ptr = this.game.alloc(len);
         new Uint8Array(this.game.memory.buffer, ptr, len).set(bytes);
-        try { return use(ptr, len); }
-        finally { this.game.dealloc(ptr, len); }
+        try {
+            return use(ptr, len);
+        } finally {
+            this.game.dealloc(ptr, len);
+        }
     }
 }

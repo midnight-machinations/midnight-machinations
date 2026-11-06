@@ -1,22 +1,22 @@
-import React, { useEffect, useMemo, useRef, ReactElement, useState, forwardRef, useContext } from "react";
+import React, { forwardRef, type ReactElement, useContext, useEffect, useMemo, useRef, useState } from "react";
 import "./button.css";
 import ReactDOM from "react-dom/client";
 import { THEME_CSS_ATTRIBUTES } from "..";
 import { CtrlPressedContext, TooltipContext } from "../menu/Anchor";
 import { dropdownPlacementFunction } from "./Select";
-import { WikiArticleLink } from "./WikiArticleLink";
+import type { WikiArticleLink } from "./WikiArticleLink";
 import WikiArticleTooltip from "./WikiArticleTooltip";
 
-export type ButtonProps<R> = Omit<JSX.IntrinsicElements['button'], 'onClick' | 'ref'> & {
-    onClick?: (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => (R | void | Promise<R | void>)
-    highlighted?: boolean,
-    pressedChildren?: (result: R) => React.ReactNode
-    pressedText?: (result: R) => React.ReactNode
-    tooltip?: JSX.Element | WikiArticleLink
+export type ButtonProps<R> = Omit<JSX.IntrinsicElements["button"], "onClick" | "ref"> & {
+    onClick?: (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => R | void | Promise<R | void>;
+    highlighted?: boolean;
+    pressedChildren?: (result: R) => React.ReactNode;
+    pressedText?: (result: R) => React.ReactNode;
+    tooltip?: JSX.Element | WikiArticleLink;
 };
 
-function reconcileProps<R>(props: ButtonProps<R>): JSX.IntrinsicElements['button'] {
-    const newProps = {...props};
+function reconcileProps<R>(props: ButtonProps<R>): JSX.IntrinsicElements["button"] {
+    const newProps = { ...props };
     delete newProps.onClick;
     delete newProps.highlighted;
     delete newProps.pressedChildren;
@@ -29,10 +29,13 @@ function reconcileProps<R>(props: ButtonProps<R>): JSX.IntrinsicElements['button
 const POPUP_TIMEOUT_MS = 1000;
 
 export function Button<R>(props: ButtonProps<R>): ReactElement {
-    return <RawButton {...props} />
+    return <RawButton {...props} />;
 }
 
-const RawButton = forwardRef<HTMLButtonElement, ButtonProps<any>>(function RawButton<R>(props: ButtonProps<R>, passedRef: React.ForwardedRef<HTMLButtonElement>): ReactElement {
+const RawButton = forwardRef<HTMLButtonElement, ButtonProps<any>>(function RawButton<R>(
+    props: ButtonProps<R>,
+    passedRef: React.ForwardedRef<HTMLButtonElement>,
+): ReactElement {
     const [success, setSuccess] = useState<R | "unclicked">("unclicked");
     const ref = useRef<HTMLButtonElement>(null);
 
@@ -40,11 +43,11 @@ const RawButton = forwardRef<HTMLButtonElement, ButtonProps<any>>(function RawBu
         if (typeof passedRef === "function") {
             passedRef(ref.current);
         } else if (passedRef) {
-            passedRef.current = ref.current
+            passedRef.current = ref.current;
         }
     }, [props, ref, passedRef]);
 
-    const popupContainer = useRef<HTMLDivElement>(document.createElement('div'));
+    const popupContainer = useRef<HTMLDivElement>(document.createElement("div"));
 
     let lastTimeout: NodeJS.Timeout | null = null;
 
@@ -53,85 +56,93 @@ const RawButton = forwardRef<HTMLButtonElement, ButtonProps<any>>(function RawBu
         const root = ReactDOM.createRoot(popupContainer.current);
         root.render(<ButtonPopup button={ref.current}>{content}</ButtonPopup>);
         document.body.appendChild(popupContainer.current);
-    }
+    };
 
     const hidePopup = () => {
         if (document.body.contains(popupContainer.current)) {
-            document.body.removeChild(popupContainer.current)
+            document.body.removeChild(popupContainer.current);
         }
-    }
-    
+    };
+
     const children = useMemo(() => {
         if (success === "unclicked" || props.pressedChildren === undefined) return props.children;
         return props.pressedChildren(success) || props.children;
     }, [props, success]);
-    
+
     const isCtrlPressed = useContext(CtrlPressedContext) ?? false;
     const tooltipContext = useContext(TooltipContext)!;
-    
+
     const articleTooltip = React.useMemo(() => {
         if (props.tooltip === undefined) return null;
         if (typeof props.tooltip !== "string") return props.tooltip;
 
-        return <WikiArticleTooltip article={props.tooltip} />
+        return <WikiArticleTooltip article={props.tooltip} />;
     }, [isCtrlPressed, props.tooltip]);
 
-    const handleFocus = (event: any) => {
+    const handleFocus = (_event: any) => {
         if (articleTooltip) {
             tooltipContext.open(
                 articleTooltip,
                 (popover, anchor) => dropdownPlacementFunction(popover, anchor, null),
-                ref
-            )
+                ref,
+            );
         }
     };
 
-    const handleUnfocus = (event: any) => {
-        tooltipContext.close()
+    const handleUnfocus = (_event: any) => {
+        tooltipContext.close();
     };
 
-    return <button {...reconcileProps(props)} ref={ref}
-        className={
-            "button " + (props.className ?? "") + (props.highlighted ? " highlighted" : "")
-        }
-        onClick={async e => {
-            if (props.onClick) {
-                const result = await props.onClick(e);
-                if (result === undefined) return;
+    return (
+        <button
+            {...reconcileProps(props)}
+            ref={ref}
+            className={"button " + (props.className ?? "") + (props.highlighted ? " highlighted" : "")}
+            onClick={async (e) => {
+                if (props.onClick) {
+                    const result = await props.onClick(e);
+                    if (result === undefined) return;
 
-                setSuccess(result);
-                if (props.pressedText !== undefined) showPopup(props.pressedText(result))
+                    setSuccess(result);
+                    if (props.pressedText !== undefined) showPopup(props.pressedText(result));
 
-                if (lastTimeout) clearTimeout(lastTimeout);
-                lastTimeout = setTimeout(() => {
-                    setSuccess("unclicked")
-                    hidePopup();
-                }, POPUP_TIMEOUT_MS);
-            }
-        }}
-        onMouseEnter={handleFocus}
-        onMouseLeave={handleUnfocus}
-        onFocus={handleFocus}
-        onBlur={handleUnfocus}
-    >{children}</button>
-})
+                    if (lastTimeout) clearTimeout(lastTimeout);
+                    lastTimeout = setTimeout(() => {
+                        setSuccess("unclicked");
+                        hidePopup();
+                    }, POPUP_TIMEOUT_MS);
+                }
+            }}
+            onMouseEnter={handleFocus}
+            onMouseLeave={handleUnfocus}
+            onFocus={handleFocus}
+            onBlur={handleUnfocus}
+        >
+            {children}
+        </button>
+    );
+});
 
 export { RawButton };
 
-function ButtonPopup(props: { children: React.ReactNode, button: HTMLButtonElement }): ReactElement {
+function ButtonPopup(props: { children: React.ReactNode; button: HTMLButtonElement }): ReactElement {
     const ref = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
-        if ((ref.current) === null) return;
+        if (ref.current === null) return;
 
         const buttonBounds = props.button.getBoundingClientRect();
         ref.current.style.top = `${buttonBounds.bottom}px`;
-        ref.current.style.left = `${(buttonBounds.left + buttonBounds.width / 2)}px`;
-        THEME_CSS_ATTRIBUTES.forEach(prop => {
-            if ((ref.current) === null) return;
-            ref.current.style.setProperty(`--${prop}`, getComputedStyle(props.button).getPropertyValue(`--${prop}`))
-        })
+        ref.current.style.left = `${buttonBounds.left + buttonBounds.width / 2}px`;
+        THEME_CSS_ATTRIBUTES.forEach((prop) => {
+            if (ref.current === null) return;
+            ref.current.style.setProperty(`--${prop}`, getComputedStyle(props.button).getPropertyValue(`--${prop}`));
+        });
     });
-    
-    return <div className="button-popup" ref={ref}>{props.children}</div>
+
+    return (
+        <div className="button-popup" ref={ref}>
+            {props.children}
+        </div>
+    );
 }

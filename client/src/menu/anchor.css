@@ -1,13 +1,12 @@
-
 .anchor {
     overflow: hidden;
     position: absolute;
-    
+
     height: 100dvh;
     width: 100dvw;
 
     background:
-        url('../../public/images/fuzzy-background-alpha.png') center / 10000px,
+        url("/images/fuzzy-background-alpha.png") center / 10000px,
         var(--background-color);
     animation: background-scroll 9s infinite forwards linear;
 }
@@ -21,19 +20,18 @@
     height: fit-content;
     width: 20%;
     min-width: 15rem;
-    box-shadow: 0 0 .5rem #0007;
-
+    box-shadow: 0 0 0.5rem #0007;
 
     --text-color: red;
-    
+
     border-radius: 0;
     border-style: solid;
-    padding: .5rem;
+    padding: 0.5rem;
     background-color: var(--primary-color);
     border-color: var(--primary-border-color);
     border-bottom-color: var(--primary-border-shadow-color);
     border-right-color: var(--primary-border-shadow-color);
-    border-width: .13rem;
+    border-width: 0.13rem;
     color: white;
 }
 
@@ -65,21 +63,22 @@
         -webkit-animation: slide-in 0.5s forwards;
     }
 }
-    
+
 @keyframes slide-in {
-    100% { transform: translateX(0%); }
+    100% {
+        transform: translateX(0%);
+    }
 }
 
 .anchor .global-menu-button {
     z-index: 101;
     position: fixed;
-    right: .5rem;
-    top: .5rem;
+    right: 0.5rem;
+    top: 0.5rem;
     height: fit-content;
     width: fit-content;
     font-size: 1.5rem;
 }
-
 
 .anchor-cover-card {
     display: flex;
@@ -90,7 +89,7 @@
     border-right-color: var(--primary-border-shadow-color);
     border-bottom-color: var(--primary-border-shadow-color);
     overflow-y: hidden;
-    box-shadow: 0 0 .5rem #0007;
+    box-shadow: 0 0 0.5rem #0007;
 
     max-width: 90vw;
     max-height: 90vh;
@@ -128,9 +127,7 @@
     content: "";
     width: 100%;
     height: 100%;
-    background: 
-        url('../../public/images/fuzzy-background-alpha.png'),
-        var(--fade-color, var(--background-color));
+    background: url("/images/fuzzy-background-alpha.png"), var(--fade-color, var(--background-color));
     background-size: 10000px;
     animation: background-scroll 9s infinite forwards linear;
     opacity: 80%;

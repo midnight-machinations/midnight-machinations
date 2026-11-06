@@ -1,9 +1,9 @@
-import React, { ReactElement, useContext } from "react";
-import "../game/gameScreen.css"
-import HeaderMenu, { MenuButtons } from "../game/HeaderMenu";
-import { MenuController, useMenuController, MenuControllerContext, GameScreenMenus } from "../game/GameScreen";
-import { MobileContext } from "../Anchor";
+import { type ReactElement, useContext } from "react";
+import "../game/gameScreen.css";
 import { loadSettingsParsed } from "../../game/localStorage";
+import { MobileContext } from "../Anchor";
+import { GameScreenMenus, type MenuController, MenuControllerContext, useMenuController } from "../game/GameScreen";
+import HeaderMenu, { MenuButtons } from "../game/HeaderMenu";
 
 let CONTENT_CONTROLLER: MenuController | undefined;
 
@@ -19,20 +19,18 @@ export default function SpectatorGameScreen(): ReactElement {
         maxMenus,
         Object.fromEntries(menuOrder),
         () => CONTENT_CONTROLLER!,
-        contentController => CONTENT_CONTROLLER = contentController
+        (contentController) => (CONTENT_CONTROLLER = contentController),
     );
-
 
     return (
         <MenuControllerContext.Provider value={contentController}>
             <div className="game-screen spectator-game-screen">
                 <div className="header">
-                    <HeaderMenu chatMenuNotification={false}/>
+                    <HeaderMenu chatMenuNotification={false} />
                 </div>
                 <GameScreenMenus />
-                {mobile === true && <MenuButtons chatMenuNotification={false}/>}
+                {mobile === true && <MenuButtons chatMenuNotification={false} />}
             </div>
         </MenuControllerContext.Provider>
     );
-    
 }

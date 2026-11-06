@@ -1,32 +1,33 @@
-import { ReactElement } from "react";
-import React from "react";
+import type { ReactElement } from "react";
 import { TextDropdownArea } from "../../../../../components/TextAreaDropdown";
-import { ControllerID, translateControllerID } from "../../../../../game/controllerInput";
 import { usePlayerState } from "../../../../../components/useHooks";
-import { UnsafeString } from "../../../../../game/gameState.d";
+import { type ControllerID, translateControllerID } from "../../../../../game/controllerInput";
+import type { UnsafeString } from "../../../../../game/gameState.d";
 
-export default function StringSelectionMenu(props: Readonly<{
-    id?: ControllerID
-    selection: UnsafeString,
-    onChoose: (string: string)=>void,
-}>): ReactElement {
+export default function StringSelectionMenu(
+    props: Readonly<{
+        id?: ControllerID;
+        selection: UnsafeString;
+        onChoose: (string: string) => void;
+    }>,
+): ReactElement {
+    const cantPost = usePlayerState((playerState) => playerState.sendChatGroups.length === 0, ["yourSendChatGroups"])!;
 
-    const cantPost = usePlayerState(
-        playerState => playerState.sendChatGroups.length === 0,
-        ["yourSendChatGroups"]
-    )!;
-
-    let title: UnsafeString = (props.selection as string).split('\n')[0];
-    if(props.id !== undefined){
+    let title: UnsafeString = (props.selection as string).split("\n")[0];
+    if (props.id !== undefined) {
         title = translateControllerID(props.id);
     }
 
-    return <TextDropdownArea
-        className="stuck-open"
-        open={true}
-        titleString={title}
-        savedText={props.selection}
-        onSave={(s) => { props.onChoose(s); } }
-        cantPost={cantPost}
-    />    
+    return (
+        <TextDropdownArea
+            className="stuck-open"
+            open={true}
+            titleString={title}
+            savedText={props.selection}
+            onSave={(s) => {
+                props.onChoose(s);
+            }}
+            cantPost={cantPost}
+        />
+    );
 }

@@ -1,6 +1,6 @@
 .play-menu-join-popup {
     max-height: 100%;
-    height:fit-content;
+    height: fit-content;
     overflow-y: auto;
     display: block;
 }

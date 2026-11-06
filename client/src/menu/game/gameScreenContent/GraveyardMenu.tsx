@@ -1,138 +1,138 @@
-import { ReactElement, useState } from "react";
+import { type ReactElement, useState } from "react";
 import translate from "../../../game/lang";
 import GAME_MANAGER from "../../../index";
 import { ContentMenu, ContentTab } from "../GameScreen";
 import "./graveyardMenu.css";
-import StyledText from "../../../components/StyledText";
-import { EnabledRolesDisplay } from "../../../components/gameModeSettings/EnabledRoleSelector";
-import { useGameState, useLobbyOrGameState, usePlayerState, useSpectator } from "../../../components/useHooks";
-import { translateRoleOutline } from "../../../game/roleListState.d";
 import { Button } from "../../../components/Button";
 import DetailsSummary from "../../../components/DetailsSummary";
+import { EnabledRolesDisplay } from "../../../components/gameModeSettings/EnabledRoleSelector";
 import { ModifierSettingsDisplay } from "../../../components/gameModeSettings/ModifiersSelector";
 import Icon from "../../../components/Icon";
+import StyledText from "../../../components/StyledText";
+import { useGameState, useLobbyOrGameState, usePlayerState, useSpectator } from "../../../components/useHooks";
+import { translateRoleOutline } from "../../../game/roleListState.d";
 
 export default function GraveyardMenu(): ReactElement {
-    const playerCount = useLobbyOrGameState(
-        gameState => gameState.roleList.length,
-        ["roleList"]
-    )!;
+    const playerCount = useLobbyOrGameState((gameState) => gameState.roleList.length, ["roleList"])!;
 
-    return <div className="graveyard-menu graveyard-menu-colors">
-        <ContentTab close={ContentMenu.GraveyardMenu}>{translate("menu.gameMode.title")}</ContentTab>
-            
-        <DetailsSummary
-            summary={translate("menu.lobby.roleList") + ": " + playerCount}
-            defaultOpen={true}
-        >
-            <RoleListDisplay />
-        </DetailsSummary>
-        <EnabledRoles/>
-        <EnabledModifiers/>
-    </div>
+    return (
+        <div className="graveyard-menu graveyard-menu-colors">
+            <ContentTab close={ContentMenu.GraveyardMenu}>{translate("menu.gameMode.title")}</ContentTab>
+
+            <DetailsSummary summary={translate("menu.lobby.roleList") + ": " + playerCount} defaultOpen={true}>
+                <RoleListDisplay />
+            </DetailsSummary>
+            <EnabledRoles />
+            <EnabledModifiers />
+        </div>
+    );
 }
 
 function RoleListDisplay(): ReactElement {
-    const roleList = useLobbyOrGameState(
-        gameState => gameState.roleList,
-        ["roleList"]
-    )!
+    const roleList = useLobbyOrGameState((gameState) => gameState.roleList, ["roleList"])!;
     const crossedOutOutlines = usePlayerState(
-        clientState => clientState.crossedOutOutlines,
+        (clientState) => clientState.crossedOutOutlines,
         ["yourCrossedOutOutlines"],
-        []
-    )!
+        [],
+    )!;
     const playerNames = useGameState(
-        gameState => gameState.players.map(player => player.toString()),
-        ["gamePlayers"]
-    )!
+        (gameState) => gameState.players.map((player) => player.toString()),
+        ["gamePlayers"],
+    )!;
 
     const spectator = useSpectator();
 
-    return <>
-        {roleList.map((entry, index)=>{
-            return <Button
-                className="role-list-button"
-                style={{ gridRow: index + 1}}
-                key={index}
-                onClick={()=>{
-                    if (spectator) return;
+    return (
+        <>
+            {roleList.map((entry, index) => {
+                return (
+                    <Button
+                        className="role-list-button"
+                        style={{ gridRow: index + 1 }}
+                        key={index}
+                        onClick={() => {
+                            if (spectator) return;
 
-                    let newCrossedOutOutlines;
-                    if(crossedOutOutlines.includes(index))
-                        newCrossedOutOutlines = crossedOutOutlines.filter(x=>x!==index);
-                    else
-                        newCrossedOutOutlines = crossedOutOutlines.concat(index);
+                            let newCrossedOutOutlines;
+                            if (crossedOutOutlines.includes(index))
+                                newCrossedOutOutlines = crossedOutOutlines.filter((x) => x !== index);
+                            else newCrossedOutOutlines = crossedOutOutlines.concat(index);
 
-                    GAME_MANAGER.sendSaveCrossedOutOutlinesPacket(newCrossedOutOutlines);
-                }}
-            >
-                {
-                    crossedOutOutlines.includes(index) ? 
-                    <s><StyledText>
-                        {`${index + 1}: ` + translateRoleOutline(entry, playerNames)}
-                    </StyledText></s> : 
-                    <StyledText>
-                        {`${index + 1}: ` + translateRoleOutline(entry, playerNames)}
-                    </StyledText>
-                }
-            </Button>
-        })}
-    </>
+                            GAME_MANAGER.sendSaveCrossedOutOutlinesPacket(newCrossedOutOutlines);
+                        }}
+                    >
+                        {crossedOutOutlines.includes(index) ? (
+                            <s>
+                                <StyledText>{`${index + 1}: ` + translateRoleOutline(entry, playerNames)}</StyledText>
+                            </s>
+                        ) : (
+                            <StyledText>{`${index + 1}: ` + translateRoleOutline(entry, playerNames)}</StyledText>
+                        )}
+                    </Button>
+                );
+            })}
+        </>
+    );
 }
 
 function EnabledRoles(): ReactElement {
-    const enabledRoles = useGameState(
-        gameState => gameState.enabledRoles,
-        ["enabledRoles"]
-    )!
+    const enabledRoles = useGameState((gameState) => gameState.enabledRoles, ["enabledRoles"])!;
 
     const [hideDisabled, setHideDisabled] = useState(true);
 
-    return <div className="graveyard-menu-excludedRoles">
-        <DetailsSummary
-            summary={<span className="enabled-roles-summary-span">
-                {translate("menu.enabledRoles.enabledRoles")}
-                <Button
-                    className="flush"
-                    onClick={e => {
-                        e.stopPropagation();
-                        setHideDisabled(hideDisabled => !hideDisabled)
-                    }}
-                >
-                    <Icon>{hideDisabled ? "visibility" : "visibility_off"}</Icon>
-                </Button>
-            </span>}
-        >
-            <EnabledRolesDisplay enabledRoles={enabledRoles} hideDisabled={hideDisabled}/>
-        </DetailsSummary>
-    </div>
+    return (
+        <div className="graveyard-menu-excludedRoles">
+            <DetailsSummary
+                summary={
+                    <span className="enabled-roles-summary-span">
+                        {translate("menu.enabledRoles.enabledRoles")}
+                        <Button
+                            className="flush"
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                setHideDisabled((hideDisabled) => !hideDisabled);
+                            }}
+                        >
+                            <Icon>{hideDisabled ? "visibility" : "visibility_off"}</Icon>
+                        </Button>
+                    </span>
+                }
+            >
+                <EnabledRolesDisplay enabledRoles={enabledRoles} hideDisabled={hideDisabled} />
+            </DetailsSummary>
+        </div>
+    );
 }
 
 function EnabledModifiers(): ReactElement {
-    const modifierSettings = useGameState(
-        gameState=>gameState.modifierSettings.list,
-        ["modifierSettings"]
-    )!
+    const modifierSettings = useGameState((gameState) => gameState.modifierSettings.list, ["modifierSettings"])!;
 
     const [hideDisabled, setHideDisabled] = useState(true);
 
-    return <div className="graveyard-menu-excludedRoles">
-        <DetailsSummary
-            summary={<span className="enabled-roles-summary-span">
-                {translate("modifiers")}
-                <Button
-                    className="flush"
-                    onClick={e => {
-                        e.stopPropagation();
-                        setHideDisabled(hideDisabled => !hideDisabled)
-                    }}
-                >
-                    <Icon>{hideDisabled ? "visibility" : "visibility_off"}</Icon>
-                </Button>
-            </span>}
-        >
-            <ModifierSettingsDisplay disabled={true} modifierSettings={modifierSettings} hideDisabled={hideDisabled}/>
-        </DetailsSummary>
-    </div>
+    return (
+        <div className="graveyard-menu-excludedRoles">
+            <DetailsSummary
+                summary={
+                    <span className="enabled-roles-summary-span">
+                        {translate("modifiers")}
+                        <Button
+                            className="flush"
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                setHideDisabled((hideDisabled) => !hideDisabled);
+                            }}
+                        >
+                            <Icon>{hideDisabled ? "visibility" : "visibility_off"}</Icon>
+                        </Button>
+                    </span>
+                }
+            >
+                <ModifierSettingsDisplay
+                    disabled={true}
+                    modifierSettings={modifierSettings}
+                    hideDisabled={hideDisabled}
+                />
+            </DetailsSummary>
+        </div>
+    );
 }

@@ -76,7 +76,8 @@ class VoiceMicrophoneProcessor extends AudioWorkletProcessor {
                     this.gain += Math.max(-1 / 240, Math.min(1 / 240, target - this.gain));
                     this.output[this.write++ % this.output.length] = this.frame[j] * this.gain;
                 }
-                if (++this.frames % 10 === 0) this.port.postMessage({ levelDb: Math.max(-80, db), gateOpen: target === 1 });
+                if (++this.frames % 10 === 0)
+                    this.port.postMessage({ levelDb: Math.max(-80, db), gateOpen: target === 1 });
             }
             output[i] = this.output[this.read++ % this.output.length];
         }

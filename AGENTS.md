@@ -17,7 +17,7 @@ All development commands are tasks in `maskfile.md`. Run `mask --help` from the 
 ```bash
 mask setup          # install dependencies and generate local settings (mask config)
 mask start          # client, server, and voice together
-mask check          # cargo clippy, cargo test, and pnpm build
+mask check          # buf lint, cargo clippy, cargo test, client build and tests, voice tests
 mask lint           # biome and clippy suggestions (advisory, never blocks)
 mask e2e test       # Playwright browser tests in e2e/ (first time: mask e2e install)
 ```

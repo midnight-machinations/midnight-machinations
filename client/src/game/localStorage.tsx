@@ -1,41 +1,40 @@
 import DEFAULT_GAME_MODES from "../../../assets/resources/defaultGameModes.json";
-import { CurrentFormat, GameModeStorage } from "../components/gameModeSettings/gameMode";
-import { Language } from "./lang";
+import type { CurrentFormat, GameModeStorage } from "../components/gameModeSettings/gameMode";
 import parseFromJson from "../components/gameModeSettings/gameMode/migrations";
+import { type ParseResult, Success } from "../components/gameModeSettings/gameMode/parse";
+import type { ListMapData } from "../ListMap";
 import { ContentMenu } from "../menu/game/GameScreen";
-import { ParseResult, Success } from "../components/gameModeSettings/gameMode/parse";
-import { UnsafeString } from "./gameState.d";
-import { ListMapData } from "../ListMap";
-
+import type { UnsafeString } from "./gameState.d";
+import type { Language } from "./lang";
 
 export function saveReconnectData(roomCode: number, playerId: number) {
     localStorage.setItem(
         "reconnectData",
         JSON.stringify({
-            "roomCode": roomCode,
-            "playerId": playerId,
-            "lastSaveTime": Date.now()
-        })
+            roomCode: roomCode,
+            playerId: playerId,
+            lastSaveTime: Date.now(),
+        }),
     );
 }
 export function deleteReconnectData() {
     localStorage.removeItem("reconnectData");
 }
 export function loadReconnectData(): {
-    roomCode: number,
-    playerId: number,
-    lastSaveTime: number,
+    roomCode: number;
+    playerId: number;
+    lastSaveTime: number;
 } | null {
-    let dataJSON = localStorage.getItem("reconnectData");
-    
+    const dataJSON = localStorage.getItem("reconnectData");
+
     if (dataJSON) {
-        let reconnectData = JSON.parse(dataJSON);
-    
+        const reconnectData = JSON.parse(dataJSON);
+
         // Make sure it isn't expired
         const HOUR_IN_SECONDS = 3_600_000;
         if (reconnectData.lastSaveTime < Date.now() - HOUR_IN_SECONDS) {
             deleteReconnectData();
-            return null
+            return null;
         }
 
         return reconnectData;
@@ -43,8 +42,6 @@ export function loadReconnectData(): {
 
     return null;
 }
-
-
 
 export type Settings = {
     format: CurrentFormat;
@@ -54,45 +51,43 @@ export type Settings = {
     defaultName: UnsafeString | null;
     language: Language;
     maxMenus: number;
-    menuOrder: ListMapData<ContentMenu, boolean>,
-    headerEnabled?: boolean,
-    scanlineIntensity: number,
+    menuOrder: ListMapData<ContentMenu, boolean>;
+    headerEnabled?: boolean;
+    scanlineIntensity: number;
 };
 
 export type RoleSpecificMenuType = "playerList" | "standalone";
 
-
-
 export function loadSettingsParsed(): Settings {
     const result = parseFromJson("Settings", loadSettings());
-    if(result.type === "failure") {
+    if (result.type === "failure") {
         return getDefaultSettings();
-    }else{
+    } else {
         return result.value;
     }
 }
 export function getDefaultSettings(): Readonly<Settings> {
     const mobile = window.innerWidth < 600;
 
-    let menuOrder: undefined | ListMapData<ContentMenu, boolean> = undefined;
-    if(mobile) {
+    let menuOrder: undefined | ListMapData<ContentMenu, boolean>;
+    if (mobile) {
         menuOrder = [
             [ContentMenu.ChatMenu, true],
-            [ContentMenu.WikiMenu, false], 
-            [ContentMenu.GraveyardMenu, false], 
+            [ContentMenu.WikiMenu, false],
+            [ContentMenu.GraveyardMenu, false],
             [ContentMenu.PlayerListMenu, false],
-            [ContentMenu.WillMenu, false], 
-            [ContentMenu.RoleSpecificMenu, false]
-        ]
-    }else{
+            [ContentMenu.WillMenu, false],
+            [ContentMenu.RoleSpecificMenu, false],
+        ];
+    } else {
         menuOrder = [
-            [ContentMenu.WikiMenu, false], 
-            [ContentMenu.GraveyardMenu, false], 
-            [ContentMenu.PlayerListMenu, true], 
-            [ContentMenu.ChatMenu, true], 
-            [ContentMenu.WillMenu, false], 
-            [ContentMenu.RoleSpecificMenu, true]
-        ]
+            [ContentMenu.WikiMenu, false],
+            [ContentMenu.GraveyardMenu, false],
+            [ContentMenu.PlayerListMenu, true],
+            [ContentMenu.ChatMenu, true],
+            [ContentMenu.WillMenu, false],
+            [ContentMenu.RoleSpecificMenu, true],
+        ];
     }
 
     return {
@@ -105,7 +100,7 @@ export function getDefaultSettings(): Readonly<Settings> {
         maxMenus: mobile ? 1 : 6,
         menuOrder: menuOrder,
         scanlineIntensity: 50,
-    }
+    };
 }
 export function loadSettings(): unknown {
     const data = localStorage.getItem("settings");
@@ -123,25 +118,29 @@ export function saveSettings(newSettings: Partial<Settings>) {
 
     console.log(currentSettings);
 
-
-    if(currentSettings.type === "failure") {
-        localStorage.setItem("settings", JSON.stringify({
-            ...getDefaultSettings(),
-            ...newSettings,
-        }));
-    }else{
-        localStorage.setItem("settings", JSON.stringify({
-            ...currentSettings.value,
-            ...newSettings,
-        }));
+    if (currentSettings.type === "failure") {
+        localStorage.setItem(
+            "settings",
+            JSON.stringify({
+                ...getDefaultSettings(),
+                ...newSettings,
+            }),
+        );
+    } else {
+        localStorage.setItem(
+            "settings",
+            JSON.stringify({
+                ...currentSettings.value,
+                ...newSettings,
+            }),
+        );
     }
 }
 
 let cachedGameModes: ParseResult<GameModeStorage> | null = null;
 
 export function loadGameModesParsed(): ParseResult<GameModeStorage> {
-
-    if(cachedGameModes !== null) return cachedGameModes;
+    if (cachedGameModes !== null) return cachedGameModes;
 
     cachedGameModes = parseFromJson("GameModeStorage", loadGameModes());
     return cachedGameModes;
@@ -168,4 +167,3 @@ export function loadGameModes(): unknown {
 export function deleteGameModes() {
     localStorage.removeItem("savedGameModes");
 }
-
