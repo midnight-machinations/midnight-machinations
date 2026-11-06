@@ -146,35 +146,24 @@ impl RoleStateTrait for PropMaster {
         if actor_ref.ability_deactivated_from_death(game) {return;}
         let grave_ref = grave;
         
-        if self.has_prop(grave.deref(game).player) {
-            let mut grave = grave_ref.deref(game).clone();
-
-
-            *grave_ref.deref_mut(game) = match grave.information {
-                GraveInformation::Normal{role, alibi, death_causes, calling_cards} => {
-
-                    let new_death_causes = ControllerID::role(actor_ref, Role::PropMaster, 2)
-                        .get_grave_death_causes_selection(game)
-                        .map(|selection| selection.0.clone());
-
-                    if new_death_causes.is_none() {
-                        return;
-                    }
-                    if let Some(new_death_causes) = new_death_causes && new_death_causes.is_empty() {
-                        return;
-                    }
-
-                    grave.information = GraveInformation::Normal{
-                        role,
-                        alibi,
-                        death_causes,
-                        calling_cards
-                    };
-                    grave
-                },
-                _ => grave
-            };
+        if !self.has_prop(grave.deref(game).player) {
+            return;
         }
+        let mut new_grave = grave_ref.deref(game).clone();
+            
+        if let GraveInformation::Normal{death_causes, ..} = &mut new_grave.information {
+
+            let new_death_causes = ControllerID::role(actor_ref, Role::PropMaster, 2)
+                .get_grave_death_causes_selection(game)
+                .map(|selection| selection.0.clone())
+                .unwrap_or(death_causes.clone());
+
+            if !new_death_causes.is_empty() {
+                *death_causes = new_death_causes;
+            }
+        };
+
+        *grave_ref.deref_mut(game) = new_grave
     }
     fn on_phase_start(self, game: &mut Game, actor_ref: PlayerReference, _phase: PhaseType) {
         self.take_prop_if_on_invalid(game, actor_ref);
