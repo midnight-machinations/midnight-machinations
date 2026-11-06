@@ -4,7 +4,7 @@ Midnight Machinations (formerly Mafia) is a multiplayer social deduction game.
 
 - `server/`: Rust WebSocket server and game logic (Cargo)
 - `client/`: TypeScript/React frontend (Vite, pnpm)
-- `voice/`: WebRTC voice service
+- `voice/`: voice signaling Worker (TypeScript, Cloudflare Realtime SFU)
 - `assets/`: static files shared across packages (`public/` is served by the client, `random_names/` is compiled into the server)
 - `tools/gen/`: Rust generators for shared files (`mask gen <generator>`)
 

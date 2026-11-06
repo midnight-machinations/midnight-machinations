@@ -17,7 +17,7 @@ mask start   # start client, server, and voice together
 
 Every development task lives in [`maskfile.md`](maskfile.md); `mask --help` lists them. Each service can also be run on its own (`mask client dev`, `mask server run`, `mask voice start`).
 
-In the dev container, forward ports 3000, 9000, and 9100. Voice media also needs the ports described in [the voice guide](voice/README.md#local-setup).
+In the dev container, forward ports 3000, 9000, and 9100. Voice needs a free Cloudflare Realtime SFU app; see [the voice guide](voice/README.md#local-setup).
 
 Note: if the server build fails on Linux or WSL, you may need to install OpenSSL first.
 

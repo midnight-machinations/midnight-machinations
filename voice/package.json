@@ -6,14 +6,14 @@
     "node": ">=22"
   },
   "scripts": {
-    "start": "node --env-file-if-exists=.env.local src/server.mjs",
-    "check": "node --check src/server.mjs",
-    "test": "node --test test/*.test.mjs",
-    "configure": "node configure-local.mjs"
+    "start": "wrangler dev",
+    "check": "tsc",
+    "test": "node --experimental-strip-types --test test/*.test.ts"
   },
-  "dependencies": {
-    "mediasoup": "^3.19.0",
-    "ws": "^8.18.0"
+  "devDependencies": {
+    "@cloudflare/workers-types": "^5.20261015.1",
+    "typescript": "^5.9.3",
+    "wrangler": "^4.158.0"
   },
   "packageManager": "pnpm@11.5.0"
 }

@@ -11,7 +11,8 @@ Prerequisites: Node.js 22+, pnpm (`corepack enable`), and Rust with Cargo (`rust
 ```sh
 corepack enable || true
 (cd client && pnpm install --frozen-lockfile)
-(cd voice && pnpm install --frozen-lockfile && node configure-local.mjs)
+(cd voice && pnpm install --frozen-lockfile)
+mask voice configure
 ```
 
 ## start
@@ -38,8 +39,8 @@ missing=""
 command -v pnpm >/dev/null || missing="$missing\n  pnpm is unavailable. Run: corepack enable"
 command -v cargo >/dev/null || missing="$missing\n  cargo is unavailable. Install Rust with rustup."
 [ -f client/node_modules/vite/bin/vite.js ] || missing="$missing\n  Client dependencies are missing. Run: mask setup"
-[ -d voice/node_modules/mediasoup ] || missing="$missing\n  Voice dependencies are missing. Run: mask setup"
-secret=$(env_value voice/.env.local VOICE_CONTROL_SECRET)
+[ -d voice/node_modules/wrangler ] || missing="$missing\n  Voice dependencies are missing. Run: mask setup"
+secret=$(env_value voice/.dev.vars VOICE_CONTROL_SECRET)
 server_secret=$(env_value server/.env.local VOICE_CONTROL_SECRET)
 if [ -z "$secret" ] || [ -z "$server_secret" ] || [ -z "$(env_value server/.env.local VOICE_PUBLIC_URL)" ]; then
   missing="$missing\n  Local voice settings are missing. Run: mask voice configure"
@@ -82,7 +83,7 @@ stop $(( status > 0 ? status : 1 ))
 
 > Create a git worktree with its own client, server, and voice ports
 
-Checks out `branch` if it exists, otherwise creates it from HEAD. Writes the worktree's `client/.env.local` and `server/.env.local`, configures voice with the same offset, and installs client dependencies. The client gets port `3000 + offset` and the server `9000 + offset`.
+Checks out `branch` if it exists, otherwise creates it from HEAD. Writes the worktree's `client/.env.local` and `server/.env.local`, configures voice with the same offset, and installs client dependencies. The client gets port `3000 + offset`, the server `9000 + offset`, and voice `9100 + offset`.
 
 **OPTIONS**
 * offset
@@ -103,14 +104,14 @@ fi
 printf "VITE_WS_ADDRESS=ws://localhost:%s\nCLIENT_PORT=%s\n" "$server_port" "$client_port" > "$path/client/.env.local"
 echo "WS_ADDRESS=0.0.0.0:$server_port" > "$path/server/.env.local"
 # Also adds the voice settings to server/.env.local.
-if [ -f "$path/voice/configure-local.mjs" ]; then (cd "$path/voice" && node configure-local.mjs "$offset"); fi
+(cd "$path" && mask voice configure --offset "$offset")
 (cd "$path/client" && pnpm install --frozen-lockfile)
 path=$(cd "$path" && pwd)
 echo
 echo "Worktree ready at $path"
 echo "  server: ws://localhost:$server_port (cd $path && mask server run)"
 echo "  client: http://localhost:$client_port (cd $path && mask client dev --no-open)"
-echo "  voice:  ws://localhost:$((9100 + offset * 2)) (cd $path && mask voice start)"
+echo "  voice:  ws://localhost:$((9100 + offset)) (cd $path && mask voice start)"
 ```
 
 ## check
@@ -190,28 +191,54 @@ cd server && cargo clippy
 
 ## voice
 
-> Voice service tasks
+> Voice service tasks (a Cloudflare Worker, run locally with wrangler)
 
 ### voice start
 
+> Run the voice worker locally. Needs Realtime SFU credentials in voice/.dev.vars
+
 ```sh
-cd voice && pnpm start
+port=$(sed -n 's/^VOICE_DEV_PORT=//p' voice/.dev.vars 2>/dev/null | tail -n 1)
+cd voice && pnpm exec wrangler dev --port "${port:-9100}"
 ```
 
 ### voice configure
 
-> Write local voice secrets and ports into voice/.env.local and server/.env.local
+> Write a shared control secret and ports into voice/.dev.vars and server/.env.local
+
+Keeps an existing secret and unrelated settings. Add your Cloudflare Realtime SFU app ID and token to `voice/.dev.vars` afterwards (see voice/README.md). Restart the server after running this.
 
 **OPTIONS**
 * offset
     * flags: --offset
     * type: number
-    * desc: Port offset for simultaneous checkouts
-* announced_address
-    * flags: --announced-address
-    * type: string
-    * desc: Browser-reachable IPv4 address for media
+    * desc: Port offset for simultaneous checkouts. Voice listens on 9100 + offset
 
 ```sh
-cd voice && node configure-local.mjs ${offset} ${announced_address:+--announced-address "$announced_address"}
+set -e
+port=$((9100 + ${offset:-0}))
+set_var() { # file key value
+  touch "$1"
+  grep -v "^$2=" "$1" > "$1.tmp" || true
+  echo "$2=$3" >> "$1.tmp"
+  mv "$1.tmp" "$1"
+}
+secret=$(sed -n 's/^VOICE_CONTROL_SECRET=//p' voice/.dev.vars 2>/dev/null | tail -n 1)
+[ -n "$secret" ] || secret=$(node -e "console.log(require('crypto').randomBytes(32).toString('hex'))")
+set_var voice/.dev.vars VOICE_CONTROL_SECRET "$secret"
+set_var voice/.dev.vars VOICE_DEV_PORT "$port"
+grep -q '^REALTIME_APP_ID=' voice/.dev.vars || printf 'REALTIME_APP_ID=\nREALTIME_APP_TOKEN=\n' >> voice/.dev.vars
+set_var server/.env.local VOICE_CONTROL_SECRET "$secret"
+set_var server/.env.local VOICE_CONTROL_URL "ws://127.0.0.1:$port/control"
+set_var server/.env.local VOICE_PUBLIC_URL "ws://localhost:$port"
+echo "Configured voice/.dev.vars and server/.env.local for voice on port $port."
+grep -q '^REALTIME_APP_ID=.' voice/.dev.vars || echo "Add REALTIME_APP_ID and REALTIME_APP_TOKEN to voice/.dev.vars (see voice/README.md)."
+```
+
+### voice test
+
+> Type-check and run the routing tests
+
+```sh
+cd voice && pnpm check && pnpm test
 ```

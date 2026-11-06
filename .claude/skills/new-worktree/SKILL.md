@@ -18,7 +18,7 @@ Use the `mask worktree` task (in `maskfile.md`) from the repo root. Don't create
    - If `<branch>` exists, the task checks it out. Otherwise it creates it from the current HEAD.
    - Leave out `--offset` unless the user asks for specific ports or the default clashes with something. The default is the number of existing worktrees, so the first extra worktree gets client 3001 and server 9001.
    - It writes `client/.env.local` (`VITE_WS_ADDRESS`, `CLIENT_PORT`) and `server/.env.local` (`WS_ADDRESS`), then runs `pnpm install`. This can take a minute.
-   - If the branch has `voice/`, it also runs the voice `configure` step with the same offset. That writes `voice/.env.local` and adds the voice settings to `server/.env.local`. Voice uses signaling port `9100 + 2×offset`, control port `9101 + 2×offset`, and three media ports from `44400 + 3×offset`.
+   - It also runs `mask voice configure --offset <offset>`. That writes `voice/.dev.vars` and adds the voice settings to `server/.env.local`. Voice listens on port `9100 + offset`. Copy `REALTIME_APP_ID` and `REALTIME_APP_TOKEN` from the main checkout's `voice/.dev.vars` if voice is needed.
 4. Tell the user the worktree path and the client, server, and voice ports the task printed.
 
 ## Running the worktree
@@ -31,7 +31,6 @@ cd <path> && mask client dev --no-open  # serves on the worktree's client port
 cd <path> && mask voice start         # serves on the worktree's voice ports (run mask setup first)
 ```
 
-- The voice package approves mediasoup's native worker build in `voice/pnpm-workspace.yaml`. If installation fails, inspect its build output and the prerequisites in `voice/README.md`.
 
 - Start the server too, not only the client. The worktree's client connects only to its own server port, so it won't reach a server running from another checkout. If the page can't connect, check that this worktree's server is running and that it logged `Started listening on 0.0.0.0:<server port>`.
 - Don't run `cargo run` from the worktree root (for example with `--manifest-path`). From there, the server doesn't read `server/.env.local`.

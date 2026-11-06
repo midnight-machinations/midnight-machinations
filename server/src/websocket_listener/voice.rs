@@ -22,9 +22,6 @@ impl WebsocketListener {
     /// role events, controller inputs, and mid-phase status/group changes.
     /// Future timer, admin, or external event handlers must use this too.
     pub(super) fn with_voice_update<R>(&mut self, action: impl FnOnce(&mut Self) -> R) -> R {
-        if let Some(voice) = &self.voice {
-            voice.freeze();
-        }
         let result = action(self);
         self.sync_voice();
         result

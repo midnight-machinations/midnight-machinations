@@ -46,4 +46,5 @@ generate/**/__pycache__
 
 # Voice service
 voice/node_modules/
-voice/.env.local
+voice/.dev.vars
+.wrangler/

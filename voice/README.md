@@ -1,130 +1,76 @@
 # Voice service
 
-Audio-only WebRTC through mediasoup, controlled by the Rust game server. Requires Node.js 22 or newer. The service starts three media workers and assigns each game a router. This is intended for a small deployment of up to three games with 30 players each. Capacity and browser interoperability have not been load-tested.
+Audio-only voice chat. A Cloudflare Worker (`src/index.ts`) relays signaling and steers the [Cloudflare Realtime SFU](https://developers.cloudflare.com/realtime/sfu/). The Rust game server decides who may hear whom, so no media server needs to be hosted.
+
+```
+browser ── game socket ──▶ Rust server ── /control (secret) ──▶ voice worker ── HTTPS ──▶ Realtime SFU
+   │                         (voice token)                         ▲                        ▲
+   └──────────── voice socket (token) ─────────────────────────────┘                        │
+   └──────────── WebRTC audio (one RTCPeerConnection) ──────────────────────────────────────┘
+```
+
+- `src/index.ts`: the Worker and its single `Voice` Durable Object. It holds the routing policy and every peer's SFU session.
+- `src/routing.ts`: the forwarding rule. A speaker's single send group must be one the listener receives and hasn't deafened.
+- `src/sfu.ts`: a minimal Realtime SFU API client. The app token stays in the Worker.
 
 ## Local setup
 
-The dev container includes Python with pip and the C/C++ build tools needed when mediasoup's prebuilt worker cannot run. After changing the dev-container configuration, use **Dev Containers: Rebuild Container** in VS Code. The first source build during `pnpm install --frozen-lockfile` can take several minutes.
+1. In the Cloudflare dashboard, open **Realtime → SFU** and create an app. The free plan includes it. Copy the app ID and API token.
+2. From the repository root:
 
-To repair an already-running Ubuntu dev container without rebuilding its image:
-
-```sh
-sudo apt-get update
-sudo apt-get install -y build-essential python3-pip python3-venv
-```
-
-From `voice/`:
-
-```sh
-pnpm install --frozen-lockfile
-pnpm configure
-pnpm start
-```
-
-Once configured, you can start all three services from the repository root with `mask start`. Ctrl+C stops them together. The commands above remain available for running voice separately.
-
-`configure` creates a random shared control secret in gitignored `voice/.env.local` and `server/.env.local`. It preserves unrelated server settings. Restart the Rust server after configuring it. Run the server and client normally from their own directories:
-
-```sh
-# server/
-cargo run
-# client/
-pnpm dev --no-open
-```
-
-The dev container publishes media ports 44400–44402 over UDP and TCP. VS Code forwards the web and signaling ports separately. Media binds to `0.0.0.0`, and `configure` announces a non-loopback interface address. On Linux a browser on the Docker host can reach the container directly at that address. Firefox rejects loopback media candidates, so `127.0.0.1` must not be used as the announced media address. The game page and signaling URL can still use localhost.
-
-For Docker Desktop or a remote Docker host, explicitly announce the Docker host's IPv4 address that your browser can reach:
-
-```sh
-pnpm configure --announced-address 192.168.1.100
-# An offset can be combined with the explicit address:
-pnpm configure 1 --announced-address 192.168.1.100
-```
-
-Re-run `pnpm configure` after changing container networks. A container rebuild is required to apply changed published-port mappings. With a port offset, update those mappings to match.
-
-Open two browser profiles or devices, join a lobby, click **Join voice** in the lobby header, or open the top-right hamburger menu and choose **Settings**. Voice controls have their own column there. Joining asks for microphone permission and starts muted even when you allow it. Click your own microphone icon to unmute. If you decline, you join listen-only; click your own microphone icon to be asked again. Firefox only gives WebRTC the local addresses it needs after the page has microphone access, so a listen-only Firefox session may fail to connect. If the browser blocks audio autoplay, use **Enable audio playback** in the voice column; this does not reconnect the voice session. The default input mode is open microphone, starting muted. Existing saved input-mode choices are preserved; push-to-talk and toggle mute use V by default. Choose push-to-talk, open microphone, or toggle mute in the voice column of Settings. Toggle mute starts muted and switches with its configured key or your own mic button. Microphone selection, key bindings, and voice volume are in that same column. Jitsi RNNoise suppression is enabled by default and can be disabled there. The microphone threshold defaults to off. The slider itself displays the live microphone level, including while your outgoing microphone is muted. Move its handle to gate audio below the selected level after noise suppression; its leftmost position turns the threshold off. Both settings are stored in localStorage with your other voice preferences. Processing runs locally in a 48 kHz AudioWorklet before transmission, with a short hold and gain ramp to avoid chopped word endings and clicks. Only the processed track can be transmitted. Processing failures stop the microphone and show an error rather than transmitting unfiltered audio. License notices are shipped at `/licenses/rnnoise.txt`. The hold-to-talk button supports touch input.
-
-The lobby player list shows your mic button while you are connected to voice. During a game, your mic button is in the chat header beside the Join voice control and active chat filter. Other players can be muted or unmuted from voice settings. Its icon changes between idle, speaking, and locally muted. Click another player's mic to mute or unmute their voice locally; click your own mic to mute or unmute your microphone. Remote speaking indicators use audio arriving at your browser and respect your playback mute and volume settings. They do not reveal speech in private groups or anyone else's permission or mute state.
-
-The chat composer has a group selector beside the player name and group icons. Text and voice send only to the selected group. If access to that group changes, the server switches to All when allowed, otherwise the first allowed group. With no allowed group, sending stops. Whispers remain separate from this selection. Each voice group has an incoming deafen button. Individual player mute and volume controls affect only your playback. Deafen settings survive reconnects within the same lobby or game. A fresh game resets them. Brained and blackmailed players cannot transmit, regardless of their settings. Spectators can speak in the lobby, but can only hear All during a game.
-
-For simultaneous checkouts, use `pnpm configure 1` with a different offset per checkout. `mask worktree` runs this step automatically with the worktree's port offset.
-
-Hosts can enable or disable voice for the whole room in lobby settings or in-game host settings. The toggle is a room setting, is absent from the game mode editor, and is never included in saved client game modes. The server checks host authority, preserves the setting across lobby/game transitions, revokes media credentials and routes when disabled, and updates all clients. Enabling voice again lets players join it explicitly; it does not turn on their microphones.
-
-## Deployment
-
-1. Build the service with `docker build -t midnight-voice voice/`, or install its locked dependencies with Node.js 22+ and `pnpm install --frozen-lockfile`.
-2. Set the same nonempty `VOICE_CONTROL_SECRET` for Rust and the service. Keep it out of the client build and source control.
-3. Set Rust's `VOICE_CONTROL_URL` to the private service address, such as `ws://voice:9101/control`. Set `VOICE_PUBLIC_URL` to the browser-facing `wss://` signaling URL.
-4. Set service `VOICE_LISTEN_ADDRESS=0.0.0.0`, `VOICE_MEDIA_ADDRESS=0.0.0.0`, and `VOICE_ANNOUNCED_ADDRESS` to its reachable public IP. When using containers, set `VOICE_CONTROL_ADDRESS=0.0.0.0` on the private container network. Never publish port 9101 to the internet.
-5. Proxy the public signaling port 9100 with WebSocket upgrades and TLS. Serve the game client over HTTPS and its game socket over WSS. Microphone access works on localhost during local development.
-6. Forward ports 44400–44402 over both UDP and TCP directly to the service. These media ports do not use the HTTP reverse proxy. Set `VOICE_MEDIA_PORT` to change the first port.
-7. Set `VOICE_ALLOWED_ORIGINS` to a comma-separated list of exact frontend origins. Configure `VOICE_ICE_SERVERS` with browser-compatible ICE server JSON if TURN is needed for restrictive networks. These credentials are shared with authenticated browsers, so use limited credentials and rotate them as appropriate. No TURN server is bundled.
-
-If any of Rust's three voice environment variables are absent, voice stays disabled and the game continues normally. A configured but unavailable service produces a reconnect message in the voice column.
-
-### Sammy production deployment
-
-`.github/workflows/sammyserver-deploy-prod.yml` builds and pushes both the game and voice images, then replaces both containers on the Sammy host. Deploying interrupts active games. It keeps the game on port 2001, publishes voice signaling on host port 9100 for the Cloudflare proxy, and publishes media ports 44400–44402 over UDP and TCP. Port 9101 is available only inside the shared Docker network. The workflow checks that voice has an authenticated game-server connection before reporting success.
-
-Before the first deployment:
-
-1. Add these repository secrets under **Settings → Secrets and variables → Actions**:
-
-   | Secret | Value |
-   | --- | --- |
-   | `VOICE_CONTROL_SECRET` | Generate once with `openssl rand -hex 32`. The workflow supplies the same value to both containers. |
-   | `VOICE_PUBLIC_URL` | `wss://voice.midnightmachinations.net` |
-   | `VOICE_ANNOUNCED_ADDRESS` | Sammy's public IPv4 address, reachable directly by players. Use the actual server/NAT public IP, not a CDN IP or Docker address. |
-   | `VOICE_ALLOWED_ORIGINS` | `https://midnightmachinations.net`, adding any other actual game frontend origins separated by commas with no spaces. An origin includes its scheme and optional port, with no path or trailing slash. |
-
-   Existing `DOCKERHUB_USERNAME`, `DOCKERHUB_TOKEN`, `SERVER_HOST`, `SERVER_USER`, `SERVER_SSH_KEY`, and `SERVER_SSH_PORT` stay as configured. The Docker Hub account must be able to push `midnightmachinations-voice`. The server must be able to pull both images; if they are private, log in to Docker Hub on the server using its deployment user first.
-
-2. In Cloudflare DNS, add an **A** record named **voice**, pointing to the same server IPv4 address as the existing **wss** record. Enable **Proxied**. Keep the existing `wss` record and rule unchanged. The frontend stays on Cloudflare Pages.
-
-   In **Rules → Overview → Origin Rules**, create a rule matching **Hostname equals `voice.midnightmachinations.net`** and set **Destination port → Rewrite to `9100`**. This follows the existing `wss` origin rule, which forwards the game connection to port 2001. The expression is:
-
-   ```text
-   (http.host eq "voice.midnightmachinations.net")
+   ```sh
+   mask setup             # installs dependencies and runs mask voice configure
    ```
 
-   Cloudflare accepts browser HTTPS/WSS on port 443 and forwards to Sammy on port 9100. No Nginx or Cloudflare Tunnel is required. See [Cloudflare Origin Rules](https://developers.cloudflare.com/rules/origin-rules/).
+   Then fill in `REALTIME_APP_ID` and `REALTIME_APP_TOKEN` in the gitignored `voice/.dev.vars`. `mask voice configure` also wrote a shared random `VOICE_CONTROL_SECRET` there and the matching `VOICE_CONTROL_SECRET`, `VOICE_CONTROL_URL`, and `VOICE_PUBLIC_URL` into `server/.env.local`.
+3. `mask start` runs everything. To run voice on its own, use `mask voice start`, which runs `wrangler dev` on port 9100 (or `9100 + offset`).
 
-   The voice signaling service speaks HTTP, like the existing game server. Apply the same HTTP-origin SSL behavior used by `wss` to this new hostname. If the zone already uses **Flexible**, no SSL change is needed. If HTTP-origin behavior is scoped to `wss` by an existing rule, add a hostname-specific **Configuration Rule** with **SSL → Flexible** for `voice.midnightmachinations.net`. Do not change the entire zone's SSL mode. With Flexible, the browser-to-Cloudflare connection is encrypted, while Cloudflare-to-Sammy signaling uses unencrypted HTTP. WebRTC audio is encrypted independently. See [Cloudflare encryption modes](https://developers.cloudflare.com/ssl/origin-configuration/ssl-modes/).
+`mask worktree` configures voice with the worktree's port offset. Media goes from browsers straight to Cloudflare, so no UDP ports need to be published, including in the dev container.
 
-3. Allow inbound **9100/TCP** for Cloudflare signaling, preferably restricted to [Cloudflare's published IP ranges](https://www.cloudflare.com/ips/), and **44400–44402/UDP and TCP** for voice media from players. Apply the rules in the host and provider firewalls, using the same firewall mechanism that already allows port 2001. Docker publishes these ports itself, so ensure any host restrictions apply to Docker-forwarded traffic as well. Port **9101** stays private inside Docker and must not be published.
+If any of the server's three voice variables are missing, voice stays disabled and the game runs normally.
 
-   Media connects directly to Sammy's public IPv4 address and does not pass through the orange-cloud proxy. Set `VOICE_ANNOUNCED_ADDRESS` to the IP shown in the existing `wss` A record. If behind NAT, forward the media ports unchanged to Sammy. No inbound port 443 on Sammy is needed for this configuration.
+## Protocol
 
-4. Ensure the production frontend is deployed with the voice changes through your current frontend deployment process. The outdated `awesomeserver` workflows have been removed; Sammy deploys the game and voice servers only.
+Control link (`/control`, `Authorization: Bearer <VOICE_CONTROL_SECRET>`), game server → voice:
 
-5. Merge the workflow and voice changes into `prod`, or manually run **sammyserver-deploy** against the branch containing them. The workflow creates the Docker network and passes all required environment variables. No committed `.env`, client `VITE_*` variables, or manual container environment changes are needed. `VOICE_CONTROL_URL=ws://midnightmachinations-voice:9101/control` and all bind addresses are configured by the workflow. Local development `.env.local` files stay unchanged.
+```json
+{ "version": 3, "rooms": [{ "scope": "<random>", "members": [{ "id": 0, "token": "<random>", "send": ["all"], "receive": ["all", "dead"] }] }] }
+```
 
-6. Verify `https://voice.midnightmachinations.net/` returns `voice ready`, then join voice as two different players and check audio in both directions. On the host, use `docker logs midnightmachinations-voice` and `docker logs midnightmachinations-server` to investigate failures. If readiness fails, the workflow reports failure but leaves the containers running for inspection. It does not roll back automatically.
+The game server sends a snapshot whenever permissions change, and once on connect. Voice replies with `{ "presence": { "<scope>": [0, 2] } }` whenever someone joins or leaves. Only one game server is the authority at a time. A new control connection replaces the old one, and losing the link closes every voice session.
 
-Restrictive player networks may also require a separate TURN service. The initial workflow does not configure `VOICE_ICE_SERVERS` or deploy TURN.
+Browser socket (`/`): requests carry an `id`, and replies are `{ id, data }` or `{ id, error }`.
+
+| Request | Reply |
+| --- | --- |
+| `{ type: "join", token, deafened }` | `{ iceServers }` |
+| `{ type: "publish", sdp, mid }`: offer with one send-only audio transceiver | `{ sdp }` answer |
+| `{ type: "preferences", deafened }` | `{}` once routes are updated |
+
+When speakers become audible, voice sends `{ type: "offer", sdp, tracks: [{ mid, peer }] }`, and the browser replies with `{ type: "answer", sdp }`.
 
 ## Permission and privacy behavior
 
-Rust computes private send and receive sets from the same calculations used by text chat. It applies a separate voice-only forced-silence override for Cerenovous and Blackmailer effects. Only each player's own permissions go to that player's game socket. Public roster data contains no voice availability or mute/deafen state.
+Rust computes the send and receive sets with the same calculations used by text chat. It applies a separate voice-only forced-silence override for Cerenovous and Blackmailer effects. Only each player's own permissions go to that player's game socket. Public roster data contains no voice availability or mute or deafen state. All room mutations go through `with_voice_update`, which recomputes permissions after every action and publishes the snapshot if it changed.
 
-The listener wraps all mutating actions in `with_voice_update`. It recomputes permissions after every action, including mid-phase controller/role effects and silence changes; it does not depend on phase-change notifications. Future timer, admin, or external event handlers must use the same wrapper. Before game mutations, connects, disconnects, and ticks, Rust asks the SFU to pause forwarding and waits for acknowledgement. It then sends the new permission snapshot to resume authorized routes. This prevents an old permission snapshot from remaining active during a phase or role change. The control connection also sends one-second heartbeats. The SFU applies route revocations before grants. A listener receives one copy of a speaker's stream when at least one group allows it. Client requests cannot create or resume unauthorized routes. Group preference changes temporarily stop local transmission and playback until the service acknowledges them.
+Every browser publishes exactly one track, even while listen-only or forbidden to speak, so publishing reveals nothing. Browsers can only receive tracks that the Worker pulls into their SFU session. The SFU token never leaves the Worker. On each change, the Worker revokes obsolete routes before granting new ones, per listener.
 
-Consumers remain established while routing permissions change. The SFU pauses forwarding privately and never broadcasts producer mute, permission, group membership, or subscription-denied events. Muting a microphone does not send a mute status to other players. Network traffic and audible silence can still support guesses; the application does not report the reason.
+- **Revocation** force-closes the pulled track at the SFU without renegotiating. The listener gets silence and no message.
+- **Granting** pulls the speaker's track, which renegotiates with the listener. The offer names only the speaker's id, with no group, mute, or permission metadata. A listener can see that a speaker became audible to them, as they can with audible speech. If the same speaker is granted again after a revocation, they appear as a new track, so a modified client could notice that their route had been revoked earlier.
+- Changes take effect once the SFU applies them, usually within a few hundred milliseconds. There is no barrier that holds game actions until media is rerouted, so audio already in flight during a phase change can still arrive.
 
-Loss of the control socket closes media routers immediately. If a forwarding acknowledgement fails, a game operation may briefly wait for the old media lease to expire before proceeding. A stalled control connection expires after approximately 3.5–4 seconds. Reconnecting game sockets receive new random voice credentials and replace old sessions. Room and game changes also rotate credentials. Routing changes take effect when the media service applies the control snapshot; audio already in transit or buffered cannot be recalled.
+Group deafen changes mute local playback until the Worker acknowledges them. Brained and blackmailed players cannot transmit, whatever their settings. Spectators can speak in the lobby, but during a game they can only hear All.
+
+## Client behavior
+
+Join voice from the lobby header or the voice column in **Settings**. Joining asks for microphone permission and starts muted. If you decline, you join listen-only, and clicking your own microphone icon asks again. Input modes are open microphone (the default), push-to-talk, and toggle mute; push-to-talk and toggle mute use V by default. Jitsi RNNoise noise suppression and an optional threshold gate run locally in a 48 kHz AudioWorklet before transmission. Only the processed track is sent, and if processing fails the microphone stops rather than sending unfiltered audio. The license notice is shipped at `/licenses/rnnoise.txt`.
+
+Click another player's microphone icon to mute them locally. Per-player volume and per-group deafen live in the voice column. Speaking indicators use audio arriving at your browser, so they don't reveal speech in private groups. Hosts can turn voice on or off for the whole room. This is a room setting, never saved in game modes, and turning it off revokes every voice credential.
 
 ## Checks
 
 ```sh
-pnpm check
-# client/
-pnpm build
-# server/
-cargo clippy
+mask voice test   # tsc and routing tests
 ```
 
-Automated tests and load testing are deferred. Real microphones, browser autoplay behavior, restrictive networks, and phase changes during speech still need a multiplayer acceptance pass.
+Real microphones, browser autoplay, restrictive networks (configure TURN through `VOICE_ICE_SERVERS`), and phase changes during speech still need a multiplayer acceptance pass.
