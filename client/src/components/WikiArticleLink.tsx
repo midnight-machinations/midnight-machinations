@@ -1,7 +1,7 @@
 import translate, { langJson } from "../game/lang";
 import { MODIFIERS, type ModifierID } from "../game/modifiers";
 import { type Role, roleJsonData } from "../game/roleState.d";
-import { partitionWikiPages, WIKI_CATEGORIES, type WikiCategory, type WikiDisabledFilter } from "./Wiki";
+import { partitionWikiPages, type WikiDisabledFilter } from "./Wiki";
 import "./wiki.css";
 import { getAllRoles } from "../game/roleListState.d";
 
@@ -24,6 +24,23 @@ export type StandardArticle = (typeof STANDARD_ARTICLES)[number];
 
 const GENERATED_ARTICLES = ["roleSet", "all_text"] as const;
 export type GeneratedArticle = (typeof GENERATED_ARTICLES)[number];
+
+export const WIKI_CATEGORIES = [
+    "categories",
+    "town",
+    "mafia",
+    "cult",
+    "neutral",
+    "minions",
+    "fiends",
+    "modifiers",
+    "abilities",
+    "strategies",
+    "menus",
+    "phases",
+    "trial",
+] as const;
+export type WikiCategory = (typeof WIKI_CATEGORIES)[number];
 
 export const ARTICLES: WikiArticleLink[] = WIKI_CATEGORIES.map((category) => `category/${category}`)
     .concat(getAllRoles().map((role) => `role/${role}`))

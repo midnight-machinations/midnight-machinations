@@ -18,7 +18,14 @@ import Select from "./Select";
 import StyledText from "./StyledText";
 import { useLobbyOrGameState } from "./useHooks";
 import WikiArticle, { getSearchStrings, PageCollection } from "./WikiArticle";
-import { ARTICLES, getArticleTitle, type WikiArticleLink, wikiPageIsEnabled } from "./WikiArticleLink";
+import {
+    ARTICLES,
+    getArticleTitle,
+    WIKI_CATEGORIES,
+    type WikiArticleLink,
+    type WikiCategory,
+    wikiPageIsEnabled,
+} from "./WikiArticleLink";
 import WikiCoverCard from "./WikiCoverCard";
 
 export function setWikiSearchPage(
@@ -456,22 +463,8 @@ function WikiMainPage(
     );
 }
 
-export const WIKI_CATEGORIES = [
-    "categories",
-    "town",
-    "mafia",
-    "cult",
-    "neutral",
-    "minions",
-    "fiends",
-    "modifiers",
-    "abilities",
-    "strategies",
-    "menus",
-    "phases",
-    "trial",
-] as const;
-export type WikiCategory = (typeof WIKI_CATEGORIES)[number];
+// Defined next to ARTICLES, which needs it while modules load; Wiki and WikiArticleLink import each other
+export { WIKI_CATEGORIES, type WikiCategory };
 
 type WikiPagePartitions = Record<WikiCategory | "uncategorized", WikiArticleLink[]>;
 
