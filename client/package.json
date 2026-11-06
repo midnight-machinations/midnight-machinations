@@ -38,11 +38,11 @@
     "start": "vite",
     "dev": "vite",
     "build": "tsc && vite build",
-    "test": "node --test tests/*.test.cjs",
-    "test:mobile-swipe": "node --test tests/mobileSwipe.test.cjs",
-    "test:voice-keybind": "node --test tests/voiceKeybind.test.cjs",
-    "test:chat-group": "node --test tests/chatGroupSelect.test.cjs",
-    "test:chat-filter": "node --test tests/chatFilters.test.cjs",
+    "test": "node --experimental-strip-types --test tests/*.test.ts",
+    "test:mobile-swipe": "node --experimental-strip-types --test tests/mobileSwipe.test.ts",
+    "test:voice-keybind": "node --experimental-strip-types --test tests/voiceKeybind.test.ts",
+    "test:chat-group": "node --experimental-strip-types --test tests/chatGroupSelect.test.ts",
+    "test:chat-filter": "node --experimental-strip-types --test tests/chatFilters.test.ts",
     "preview": "vite preview"
   },
   "browserslist": {

@@ -1,4 +1,4 @@
-import workletUrl from "./microphone.worklet.js?worker&url";
+import workletUrl from "./microphone.worklet.ts?worker&url";
 import { VoiceSettings } from "./types";
 
 const modules = new WeakMap<AudioContext, Promise<void>>();

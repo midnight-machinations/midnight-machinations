@@ -5,7 +5,21 @@ const rnnoise = createRNNWasmModuleSync();
 const FRAME = 480;
 
 class VoiceMicrophoneProcessor extends AudioWorkletProcessor {
-    constructor(options) {
+    private readonly state: number;
+    private readonly buffer: number;
+    private readonly frame: Float32Array;
+    private framePosition: number;
+    private readonly output: Float32Array;
+    private read: number;
+    private write: number;
+    private suppression: boolean;
+    private thresholdDb: number;
+    private hold: number;
+    private gain: number;
+    private frames: number;
+    private closed: boolean;
+
+    constructor(options: AudioWorkletNodeOptions) {
         super();
         if (sampleRate !== 48000) throw new Error("Voice processing requires 48 kHz audio");
         this.state = rnnoise._rnnoise_create(0);
@@ -21,7 +35,7 @@ class VoiceMicrophoneProcessor extends AudioWorkletProcessor {
         this.gain = 0;
         this.frames = 0;
         this.closed = false;
-        this.port.onmessage = ({ data }) => {
+        this.port.onmessage = ({ data }: MessageEvent) => {
             if (data.close) {
                 rnnoise._rnnoise_destroy(this.state);
                 rnnoise._free(this.buffer);
@@ -34,7 +48,7 @@ class VoiceMicrophoneProcessor extends AudioWorkletProcessor {
         };
         this.port.postMessage({ ready: true });
     }
-    process(inputs, outputs) {
+    process(inputs: Float32Array[][], outputs: Float32Array[][]): boolean {
         if (this.closed) return false;
         const input = inputs[0]?.[0];
         const output = outputs[0]?.[0];
