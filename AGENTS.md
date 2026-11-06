@@ -5,6 +5,7 @@ Midnight Machinations (formerly Mafia) is a multiplayer social deduction game.
 - `server/`: Rust game logic and native WebSocket server (Cargo). `server/wasm` builds it for WebAssembly, and `server/worker` hosts that build in a Cloudflare Durable Object
 - `client/`: TypeScript/React frontend (Vite, pnpm)
 - `voice/`: voice signaling Worker (TypeScript, Cloudflare Realtime SFU)
+- `proto/`: protobuf definitions (a buf module) for Twirp endpoints. `mask proto generate` writes the TypeScript client to `client/src/gen`; `server/proto` generates the Rust side at build time
 - `assets/`: static files shared across packages (`public/` is served by the client, `random_names/` is compiled into the server)
 - `tools/gen/`: Rust generators for shared files and local settings (`mask gen <generator>`, `mask config`)
 - `deploy/`: per-service wrangler configs, Dockerfiles, and deploy tasks
