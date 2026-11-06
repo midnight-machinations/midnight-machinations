@@ -6,7 +6,7 @@
     "node": ">=22"
   },
   "scripts": {
-    "start": "wrangler dev",
+    "start": "wrangler dev -c ../deploy/voice/wrangler.json --env-file .dev.vars",
     "check": "tsc",
     "test": "node --experimental-strip-types --test test/*.test.ts"
   },

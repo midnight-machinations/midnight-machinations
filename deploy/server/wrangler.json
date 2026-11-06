@@ -1,0 +1,19 @@
+{
+  "$schema": "../../server/worker/node_modules/wrangler/config-schema.json",
+  "name": "midnight-machinations-server",
+  "main": "../../server/worker/index.ts",
+  "compatibility_date": "2026-10-01",
+  "build": {
+    "command": "cargo build --release --target wasm32-unknown-unknown",
+    "cwd": "../../server/wasm",
+    "watch_dir": ["../../server/src", "../../server/wasm/src"]
+  },
+  "durable_objects": {
+    "bindings": [{ "name": "GAME", "class_name": "Game" }]
+  },
+  "migrations": [{ "tag": "v1", "new_sqlite_classes": ["Game"] }],
+  "services": [{ "binding": "VOICE", "service": "midnight-machinations-voice" }],
+  "vars": { "VOICE_PUBLIC_URL": "" },
+  "dev": { "port": 9000 },
+  "observability": { "enabled": true }
+}

@@ -124,6 +124,16 @@ set -e
 (cd client && pnpm build)
 ```
 
+## deploy
+
+> Deployment tasks live in deploy/{server,voice,client}/maskfile.md
+
+Run them with `mask --maskfile deploy/<service>/maskfile.md <task>`. Each directory's README explains its Cloudflare and Docker setup.
+
+```sh
+for service in server voice client; do echo "== $service"; mask --maskfile "deploy/$service/maskfile.md" --help | sed -n '/SUBCOMMANDS/,$p'; done
+```
+
 ## gen (generator)
 
 > Regenerate shared files: dummy-names, broken-keyboard, scrambled, or all
@@ -199,7 +209,7 @@ cd server && cargo clippy
 
 ```sh
 port=$(sed -n 's/^VOICE_DEV_PORT=//p' voice/.dev.vars 2>/dev/null | tail -n 1)
-cd voice && pnpm exec wrangler dev --port "${port:-9100}"
+cd voice && pnpm start --port "${port:-9100}"
 ```
 
 ### voice configure

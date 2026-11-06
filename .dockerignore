@@ -1,0 +1,7 @@
+**/node_modules
+**/target
+**/.wrangler
+client/build
+**/.env.local
+**/.dev.vars
+.git

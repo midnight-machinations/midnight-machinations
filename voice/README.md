@@ -13,6 +13,8 @@ browser ── game socket ──▶ Rust server ── /control (secret) ──
 - `src/routing.ts`: the forwarding rule. A speaker's single send group must be one the listener receives and hasn't deafened.
 - `src/sfu.ts`: a minimal Realtime SFU API client. The app token stays in the Worker.
 
+The wrangler config is `deploy/voice/wrangler.json`; see `deploy/voice/README.md` for deployment.
+
 ## Local setup
 
 1. In the Cloudflare dashboard, open **Realtime → SFU** and create an app. The free plan includes it. Copy the app ID and API token.
