@@ -12,12 +12,12 @@ This is Midnight Machinations (formerly Mafia), a multiplayer social deduction g
 ```
 .
 ├── client/          # Frontend React/TypeScript application
-│   ├── src/         # Source code
-│   └── public/      # Static assets
+│   └── src/         # Source code
 ├── server/          # Backend Rust application
 │   ├── src/         # Source code
 │   └── tests/       # Test files
-└── generate/        # Code generation utilities
+├── assets/          # Shared static files (client public/, server random_names/)
+└── tools/gen/       # Rust generators for shared files
 ```
 
 ## Build, Test, and Lint Commands

@@ -1,0 +1,9 @@
+[package]
+name = "gen"
+version = "0.1.0"
+edition = "2024"
+description = "Code and data generators for Midnight Machinations"
+
+[dependencies]
+serde_json = { version = "1.0", features = ["preserve_order"] }
+serde = "1.0"

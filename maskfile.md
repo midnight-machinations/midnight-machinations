@@ -123,6 +123,16 @@ set -e
 (cd client && pnpm build)
 ```
 
+## gen (generator)
+
+> Regenerate shared files: dummy-names, broken-keyboard, scrambled, or all
+
+`dummy-names` reads `assets/random_names/names.json` and writes the client's `dummyNames.json` and the server's name CSVs. `broken-keyboard` and `scrambled` derive client language files from `en_us.json`.
+
+```sh
+cargo run --quiet --manifest-path tools/gen/Cargo.toml -- "$generator"
+```
+
 ## client
 
 > Client tasks (TypeScript/React, Vite)

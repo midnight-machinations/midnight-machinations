@@ -6,12 +6,12 @@ lazy_static!(
     static ref RANDOM_NAMES: Vec<String> = {
         let mut random_names = Vec::new();
         random_names.append(&mut 
-            include_str!("../../resources/random_names/default_names.csv").lines()
+            include_str!("../../../assets/random_names/default_names.csv").lines()
                 .map(str::to_string)
                 .collect()
         );
         random_names.append(&mut 
-            include_str!("../../resources/random_names/extra_names.csv").lines()
+            include_str!("../../../assets/random_names/extra_names.csv").lines()
                 .map(str::to_string)
                 .collect()
         );

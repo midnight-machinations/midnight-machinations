@@ -8,6 +8,8 @@ export default defineConfig(({ mode }) => {
 
   return {
     plugins: [react()],
+    // Static files shared with other packages live in the root assets folder.
+    publicDir: '../assets/public',
     // AudioWorklet has import.meta.url but no WorkerGlobalScope/self.location.
     worker: { format: 'es' },
     server: {
