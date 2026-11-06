@@ -5,12 +5,14 @@ import { useLobbyOrGameState } from "../useHooks";
 import translate from "../../game/lang";
 import { VOICE } from "../../voice/voiceManager";
 import CheckBox from "../CheckBox";
+import { FEATURES } from "../../features";
 
 export default function RoomVoiceSetting(props: Readonly<{ children?: React.ReactNode }>) {
     useSyncExternalStore(VOICE.subscribe, VOICE.getRevision);
     const room = useLobbyOrGameState(state => ({
         host: state.stateType === "game" ? state.host !== null : state.players.get(state.myId!)?.ready === "host",
     }), ["lobbyClients", "playersHost", "hostData", "acceptJoin", "startGame", "backToLobby"]);
+    if (!FEATURES.voice) return <>{props.children}</>;
     if (!room || (GAME_MANAGER.state.stateType !== "lobby" && GAME_MANAGER.state.stateType !== "game")) return null;
     return <section className="chat-menu-colors selector-section room-voice-setting">
         <div className="voice-setting-row">

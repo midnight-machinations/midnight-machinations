@@ -17,8 +17,8 @@ Use the `mask worktree` task (in `maskfile.md`) from the repo root. Don't create
    ```
    - If `<branch>` exists, the task checks it out. Otherwise it creates it from the current HEAD.
    - Leave out `--offset` unless the user asks for specific ports or the default clashes with something. The default is the number of existing worktrees, so the first extra worktree gets client 3001 and server 9001.
-   - It writes `client/.env.local` (`VITE_WS_ADDRESS`, `CLIENT_PORT`) and `server/.env.local` (`WS_ADDRESS`), then runs `pnpm install`. This can take a minute.
-   - It also runs `mask voice configure --offset <offset>`. That writes `voice/.dev.vars` and adds the voice settings to `server/.env.local`. Voice listens on port `9100 + offset`. Copy `REALTIME_APP_ID` and `REALTIME_APP_TOKEN` from the main checkout's `voice/.dev.vars` if voice is needed.
+   - It copies the main checkout's `config.local.toml` (voice credentials and secret) with the new `[ports] offset`, runs `mask config` there, and then runs `pnpm install`. This can take a minute.
+   - Ports are the `config.toml` ports plus the offset: client `3000 + offset`, server `9000 + offset`, voice `9100 + offset`.
 4. Tell the user the worktree path and the client, server, and voice ports the task printed.
 
 ## Running the worktree
@@ -38,6 +38,6 @@ cd <path> && mask voice start         # serves on the worktree's voice ports (ru
 
 ## Notes
 
-- Both `.env.local` files are gitignored and take precedence over the committed `.env` files. To change a worktree's ports later, edit those files. Keep the client's `VITE_WS_ADDRESS` port the same as the server's `WS_ADDRESS` port.
+- The generated `.env.local` and `.dev.vars` files are gitignored. To change a worktree's ports or flags later, edit its `config.local.toml` and run `mask config` again.
 - Each worktree has its own `server/target`, so the first `cargo build` in it starts from scratch.
 - To remove a worktree: `git worktree remove <path>`, then `git branch -d <branch>` if the branch isn't needed anymore. Ask before deleting a branch that has unmerged commits.

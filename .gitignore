@@ -13,7 +13,7 @@ Cargo.lock
 
 #Mafia Client
 # dependencies
-/node_modules/
+**/node_modules/
 client/node_modules
 client/.pnp
 client/.pnp.js
@@ -46,5 +46,8 @@ generate/**/__pycache__
 
 # Voice service
 voice/node_modules/
-voice/.dev.vars
+**/.dev.vars
 .wrangler/
+
+# Local settings overrides and secrets (see config.toml)
+config.local.toml

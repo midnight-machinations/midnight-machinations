@@ -2,6 +2,7 @@ import React, { useSyncExternalStore } from "react";
 import Icon from "../components/Icon";
 import translate from "../game/lang";
 import { VOICE } from "./voiceManager";
+import { FEATURES } from "../features";
 import "./voice.css";
 
 /** Voice state for one player-list entry. Speaking shows as an outline on the entry itself. */
@@ -14,7 +15,7 @@ export function useVoicePlayer(target: { roomClientId?: number; playerIndex?: nu
     return {
         id,
         // Whether this room has voice, so presence icons have meaning.
-        available: session !== null,
+        available: FEATURES.voice && session !== null,
         // The server only reports presence in lobbies.
         inVoice: id !== undefined && session?.peers.find(peer => peer.id === id)?.inVoice === true,
         speaking: connected && id !== undefined && !VOICE.playerMuted(id) && VOICE.isSpeaking(id),

@@ -13,7 +13,6 @@
   },
   "migrations": [{ "tag": "v1", "new_sqlite_classes": ["Game"] }],
   "services": [{ "binding": "VOICE", "service": "midnight-machinations-voice" }],
-  "vars": { "VOICE_PUBLIC_URL": "" },
   "dev": { "port": 9000 },
   "observability": { "enabled": true }
 }

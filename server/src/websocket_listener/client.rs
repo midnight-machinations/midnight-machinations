@@ -76,7 +76,7 @@ pub(super) struct Client {
     pub(super) voice_session: Option<crate::voice::VoiceSession>,
     connection: Connection,
     location: ClientLocation,
-    last_ping: tokio::time::Instant,
+    last_ping: crate::platform::Instant,
 }
 impl Client{
     const PONG_INTERVAL: Duration = Duration::from_secs(5);
@@ -86,17 +86,17 @@ impl Client{
             voice_session: None,
             connection,
             location: ClientLocation::OutsideRoom,
-            last_ping: tokio::time::Instant::now(),
+            last_ping: crate::platform::Instant::now(),
         }
     }
     pub(super) fn on_ping(&mut self) {
-        self.last_ping = tokio::time::Instant::now();
+        self.last_ping = crate::platform::Instant::now();
     }
     pub(super) fn ping_timed_out(&self) -> bool {
         self.last_ping.elapsed() > Self::PONG_INTERVAL.mul(2)
     }
     pub(super) fn tick(&mut self) {
-        if Self::PONG_INTERVAL < tokio::time::Instant::now().saturating_duration_since(self.last_ping) {
+        if Self::PONG_INTERVAL < crate::platform::Instant::now().saturating_duration_since(self.last_ping) {
             self.connection.send(ToClientPacket::Pong);
         }
     }

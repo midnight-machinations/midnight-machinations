@@ -21,13 +21,21 @@ The wrangler config is `deploy/voice/wrangler.json`; see `deploy/voice/README.md
 2. From the repository root:
 
    ```sh
-   mask setup             # installs dependencies and runs mask voice configure
+   mask setup             # installs dependencies and runs mask config
    ```
 
-   Then fill in `REALTIME_APP_ID` and `REALTIME_APP_TOKEN` in the gitignored `voice/.dev.vars`. `mask voice configure` also wrote a shared random `VOICE_CONTROL_SECRET` there and the matching `VOICE_CONTROL_SECRET`, `VOICE_CONTROL_URL`, and `VOICE_PUBLIC_URL` into `server/.env.local`.
+   Then add the credentials to the gitignored `config.local.toml` and run `mask config` again:
+
+   ```toml
+   [voice]
+   realtime_app_id = "..."
+   realtime_app_token = "..."
+   ```
+
+   `mask config` generated a shared `control_secret` there the first time. It writes the voice Worker's `deploy/voice/.dev.vars` and the matching game server settings into `server/.env.local` (native) and `deploy/server/.dev.vars` (serverless). Set `[features] voice = false` to run without voice.
 3. `mask start` runs everything. To run voice on its own, use `mask voice start`, which runs `wrangler dev` on port 9100 (or `9100 + offset`).
 
-`mask worktree` configures voice with the worktree's port offset. Media goes from browsers straight to Cloudflare, so no UDP ports need to be published, including in the dev container.
+`mask worktree` gives each worktree its own voice port. Media goes from browsers straight to Cloudflare, so no UDP ports need to be published, including in the dev container.
 
 If any of the server's three voice variables are missing, voice stays disabled and the game runs normally.
 

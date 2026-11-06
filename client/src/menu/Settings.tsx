@@ -1,4 +1,5 @@
 import VoiceControls from "../voice/VoiceControls";
+import { FEATURES } from "../features";
 import React, { ReactElement, useContext, useEffect, useState } from "react";
 import "./settings.css";
 import translate, { Language, languageName, LANGUAGES, switchLanguage } from "../game/lang";
@@ -194,9 +195,9 @@ export default function SettingsMenu(): ReactElement {
                     }}><Icon>delete_forever</Icon> {translate('menu.settings.eraseSaveData')}</Button>
                 </section>
             </div>
-            <div className="settings-voice-column chat-menu-colors">
+            {FEATURES.voice && <div className="settings-voice-column chat-menu-colors">
                 <VoiceControls/>
-            </div>
+            </div>}
         </main>
     </div>
 }

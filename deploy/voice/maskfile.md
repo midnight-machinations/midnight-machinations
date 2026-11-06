@@ -37,8 +37,8 @@ cd "$MASKFILE_DIR/../.." && docker build -f deploy/voice/Dockerfile -t midnightm
 
 ### docker run
 
-> Run the image on port 9100 with secrets from voice/.dev.vars
+> Run the image on port 9100 with the settings mask config generated
 
 ```sh
-cd "$MASKFILE_DIR/../.." && docker run --rm -p 9100:9100 --env-file voice/.dev.vars midnightmachinations-voice
+cd "$MASKFILE_DIR/../.." && docker run --rm -p 9100:9100 --env-file deploy/voice/.dev.vars midnightmachinations-voice
 ```

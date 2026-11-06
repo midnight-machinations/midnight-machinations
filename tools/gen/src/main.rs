@@ -1,22 +1,29 @@
 //! Generators for files shared between the client and server.
 //!
-//! Run from anywhere in the repository: `cargo run -p gen -- <generator>` from
-//! `tools/gen`, or `mask gen <generator>` from the root.
+//! Run `mask gen <generator>` from the repository root. `mask config` runs `vars`.
 
-use std::{collections::HashMap, fs, io, path::PathBuf};
+use std::{collections::HashMap, fs, io, path::{Path, PathBuf}};
 
 use serde_json::{Map, Value};
 
-const USAGE: &str = "Usage: gen <dummy-names | broken-keyboard | scrambled | all>";
+mod vars;
+
+type Generator = (&'static str, fn(&Path) -> io::Result<()>);
+
+const USAGE: &str = "Usage: gen <vars | dummy-names | broken-keyboard | scrambled | all>";
 
 fn main() -> Result<(), String> {
     let root = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../..");
-    let generators: &[(&str, fn(&PathBuf) -> io::Result<()>)] = &[
+    let generators: &[Generator] = &[
         ("dummy-names", dummy_names),
         ("broken-keyboard", broken_keyboard),
         ("scrambled", scrambled),
     ];
     let arg = std::env::args().nth(1).ok_or(USAGE)?;
+    // Local settings are separate from the checked-in generated files, so `all` skips them.
+    if arg == "vars" {
+        return vars::generate(&root).map_err(|error| format!("vars: {error}"));
+    }
     let selected: Vec<_> = generators.iter().filter(|(name, _)| arg == "all" || arg == *name).collect();
     if selected.is_empty() {
         return Err(USAGE.into());
@@ -30,7 +37,7 @@ fn main() -> Result<(), String> {
 
 /// `assets/random_names/names.json` is the source for the client's dummy names
 /// and the server's random name lists.
-fn dummy_names(root: &PathBuf) -> io::Result<()> {
+fn dummy_names(root: &Path) -> io::Result<()> {
     let names: Value = serde_json::from_str(&fs::read_to_string(root.join("assets/random_names/names.json"))?)?;
     let list = |key: &str| -> Vec<String> {
         names[key].as_array().into_iter().flatten().filter_map(|name| name.as_str().map(str::to_owned)).collect()
@@ -53,7 +60,7 @@ fn csv_field(field: &str) -> String {
 }
 
 /// Removes vowels from every word.
-fn broken_keyboard(root: &PathBuf) -> io::Result<()> {
+fn broken_keyboard(root: &Path) -> io::Result<()> {
     transform_lang(root, "broken_keyboard.json", "Broken Keyboard", |_, value| {
         value.chars().filter(|c| !"aeiouAEIOU".contains(*c)).collect()
     })
@@ -61,7 +68,7 @@ fn broken_keyboard(root: &PathBuf) -> io::Result<()> {
 
 /// Shuffles the letters of every word. Each word is shuffled once, the first time
 /// it appears, so it reads the same everywhere.
-fn scrambled(root: &PathBuf) -> io::Result<()> {
+fn scrambled(root: &Path) -> io::Result<()> {
     let mut cache: HashMap<String, Vec<char>> = HashMap::new();
     transform_lang(root, "dyslexic.json", "Scrambled", |key, value| {
         let mut rng = Rng::seeded(key);
@@ -88,7 +95,7 @@ fn scrambled(root: &PathBuf) -> io::Result<()> {
 }
 
 /// Rewrites every value of `en_us.json` into another client language file.
-fn transform_lang(root: &PathBuf, file: &str, language: &str, mut transform: impl FnMut(&str, &str) -> String) -> io::Result<()> {
+fn transform_lang(root: &Path, file: &str, language: &str, mut transform: impl FnMut(&str, &str) -> String) -> io::Result<()> {
     let lang_root = root.join("client/src/resources/lang");
     let english: Map<String, Value> = serde_json::from_str(&fs::read_to_string(lang_root.join("en_us.json"))?)?;
     let output: Map<String, Value> = english

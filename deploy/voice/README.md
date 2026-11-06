@@ -24,7 +24,7 @@ The voice service is a Cloudflare Worker with one Durable Object (`voice/src/ind
 
 ```sh
 mask --maskfile deploy/voice/maskfile.md docker build
-mask --maskfile deploy/voice/maskfile.md docker run   # uses voice/.dev.vars
+mask --maskfile deploy/voice/maskfile.md docker run   # uses deploy/voice/.dev.vars
 ```
 
 Put TLS in front of port 9100. Keep `/control` reachable only by the game server, or rely on its bearer secret.

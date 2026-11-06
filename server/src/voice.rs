@@ -1,8 +1,5 @@
 //! Private control link to the voice service. Audio never travels over the game socket.
-use futures_util::{SinkExt, StreamExt};
 use serde::Serialize;
-use tokio::sync::watch;
-use tokio_tungstenite::tungstenite::{Message, client::IntoClientRequest};
 
 #[derive(Clone, Debug, PartialEq, Eq, Serialize)]
 #[serde(rename_all = "camelCase")]
@@ -35,25 +32,56 @@ pub fn random_token() -> String {
     )
 }
 
-/// Publishes routing snapshots to the voice service and keeps the presence it reports.
+/// Holds the routing snapshot for the voice service and the presence it reports.
 /// Snapshots go out only when they change; the voice service applies revocations
-/// before grants and drops all routes if this link closes.
+/// before grants and drops all routes if its control link closes.
 pub struct VoiceBridge {
     pub public_url: String,
-    snapshots: watch::Sender<serde_json::Value>,
+    snapshot: serde_json::Value,
+    /// Hands each new snapshot to whatever carries it to the voice service.
+    outbox: Box<dyn FnMut(&serde_json::Value) + Send>,
     /// Room client IDs joined to voice, by scope, as last reported by the voice service.
     presence: std::sync::Arc<std::sync::Mutex<std::collections::HashMap<String, Vec<u32>>>>,
 }
 impl VoiceBridge {
+    pub fn new(public_url: String, outbox: Box<dyn FnMut(&serde_json::Value) + Send>) -> Self {
+        Self { public_url, snapshot: serde_json::json!([]), outbox, presence: Default::default() }
+    }
+    pub fn in_voice(&self, scope: &str, id: u32) -> bool {
+        self.presence
+            .lock()
+            .is_ok_and(|presence| presence.get(scope).is_some_and(|ids| ids.contains(&id)))
+    }
+    pub fn set_presence(&self, presence: std::collections::HashMap<String, Vec<u32>>) {
+        if let Ok(mut reported) = self.presence.lock() { *reported = presence; }
+    }
+    /// The current snapshot, to resend when a control link (re)connects.
+    pub fn snapshot(&self) -> &serde_json::Value {
+        &self.snapshot
+    }
+    pub fn publish(&mut self, snapshot: serde_json::Value) {
+        if snapshot != self.snapshot {
+            self.snapshot = snapshot;
+            (self.outbox)(&self.snapshot);
+        }
+    }
+
+    /// Connects to `VOICE_CONTROL_URL` from a background thread, if voice is configured.
+    #[cfg(not(target_arch = "wasm32"))]
     pub fn from_env() -> Option<Self> {
+        if std::env::var("FEATURE_VOICE").is_ok_and(|flag| flag == "false") { return None }
+        use futures_util::{SinkExt, StreamExt};
+        use tokio::sync::watch;
+        use tokio_tungstenite::tungstenite::{Message, client::IntoClientRequest};
+
         let url = std::env::var("VOICE_CONTROL_URL").ok()?;
         let public_url = std::env::var("VOICE_PUBLIC_URL").ok()?;
         let secret = std::env::var("VOICE_CONTROL_SECRET")
             .ok()
             .filter(|s| !s.is_empty())?;
         let (snapshots, mut updates) = watch::channel(serde_json::json!([]));
-        let presence = std::sync::Arc::new(std::sync::Mutex::new(std::collections::HashMap::new()));
-        let reported = presence.clone();
+        let bridge = Self::new(public_url, Box::new(move |snapshot| { snapshots.send_replace(snapshot.clone()); }));
+        let reported = bridge.presence.clone();
         // A dedicated runtime keeps the link independent of the game loop's lock.
         std::thread::spawn(move || {
             let Ok(runtime) = tokio::runtime::Builder::new_current_thread()
@@ -104,18 +132,6 @@ impl VoiceBridge {
                 }
             });
         });
-        Some(Self { public_url, snapshots, presence })
-    }
-    pub fn in_voice(&self, scope: &str, id: u32) -> bool {
-        self.presence
-            .lock()
-            .is_ok_and(|presence| presence.get(scope).is_some_and(|ids| ids.contains(&id)))
-    }
-    pub fn publish(&self, snapshot: serde_json::Value) {
-        self.snapshots.send_if_modified(|current| {
-            let changed = *current != snapshot;
-            *current = snapshot;
-            changed
-        });
+        Some(bridge)
     }
 }

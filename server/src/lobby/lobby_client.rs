@@ -1,5 +1,5 @@
 use std::collections::VecDeque;
-use std::time::Instant;
+use crate::platform::Instant;
 
 use serde::Serialize;
 

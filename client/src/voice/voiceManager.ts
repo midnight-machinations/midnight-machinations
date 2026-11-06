@@ -3,6 +3,7 @@ import { ANCHOR_CONTROLLER } from "../menu/Anchor";
 import translate from "../game/lang";
 import { MicrophoneProcessing } from "./microphoneProcessing";
 import { keybindReleased, matchesKeybind, matchesKeybindModifiers } from "./keybind";
+import { FEATURES } from "../features";
 
 /** Sent by the voice service when it pulls speakers into this session. */
 type OfferMessage = { type: "offer"; sdp: string; tracks: { mid: string; peer: number }[] };
@@ -153,7 +154,7 @@ export class VoiceManager {
         this.changed();
     }
     async join() {
-        if (!this.roomEnabled || !this.session || this.status === "connecting" || this.status === "connected") return;
+        if (!FEATURES.voice || !this.roomEnabled || !this.session || this.status === "connecting" || this.status === "connected") return;
         this.wantConnected = true;
         this.selfMuted = true;
         this.lastWarning = "";

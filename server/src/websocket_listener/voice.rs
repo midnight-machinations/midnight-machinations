@@ -184,7 +184,7 @@ impl WebsocketListener {
                 .and_then(serde_json::Value::as_str)
                 .map(str::to_owned)
         });
-        if let Some(bridge) = &self.voice {
+        if let Some(bridge) = &mut self.voice {
             bridge.publish(serde_json::json!(rooms));
         }
         for (address, client) in &mut self.clients {

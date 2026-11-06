@@ -38,5 +38,7 @@ jobs:
         run: cargo test --verbose
       - name: Check
         run: cargo clippy --verbose
+      - name: WebAssembly build (Cloudflare Worker)
+        run: rustup target add wasm32-unknown-unknown && cd wasm && cargo build --release
       - name: Audit
         run: cargo audit

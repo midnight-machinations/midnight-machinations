@@ -10,7 +10,9 @@ COPY voice/package.json voice/pnpm-lock.yaml voice/pnpm-workspace.yaml ./
 RUN pnpm install --frozen-lockfile
 COPY voice ./
 COPY deploy/voice/wrangler.json ../deploy/voice/wrangler.json
+# wrangler keeps local state beside the Worker and reads vars from .dev.vars beside its config.
+RUN chown -R node /app
+USER node
 ENV WRANGLER_SEND_METRICS=false
 EXPOSE 9100
-USER node
-CMD ["sh", "-c", "env | grep -E '^(VOICE_|REALTIME_)' > /tmp/voice.env; exec pnpm exec wrangler dev -c ../deploy/voice/wrangler.json --env-file /tmp/voice.env --ip 0.0.0.0 --port 9100 --show-interactive-dev-session=false"]
+CMD ["sh", "-c", "env | grep -E '^(VOICE_|REALTIME_)' > ../deploy/voice/.dev.vars; exec pnpm exec wrangler dev -c ../deploy/voice/wrangler.json --ip 0.0.0.0 --port 9100 --show-interactive-dev-session=false"]
