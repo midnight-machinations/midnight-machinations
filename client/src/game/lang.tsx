@@ -4,12 +4,12 @@ import enUsJson from "../../../assets/resources/lang/en_us.json";
 
 export let langMap: ReadonlyMap<string, string>;
 export let langText: string;
-export let langJson: any;
+export let langJson: Record<string, string>;
 
 export const LANGUAGES = ["en_us", "broken_keyboard", "dyslexic"] as const;
 export type Language = (typeof LANGUAGES)[number];
 
-const LANGUAGE_IMPORTS: Record<Language, any> = {
+const LANGUAGE_IMPORTS: Record<Language, Record<string, string>> = {
     en_us: enUsJson,
     broken_keyboard: brokenKeyboardJson,
     dyslexic: dyslexicJson,

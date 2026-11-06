@@ -8,6 +8,7 @@ import { Button } from "../../../components/Button";
 import ChatMessage, { type ChatMessageIndex, translateChatMessage } from "../../../components/ChatMessage";
 import GraveComponent, { translateGraveRole } from "../../../components/grave";
 import Icon from "../../../components/Icon";
+import { buttonProps } from "../../../components/keyboard";
 import PlayerNamePlate from "../../../components/PlayerNamePlate";
 import StyledText from "../../../components/StyledText";
 import {
@@ -21,7 +22,6 @@ import { controllerIdToLinkWithPlayer } from "../../../game/controllerInput";
 import type { PlayerIndex } from "../../../game/gameState.d";
 import ListMap from "../../../ListMap";
 import { ContentMenu, ContentTab } from "../GameScreen";
-import { buttonProps } from "../../../components/keyboard";
 import { ChatMessageSection, ChatTextInput } from "./ChatMenu";
 
 export default function PlayerListMenu(): ReactElement {
@@ -212,7 +212,7 @@ function PlayerCard(
                 selection: newSelection,
             },
         });
-    }, [controllers, myPlayerIndex, myNominationControllerId, myNominationSelection]);
+    }, [myNominationControllerId, myNominationSelection, props.playerIndex]);
 
     const voice = useVoicePlayer({ playerIndex: props.playerIndex });
 

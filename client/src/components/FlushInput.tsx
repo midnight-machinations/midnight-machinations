@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import Icon from "./Icon";
 import "./flushInput.css";
 
@@ -14,7 +14,7 @@ export default function FlushInput(
 ) {
     const inputRef = useRef<HTMLInputElement | null>(null);
 
-    const calculateInputFieldWidth = () => {
+    const calculateInputFieldWidth = useCallback(() => {
         if (inputRef.current === null) return 50;
 
         const style = globalThis.getComputedStyle(inputRef.current);
@@ -30,13 +30,13 @@ export default function FlushInput(
         const inputWidth = temp.getBoundingClientRect().width;
         temp.remove();
         return inputWidth;
-    };
+    }, [props.value]);
 
     const [inputFieldWidth, setInputFieldWidth] = useState(calculateInputFieldWidth());
 
     useEffect(() => {
         setInputFieldWidth(calculateInputFieldWidth());
-    }, [props.value]);
+    }, [calculateInputFieldWidth]);
 
     const [inputFocused, setInputFocused] = useState(false);
 

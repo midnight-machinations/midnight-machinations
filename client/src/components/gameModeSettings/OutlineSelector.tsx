@@ -469,8 +469,8 @@ function PlayerPoolSelector(
     const optionsSearch = new Map<number, [ReactElement, string]>(
         playerNames.map((name, index) => [
             index,
-            // biome-ignore lint/suspicious/noArrayIndexKey: outline options have no id; each entry is identified by its position
             [
+                // biome-ignore lint/suspicious/noArrayIndexKey: the index is the player index, which is the option's identity
                 <StyledText key={index} noLinks={true}>
                     {encodeString(name)}
                 </StyledText>,
@@ -597,11 +597,12 @@ export function RoleOrRoleSetSelector(
         [enabledRoles],
     );
 
+    const displayValue = "displayValue" in props ? props.displayValue : undefined;
     const optionsSearch: SelectOptionsSearch<string> = useMemo(() => {
         const options = new Map();
 
-        if ("displayValue" in props) {
-            options.set(props.displayValue[0], props.displayValue[1]);
+        if (displayValue !== undefined) {
+            options.set(displayValue[0], displayValue[1]);
         }
 
         ROLE_SETS.forEach((roleSet) => {
@@ -632,7 +633,7 @@ export function RoleOrRoleSetSelector(
             ]);
         });
         return options;
-    }, [props.disabled, isRoleEnabled]);
+    }, [displayValue, props.disabled, isRoleEnabled]);
 
     return (
         <Select

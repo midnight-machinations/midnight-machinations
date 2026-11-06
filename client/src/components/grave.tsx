@@ -7,8 +7,8 @@ import StyledText from "./StyledText";
 import "./grave.css";
 import type { UnsafeString } from "../game/gameState.d";
 import type { RoleList } from "../game/roleListState.d";
-import { useGameState, useLobbyOrGameState } from "./useHooks";
 import { buttonProps } from "./keyboard";
+import { useGameState, useLobbyOrGameState } from "./useHooks";
 
 export function translateGraveRole(grave: Grave): string {
     if (grave.information.type === "obscured") {
@@ -44,7 +44,7 @@ export default function GraveComponent(
         return (
             <UnobscuredGrave
                 noLinks={props.noLinks}
-                grave={props.grave as any}
+                grave={props.grave as Grave & { information: GraveInformation & { type: "normal" } }}
                 playerNames={playerNames}
                 roleList={roleList}
             />

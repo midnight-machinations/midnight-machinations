@@ -99,7 +99,7 @@ export function controllerIsVisible(id: ControllerID, controller: SavedControlle
     return (singleAbilityJsonData(controllerIdToLink(id))?.visible ?? true) && !controller.parameters.grayedOut;
 }
 
-export default function GenericAbilityMenu(): ReactElement {
+export default function GenericAbilityMenu(): ReactElement | null {
     const savedAbilities = usePlayerState(
         (playerState) => playerState.savedControllers,
         ["yourAllowedControllers", "yourAllowedController"],
@@ -155,9 +155,9 @@ function MultipleControllersMenu(
         groupName: string;
         controllers: ListMap<ControllerID, SavedController>;
     }>,
-): ReactElement {
+): ReactElement | null {
     if (props.controllers.entries().length === 0) {
-        return <></>;
+        return null;
     }
     if (props.controllers.entries().length === 1) {
         const firstController = props.controllers.entries()[0];
@@ -171,7 +171,7 @@ function MultipleControllersMenu(
     if (anyControllerId !== undefined) {
         groupName = translateGroupName(anyControllerId);
     } else {
-        return <></>;
+        return null;
     }
 
     return (
@@ -337,7 +337,7 @@ function SwitchSingleAbilityMenuType(
         available: AvailableControllerSelection;
         selected: ControllerSelection;
     }>,
-): ReactElement {
+): ReactElement | null {
     const { id, available } = props;
     const selected: ControllerSelection = props.selected;
 
@@ -599,6 +599,6 @@ function SwitchSingleAbilityMenuType(
             );
         }
         default:
-            return <></>;
+            return null;
     }
 }

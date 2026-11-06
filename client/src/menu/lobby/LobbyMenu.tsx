@@ -45,8 +45,9 @@ export default function LobbyMenu(): ReactElement {
 
     const [advancedView, setAdvancedView] = useState<boolean>(true);
 
+    // Reset, since you don't get the button on mobile or when you're the host.
+    // biome-ignore lint/correctness/useExhaustiveDependencies: deliberately keyed on mobile and isHost changing
     useEffect(() => {
-        // Reset, since you don't get the button on mobile or when you're the host.
         setAdvancedView(true);
     }, [mobile, isHost]);
 
@@ -204,7 +205,7 @@ function LobbyMenuHeader(
         return () => {
             GAME_MANAGER.removeStateListener(listener);
         };
-    }, [setLobbyName]);
+    }, []);
 
     return (
         <header>

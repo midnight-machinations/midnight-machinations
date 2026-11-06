@@ -215,7 +215,11 @@ export function sortControllerIdCompare(a: ControllerID, b: ControllerID, firstR
     }
 
     // Default fallback: player order
-    return ((a as any).player ?? -1) - ((b as any).player ?? -1);
+    return controllerPlayer(a) - controllerPlayer(b);
+}
+
+function controllerPlayer(id: ControllerID): number {
+    return "player" in id && typeof id.player === "number" ? id.player : -1;
 }
 
 export type ControllerSelection =

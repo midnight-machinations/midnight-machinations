@@ -135,7 +135,7 @@ async function readFromClipboard(pushError: (error: ErrorData) => void): Promise
         const text = await navigator.clipboard.readText();
         return text;
     } catch (error) {
-        switch ((error as any as DOMException).name) {
+        switch ((error as DOMException).name) {
             case "NotFoundError":
                 pushError({
                     title: translate("notification.clipboard.read.failure"),

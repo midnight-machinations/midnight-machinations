@@ -112,7 +112,7 @@ const ChatElement = React.memo(
             case "lobbyMessage":
                 return (
                     <LobbyChatMessage
-                        message={message as any}
+                        message={message as ChatMessage & { variant: { type: "lobbyMessage" } }}
                         style={style}
                         chatGroupIcon={chatGroupIcon!}
                         playerNames={playerNames}
@@ -127,7 +127,7 @@ const ChatElement = React.memo(
                 return (
                     <NormalChatMessage
                         messageIndex={props.messageIndex}
-                        message={message as any}
+                        message={message as ChatMessage & { variant: { type: "normal" } }}
                         style={style}
                         chatGroupIcon={chatGroupIcon!}
                         playerNames={playerNames}
@@ -228,7 +228,7 @@ const ChatElement = React.memo(
                         chatGroupIcon={chatGroupIcon}
                         playerNames={playerNames}
                         roleList={roleList}
-                        message={message as any}
+                        message={message as ChatMessage & { variant: { type: "playerDied" } }}
                         noLinks={props.noLinks}
                     />
                 );
@@ -1086,7 +1086,7 @@ export function translateChatMessage(
         case "werewolfTracked":
             return translate(`chatMessage.${message.type}`);
         default:
-            console.error(`Unknown message type ${(message as any).type}:`);
+            console.error(`Unknown message type ${(message as { type: string }).type}:`);
             console.error(message);
             return `FIXME: ${translate(`chatMessage.${message}`)}`;
     }

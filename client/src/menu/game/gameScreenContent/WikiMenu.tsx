@@ -4,7 +4,7 @@ import "./wikiMenu.css";
 import { useLobbyOrGameState } from "../../../components/useHooks";
 import Wiki from "../../../components/Wiki";
 import translate from "../../../game/lang";
-import { MODIFIERS, type ModifierID } from "../../../game/modifiers";
+import { ALL_MODIFIERS } from "../../../game/modifiers";
 import { getAllRoles } from "../../../game/roleListState.d";
 
 export default function WikiMenu(): ReactElement {
@@ -12,7 +12,7 @@ export default function WikiMenu(): ReactElement {
     const enabledModifiers = useLobbyOrGameState(
         (state) => state.modifierSettings.keys(),
         ["modifierSettings"],
-        MODIFIERS as any as ModifierID[],
+        ALL_MODIFIERS,
     )!;
 
     return (

@@ -3,7 +3,7 @@ import Wiki from "../../components/Wiki";
 import translate from "../../game/lang";
 import "./standaloneWiki.css";
 import type { WikiArticleLink } from "../../components/WikiArticleLink";
-import { MODIFIERS, type ModifierID } from "../../game/modifiers";
+import { ALL_MODIFIERS } from "../../game/modifiers";
 import { getAllRoles } from "../../game/roleListState.d";
 
 export default function StandaloneWiki(
@@ -19,7 +19,7 @@ export default function StandaloneWiki(
             <div>
                 <Wiki
                     enabledRoles={getAllRoles()}
-                    enabledModifiers={MODIFIERS as any as ModifierID[]}
+                    enabledModifiers={ALL_MODIFIERS}
                     initialWikiPage={props.initialWikiPage}
                     onPageChange={(page) => {
                         if (page !== null) {

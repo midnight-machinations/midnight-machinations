@@ -295,6 +295,7 @@ function SelectOptions<K extends { toString(): string }>(
 
     const current = useRef<HTMLButtonElement | null>(null);
 
+    // biome-ignore lint/correctness/useExhaustiveDependencies(props.indexSelected): scroll the selected option into view whenever the selection moves
     useEffect(() => {
         if (current.current) {
             current.current.scrollIntoView({ block: "center" });

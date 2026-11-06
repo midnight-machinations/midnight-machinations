@@ -127,11 +127,12 @@ echo "Worktree ready at $(cd "$path" && pwd). Run mask start there."
 
 ## check
 
-> Everything CI checks: proto lint, clippy, server tests, client build and tests, voice type-check and tests
+> Everything CI checks: proto lint, Biome, clippy, server tests, client build and tests, voice type-check and tests
 
 ```sh
 set -e
 (cd proto && pnpm exec buf lint)
+pnpm exec biome check .
 (cd server && cargo clippy && cargo test)
 (cd server/proto && cargo clippy)
 (cd client && pnpm build && pnpm test)
@@ -142,7 +143,7 @@ set -e
 
 > Biome (TypeScript) and clippy (every Rust crate). Advisory: it reports and never fixes
 
-Biome rules and clippy thresholds are copied from [aislop](https://github.com/scanaislop/aislop) (`biome.json`, `clippy.toml`, and each crate's `[lints.clippy]`). Existing code still has findings, so this is not part of `mask check`.
+Biome rules and clippy thresholds are copied from [aislop](https://github.com/scanaislop/aislop) (`biome.json`, `clippy.toml`, and each crate's `[lints.clippy]`). `mask check` also runs Biome and fails on any finding; this task covers every Rust crate and never fails.
 
 ```sh
 pnpm exec biome check . || true

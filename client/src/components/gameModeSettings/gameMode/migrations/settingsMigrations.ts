@@ -3,7 +3,7 @@
  */
 
 import { getDefaultSettings } from "../../../../game/localStorage";
-import { Success } from "../parse";
+import { Success, type UntypedJson } from "../parse";
 import { registerMigration } from "./registry";
 
 registerMigration("Settings", {
@@ -11,7 +11,7 @@ registerMigration("Settings", {
     description: "Add maxMenus and menuOrder, remove roleSpecificMenus",
     matches: (json) => json.format === "v3",
     transform: (json) => {
-        const result: any = { ...json, format: "v6" };
+        const result: UntypedJson = { ...json, format: "v6" };
 
         // Add missing fields from default settings
         if (!("maxMenus" in result)) {

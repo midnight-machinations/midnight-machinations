@@ -32,6 +32,8 @@ export default function LobbyNamePane(): ReactElement {
         return () => clearInterval(interval);
     }, []);
 
+    // Flash the ready button when someone else readies up, not when your own status changes
+    // biome-ignore lint/correctness/useExhaustiveDependencies: deliberately keyed on the other players' ready states only
     useEffect(() => {
         if (ready === "notReady" && !isSpectator) {
             setFlashingSince(Date.now());

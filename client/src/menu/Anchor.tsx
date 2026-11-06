@@ -37,7 +37,7 @@ const CtrlPressedContext = createContext<boolean | undefined>(undefined);
 export type AnchorController = {
     reload: () => void;
     setContent: (content: JSX.Element) => void;
-    contentType: string | JSXElementConstructor<any>;
+    contentType: string | JSXElementConstructor<never>;
     getCoverCard: () => JSX.Element | null;
     setCoverCard: (content: JSX.Element) => void;
     clearCoverCard: () => void;
@@ -72,6 +72,27 @@ let ANCHOR_CONTROLLER: AnchorController | null = null;
 
 export { ANCHOR_CONTROLLER };
 
+// These only touch document styles, so they live outside the component
+const setFontSize = (n: number) => {
+    document.documentElement.style.fontSize = `${n}em`;
+};
+const setAccessibilityFontEnabled = (enabled: boolean) => {
+    const getFont = (font: string, enabled: boolean) => (enabled === true ? "game-accessible-font" : font);
+
+    const iconFactor = enabled ? "1.2" : "1";
+
+    document.documentElement.style.setProperty("--game-font", getFont("computer-font", enabled));
+    document.documentElement.style.setProperty("--kira-font", getFont("game-kira-font", enabled));
+    document.documentElement.style.setProperty("--spiral-font", getFont("game-spiral-font", enabled));
+    document.documentElement.style.setProperty("--title-font", getFont("game-title-font", enabled));
+    document.documentElement.style.setProperty("--computer-font", getFont("computer-font", enabled));
+    document.documentElement.style.setProperty("--legible-computer-font", getFont("legible-computer-font", enabled));
+    document.documentElement.style.setProperty("--icon-factor", iconFactor);
+};
+const setScanlineIntensity = (intensity: number) => {
+    document.documentElement.style.setProperty("--scanline-opacity", `${(intensity / 100) * 0.2}`);
+};
+
 export default function Anchor(
     props: Readonly<{
         children: JSX.Element;
@@ -82,7 +103,7 @@ export default function Anchor(
 
     // Tooltip stuff
     const [isCtrlPressed, setIsCtrlPressed] = useState<boolean>(false);
-    const [tooltip, setTooltip] = useState<JSX.Element>(<></>);
+    const [tooltip, setTooltip] = useState<JSX.Element | null>(null);
     const [tooltipOnRender, setOnRender] =
         useState<(dropdownElement: HTMLElement, sourceElement?: HTMLElement) => void>();
     const [tooltipSourceRef, setSourceRef] = useState<React.RefObject<HTMLElement>>();
@@ -189,29 +210,6 @@ export default function Anchor(
 
     const [globalMenuOpen, setGlobalMenuOpen] = useState<boolean>(false);
 
-    const setFontSize = (n: number) => {
-        document.documentElement.style.fontSize = `${n}em`;
-    };
-    const setAccessibilityFontEnabled = (enabled: boolean) => {
-        const getFont = (font: string, enabled: boolean) => (enabled === true ? "game-accessible-font" : font);
-
-        const iconFactor = enabled ? "1.2" : "1";
-
-        document.documentElement.style.setProperty("--game-font", getFont("computer-font", enabled));
-        document.documentElement.style.setProperty("--kira-font", getFont("game-kira-font", enabled));
-        document.documentElement.style.setProperty("--spiral-font", getFont("game-spiral-font", enabled));
-        document.documentElement.style.setProperty("--title-font", getFont("game-title-font", enabled));
-        document.documentElement.style.setProperty("--computer-font", getFont("computer-font", enabled));
-        document.documentElement.style.setProperty(
-            "--legible-computer-font",
-            getFont("legible-computer-font", enabled),
-        );
-        document.documentElement.style.setProperty("--icon-factor", iconFactor);
-    };
-    const setScanlineIntensity = (intensity: number) => {
-        document.documentElement.style.setProperty("--scanline-opacity", `${(intensity / 100) * 0.2}`);
-    };
-
     // Load settings
     useEffect(() => {
         const settings = loadSettingsParsed();
@@ -296,9 +294,9 @@ export default function Anchor(
         ANCHOR_CONTROLLER = anchorController;
     }, [anchorController]);
 
+    // biome-ignore lint/correctness/useExhaustiveDependencies: onMount runs once per props, not every time the controller changes with the content
     useEffect(() => {
         props.onMount(anchorController);
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [props]);
 
     const stateType = useLobbyOrGameState(

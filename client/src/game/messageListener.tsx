@@ -588,7 +588,9 @@ export default function messageListener(packet: ToClientPacket) {
             }
             break;
         default:
-            console.error(`incoming message response not implemented: ${(packet as any)?.type}`);
+            console.error(
+                `incoming message response not implemented: ${(packet as { type?: string } | undefined)?.type}`,
+            );
             console.error(packet);
             break;
     }

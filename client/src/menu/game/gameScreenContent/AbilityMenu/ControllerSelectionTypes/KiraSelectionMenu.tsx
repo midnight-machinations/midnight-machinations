@@ -157,7 +157,7 @@ function KiraGuessPicker(props: {
         listener();
         GAME_MANAGER.addStateListener(listener);
         return () => GAME_MANAGER.removeStateListener(listener);
-    }, [setPlayers]);
+    }, []);
 
     const guessOptions: SelectOptionsSearch<KiraGuess> = new Map();
     for (const guess of props.availableGuesses) {

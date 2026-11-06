@@ -141,13 +141,14 @@ export default function Popover<T extends HTMLElement = HTMLElement>(
     ]);
 
     // Resize when children change
+    // biome-ignore lint/correctness/useExhaustiveDependencies(props.children): re-run onRender whenever the content changes size
     useEffect(() => {
         setTimeout(() => {
             if (props.onRender) {
                 props.onRender(popoverRef.current, props.anchorForPositionRef?.current ?? undefined);
             }
         });
-    }, [props.anchorForPositionRef, props.children, props.onRender, popoverRef]);
+    }, [props.anchorForPositionRef, props.children, props.onRender]);
 
     //close on click outside
     useEffect(() => {

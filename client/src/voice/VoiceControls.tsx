@@ -21,6 +21,7 @@ export function VoiceSettingsControls() {
     const voice = useVoice();
     const [devices, setDevices] = useState<MediaDeviceInfo[]>([]);
     const [captureKey, setCaptureKey] = useState(false);
+    // biome-ignore lint/correctness/useExhaustiveDependencies(voice.microphoneEnabled): device labels only become available after microphone permission, so list again then
     useEffect(() => {
         const refresh = () => {
             void navigator.mediaDevices

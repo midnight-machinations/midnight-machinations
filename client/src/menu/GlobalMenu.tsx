@@ -62,7 +62,7 @@ export default function GlobalMenu(): ReactElement {
         anchorController.setCoverCard(<GameModesEditor />);
         anchorController.closeGlobalMenu();
     }
-    const quitButtonBlacklist: (string | JSXElementConstructor<any>)[] = [StartMenu, LoadingScreen];
+    const quitButtonBlacklist: (string | JSXElementConstructor<never>)[] = [StartMenu, LoadingScreen];
 
     return (
         <div className="global-menu slide-in" ref={ref}>

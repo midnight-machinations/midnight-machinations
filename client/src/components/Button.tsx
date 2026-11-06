@@ -1,8 +1,17 @@
-import React, { forwardRef, type ReactElement, useContext, useEffect, useMemo, useRef, useState } from "react";
+import React, {
+    forwardRef,
+    type ReactElement,
+    useContext,
+    useEffect,
+    useImperativeHandle,
+    useMemo,
+    useRef,
+    useState,
+} from "react";
 import "./button.css";
 import ReactDOM from "react-dom/client";
 import { THEME_CSS_ATTRIBUTES } from "..";
-import { CtrlPressedContext, TooltipContext } from "../menu/Anchor";
+import { TooltipContext } from "../menu/Anchor";
 import { dropdownPlacementFunction } from "./Select";
 import type { WikiArticleLink } from "./WikiArticleLink";
 import WikiArticleTooltip from "./WikiArticleTooltip";
@@ -32,6 +41,7 @@ export function Button<R>(props: ButtonProps<R>): ReactElement {
     return <RawButton {...props} />;
 }
 
+// biome-ignore lint/suspicious/noExplicitAny: forwardRef cannot keep the result type R generic, and R appears in both argument and return positions
 const RawButton = forwardRef<HTMLButtonElement, ButtonProps<any>>(function RawButton<R>(
     props: ButtonProps<R>,
     passedRef: React.ForwardedRef<HTMLButtonElement>,
@@ -39,13 +49,7 @@ const RawButton = forwardRef<HTMLButtonElement, ButtonProps<any>>(function RawBu
     const [success, setSuccess] = useState<R | "unclicked">("unclicked");
     const ref = useRef<HTMLButtonElement>(null);
 
-    useEffect(() => {
-        if (typeof passedRef === "function") {
-            passedRef(ref.current);
-        } else if (passedRef) {
-            passedRef.current = ref.current;
-        }
-    }, [props, ref, passedRef]);
+    useImperativeHandle(passedRef, () => ref.current as HTMLButtonElement, []);
 
     const popupContainer = useRef<HTMLDivElement>(document.createElement("div"));
 
@@ -69,7 +73,6 @@ const RawButton = forwardRef<HTMLButtonElement, ButtonProps<any>>(function RawBu
         return props.pressedChildren(success) || props.children;
     }, [props, success]);
 
-    const isCtrlPressed = useContext(CtrlPressedContext) ?? false;
     const tooltipContext = useContext(TooltipContext)!;
 
     const articleTooltip = React.useMemo(() => {
@@ -77,9 +80,9 @@ const RawButton = forwardRef<HTMLButtonElement, ButtonProps<any>>(function RawBu
         if (typeof props.tooltip !== "string") return props.tooltip;
 
         return <WikiArticleTooltip article={props.tooltip} />;
-    }, [isCtrlPressed, props.tooltip]);
+    }, [props.tooltip]);
 
-    const handleFocus = (_event: any) => {
+    const handleFocus = () => {
         if (articleTooltip) {
             tooltipContext.open(
                 articleTooltip,
@@ -89,7 +92,7 @@ const RawButton = forwardRef<HTMLButtonElement, ButtonProps<any>>(function RawBu
         }
     };
 
-    const handleUnfocus = (_event: any) => {
+    const handleUnfocus = () => {
         tooltipContext.close();
     };
 

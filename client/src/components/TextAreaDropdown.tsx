@@ -223,17 +223,15 @@ function PrettyTextArea(
         return () => document.removeEventListener("mousemove", handleMouseMove);
     }, []);
 
-    // Function to adjust textarea height
-    const adjustHeight = () => {
+    // Adjust the textarea height to fit its content when the text changes or the textarea appears
+    // biome-ignore lint/correctness/useExhaustiveDependencies(props.field): resize when the text changes
+    // biome-ignore lint/correctness/useExhaustiveDependencies(writing): the textarea mounts when writing starts
+    // biome-ignore lint/correctness/useExhaustiveDependencies(hover): the textarea mounts on hover
+    useEffect(() => {
         if (textareaRef.current) {
             textareaRef.current.style.height = "auto"; // Reset height
             textareaRef.current.style.height = `calc(.25rem + ${textareaRef.current.scrollHeight}px)`; // Adjust to fit content
         }
-    };
-
-    // Adjust height when the `props.field` value changes
-    useEffect(() => {
-        adjustHeight();
     }, [props.field, writing, hover]);
 
     return (

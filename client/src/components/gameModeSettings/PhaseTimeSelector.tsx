@@ -212,17 +212,17 @@ function PhaseTimesVisualizerPhase(
         }
 
         setOpen((current) => (current === "edit" ? "closed" : "edit"));
-    }, [props.disabled, phase, anchorController]);
+    }, [props.disabled, phase, anchorController, isMobile]);
 
     const onMouseEnter = useCallback(() => {
         if (isMobile) return;
         setOpen((current) => (current === "closed" ? "show" : current));
-    }, []);
+    }, [isMobile]);
 
     const onMouseLeave = useCallback(() => {
         if (isMobile) return;
         setOpen((current) => (current === "show" ? "closed" : current));
-    }, []);
+    }, [isMobile]);
 
     const handleMouseDown = useDragToChangeValue(time, (time) => {
         if (isMobile) return;
@@ -325,10 +325,20 @@ function getPhaseBaseColor(phase: Exclude<PhaseType, "recess">): string {
 }
 
 function useDragToChangeValue(startValue: number, onChange: (value: number) => void) {
-    const [startY, setStartY] = useState<number | null>(null);
+    // Where the drag started and the value at that moment, or null when not dragging
+    const [drag, setDrag] = useState<{ y: number; value: number } | null>(null);
+    const onChangeRef = useRef(onChange);
+    useEffect(() => {
+        onChangeRef.current = onChange;
+    });
 
     useEffect(() => {
-        if (startY === null) return;
+        if (drag === null) return;
+
+        const handleMouseMove = (e: MouseEvent) => {
+            onChangeRef.current(drag.value - Math.floor((e.clientY - drag.y) / 10));
+        };
+        const handleMouseUp = () => setDrag(null);
 
         // Add global listeners so dragging works even if the cursor leaves the button
         globalThis.addEventListener("mousemove", handleMouseMove);
@@ -338,22 +348,9 @@ function useDragToChangeValue(startValue: number, onChange: (value: number) => v
             globalThis.removeEventListener("mousemove", handleMouseMove);
             globalThis.removeEventListener("mouseup", handleMouseUp);
         };
-    }, [startY]);
+    }, [drag]);
 
-    const handleMouseDown = (e: React.MouseEvent<HTMLButtonElement>) => {
-        setStartY(e.clientY);
+    return (e: React.MouseEvent<HTMLButtonElement>) => {
+        setDrag({ y: e.clientY, value: startValue });
     };
-
-    const handleMouseMove = (e: MouseEvent) => {
-        if (startY === null) return;
-        const deltaY = e.clientY - startY;
-        onChange(startValue - Math.floor(deltaY / 10));
-    };
-
-    const handleMouseUp = () => {
-        globalThis.removeEventListener("mousemove", handleMouseMove);
-        globalThis.removeEventListener("mouseup", handleMouseUp);
-    };
-
-    return handleMouseDown;
 }

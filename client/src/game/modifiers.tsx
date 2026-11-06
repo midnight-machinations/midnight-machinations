@@ -27,6 +27,9 @@ export const MODIFIERS = [
 
 export type ModifierID = (typeof MODIFIERS)[number];
 
+/** Every modifier, as a mutable array for props that take a list of modifiers */
+export const ALL_MODIFIERS: ModifierID[] = [...MODIFIERS];
+
 export type ModifierState =
     | {
           type: "obscuredGraves";

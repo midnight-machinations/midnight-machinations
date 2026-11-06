@@ -6,7 +6,7 @@
  */
 
 import { defaultPhaseTimes } from "../../../../game/gameState";
-import { Failure, Success } from "../parse";
+import { Failure, Success, type UntypedJson } from "../parse";
 import { registerMigration } from "./registry";
 
 registerMigration("GameModeStorage", {
@@ -18,16 +18,16 @@ registerMigration("GameModeStorage", {
             return Failure("gameModesMissing", json);
         }
 
-        const gameModes = json.gameModes.map((gameMode: any) => {
-            const newData: Record<number, any> = {};
+        const gameModes = json.gameModes.map((gameMode: UntypedJson) => {
+            const newData: Record<string, UntypedJson> = {};
 
-            for (const [players, data] of Object.entries(gameMode.data) as [string, any][]) {
+            for (const [players, data] of Object.entries(gameMode.data) as [string, UntypedJson][]) {
                 const phaseTimes = { ...data.phaseTimes };
                 if (phaseTimes.adjournment === undefined) {
                     phaseTimes.adjournment = defaultPhaseTimes().adjournment;
                 }
 
-                newData[players as any] = {
+                newData[players] = {
                     ...data,
                     phaseTimes,
                 };
@@ -67,10 +67,10 @@ registerMigration("GameModeStorage", {
             return Failure("gameModesMissing", json);
         }
 
-        const gameModes = json.gameModes.map((gameMode: any) => ({
+        const gameModes = json.gameModes.map((gameMode: UntypedJson) => ({
             ...gameMode,
             data: Object.fromEntries(
-                Object.entries(gameMode.data).map(([players, data]: [string, any]) => {
+                Object.entries(gameMode.data).map(([players, data]: [string, UntypedJson]) => {
                     const { recess, ...phaseTimes } = data.phaseTimes ?? {};
 
                     return [

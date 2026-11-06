@@ -76,6 +76,8 @@ export function useMenuController<C extends Partial<Record<ContentMenu, boolean>
 
     const [callbacks, setCallbacks] = useState<(() => void)[]>([]);
 
+    // Run the callbacks queued by openMenu once the menus they waited for have changed
+    // biome-ignore lint/correctness/useExhaustiveDependencies: deliberately keyed on contentMenus, not on the callback list
     useEffect(() => {
         for (const callback of callbacks) {
             callback();
@@ -83,7 +85,6 @@ export function useMenuController<C extends Partial<Record<ContentMenu, boolean>
         if (callbacks.length !== 0) {
             setCallbacks([]);
         }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [contentMenus]);
 
     const initializeMenuController = useCallback(() => {

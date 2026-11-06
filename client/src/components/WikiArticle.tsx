@@ -21,7 +21,7 @@ import "./wiki.css";
 import Masonry from "react-responsive-masonry";
 import DUMMY_ROLE_LIST from "../../../assets/resources/dummyRoleList.json";
 import GAME_MANAGER, { replaceMentions } from "..";
-import { MODIFIERS, type ModifierID } from "../game/modifiers";
+import { ALL_MODIFIERS, type ModifierID } from "../game/modifiers";
 import { Button } from "./Button";
 import DetailsSummary from "./DetailsSummary";
 import { useLobbyOrGameState } from "./useHooks";
@@ -42,7 +42,7 @@ export default function WikiArticle(props: {
     article: WikiArticleLink;
     className?: string;
     noLinks?: boolean;
-}): ReactElement {
+}): ReactElement | null {
     const path = props.article.split("/");
 
     switch (path[0]) {
@@ -240,7 +240,7 @@ export default function WikiArticle(props: {
             );
     }
 
-    return <></>;
+    return null;
 }
 
 function CategoryArticle(
@@ -254,7 +254,7 @@ function CategoryArticle(
     const enabledModifiers = useLobbyOrGameState(
         (state) => state.modifierSettings.keys(),
         ["modifierSettings"],
-        MODIFIERS as any as ModifierID[],
+        ALL_MODIFIERS,
     )!;
 
     return (
@@ -391,11 +391,14 @@ function RoleSetArticle(props: Readonly<{ noLinks?: boolean }>): ReactElement {
 
         redetermineColumnWidths();
 
-        setTimeout(() => {
-            resizeObserver.observe(ref.current!);
+        const observeTimeout = setTimeout(() => {
+            if (ref.current) resizeObserver.observe(ref.current);
         });
-        return resizeObserver.unobserve(ref.current!);
-    }, [ref]);
+        return () => {
+            clearTimeout(observeTimeout);
+            resizeObserver.disconnect();
+        };
+    }, []);
 
     return (
         <div ref={ref} className="role-set-article">

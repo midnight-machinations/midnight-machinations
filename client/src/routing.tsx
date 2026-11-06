@@ -1,7 +1,7 @@
 import GAME_MANAGER from ".";
 import GameModesEditor from "./components/gameModeSettings/GameModesEditor";
 import parseFromJson from "./components/gameModeSettings/gameMode/migrations";
-import { isFailure } from "./components/gameModeSettings/gameMode/parse";
+import { isFailure, type UntypedJson } from "./components/gameModeSettings/gameMode/parse";
 import { ARTICLES, type WikiArticleLink } from "./components/WikiArticleLink";
 import { deleteReconnectData, loadReconnectData } from "./game/localStorage";
 import type { AnchorController } from "./menu/Anchor";
@@ -21,7 +21,7 @@ async function routeWiki(anchorController: AnchorController, page: string) {
 
     if (wikiPage === "") {
         anchorController.setContent(<StandaloneWiki />);
-    } else if (ARTICLES.includes(wikiPage.substring(1) as any)) {
+    } else if ((ARTICLES as readonly string[]).includes(wikiPage.substring(1))) {
         anchorController.setContent(<StandaloneWiki initialWikiPage={wikiPage.substring(1) as WikiArticleLink} />);
     } else {
         return await route404(anchorController, `/wiki${page}`);
@@ -65,7 +65,7 @@ async function routeLobby(anchorController: AnchorController, roomCode: string) 
 async function routeGameMode(anchorController: AnchorController, gameModeString: string) {
     window.history.replaceState({}, "", "/");
 
-    let gameMode: any;
+    let gameMode: UntypedJson;
     try {
         gameMode = JSON.parse(gameModeString);
     } catch {

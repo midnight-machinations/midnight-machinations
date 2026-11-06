@@ -1,6 +1,6 @@
 import type { Settings } from "../../../../game/localStorage";
 import type { GameModeStorage, ShareableGameMode } from "..";
-import { Failure, isFailure, type ParseResult, Success } from "../parse";
+import { Failure, isFailure, type ParseResult, Success, type UntypedJson } from "../parse";
 import { MIGRATIONS } from "./registry";
 
 // Re-export for convenience
@@ -31,7 +31,7 @@ function getLatestMigrationId<T extends keyof ConverterMap>(type: T): string {
  */
 export function applyMigrations<T extends keyof ConverterMap>(
     type: T,
-    json: NonNullable<any>,
+    json: UntypedJson,
 ): ParseResult<ConverterMap[T]> {
     const MAX_ITERATIONS = 1000;
     let currentJson = json;
@@ -74,7 +74,7 @@ export function applyMigrations<T extends keyof ConverterMap>(
  */
 export default function parseFromJson<T extends keyof ConverterMap>(
     type: T,
-    json: NonNullable<any>,
+    json: UntypedJson,
 ): ParseResult<ConverterMap[T]> {
     return applyMigrations(type, json);
 }

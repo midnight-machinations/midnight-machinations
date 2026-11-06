@@ -150,10 +150,10 @@ function graveDeathCauseFromLink(cause: string): GraveDeathCause | null {
             return { type: cause };
     }
     if (getAllRoles().includes(cause as Role)) {
-        return { type: "role", value: cause as any };
+        return { type: "role", value: cause as Role };
     }
     if (getAllRoleSets().includes(cause as RoleSet)) {
-        return { type: "roleSet", value: cause as any };
+        return { type: "roleSet", value: cause as RoleSet };
     }
     return null;
 }

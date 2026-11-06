@@ -81,7 +81,7 @@ export function wikiPageIsEnabled(
     if (page.startsWith("category/")) {
         return (
             partitionWikiPages(ARTICLES, enabledRoles, enabledModifiers, false)
-                [page.split("/")[1] as any as WikiCategory].filter((p) => p !== page)
+                [page.split("/")[1] as WikiCategory].filter((p) => p !== page)
                 .filter((page) => wikiPageIsEnabled(page, enabledRoles, enabledModifiers, wikiDisabledFilter))
                 .length !== 0
         );

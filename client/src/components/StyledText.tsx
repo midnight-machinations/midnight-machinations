@@ -102,7 +102,7 @@ export default function StyledText(props: Readonly<StyledTextProps>): ReactEleme
         }
     };
 
-    const handleFocus = (event: any) => {
+    const handleFocus = (event: React.SyntheticEvent) => {
         const target = event.target as HTMLElement;
         const anchor = target.closest("a[data-wiki-page]");
         if (anchor) {
@@ -117,7 +117,7 @@ export default function StyledText(props: Readonly<StyledTextProps>): ReactEleme
         }
     };
 
-    const handleUnfocus = (event: any) => {
+    const handleUnfocus = (event: React.SyntheticEvent) => {
         const target = event.target as HTMLElement;
         const anchor = target.closest("a[data-wiki-page]");
         if (anchor) {

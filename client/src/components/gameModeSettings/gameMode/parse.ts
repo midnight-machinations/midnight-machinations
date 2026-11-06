@@ -1,3 +1,10 @@
+/**
+ * JSON read from storage, links, or older formats, before migrations check its shape.
+ * Migrations read fields that only older formats have, so this stays untyped on purpose.
+ */
+// biome-ignore lint/suspicious/noExplicitAny: see above
+export type UntypedJson = any;
+
 export type ParseSuccess<T> = {
     type: "success";
     value: T;
@@ -11,7 +18,7 @@ export type ParseFailure = {
 };
 export type ParseResult<T> = ParseSuccess<T> | ParseFailure;
 
-export function isFailure(result: ParseResult<any>): result is ParseFailure {
+export function isFailure(result: ParseResult<unknown>): result is ParseFailure {
     return result.type === "failure";
 }
 
@@ -22,7 +29,7 @@ export function Success<T>(result: T): ParseSuccess<T> {
     };
 }
 
-export function Failure(reason: ParseFailure["reason"], snippet: any): ParseFailure {
+export function Failure(reason: ParseFailure["reason"], snippet: unknown): ParseFailure {
     return {
         type: "failure",
         reason,
@@ -31,8 +38,8 @@ export function Failure(reason: ParseFailure["reason"], snippet: any): ParseFail
     };
 }
 
-export function parseJsonObject(jsonString: string): NonNullable<any> | null {
-    let json: any;
+export function parseJsonObject(jsonString: string): UntypedJson | null {
+    let json: UntypedJson;
     try {
         json = JSON.parse(jsonString);
     } catch {

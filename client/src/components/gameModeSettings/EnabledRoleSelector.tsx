@@ -34,7 +34,7 @@ export default function EnabledRoleSelector(
                 props.onEnableRoles(getRolesFromRoleOrRoleSet(roleOrRoleSet));
             }
         },
-        [enabledRoles],
+        [enabledRoles, props.onDisableRoles, props.onEnableRoles],
     );
 
     const [hideDisabled, setHideDisabled] = useState(props.disabled ?? false);

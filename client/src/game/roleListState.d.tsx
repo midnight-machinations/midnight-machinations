@@ -195,7 +195,7 @@ export function sortRolesCanonically(a: Role, b: Role): number {
     }
 }
 
-function deepEqual(obj1: any, obj2: any): boolean {
+function deepEqual(obj1: unknown, obj2: unknown): boolean {
     // Check if the objects are strictly equal
     if (obj1 === obj2) {
         return true;
@@ -220,7 +220,7 @@ function deepEqual(obj1: any, obj2: any): boolean {
 
     // Recursively compare each key-value pair
     for (const key of keys1) {
-        if (!deepEqual(obj1[key], obj2[key])) {
+        if (!deepEqual((obj1 as Record<string, unknown>)[key], (obj2 as Record<string, unknown>)[key])) {
             return false;
         }
     }

@@ -2,7 +2,7 @@ import type { ReactElement } from "react";
 import Wiki from "../components/Wiki";
 import translate from "../game/lang";
 import "./wiki.css";
-import { MODIFIERS, type ModifierID } from "../game/modifiers";
+import { ALL_MODIFIERS } from "../game/modifiers";
 import { getAllRoles } from "../game/roleListState.d";
 import { useLobbyOrGameState } from "./useHooks";
 import type { WikiArticleLink } from "./WikiArticleLink";
@@ -16,7 +16,7 @@ export default function WikiCoverCard(
     const enabledModifiers = useLobbyOrGameState(
         (state) => state.modifierSettings.keys(),
         ["modifierSettings"],
-        MODIFIERS as any as ModifierID[],
+        ALL_MODIFIERS,
     )!;
 
     return (

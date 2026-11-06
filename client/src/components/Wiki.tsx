@@ -5,7 +5,7 @@ import "./wiki.css";
 import Masonry from "react-responsive-masonry";
 import GAME_MANAGER, { regEscape } from "..";
 import { loadGameModesParsed } from "../game/localStorage";
-import { MODIFIERS, type ModifierID } from "../game/modifiers";
+import { ALL_MODIFIERS, type ModifierID } from "../game/modifiers";
 import { getAllRoles } from "../game/roleListState.d";
 import { getMainRoleSetFromRole, type Role } from "../game/roleState.d";
 import type { AnchorController } from "../menu/Anchor";
@@ -71,7 +71,7 @@ export default function Wiki(
         GAME_MANAGER.addSetWikiArticleCallback(chooseArticle);
 
         return () => GAME_MANAGER.removeSetWikiArticleCallback(chooseArticle);
-    }, [setArticle, chooseArticle]);
+    }, [chooseArticle]);
 
     // This makes sure you can call GAME_MANAGER.setWikiArticle immediately after this component is added
     GAME_MANAGER.addSetWikiArticleCallback(chooseArticle);
@@ -202,7 +202,7 @@ function WikiSearchResults(
     const enabledModifiers = useLobbyOrGameState(
         (gameState) => gameState.modifierSettings.keys(),
         ["modifierSettings"],
-        MODIFIERS as any as ModifierID[],
+        ALL_MODIFIERS,
     )!;
 
     const getSearchResults = useCallback((search: string) => {
@@ -317,7 +317,7 @@ function WikiDisabledSelector(
         }
 
         return options;
-    }, [gameModes, inLobbyOrGame]);
+    }, [gameModes]);
 
     const selectedValue = useMemo(() => {
         return typeof props.wikiDisabledFilter === "string" ? props.wikiDisabledFilter : props.wikiDisabledFilter[0];
@@ -385,11 +385,14 @@ function WikiMainPage(
 
         redetermineColumnWidths();
 
-        setTimeout(() => {
-            resizeObserver.observe(ref.current!);
+        const observeTimeout = setTimeout(() => {
+            if (ref.current) resizeObserver.observe(ref.current);
         });
-        return resizeObserver.unobserve(ref.current!);
-    }, [ref]);
+        return () => {
+            clearTimeout(observeTimeout);
+            resizeObserver.disconnect();
+        };
+    }, []);
 
     return (
         <div ref={ref} className="wiki-main-page">

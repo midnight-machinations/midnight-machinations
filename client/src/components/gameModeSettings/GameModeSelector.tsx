@@ -59,6 +59,10 @@ export function GameModeSelector(
     );
 }
 
+function validateName(name: string) {
+    return name.length < 100 && name.length !== 0;
+}
+
 function GameModeSelectorPanel(
     props: Readonly<{
         gameModeStorage: GameModeStorage;
@@ -71,10 +75,6 @@ function GameModeSelectorPanel(
     const [gameModeLocation, setGameModeLocation] = useState<GameModeLocation | null>(null);
     const { roleList, phaseTimes, enabledRoles, modifierSettings } = useContext(GameModeContext);
     const anchorController = useContext(AnchorControllerContext)!;
-
-    const validateName = (name: string) => {
-        return name.length < 100 && name.length !== 0;
-    };
 
     // Caller must ensure location is valid
     const loadGameMode = (location: GameModeLocation) => {
@@ -183,6 +183,7 @@ function GameModeSelectorPanel(
         }
     };
 
+    // biome-ignore lint/correctness/useExhaustiveDependencies: only on mount, so a fresh lobby starts from the default game mode
     useEffect(() => {
         if (playerCount === undefined || playerCount === 1) {
             returnToDefaultGameMode();
@@ -353,7 +354,7 @@ function GameModeSelectorSelect(
             return gameMode ? gameMode.data[props.gameModeLocation.players] : null;
         }
         return null;
-    }, [props.gameModeLocation]);
+    }, [props.gameModeLocation, props.gameModeStorage]);
 
     const gameModeContext = useContext(GameModeContext);
 
@@ -420,7 +421,7 @@ function GameModeSelectorSelect(
         } else {
             return `${props.gameModeLocation.name}:${props.gameModeLocation.players}`;
         }
-    }, [props.gameModeLocation, props.gameModeStorage]);
+    }, [props.gameModeLocation]);
 
     return (
         <Select
@@ -484,6 +485,7 @@ function GameModeFolderLabel(props: {
 }): ReactElement {
     const [expanded, setExpanded] = useState<boolean>(false);
 
+    // biome-ignore lint/correctness/useExhaustiveDependencies(props.gameModeName): collapse the folder when it shows a different game mode
     useEffect(() => {
         setExpanded(false);
     }, [props.gameModeName]);
