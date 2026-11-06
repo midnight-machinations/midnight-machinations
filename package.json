@@ -7,7 +7,11 @@
     "node": ">=22"
   },
   "devDependencies": {
-    "@biomejs/biome": "^2.6.6"
+    "@biomejs/biome": "^2.6.6",
+    "husky": "^9.1.7"
   },
-  "packageManager": "pnpm@11.5.0"
+  "packageManager": "pnpm@11.5.0",
+  "scripts": {
+    "prepare": "husky"
+  }
 }
