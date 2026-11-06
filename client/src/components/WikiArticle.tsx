@@ -4,7 +4,7 @@ import translate, { langText, translateChecked } from "../game/lang";
 import StyledText, { DUMMY_NAMES_KEYWORD_DATA, DUMMY_NAMES_SENDER_KEYWORD_DATA, DUMMY_ROLE_LIST_KEYWORD_DATA, StyledTextProps } from "./StyledText";
 import { ROLE_SETS, RoleList, getAllRoles, getRolesFromRoleSet } from "../game/roleListState.d";
 import ChatElement from "./ChatMessage";
-import DUMMY_NAMES from "../resources/dummyNames.json";
+import DUMMY_NAMES from "../../../assets/resources/dummyNames.json";
 import { ARTICLES, GeneratedArticle, getArticleTitle, WikiArticleLink, wikiPageIsEnabled } from "./WikiArticleLink";
 import "./wiki.css";
 import GAME_MANAGER, { replaceMentions } from "..";
@@ -12,7 +12,7 @@ import { useLobbyOrGameState } from "./useHooks";
 import DetailsSummary from "./DetailsSummary";
 import { partitionWikiPages, WikiCategory, WikiDisabledFilter } from "./Wiki";
 import { MODIFIERS, ModifierID } from "../game/modifiers";
-import DUMMY_ROLE_LIST from "../resources/dummyRoleList.json";
+import DUMMY_ROLE_LIST from "../../../assets/resources/dummyRoleList.json";
 import Masonry from "react-responsive-masonry";
 import { Button } from "./Button";
 

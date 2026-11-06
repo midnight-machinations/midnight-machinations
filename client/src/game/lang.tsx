@@ -1,6 +1,6 @@
-import enUsJson from "../resources/lang/en_us.json";
-import brokenKeyboardJson from "../resources/lang/broken_keyboard.json";
-import dyslexicJson from "../resources/lang/dyslexic.json";
+import enUsJson from "../../../assets/resources/lang/en_us.json";
+import brokenKeyboardJson from "../../../assets/resources/lang/broken_keyboard.json";
+import dyslexicJson from "../../../assets/resources/lang/dyslexic.json";
 
 export let langMap: ReadonlyMap<string, string>;
 export let langText: string;

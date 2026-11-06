@@ -12,7 +12,7 @@ import { Button, RawButton } from "../Button";
 import { useLobbyOrGameState, useLobbyState } from "../useHooks";
 import { Conclusion, CONCLUSIONS, INSIDER_GROUPS, InsiderGroup, LobbyClient, LobbyClientID, PlayerClientType, PlayerIndex, translateConclusion, translateWinCondition, UnsafeString } from "../../game/gameState.d";
 import Popover from "../Popover";
-import DUMMY_NAMES from "../../resources/dummyNames.json";
+import DUMMY_NAMES from "../../../../assets/resources/dummyNames.json";
 import { encodeString } from "../ChatMessage";
 import ListMap from "../../ListMap";
 

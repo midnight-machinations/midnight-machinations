@@ -8,6 +8,7 @@ COPY client/package.json client/pnpm-lock.yaml client/pnpm-workspace.yaml ./clie
 RUN --mount=type=cache,id=pnpm,target=/root/.local/share/pnpm/store \
     cd client && pnpm install --frozen-lockfile
 COPY assets/public ./assets/public
+COPY assets/resources ./assets/resources
 COPY client ./client
 ARG VITE_WS_ADDRESS=ws://localhost:80
 ENV VITE_WS_ADDRESS=${VITE_WS_ADDRESS}

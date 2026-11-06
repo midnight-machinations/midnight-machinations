@@ -3,7 +3,7 @@ import { KiraGuess } from "../menu/game/gameScreenContent/AbilityMenu/Controller
 import { ChatGroup, PhaseType, PlayerIndex, UnsafeString } from "./gameState.d";
 import translate, { translateChecked } from "./lang";
 import { Role } from "./roleState.d";
-import abilitiesJson from "../resources/abilityId.json";
+import abilitiesJson from "../../../assets/resources/abilityId.json";
 import { ChatMessageIndex } from "../components/ChatMessage";
 import { GraveDeathCause } from "./graveState";
 

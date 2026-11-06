@@ -1,4 +1,4 @@
-import DEFAULT_GAME_MODES from "../resources/defaultGameModes.json";
+import DEFAULT_GAME_MODES from "../../../assets/resources/defaultGameModes.json";
 import { CurrentFormat, GameModeStorage } from "../components/gameModeSettings/gameMode";
 import { Language } from "./lang";
 import parseFromJson from "../components/gameModeSettings/gameMode/migrations";

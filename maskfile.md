@@ -170,7 +170,7 @@ for service in server voice client; do echo "== $service"; mask --maskfile "depl
 
 > Regenerate shared files: dummy-names, broken-keyboard, scrambled, or all
 
-`dummy-names` reads `assets/random_names/names.json` and writes the client's `dummyNames.json` and the server's name CSVs. `broken-keyboard` and `scrambled` derive client language files from `en_us.json`. (`vars` is `mask config`.)
+`dummy-names` reads `assets/random_names/names.json` and writes `assets/resources/dummyNames.json` and the server's name CSVs. `broken-keyboard` and `scrambled` derive client language files from `en_us.json`. (`vars` is `mask config`.)
 
 ```sh
 cargo run --quiet --manifest-path tools/gen/Cargo.toml -- "$generator"

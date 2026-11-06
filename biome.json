@@ -13,7 +13,6 @@
       "voice/test/**",
       "server/worker/*.ts",
       "!client/src/gen",
-      "!client/src/resources",
       "!**/node_modules",
       "!**/target"
     ],

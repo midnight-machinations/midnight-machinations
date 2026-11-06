@@ -5,7 +5,7 @@ import { find } from "..";
 import translate, { translateChecked } from "../game/lang";
 import { Role, getMainRoleSetFromRole, roleJsonData } from "../game/roleState.d";
 import "./styledText.css";
-import DUMMY_NAMES from "../resources/dummyNames.json";
+import DUMMY_NAMES from "../../../assets/resources/dummyNames.json";
 import { ARTICLES, WikiArticleLink, getArticleLangKey } from "./WikiArticleLink";
 import { MenuControllerContext } from "../menu/game/GameScreen";
 import { Player, UnsafeString } from "../game/gameState.d";
@@ -13,8 +13,8 @@ import { AnchorControllerContext, CtrlPressedContext, TooltipContext } from "../
 import { setWikiSearchPage } from "./Wiki";
 import { getRoleSetsFromRole, RoleList, translateRoleOutline } from "../game/roleListState.d";
 import { encodeString } from "./ChatMessage";
-import DUMMY_ROLE_LIST from "../resources/dummyRoleList.json";
-import KEYWORD_DATA_JSON_IMPORT from "../resources/keywords.json" with { type: "json" };
+import DUMMY_ROLE_LIST from "../../../assets/resources/dummyRoleList.json";
+import KEYWORD_DATA_JSON_IMPORT from "../../../assets/resources/keywords.json" with { type: "json" };
 import { dropdownPlacementFunction } from "./Select";
 import WikiArticleTooltip from "./WikiArticleTooltip";
 

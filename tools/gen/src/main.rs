@@ -44,7 +44,7 @@ fn dummy_names(root: &Path) -> io::Result<()> {
     };
     let (default_names, extra_names) = (list("defaultNames"), list("extraNames"));
     let combined: Vec<Value> = default_names.iter().chain(&extra_names).cloned().map(Value::String).collect();
-    write_json(root.join("client/src/resources/dummyNames.json"), &Value::Array(combined))?;
+    write_json(root.join("assets/resources/dummyNames.json"), &Value::Array(combined))?;
     // One name per line, quoted like Python's csv writer when needed.
     let csv = |names: &[String]| names.iter().map(|name| csv_field(name) + "\r\n").collect::<String>();
     fs::write(root.join("assets/random_names/default_names.csv"), csv(&default_names))?;
@@ -96,7 +96,7 @@ fn scrambled(root: &Path) -> io::Result<()> {
 
 /// Rewrites every value of `en_us.json` into another client language file.
 fn transform_lang(root: &Path, file: &str, language: &str, mut transform: impl FnMut(&str, &str) -> String) -> io::Result<()> {
-    let lang_root = root.join("client/src/resources/lang");
+    let lang_root = root.join("assets/resources/lang");
     let english: Map<String, Value> = serde_json::from_str(&fs::read_to_string(lang_root.join("en_us.json"))?)?;
     let output: Map<String, Value> = english
         .iter()

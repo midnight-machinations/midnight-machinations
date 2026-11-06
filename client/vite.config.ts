@@ -14,7 +14,9 @@ export default defineConfig(({ mode }) => {
     worker: { format: 'es' },
     server: {
       port: Number(env.CLIENT_PORT) || 3000,
-      open: true
+      open: true,
+      // Roles, language files, and fonts are imported from the root assets folder.
+      fs: { allow: ['..'] }
     },
     build: {
       outDir: 'build',
