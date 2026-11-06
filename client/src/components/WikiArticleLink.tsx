@@ -46,7 +46,7 @@ export function getArticleLangKey(page: WikiArticleLink): string {
         case "generated":
             return `wiki.article.generated.${path[1]}.title`;
         default:
-            console.error("Invalid article type: " + path[0]);
+            console.error(`Invalid article type: ${path[0]}`);
             return "ERROR";
     }
 }

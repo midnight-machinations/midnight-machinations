@@ -16,6 +16,7 @@
     padding: 0.1em 0.35em 1.2em;
     font-size: 0.8em;
     text-indent: 0;
+    /* biome-ignore lint/complexity/noImportantStyles: number badges stay centred inside text-align: left containers such as chat and the wiki */
     text-align: center !important;
     box-shadow: 0 0 5px rgba(from var(--text-color) / 0.3);
 }
@@ -30,6 +31,7 @@
     padding: 0.1em 0.35em 1.2em;
     font-size: 0.8em;
     text-indent: 0;
+    /* biome-ignore lint/complexity/noImportantStyles: number badges stay centred inside text-align: left containers such as chat and the wiki */
     text-align: center !important;
     margin: 0 0 0 0;
     box-shadow: 0 0 5px rgba(from var(--text-color) / 0.3);

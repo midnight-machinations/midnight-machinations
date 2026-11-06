@@ -7,6 +7,8 @@ import type { GroupPreference, VoiceSession, VoiceSettings } from "./types";
 
 /** Sent by the voice service when it pulls speakers into this session. */
 type OfferMessage = { type: "offer"; sdp: string; tracks: { mid: string; peer: number }[] };
+/** A reply to one of our requests (has an id) or a message the signaling server pushes (has a type) */
+type SignalingMessage = { id?: number; error?: string; data?: unknown } & (OfferMessage | { type?: undefined });
 type Playback = {
     receiver: RTCRtpReceiver;
     element: HTMLAudioElement;
@@ -332,7 +334,7 @@ export class VoiceManager {
             if (!current()) return;
             socket.onmessage = (event) => {
                 if (!current()) return;
-                let message;
+                let message: SignalingMessage;
                 try {
                     message = JSON.parse(event.data);
                 } catch {
@@ -530,7 +532,9 @@ export class VoiceManager {
                 video: false,
             });
             if (generation !== this.microphoneGeneration || !this.session) {
-                stream.getTracks().forEach((track) => track.stop());
+                stream.getTracks().forEach((track) => {
+                    track.stop();
+                });
                 return;
             }
             this.audio ??= new AudioContext({ sampleRate: 48000 });
@@ -553,11 +557,15 @@ export class VoiceManager {
             );
             if (generation !== this.microphoneGeneration || !this.session) {
                 processing.close();
-                stream.getTracks().forEach((track) => track.stop());
+                stream.getTracks().forEach((track) => {
+                    track.stop();
+                });
                 return;
             }
             this.processing?.close();
-            this.microphone?.getTracks().forEach((track) => track.stop());
+            this.microphone?.getTracks().forEach((track) => {
+                track.stop();
+            });
             this.microphone = stream;
             this.processing = processing;
             // Settings may change while the worklet is loading.
@@ -581,7 +589,9 @@ export class VoiceManager {
             this.updateMicrophone();
         } catch (error) {
             processing?.close();
-            stream?.getTracks().forEach((track) => track.stop());
+            stream?.getTracks().forEach((track) => {
+                track.stop();
+            });
             if (generation === this.microphoneGeneration) {
                 this.disableMicrophone();
                 const declined = error instanceof DOMException && error.name === "NotAllowedError";
@@ -600,7 +610,9 @@ export class VoiceManager {
         if (this.processing) this.processing.track.enabled = false;
         // Keep the sender stable so other clients receive no mute notification.
         // Release the hardware; a fresh track can replace this stopped track later.
-        this.microphone?.getTracks().forEach((track) => track.stop());
+        this.microphone?.getTracks().forEach((track) => {
+            track.stop();
+        });
         this.microphone = undefined;
         this.processing?.close();
         this.processing = undefined;

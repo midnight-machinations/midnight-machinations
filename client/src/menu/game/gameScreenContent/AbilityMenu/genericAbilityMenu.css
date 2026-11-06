@@ -19,18 +19,18 @@
     width: 100%;
     padding: 0 0.13rem;
 }
-.generic-ability-menu-tab-no-summary > div > span {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.13rem;
-}
 .generic-ability-menu-tab-summary > span {
     display: inline-flex;
     align-items: center;
     justify-content: center;
     gap: 0.13rem;
     flex-wrap: wrap;
+}
+.generic-ability-menu-tab-no-summary > div > span {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.13rem;
 }
 .controller-icon {
     padding: 0;

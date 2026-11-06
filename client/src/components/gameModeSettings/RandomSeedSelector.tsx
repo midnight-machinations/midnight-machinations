@@ -41,8 +41,8 @@ export default function RandomSeedSelector(
                                 return;
                             } else {
                                 const value = Number(e.target.value);
-                                setLocalSeed(isNaN(value) ? null : value);
-                                onChange(isNaN(value) ? null : value);
+                                setLocalSeed(Number.isNaN(value) ? null : value);
+                                onChange(Number.isNaN(value) ? null : value);
                             }
                         }}
                     />

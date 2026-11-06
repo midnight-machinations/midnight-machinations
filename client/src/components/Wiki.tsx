@@ -164,7 +164,7 @@ function WikiSearchBar(
 ): ReactElement {
     return (
         <div className="wiki-search-bar">
-            <button tabIndex={-1} onClick={() => props.onBack()}>
+            <button type="button" tabIndex={-1} onClick={() => props.onBack()}>
                 <Icon>arrow_back</Icon>
             </button>
             <input
@@ -180,7 +180,7 @@ function WikiSearchBar(
                 }}
                 placeholder={translate("menu.wiki.search.placeholder")}
             />
-            <button tabIndex={-1} onClick={props.onClear}>
+            <button type="button" tabIndex={-1} onClick={props.onClear}>
                 <Icon>close</Icon>
             </button>
         </div>
@@ -308,7 +308,7 @@ function WikiDisabledSelector(
         options.set("all", [translate("wiki.disabledSelector.all"), "all"]);
 
         for (const gameMode of gameModes) {
-            options.set("gamemode:" + gameMode.name, [
+            options.set(`gamemode:${gameMode.name}`, [
                 <StyledText key={gameMode.name} noLinks={true}>
                     {gameMode.name}
                 </StyledText>,
@@ -643,7 +643,7 @@ function WikiSearchResult(
     }>,
 ): ReactElement {
     return (
-        <button key={props.page} onClick={() => props.onChooseArticle(props.page)}>
+        <button type="button" key={props.page} onClick={() => props.onChooseArticle(props.page)}>
             <StyledText noLinks={true} className={props.className}>
                 {getArticleTitle(props.page)}
             </StyledText>

@@ -126,6 +126,7 @@ export default function StyledText(props: Readonly<StyledTextProps>): ReactEleme
     };
 
     return (
+        // biome-ignore lint/a11y/noStaticElementInteractions lint/a11y/useKeyWithClickEvents: delegates events from the keyword links inside, which are focusable anchors
         <span
             className={props.className}
             onClick={handleClick}
@@ -133,6 +134,7 @@ export default function StyledText(props: Readonly<StyledTextProps>): ReactEleme
             onFocus={handleFocus}
             onMouseOut={handleUnfocus}
             onBlur={handleUnfocus}
+            // biome-ignore lint/security/noDangerouslySetInnerHtml: the markup is built by mapTokensToHtml from translations and keyword data; player text is escaped with encodeString first
             dangerouslySetInnerHTML={{ __html: jsxString }}
         ></span>
     );
@@ -145,15 +147,16 @@ function mapTokensToHtml(tokens: Token[], noLinks: boolean): string {
                 return token.string;
             } else if (token.link === undefined || noLinks) {
                 return ReactDOMServer.renderToStaticMarkup(
+                    // biome-ignore lint/security/noDangerouslySetInnerHtml: token strings are already escaped HTML fragments
                     <span className={token.style} dangerouslySetInnerHTML={{ __html: token.string }} />,
                 );
             } else {
                 return ReactDOMServer.renderToStaticMarkup(
-                    // eslint-disable-next-line jsx-a11y/anchor-is-valid
                     <a
-                        href="#"
+                        href={`/wiki/${token.link}`}
                         data-wiki-page={token.link}
-                        className={token.style + " keyword-link"}
+                        className={`${token.style} keyword-link`}
+                        // biome-ignore lint/security/noDangerouslySetInnerHtml: token strings are already escaped HTML fragments
                         dangerouslySetInnerHTML={{ __html: token.string }}
                     />,
                 );
@@ -172,7 +175,9 @@ export function computeKeywordData() {
 
     function addTranslatableKeywordData(langKey: string, data: KeywordData) {
         KEYWORD_DATA[translate(langKey)] = data;
-        for (let i = 0, variant; (variant = translateChecked(`${langKey}:var.${i}`)) !== null; i++) {
+        for (let i = 0; ; i++) {
+            const variant = translateChecked(`${langKey}:var.${i}`);
+            if (variant === null) break;
             const variantData = data.map((datum) => ({
                 ...datum,
                 replacement:
@@ -269,7 +274,7 @@ export function computeRoleListKeywordData(playerNames: UnsafeString[], roleList
     }
 
     for (const [index, outline] of roleList.entries()) {
-        ROLE_LIST_KEYWORD_DATA[`${index + 1}: ` + translateRoleOutline(outline, playerNames)] = [
+        ROLE_LIST_KEYWORD_DATA[`${index + 1}: ${translateRoleOutline(outline, playerNames)}`] = [
             { style: "keyword-outline-number", replacement: (index + 1).toString() },
             { replacement: " " },
             {
@@ -324,7 +329,7 @@ function computeDummyKeywordData() {
     }
 
     for (const [index, outline] of (DUMMY_ROLE_LIST as RoleList).entries()) {
-        DUMMY_ROLE_LIST_KEYWORD_DATA[`${index + 1}: ` + translateRoleOutline(outline, DUMMY_NAMES)] = [
+        DUMMY_ROLE_LIST_KEYWORD_DATA[`${index + 1}: ${translateRoleOutline(outline, DUMMY_NAMES)}`] = [
             { style: "keyword-outline-number", replacement: (index + 1).toString() },
             { replacement: " " },
             {
@@ -369,7 +374,7 @@ function styleKeywords(tokens: Token[], extraData?: KeywordDataMap): Token[] {
             const token = tokens[index];
             if (token.type !== "raw") continue;
 
-            const stringSplit = token.string.split(RegExp("(" + find(keyword).source + ")", "gi"));
+            const stringSplit = token.string.split(RegExp(`(${find(keyword).source})`, "gi"));
 
             if (stringSplit.length === 1) continue;
 

@@ -6,7 +6,7 @@ import StyledText from "../../../../components/StyledText";
 import { useGameState, usePlayerNames, usePlayerState } from "../../../../components/useHooks";
 import type { PhaseState, UnsafeString } from "../../../../game/gameState.d";
 import translate from "../../../../game/lang";
-import type { RoleState } from "../../../../game/roleState.d";
+import { abilityIdToString, type RoleState } from "../../../../game/roleState.d";
 import HypnotistMenu from "./RoleSpecificMenus/HypnotistMenu";
 import RecruiterMenu from "./RoleSpecificMenus/RecruiterMenu";
 import SmallPuppeteerMenu from "./RoleSpecificMenus/SmallPuppeteerMenu";
@@ -19,14 +19,14 @@ export default function RoleSpecificSection(): ReactElement {
     // )!;
 
     const abilityStates = usePlayerState(
-        (playerState) => [...playerState.abilityStates.values()],
+        (playerState) => [...playerState.abilityStates.entries()],
         ["abilityState", "tick"],
     )!;
 
     return (
         <>
-            {abilityStates.map((abilityState) => (
-                <OneRoleSpecificSection roleState={abilityState} />
+            {abilityStates.map(([abilityId, abilityState]) => (
+                <OneRoleSpecificSection key={abilityIdToString(abilityId)} roleState={abilityState} />
             ))}
         </>
     );
@@ -47,7 +47,7 @@ function OneRoleSpecificSection(
     return inner !== null ? (
         <DetailsSummary
             key={props.roleState.type}
-            summary={<StyledText>{translate("role." + props.roleState?.type + ".name")}</StyledText>}
+            summary={<StyledText>{translate(`role.${props.roleState?.type}.name`)}</StyledText>}
             defaultOpen={true}
         >
             {inner}
@@ -113,7 +113,7 @@ function roleSpecificSectionInner(
         case "engineer":
             return (
                 <div className="role-information">
-                    <StyledText>{translate("role.engineer.roleDataText." + roleState.trap.type)}</StyledText>
+                    <StyledText>{translate(`role.engineer.roleDataText.${roleState.trap.type}`)}</StyledText>
                 </div>
             );
         case "vigilante":
@@ -248,7 +248,7 @@ function MarksmanRoleSpecificMenu(
         case "notLoaded":
         case "loaded":
         case "shotTownie":
-            stateText = translate("role.marksman.roleDataText." + props.roleState.state.type);
+            stateText = translate(`role.marksman.roleDataText.${props.roleState.state.type}`);
             break;
     }
 
@@ -259,7 +259,7 @@ function MarksmanRoleSpecificMenu(
     );
 }
 
-function SpiralMenu(_props: {}): ReactElement | null {
+function SpiralMenu(): ReactElement | null {
     const spiralingPlayers = useGameState(
         (gameState) => gameState.players.filter((p) => p.playerTags.includes("spiraling")),
         ["yourPlayerTags"],

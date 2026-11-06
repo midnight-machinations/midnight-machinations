@@ -162,7 +162,7 @@ export default function SettingsMenu(): ReactElement {
                                     items={menuOrder}
                                     render={(menu, i) => (
                                         <Button
-                                            className={"placard " + (MENU_THEMES[menu[0]] ?? "")}
+                                            className={`placard ${MENU_THEMES[menu[0]] ?? ""}`}
                                             highlighted={menu[1] === true}
                                             onClick={() => {
                                                 menuOrder[i][1] = !menuOrder[i][1];
@@ -171,7 +171,7 @@ export default function SettingsMenu(): ReactElement {
                                                 setMenuOrder([...newItems]);
                                             }}
                                         >
-                                            {translate(MENU_TRANSLATION_KEYS[menu[0]] + ".icon")}
+                                            {translate(`${MENU_TRANSLATION_KEYS[menu[0]]}.icon`)}
                                         </Button>
                                     )}
                                     onDragEnd={(newItems) => {

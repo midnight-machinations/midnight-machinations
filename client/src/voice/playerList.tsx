@@ -33,6 +33,7 @@ export function LobbyVoiceMuteButton(props: Readonly<{ roomClientId: number }>) 
     const label = `${translate(muted ? "voice.unmute" : "voice.mute")} ${name}`;
     return (
         <button
+            type="button"
             aria-pressed={muted}
             aria-label={label}
             title={label}

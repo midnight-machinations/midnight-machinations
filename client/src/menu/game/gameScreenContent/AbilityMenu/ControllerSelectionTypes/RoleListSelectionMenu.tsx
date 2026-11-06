@@ -36,6 +36,8 @@ export default function RoleListSelectionMenu(
         <div className="generic-list-controller-menu">
             {props.selection.map((p, i) => (
                 <RoleDropdown
+                    // biome-ignore lint/suspicious/noArrayIndexKey: each dropdown is a fixed slot in the selection
+                    key={i}
                     enabledRoles={
                         props.availableSelection.availableRoles.filter(
                             (p) =>

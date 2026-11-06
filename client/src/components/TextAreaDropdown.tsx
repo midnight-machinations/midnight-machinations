@@ -237,6 +237,7 @@ function PrettyTextArea(
     }, [props.field, writing, hover]);
 
     return (
+        // biome-ignore lint/a11y/noStaticElementInteractions: focus and blur bubble up from the textarea inside
         <div
             ref={prettyTextAreaRef}
             className="pretty-text-area"

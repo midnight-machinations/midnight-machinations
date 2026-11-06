@@ -18,7 +18,7 @@ function stringToFastForwardSetting(string: FastForwardSettingString): FastForwa
         case "skip":
             return { type: split[0] };
         case "phase":
-            return { type: "phase", phase: split[1] as PhaseType, day: parseInt(split[2]) };
+            return { type: "phase", phase: split[1] as PhaseType, day: parseInt(split[2], 10) };
     }
     return { type: "none" };
 }
@@ -33,8 +33,8 @@ export default function FastForwardButton(props: {
 
     const optionMap: SelectOptionsSearch<FastForwardSettingString> = new Map();
 
-    optionMap.set("none", [<Icon>play_arrow</Icon>, translate("none")]);
-    optionMap.set("skip", [<Icon>fast_forward</Icon>, translate("wiki.article.standard.fastForward.title")]);
+    optionMap.set("none", [<Icon key="none">play_arrow</Icon>, translate("none")]);
+    optionMap.set("skip", [<Icon key="skip">fast_forward</Icon>, translate("wiki.article.standard.fastForward.title")]);
 
     for (let i = dayNumber; i < Math.min(dayNumber + 4, 255); i++) {
         for (const phase of ["discussion", "nomination", "night"] as PhaseType[]) {
@@ -46,10 +46,10 @@ export default function FastForwardButton(props: {
                     <>
                         <Icon>fast_forward</Icon>{" "}
                         <StyledText noLinks={true}>
-                            {translate("phase." + phase)} {i.toString()}
+                            {translate(`phase.${phase}`)} {i.toString()}
                         </StyledText>
                     </>,
-                    translate("phase." + phase) + " " + i.toString(),
+                    `${translate(`phase.${phase}`)} ${i.toString()}`,
                 ]);
             }
         }
@@ -57,7 +57,7 @@ export default function FastForwardButton(props: {
 
     return (
         <Select
-            className={"brand fast-forward-button" + (fastForward.type !== "none" ? " highlighted" : "")}
+            className={`brand fast-forward-button${fastForward.type !== "none" ? " highlighted" : ""}`}
             value={fastForwardSettingToString(fastForward)}
             onChange={(e) => {
                 props.onChange(stringToFastForwardSetting(e));

@@ -26,7 +26,9 @@ export function VoiceSettingsControls() {
             void navigator.mediaDevices
                 ?.enumerateDevices()
                 .then((values) => setDevices(values.filter((value) => value.kind === "audioinput")))
-                .catch(() => {});
+                .catch(() => {
+                    // Keep the current list when devices cannot be listed (no permission yet)
+                });
         };
         refresh();
         navigator.mediaDevices?.addEventListener("devicechange", refresh);
@@ -36,23 +38,46 @@ export function VoiceSettingsControls() {
     const modeOptions: SelectOptionsSearch<VoiceSettings["mode"]> = new Map(
         modes.map((mode) => {
             const label = translate(`voice.${mode}`);
-            return [mode, [<StyledText noLinks={true}>{label}</StyledText>, label]];
+            return [
+                mode,
+                [
+                    <StyledText key={mode} noLinks={true}>
+                        {label}
+                    </StyledText>,
+                    label,
+                ],
+            ];
         }),
     );
     const defaultDevice = translate("voice.defaultDevice");
     const deviceOptions: SelectOptionsSearch<string> = new Map([
-        ["", [<StyledText noLinks={true}>{defaultDevice}</StyledText>, defaultDevice]],
+        [
+            "",
+            [
+                <StyledText key="default" noLinks={true}>
+                    {defaultDevice}
+                </StyledText>,
+                defaultDevice,
+            ],
+        ],
     ]);
     devices
         .filter((device) => device.deviceId !== "")
         .forEach((device, index) => {
             const label = device.label || translate("voice.deviceNumber", index + 1);
-            deviceOptions.set(device.deviceId, [<StyledText noLinks={true}>{encodeString(label)}</StyledText>, label]);
+            deviceOptions.set(device.deviceId, [
+                <StyledText key={device.deviceId} noLinks={true}>
+                    {encodeString(label)}
+                </StyledText>,
+                label,
+            ]);
         });
     if (voice.settings.deviceId && !deviceOptions.has(voice.settings.deviceId)) {
         const label = translate("voice.savedMicrophone");
         deviceOptions.set(voice.settings.deviceId, [
-            <StyledText noLinks={true}>{encodeString(label)}</StyledText>,
+            <StyledText key="saved" noLinks={true}>
+                {encodeString(label)}
+            </StyledText>,
             label,
         ]);
     }

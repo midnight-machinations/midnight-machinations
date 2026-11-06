@@ -30,7 +30,7 @@ export function CopyButton(props: CopyButtonProps): ReactElement {
         <Button
             {...reconcileCopyProps(props)}
             onClick={() => writeToClipboard(props.text, anchorController.pushErrorCard)}
-            pressedText={(success) => translate("notification.clipboard.write." + (success ? "success" : "failure"))}
+            pressedText={(success) => translate(`notification.clipboard.write.${success ? "success" : "failure"}`)}
             pressedChildren={pressedChildren}
         >
             {children ?? <Icon>content_copy</Icon>}
@@ -41,7 +41,7 @@ export function CopyButton(props: CopyButtonProps): ReactElement {
 type PasteButtonResult<H> = "success" | "clipboardError" | H;
 type PasteButtonProps<H> = ButtonProps<PasteButtonResult<H>> & {
     onClick?: undefined;
-    onClipboardRead?: (text: string) => void | "success" | H;
+    onClipboardRead?: (text: string) => undefined | "success" | H;
     pressedText?: never;
     failureText?: (result: H) => React.ReactNode;
 };

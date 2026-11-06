@@ -15,9 +15,8 @@ export default function BooleanSelectionMenu(
 ): ReactElement {
     if (
         props.id === undefined ||
-        translateChecked("controllerId." + controllerIdToLink(props.id).replace(/\//g, ".") + ".boolean.true") ===
-            null ||
-        translateChecked("controllerId." + controllerIdToLink(props.id).replace(/\//g, ".") + ".boolean.false") === null
+        translateChecked(`controllerId.${controllerIdToLink(props.id).replace(/\//g, ".")}.boolean.true`) === null ||
+        translateChecked(`controllerId.${controllerIdToLink(props.id).replace(/\//g, ".")}.boolean.false`) === null
     ) {
         return <BooleanSelectionMenuUnnamed {...props} />;
     } else {
@@ -61,11 +60,21 @@ function BooleanSelectionMenuNamed(
     ///make array with numbers from available.min to available.max
     const optionsSearch = new Map<boolean, [React.ReactNode, string]>();
 
-    const trueText = translate("controllerId." + controllerIdToLink(props.id).replace(/\//g, ".") + ".boolean.true");
-    optionsSearch.set(true, [<StyledText noLinks={true}>{trueText}</StyledText>, trueText]);
+    const trueText = translate(`controllerId.${controllerIdToLink(props.id).replace(/\//g, ".")}.boolean.true`);
+    optionsSearch.set(true, [
+        <StyledText key="true" noLinks={true}>
+            {trueText}
+        </StyledText>,
+        trueText,
+    ]);
 
-    const falseText = translate("controllerId." + controllerIdToLink(props.id).replace(/\//g, ".") + ".boolean.false");
-    optionsSearch.set(false, [<StyledText noLinks={true}>{falseText}</StyledText>, falseText]);
+    const falseText = translate(`controllerId.${controllerIdToLink(props.id).replace(/\//g, ".")}.boolean.false`);
+    optionsSearch.set(false, [
+        <StyledText key="false" noLinks={true}>
+            {falseText}
+        </StyledText>,
+        falseText,
+    ]);
 
     return (
         <div>

@@ -69,6 +69,7 @@ export default function FlushInput(
             />
             {(props.dontHidePencil || !inputFocused) && (
                 <button
+                    type="button"
                     className="flush-input-button"
                     onClick={() => {
                         inputRef.current?.focus();

@@ -36,6 +36,12 @@
   "linter": {
     "rules": {
       "preset": "recommended",
+      "a11y": {
+        "noLabelWithoutControl": {
+          "level": "error",
+          "options": { "inputComponents": ["Select", "CheckBox"] }
+        }
+      },
       "correctness": {
         "noUnusedVariables": "warn",
         "noUnusedImports": "warn",
@@ -60,7 +66,12 @@
       "linter": {
         "rules": {
           "suspicious": {
-            "noTemplateCurlyInString": "off"
+            "noTemplateCurlyInString": "off",
+            "noEmptyBlockStatements": "off"
+          },
+          "correctness": {
+            "noComponentHookFactories": "off",
+            "useHookAtTopLevel": "off"
           }
         }
       }

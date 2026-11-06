@@ -19,7 +19,7 @@ export default function GraveyardMenu(): ReactElement {
         <div className="graveyard-menu graveyard-menu-colors">
             <ContentTab close={ContentMenu.GraveyardMenu}>{translate("menu.gameMode.title")}</ContentTab>
 
-            <DetailsSummary summary={translate("menu.lobby.roleList") + ": " + playerCount} defaultOpen={true}>
+            <DetailsSummary summary={`${translate("menu.lobby.roleList")}: ${playerCount}`} defaultOpen={true}>
                 <RoleListDisplay />
             </DetailsSummary>
             <EnabledRoles />
@@ -49,24 +49,24 @@ function RoleListDisplay(): ReactElement {
                     <Button
                         className="role-list-button"
                         style={{ gridRow: index + 1 }}
+                        // biome-ignore lint/suspicious/noArrayIndexKey: each button is a fixed role list slot
                         key={index}
                         onClick={() => {
                             if (spectator) return;
 
-                            let newCrossedOutOutlines;
-                            if (crossedOutOutlines.includes(index))
-                                newCrossedOutOutlines = crossedOutOutlines.filter((x) => x !== index);
-                            else newCrossedOutOutlines = crossedOutOutlines.concat(index);
+                            const newCrossedOutOutlines = crossedOutOutlines.includes(index)
+                                ? crossedOutOutlines.filter((x) => x !== index)
+                                : crossedOutOutlines.concat(index);
 
                             GAME_MANAGER.sendSaveCrossedOutOutlinesPacket(newCrossedOutOutlines);
                         }}
                     >
                         {crossedOutOutlines.includes(index) ? (
                             <s>
-                                <StyledText>{`${index + 1}: ` + translateRoleOutline(entry, playerNames)}</StyledText>
+                                <StyledText>{`${index + 1}: ${translateRoleOutline(entry, playerNames)}`}</StyledText>
                             </s>
                         ) : (
-                            <StyledText>{`${index + 1}: ` + translateRoleOutline(entry, playerNames)}</StyledText>
+                            <StyledText>{`${index + 1}: ${translateRoleOutline(entry, playerNames)}`}</StyledText>
                         )}
                     </Button>
                 );

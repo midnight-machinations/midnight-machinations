@@ -38,6 +38,7 @@ export function DragAndDrop<T>(
         <>
             {renderedItems.map((item, index) => (
                 <DragAndDropItem<T>
+                    // biome-ignore lint/suspicious/noArrayIndexKey: items have no id of their own and reorder only through onDragEnd
                     key={index}
                     item={item}
                     index={index}
@@ -90,6 +91,7 @@ function DragAndDropItem<T>(
     }, [render, item, index, dragHandleProps]);
 
     return (
+        // biome-ignore lint/a11y/noStaticElementInteractions: drag and drop reordering is mouse only for now
         <div
             {...(props.dragHandle ? {} : dragHandleProps)}
             className={(disabled || props.dragHandle ? "" : "draggable") + (item === draggedItem ? " dragged" : "")}

@@ -143,7 +143,9 @@ export function createGameManager(): GameManager {
         setPrependWhisperFunction: (f) => {
             gameManager.prependWhisper = f;
         },
-        prependWhisper: (_index) => {},
+        prependWhisper: (_index) => {
+            // Replaced by the chat menu while it is mounted
+        },
 
         wikiArticleCallbacks: [],
         addSetWikiArticleCallback: (callback) => {
@@ -361,15 +363,10 @@ export function createGameManager(): GameManager {
         },
 
         sendJudgementPacket(judgement: Verdict) {
-            let player;
-            // if(player===undefined){
-            if (this.state.stateType === "game" && this.state.clientState.type === "player") {
-                player = this.state.clientState.myIndex;
-            }
-            // }
-            if (player === undefined) {
+            if (this.state.stateType !== "game" || this.state.clientState.type !== "player") {
                 return;
             }
+            const player = this.state.clientState.myIndex;
 
             const verdictInt = judgement === "innocent" ? 0 : judgement === "guilty" ? 1 : 2;
 
@@ -384,15 +381,10 @@ export function createGameManager(): GameManager {
                 will = defaultAlibi();
             }
 
-            let player;
-            // if(player===undefined){
-            if (this.state.stateType === "game" && this.state.clientState.type === "player") {
-                player = this.state.clientState.myIndex;
-            }
-            // }
-            if (player === undefined) {
+            if (this.state.stateType !== "game" || this.state.clientState.type !== "player") {
                 return;
             }
+            const player = this.state.clientState.myIndex;
 
             this.sendControllerInput({
                 id: {

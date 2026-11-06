@@ -22,7 +22,7 @@ export default function PlayMenu(): ReactElement {
             GAME_MANAGER.sendLobbyListRequest();
         }, 2500);
         return () => clearInterval(autoRefresh);
-    });
+    }, []);
 
     const joinGame = useCallback(
         async (roomCode?: number, playerId?: number): Promise<boolean> => {
@@ -61,6 +61,7 @@ export default function PlayMenu(): ReactElement {
                             <Icon>refresh</Icon>
                         </Button>
                         <button
+                            type="button"
                             className="brand"
                             onClick={async () => {
                                 setAnchorContent(<LoadingScreen type="host" />);
@@ -96,8 +97,9 @@ function PlayMenuFooter(
     return (
         <footer>
             <div>
-                <label>{translate("menu.play.field.roomCode")}</label>
+                <label htmlFor="play-menu-room-code">{translate("menu.play.field.roomCode")}</label>
                 <input
+                    id="play-menu-room-code"
                     type="text"
                     value={roomCode?.toString(18)}
                     onChange={(e) => {
@@ -105,12 +107,10 @@ function PlayMenuFooter(
                         if (value === "") {
                             setRoomCode(undefined);
                         } else {
-                            try {
-                                const code = parseInt(value, 18);
-                                if (!isNaN(code)) {
-                                    setRoomCode(code);
-                                }
-                            } catch (_) {}
+                            const code = parseInt(value, 18);
+                            if (!Number.isNaN(code)) {
+                                setRoomCode(code);
+                            }
                         }
                     }}
                     onKeyUp={(e) => {
@@ -121,8 +121,9 @@ function PlayMenuFooter(
                 />
             </div>
             <div>
-                <label>{translate("menu.play.field.playerId")}</label>
+                <label htmlFor="play-menu-player-id">{translate("menu.play.field.playerId")}</label>
                 <input
+                    id="play-menu-player-id"
                     type="text"
                     value={playerID}
                     onChange={(e) => {
@@ -130,12 +131,10 @@ function PlayMenuFooter(
                         if (value === "") {
                             setPlayerID(undefined);
                         } else {
-                            try {
-                                const id = parseInt(value);
-                                if (!isNaN(id) && id < 256) {
-                                    setPlayerID(id);
-                                }
-                            } catch (_) {}
+                            const id = parseInt(value, 10);
+                            if (!Number.isNaN(id) && id < 256) {
+                                setPlayerID(id);
+                            }
                         }
                     }}
                     onKeyUp={(e) => {
@@ -146,6 +145,7 @@ function PlayMenuFooter(
                 />
             </div>
             <button
+                type="button"
                 onClick={() => {
                     props.joinGame(roomCode, playerID);
                 }}
@@ -174,7 +174,7 @@ function PlayMenuTable(
         };
         GAME_MANAGER.addStateListener(listener);
         return () => GAME_MANAGER.removeStateListener(listener);
-    });
+    }, []);
 
     return (
         <table className="play-menu-table">
@@ -191,6 +191,7 @@ function PlayMenuTable(
                         <tr key={roomCode}>
                             <td>
                                 <button
+                                    type="button"
                                     onClick={() => {
                                         if (lobby.inGame) {
                                             setCoverCard(
@@ -214,7 +215,7 @@ function PlayMenuTable(
                                     {lobby.players.map(([clientId, clientName]) => {
                                         return (
                                             <Button
-                                                key={clientName as string}
+                                                key={clientId}
                                                 onClick={() => {
                                                     props.joinGame(roomCode, clientId);
                                                 }}
@@ -232,6 +233,7 @@ function PlayMenuTable(
             <tfoot>
                 {new Array(100).fill(0).map((_, i) => {
                     return (
+                        // biome-ignore lint/suspicious/noArrayIndexKey: identical filler rows that never reorder
                         <tr key={i}>
                             <td></td>
                             <td></td>

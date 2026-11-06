@@ -177,7 +177,7 @@ export function ModifierSettingsDisplay(props: ModifierSettingsDisplayProps): Re
                                 }}
                             />
                         ) : (
-                            <div key={modifier} className={"placard" + (!isEnabled(modifier) ? " disabled" : "")}>
+                            <div key={modifier} className={`placard${!isEnabled(modifier) ? " disabled" : ""}`}>
                                 {modifierTextElement(modifier)}
                             </div>
                         ),

@@ -35,6 +35,7 @@ export default function GraveDeathCausesSelectionMenu(
         <div className="generic-list-controller-menu">
             {props.selection.map((p, i) => (
                 <GraveDeathCauseDropdown
+                    // biome-ignore lint/suspicious/noArrayIndexKey: each dropdown is a fixed slot in the selection
                     key={i}
                     canChooseNone={true}
                     value={p}
@@ -76,12 +77,19 @@ function GraveDeathCauseDropdown(props: Readonly<GraveDeathCauseDropdownProps>):
     const optionMap: SelectOptionsSearch<string | "none"> = new Map();
 
     if (props.canChooseNone) {
-        optionMap.set("none", [<StyledText noLinks={true}>{translate("none")}</StyledText>, translate("none")]);
+        optionMap.set("none", [
+            <StyledText key="none" noLinks={true}>
+                {translate("none")}
+            </StyledText>,
+            translate("none"),
+        ]);
     }
 
     for (const cause of getAllGraveDeathCauses()) {
         optionMap.set(graveDeathCauseLink(cause), [
-            <StyledText noLinks={true}>{translateGraveDeathCause(cause)}</StyledText>,
+            <StyledText key={graveDeathCauseLink(cause)} noLinks={true}>
+                {translateGraveDeathCause(cause)}
+            </StyledText>,
             translateGraveDeathCause(cause),
         ]);
     }

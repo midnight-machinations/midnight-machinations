@@ -57,7 +57,7 @@ export default function LobbyNamePane(): ReactElement {
                         </Button>
                     )}
                     {ready === "host" && (
-                        <button onClick={() => GAME_MANAGER.sendRelinquishHostPacket()}>
+                        <button type="button" onClick={() => GAME_MANAGER.sendRelinquishHostPacket()}>
                             <Icon>remove_moderator</Icon> {translate("menu.lobby.button.relinquishHost")}
                         </button>
                     )}

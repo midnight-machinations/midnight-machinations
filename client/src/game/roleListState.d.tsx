@@ -85,7 +85,7 @@ export type RoleOrRoleSet =
 export function translateRoleOutline(roleOutline: RoleOutline, playerNames: UnsafeString[]): string {
     return roleOutline
         .map((outline) => translateRoleOutlineOption(outline, playerNames))
-        .join(" " + translate("union:var.0") + " ");
+        .join(` ${translate("union:var.0")} `);
 }
 
 export function translatePlayerPool(playerPool: PlayerIndex[], playerNames: UnsafeString[]): string {
@@ -95,7 +95,7 @@ export function translatePlayerPool(playerPool: PlayerIndex[], playerNames: Unsa
     }
     out += playerPool
         .map((playerNumber) => encodeString(playerNames.at(playerNumber) ?? translate("player.unknown", playerNumber)))
-        .join(" " + translate("union") + " ");
+        .join(` ${translate("union")} `);
 
     return out;
 }
@@ -103,7 +103,7 @@ export function translatePlayerPool(playerPool: PlayerIndex[], playerNames: Unsa
 export function translateRoleOutlineOption(roleOutlineOption: RoleOutlineOption, playerNames: UnsafeString[]): string {
     let out = "";
     if (roleOutlineOption.playerPool) {
-        out += translatePlayerPool(roleOutlineOption.playerPool, playerNames) + ": ";
+        out += `${translatePlayerPool(roleOutlineOption.playerPool, playerNames)}: `;
     }
     if (roleOutlineOption.insiderGroups) {
         if (roleOutlineOption.insiderGroups.length === 0) {
@@ -111,7 +111,7 @@ export function translateRoleOutlineOption(roleOutlineOption: RoleOutlineOption,
         }
         out += roleOutlineOption.insiderGroups
             .map((insiderGroup) => translate(`chatGroup.${insiderGroup}.icon`))
-            .join(" " + translate("union") + " ");
+            .join(` ${translate("union")} `);
         out += ", ";
     }
     if (roleOutlineOption.winIfAny) {
@@ -120,7 +120,7 @@ export function translateRoleOutlineOption(roleOutlineOption: RoleOutlineOption,
     if ("roleSet" in roleOutlineOption) {
         out += translate(roleOutlineOption.roleSet);
     } else {
-        out += translate("role." + roleOutlineOption.role + ".name");
+        out += translate(`role.${roleOutlineOption.role}.name`);
     }
     return out;
 }
@@ -129,7 +129,7 @@ export function translateRoleOrRoleSet(roleOrRoleSet: RoleOrRoleSet): string {
         case "roleSet":
             return translate(roleOrRoleSet.roleSet);
         case "role":
-            return translate("role." + roleOrRoleSet.role + ".name");
+            return translate(`role.${roleOrRoleSet.role}.name`);
     }
 }
 export function getRolesFromOutline(roleOutline: RoleOutline): Role[] {

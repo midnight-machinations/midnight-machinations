@@ -5,13 +5,12 @@
     display: block;
 }
 
-.play-menu-join-popup .rejoinColumn {
-    margin-top: 1rem;
-}
-
 .rejoinColumn {
     display: flex;
     flex-direction: column;
     width: 100%;
     height: 100%;
+}
+.play-menu-join-popup .rejoinColumn {
+    margin-top: 1rem;
 }

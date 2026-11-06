@@ -4,6 +4,12 @@
     flex-direction: column;
 }
 
+.content-tab > button {
+    width: max-content;
+    margin: 0 0.3rem;
+    padding: 0;
+    height: 1.2em;
+}
 .game-screen > .menu-buttons > button {
     padding: 0.5rem;
     font-size: 1.5em;
@@ -79,12 +85,6 @@
     align-items: center;
     user-select: none;
     position: relative;
-}
-.content-tab > button {
-    width: max-content;
-    margin: 0 0.3rem;
-    padding: 0;
-    height: 1.2em;
 }
 .content-tab > button > .icon-small {
     vertical-align: super;

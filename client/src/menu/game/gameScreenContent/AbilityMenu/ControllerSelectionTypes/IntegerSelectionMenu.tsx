@@ -30,10 +30,16 @@ export default function IntegerSelectionMenu(
 
         if (props.id !== undefined) {
             const text = translateChecked(
-                "controllerId." + controllerIdToLink(props.id).replace(/\//g, ".") + ".integer." + i,
+                `controllerId.${controllerIdToLink(props.id).replace(/\//g, ".")}.integer.${i}`,
             );
 
-            if (text !== null) out = [<StyledText noLinks={true}>{text}</StyledText>, text];
+            if (text !== null)
+                out = [
+                    <StyledText key={i} noLinks={true}>
+                        {text}
+                    </StyledText>,
+                    text,
+                ];
         }
 
         optionsSearch.set(i, out);

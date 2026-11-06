@@ -153,20 +153,20 @@ export function translateControllerID(abilityId: ControllerID): string {
     switch (abilityId.type) {
         case "role":
             return (
-                translate("role." + abilityId.role + ".name") +
+                translate(`role.${abilityId.role}.name`) +
                 " " +
-                (translateChecked("controllerId.role." + abilityId.role + "." + abilityId.id + ".name") ?? "")
+                (translateChecked(`controllerId.role.${abilityId.role}.${abilityId.id}.name`) ?? "")
             );
         default:
-            return translateChecked("controllerId." + abilityId.type + ".name") ?? "";
+            return translateChecked(`controllerId.${abilityId.type}.name`) ?? "";
     }
 }
 export function translateControllerIDNoRole(abilityId: ControllerID): string {
     switch (abilityId.type) {
         case "role":
-            return translateChecked("controllerId.role." + abilityId.role + "." + abilityId.id + ".name") ?? "";
+            return translateChecked(`controllerId.role.${abilityId.role}.${abilityId.id}.name`) ?? "";
         default:
-            return translateChecked("controllerId." + abilityId.type + ".name") ?? "";
+            return translateChecked(`controllerId.${abilityId.type}.name`) ?? "";
     }
 }
 

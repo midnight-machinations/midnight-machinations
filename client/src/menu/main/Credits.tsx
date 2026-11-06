@@ -8,6 +8,7 @@ export default function Credits(): ReactElement {
     return (
         <div className="credits-menu">
             <button
+                type="button"
                 onClick={() => {
                     ANCHOR_CONTROLLER?.setContent(<StartMenu />);
                 }}

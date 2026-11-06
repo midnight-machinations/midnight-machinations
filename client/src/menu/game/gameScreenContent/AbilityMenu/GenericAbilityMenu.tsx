@@ -52,7 +52,7 @@ type ControllerGroupsMap = ListMap<GroupName, ListMap<ControllerID, SavedControl
 export function getGroupNameFromControllerID(id: ControllerID): GroupName {
     switch (id.type) {
         case "role":
-            return ("role/" + id.player + "/" + id.role) as `${PlayerIndex}/${Role}`;
+            return `role/${id.player}/${id.role}` as `${PlayerIndex}/${Role}`;
         case "syndicateGunGive":
         case "syndicateGunShoot":
         case "syndicateBackupAttack":
@@ -79,7 +79,7 @@ export function getGroupNameFromControllerID(id: ControllerID): GroupName {
 function translateGroupName(id: ControllerID): string {
     switch (id.type) {
         case "role":
-            return translate("role." + id.role + ".name");
+            return translate(`role.${id.role}.name`);
         case "syndicateGunGive":
         case "syndicateGunShoot":
         case "syndicateBackupAttack":
@@ -143,8 +143,8 @@ export default function GenericAbilityMenu(): ReactElement {
 
     return (
         <>
-            {controllerGroupsMap.entries().map(([group, controllers], i) => {
-                return <MultipleControllersMenu key={i} groupName={group} controllers={controllers} />;
+            {controllerGroupsMap.entries().map(([group, controllers]) => {
+                return <MultipleControllersMenu key={group} groupName={group} controllers={controllers} />;
             })}
         </>
     );
@@ -185,8 +185,15 @@ function MultipleControllersMenu(
             defaultOpen={true}
             disabled={disabled}
         >
-            {props.controllers.entries().map(([id, saveData], i) => {
-                return <SingleAbilityMenu key={i} abilityId={id} saveData={saveData} includeDropdown={false} />;
+            {props.controllers.entries().map(([id, saveData]) => {
+                return (
+                    <SingleAbilityMenu
+                        key={controllerIdToLink(id)}
+                        abilityId={id}
+                        saveData={saveData}
+                        includeDropdown={false}
+                    />
+                );
             })}
         </DetailsSummary>
     );
@@ -195,7 +202,6 @@ function MultipleControllersMenu(
 function SingleAbilityMenu(
     props: Readonly<{
         abilityId: ControllerID;
-        key: number;
         saveData: SavedController;
         includeDropdown?: boolean;
     }>,
@@ -285,7 +291,7 @@ function ControllerIcon(props: Readonly<{ icon: ControllerIconData }>) {
             return translate("night.icon");
         }
         if ("visit" in props.icon) {
-            return translate("visit.icon." + props.icon.visit);
+            return translate(`visit.icon.${props.icon.visit}`);
         }
         return null;
     }, [props.icon]);
@@ -358,12 +364,7 @@ function SwitchSingleAbilityMenuType(
                 </Button>
             );
         case "boolean": {
-            let bool;
-            if (selected === null || selected.type !== "boolean") {
-                bool = false;
-            } else {
-                bool = selected.selection;
-            }
+            const bool = selected !== null && selected.type === "boolean" ? selected.selection : false;
 
             return (
                 <BooleanSelectionMenu

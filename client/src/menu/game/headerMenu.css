@@ -2,6 +2,9 @@
     display: flex;
     justify-content: center;
 }
+.menu-buttons button {
+    position: relative;
+}
 .header-menu .menu-buttons button {
     margin: .2%;
     margin-bottom: 0;
@@ -13,9 +16,6 @@
     background-color: var(--primary-color);
     overflow-x: hidden;
     box-shadow: 0 0 10px rgba(from var(--text-color) / 0.3);
-}
-.menu-buttons button {
-    position: relative;
 }
 .header-menu .menu-buttons button:hover {
     background-color: var(--hover-color);
@@ -54,6 +54,16 @@
     flex-direction: row;
     justify-content: center;
 }
+.header-menu .phase-specific > div {
+    width: fit-content;
+    background-color: var(--background-color);
+    border-color: var(--primary-border-color);
+    border-width: 0.13rem;
+    border-style: solid;
+    border-radius: 0;
+    padding: 0.13rem 0.25rem;
+    box-shadow: 0 0 10px rgba(from var(--text-color) / 0.3);
+}
 .header-menu > .information > .my-information > div {
     width: fit-content;
     background-color: var(--background-color);
@@ -69,16 +79,6 @@
     display: flex;
     flex-direction: row;
     justify-content: center;
-}
-.header-menu .phase-specific > div {
-    width: fit-content;
-    background-color: var(--background-color);
-    border-color: var(--primary-border-color);
-    border-width: 0.13rem;
-    border-style: solid;
-    border-radius: 0;
-    padding: 0.13rem 0.25rem;
-    box-shadow: 0 0 10px rgba(from var(--text-color) / 0.3);
 }
 .header-menu .judgement-info > button {
     width: max-content;

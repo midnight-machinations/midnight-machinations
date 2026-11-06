@@ -48,7 +48,7 @@ function getArticleTooltip(page: WikiArticleLink): string | null {
     const truncated = shortened?.split("\n").slice(0, 3).join("\n");
     // Add ellipsis
     const hasMore = tooltipText && truncated && truncated.length < tooltipText.length;
-    const ellipsized = hasMore ? truncated + "..." : tooltipText;
+    const ellipsized = hasMore ? `${truncated}...` : tooltipText;
     return ellipsized;
 }
 

@@ -43,7 +43,7 @@ export default function ChatMenu(): ReactElement {
     return (
         <div className="chat-menu chat-menu-colors">
             <ContentTab close={ContentMenu.ChatMenu}>{translate("menu.chat.title")}</ContentTab>
-            <div className={"chat-voice-header" + (filterActive ? " highlighted" : "")}>
+            <div className={`chat-voice-header${filterActive ? " highlighted" : ""}`}>
                 <ChatFilters filter={filter ?? null} />
                 <div className="chat-header-voice-controls">
                     <LobbyVoicePrompt />
@@ -70,14 +70,14 @@ export default function ChatMenu(): ReactElement {
 
                 return (
                     <div className="brand chat-menu-chat-controller" key={JSON.stringify(id)}>
-                        <div key={"header: " + JSON.stringify(id)} className="chat-menu-icons">
+                        <div key={`header: ${JSON.stringify(id)}`} className="chat-menu-icons">
                             {!sendChatGroups.includes("all") && (
                                 <StyledText noLinks={true}>{translate("noAll.icon")}</StyledText>
                             )}
                             {sendChatGroups.map((group) => {
                                 return (
                                     <StyledText key={group} noLinks={true}>
-                                        {translate("chatGroup." + group + ".icon")}
+                                        {translate(`chatGroup.${group}.icon`)}
                                     </StyledText>
                                 );
                             })}
@@ -90,7 +90,7 @@ export default function ChatMenu(): ReactElement {
                             />
                         </div>
                         <ChatTextInput
-                            key={"input: " + JSON.stringify(id)}
+                            key={`input: ${JSON.stringify(id)}`}
                             disabled={sendChatController.parameters.grayedOut}
                             controllingPlayer={id.player}
                         />
@@ -247,7 +247,10 @@ export function ChatTextInput(
 
     useEffect(() => {
         GAME_MANAGER.setPrependWhisperFunction(prependWhisper);
-        return () => GAME_MANAGER.setPrependWhisperFunction(() => {});
+        return () =>
+            GAME_MANAGER.setPrependWhisperFunction(() => {
+                // No chat menu is mounted to prepend a whisper to
+            });
     }, [prependWhisper]);
 
     const history: HistoryQueue<string> = useMemo(() => new HistoryQueue(40), []);
@@ -276,7 +279,7 @@ export function ChatTextInput(
             const text = event.target.value;
             const whisperCommandMatch = RegExp(/\/w(\d+) /).exec(text);
             if (whispering === null && whisperCommandMatch !== null) {
-                const index = parseInt(whisperCommandMatch[1]) - 1;
+                const index = parseInt(whisperCommandMatch[1], 10) - 1;
                 if (
                     gamePlayers !== undefined &&
                     index < gamePlayers.length &&
@@ -301,7 +304,7 @@ export function ChatTextInput(
             //if press enter while holding shift
             if (event.key === "Enter" && event.shiftKey) {
                 event.preventDefault();
-                setChatBoxText(chatBoxText + "\n");
+                setChatBoxText(`${chatBoxText}\n`);
             } else if (event.key === "Enter") {
                 event.preventDefault();
                 sendChatField();

@@ -66,7 +66,7 @@ export default function messageListener(packet: ToClientPacket) {
                 GAME_MANAGER.state.lobbies = new Map();
 
                 for (const [lobbyId, lobbyData] of Object.entries(packet.lobbies))
-                    GAME_MANAGER.state.lobbies.set(Number.parseInt(lobbyId), lobbyData);
+                    GAME_MANAGER.state.lobbies.set(Number.parseInt(lobbyId, 10), lobbyData);
             }
             break;
         case "acceptJoin":
@@ -402,7 +402,7 @@ export default function messageListener(packet: ToClientPacket) {
                 if (packet.phase.type === "briefing" && GAME_MANAGER.state.clientState.type === "player") {
                     const role = GAME_MANAGER.state.clientState.myRole;
                     if (role !== undefined) {
-                        ANCHOR_CONTROLLER?.setCoverCard(<WikiArticle article={("role/" + role) as WikiArticleLink} />);
+                        ANCHOR_CONTROLLER?.setCoverCard(<WikiArticle article={`role/${role}` as WikiArticleLink} />);
                     }
                 }
             }

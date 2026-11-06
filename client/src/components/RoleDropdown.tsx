@@ -24,14 +24,21 @@ export default function RoleDropdown(props: RoleDropdownProps): ReactElement {
     const optionMap: SelectOptionsSearch<Role | "none"> = new Map();
 
     if (props.canChooseNone) {
-        optionMap.set("none", [<StyledText noLinks={true}>{translate("none")}</StyledText>, translate("none")]);
+        optionMap.set("none", [
+            <StyledText key="none" noLinks={true}>
+                {translate("none")}
+            </StyledText>,
+            translate("none"),
+        ]);
     }
 
     for (const role of getAllRoles()) {
         if (props.enabledRoles === undefined || props.enabledRoles.includes(role)) {
             optionMap.set(role, [
-                <StyledText noLinks={true}>{translate("role." + role + ".name")}</StyledText>,
-                translate("role." + role + ".name"),
+                <StyledText key={role} noLinks={true}>
+                    {translate(`role.${role}.name`)}
+                </StyledText>,
+                translate(`role.${role}.name`),
             ]);
         }
     }

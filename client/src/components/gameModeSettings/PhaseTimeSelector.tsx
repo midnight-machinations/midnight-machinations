@@ -45,7 +45,7 @@ function _PhaseTimeSelector(
         onChange: (phase: Exclude<PhaseType, "recess">, time: number) => void;
     }>,
 ): ReactElement {
-    const phaseKey = "phase." + props.phase;
+    const phaseKey = `phase.${props.phase}`;
 
     return (
         <div className="placard">
@@ -207,7 +207,7 @@ function PhaseTimesVisualizerPhase(
                 setOpen((current) => (current === "closed" ? "show" : "closed"));
                 return;
             }
-            setWikiSearchPage(("standard/" + phase) as WikiArticleLink, anchorController);
+            setWikiSearchPage(`standard/${phase}` as WikiArticleLink, anchorController);
             return;
         }
 
@@ -233,6 +233,7 @@ function PhaseTimesVisualizerPhase(
     return (
         <>
             <button
+                type="button"
                 style={{
                     width: `${ratio * 100}%`,
                     backgroundColor: baseColor,
@@ -268,7 +269,7 @@ function PhaseTimesVisualizerPhase(
                 {open !== "edit" && (
                     <div className="placard">
                         <StyledText noLinks={true}>
-                            {translate(`phase.${phase}`)}: {"" + time}
+                            {translate(`phase.${phase}`)}: {`${time}`}
                         </StyledText>
                     </div>
                 )}
@@ -281,11 +282,10 @@ function PhaseTimesVisualizerPhase(
                             style={{ display: open === "edit" ? undefined : "none" }}
                             type="number"
                             ref={focusInput}
-                            autoFocus
                             onKeyUp={(e) => {
                                 if (e.key !== "Enter") return;
 
-                                const value = Number.parseInt((e.target as HTMLInputElement).value);
+                                const value = Number.parseInt((e.target as HTMLInputElement).value, 10);
                                 if (!isValidPhaseTime(value)) return;
 
                                 props.onChange(props.phase, value);

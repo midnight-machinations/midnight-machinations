@@ -8,7 +8,7 @@ import type { WikiArticleLink } from "./WikiArticleLink";
 import WikiArticleTooltip from "./WikiArticleTooltip";
 
 export type ButtonProps<R> = Omit<JSX.IntrinsicElements["button"], "onClick" | "ref"> & {
-    onClick?: (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => R | void | Promise<R | void>;
+    onClick?: (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => R | undefined | Promise<R | undefined>;
     highlighted?: boolean;
     pressedChildren?: (result: R) => React.ReactNode;
     pressedText?: (result: R) => React.ReactNode;
@@ -97,7 +97,7 @@ const RawButton = forwardRef<HTMLButtonElement, ButtonProps<any>>(function RawBu
         <button
             {...reconcileProps(props)}
             ref={ref}
-            className={"button " + (props.className ?? "") + (props.highlighted ? " highlighted" : "")}
+            className={`button ${props.className ?? ""}${props.highlighted ? " highlighted" : ""}`}
             onClick={async (e) => {
                 if (props.onClick) {
                     const result = await props.onClick(e);

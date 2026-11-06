@@ -35,7 +35,7 @@ export default function HeaderMenu(
     const reducedHeader = loadSettingsParsed().headerEnabled === false;
 
     return (
-        <div className={"header-menu " + backgroundStyle + (reducedHeader ? " reduced-header" : "")}>
+        <div className={`header-menu ${backgroundStyle}${reducedHeader ? " reduced-header" : ""}`}>
             {!(spectator && !host) && <FastForwardButton spectatorAndHost={spectator && host} />}
             {reducedHeader || <Information />}
             {!mobile && <MenuButtons chatMenuNotification={props.chatMenuNotification} />}
@@ -103,11 +103,11 @@ function Information(): ReactElement {
             <div className="my-information">
                 <div>
                     <h3>
-                        <div>{`${translate("phase." + phaseState.type)}${dayNumberText}⏳${timeLeftText}`}</div>
+                        <div>{`${translate(`phase.${phaseState.type}`)}${dayNumberText}⏳${timeLeftText}`}</div>
                     </h3>
                     {spectator || (
                         <StyledText>
-                            {encodeString(myName ?? "undefined") + " (" + translate("role." + myRole + ".name") + ")"}
+                            {`${encodeString(myName ?? "undefined")} (${translate(`role.${myRole}.name`)})`}
                         </StyledText>
                     )}
                 </div>
@@ -223,7 +223,7 @@ function VerdictButton(props: Readonly<{ verdict: Verdict; selected: boolean }>)
                 GAME_MANAGER.sendJudgementPacket(props.verdict);
             }}
         >
-            <StyledText noLinks={true}>{translate("verdict." + props.verdict)}</StyledText>
+            <StyledText noLinks={true}>{translate(`verdict.${props.verdict}`)}</StyledText>
         </Button>
     );
 }
@@ -251,8 +251,8 @@ export function MenuButtons(props: Readonly<{ chatMenuNotification: boolean }>):
                         {menu === ContentMenu.ChatMenu && props.chatMenuNotification && (
                             <div className="chat-notification highlighted">!</div>
                         )}
-                        {translate(MENU_TRANSLATION_KEYS[menu] + ".icon")}
-                        <span className="mobile-hidden">{translate(MENU_TRANSLATION_KEYS[menu] + ".title")}</span>
+                        {translate(`${MENU_TRANSLATION_KEYS[menu]}.icon`)}
+                        <span className="mobile-hidden">{translate(`${MENU_TRANSLATION_KEYS[menu]}.title`)}</span>
                     </Button>
                 );
             })}

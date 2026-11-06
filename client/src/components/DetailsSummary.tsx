@@ -1,6 +1,7 @@
 import React, { type ReactElement, type ReactNode, useMemo } from "react";
 import "./detailsSummary.css";
 import Icon from "./Icon";
+import { buttonProps } from "./keyboard";
 
 export default function DetailsSummary(
     props: Readonly<{
@@ -24,14 +25,14 @@ export default function DetailsSummary(
     }, [props.open, openState, props.disabled]);
 
     return (
-        <div className={"details-summary-container " + (props.className ?? "")}>
+        <div className={`details-summary-container ${props.className ?? ""}`}>
             <div
-                className={"details-summary-summary-container" + (open ? " open" : "")}
-                onClick={(_e) => {
+                className={`details-summary-summary-container${open ? " open" : ""}`}
+                {...buttonProps(() => {
                     if (props.disabled) return;
                     setOpen(!open);
                     if (props.onClick) props.onClick();
-                }}
+                })}
             >
                 {props.dropdownArrow === undefined || props.dropdownArrow === true ? (
                     props.disabled === undefined || props.disabled === false ? (

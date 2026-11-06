@@ -99,7 +99,7 @@ export function EnabledRolesDisplay(props: EnabledRolesDisplayProps): ReactEleme
                 noLinks={props.modifiable ?? false}
                 className={!isEnabled(role) ? "keyword-disabled" : undefined}
             >
-                {translate("role." + role + ".name")}
+                {translate(`role.${role}.name`)}
             </StyledText>
         );
     };
@@ -115,17 +115,17 @@ export function EnabledRolesDisplay(props: EnabledRolesDisplayProps): ReactEleme
                             ROLE_SETS.indexOf(roleJsonData()[a].mainRoleSet) -
                             ROLE_SETS.indexOf(roleJsonData()[b].mainRoleSet),
                     )
-                    .map((role, i) =>
+                    .map((role) =>
                         props.modifiable ? (
                             <Button
-                                key={i}
+                                key={role}
                                 disabled={props.disabled}
                                 onClick={() => (!isEnabled(role) ? props.onEnableRoles : props.onDisableRoles)([role])}
                             >
                                 {roleTextElement(role)}
                             </Button>
                         ) : (
-                            <div key={i} className={"placard" + (!isEnabled(role) ? " disabled" : "")}>
+                            <div key={role} className={`placard${!isEnabled(role) ? " disabled" : ""}`}>
                                 {roleTextElement(role)}
                             </div>
                         ),

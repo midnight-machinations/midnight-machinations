@@ -22,12 +22,22 @@ export default function PlayerOptionDropdown(props: {
     const optionMap: SelectOptionsSearch<PlayerIndex | "none"> = new Map();
 
     if (props.canChooseNone === true) {
-        optionMap.set("none", [<StyledText noLinks={true}>{translate("none")}</StyledText>, translate("none")]);
+        optionMap.set("none", [
+            <StyledText key="none" noLinks={true}>
+                {translate("none")}
+            </StyledText>,
+            translate("none"),
+        ]);
     }
 
     for (const [index, name] of players) {
         if (props.choosablePlayers === undefined || props.choosablePlayers.includes(index)) {
-            optionMap.set(index, [<StyledText noLinks={true}>{encodeString(name)}</StyledText>, name]);
+            optionMap.set(index, [
+                <StyledText key={index} noLinks={true}>
+                    {encodeString(name)}
+                </StyledText>,
+                name,
+            ]);
         }
     }
 

@@ -50,7 +50,7 @@ export default function WillMenu(): ReactElement {
 
     const canPostAsPlayers: PlayerIndex[] = savedAbilities
         .map(([id, _]) => (id.type === "chat" ? id.player : undefined))
-        .filter((p) => (p !== undefined ? true : false)) as PlayerIndex[];
+        .filter((p) => p !== undefined) as PlayerIndex[];
 
     return (
         <div className="will-menu will-menu-colors">
@@ -135,7 +135,7 @@ export default function WillMenu(): ReactElement {
                             GAME_MANAGER.state.clientState.type === "player"
                         ) {
                             const notes = [...GAME_MANAGER.state.clientState.notes];
-                            notes.push("Note " + (notes.length + 1));
+                            notes.push(`Note ${notes.length + 1}`);
                             GAME_MANAGER.sendSaveNotesPacket(notes as string[]);
                         }
                     }}

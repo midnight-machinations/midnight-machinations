@@ -117,7 +117,7 @@ export function createPlayer(name: UnsafeString, index: number): Player {
         playerTags: [],
 
         toString() {
-            return "" + (this.index + 1) + ": " + this.name;
+            return `${this.index + 1}: ${this.name}`;
         },
     };
 }

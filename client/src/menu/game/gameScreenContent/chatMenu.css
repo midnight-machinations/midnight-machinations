@@ -32,6 +32,15 @@
     padding-top: 0.115rem;
     padding-bottom: 0.115rem;
 }
+.chat-filter-icon-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 2rem;
+    width: 2rem;
+    height: 2rem;
+    padding: 0.2rem;
+}
 .chat-voice-header .chat-filter-icon-button,
 .chat-voice-header .voice-icon-button {
     flex-basis: 1.875rem;
@@ -72,15 +81,6 @@
 .chat-filter-actions > .custom-select {
     min-width: 0;
     max-width: 100%;
-}
-.chat-filter-icon-button {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    flex: 0 0 2rem;
-    width: 2rem;
-    height: 2rem;
-    padding: 0.2rem;
 }
 .chat-message-section {
     height: 100%;

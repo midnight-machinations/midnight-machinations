@@ -312,7 +312,7 @@ export default function Anchor(
                 <TooltipContext.Provider value={toolTipContext}>
                     <div className="anchor">
                         <Button
-                            className={"global-menu-button " + (stateType === "game" ? "" : "flush")}
+                            className={`global-menu-button ${stateType === "game" ? "" : "flush"}`}
                             onClick={() => {
                                 if (!globalMenuOpen) {
                                     setGlobalMenuOpen(true);
@@ -374,6 +374,7 @@ function CoverCard(
     const [mouseDownOnElement, setMouseDownOnElement] = useState(false);
 
     return (
+        // biome-ignore lint/a11y/noStaticElementInteractions: clicking the backdrop is a mouse shortcut; Escape closes the card from the keyboard
         <div
             className={`anchor-cover-card-background-cover ${props.theme ?? ""}`}
             // Onclick will trigger even when the click is started on a child element
@@ -413,10 +414,13 @@ function ErrorCard(
     }>,
 ) {
     return (
+        // biome-ignore lint/a11y/noStaticElementInteractions lint/a11y/useKeyWithClickEvents: the close button inside is the keyboard path; clicks on it bubble here
         <div className="error-card role-specific-colors" onClick={() => props.onClose()}>
             <header>
                 {props.error.title}
-                <button className="close flush">✕</button>
+                <button type="button" className="close flush">
+                    ✕
+                </button>
             </header>
             <div>{props.error.body}</div>
         </div>

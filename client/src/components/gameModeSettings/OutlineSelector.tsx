@@ -70,6 +70,7 @@ export default function RoleOutlineSelector(props: RoleOutlineSelectorProps): Re
                 }
 
                 return (
+                    // biome-ignore lint/suspicious/noArrayIndexKey: outline options have no id; each entry is identified by its position
                     <div key={index} className="role-picker-option">
                         <PlayerPoolSelectorLabel
                             disabled={props.disabled}
@@ -199,7 +200,9 @@ function ConclusionsSelector(
         CONCLUSIONS.map((conclusion) => [
             conclusion,
             [
-                <StyledText noLinks={true}>{translateConclusion(conclusion)}</StyledText>,
+                <StyledText key={conclusion} noLinks={true}>
+                    {translateConclusion(conclusion)}
+                </StyledText>,
                 translateConclusion(conclusion),
             ],
         ]),
@@ -210,6 +213,7 @@ function ConclusionsSelector(
             <div className="role-picker">
                 {conclusions.map((option, index) => {
                     return (
+                        // biome-ignore lint/suspicious/noArrayIndexKey: outline options have no id; each entry is identified by its position
                         <div key={index} className="role-picker-option">
                             <Select
                                 className="role-outline-option-selector"
@@ -317,7 +321,9 @@ function InsiderGroupSelector(
         INSIDER_GROUPS.map((insiderGroup) => [
             insiderGroup,
             [
-                <StyledText noLinks={true}>{translate(`chatGroup.${insiderGroup}.name`)}</StyledText>,
+                <StyledText key={insiderGroup} noLinks={true}>
+                    {translate(`chatGroup.${insiderGroup}.name`)}
+                </StyledText>,
                 translate(`chatGroup.${insiderGroup}.name`),
             ],
         ]),
@@ -328,6 +334,7 @@ function InsiderGroupSelector(
             <div className="role-picker">
                 {insiderGroups.map((option, index) => {
                     return (
+                        // biome-ignore lint/suspicious/noArrayIndexKey: outline options have no id; each entry is identified by its position
                         <div key={index} className="role-picker-option">
                             <Select
                                 className="role-outline-option-selector"
@@ -355,6 +362,7 @@ function InsiderGroupSelector(
                 })}
                 {insiderGroupsNotChosen.length !== 0 && (
                     <button
+                        type="button"
                         disabled={props.disabled}
                         onClick={() => props.onChange([...insiderGroups, insiderGroupsNotChosen[0]])}
                     >
@@ -461,7 +469,13 @@ function PlayerPoolSelector(
     const optionsSearch = new Map<number, [ReactElement, string]>(
         playerNames.map((name, index) => [
             index,
-            [<StyledText noLinks={true}>{encodeString(name)}</StyledText>, encodeString(name)],
+            // biome-ignore lint/suspicious/noArrayIndexKey: outline options have no id; each entry is identified by its position
+            [
+                <StyledText key={index} noLinks={true}>
+                    {encodeString(name)}
+                </StyledText>,
+                encodeString(name),
+            ],
         ]),
     );
 
@@ -685,6 +699,7 @@ export function OutlineListSelector(
                                 )}
                                 {props.onRemoveOutline && (
                                     <button
+                                        type="button"
                                         disabled={props.disabled}
                                         onClick={() => {
                                             if (props.onRemoveOutline) props.onRemoveOutline(index);
@@ -699,7 +714,7 @@ export function OutlineListSelector(
                 />
                 <div className="role-list-setter-outline-div role-list-setter-add-button-div">
                     {props.onAddNewOutline ? (
-                        <button disabled={props.disabled} onClick={props.onAddNewOutline}>
+                        <button type="button" disabled={props.disabled} onClick={props.onAddNewOutline}>
                             <Icon>add</Icon>
                         </button>
                     ) : null}

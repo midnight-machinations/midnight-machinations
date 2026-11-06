@@ -54,7 +54,7 @@ export default function Popover<T extends HTMLElement = HTMLElement>(
                 );
             });
 
-            popoverElement.className = "popover " + (props.className ?? "");
+            popoverElement.className = `popover ${props.className ?? ""}`;
         }
     }, [props.anchorForPositionRef, props.className]);
 

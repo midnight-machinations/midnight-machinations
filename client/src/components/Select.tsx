@@ -131,7 +131,7 @@ export default function Select<K extends { toString(): string }>(
                 onClick={() => {
                     handleSetOpen(!open);
                 }}
-                className={"custom-select " + (props.className ? props.className : "")}
+                className={`custom-select ${props.className ? props.className : ""}`}
                 onKeyDown={(e) => {
                     if (props.disabled) return;
                     if (e.key === "Enter" && !open) {

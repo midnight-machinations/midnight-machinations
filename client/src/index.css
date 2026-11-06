@@ -304,16 +304,6 @@ textarea,
     border-left-color: var(--primary-border-shadow-color);
 }
 
-:has(input):focus-within > button.clear,
-:has(input):focus-within > .button.clear {
-    display: block;
-}
-
-:has(button.clear),
-:has(.button.clear) {
-    position: relative;
-}
-
 button.clear,
 .button.clear {
     display: none;
@@ -324,6 +314,16 @@ button.clear,
     background: none;
     border: none;
     padding: 0;
+}
+
+:has(input):focus-within > button.clear,
+:has(input):focus-within > .button.clear {
+    display: block;
+}
+
+:has(button.clear),
+:has(.button.clear) {
+    position: relative;
 }
 
 button.close,

@@ -18,7 +18,7 @@ export type KiraResult = ListMapData<PlayerIndex, [KiraGuess, KiraGuessResult]>;
 
 export type KiraGuess = "none" | "nonTown" | Role;
 export function kiraGuessTranslate(kiraGuess: KiraGuess): string {
-    let outString = translateChecked("role." + kiraGuess + ".name");
+    let outString = translateChecked(`role.${kiraGuess}.name`);
     if (outString === null) {
         outString = translate(kiraGuess);
     }
@@ -86,7 +86,7 @@ export function KiraResultDisplay(
         }
 
         out.push(
-            <div key={playerIndex} className={"kira-guess-result " + resultStyle}>
+            <div key={playerIndex} className={`kira-guess-result ${resultStyle}`}>
                 <StyledText playerKeywordData={props.playerKeywordData} noLinks={props.noLinks}>
                     {encodeString(props.playerNames[playerIndex])} {kiraGuessTranslate(guess)} {resultIcon}{" "}
                     {resultString}
@@ -162,7 +162,9 @@ function KiraGuessPicker(props: {
     const guessOptions: SelectOptionsSearch<KiraGuess> = new Map();
     for (const guess of props.availableGuesses) {
         guessOptions.set(guess, [
-            <StyledText noLinks={true}>{kiraGuessTranslate(guess)}</StyledText>,
+            <StyledText key={guess} noLinks={true}>
+                {kiraGuessTranslate(guess)}
+            </StyledText>,
             kiraGuessTranslate(guess),
         ]);
     }

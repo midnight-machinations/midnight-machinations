@@ -33,11 +33,11 @@ export default function PlayerNamePlate(
 
     const roleString = useMemo(() => {
         if (props.playerIndex === myIndex) {
-            return "(" + translate("role." + myRole + ".name") + ")";
+            return `(${translate(`role.${myRole}.name`)})`;
         }
 
         if (playerAlive && playerRoleLabel !== null) {
-            return "(" + translate("role." + playerRoleLabel + ".name") + ")";
+            return `(${translate(`role.${playerRoleLabel}.name`)})`;
         }
 
         return "";
@@ -69,7 +69,7 @@ export default function PlayerNamePlate(
             {roleString !== null && <StyledText> {roleString}</StyledText>}
             <StyledText>
                 {playerTags.map((tag) => {
-                    return translate("tag." + tag);
+                    return translate(`tag.${tag}`);
                 })}
             </StyledText>
         </div>

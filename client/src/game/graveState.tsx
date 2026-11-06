@@ -46,11 +46,11 @@ export type GravePhase = "day" | "night";
 export function translateGraveDeathCause(deathCause: GraveDeathCause): string {
     switch (deathCause.type) {
         case "role":
-            return translate("role." + deathCause.value + ".name");
+            return translate(`role.${deathCause.value}.name`);
         case "roleSet":
             return translate(deathCause.value);
         default:
-            return translate("grave.deathCause." + deathCause.type);
+            return translate(`grave.deathCause.${deathCause.type}`);
     }
 }
 export function translateGraveDeathCauses(deathCauses: GraveDeathCause[]): string {

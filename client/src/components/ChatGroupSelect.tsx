@@ -17,12 +17,17 @@ export default function ChatGroupSelect(
     for (const group of props.groups) {
         const name = translate(`chatGroup.${group}.name`);
         options.set(group, [
-            <StyledText noLinks={true}>{`${translate(`chatGroup.${group}.icon`)} ${name}`}</StyledText>,
+            <StyledText key={group} noLinks={true}>{`${translate(`chatGroup.${group}.icon`)} ${name}`}</StyledText>,
             name,
         ]);
     }
     if (props.groups.length === 0)
-        options.set("none", [<StyledText noLinks={true}>{translate("none")}</StyledText>, translate("none")]);
+        options.set("none", [
+            <StyledText key="none" noLinks={true}>
+                {translate("none")}
+            </StyledText>,
+            translate("none"),
+        ]);
     const selected =
         props.selected !== null && props.groups.includes(props.selected)
             ? props.selected

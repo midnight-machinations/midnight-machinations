@@ -133,12 +133,12 @@ function LobbyPlayerListPlayer(props: Readonly<{ player: PlayerDisplayData }>): 
             <div>
                 <LobbyVoiceMuteButton roomClientId={props.player.id} />
                 {host && !props.player.host && (
-                    <button onClick={() => GAME_MANAGER.sendSetPlayerHostPacket(props.player.id)}>
+                    <button type="button" onClick={() => GAME_MANAGER.sendSetPlayerHostPacket(props.player.id)}>
                         <Icon>add_moderator</Icon>
                     </button>
                 )}
                 {host && props.player.connection !== "disconnected" && (
-                    <button onClick={() => GAME_MANAGER.sendKickPlayerPacket(props.player.id)}>
+                    <button type="button" onClick={() => GAME_MANAGER.sendKickPlayerPacket(props.player.id)}>
                         <Icon>person_remove</Icon>
                     </button>
                 )}

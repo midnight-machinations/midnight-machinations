@@ -1,7 +1,11 @@
 import type { ReactElement } from "react";
 import GAME_MANAGER from "../../../../..";
 import { usePlayerState } from "../../../../../components/useHooks";
-import { controllerIdToLinkWithPlayer, type TwoRoleOutlineOptionSelection } from "../../../../../game/controllerInput";
+import {
+    type AvailableTwoRoleOutlineOptionSelection,
+    controllerIdToLinkWithPlayer,
+    type TwoRoleOutlineOptionSelection,
+} from "../../../../../game/controllerInput";
 import type { Role, RoleState } from "../../../../../game/roleState.d";
 import ListMap from "../../../../../ListMap";
 import TwoRoleOutlineOptionSelectionMenu from "../ControllerSelectionTypes/TwoRoleOutlineOptionSelectionMenu";
@@ -47,8 +51,8 @@ export default function AuditorMenu(
         id: 0,
     });
 
-    let newSelection;
-    let newAvailable;
+    let newSelection: TwoRoleOutlineOptionSelection | undefined;
+    let newAvailable: AvailableTwoRoleOutlineOptionSelection | undefined;
     if (
         singleAbilitySave !== null &&
         singleAbilitySave.selection.type === "twoRoleOutlineOption" &&

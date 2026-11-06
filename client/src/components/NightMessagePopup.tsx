@@ -14,6 +14,7 @@ export default function NightMessagePopup(
             <div className="chat-message-section">
                 <div className="chat-message-list">
                     {props.messages.map((msg, index) => {
+                        // biome-ignore lint/suspicious/noArrayIndexKey: night messages are a fixed list for this popup
                         return <ChatElement key={index} message={msg} />;
                     })}
                 </div>

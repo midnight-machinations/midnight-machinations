@@ -35,6 +35,7 @@ export default function PlayerListSelectionMenu(
         <div className="generic-list-controller-menu">
             {props.selection.map((p, i) => (
                 <PlayerOptionDropdown
+                    // biome-ignore lint/suspicious/noArrayIndexKey: each dropdown is a fixed slot in the selection
                     key={i}
                     value={p}
                     onChange={(p) => handleSelection(p, i)}

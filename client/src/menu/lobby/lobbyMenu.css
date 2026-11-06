@@ -85,6 +85,11 @@ input.lobby-name-field {
     flex-direction: row;
 }
 
+.lobby-name input {
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+
 .lm > div .name-box input {
     width: 100%;
 }
@@ -124,11 +129,6 @@ input.lobby-name-field {
     border-left-color: var(--primary-border-shadow-color);
     border-right-color: var(--primary-border-color);
     border-bottom-color: var(--primary-border-color);
-}
-
-.lobby-name input {
-    font-size: 1.5rem;
-    font-weight: bold;
 }
 
 .lobby-player-list-section {

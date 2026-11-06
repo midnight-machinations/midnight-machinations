@@ -109,7 +109,7 @@ function GameModeSelectorPanel(
                 }
             } else {
                 if (
-                    Object.keys(gameMode.data).includes("" + roleList.length) &&
+                    Object.keys(gameMode.data).includes(`${roleList.length}`) &&
                     !window.confirm(translate("confirmOverwrite"))
                 ) {
                     return "didNotConfirm";
@@ -150,7 +150,7 @@ function GameModeSelectorPanel(
                 if (result !== "success") {
                     anchorController.pushErrorCard({
                         title: translate("notification.saveGameMode.failure"),
-                        body: translate("notification.saveGameMode.failure." + result),
+                        body: translate(`notification.saveGameMode.failure.${result}`),
                     });
                 }
             }
@@ -166,13 +166,13 @@ function GameModeSelectorPanel(
 
         // If there's more than one person in the lobby, we must have come from a game, so don't reset game mode.
         if (experimental) {
-            let players;
+            let players: number;
             if ("15" in experimental.data) {
                 players = 15;
             } else if ("14" in experimental.data) {
                 players = 14;
             } else {
-                players = Object.keys(experimental.data).map((index) => Number.parseInt(index))[0];
+                players = Object.keys(experimental.data).map((index) => Number.parseInt(index, 10))[0];
             }
             loadGameMode({
                 name: "Experimental",
@@ -255,7 +255,7 @@ function GameModeSelectorPanel(
                             if (result === "success") {
                                 return translate("notification.saveGameMode.success");
                             } else {
-                                return translate("notification.saveGameMode.failure." + result);
+                                return translate(`notification.saveGameMode.failure.${result}`);
                             }
                         }}
                     >
@@ -366,9 +366,9 @@ function GameModeSelectorSelect(
 
         for (const gameMode of props.gameModeStorage.gameModes) {
             for (const [number, _] of Object.entries(gameMode.data)) {
-                const players = Number.parseInt(number);
+                const players = Number.parseInt(number, 10);
 
-                map.set(gameMode.name + ":" + players, {
+                map.set(`${gameMode.name}:${players}`, {
                     name: gameMode.name,
                     players,
                 });
@@ -392,7 +392,7 @@ function GameModeSelectorSelect(
 
         for (const gameMode of props.gameModeStorage.gameModes) {
             for (const [number, _] of Object.entries(gameMode.data)) {
-                const players = Number.parseInt(number);
+                const players = Number.parseInt(number, 10);
                 let addStar = false;
                 if (
                     props.gameModeLocation !== null &&
@@ -402,11 +402,11 @@ function GameModeSelectorSelect(
                     addStar = star;
                 }
 
-                options.set(gameMode.name + ":" + players, [
-                    <StyledText key={gameMode.name + ":" + players} noLinks={true}>
+                options.set(`${gameMode.name}:${players}`, [
+                    <StyledText key={`${gameMode.name}:${players}`} noLinks={true}>
                         {`${gameMode.name}: ${players}${addStar ? "*" : ""}`}
                     </StyledText>,
-                    gameMode.name + " " + players,
+                    `${gameMode.name} ${players}`,
                 ]);
             }
         }
@@ -418,7 +418,7 @@ function GameModeSelectorSelect(
         if (props.gameModeLocation === null) {
             return "Custom" as const;
         } else {
-            return props.gameModeLocation.name + ":" + props.gameModeLocation.players;
+            return `${props.gameModeLocation.name}:${props.gameModeLocation.players}`;
         }
     }, [props.gameModeLocation, props.gameModeStorage]);
 
@@ -452,7 +452,7 @@ function _GameModeLabel(
     if (Object.keys(props.gameMode.data).length === 1) {
         return (
             <GameModeSingleLabel
-                location={{ name: props.gameMode.name, players: parseInt(Object.keys(props.gameMode.data)[0]) }}
+                location={{ name: props.gameMode.name, players: parseInt(Object.keys(props.gameMode.data)[0], 10) }}
                 modifiable={props.modifiable}
                 gameModeStorage={props.gameModeStorage}
                 loadGameMode={props.loadGameMode}
@@ -506,7 +506,8 @@ function GameModeFolderLabel(props: {
                     <div className="game-mode-folder-content">
                         {Object.keys(gameMode.data).map((key) => (
                             <GameModeSingleLabel
-                                location={{ name: props.gameModeName, players: parseInt(key) }}
+                                key={key}
+                                location={{ name: props.gameModeName, players: parseInt(key, 10) }}
                                 gameModeStorage={props.gameModeStorage}
                                 modifiable={props.modifiable}
                                 draggable={false}

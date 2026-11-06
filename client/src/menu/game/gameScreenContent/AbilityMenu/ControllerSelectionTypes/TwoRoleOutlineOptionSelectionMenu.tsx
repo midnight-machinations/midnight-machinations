@@ -85,15 +85,16 @@ function RoleListDisplay(props: {
         <>
             {props.roleList.map((entry, index) => {
                 return (
+                    // biome-ignore lint/suspicious/noArrayIndexKey: each button is a fixed role list slot
                     <Button className="role-list-button" style={{ gridRow: index + 1 }} key={index}>
                         {props.strikenOutlineIndexs.includes(index) ? (
                             <s>
                                 <StyledText>
-                                    {`${index + 1}: ` + translateRoleOutline(entry, props.playerNames)}
+                                    {`${index + 1}: ${translateRoleOutline(entry, props.playerNames)}`}
                                 </StyledText>
                             </s>
                         ) : (
-                            <StyledText>{`${index + 1}: ` + translateRoleOutline(entry, props.playerNames)}</StyledText>
+                            <StyledText>{`${index + 1}: ${translateRoleOutline(entry, props.playerNames)}`}</StyledText>
                         )}
                     </Button>
                 );
@@ -116,7 +117,8 @@ function ChooseButtons(
                 if (button.type === "notUsed") {
                     return (
                         <Button
-                            className={"choose-button" + (button.chosen ? " highlighted" : "")}
+                            className={`choose-button${button.chosen ? " highlighted" : ""}`}
+                            // biome-ignore lint/suspicious/noArrayIndexKey: each button is a fixed role list slot
                             key={index}
                             onClick={() => {
                                 const newChosenOutlines = [...props.chosenOutlines];
@@ -139,11 +141,12 @@ function ChooseButtons(
                     );
                 } else {
                     return (
-                        <label className="choose-button" key={index}>
+                        // biome-ignore lint/suspicious/noArrayIndexKey: each button is a fixed role list slot
+                        <span className="choose-button" key={index}>
                             <StyledText>
-                                {button.result.map((role) => translate("role." + role + ".name")).join(" ")}
+                                {button.result.map((role) => translate(`role.${role}.name`)).join(" ")}
                             </StyledText>
-                        </label>
+                        </span>
                     );
                 }
             })}

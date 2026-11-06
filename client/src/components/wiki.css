@@ -37,10 +37,6 @@
     border: 0.13rem solid var(--primary-border-color);
     background-color: var(--secondary-color);
 }
-.wiki-search .masonry-item h3 {
-    margin: 0;
-    background-color: var(--background-color);
-}
 .wiki-search .wiki-page-button {
     display: inline-block;
 }
@@ -84,6 +80,10 @@
     margin-bottom: 0.5rem;
     text-align: left;
 }
+.wiki-article-tooltip * {
+    text-align: left;
+    pointer-events: none;
+}
 .wiki-article blockquote > * {
     display: inline-block;
     margin: auto;
@@ -102,6 +102,10 @@
 .wiki-article h3 {
     text-align: center;
     margin-bottom: 0.5rem;
+}
+.wiki-search .masonry-item h3 {
+    margin: 0;
+    background-color: var(--background-color);
 }
 .wiki-article p {
     margin-bottom: 0.5rem;
@@ -168,10 +172,6 @@
 .wiki-article-tooltip-popover {
     pointer-events: none;
     overflow: hidden;
-}
-.wiki-article-tooltip * {
-    text-align: left;
-    pointer-events: none;
 }
 .wiki-article-tooltip-footer {
     position: absolute;

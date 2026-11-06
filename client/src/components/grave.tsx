@@ -8,6 +8,7 @@ import "./grave.css";
 import type { UnsafeString } from "../game/gameState.d";
 import type { RoleList } from "../game/roleListState.d";
 import { useGameState, useLobbyOrGameState } from "./useHooks";
+import { buttonProps } from "./keyboard";
 
 export function translateGraveRole(grave: Grave): string {
     if (grave.information.type === "obscured") {
@@ -79,9 +80,7 @@ function UnobscuredGrave(
     return (
         <div
             className="grave graveyard-menu-colors"
-            onClick={() => {
-                if (props.onClick !== undefined) props.onClick();
-            }}
+            {...(props.onClick !== undefined ? buttonProps(props.onClick) : {})}
         >
             <div>
                 <StyledText
@@ -91,13 +90,13 @@ function UnobscuredGrave(
             <div>
                 <StyledText
                     noLinks={props.noLinks}
-                >{`${props.playerNames[props.grave.player] + " (" + graveRoleString + ")"}`}</StyledText>
+                >{`${`${props.playerNames[props.grave.player]} (${graveRoleString})`}`}</StyledText>
             </div>
             {graveDeathCause && (
                 <div>
                     <StyledText
                         noLinks={props.noLinks}
-                    >{`${translate("killedBy") + " " + graveDeathCause}`}</StyledText>
+                    >{`${`${translate("killedBy")} ${graveDeathCause}`}`}</StyledText>
                 </div>
             )}
             {(props.grave.information.alibi as string).length === 0 || (
@@ -144,7 +143,7 @@ function ObscuredGrave(
             <div>
                 <StyledText
                     noLinks={props.noLinks}
-                >{`${props.playerNames[props.grave.player] + " (" + graveRoleString + ")"}`}</StyledText>
+                >{`${`${props.playerNames[props.grave.player]} (${graveRoleString})`}`}</StyledText>
             </div>
         </div>
     );

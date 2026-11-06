@@ -45,15 +45,15 @@
     justify-content: center;
     flex-grow: 0;
 }
-.saved-game-modes .game-mode-label > .draggable > span {
-    margin: 0 0.25rem;
-}
 .saved-game-modes .game-mode-label > span {
     display: inline-flex;
     margin: 0 0.25rem;
     align-items: center;
     justify-content: center;
     flex-grow: 1;
+}
+.saved-game-modes .game-mode-label > .draggable > span {
+    margin: 0 0.25rem;
 }
 .saved-game-modes .game-mode-label .game-mode-label-buttons {
     display: flex;

@@ -28,8 +28,8 @@ export default function translate(langKey: string, ...valuesList: (string | numb
     const translation = translateChecked(langKey, ...valuesList);
 
     if (translation === null) {
-        console.error("Attempted to use non existent lang key: " + langKey);
-        return "ERROR: " + langKey;
+        console.error(`Attempted to use non existent lang key: ${langKey}`);
+        return `ERROR: ${langKey}`;
     }
 
     return translation;
@@ -44,8 +44,8 @@ export function translateAny(langKeys: string[], ...valuesList: (string | number
         }
     }
 
-    console.error("Attempted to use non existent lang key: " + langKeys.at(-1));
-    return "ERROR: " + langKeys.at(-1);
+    console.error(`Attempted to use non existent lang key: ${langKeys.at(-1)}`);
+    return `ERROR: ${langKeys.at(-1)}`;
 }
 
 export function translateChecked(langKey: string, ...valuesList: (string | number)[]): string | null {
@@ -54,7 +54,7 @@ export function translateChecked(langKey: string, ...valuesList: (string | numbe
         return null;
     }
     for (let i = 0; i < valuesList.length; i++) {
-        out = out.replace("\\" + i, valuesList[i] as string);
+        out = out.replace(`\\${i}`, valuesList[i] as string);
     }
     return out;
 }

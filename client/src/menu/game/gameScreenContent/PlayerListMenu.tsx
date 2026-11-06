@@ -21,6 +21,7 @@ import { controllerIdToLinkWithPlayer } from "../../../game/controllerInput";
 import type { PlayerIndex } from "../../../game/gameState.d";
 import ListMap from "../../../ListMap";
 import { ContentMenu, ContentTab } from "../GameScreen";
+import { buttonProps } from "../../../components/keyboard";
 import { ChatMessageSection, ChatTextInput } from "./ChatMenu";
 
 export default function PlayerListMenu(): ReactElement {
@@ -235,7 +236,7 @@ function PlayerCard(
                     {grave !== undefined ? (
                         <Button className="grave-button graveyard-menu-colors" onClick={() => setGraveOpen(!graveOpen)}>
                             <StyledText noLinks={true}>
-                                {translateGraveRole(grave)} {translate(grave.diedPhase + ".icon")}
+                                {translateGraveRole(grave)} {translate(`${grave.diedPhase}.icon`)}
                                 {grave.dayNumber.toString()}
                             </StyledText>
                         </Button>
@@ -307,12 +308,12 @@ function PlayerCard(
                 </div>
             </div>
             {alibiOpen && mostRecentBlockMessage !== undefined ? (
-                <div className="open-alibi" onClick={() => setAlibiOpen(false)}>
+                <div className="open-alibi" {...buttonProps(() => setAlibiOpen(false))}>
                     <ChatMessage message={mostRecentBlockMessage[1]} messageIndex={mostRecentBlockMessage[0]} />
                 </div>
             ) : null}
             {graveOpen && grave !== undefined ? (
-                <div onClick={() => setGraveOpen(false)}>
+                <div {...buttonProps(() => setGraveOpen(false))}>
                     <GraveComponent grave={grave} />
                 </div>
             ) : null}

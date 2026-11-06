@@ -25,7 +25,15 @@ export default function ChatFilters(props: Readonly<{ filter: ChatFilter }>) {
     const options: SelectOptionsSearch<FilterMode> = new Map(
         modes.map((mode) => {
             const label = translate(`menu.chat.filter.${mode}`);
-            return [mode, [<StyledText noLinks={true}>{label}</StyledText>, label]];
+            return [
+                mode,
+                [
+                    <StyledText key={mode} noLinks={true}>
+                        {label}
+                    </StyledText>,
+                    label,
+                ],
+            ];
         }),
     );
     return (
@@ -66,6 +74,7 @@ export default function ChatFilters(props: Readonly<{ filter: ChatFilter }>) {
             {filter?.type === "text" && (
                 <input
                     type="search"
+                    // biome-ignore lint/a11y/noAutofocus: the search box opens because the user just chose the text filter
                     autoFocus
                     aria-label={translate("menu.chat.filter.search")}
                     placeholder={translate("menu.chat.filter.search")}

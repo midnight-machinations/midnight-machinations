@@ -115,7 +115,9 @@ export function useMenuController<C extends Partial<Record<ContentMenu, boolean>
                 if (getMenuController().menusOpen().includes(menu)) {
                     getMenuController().closeMenu(menu);
                 } else {
-                    getMenuController().openMenu(menu, () => {});
+                    getMenuController().openMenu(menu, () => {
+                        // Nothing to do once the menu is open
+                    });
                 }
             },
             openMenu(menu, callback) {
