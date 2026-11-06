@@ -4,33 +4,20 @@ Midnight Machinations (formerly Mafia) is a multiplayer social deduction game.
 
 - `server/`: Rust WebSocket server and game logic (Cargo)
 - `client/`: TypeScript/React frontend (Vite, pnpm)
+- `voice/`: WebRTC voice service
 - `generate/`: Python code generation utilities
 
 ## Commands
 
-All development services (from the repository root, after installing client/voice dependencies and configuring local voice):
-```bash
-pnpm start  # client, Rust server, and voice; Ctrl+C stops all three
-pnpm test         # development launcher checks
-```
-The root launcher has no dependencies. It reports missing setup instead of installing or configuring automatically. Use pnpm for both client and voice dependencies. Each service has its own pnpm lockfile; do not generate npm lockfiles.
+All development commands are tasks in `maskfile.md`. Run `mask --help` from the repository root to list them. The usual ones:
 
-Client (from `client/`):
 ```bash
-corepack enable
-pnpm install --frozen-lockfile
-pnpm dev          # dev server, default http://localhost:3000; add --no-open (not --open=false) to skip opening a browser
-pnpm build        # type-checks (tsc) and builds; run this to check for type errors
+mask setup          # install dependencies and configure local voice
+mask start          # client, server, and voice together
+mask check          # cargo clippy, cargo test, and pnpm build
 ```
 
-Server (from `server/`):
-```bash
-cargo run         # WebSocket server, default ws://localhost:9000
-cargo test
-cargo clippy      # CI runs clippy; keep it clean
-```
-
-After making changes, run `cargo clippy` / `cargo test` for server changes and `pnpm build` for client changes.
+After making changes, run `mask server clippy` / `mask server test` for server changes and `mask client build` for client changes, or `mask check` for both. Use pnpm, never npm, for JavaScript dependencies.
 
 ## Configuration
 
@@ -39,7 +26,7 @@ After making changes, run `cargo clippy` / `cargo test` for server changes and `
 
 ## Worktrees
 
-To create a worktree that can run at the same time as other checkouts, use `scripts/new-worktree.sh <path> <branch> [port-offset]`. It gives the worktree its own ports through the `.env.local` files. Claude Code users can run the `new-worktree` skill (`.claude/skills/new-worktree/`) instead.
+To create a worktree that can run at the same time as other checkouts, use `mask worktree <path> <branch> [--offset N]`. It gives the worktree its own ports through the `.env.local` files. Claude Code users can run the `new-worktree` skill (`.claude/skills/new-worktree/`) instead.
 
 ## Guides
 
