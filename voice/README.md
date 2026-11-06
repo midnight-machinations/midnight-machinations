@@ -21,7 +21,7 @@ pnpm configure
 pnpm start
 ```
 
-Once configured, you can start all three services from the repository root with `pnpm start`. Ctrl+C stops them together. The commands above remain available for running voice separately.
+Once configured, you can start all three services from the repository root with `mask start`. Ctrl+C stops them together. The commands above remain available for running voice separately.
 
 `configure` creates a random shared control secret in gitignored `voice/.env.local` and `server/.env.local`. It preserves unrelated server settings. Restart the Rust server after configuring it. Run the server and client normally from their own directories:
 
@@ -50,7 +50,7 @@ The lobby player list shows your mic button while you are connected to voice. Du
 
 The chat composer has a group selector beside the player name and group icons. Text and voice send only to the selected group. If access to that group changes, the server switches to All when allowed, otherwise the first allowed group. With no allowed group, sending stops. Whispers remain separate from this selection. Each voice group has an incoming deafen button. Individual player mute and volume controls affect only your playback. Deafen settings survive reconnects within the same lobby or game. A fresh game resets them. Brained and blackmailed players cannot transmit, regardless of their settings. Spectators can speak in the lobby, but can only hear All during a game.
 
-For simultaneous checkouts, use `pnpm configure 1` with a different offset per checkout. `scripts/new-worktree.sh` runs this step automatically with the worktree's port offset.
+For simultaneous checkouts, use `pnpm configure 1` with a different offset per checkout. `mask worktree` runs this step automatically with the worktree's port offset.
 
 Hosts can enable or disable voice for the whole room in lobby settings or in-game host settings. The toggle is a room setting, is absent from the game mode editor, and is never included in saved client game modes. The server checks host authority, preserves the setting across lobby/game transitions, revokes media credentials and routes when disabled, and updates all clients. Enabling voice again lets players join it explicitly; it does not turn on their microphones.
 
