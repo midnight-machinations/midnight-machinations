@@ -20,6 +20,7 @@ function setup(mode, binding) {
         window: { addEventListener: (type, handler) => listeners.set(type, handler), setInterval() {} },
         document: { addEventListener() {} }, Element,
         localStorage: { getItem: name => saved.get(name), setItem: (name, value) => saved.set(name, value) },
+        loadSettingsParsed: () => ({ volume: 0.5 }),
     };
     vm.createContext(context);
     const source = fs.readFileSync(path.join(__dirname, '../src/voice/voiceManager.ts'), 'utf8')
@@ -65,6 +66,33 @@ test('Shift+M toggles mute once and ignores repeats and unmodified M', () => {
     assert.equal(voice.selfMuted, false);
     dispatch('keydown', 'KeyM', { shiftKey: true });
     assert.equal(voice.selfMuted, true);
+});
+
+function fakeAudio() {
+    const tones = [];
+    const node = () => ({ gain: { value: 1, setValueAtTime() {}, linearRampToValueAtTime() {}, exponentialRampToValueAtTime() {} }, connect: next => next, disconnect() {} });
+    return {
+        tones, state: 'running', currentTime: 0, destination: {}, createGain: node,
+        createOscillator: () => {
+            const tone = { ...node(), frequency: { value: 0 }, started: false, start() { tone.started = true; }, stop() {} };
+            tones.push(tone);
+            return tone;
+        },
+    };
+}
+
+test('unmuting plays the mute sound backwards', () => {
+    const { voice, dispatch } = setup('toggleMute', 'Shift+KeyM');
+    const audio = fakeAudio();
+    voice.audio = audio;
+    dispatch('keydown', 'KeyM', { shiftKey: true });
+    assert.equal(voice.selfMuted, false);
+    const unmute = audio.tones.splice(0).map(tone => tone.frequency.value);
+    dispatch('keydown', 'KeyM', { shiftKey: true });
+    assert.equal(voice.selfMuted, true);
+    const mute = audio.tones.map(tone => tone.frequency.value);
+    assert.ok(mute.length > 1 && mute[0] > mute[mute.length - 1], 'the mute sound falls in pitch');
+    assert.deepEqual(unmute, [...mute].reverse());
 });
 
 for (const modifier of ['ctrlKey', 'altKey', 'metaKey']) {
