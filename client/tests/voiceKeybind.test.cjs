@@ -81,16 +81,18 @@ function fakeAudio() {
     };
 }
 
-test('muting yourself plays a sound and unmuting does not', () => {
+test('unmuting plays the mute sound backwards', () => {
     const { voice, dispatch } = setup('toggleMute', 'Shift+KeyM');
     const audio = fakeAudio();
     voice.audio = audio;
     dispatch('keydown', 'KeyM', { shiftKey: true });
     assert.equal(voice.selfMuted, false);
-    assert.equal(audio.tones.length, 0);
+    const unmute = audio.tones.splice(0).map(tone => tone.frequency.value);
     dispatch('keydown', 'KeyM', { shiftKey: true });
     assert.equal(voice.selfMuted, true);
-    assert.ok(audio.tones.length > 0 && audio.tones.every(tone => tone.started));
+    const mute = audio.tones.map(tone => tone.frequency.value);
+    assert.ok(mute.length > 1 && mute[0] > mute[mute.length - 1], 'the mute sound falls in pitch');
+    assert.deepEqual(unmute, [...mute].reverse());
 });
 
 for (const modifier of ['ctrlKey', 'altKey', 'metaKey']) {
