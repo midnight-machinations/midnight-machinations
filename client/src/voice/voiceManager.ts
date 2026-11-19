@@ -4,6 +4,7 @@ import { ANCHOR_CONTROLLER } from "../menu/Anchor";
 import translate from "../game/lang";
 import { MicrophoneProcessing } from "./microphoneProcessing";
 import { keybindReleased, matchesKeybind, matchesKeybindModifiers } from "./keybind";
+import { loadSettingsParsed } from "../game/localStorage";
 
 type ConsumerMessage = {
     type: "consumer";
@@ -125,8 +126,46 @@ export class VoiceManager {
     }
     toggleSelfMute() {
         this.selfMuted = !this.selfMuted;
+        if (this.microphoneEnabled) this.playMuteSound(this.selfMuted);
         this.updateMicrophone();
         this.changed();
+    }
+    /**
+     * A short falling two-note blip on mute, and the same blip reversed on unmute. Synthesized so
+     * it plays alongside chat sounds instead of interrupting them.
+     */
+    private playMuteSound(muted: boolean) {
+        const audio = this.audio;
+        const volume = loadSettingsParsed().volume;
+        if (!audio || audio.state === "closed" || volume <= 0) return;
+        const start = audio.currentTime;
+        const output = audio.createGain();
+        output.gain.value = 0.25 * volume;
+        output.connect(audio.destination);
+        // Reversing the 0.21 s blip keeps the note timings but swaps their pitches and flips each envelope.
+        const notes = muted ? [[0, 660], [0.09, 440]] : [[0, 440], [0.09, 660]];
+        notes.forEach(([offset, frequency], index) => {
+            const tone = audio.createOscillator();
+            const envelope = audio.createGain();
+            tone.type = "sine";
+            tone.frequency.value = frequency;
+            if (muted) {
+                envelope.gain.setValueAtTime(0, start + offset);
+                envelope.gain.linearRampToValueAtTime(1, start + offset + 0.01);
+                envelope.gain.exponentialRampToValueAtTime(0.001, start + offset + 0.12);
+            } else {
+                envelope.gain.setValueAtTime(0.001, start + offset);
+                envelope.gain.exponentialRampToValueAtTime(1, start + offset + 0.11);
+                envelope.gain.linearRampToValueAtTime(0, start + offset + 0.12);
+            }
+            tone.connect(envelope).connect(output);
+            tone.start(start + offset);
+            tone.stop(start + offset + 0.13);
+            tone.onended = () => {
+                tone.disconnect(); envelope.disconnect();
+                if (index === notes.length - 1) output.disconnect();
+            };
+        });
     }
     async togglePlayerMute(id: number) {
         if (id === this.session?.selfId) {
